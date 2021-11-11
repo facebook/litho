@@ -236,6 +236,27 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
+  /** Inverse of {@link #hasVisibleTextMatching(String)}. */
+  public ComponentAssert doesNotHaveVisibleTextMatching(String pattern) {
+    assertThatLithoView().doesNotHaveVisibleTextMatching(pattern);
+
+    return this;
+  }
+
+  /** Assert that the given component contains the provided text. */
+  public ComponentAssert hasVisibleTextContaining(String text) {
+    assertThatLithoView().hasVisibleTextContaining(text);
+
+    return this;
+  }
+
+  /** Inverse of {@link #hasVisibleTextContaining(String)}. */
+  public ComponentAssert doesNotHaveVisibleTextContaining(String text) {
+    assertThatLithoView().doesNotHaveVisibleTextContaining(text);
+
+    return this;
+  }
+
   /**
    * Assert that the view tag is present for the given index.
    *

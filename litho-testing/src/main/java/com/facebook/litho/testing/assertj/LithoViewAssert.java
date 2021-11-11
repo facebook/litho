@@ -162,6 +162,28 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
+  /**
+   * Assert that the given component contains the provided text. Useful if checking portion of text
+   * that may be appended with other text in a span.
+   */
+  public LithoViewAssert hasVisibleTextContaining(String text) {
+    final String regexPattern = String.format(".*%s.*", text);
+    return hasVisibleTextMatching(regexPattern);
+  }
+
+  /** Inverse of {@link #hasVisibleTextMatching(String)}. */
+  public LithoViewAssert doesNotHaveVisibleTextMatching(String pattern) {
+    assertThatViewTree().hasVisibleTextMatching(pattern);
+
+    return this;
+  }
+
+  /** Inverse of {@link #hasVisibleTextContaining(String)}. */
+  public LithoViewAssert doesNotHaveVisibleTextContaining(String text) {
+    final String regexPattern = String.format(".*%s.*", text);
+    return doesNotHaveVisibleTextMatching(regexPattern);
+  }
+
   /** Assert that the LithoView under test has the provided measured width. */
   public LithoViewAssert hasMeasuredWidthOf(int width) {
     Java6Assertions.assertThat(actual.getMeasuredWidth())
