@@ -124,4 +124,34 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
     assertThat(holder.errorMessages).hasSize(1);
     assertThat(holder.errorMessages).containsExactly("Methods in a spec must be static.");
   }
+
+  @Test
+  public void annotate_forFileWithDiffSectionSpec_showsErrorMessages() throws IOException {
+    final PsiFile file = testHelper.configure("DiffSectionSpecAnnotatorSpec.java");
+    ApplicationManager.getApplication().invokeAndWait(() -> specAnnotator.annotate(file, holder));
+    assertForDiffSectionSpecShowsErrorMessages(holder);
+  }
+
+  @Test
+  public void annotate_forDiffSectionSpec_showsErrorMessages() throws IOException {
+    final PsiFile file = testHelper.configure("DiffSectionSpecAnnotatorSpec.java");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiClass cls =
+                  LithoPluginUtils.getFirstClass(
+                          file, LithoPluginUtils::hasLithoSectionSpecAnnotation)
+                      .get();
+              specAnnotator.annotate(cls, holder);
+            });
+    assertForDiffSectionSpecShowsErrorMessages(holder);
+  }
+
+  private static void assertForDiffSectionSpecShowsErrorMessages(TestHolder holder) {
+    assertThat(holder.errorMessages).hasSize(2);
+    assertThat(holder.errorMessages)
+        .containsExactly(
+            "Methods in a spec must be static.",
+            "A method annotated with @OnDiff needs to return void. Note that even if your return value is a subclass of void, you should still use void as the return type.");
+  }
 }
