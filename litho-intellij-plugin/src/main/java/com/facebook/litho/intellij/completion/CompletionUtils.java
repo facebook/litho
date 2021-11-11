@@ -34,12 +34,16 @@ import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Optional;
 import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression;
 
 class CompletionUtils {
   static final ElementPattern<? extends PsiElement> METHOD_ANNOTATION_PARAMETER =
       PlatformPatterns.psiElement(PsiIdentifier.class)
           .inside(PsiAnnotationParameterList.class)
           .inside(PsiMethod.class);
+
+  static final ElementPattern<? extends PsiElement> IN_KT_EXPR =
+      PlatformPatterns.psiElement(PsiElement.class).inside(KtNameReferenceExpression.class);
 
   static final ElementPattern<? extends PsiElement> METHOD_PARAMETER_ANNOTATION =
       PlatformPatterns.psiElement(PsiIdentifier.class)

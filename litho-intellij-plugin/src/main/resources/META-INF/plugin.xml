@@ -94,6 +94,7 @@
 
     <codeInsight.lineMarkerProvider language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropLineMarkerProvider"/>
 
+    <completion.contributor language="kotlin" implementationClass="com.facebook.litho.intellij.completion.KComponentRequiredPropMethodContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.MethodCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.RequiredPropMethodContributor" order="first"/>
