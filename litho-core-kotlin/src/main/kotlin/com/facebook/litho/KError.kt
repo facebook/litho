@@ -22,6 +22,14 @@ import java.lang.Exception
 /**
  * Registers a callback to perform error handling for exceptions that might happen in child
  * components down in the tree.
+ *
+ * The hook parameter will receive all exceptions that are raised in the lifecycle methods of
+ * components sitting underneath the error boundary in the tree, regardless of whether those are
+ * other KComponents or Litho Specs.
+ *
+ * The KComponent can leverage the useState hook to update the state with the exception that was
+ * caught, and trigger a render pass with the new state value in order to replace the crashing
+ * component with an error component, or not display it at all.
  */
 @Hook
 fun ComponentScope.useErrorBoundary(onError: (exception: Exception) -> Unit) {

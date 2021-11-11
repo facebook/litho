@@ -26,6 +26,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.useErrorBoundary
 import com.facebook.litho.useState
 
+// start_example
 class KErrorBoundary(private val childComponent: Component) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
@@ -45,3 +46,4 @@ class KErrorBoundary(private val childComponent: Component) : KComponent() {
     return childComponent
   }
 }
+// end_example

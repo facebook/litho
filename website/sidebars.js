@@ -70,6 +70,7 @@ module.exports = {
             'fb/kotlin/use-effect',
             'fb/kotlin/use-ref',
             'fb/kotlin/use-transition',
+            'fb/kotlin/use-error-boundary',
           ],
         },
         'fb/kotlin/kotlin-flexbox-containers',

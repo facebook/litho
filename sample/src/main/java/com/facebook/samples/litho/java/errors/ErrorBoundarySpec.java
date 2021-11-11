@@ -28,6 +28,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 
+// start_example
 @LayoutSpec
 public class ErrorBoundarySpec {
 
@@ -52,3 +53,4 @@ public class ErrorBoundarySpec {
     ErrorBoundary.updateErrorSync(c, error);
   }
 }
+// end_example
