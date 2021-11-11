@@ -154,13 +154,6 @@ public class IncrementalMountExtension
       return;
     }
 
-    if (state.mPreviousLocalVisibleRect.equals(localVisibleRect)) {
-      log("Skipping: previous and current visible areas are identical");
-      notifyVisibleBoundsChangedOnNestedContent(extensionState);
-      RenderCoreSystrace.endSection();
-      return;
-    }
-
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (state.mPreviousLocalVisibleRect.isEmpty()
         || localVisibleRect.isEmpty()
