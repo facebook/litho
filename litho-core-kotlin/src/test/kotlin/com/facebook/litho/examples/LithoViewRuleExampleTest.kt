@@ -41,6 +41,7 @@ import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions
+import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -165,6 +166,7 @@ class LithoViewRuleExampleTest {
     lithoViewRule
         .assertThat(component)
         .hasProps(InnerComponent::value, "some_value")
+        .hasPropsMatching(InnerComponent::value, IsInstanceOf.instanceOf(String::class.java))
         .hasProps(InnerComponent::style, Style.height(100.dp).width(100.dp))
     // has_props_end
   }

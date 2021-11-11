@@ -34,6 +34,7 @@ import org.assertj.core.api.Java6Assertions;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.CheckReturnValue;
+import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 
@@ -332,8 +333,15 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
+  /** Assert that a given {@link Component} has a property equaling the provided value. */
   public <T1, T2> ComponentAssert hasProps(KProperty1<T2, T1> property, T1 value) {
-    MatcherAssert.assertThat(property.get((T2) actual), IsEqual.equalTo(value));
+    return hasPropsMatching(property, IsEqual.equalTo(value));
+  }
+
+  /** Assert that a given {@link Component} has a property matching the provided matcher. */
+  public <T1, T2> ComponentAssert hasPropsMatching(
+      KProperty1<T2, T1> property, Matcher<T1> matcher) {
+    MatcherAssert.assertThat(property.get((T2) actual), matcher);
     return this;
   }
 
