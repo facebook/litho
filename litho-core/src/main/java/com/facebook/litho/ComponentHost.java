@@ -728,7 +728,24 @@ public class ComponentHost extends Host implements DisappearingHost {
   public void dispatchDraw(Canvas canvas) {
     mDispatchDraw.start(canvas);
 
-    super.dispatchDraw(canvas);
+    try {
+      super.dispatchDraw(canvas);
+    } catch (LithoMetadataExceptionWrapper e) {
+      int mountItemCount = getMountItemCount();
+      StringBuilder componentNames = new StringBuilder("[");
+      for (int i = 0; i < mountItemCount; i++) {
+        MountItem item = mMountItems.get(i);
+        String componentName = getLayoutOutput(item).getComponent().getSimpleName();
+        componentNames.append(componentName);
+        if (i < mountItemCount - 1) {
+          componentNames.append(", ");
+        } else {
+          componentNames.append("]");
+        }
+      }
+      e.addCustomMetadata("component_names_from_mount_items", componentNames.toString());
+      throw e;
+    }
 
     // Cover the case where the host has no child views, in which case
     // getChildDrawingOrder() will not be called and the draw index will not
