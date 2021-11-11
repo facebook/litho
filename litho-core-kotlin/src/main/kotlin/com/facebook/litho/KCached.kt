@@ -24,7 +24,7 @@ import com.facebook.litho.annotations.Hook
  * calculation.
  */
 @Hook
-fun <T> ComponentScope.useCached(vararg inputs: Any, calculator: () -> T): T {
+fun <T> ComponentScope.useCached(vararg inputs: Any?, calculator: () -> T): T {
   val globalKey = context.globalKey
   val hookIndex = useCachedIndex++
   val hookKey = "$globalKey:$hookIndex"
@@ -36,7 +36,7 @@ fun <T> ComponentScope.useCached(vararg inputs: Any, calculator: () -> T): T {
   @Suppress("UNCHECKED_CAST") return result as T
 }
 
-internal class CachedInputs(val hookKey: String, val inputs: Array<out Any>) {
+internal class CachedInputs(val hookKey: String, val inputs: Array<out Any?>) {
   override fun equals(other: Any?): Boolean {
     if (this === other) {
       return true
