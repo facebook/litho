@@ -1,9 +1,11 @@
 # Changelog
 
-## Version 0.40.1-SNAPSHOT
+## Version 0.41.0
 
-_release-date_
+_2021-11-11_
 
+ * **Breaking:** Delete `@FromBind` inter stage prop. **Replace existing usages with `@State AtomicReference<?>` instead.** Create a `@State AtomicReference<?>` for the `Component`; set that value for the `AtomicReference` in `@OnBind`, and get from it in `@OnUnbind` or other lifecycle methods.
+ * **Breaking:** Add `ComponentTree` in `Handle` so that `Handle` can be used across component trees, i.e. throughout Sections. **Remove static references of `Handle` as that can lead to memory leaks** since it holds reference to `ComponentTree` now, **instead `Handle` should be used via `@State` in Spec API or `useState` in Kotlin API**.
  * **Breaking:** Remove `@OnShouldCreateLayoutWithNewSizeSpec` API. We hope to provide replacements for it in the future, please let us know if you were relying on it.
  * **Breaking:** Add new `ComponentTree` parameter to `ErrorEventHandler.onError()` method.
  * **Breaking:** Add UI thread call assertion to `ComponentTree.release()` method.
@@ -13,14 +15,13 @@ _release-date_
  * **Breaking:** Remove stale `ThreadPoolDynamicPriorityLayoutHandler` and `LayoutPriorityThreadPoolExecutor` classes.
  * **Breaking:** Rename `LithoHandler` to `RunnableHandler` and `DefaultLithoHandler` to `DefaultHandler`.
  * **Breaking:** Move `RunnableHandler`, `FutureInstrumenter`, and `HandlerInstrumenter` to core RenderCore artifact.
- * New: Almost all lifecycle methods are now covered by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.
  * **Breaking:** `Component` and `ComponentLifecycle` are now merged as one class (`Component`). `ComponentLifecycle` is now removed. Anywhere `ComponentLifecycle` was directly referenced should be changed to `Component`. Generated components now extend `SpecGeneratedComponent` which extends `Component`.
-   * onCreateLayout/onCreateLayoutWithSizeSpec have been moved to SpecGeneratedComponent. Direct subclasses of Component should implement render() instead.
- * New: Allow passing `@TreeProp` to `@OnCalculateCachedValue` methods
- * **Breaking:** Deletes `@FromBind` inter stage prop. Replace existing usages with `@State AtomicReference<?>` instead. Create a `@State AtomicReference<?>` for the `Component`; set that value for the `AtomicReference` in `@OnBind`, and get from it in `@OnUnbind` or other lifecycle methods.
- * **Breaking:** Add `ComponentTree` in `Handle` so that `Handle` can be used across component trees. Remove static references of `Handle` as that can lead to memory leaks since it hold reference to `ComponentTree` now, instead `Handle` should be used via `@State` or `useState` in Kotlin.
+   * `onCreateLayout`/`onCreateLayoutWithSizeSpec` methods have been moved to `SpecGeneratedComponent`
+   * Direct subclasses of `Component` should implement `render` method instead
+  * New: Almost all lifecycle methods are now covered by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.
+  * New: Allow passing `@TreeProp` to `@OnCalculateCachedValue` methods
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...v0.41.0).
 
 
 ## Version 0.40.0
