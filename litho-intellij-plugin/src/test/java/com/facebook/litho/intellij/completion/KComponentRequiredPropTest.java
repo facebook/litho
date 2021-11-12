@@ -23,6 +23,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
+import org.jetbrains.kotlin.psi.KtClass;
 import org.jetbrains.kotlin.psi.KtNamedFunction;
 import org.junit.Test;
 
@@ -33,8 +34,8 @@ public class KComponentRequiredPropTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void KComponentRequiredPropLookupStringCreationTest() throws IOException {
-    final String clsName = "KcomponentTestFunction.kt";
+  public void LithoKotlinWrapperRequiredPropLookupStringCreationTest() throws IOException {
+    final String clsName = "LithoKotlinWrapperTestFunction.kt";
     testHelper.configure(clsName);
     final CodeInsightTestFixture fixture = testHelper.getFixture();
     final String[] lookupString = new String[1];
@@ -48,5 +49,23 @@ public class KComponentRequiredPropTest extends LithoPluginIntellijTest {
                       lithoKotlinFunction);
             });
     assertThat(lookupString[0]).contains("options = , selectedOption = , onItemSelected = ");
+  }
+
+  @Test
+  public void KComponentRequiredPropLookupStringCreationTest() throws IOException {
+    final String clsName = "KcomponentTestFunction.kt";
+    testHelper.configure(clsName);
+    final CodeInsightTestFixture fixture = testHelper.getFixture();
+    final String[] lookupString = new String[1];
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              KtClass lithoKotlinClass =
+                  PsiTreeUtil.getChildOfType(fixture.getFile(), KtClass.class);
+              lookupString[0] =
+                  KComponentRequiredPropMethodContributor.createKotlinCompletionStringForKComponent(
+                      lithoKotlinClass);
+            });
+    assertThat(lookupString[0]).contains("text = , selected = ) {}");
   }
 }

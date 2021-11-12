@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-inline fun ComponentScope.Spinner(
-    options: List<String>,
-    selectedOption: String,
-    @LayoutRes itemLayout: Int = android.R.layout.simple_dropdown_item_1line,
-    selectedTextSize: Dimen = 16.sp,
-    @ColorInt selectedTextColor: Int = 0xDE000000.toInt(),
-    caret: Drawable? = null,
-    noinline onItemSelected: (ItemSelectedEvent) -> Unit
-): Spinner =
-    Spinner.create(context)
-        .options(options)
-        .selectedOption(selectedOption)
-        .itemLayout(itemLayout)
-        .selectedTextColor(selectedTextColor)
-        .selectedTextSizePx(selectedTextSize.toPixels().toFloat())
-        .caret(caret)
-        .itemSelectedEventHandler(eventHandler(onItemSelected))
-        .build()
+class Selectable(val text: String, val selected: Boolean, val onClick: (ClickEvent) -> Unit) :
+    KComponent() {
+
+  override fun ComponentScope.render(): Component? {
+    return Row(
+        justifyContent = YogaJustify.SPACE_BETWEEN,
+        style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(onClick)) {
+      child(Text(text))
+      child(
+          Image(
+              drawableRes(
+                  if (selected) android.R.drawable.checkbox_on_background
+                  else android.R.drawable.checkbox_off_background)))
+    }
+  }
+}

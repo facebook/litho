@@ -34,9 +34,18 @@ import com.intellij.util.Consumer;
 import com.intellij.util.ProcessingContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.idea.completion.KotlinCompletionContributor;
+import org.jetbrains.kotlin.psi.KtClass;
+import org.jetbrains.kotlin.psi.KtFunctionType;
 import org.jetbrains.kotlin.psi.KtNamedFunction;
+import org.jetbrains.kotlin.psi.KtParameter;
+import org.jetbrains.kotlin.psi.KtParameterList;
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor;
+import org.jetbrains.kotlin.psi.KtSuperTypeCallEntry;
+import org.jetbrains.kotlin.psi.KtSuperTypeList;
 import org.jetbrains.kotlin.psi.KtTypeReference;
 
 public class KComponentRequiredPropMethodContributor extends CompletionContributor {
@@ -82,23 +91,35 @@ public class KComponentRequiredPropMethodContributor extends CompletionContribut
     @Override
     public void addElement(LookupElement element) {
       final PsiElement psiElement = element.getPsiElement();
-      if (!(psiElement instanceof KtNamedFunction)) { // Kotlin Litho components are functions
+      if (psiElement == null) {
         return;
       }
-
-      final List<KtTypeReference> referenceTypes =
-          PsiTreeUtil.getChildrenOfTypeAsList(psiElement, KtTypeReference.class); // 2 Types:
-
-      if (referenceTypes.size() < 2) {
+      LookupElement lookupElement;
+      if (checkIsComponentWrapper(psiElement)) {
+        final KtNamedFunction lithoKotlinFunction = (KtNamedFunction) psiElement;
+        final String lookupString = createKotlinCompletionString(lithoKotlinFunction);
+        final String name = lithoKotlinFunction.getName();
+        if (name == null) {
+          return;
+        }
+        lookupElement =
+            createKotlinCompletionLookupElement(lithoKotlinFunction, lookupString, element, name);
+      } else if (checkIsKComponent(psiElement)) {
+        final KtClass lithoKotlinClass = (KtClass) psiElement;
+        final @Nullable String lookupString =
+            createKotlinCompletionStringForKComponent(lithoKotlinClass);
+        if (lookupString == null) {
+          return;
+        }
+        final String name = lithoKotlinClass.getName();
+        if (name == null) {
+          return;
+        }
+        lookupElement =
+            createKotlinCompletionLookupElement(lithoKotlinClass, lookupString, element, name);
+      } else {
         return;
       }
-      if (!"ComponentScope".equals(referenceTypes.get(0).getText())) {
-        return;
-      }
-      final KtNamedFunction lithoKotlinFunction = (KtNamedFunction) psiElement;
-      final String lookupString = createKotlinCompletionString(lithoKotlinFunction);
-      final LookupElement lookupElement =
-          createKotlinCompletionLookupElement(lithoKotlinFunction, lookupString, element);
       completionLookupElements.add(lookupElement);
     }
 
@@ -132,26 +153,93 @@ public class KComponentRequiredPropMethodContributor extends CompletionContribut
     public void restartCompletionWhenNothingMatches() {}
   }
 
-  protected static String createKotlinCompletionString(KtNamedFunction lithoKotlinFunction) {
+  static boolean checkIsKComponent(@Nullable PsiElement psiElement) {
+    if (!(psiElement instanceof KtClass)) {
+      return false;
+    }
+    final KtClass ktClass = (KtClass) psiElement;
+    final KtSuperTypeList superTypeList = ktClass.getSuperTypeList();
+    if (superTypeList == null) {
+      return false;
+    }
+    final @Nullable KtSuperTypeCallEntry ktSuperTypeCallEntry =
+        PsiTreeUtil.getChildOfType(superTypeList, KtSuperTypeCallEntry.class);
+
+    if (ktSuperTypeCallEntry == null) {
+      return false;
+    }
+    return ktSuperTypeCallEntry.getText().equals("KComponent()");
+  }
+
+  static boolean checkIsComponentWrapper(@Nullable PsiElement psiElement) {
+    if (!(psiElement instanceof KtNamedFunction)) { // Kotlin Litho components are functions
+      return false;
+    }
+    final List<KtTypeReference> referenceTypes =
+        PsiTreeUtil.getChildrenOfTypeAsList(psiElement, KtTypeReference.class); // 2 Types:
+    if (referenceTypes.size() < 2) {
+      return false;
+    }
+    return "ComponentScope".equals(referenceTypes.get(0).getText());
+  }
+
+  static String createKotlinCompletionString(KtNamedFunction lithoKotlinFunction) {
     final List<String> parameters =
         lithoKotlinFunction.getValueParameters().stream()
             .filter(param -> !param.hasDefaultValue())
             .map(param -> param.getName() + " = ")
             .collect(Collectors.toList());
-    return String.join(", ", parameters);
+    return lithoKotlinFunction.getName() + "(" + String.join(", ", parameters) + " )";
+  }
+
+  static @Nullable String createKotlinCompletionStringForKComponent(KtClass lithoKotlinClass) {
+    final KtPrimaryConstructor ktPrimaryConstructor =
+        PsiTreeUtil.getChildOfType(lithoKotlinClass, KtPrimaryConstructor.class);
+    if (ktPrimaryConstructor == null) {
+      return null;
+    }
+    final AtomicBoolean addKotlinLambda = new AtomicBoolean(false);
+    final KtParameterList ktParameterList =
+        PsiTreeUtil.getChildOfType(ktPrimaryConstructor, KtParameterList.class);
+    if (ktParameterList == null) {
+      return null;
+    }
+    final List<KtParameter> parameterList = ktParameterList.getParameters();
+    if (parameterList.isEmpty()) {
+      return null;
+    }
+    final List<String> parameters =
+        parameterList.stream()
+            .filter(param -> !param.hasDefaultValue())
+            .map(param -> param.getName() + " = ")
+            .collect(Collectors.toList());
+
+    final @Nullable KtTypeReference typeElement =
+        parameterList.get(parameterList.size() - 1).getTypeReference();
+    if (typeElement != null && typeElement.getTypeElement() instanceof KtFunctionType) {
+      addKotlinLambda.set(true);
+      // remove final param as we turn it into lambda expression
+      parameters.remove(parameters.size() - 1);
+    }
+
+    final String completionString =
+        lithoKotlinClass.getName() + "(" + String.join(", ", parameters) + ")";
+    if (addKotlinLambda.get()) {
+      return completionString + " {}";
+    }
+    return completionString;
   }
 
   static LookupElement createKotlinCompletionLookupElement(
-      KtNamedFunction lithoKotlinFunction, String joinedParameters, LookupElement element) {
-    final String functionName = lithoKotlinFunction.getName();
+      PsiElement lithoKotlinElement, String joinedParameters, LookupElement element, String name) {
     final LookupElement lookupElement =
         LookupElementBuilder.create(joinedParameters)
             .withBoldness(true)
-            .withPresentableText(functionName)
-            .appendTailText("(" + joinedParameters + ")", true)
-            .withLookupString(functionName)
-            .withTypeText("Litho " + functionName)
-            .withIcon(lithoKotlinFunction.getIcon(1))
+            .withPresentableText(name)
+            .appendTailText(joinedParameters.replaceFirst(name, ""), true)
+            .withLookupString(name)
+            .withTypeText("Litho " + name)
+            .withIcon(lithoKotlinElement.getIcon(1))
             .withInsertHandler(
                 (context, lookupItem) -> {
                   // We use this insert handler to get the import statement added automatically. We
@@ -159,7 +247,10 @@ public class KComponentRequiredPropMethodContributor extends CompletionContribut
                   element.handleInsert(context);
                   context
                       .getDocument()
-                      .insertString(context.getTailOffset() - 1, lookupItem.getLookupString());
+                      .deleteString(context.getStartOffset(), context.getTailOffset());
+                  context
+                      .getDocument()
+                      .insertString(context.getTailOffset(), lookupItem.getLookupString());
                   context.commitDocument();
                   context.getEditor().getCaretModel().moveToOffset(context.getTailOffset() - 1);
                 });
