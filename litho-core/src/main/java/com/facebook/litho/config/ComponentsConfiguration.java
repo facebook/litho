@@ -187,8 +187,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useStatelessComponent = false;
 
-  public static boolean keepReconciliationEnabledWhenStateless = true;
-
   public static boolean reuseInternalNodes = false;
 
   public static boolean enableLayoutCaching = false;
