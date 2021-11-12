@@ -42,6 +42,10 @@ inline class Dimen(val encodedValue: Long) {
 inline fun ComponentScope.dimenRes(@DimenRes id: Int): Dimen =
     resourceResolver.resolveDimenSizeRes(id).px
 
+/** Resolve a dimen resource ID as a [Dimen] value. */
+inline fun ComponentContext.dimenRes(@DimenRes id: Int): Dimen =
+    resourceResolver.resolveDimenSizeRes(id).px
+
 /** Creates a Dimen with a constant dp (density-independent pixels) value. */
 inline val Int.dp: Dimen
   get() = Dimen(doubleToRawLongBits(this.toDouble()))
