@@ -253,20 +253,20 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
    * Clicks on a [View] with the specified text in the rendered hierarchy, throwing if the view
    * doesn't exists
    */
-  fun clickOnText(text: String): Boolean? = findViewWithText(text)?.performClick()
+  fun clickOnText(text: String): Boolean = findViewWithText(text).performClick()
 
   /**
    * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
    * doesn't exists
    */
-  fun clickOnTag(tag: String): Boolean? = findViewWithTag(tag)?.performClick()
+  fun clickOnTag(tag: String): Boolean = findViewWithTag(tag).performClick()
 
   /**
    * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
    * doesn't exists
    */
-  fun clickOnContentDescription(contentDescription: String): Boolean? =
-      findViewWithContentDescription(contentDescription)?.performClick()
+  fun clickOnContentDescription(contentDescription: String): Boolean =
+      findViewWithContentDescription(contentDescription).performClick()
 
   /**
    * Finds the first [View] with the specified tag in the rendered hierarchy, returning null if is
@@ -312,7 +312,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
    * Finds the first [View] with the specified text in the rendered hierarchy, throwing if it
    * doesn't exist.
    */
-  fun findViewWithText(text: String): View? {
+  fun findViewWithText(text: String): View {
     return findViewWithTextOrNull(text)
         ?: throw RuntimeException("Did not find view with text '$text'")
   }
@@ -330,7 +330,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * throwing if it doesn't exist.
    */
-  fun findViewWithContentDescription(contentDescription: String): View? {
+  fun findViewWithContentDescription(contentDescription: String): View {
     return findViewWithContentDescriptionOrNull(contentDescription)
         ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
   }
