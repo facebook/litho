@@ -234,7 +234,7 @@ module.exports = {
         theme: {
           customCss: require.resolve('./src/css/custom.scss'),
         },
-        enableEditor: false,
+        enableEditor: true,
         staticDocsProject: 'litho',
         trackingFile: 'xplat/staticdocs/WATCHED_FILES',
       },
