@@ -450,11 +450,11 @@ public class ComponentTree implements LithoLifecycleListener {
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
 
     mIsLayoutCachingEnabled =
-        builder.componentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
-    mReuseInternalNodes = mIsLayoutCachingEnabled || builder.reuseInternalNodes;
+        mComponentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
+    mReuseInternalNodes = mIsLayoutCachingEnabled || mComponentsConfiguration.reuseInternalNodes();
     mUseInputOnlyInternalNodes =
         mReuseInternalNodes || mComponentsConfiguration.getUseInputOnlyInternalNodes();
-    useStatelessComponent = mReuseInternalNodes || builder.useStatelessComponent;
+    useStatelessComponent = mReuseInternalNodes || mComponentsConfiguration.useStatelessComponent();
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -3312,8 +3312,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
-    private boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    private boolean reuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
     private boolean useRenderUnitIdMap = true;
 
@@ -3532,6 +3530,22 @@ public class ComponentTree implements LithoLifecycleListener {
       return this;
     }
 
+    /**
+     * Sets the ComponentTree to reuse InternalNode from the previous layout. This also makes
+     * components stateless. This API should only be used to exclude some surface temporarily.
+     *
+     * @deprecated This API will be removed.
+     */
+    @Deprecated
+    public Builder reuseInternalNodes(boolean shouldReuseInternalNodes) {
+      overrideStatelessConfigs(
+          shouldReuseInternalNodes,
+          shouldReuseInternalNodes,
+          shouldReuseInternalNodes,
+          isLayoutCachingEnabled);
+      return this;
+    }
+
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
 
@@ -3552,12 +3566,12 @@ public class ComponentTree implements LithoLifecycleListener {
         boolean inputOnlyInternalNode,
         boolean internalNodeReuseEnabled,
         boolean isLayoutCachingEnabled) {
-      this.useStatelessComponent = useStateLessComponent;
       this.componentsConfiguration =
           ComponentsConfiguration.create(this.componentsConfiguration)
               .useInputOnlyInternalNodes(inputOnlyInternalNode)
+              .useStatelessComponents(useStateLessComponent)
+              .reuseInternalNodes(internalNodeReuseEnabled)
               .build();
-      this.reuseInternalNodes = internalNodeReuseEnabled;
       this.isLayoutCachingEnabled = isLayoutCachingEnabled;
     }
   }

@@ -29,6 +29,9 @@ public class TempComponentsConfigurations {
   private static final boolean originalUseStatelessComponent =
       ComponentsConfiguration.useStatelessComponent;
 
+  private static final boolean originalReuseInternalNodes =
+      ComponentsConfiguration.reuseInternalNodes;
+
   private static final boolean originalDelegateToRenderCoreMount =
       ComponentsConfiguration.delegateToRenderCoreMount;
 
@@ -51,6 +54,14 @@ public class TempComponentsConfigurations {
 
   public static void setUseStatelessComponent(boolean value) {
     ComponentsConfiguration.useStatelessComponent = value;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().useStatelessComponents(value));
+  }
+
+  public static void setReuseInternalNode(boolean value) {
+    ComponentsConfiguration.reuseInternalNodes = value;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().reuseInternalNodes(value));
   }
 
   public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {
@@ -59,6 +70,14 @@ public class TempComponentsConfigurations {
 
   public static void restoreUseStatelessComponent() {
     ComponentsConfiguration.useStatelessComponent = originalUseStatelessComponent;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().useStatelessComponents(originalUseStatelessComponent));
+  }
+
+  public static void restoreReuseInternalNode() {
+    ComponentsConfiguration.reuseInternalNodes = originalReuseInternalNodes;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().reuseInternalNodes(originalReuseInternalNodes));
   }
 
   public static void setDelegateToRenderCoreMount(boolean value) {

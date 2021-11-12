@@ -61,6 +61,8 @@ public class StatelessComponentGlobalKeyTest {
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     ComponentsConfiguration.useStatelessComponent = true;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().useStatelessComponents(true));
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);
@@ -69,6 +71,8 @@ public class StatelessComponentGlobalKeyTest {
   @After
   public void cleanup() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().useStatelessComponents(false));
   }
 
   @Test

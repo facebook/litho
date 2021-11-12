@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.TextView;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.widget.MountSpecWithShouldUpdate;
@@ -265,12 +266,7 @@ public class LayoutDiffingTest {
 
   @Test
   public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem_with_reuse() {
-
-    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
-    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
-
-    ComponentsConfiguration.reuseInternalNodes = true;
-    ComponentsConfiguration.useStatelessComponent = true;
+    TempComponentsConfigurations.setReuseInternalNode(true);
 
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
@@ -286,8 +282,7 @@ public class LayoutDiffingTest {
     view.callOnClick();
     assertThat(((TextView) view).getText()).isEqualTo("1");
 
-    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
-    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
+    TempComponentsConfigurations.restoreReuseInternalNode();
   }
 
   @Test

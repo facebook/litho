@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -44,7 +43,7 @@ public class LegacyStatelessComponentGlobalKeyTest {
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
-    ComponentsConfiguration.useStatelessComponent = true;
+    TempComponentsConfigurations.setUseStatelessComponent(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -178,5 +177,6 @@ public class LegacyStatelessComponentGlobalKeyTest {
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
+    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 }

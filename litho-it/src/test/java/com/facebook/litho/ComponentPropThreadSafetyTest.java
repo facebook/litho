@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import android.content.ContextWrapper;
 import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestWrappedComponentProp;
 import com.facebook.litho.testing.TestWrappedComponentPropSpec;
@@ -70,6 +71,8 @@ public class ComponentPropThreadSafetyTest {
 
   @Test
   public void testThreadSafeConcurrentPropComponentAccess() {
+    TempComponentsConfigurations.setUseStatelessComponent(false);
+
     // TODO(festevezga, T68365308) - SimpleMountSpecTester is not spy-able
     TestDrawableComponent testComponent =
         Mockito.spy(TestDrawableComponent.create(mContext).build());
@@ -93,10 +96,14 @@ public class ComponentPropThreadSafetyTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(testComponent).makeShallowCopy();
+
+    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 
   @Test
   public void testThreadSafeConcurrentPropListComponentAccess() {
+    TempComponentsConfigurations.setUseStatelessComponent(false);
+
     // TODO(festevezga, T68365308) - SimpleMountSpecTester is not spy-able
     TestDrawableComponent testComponent =
         Mockito.spy(TestDrawableComponent.create(mContext).build());
@@ -123,5 +130,7 @@ public class ComponentPropThreadSafetyTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(testComponent, times(19)).makeShallowCopy();
+
+    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 }
