@@ -49,7 +49,8 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
-class State<T>(
+class State<T>
+internal constructor(
     private val context: ComponentContext,
     private val hookStateIndex: Int,
     val value: T
