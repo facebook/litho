@@ -3809,10 +3809,10 @@ dns-txt@^2.0.2:
   dependencies:
     buffer-indexof "^1.0.0"
 
-docusaurus-plugin-internaldocs-fb@^0.9.7:
-  version "0.9.9"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.9.9.tgz#a9ef9ba513791730f065b01815a8b63d2c40ad30"
-  integrity sha512-X93iOnQB7oNrODzHdwt3WW6uIkdjHuWHe19vW7xYxb8mbgCQQSMftVw3yASGyUrQChh5U9NIJWN9JGMmjW2/Yg==
+docusaurus-plugin-internaldocs-fb@^0.9.12:
+  version "0.9.12"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.9.12.tgz#1ba1f0800092425633cc6364751df25b73b3cc70"
+  integrity sha512-CQ25P7h0ZrREaylSSB81CU+sR3xPcy09TfNUXgd335+k031s9SskR1DNMapA7BoHQJ1htR7d8Hb6RiSWwky+/w==
   dependencies:
     "@mdx-js/mdx" "2.0.0-next.9"
     "@mdx-js/react" "^1.6.22"
