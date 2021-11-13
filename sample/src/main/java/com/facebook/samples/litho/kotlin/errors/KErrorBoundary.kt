@@ -35,7 +35,7 @@ class KErrorBoundary(private val childComponent: Component) : KComponent() {
 
     errorState.value?.let {
       return Column(style = Style.margin(all = 16.dp)) {
-        child(KDebugComponent(message = "KComponent's Error Boundary",throwable = it))
+        child(KDebugComponent(message = "KComponent's Error Boundary", throwable = it))
       }
     }
 
