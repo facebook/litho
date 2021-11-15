@@ -119,7 +119,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
 
   static class TestTemplateAction extends LithoTemplateAction {
     TestTemplateAction() {
-      super("GroupSectionSpec", "SectionSpec");
+      super("GroupSectionSpec", "SectionSpec", 0);
     }
   }
 }

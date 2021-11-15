@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.8.5
+
+_2021-11-15_
+
+* Fix: Re-arrange litho actions in 'New' context menu
+
 ## Version 1.8.4
 
 _2021-10-27_

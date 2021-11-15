@@ -29,4 +29,9 @@ public class LayoutSpecTemplateProvider implements TemplateProvider {
   public String getClassNameSuffix() {
     return "Spec";
   }
+
+  @Override
+  public int getTemplatePriority() {
+    return Integer.MAX_VALUE;
+  }
 }

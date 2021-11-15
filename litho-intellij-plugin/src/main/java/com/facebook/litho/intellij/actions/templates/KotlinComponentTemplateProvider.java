@@ -22,11 +22,16 @@ public class KotlinComponentTemplateProvider implements TemplateProvider {
 
   @Override
   public String getTemplateName() {
-    return "KotlinComponent";
+    return "KComponent";
   }
 
   @Override
   public String getClassNameSuffix() {
     return "";
+  }
+
+  @Override
+  public int getTemplatePriority() {
+    return Integer.MIN_VALUE;
   }
 }

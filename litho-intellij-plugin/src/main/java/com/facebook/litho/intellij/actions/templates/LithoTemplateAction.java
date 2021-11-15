@@ -27,6 +27,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.Separator;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
@@ -34,23 +35,28 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.Icon;
 
 public class LithoTemplateAction extends CreateFileFromTemplateAction {
   private static final Icon ICON = AllIcons.Nodes.AbstractClass;
   private final String templateName;
   private final String classNameSuffix;
+  private final Integer templatePriority;
   private final Map<String, FileTemplate> templateMap = new HashMap<>(2);
 
   static AnAction[] getTemplateActions() {
     return ActionsHolder.ACTIONS;
   }
 
-  LithoTemplateAction(String templateName, String classNameSuffix) {
+  LithoTemplateAction(String templateName, String classNameSuffix, Integer templatePriority) {
     super(templateName, templateName, ICON);
     this.templateName = templateName;
     this.classNameSuffix = classNameSuffix;
+    this.templatePriority = templatePriority;
   }
 
   @Override
@@ -115,13 +121,34 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
   private static class ActionsHolder {
     private static final ExtensionPointName<TemplateProvider> EP_NAME =
         ExtensionPointName.create("com.facebook.litho.intellij.templateProvider");
-    private static final AnAction[] ACTIONS =
-        Arrays.stream(EP_NAME.getExtensions())
-            .map(
-                provider ->
-                    new LithoTemplateAction(
-                        provider.getTemplateName(), provider.getClassNameSuffix()))
-            .toArray(AnAction[]::new);
+    private static final AnAction[] ACTIONS = getActionsArray();
+
+    private static AnAction[] getActionsArray() {
+      Stream<LithoTemplateAction> stream =
+          Arrays.stream(EP_NAME.getExtensions())
+              .map(
+                  provider ->
+                      new LithoTemplateAction(
+                          provider.getTemplateName(),
+                          provider.getClassNameSuffix(),
+                          provider.getTemplatePriority()))
+              .sorted((t1, t2) -> t1.templatePriority.compareTo(t2.templatePriority));
+
+      return addDivider(stream);
+    }
+
+    private static AnAction[] addDivider(Stream<LithoTemplateAction> stream) {
+      List<AnAction> actionsList = stream.collect(Collectors.toList());
+      int indexToAdd = 0;
+      for (AnAction action : actionsList) {
+        if (((LithoTemplateAction) action).templatePriority > 0) {
+          break;
+        }
+        indexToAdd++;
+      }
+      actionsList.add(indexToAdd, Separator.create());
+      return actionsList.toArray(new AnAction[actionsList.size()]);
+    }
   }
 
   private static class PostProcessesHolder {

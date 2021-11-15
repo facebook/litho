@@ -35,4 +35,8 @@ public interface TemplateProvider {
   String getTemplateName();
 
   String getClassNameSuffix();
+
+  default int getTemplatePriority() {
+    return 0;
+  }
 }
