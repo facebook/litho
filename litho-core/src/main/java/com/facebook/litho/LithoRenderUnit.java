@@ -145,10 +145,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final LithoRenderUnit next,
       final @Nullable Object currentData,
       final @Nullable Object nextData) {
-    if (next.output.getComponent() instanceof HostComponent) {
-      return false;
-    }
-
     final LithoLayoutData currentLithoData = verifyAndGetLithoLayoutData(currentData);
     final LithoLayoutData nextLithoData = verifyAndGetLithoLayoutData(nextData);
 
@@ -180,6 +176,10 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit next,
         final @Nullable Object currentData,
         final @Nullable Object nextData) {
+      if (next.output.getComponent() instanceof HostComponent) {
+        return false;
+      }
+
       return shouldUpdateMountItem(current, next, currentData, nextData);
     }
 
