@@ -20,12 +20,12 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.TreePropProvider
-import com.facebook.litho.useTreeProp
+import com.facebook.litho.getTreeProp
 import com.facebook.litho.widget.Text
 
 class LoggingChildComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
-    val parent = useTreeProp<LogContext>()
+    val parent = getTreeProp<LogContext>()
 
     return TreePropProvider(LogContext::class.java to parent.append("child")) {
       Text(text = "Hello, Logger.")

@@ -26,7 +26,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Unit tests for [useTreeProp] and [createTreeProp]. */
+/** Unit tests for [getTreeProp] and [createTreeProp]. */
 @Suppress("MagicNumber")
 @RunWith(AndroidJUnit4::class)
 class KTreePropsTest {
@@ -46,8 +46,8 @@ class KTreePropsTest {
 
     class ChildComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        treeProp1Ref.prop = useTreeProp<Integer>()
-        treeProp2Ref.prop = useTreeProp<Rect>()
+        treeProp1Ref.prop = getTreeProp<Integer>()
+        treeProp2Ref.prop = getTreeProp<Rect>()
         return null
       }
     }
@@ -72,7 +72,7 @@ class KTreePropsTest {
 
     class ChildComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        treePropRef.prop = useTreeProp<Integer>()
+        treePropRef.prop = getTreeProp<Integer>()
         return null
       }
     }
@@ -103,15 +103,15 @@ class KTreePropsTest {
 
     class Child1Component : KComponent() {
       override fun ComponentScope.render(): Component? {
-        child1StringPropRef.prop = useTreeProp<String>()
-        child1IntPropRef.prop = useTreeProp<Integer>()
+        child1StringPropRef.prop = getTreeProp<String>()
+        child1IntPropRef.prop = getTreeProp<Integer>()
         return null
       }
     }
 
     class Child2Component : KComponent() {
       override fun ComponentScope.render(): Component? {
-        child2IntPropRef.prop = useTreeProp<Integer>()
+        child2IntPropRef.prop = getTreeProp<Integer>()
         return null
       }
     }

@@ -31,7 +31,7 @@ typealias ClassValuePair<T> = Pair<Class<T>, T>
  *
  * Tree props are useful for providing theme info, logging tags, or other things that generally need
  * to be available throughout a hierarchy, without having to manual thread them through as
- * individual props. Tree props can be accessed in children via [useTreeProp].
+ * individual props. Tree props can be accessed in children via [getTreeProp].
  */
 @Suppress("FunctionNaming")
 inline fun TreePropProvider(
@@ -67,4 +67,4 @@ private fun <T> ComponentScope.createTreeProp(clazz: Class<out T>, value: T) {
  * specs API.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> ComponentScope.useTreeProp(): T? = context.getTreeProp(T::class.java)
+inline fun <reified T : Any> ComponentScope.getTreeProp(): T? = context.getTreeProp(T::class.java)
