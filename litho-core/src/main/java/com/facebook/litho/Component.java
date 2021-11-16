@@ -252,7 +252,6 @@ public abstract class Component
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       return dispatchOnEventImpl(eventHandler, eventState);
     }
-    final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
     try {
       return dispatchOnEventImpl(eventHandler, eventState);
     } catch (Exception e) {
@@ -262,8 +261,6 @@ public abstract class Component
       } else {
         throw e;
       }
-    } finally {
-      EventDispatcherInstrumenter.onEndWork(token);
     }
   }
 
