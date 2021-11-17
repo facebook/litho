@@ -715,4 +715,30 @@ class ComponentErrorBoundaryTest {
     assertThat(errorList.size).isEqualTo(1)
     assertThat(errorList.get(0).message).isEqualTo("onCreateLayout crash")
   }
+
+  @Test
+  fun testOnCreateLayoutWithSizeSpecCrashWithKotlinErrorBoundary() {
+    lateinit var stateRef: AtomicReference<List<Exception>>
+
+    val crashingComponent =
+        TestCrasherOnCreateLayoutWithSizeSpec.create(lithoViewRule.context).build()
+
+    class UseErrorComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        val errorState = useState { listOf<Exception>() }
+        stateRef = AtomicReference(errorState.value)
+        useErrorBoundary { exception: Exception ->
+          errorState.update(errorState.value + listOf(exception))
+          assertThat(exception.message).contains("onCreateLayoutWithSizeSpec crash")
+        }
+        return if (errorState.value.isEmpty()) crashingComponent else Text("error caught")
+      }
+    }
+
+    lithoViewRule.setRoot(UseErrorComponent()).attachToWindow().measure().act { layout() }
+
+    val errorList = stateRef.get()
+    assertThat(errorList.size).isEqualTo(1)
+    assertThat(errorList.get(0).message).isEqualTo("onCreateLayoutWithSizeSpec crash")
+  }
 }
