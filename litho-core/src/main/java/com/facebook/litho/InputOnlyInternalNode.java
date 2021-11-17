@@ -434,6 +434,12 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     final YogaNode node;
     if (isCloned) {
       node = previousLayoutResult.getYogaNode().cloneWithoutChildren();
+
+      // TODO (T100055526): Investigate how the measure function can be set at this point.
+      if (currentInternalNode.getChildCount() != 0 && node.isMeasureDefined()) {
+        node.setMeasureFunction(null);
+      }
+
     } else {
       node = NodeConfig.createYogaNode();
 
