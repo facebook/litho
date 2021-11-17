@@ -164,14 +164,20 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
 
-    // In Litho's Inc-Mount, when an item's bottom is equal to the container's top, they will
-    // be mounted. Ensure they are mounted here, and scroll by 1 more px to ensure it unmounts
-    // properly.
-    assertThat(child2.isMounted()).isTrue();
+    if (mUseMountDelegateTarget) {
+      // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
+      // top.
+      assertThat(child2.isMounted()).isFalse();
+    } else {
+      // In Litho's Inc-Mount, when an item's bottom is equal to the container's top, they will
+      // be mounted. Ensure they are mounted here, and scroll by 1 more px to ensure it unmounts
+      // properly.
+      assertThat(child2.isMounted()).isTrue();
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+      lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
+      assertThat(child1.isMounted()).isFalse();
+      assertThat(child2.isMounted()).isFalse();
+    }
   }
 
   @Test
@@ -459,14 +465,20 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
 
-    // In Litho's Inc-Mount, when an item's bottom is equal to the container's top, they will
-    // be mounted. Ensure they are mounted here, and scroll by 1 more px to ensure it unmounts
-    // properly.
-    assertThat(lifecycleTracker2.isMounted()).isTrue();
+    if (mUseMountDelegateTarget) {
+      // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
+      // top.
+      assertThat(lifecycleTracker2.isMounted()).isFalse();
+    } else {
+      // In Litho's Inc-Mount, when an item's bottom is equal to the container's top, they will
+      // be mounted. Ensure they are mounted here, and scroll by 1 more px to ensure it unmounts
+      // properly.
+      assertThat(lifecycleTracker2.isMounted()).isTrue();
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
-    assertThat(lifecycleTracker1.isMounted()).isFalse();
-    assertThat(lifecycleTracker2.isMounted()).isFalse();
+      lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
+      assertThat(lifecycleTracker1.isMounted()).isFalse();
+      assertThat(lifecycleTracker2.isMounted()).isFalse();
+    }
   }
 
   /** Tests incremental mount behaviour of a view mount item in a nested hierarchy. */
@@ -1391,8 +1403,11 @@ public class MountStateIncrementalMountTest {
     // Ensure unmount is called once
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_UNMOUNT)).isEqualTo(1);
 
-    // When using Litho's inc-mount, the exiting item will be mounted twice.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(2);
+    // Ensure mount is called once
+    // When using Litho's inc-mount, the exiting item will be mounted twice due to an issue with
+    // the calculation there. Inc-mount-ext does not have this issue.
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
+        .isEqualTo(mUseMountDelegateTarget ? 1 : 2);
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);
@@ -1412,9 +1427,11 @@ public class MountStateIncrementalMountTest {
     // Ensure unmount is called once
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_UNMOUNT)).isEqualTo(1);
 
+    // Ensure mount is called once
     // When using Litho's inc-mount, the item we previously expected to exit is still there, so
     // we don't expect a mount to occur.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
+        .isEqualTo(mUseMountDelegateTarget ? 1 : 0);
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);

@@ -184,10 +184,6 @@ public class IncrementalMountExtensionTest {
 
     // Translate host up to boundary condition is reverse direction.
     host.offsetTopAndBottom(-1 - 100 - 100); // 101 - 1 - 100 - 100 = -100
-    assertThat(host.getChildCount()).isEqualTo(3);
-
-    // Translate by 1 more pixel to ensure host is beyond the boundary condition.
-    host.offsetTopAndBottom(-1);
     assertThat(host.getChildCount()).isEqualTo(2);
   }
 
