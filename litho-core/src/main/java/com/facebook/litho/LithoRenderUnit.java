@@ -91,8 +91,13 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   @Override
   @Nullable
   public MountItemsPool.ItemPool getRecyclingPool() {
-    final MountContentPool mountContentPool = output.getComponent().onCreateMountContentPool();
-    return new MountContentPoolWrapper(mountContentPool);
+    try {
+      final MountContentPool mountContentPool = output.getComponent().onCreateMountContentPool();
+      return new MountContentPoolWrapper(mountContentPool);
+    } catch (Exception e) {
+      ComponentUtils.handle(mContext, e);
+      return null;
+    }
   }
 
   @Override

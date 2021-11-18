@@ -83,6 +83,9 @@ class ComponentErrorBoundaryTest {
     // Disable reconciliation so that the onCreateLayout is called for layout.
     ComponentsConfiguration.isReconciliationEnabled = false
     ComponentsConfiguration.isAnimationDisabled = false
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true
+    ComponentsConfiguration.delegateToRenderCoreMount = true
+    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = true
     assumeThat(
         "These tests can only be run in debug mode.",
         ComponentsConfiguration.IS_INTERNAL_BUILD,
@@ -94,6 +97,9 @@ class ComponentErrorBoundaryTest {
     // Reset the the values of the config.
     ComponentsConfiguration.isReconciliationEnabled = currentReconciliationValue
     ComponentsConfiguration.isAnimationDisabled = true
+    ComponentsConfiguration.useExtensionsWithMountDelegate = false
+    ComponentsConfiguration.delegateToRenderCoreMount = false
+    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = false
   }
 
   @Test
@@ -537,10 +543,6 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnCreateMountContentPoolCrashWithTestErrorBoundary() {
-    // TODO(T85975436): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    expectedException.expect(LithoMetadataExceptionWrapper::class.java)
-    expectedException.expectMessage("Crashed on ON_CREATE_MOUNT_CONTENT_POOL")
     crashingScenarioMountHelper(
         LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL,
         "Crashed on ON_CREATE_MOUNT_CONTENT_POOL",
