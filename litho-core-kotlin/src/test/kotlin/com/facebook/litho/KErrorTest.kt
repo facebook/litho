@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
-import com.facebook.litho.testing.setRoot
 import com.facebook.litho.widget.Text
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -61,9 +60,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act {
-      lithoViewRule.layout()
-    }
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
@@ -88,7 +86,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().layout()
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
   }
 
   @Test
@@ -119,10 +118,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act {
-      lithoViewRule.layout()
-    }
-
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
     assertThat(errorList.get(0).message).isEqualTo("crash from kotlin component 2 levels down")
@@ -145,7 +142,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().layout()
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
   }
 
   @Test
@@ -172,10 +170,8 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act {
-      lithoViewRule.layout()
-    }
-
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
     assertThat(errorList.get(0).message).isEqualTo("crash from kotlin component's state")

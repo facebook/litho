@@ -35,11 +35,13 @@ import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.ComponentConditions.typeIs
 import com.facebook.litho.testing.assertj.LithoViewAssert
+import com.facebook.litho.testing.setRoot
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.Text
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
@@ -115,7 +117,8 @@ class LithoViewRuleExampleTest {
     // visibility_test_start
     lithoViewRule.setRoot(TestComponent()).attachToWindow().measure()
     /** Before the onVisible is called */
-    lithoViewRule.act { lithoViewRule.layout() }
+    lithoViewRule.layout()
+    lithoViewRule.idle()
     /** After the onVisible is called */
     // visibility_test_end
 
@@ -245,6 +248,28 @@ class LithoViewRuleExampleTest {
     Assertions.assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNotNull()
     Assertions.assertThat(lithoViewRule.findComponent(Text::class.java)).isNotNull()
     // test_interaction_end
+  }
+
+  @Test
+  fun `verify the visibility event changed the state`() {
+    lateinit var stateRef: AtomicReference<Boolean>
+
+    class TestComponent : KComponent() {
+      // idle_component_start
+      override fun ComponentScope.render(): Component? {
+        val visibilityEventCalled = useState { false }
+        stateRef = AtomicReference(visibilityEventCalled.value)
+        return Column(
+            style =
+                Style.width(10.dp).height(10.dp).onVisible { visibilityEventCalled.update(true) })
+      }
+    }
+
+    lithoViewRule.render { TestComponent() }
+    Assertions.assertThat(stateRef.get()).isEqualTo(false)
+    lithoViewRule.idle()
+    Assertions.assertThat(stateRef.get()).isEqualTo(true)
+    // idle_component_end
   }
 
   // test_component_start

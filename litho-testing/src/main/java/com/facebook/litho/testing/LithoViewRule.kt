@@ -216,7 +216,10 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     return this
   }
 
-  /** Explicitly calls layout on the current root [LithoView] */
+  /**
+   * Explicitly calls layout on the current root [LithoView]. If there are any async events
+   * triggered by layout use together with [idle]
+   */
   fun layout(): LithoViewRule {
     val lithoView: LithoView = lithoView
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
@@ -405,9 +408,18 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
    */
   fun act(action: InteractionsScope.() -> Unit): LithoViewRule {
     interactionsScope.action()
+    idle()
+    return this
+  }
+
+  /**
+   * Runs through all tasks on the background thread and main lopper, blocking until it completes.
+   * Use if there are any async events triggered by layout ( ie visibility events) to manually drain
+   * the queue
+   */
+  fun idle() {
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
-    return this
   }
 
   /** Exposes assertion methods from [ComponentAssert] for [Component]s. */
