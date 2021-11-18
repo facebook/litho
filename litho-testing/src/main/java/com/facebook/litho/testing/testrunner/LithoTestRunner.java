@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.DefaultTestLifecycle;
@@ -175,6 +176,23 @@ public class LithoTestRunner extends RobolectricTestRunner {
     @Override
     public String getName() {
       return super.getName() + "[" + configurationClass.getSimpleName() + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass() || !super.equals(o)) {
+        return false;
+      }
+      LithoRobolectricFrameworkMethod that = (LithoRobolectricFrameworkMethod) o;
+      return Objects.equals(configurationClass, that.configurationClass);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(super.hashCode(), configurationClass);
     }
   }
 
