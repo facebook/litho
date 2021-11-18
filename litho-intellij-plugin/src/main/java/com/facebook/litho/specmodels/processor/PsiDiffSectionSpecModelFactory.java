@@ -20,6 +20,7 @@ import static com.facebook.litho.sections.specmodels.processor.DiffSectionSpecMo
 
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
+import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.specmodels.model.DefaultDiffSectionSpecGenerator;
 import com.facebook.litho.sections.specmodels.model.DiffSectionSpecModel;
 import com.facebook.litho.sections.specmodels.model.SectionClassNames;
@@ -80,7 +81,7 @@ public class PsiDiffSectionSpecModelFactory {
             mDiffSectionSpecDelegateMethodAnnotations,
             ImmutableList.of(),
             ImmutableList.of(),
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class, OnDiff.class)),
         PsiEventMethodExtractor.getOnEventMethods(psiClass, ImmutableList.of(), ImmutableList.of()),
         PsiAnnotationExtractor.extractValidAnnotations(project, psiClass),
         PsiTriggerMethodExtractor.getOnTriggerMethods(
