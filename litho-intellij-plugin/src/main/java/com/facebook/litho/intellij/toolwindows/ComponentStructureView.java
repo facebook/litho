@@ -63,7 +63,7 @@ class ComponentStructureView implements Disposable {
   static {
     final JTextArea text =
         new JTextArea(
-            "Spec structure will be shown here for a valid ComponentSpec file (LayoutSpec, MountSpec, GroupSectionSpec)");
+            "Spec structure will be shown here for a valid ComponentSpec file (LayoutSpec, MountSpec, GroupSectionSpec, DiffSectionSpec)");
     text.setLineWrap(true);
     text.setEditable(false);
     text.setBackground(null);

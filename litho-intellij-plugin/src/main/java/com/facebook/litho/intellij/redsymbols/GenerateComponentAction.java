@@ -22,6 +22,7 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
+import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -37,8 +38,8 @@ import java.util.Optional;
 
 /**
  * Updates Component file for the given Spec file. Update logic is defined by the {@link
- * ComponentGenerateService}. Works with {@link LayoutSpec}, {@link MountSpec}, and {@link
- * GroupSectionSpec}.
+ * ComponentGenerateService}. Works with {@link LayoutSpec}, {@link MountSpec}, {@link
+ * GroupSectionSpec} and {@link DiffSectionSpec}.
  */
 class GenerateComponentAction extends AnAction {
 
