@@ -58,6 +58,18 @@ class AccessibilityStylesTest {
   }
 
   @Test
+  fun contentDescription_whenNull_isNotSet() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(200.px).height(200.px).contentDescription(null)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.contentDescription).isNull()
+  }
+
+  @Test
   fun importantForAccessibility_whenSet_isSetOnView() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
@@ -105,5 +117,29 @@ class AccessibilityStylesTest {
     val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
+  }
+
+  @Test
+  fun accessibilityRole_whenNotSet_isNotSetOnView() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.width(200.px).accessibilityRole(null))
+      }
+    }
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.accessibilityRole).isNull()
+  }
+
+  @Test
+  fun accessibilityRoleDescription_whenNotSet_isNotSetOnView() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.width(200.px).accessibilityRoleDescription(null))
+      }
+    }
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.accessibilityRoleDescription).isNull()
   }
 }

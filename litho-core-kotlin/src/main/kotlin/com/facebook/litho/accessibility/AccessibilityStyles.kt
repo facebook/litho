@@ -77,25 +77,30 @@ inline fun Style.accessibilityHeading(isAccessibilityHeading: Boolean): Style =
  * The Android Talkback "role" this component has. This will be read out when the view is visited in
  * Talkback mode. See [AccessibilityRoleType] for possible roles.
  */
-inline fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: String): Style =
-    this + AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE, accessibilityRole)
+inline fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: String?): Style =
+    this +
+        accessibilityRole?.let { AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE, it) }
 
 /**
  * The description for this Component's [accessibilityRole]. This will be read out when the view is
  * visited in Talkback mode.
  */
-inline fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequence): Style =
+inline fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequence?): Style =
     this +
-        AccessibilityStyleItem(
-            AccessibilityField.ACCESSIBILITY_ROLE_DESCRIPTION, accessibilityRoleDescription)
+        accessibilityRoleDescription?.let {
+          AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE_DESCRIPTION, it)
+        }
 
 /**
  * A description of the contents of this Component for accessibility.
  *
  * See [android.view.View.setContentDescription].
  */
-inline fun Style.contentDescription(contentDescription: CharSequence): Style =
-    this + AccessibilityStyleItem(AccessibilityField.CONTENT_DESCRIPTION, contentDescription)
+inline fun Style.contentDescription(contentDescription: CharSequence?): Style =
+    this +
+        contentDescription?.let {
+          AccessibilityStyleItem(AccessibilityField.CONTENT_DESCRIPTION, it)
+        }
 
 /**
  * Sets whether this Component is "important for accessibility". If it is, it fires accessibility
