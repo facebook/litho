@@ -92,6 +92,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
             .componentClass(SectionClassNames.SECTION)
             .delegateMethods(delegateMethods)
             .updateStateMethods(updateStateMethods)
+            .updateStateWithTransitionMethods(ImmutableList.of())
             .typeVariables(typeVariables)
             .eventMethods(eventMethods)
             .classAnnotations(classAnnotations)
