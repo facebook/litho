@@ -44,6 +44,8 @@ public class MountDelegate {
   private boolean mCollectVisibleBoundsChangedCalls = false;
   private int mNotifyVisibleBoundsChangedNestCount = 0;
   private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
+  private final List<MountExtension> mExtensionsToUpdate = new ArrayList<>();
+  private final List<ExtensionState> mExtensionStatesToUpdate = new ArrayList<>();
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;
@@ -182,16 +184,51 @@ public class MountDelegate {
       final Object content) {
     startNotifyVisibleBoundsChangedSection();
 
+    mExtensionsToUpdate.clear();
+    mExtensionStatesToUpdate.clear();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
-      final ExtensionState state = getExtensionState(extension);
       if (extension.shouldUpdateItem(
           previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
+        mExtensionsToUpdate.add(extension);
+        mExtensionStatesToUpdate.add(getExtensionState(extension));
+      }
+    }
+
+    if (!mExtensionsToUpdate.isEmpty()) {
+      final int size = mExtensionsToUpdate.size();
+
+      // Unbind
+      for (int i = 0; i < size; i++) {
+        final MountExtension extension = mExtensionsToUpdate.get(i);
+        final ExtensionState state = mExtensionStatesToUpdate.get(i);
         extension.onUnbindItem(state, previousRenderUnit, content, previousLayoutData);
+      }
+
+      // Unmount
+      for (int i = 0; i < size; i++) {
+        final MountExtension extension = mExtensionsToUpdate.get(i);
+        final ExtensionState state = mExtensionStatesToUpdate.get(i);
         extension.onUnmountItem(state, previousRenderUnit, content, previousLayoutData);
+      }
+
+      // Mount
+      for (int i = 0; i < size; i++) {
+        final MountExtension extension = mExtensionsToUpdate.get(i);
+        final ExtensionState state = mExtensionStatesToUpdate.get(i);
         extension.onMountItem(state, nextRenderUnit, content, nextLayoutData);
+      }
+
+      // Bind
+      for (int i = 0; i < size; i++) {
+        final MountExtension extension = mExtensionsToUpdate.get(i);
+        final ExtensionState state = mExtensionStatesToUpdate.get(i);
         extension.onBindItem(state, nextRenderUnit, content, nextLayoutData);
       }
+
+      mExtensionsToUpdate.clear();
+      mExtensionStatesToUpdate.clear();
     }
 
     endNotifyVisibleBoundsChangedSection();
