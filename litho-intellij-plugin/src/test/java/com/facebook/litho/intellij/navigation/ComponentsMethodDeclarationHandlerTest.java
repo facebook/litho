@@ -68,6 +68,18 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
         "GroupSectionSpecMethodDeclarationHandlerTest.java", "TestGroupSectionSpec");
   }
 
+  @Test
+  public void getGotoDeclarationTargets_findMethodsForDiffSectionSpec_found() {
+    testFindMethodsForClassNameInFile(
+        "DiffSectionSpecMethodDeclarationHandlerTest.java", "TestDiffSectionSpec");
+  }
+
+  @Test
+  public void getGotoDeclarationTargets_findPropsForDiffSectionSpec_found() {
+    testFindPropsForClassNameInFile(
+        "DiffSectionSpecMethodDeclarationHandlerTest.java", "TestDiffSectionSpec");
+  }
+
   private void testFindMethodsForClassNameInFile(String filePath, String clsName) {
     ApplicationManager.getApplication()
         .invokeAndWait(
