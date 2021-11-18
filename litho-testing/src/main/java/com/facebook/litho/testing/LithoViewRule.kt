@@ -103,6 +103,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   private var _lithoView: LithoView? = null
   private var _componentTree: ComponentTree? = null
   private val threadLooperController: ThreadLooperController = ThreadLooperController()
+  private val interactionsScope = InteractionsScope()
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
@@ -250,25 +251,6 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   }
 
   /**
-   * Clicks on a [View] with the specified text in the rendered hierarchy, throwing if the view
-   * doesn't exists
-   */
-  fun clickOnText(text: String): Boolean = findViewWithText(text).performClick()
-
-  /**
-   * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
-   * doesn't exists
-   */
-  fun clickOnTag(tag: String): Boolean = findViewWithTag(tag).performClick()
-
-  /**
-   * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
-   * doesn't exists
-   */
-  fun clickOnContentDescription(contentDescription: String): Boolean =
-      findViewWithContentDescription(contentDescription).performClick()
-
-  /**
    * Finds the first [View] with the specified tag in the rendered hierarchy, returning null if is
    * doesn't exist.
    */
@@ -412,9 +394,17 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     return viewTree.findChild(predicate)?.last()
   }
 
-  /** Perform any interactions defined in this class */
-  fun act(action: LithoViewRule.() -> Unit): LithoViewRule {
-    action()
+  /**
+   * Perform any interactions defined in the [InteractionScope] or on the [LithoViewRule].
+   *
+   * During tests we need to make sure that everything is in sync in the Main Thread and in the
+   * Background Thread, just like in real life use case. This functions takes off the responsibility
+   * from you to use the Loopers and manage the thread synchronisation. You only need to pass here
+   * one of the defined interactions from [LithoViewRule] or [InteractionScope], and we will take
+   * care of all of the rest
+   */
+  fun act(action: InteractionsScope.() -> Unit): LithoViewRule {
+    interactionsScope.action()
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
     return this
@@ -433,6 +423,32 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   /** Exposes assertion methods from [ListAssert] for [List<Component>]. */
   fun assertThat(componentsList: List<Component>): ListAssert<Component> {
     return ListAssert<Component>(componentsList)
+  }
+
+  /**
+   * Class which exposes interactions that can take place on a view. Exposing interactions in this
+   * class ensures that they are only accessible within [act], where the proper threading is taken
+   * into account to properly update the components and views.
+   */
+  inner class InteractionsScope internal constructor() {
+    /**
+     * Clicks on a [View] with the specified text in the rendered hierarchy, throwing if the view
+     * doesn't exists
+     */
+    fun clickOnText(text: String): Boolean = findViewWithText(text).performClick()
+
+    /**
+     * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
+     * doesn't exists
+     */
+    fun clickOnTag(tag: String): Boolean = findViewWithTag(tag).performClick()
+
+    /**
+     * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
+     * doesn't exists
+     */
+    fun clickOnContentDescription(contentDescription: String): Boolean =
+        findViewWithContentDescription(contentDescription).performClick()
   }
 
   companion object {

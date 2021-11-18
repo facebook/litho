@@ -115,7 +115,7 @@ class LithoViewRuleExampleTest {
     // visibility_test_start
     lithoViewRule.setRoot(TestComponent()).attachToWindow().measure()
     /** Before the onVisible is called */
-    lithoViewRule.act { layout() }
+    lithoViewRule.act { lithoViewRule.layout() }
     /** After the onVisible is called */
     // visibility_test_end
 

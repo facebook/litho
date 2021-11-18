@@ -61,7 +61,9 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act { layout() }
+    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act {
+      lithoViewRule.layout()
+    }
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
@@ -117,7 +119,9 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act { layout() }
+    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act {
+      lithoViewRule.layout()
+    }
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
@@ -168,7 +172,9 @@ class KErrorTest {
       }
     }
 
-    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act { layout() }
+    lithoViewRule.setRoot { UseErrorComponent() }.attachToWindow().measure().act {
+      lithoViewRule.layout()
+    }
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)

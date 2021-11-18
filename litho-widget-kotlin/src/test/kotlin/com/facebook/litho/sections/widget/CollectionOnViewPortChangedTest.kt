@@ -90,7 +90,8 @@ class CollectionOnViewPortChangedTest {
 
     lithoViewRule.act {
       val recyclerView =
-          ((findViewWithTag("collection_tag") as LithoView).getChildAt(0) as SectionsRecyclerView)
+          ((lithoViewRule.findViewWithTag("collection_tag") as LithoView).getChildAt(0) as
+                  SectionsRecyclerView)
               .recyclerView
 
       // Scroll by a distance less than the item height so the first and last items overlap the
