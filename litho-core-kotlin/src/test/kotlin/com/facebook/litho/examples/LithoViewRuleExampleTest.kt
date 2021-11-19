@@ -18,6 +18,7 @@
 
 package com.facebook.litho.examples
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Column
@@ -41,6 +42,9 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.Text
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions
 import org.hamcrest.core.IsInstanceOf
@@ -211,6 +215,29 @@ class LithoViewRuleExampleTest {
   }
 
   @Test
+  fun `verify click on component`() {
+    class TestClickComponent(private val clickHandler: TestClickHandler) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.onClick { clickHandler.onClick(androidContext) }) {
+          child(Text(text = "Text"))
+        }
+      }
+    }
+
+    val mockClickHandler: TestClickHandler = mock()
+    lithoViewRule.render { TestClickComponent(mockClickHandler) }
+    lithoViewRule.act { clickOnRootView() }
+
+    verify(mockClickHandler).onClick(any())
+  }
+
+  @Test(expected = IllegalStateException::class)
+  fun `verify runtime exception thrown when clicking on a non-clickable view`() {
+    lithoViewRule.render { Row() }
+    lithoViewRule.act { clickOnRootView() }
+  }
+
+  @Test
   fun `verify interactions on lithoView`() {
     // component_for_action_start
     class TestComponent : KComponent() {
@@ -288,4 +315,8 @@ class InnerComponent(
     return Row(style = style) { child(Text(text = value)) }
   }
 }
-  // test_component_end
+// test_component_end
+
+private interface TestClickHandler {
+  fun onClick(context: Context)
+}

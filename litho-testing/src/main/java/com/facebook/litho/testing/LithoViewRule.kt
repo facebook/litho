@@ -461,6 +461,19 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
      */
     fun clickOnContentDescription(contentDescription: String): Boolean =
         findViewWithContentDescription(contentDescription).performClick()
+
+    /**
+     * Clicks on the root view, if it has click handling, throwing if the view is not clickable.
+     *
+     * See other functions such as [clickOnText], [clickOnTag], and [clickOnContentDescription] if
+     * you'd like more specifically click on portions of the view.
+     */
+    fun clickOnRootView() {
+      checkNotNull(shadowOf(lithoView).onClickListener) {
+        "No click handling found on root view.  The root view must be clickable in order to use this function."
+      }
+      lithoView.performClick()
+    }
   }
 
   companion object {
