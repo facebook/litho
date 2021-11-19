@@ -125,19 +125,3 @@ jobs:
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         tag: ${{ needs.check-release-job.outputs.release-version-info }}
-  validate-job:
-    name: Validate uploads
-    runs-on: ubuntu-latest
-    needs: [check-release-job, publish-job]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Get tag info
-      id: tag_info
-      env:
-        VERSION_INFO:  ${{ needs.check-release-job.outputs.release-version-info }}
-      run: echo ::set-output name=TAG_INFO::`echo $VERSION_INFO | cut -d v -f2`
-    - name: Run validation script
-      env:
-        TAG: ${{ steps.tag_info.outputs.TAG_INFO }}
-      run: |
-        scripts/verify-bintray-upload.hs $TAG

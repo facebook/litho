@@ -1,8 +1,17 @@
 # Changelog
 
+## Version 0.41.1-SNAPSHOT
+
+_release-date_
+
+ * TBA
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.0...master).
+
+
 ## Version 0.41.0
 
-_2021-11-11_
+_2021-11-18_
 
  * **Breaking:** Delete `@FromBind` inter stage prop. **Replace existing usages with `@State AtomicReference<?>` instead.** Create a `@State AtomicReference<?>` for the `Component`; set that value for the `AtomicReference` in `@OnBind`, and get from it in `@OnUnbind` or other lifecycle methods.
  * **Breaking:** Add `ComponentTree` in `Handle` so that `Handle` can be used across component trees, i.e. throughout Sections. **Remove static references of `Handle` as that can lead to memory leaks** since it holds reference to `ComponentTree` now, **instead `Handle` should be used via `@State` in Spec API or `useState` in Kotlin API**.
