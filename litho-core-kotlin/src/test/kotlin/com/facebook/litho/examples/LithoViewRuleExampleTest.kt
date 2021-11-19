@@ -150,20 +150,20 @@ class LithoViewRuleExampleTest {
     }
 
     lithoViewRule.render { TestComponent() }
-    val innerComponentsList = lithoViewRule.findAllComponents(InnerComponent::class)
-    val deepComponentsList = lithoViewRule.findAllComponents(DeepComponent::class)
+    val innerComponentsList = lithoViewRule.findAllComponents(InnerComponent::class.java)
+    val deepComponentsList = lithoViewRule.findAllComponents(DeepComponent::class.java)
     lithoViewRule.assertThat(innerComponentsList).isNotEmpty
     lithoViewRule.assertThat(deepComponentsList).isNotEmpty
 
-    lithoViewRule.assertThat(innerComponentsList).haveExactly(2, typeIs(InnerComponent::class))
-    lithoViewRule.assertThat(deepComponentsList).haveExactly(3, typeIs(DeepComponent::class))
+    lithoViewRule.assertThat(innerComponentsList).haveExactly(2, typeIs(InnerComponent::class.java))
+    lithoViewRule.assertThat(deepComponentsList).haveExactly(3, typeIs(DeepComponent::class.java))
   }
 
   @Test
   fun `verify InnerComponent has given props`() {
     // has_props_start
     lithoViewRule.render { TestComponent() }
-    val component = lithoViewRule.findComponent(InnerComponent::class)
+    val component = lithoViewRule.findComponent(InnerComponent::class.java)
     lithoViewRule.assertThat(component).isNotNull
 
     lithoViewRule
@@ -192,11 +192,11 @@ class LithoViewRuleExampleTest {
   fun `verify children of the component`() {
     // find_direct_component_start
     lithoViewRule.render { TestComponent() }
-    val innerComponent = lithoViewRule.findDirectComponent(InnerComponent::class)
+    val innerComponent = lithoViewRule.findDirectComponent(InnerComponent::class.java)
     lithoViewRule.assertThat(innerComponent).willRender()
     // find_direct_component_end
     // find_non_direct_component_start
-    val textComponent = lithoViewRule.findComponent(Text::class)
+    val textComponent = lithoViewRule.findComponent(Text::class.java)
     lithoViewRule.assertThat(textComponent).willRender()
     // find_non_direct_component_end
   }
@@ -235,7 +235,8 @@ class LithoViewRuleExampleTest {
     LithoStats.resetAllCounters()
     /** Find [Component] based on the text or [Component] class */
     Assertions.assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNull()
-    Assertions.assertThat(lithoViewRule.findComponent(Text::class)).isNull()
+    Assertions.assertThat(lithoViewRule.findComponent(com.facebook.litho.widget.Text::class.java))
+        .isNull()
 
     /** perform interaction defined in [LithoViewRule] */
     lithoViewRule.act { clickOnContentDescription("row") }
@@ -245,7 +246,7 @@ class LithoViewRuleExampleTest {
 
     /** Find [Component] based on the text or [Component] class */
     Assertions.assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNotNull()
-    Assertions.assertThat(lithoViewRule.findComponent(Text::class)).isNotNull()
+    Assertions.assertThat(lithoViewRule.findComponent(Text::class.java)).isNotNull()
     // test_interaction_end
   }
 

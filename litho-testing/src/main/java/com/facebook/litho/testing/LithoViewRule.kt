@@ -28,14 +28,12 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentsPools
+import com.facebook.litho.InternalNode
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.StateHandler
 import com.facebook.litho.TreeProps
-import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
-import com.facebook.litho.componentsfinder.findComponentInLithoView
-import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.assertj.ComponentAssert
 import com.facebook.litho.testing.assertj.LithoViewAssert
@@ -43,7 +41,6 @@ import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
 import com.google.common.base.Predicate
-import kotlin.reflect.KClass
 import org.assertj.core.api.ListAssert
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -324,39 +321,76 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   }
 
   /** Returns a component of the given class only if it is a direct child of the root component */
-  fun findDirectComponent(clazz: KClass<out Component>): Component? {
-    return findDirectComponentInLithoView(lithoView, clazz)
-  }
-
-  /** Returns a component of the given class only if it is a direct child of the root component */
   fun findDirectComponent(clazz: Class<out Component?>): Component? {
-    return findDirectComponentInLithoView(lithoView, clazz)
-  }
-
-  /** Returns a component of the given class from the ComponentTree or null if not found */
-  fun findComponent(clazz: KClass<out Component>): Component? {
-    return findComponentInLithoView(lithoView, clazz)
+    val internalNode =
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode ?: return null
+    return internalNode.components.firstOrNull { it.javaClass == clazz }
   }
 
   /** Returns a component of the given class from the ComponentTree or null if not found */
   fun findComponent(clazz: Class<out Component?>): Component? {
-    return findComponentInLithoView(lithoView, clazz)
+    val internalNode =
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode
+            ?: throw IllegalStateException(
+                "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
+    return findComponentRecursively(clazz, internalNode)
   }
 
   /**
-   * Returns a list of all components of the given classes from the ComponentTree or an empty list
-   * if not found
+   * Returns a list of all components of the given class from the ComponentTree or an empty list if
+   * not found
    */
-  fun findAllComponents(vararg clazz: KClass<out Component>): List<Component> {
-    return findAllComponentsInLithoView(lithoView, *clazz)
+  fun findAllComponents(clazz: Class<out Component?>): List<Component> {
+    val componentsList = mutableListOf<Component>()
+    val internalNode =
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode
+            ?: throw IllegalStateException(
+                "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
+    findComponentsRecursively(clazz, internalNode, componentsList)
+    return componentsList
   }
 
   /**
-   * Returns a list of all components of the given classes from the ComponentTree or an empty list
-   * if not found
+   * Recursively goes through nodes in a component tree, returns a component of a given class or
+   * null if not found
    */
-  fun findAllComponents(vararg clazz: Class<out Component?>): List<Component> {
-    return findAllComponentsInLithoView(lithoView, *clazz)
+  private fun findComponentRecursively(
+      clazz: Class<out Component?>,
+      internalNode: InternalNode
+  ): Component? {
+
+    val component = internalNode.components.firstOrNull { it.javaClass == clazz }
+    if (component != null) {
+      return component
+    }
+
+    val childCount = internalNode.childCount
+    for (i in 0 until childCount) {
+      val childComponent = findComponentRecursively(clazz, internalNode.getChildAt(i))
+      if (childComponent != null) {
+        return childComponent
+      }
+    }
+    return null
+  }
+  /**
+   * Recursively goes through nodes in a component tree, and adds component of given class to the
+   * list or empty list if not found
+   */
+  private fun findComponentsRecursively(
+      clazz: Class<out Component?>,
+      internalNode: InternalNode,
+      componentsList: MutableList<Component>
+  ) {
+    val components = internalNode.components.filter { it.javaClass == clazz }
+    if (components != null) {
+      componentsList.addAll(components)
+    }
+
+    val childCount = internalNode.childCount
+    for (i in 0 until childCount) {
+      findComponentsRecursively(clazz, internalNode.getChildAt(i), componentsList)
+    }
   }
 
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
