@@ -16,26 +16,19 @@
 
 package com.facebook.litho.testing.assertj;
 
-import static com.facebook.litho.componentsfinder.ComponentsFinderKt.findAllComponentsInLithoView;
-import static com.facebook.litho.testing.assertj.ComponentConditions.typeIs;
-
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
-import com.facebook.litho.Component;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 import java.util.Deque;
-import java.util.List;
 import java.util.Locale;
-import kotlin.reflect.KClass;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.Java6Assertions;
 
 /**
  * Assertion methods for {@link LithoView}s.
@@ -62,7 +55,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   public LithoViewAssert containsTestKey(String testKey, OccurrenceCount count) {
     final Deque<TestItem> testItems = LithoViewTestHelper.findTestItems(actual, testKey);
-    Assertions.assertThat(testItems)
+    Java6Assertions.assertThat(testItems)
         .hasSize(count.times)
         .overridingErrorMessage(
             "Expected to find test key <%s> in LithoView <%s> %s, but %s.",
@@ -82,7 +75,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     final TestItem testItem = LithoViewTestHelper.findTestItem(actual, testKey);
     final Rect bounds = testItem == null ? null : testItem.getBounds();
 
-    Assertions.assertThat(testItem)
+    Java6Assertions.assertThat(testItem)
         .overridingErrorMessage(
             "Expected not to find test key <%s> in LithoView <%s>, but it was present at "
                 + "bounds %s.",
@@ -193,7 +186,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   /** Assert that the LithoView under test has the provided measured width. */
   public LithoViewAssert hasMeasuredWidthOf(int width) {
-    Assertions.assertThat(actual.getMeasuredWidth())
+    Java6Assertions.assertThat(actual.getMeasuredWidth())
         .overridingErrorMessage(
             "Expected LithoView to have a width of %d, but was %d.",
             width, actual.getMeasuredWidth())
@@ -204,7 +197,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   /** Assert that the LithoView under test has the provided measured height. */
   public LithoViewAssert hasMeasuredHeightOf(int height) {
-    Assertions.assertThat(actual.getMeasuredHeight())
+    Java6Assertions.assertThat(actual.getMeasuredHeight())
         .overridingErrorMessage(
             "Expected LithoView to have a height of %d, but was %d.",
             height, actual.getMeasuredHeight())
@@ -222,86 +215,6 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   public LithoViewAssert hasViewTag(int tagId, Object tagValue) {
     assertThatViewTree().hasViewTag(tagId, tagValue);
 
-    return this;
-  }
-
-  /**
-   * Assert that the LithoView under test has the provided Component class once in the Component
-   * Tree hierarchy.
-   */
-  public LithoViewAssert containsComponent(Class<Component> clazz) {
-    return containsComponent(1, clazz);
-  }
-
-  /**
-   * Assert that the LithoView under test has the provided Component class in the Component Tree
-   * hierarchy given number of times
-   */
-  public LithoViewAssert containsComponent(int times, Class<? extends Component> clazz) {
-    List<? extends Component> componentsList = findAllComponentsInLithoView(actual, clazz);
-    new ListAssert(componentsList).haveExactly(times, typeIs(clazz));
-    return this;
-  }
-
-  /**
-   * Assert that the LithoView under test has the provided Component class once in the Component
-   * Tree hierarchy.
-   */
-  public LithoViewAssert containsComponent(KClass<? extends Component> clazz) {
-    return containsComponent(1, clazz);
-  }
-
-  /**
-   * Assert that the LithoView under test has the provided Component class in the Component Tree
-   * hierarchy given number of times
-   */
-  public LithoViewAssert containsComponent(int times, KClass<? extends Component> clazz) {
-    List<Component> componentsList = findAllComponentsInLithoView(actual, clazz);
-    new ListAssert(componentsList).haveExactly(times, typeIs(clazz));
-    return this;
-  }
-
-  /**
-   * Assert that the LithoView under test has the provided Component classes in the Component Tree
-   * hierarchy
-   */
-  public LithoViewAssert containsComponents(Class<? extends Component>... clazz) {
-    List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
-    for (Class<? extends Component> componentClass : clazz) {
-      new ListAssert<Component>(componentList).haveAtLeastOne(typeIs(componentClass));
-    }
-    return this;
-  }
-
-  /**
-   * Assert that the LithoView under test has the provided Component classes in the Component Tree
-   * hierarchy
-   */
-  public LithoViewAssert containsComponents(KClass<? extends Component>... clazz) {
-    List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
-    for (KClass<? extends Component> componentClass : clazz) {
-      new ListAssert<Component>(componentList).haveAtLeastOne(typeIs(componentClass));
-    }
-    return this;
-  }
-
-  /**
-   * Assert that the LithoView under test does not contain the provided Component classes in the
-   * Component Tree hierarchy
-   */
-  public LithoViewAssert doesNotContainComponents(Class<? extends Component>... clazz) {
-    List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
-    Assertions.assertThat(componentList).isEmpty();
-    return this;
-  }
-
-  /**
-   * Assert that the LithoView under test does not contain the provided Component classes in the
-   * Component Tree hierarchy
-   */
-  public LithoViewAssert doesNotContainComponents(KClass<? extends Component>... clazz) {
-    List<Component> componentList = findAllComponentsInLithoView(actual, clazz);
-    Assertions.assertThat(componentList).isEmpty();
     return this;
   }
 

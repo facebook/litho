@@ -21,8 +21,6 @@ import static org.hamcrest.core.Is.is;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
-import kotlin.jvm.JvmClassMappingKt;
-import kotlin.reflect.KClass;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 import org.hamcrest.Matcher;
@@ -89,19 +87,8 @@ public final class ComponentConditions {
     return new Condition<Component>(new TextDescription("Component with type <%s>", clazz)) {
       @Override
       public boolean matches(Component value) {
-        Class componentClass = value.getClass();
-        return componentClass != null && componentClass.equals(clazz);
-      }
-    };
-  }
-
-  public static Condition<Component> typeIs(final KClass<? extends Component> clazz) {
-    return new Condition<Component>(new TextDescription("Component with type <%s>", clazz)) {
-      @Override
-      public boolean matches(Component value) {
-        Class componentClass = value.getClass();
-        return componentClass != null
-            && componentClass.equals(JvmClassMappingKt.getJavaClass(clazz));
+        Class component = value.getClass();
+        return component != null && component.equals(clazz);
       }
     };
   }

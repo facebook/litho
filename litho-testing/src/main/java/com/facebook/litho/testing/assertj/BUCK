@@ -35,7 +35,6 @@ litho_android_library(
         LITHO_TESTING_HELPER_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/componentsfinder:componentsfinder"),
     ],
     exported_deps = [
         LITHO_ASSERTJ_TARGET,
