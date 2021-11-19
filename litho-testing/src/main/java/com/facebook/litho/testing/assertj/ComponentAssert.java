@@ -163,7 +163,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /** Assert that any view in the given Component has the provided content description. */
+  /**
+   * Assert that any view in the given Component has the provided content description.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasContentDescription(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert hasContentDescription(String contentDescription) {
     assertThatLithoView().hasContentDescription(contentDescription);
 
@@ -173,84 +178,142 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Assert that the given component contains the drawable identified by the provided drawable
    * resource id.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleDrawable(int)} instead.
    */
+  @Deprecated
   public ComponentAssert hasVisibleDrawable(@DrawableRes int drawableRes) {
     assertThatLithoView().hasVisibleDrawable(drawableRes);
 
     return this;
   }
 
-  /** Assert that the given component contains the drawable provided. */
+  /**
+   * Assert that the given component contains the drawable provided.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleDrawable(Drawable)} instead.
+   */
+  @Deprecated
   public ComponentAssert hasVisibleDrawable(Drawable drawable) {
     assertThatLithoView().hasVisibleDrawable(drawable);
 
     return this;
   }
 
-  /** Inverse of {@link #hasVisibleDrawable(Drawable)} */
+  /**
+   * Inverse of {@link #hasVisibleDrawable(Drawable)}
+   *
+   * @deprecated Use {@link LithoViewAssert#doesNotHaveVisibleDrawable(Drawable)} instead.
+   */
+  @Deprecated
   public ComponentAssert doesNotHaveVisibleDrawable(Drawable drawable) {
     assertThatLithoView().doesNotHaveVisibleDrawable(drawable);
 
     return this;
   }
 
-  /** Inverse of {@link #hasVisibleDrawable(int)} */
+  /**
+   * Inverse of {@link #hasVisibleDrawable(int)}.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleDrawable(Drawable)} instead.
+   */
+  @Deprecated
   public ComponentAssert doesNotHaveVisibleDrawable(@DrawableRes int drawableRes) {
     assertThatLithoView().doesNotHaveVisibleDrawable(drawableRes);
 
     return this;
   }
 
-  /** Assert that the given component has the exact text provided. */
+  /**
+   * Assert that the given component has the exact text provided.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleText(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert hasVisibleText(String text) {
     assertThatLithoView().hasVisibleText(text);
 
     return this;
   }
 
-  /** Assert that the given component has the exact text identified by resource id. */
+  /**
+   * Assert that the given component has the exact text identified by resource id.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleText(int)} instead.
+   */
+  @Deprecated
   public ComponentAssert hasVisibleText(@StringRes int resourceId) {
     assertThatLithoView().hasVisibleText(resourceId);
 
     return this;
   }
 
-  /** Inverse of {@link #hasVisibleText(String)} */
+  /**
+   * Inverse of {@link #hasVisibleText(String)}.
+   *
+   * @deprecated Use {@link LithoViewAssert#doesNotHaveVisibleText(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert doesNotHaveVisibleText(String text) {
     assertThatLithoView().doesNotHaveVisibleText(text);
 
     return this;
   }
 
-  /** Inverse of {@link #hasVisibleText(int)} */
+  /**
+   * Inverse of {@link #hasVisibleText(int)} .
+   *
+   * @deprecated Use {@link LithoViewAssert#doesNotHaveVisibleText(int)} instead.
+   */
+  @Deprecated
   public ComponentAssert doesNotHaveVisibleText(@StringRes int resourceId) {
     assertThatLithoView().doesNotHaveVisibleText(resourceId);
 
     return this;
   }
 
-  /** Assert that the given component contains the provided pattern. */
+  /**
+   * Assert that the given component contains the provided pattern.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleTextMatching(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert hasVisibleTextMatching(String pattern) {
     assertThatLithoView().hasVisibleTextMatching(pattern);
 
     return this;
   }
 
-  /** Inverse of {@link #hasVisibleTextMatching(String)}. */
+  /**
+   * Inverse of {@link #hasVisibleTextMatching(String)}.
+   *
+   * @deprecated Use {@link LithoViewAssert#doesNotHaveVisibleTextMatching(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert doesNotHaveVisibleTextMatching(String pattern) {
     assertThatLithoView().doesNotHaveVisibleTextMatching(pattern);
 
     return this;
   }
 
-  /** Assert that the given component contains the provided text. */
+  /**
+   * Assert that the given component contains the provided text.
+   *
+   * @deprecated Use {@link LithoViewAssert#hasVisibleTextContaining(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert hasVisibleTextContaining(String text) {
     assertThatLithoView().hasVisibleTextContaining(text);
 
     return this;
   }
 
-  /** Inverse of {@link #hasVisibleTextContaining(String)}. */
+  /**
+   * Inverse of {@link #hasVisibleTextContaining(String)}.
+   *
+   * @deprecated Use {@link LithoViewAssert#doesNotHaveVisibleTextContaining(String)} instead.
+   */
+  @Deprecated
   public ComponentAssert doesNotHaveVisibleTextContaining(String text) {
     assertThatLithoView().doesNotHaveVisibleTextContaining(text);
 
@@ -262,7 +325,9 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    *
    * @param tagId Index of the view tag.
    * @param tagValue View tag value.
+   * @deprecated Use {@link LithoViewAssert#hasViewTag(int, Object)} instead.
    */
+  @Deprecated
   public ComponentAssert hasViewTag(int tagId, Object tagValue) {
     assertThatLithoView().hasViewTag(tagId, tagValue);
 
@@ -272,7 +337,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Verifies that the component contains the exact list of provided sub-components.
    *
-   * @deprecated Use {@link #extractingSubComponents} instead.
+   * @deprecated Use {@link LithoViewAssert#containsComponents(Class)} instead.
    */
   @Deprecated
   public ComponentAssert hasSubComponents(SubComponent... subComponents) {
@@ -287,7 +352,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Verifies that the component contains only the given sub-components and nothing else, in order.
    *
-   * @deprecated Use {@link #extractingSubComponents} instead.
+   * @deprecated Use {@link LithoViewAssert#containsComponents(int, Class)} instead.
    */
   @Deprecated
   public ComponentAssert containsOnlySubComponents(SubComponent... subComponents) {
@@ -312,7 +377,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ListAssert<>(value);
   }
 
-  /** Extract the sub components from the underlying Component, returning a ListAssert over it. */
+  /**
+   * Extract the sub components from the underlying Component, returning a ListAssert over it
+   *
+   * @deprecated Use {@link LithoViewAssert#containsComponent(int, Class)} instead.
+   */
+  @Deprecated
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponents(ComponentContext c) {
     return extracting(SubComponentExtractor.subComponents(c));
@@ -321,7 +391,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Extract the sub components recursively from the underlying Component, returning a ListAssert
    * over it.
+   *
+   * @deprecated Use {@link LithoViewAssert#containsComponent(int, Class)} instead.
    */
+  @Deprecated
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponentsDeeply(ComponentContext c) {
     return extracting(SubComponentDeepExtractor.subComponentsDeeply(c));
@@ -336,7 +409,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
    * </code> returns null.
+   *
+   * @deprecated Use {@link #isNotNull()} instead.
    */
+  @Deprecated
   public ComponentAssert wontRender() {
     Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
         .overridingErrorMessage("Expected Component to render to null, but it did not.")
@@ -345,7 +421,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /** Assert that a given {@link Component} produces a non-null layout. */
+  /**
+   * Assert that a given {@link Component} produces a non-null layout.
+   *
+   * @deprecated Use {@link #isNotNull()} instead.
+   */
+  @Deprecated
   public ComponentAssert willRender() {
     Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
         .overridingErrorMessage("Expected Component to not render to null, but it did.")
@@ -366,7 +447,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /** @see #wontRender() */
+  /** @deprecated Use {@link #isNotNull()} instead. */
   public ComponentAssert willNotRender() {
     return wontRender();
   }

@@ -1,0 +1,19 @@
+load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_library")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_KOTLIN_TARGET",
+    "LITHO_RENDERCORE_TESTING_TARGET",
+)
+
+fb_android_library(
+    name = "componentsfinder",
+    language = "KOTLIN",
+    deps = [
+        LITHO_KOTLIN_TARGET,
+        LITHO_RENDERCORE_TESTING_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_JAVA_TARGET,
+    ],
+)
