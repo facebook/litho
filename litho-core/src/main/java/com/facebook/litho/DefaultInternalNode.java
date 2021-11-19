@@ -35,6 +35,7 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.animation.StateListAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -43,6 +44,7 @@ import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -1584,7 +1586,8 @@ public class DefaultInternalNode
     a.recycle();
   }
 
-  /** Crash if the given node has context specific style set. */
+  /** Log a warning if the given node has context specific style set. */
+  @SuppressLint("LongLogTag")
   @Override
   public void assertContextSpecificStyleNotSet() {
     List<CharSequence> errorTypes = null;
@@ -1606,13 +1609,12 @@ public class DefaultInternalNode
 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
-          CONTEXT_SPECIFIC_STYLE_SET,
+      final String msg =
           "You should not set "
               + errorStr
               + " to a root layout in "
-              + getTailComponent().getClass().getSimpleName());
+              + getTailComponent().getClass().getSimpleName();
+      Log.w(CONTEXT_SPECIFIC_STYLE_SET, msg);
     }
   }
 

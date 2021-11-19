@@ -36,6 +36,7 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.animation.StateListAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -44,6 +45,7 @@ import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -424,6 +426,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
    * Builds the YogaNode tree from this tree of InternalNodes. At the same time, builds the
    * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
    */
+  @SuppressLint("LongLogTag")
   private static <Writer extends YogaLayoutProps> YogaNode buildYogaTree(
       LithoRenderContext renderContext,
       InputOnlyInternalNode<Writer> currentInternalNode,
@@ -453,15 +456,14 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       if (parentNode == null) {
         final @Nullable String props = writer.validateLayoutPropsForRoot();
         if (props != null) {
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.WARNING,
-              INVALID_LAYOUT_PROPS,
+          final String msg =
               props
                   + " cannot be set on the root layout.\n"
                   + "layout-stack: "
                   + TextUtils.join(
                       " -> ",
-                      Component.generateHierarchy(currentInternalNode.getTailComponentKey())));
+                      Component.generateHierarchy(currentInternalNode.getTailComponentKey()));
+          Log.w(INVALID_LAYOUT_PROPS, msg);
         }
       }
     }

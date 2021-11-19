@@ -25,7 +25,6 @@ import static com.facebook.litho.it.R.drawable.background_without_padding;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -37,7 +36,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -287,32 +285,6 @@ public class InternalNodeTest {
   @Test
   public void testContextSpecificComponentAssertionPasses() {
     acquireInternalNode().assertContextSpecificStyleNotSet();
-  }
-
-  @Test
-  public void testContextSpecificComponentAssertionFailFormatting() {
-    final boolean value = ComponentsConfiguration.isDebugModeEnabled;
-    ComponentsConfiguration.isDebugModeEnabled = true;
-
-    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
-    mLithoViewRule.useComponentTree(
-        ComponentTree.create(mLithoViewRule.getContext())
-            .componentsConfiguration(
-                ComponentsConfiguration.create().useInputOnlyInternalNodes(true).build())
-            .logger(componentsLogger, "TEST")
-            .build());
-
-    mLithoViewRule
-        .setRoot(
-            Column.create(mLithoViewRule.getContext()).alignSelf(YogaAlign.AUTO).flex(1f).build())
-        .measure()
-        .layout()
-        .attachToWindow();
-
-    assertThat(mComponentsReporter.getLoggedMessages().get(0).second)
-        .isEqualTo("alignSelf, flex cannot be set on the root layout.\n" + "layout-stack: Column");
-
-    ComponentsConfiguration.isDebugModeEnabled = value;
   }
 
   @Test

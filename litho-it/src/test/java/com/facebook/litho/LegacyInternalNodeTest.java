@@ -33,23 +33,16 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Pair;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
-import com.facebook.rendercore.LogLevel;
-import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -449,24 +442,6 @@ public class LegacyInternalNodeTest {
   @Test
   public void testContextSpecificComponentAssertionPasses() {
     acquireInternalNode().assertContextSpecificStyleNotSet();
-  }
-
-  @Test
-  public void testContextSpecificComponentAssertionFailFormatting() {
-    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
-    final PerfEvent perfEvent = mock(PerfEvent.class);
-    when(componentsLogger.newPerformanceEvent((ComponentContext) any(), anyInt()))
-        .thenReturn(perfEvent);
-
-    LithoLayoutResult node = acquireInternalNodeWithLogger(componentsLogger);
-    ((DefaultInternalNode) node.getInternalNode()).alignSelf(YogaAlign.AUTO);
-    ((DefaultInternalNode) node.getInternalNode()).flex(1f);
-
-    node.getInternalNode().assertContextSpecificStyleNotSet();
-    assertThat(mComponentsReporter.getLoggedMessages())
-        .contains(
-            new Pair<>(
-                LogLevel.WARNING, "You should not set alignSelf, flex to a root layout in Column"));
   }
 
   @Test
