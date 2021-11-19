@@ -28,6 +28,7 @@ import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.After;
 import org.junit.Before;
@@ -179,6 +180,11 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testPreallocateContent() {
+    // Test is irrelevant for render-core.
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
     assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
         .isSameAs(mNewMountContent);
 
@@ -193,6 +199,11 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testDoNotPreallocateContentBeyondPoolSize() {
+    // Test is irrelevant for render-core.
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
     for (int i = 0; i < POOL_SIZE; i++) {
       maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
       acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
@@ -207,6 +218,11 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAllocationsCountTowardsPreallocationLimit() {
+    // Test is irrelevant for render-core.
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
     for (int i = 0; i < POOL_SIZE - 1; i++) {
       maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
       acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);

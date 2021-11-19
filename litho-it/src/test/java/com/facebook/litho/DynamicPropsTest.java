@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -74,6 +76,65 @@ public class DynamicPropsTest {
 
     alphaDV.set(1.f);
     assertThat(hostView.getAlpha()).isEqualTo(1.f);
+  }
+
+  @Test
+  public void testAttributesAndDynamicPropDuringUpdate() {
+    final float startValue = 0.8f;
+    final DynamicValue<Float> alphaDV = new DynamicValue<>(startValue);
+
+    final Component component1 =
+        Column.create(mContext)
+            .widthPx(80)
+            .heightPx(80)
+            .backgroundColor(0xFFFF0000)
+            .alpha(alphaDV)
+            .build();
+
+    final Component component2 =
+        Column.create(mContext)
+            .widthPx(80)
+            .heightPx(80)
+            .backgroundColor(0xFF00FF00)
+            .alpha(alphaDV)
+            .build();
+
+    mLithoViewRule
+        .setRoot(component1)
+        .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    // Ensure we have one view.
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    View hostView = lithoView.getChildAt(0);
+
+    // Ensure alpha DV is correct
+    assertThat(hostView.getAlpha()).isEqualTo(startValue);
+
+    // Ensure background attribute is present and has the correct value.
+    assertThat(hostView.getBackground()).isNotNull();
+    assertThat(((ColorDrawable) hostView.getBackground()).getColor()).isEqualTo(0xFFFF0000);
+
+    // Mount component2, which is identical to component1, except with a different bg, invoking
+    // an update sequence.
+    mLithoViewRule.setRoot(component2);
+
+    // Grab the host again
+    hostView = lithoView.getChildAt(0);
+
+    // Alter the alpha DV
+    alphaDV.set(0.5f);
+
+    // Ensure the DV is properly applied on the view
+    assertThat(hostView.getAlpha()).isEqualTo(0.5f);
+
+    // Ensure background attribute is present and has the correct value.
+    assertThat(hostView.getBackground()).isNotNull();
+    assertThat(((ColorDrawable) hostView.getBackground()).getColor()).isEqualTo(0xFF00FF00);
   }
 
   @Test
