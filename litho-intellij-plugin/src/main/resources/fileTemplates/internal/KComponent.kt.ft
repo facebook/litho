@@ -11,3 +11,4 @@ class ${NAME} : KComponent() {
     return #[[$END$]]#
   }
 }
+
