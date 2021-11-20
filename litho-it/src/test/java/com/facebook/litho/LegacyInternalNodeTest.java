@@ -35,6 +35,7 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.Whitebox;
