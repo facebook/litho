@@ -111,6 +111,7 @@ import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
+import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 
 class Demos {
   companion object {
@@ -219,7 +220,9 @@ class Demos {
                         listOf(
                             SingleDemo(
                                 name = "Border Effects",
-                                component = BorderEffectsComponentKotlin()))),
+                                component = BorderEffectsComponentKotlin()),
+                            SingleDemo(
+                                name = "TreeProps", component = TreePropsExampleComponent()))),
                     DemoGrouping(
                         name = "Logging",
                         listOf(
