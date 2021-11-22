@@ -18,16 +18,20 @@ package com.facebook.litho.sections.widget;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnDataBound;
+import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function6;
+import kotlin.jvm.functions.Function8;
 
 @GroupSectionSpec
 class CollectionGroupSectionSpec {
@@ -72,5 +76,40 @@ class CollectionGroupSectionSpec {
   static void onRefresh(
       SectionContext c, @Prop(optional = true) Function0<kotlin.Unit> onPullToRefresh) {
     onPullToRefresh.invoke();
+  }
+
+  @OnDataRendered
+  static void onDataRendered(
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long monoTimestampMs,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo,
+      int globalOffset,
+      @Prop(optional = true)
+          Function8<
+                  ComponentContext,
+                  Boolean,
+                  Boolean,
+                  Long,
+                  Integer,
+                  Integer,
+                  ChangesInfo,
+                  Integer,
+                  Unit>
+              onDataRendered) {
+    if (onDataRendered != null) {
+      onDataRendered.invoke(
+          c,
+          isDataChanged,
+          isMounted,
+          monoTimestampMs,
+          firstVisibleIndex,
+          lastVisibleIndex,
+          changesInfo,
+          globalOffset);
+    }
   }
 }

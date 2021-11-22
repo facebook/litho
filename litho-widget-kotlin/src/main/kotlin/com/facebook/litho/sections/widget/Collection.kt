@@ -29,6 +29,7 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
+import com.facebook.litho.sections.ChangesInfo
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
@@ -49,6 +50,17 @@ typealias OnViewportChanged =
         totalCount: Int,
         firstFullyVisibleIndex: Int,
         lastFullyVisibleIndex: Int) -> Unit
+
+typealias OnDataRendered =
+    (
+        c: ComponentContext,
+        isDataChanged: Boolean,
+        isMounted: Boolean,
+        monoTimestampMs: Long,
+        firstVisibleIndex: Int,
+        lastVisibleIndex: Int,
+        changesInfo: ChangesInfo,
+        globalOffset: Int) -> Unit
 
 /**
  * A scrollable collection of components. A single [Component] can be added using
@@ -97,6 +109,7 @@ class Collection(
     // Avoid using recyclerEventsController. This is only to assist with transitioning from
     // Sections to Collections and will be removed in future.
     private val recyclerEventsController: RecyclerEventsController? = null,
+    private val onDataRendered: OnDataRendered? = null,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -131,6 +144,7 @@ class Collection(
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
+            .onDataRendered(onDataRendered)
             .build()
 
     return CollectionRecycler.create(context)
