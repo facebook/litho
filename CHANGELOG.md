@@ -4,7 +4,7 @@
 
 _release-date_
 
- * TBA
+ * **Breaking:** Rename 'LithoAssertions' to 'LegacyLithoAssertions'. (Use [fastmod](https://github.com/facebookincubator/fastmod) on existing codebase with the command: `fastmod 'LithoAssertions' 'LegacyLithoAssertions' --dir .`)
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.0...master).
 

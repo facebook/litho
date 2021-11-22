@@ -23,7 +23,7 @@ import com.facebook.litho.StateValue;
 import javax.annotation.CheckReturnValue;
 
 /** Common entry point for Litho assertions. */
-public class LithoAssertions {
+public class LegacyLithoAssertions {
   @CheckReturnValue
   public static ComponentAssert assertThat(ComponentContext c, Component component) {
     return ComponentAssert.assertThat(c, component);

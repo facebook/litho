@@ -17,7 +17,7 @@
 package com.facebook.litho.sections.widget;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 

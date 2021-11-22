@@ -26,7 +26,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.assertj.LithoAssertions;
+import com.facebook.litho.testing.assertj.LegacyLithoAssertions;
 import com.facebook.litho.testing.assertj.SubComponentExtractor;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestText;
@@ -53,7 +53,7 @@ public class LearningStateComponentSpecTest {
     final ComponentContext c = mComponentsRule.getContext();
     final Component component = LearningStateComponent.create(c).canClick(true).build();
 
-    LithoAssertions.assertThat(c, component)
+    LegacyLithoAssertions.assertThat(c, component)
         .has(
             SubComponentExtractor.subComponentWith(
                 c,
@@ -67,7 +67,7 @@ public class LearningStateComponentSpecTest {
     final ComponentContext c = mComponentsRule.getContext();
     final Component component = LearningStateComponent.create(c).canClick(false).build();
 
-    LithoAssertions.assertThat(c, component)
+    LegacyLithoAssertions.assertThat(c, component)
         .has(
             SubComponentExtractor.subComponentWith(
                 c,
@@ -82,6 +82,6 @@ public class LearningStateComponentSpecTest {
     count.set(0);
     LearningStateComponentSpec.incrementClickCount(count);
 
-    LithoAssertions.assertThat(count).valueEqualTo(1);
+    LegacyLithoAssertions.assertThat(count).valueEqualTo(1);
   }
 }

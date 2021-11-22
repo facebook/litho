@@ -19,11 +19,11 @@ for assertions that are run against either Component builders or Components.
 * [LithoViewAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewAssert.html)
 for assertions against mounted UI hierarchies.
 
-For convenience, [LithoAssertions.assertThat](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoAssertions.html)
+For convenience, [LegacyLithoAssertions.assertThat](pathname:///javadoc/com/facebook/litho/testing/assertj/LegacyLithoAssertions.html)
 can be statically imported. It hosts all the APIs of `ComponentAssert`, and `LithoViewAssert`.
 
 ```java
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 ```
 
 ## Example
@@ -88,7 +88,7 @@ public class LikersComponentTest {
 
 ## Testing component rendering
 
-`LithoAssertions` exposes AssertJ-style APIs to assert what get rendered by a component. These APIs
+`LegacyLithoAssertions` exposes AssertJ-style APIs to assert what get rendered by a component. These APIs
 will generally layout, mount and render the component before testing the assertions.
 
 ```java
@@ -106,7 +106,7 @@ public class LikersComponentTest {
         .likers(likers)
         .build();
 
-    LithoAssertions.assertThat(c , component).hasVisibleText("Jane, Mike");
+    LegacyLithoAssertions.assertThat(c , component).hasVisibleText("Jane, Mike");
   }
 
   @Test
@@ -120,25 +120,25 @@ public class LikersComponentTest {
         .build();
 
     final Drawable likeIcon = c.getResources().getDrawable(R.drawable.like);
-    LithoAssertions.assertThat(c , component).hasVisibleDrawable(likeIcon);
+    LegacyLithoAssertions.assertThat(c , component).hasVisibleDrawable(likeIcon);
   }
 }
 ```
 
 ## Additional assertions
 
-There are several more assertions that can be tested using LithoAssertions. To see the entire
-APIs please checkout its [JavaDoc here](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoAssertions.html).
+There are several more assertions that can be tested using LegacyLithoAssertions. To see the entire
+APIs please checkout its [JavaDoc here](pathname:///javadoc/com/facebook/litho/testing/assertj/LegacyLithoAssertions.html).
 These APIs test assertions on the view heirarchy created by the mounted Component. So asserting
 the presence of a Drawable in a Component will traverse the entire view hierarchy rendered by
-the Component. Following are some of the assertions provided by LithoAssertions:
+the Component. Following are some of the assertions provided by LegacyLithoAssertions:
 
-* `LithoAssertions#hasVisibleTextMatching()`
-* `LithoAssertions#doesNotHaveVisibleText()`
-* `LithoAssertions#willRender()`
-* `LithoAssertions#doesNotHaveVisibleDrawable()`
-* `LithoAssertions#hasContentDescription()`
-* `LithoAssertions#willNotRender()`
+* `LegacyLithoAssertions#hasVisibleTextMatching()`
+* `LegacyLithoAssertions#doesNotHaveVisibleText()`
+* `LegacyLithoAssertions#willRender()`
+* `LegacyLithoAssertions#doesNotHaveVisibleDrawable()`
+* `LegacyLithoAssertions#hasContentDescription()`
+* `LegacyLithoAssertions#willNotRender()`
 
 :::info
 When running Litho unit tests, be aware that the native library for Yoga must be loaded

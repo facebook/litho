@@ -26,7 +26,7 @@ import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADING;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
 import static org.assertj.core.api.Java6Assertions.assertThat;

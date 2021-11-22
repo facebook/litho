@@ -23,7 +23,7 @@ import static com.facebook.litho.LifecycleStep.ON_CREATE_INITIAL_STATE;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_TREE_PROP;
 import static com.facebook.litho.LifecycleStep.getSteps;
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.View;

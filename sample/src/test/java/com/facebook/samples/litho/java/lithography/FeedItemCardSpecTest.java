@@ -20,7 +20,7 @@ package com.facebook.samples.litho.java.lithography;
 
 import static com.facebook.litho.testing.assertj.ComponentConditions.inspectedTypeIs;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentDeepExtractor.deepSubComponentWith;
 import static org.assertj.core.api.Java6Assertions.allOf;
 import static org.assertj.core.data.Index.atIndex;

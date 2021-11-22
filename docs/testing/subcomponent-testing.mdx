@@ -74,14 +74,14 @@ public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() 
   final TruncatingComponent component = TruncatingComponent.create(c)
       .text("Mr. Meeseeks").build();
 
-  LithoAssertions.assertThat(c, component)
+  LegacyLithoAssertions.assertThat(c, component)
     .has(subComponentWith(c, textEquals("Mr. Meeseeks")));
 }
 ```
 
 #### Understanding the API usage
 
-* `LithoAssertions.assertThat(ComponentContext, Component)` will create and mount the layout.
+* `LegacyLithoAssertions.assertThat(ComponentContext, Component)` will create and mount the layout.
 * `has(ComponentContext, Condition)` tests if the component hierarchy passes the assertion of the
 Condition. This is a standard AssertJ API; checkout all the
 [default APIs here](http://joel-costigliola.github.io/assertj/assertj-core-conditions.html).
@@ -95,7 +95,7 @@ like; 'passes for a component of type Text with its text property set to "Mr. Me
 **The following is a more complex composition of similar assertions**
 
 ```java
-LithoAssertions.assertThat(c, component)
+LegacyLithoAssertions.assertThat(c, component)
     .has(allOf(
         subComponentWith(c, textEquals("Mr. Meeseeks")),
         subComponentWith(c, text(startsWith("Mr."))),
@@ -137,7 +137,7 @@ public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() 
   final ComponentContext c = mLithoViewRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c).text("Mr. Meeseeks").build();
 
-  LithoAssertions.assertThat(c, component)
+  LegacyLithoAssertions.assertThat(c, component)
     .has(subComponentWith(c, textEquals("Mr. Meeseeks")));
 }
 ```
@@ -170,7 +170,7 @@ public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() 
   final ComponentContext c = mLithoViewRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c).text("Mr. Meeseeks").build();
 
-  LithoAssertions.assertThat(c, component)
+  LegacyLithoAssertions.assertThat(c, component)
     .has(
       deepSubComponentWith(c, textEquals("Mr. Meeseeks"))
     );
@@ -212,7 +212,7 @@ public void whenTruncatingComponentIsRendered_shouldHaveBackground() {
   final ComponentContext c = mLithoViewRule.getContext();
   final TruncatingComponent component = TruncatingComponent.create(c).text("Mr. Meeseeks").build();
 
-  LithoAssertions.assertThat(c, component)
+  LegacyLithoAssertions.assertThat(c, component)
       .has(deepSubComponentWith(c, hasBackground()));
 }
 ```

@@ -18,7 +18,7 @@
 
 package com.facebook.samples.litho.java.lithography;
 
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;

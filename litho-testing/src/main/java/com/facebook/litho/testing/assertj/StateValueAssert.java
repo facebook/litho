@@ -26,8 +26,8 @@ import org.assertj.core.api.Java6Assertions;
  * <p>To create an instance of this class, invoke <code>
  * {@link StateValueAssert#assertThat(StateValue)}</code>.
  *
- * <p>Alternatively, use {@link LithoAssertions} which provides entry points to all Litho AssertJ
- * helpers.
+ * <p>Alternatively, use {@link LegacyLithoAssertions} which provides entry points to all Litho
+ * AssertJ helpers.
  *
  * @param <T> Type of the underlying state value.
  */
