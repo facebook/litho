@@ -88,16 +88,15 @@ class CollectionOnViewPortChangedTest {
     assertThat(firstFullyVisibleIndexValue.get()).isEqualTo(0)
     assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(1)
 
-    lithoViewRule.act {
-      val recyclerView =
-          ((lithoViewRule.findViewWithTag("collection_tag") as LithoView).getChildAt(0) as
-                  SectionsRecyclerView)
-              .recyclerView
+    val recyclerView =
+        ((lithoViewRule.findViewWithTag("collection_tag") as LithoView).getChildAt(0) as
+                SectionsRecyclerView)
+            .recyclerView
 
-      // Scroll by a distance less than the item height so the first and last items overlap the
-      // edges
-      recyclerView?.scrollBy(0, 50)
-    }
+    // Scroll by a distance less than the item height so the first and last items overlap the
+    // edges
+    recyclerView?.scrollBy(0, 50)
+    lithoViewRule.idle()
 
     assertThat(firstVisibleIndexValue.get()).isEqualTo(1)
     assertThat(lastVisibleIndexValue.get()).isEqualTo(3)

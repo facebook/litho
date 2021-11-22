@@ -711,13 +711,12 @@ class ComponentErrorBoundaryTest {
       }
     }
 
-    lithoViewRule.setRoot(UseErrorComponent()).attachToWindow().measure().act {
-      lithoViewRule.layout()
-    }
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
-    assertThat(errorList.get(0).message).isEqualTo("onCreateLayout crash")
+    assertThat(errorList[0].message).isEqualTo("onCreateLayout crash")
   }
 
   @Test
@@ -739,9 +738,8 @@ class ComponentErrorBoundaryTest {
       }
     }
 
-    lithoViewRule.setRoot(UseErrorComponent()).attachToWindow().measure().act {
-      lithoViewRule.layout()
-    }
+    lithoViewRule.render { UseErrorComponent() }
+    lithoViewRule.idle()
 
     val errorList = stateRef.get()
     assertThat(errorList.size).isEqualTo(1)
