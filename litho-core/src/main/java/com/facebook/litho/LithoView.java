@@ -753,8 +753,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
 
-      mLithoHostListenerCoordinator.enableVisibilityProcessing(this, mMountDelegateTarget);
-
       if (mMountDelegateTarget == null) {
         throw new IllegalStateException(
             "Cannot enable transitions extension or incremental mount extension without a MountDelegateTarget.");
@@ -774,6 +772,12 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
 
     if (componentTree != null) {
+      if (componentTree.isVisibilityProcessingEnabled()) {
+        mLithoHostListenerCoordinator.enableVisibilityProcessing(this, mMountDelegateTarget);
+      } else {
+        mLithoHostListenerCoordinator.disableVisibilityProcessing();
+      }
+
       if (componentTree.isIncrementalMountEnabled()) {
         mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
       } else {

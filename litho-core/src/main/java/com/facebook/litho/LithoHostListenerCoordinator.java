@@ -200,8 +200,7 @@ public class LithoHostListenerCoordinator {
 
   void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mVisibilityExtension != null) {
-      throw new IllegalStateException(
-          "Visibility processing has already been enabled on this coordinator");
+      return;
     }
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
@@ -211,6 +210,16 @@ public class LithoHostListenerCoordinator {
       VisibilityMountExtension.setRootHost(state, lithoView);
     }
     registerListener(mVisibilityExtension);
+  }
+
+  void disableVisibilityProcessing() {
+    if (mVisibilityExtension == null) {
+      return;
+    }
+
+    mMountDelegateTarget.unregisterMountDelegateExtension(mVisibilityExtension);
+    removeListener(mVisibilityExtension);
+    mVisibilityExtension = null;
   }
 
   void enableEndToEndTestProcessing(MountDelegateTarget mountDelegateTarget) {
