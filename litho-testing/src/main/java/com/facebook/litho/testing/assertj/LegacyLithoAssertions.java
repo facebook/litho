@@ -22,7 +22,10 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.StateValue;
 import javax.annotation.CheckReturnValue;
 
-/** Common entry point for Litho assertions. */
+/**
+ * @deprecated Use {@link LithoAssertions} which provides entry points to all Litho AssertJ helpers.
+ */
+@Deprecated
 public class LegacyLithoAssertions {
   @CheckReturnValue
   public static ComponentAssert assertThat(ComponentContext c, Component component) {

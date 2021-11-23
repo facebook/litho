@@ -31,7 +31,10 @@ import org.hamcrest.Matcher;
  *
  * <p>In most cases you will want to use the {@link #subComponentWith(ComponentContext, Condition)}
  * combinator.
+ *
+ * @deprecated Use {@link LithoViewAssert#containsComponent)} instead.
  */
+@Deprecated
 public class SubComponentExtractor implements Extractor<Component, List<InspectableComponent>> {
 
   private final ComponentContext mComponentContext;

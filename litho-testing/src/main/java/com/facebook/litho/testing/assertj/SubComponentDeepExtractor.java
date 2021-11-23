@@ -37,7 +37,10 @@ import org.assertj.core.description.TextDescription;
  *
  * <p>In most cases you will want to use the {@link #deepSubComponentWith(ComponentContext,
  * Condition)} combinator.
+ *
+ * @deprecated Use {@link LithoViewAssert#containsComponent)} instead.
  */
+@Deprecated
 public final class SubComponentDeepExtractor
     implements Extractor<Component, List<InspectableComponent>> {
 

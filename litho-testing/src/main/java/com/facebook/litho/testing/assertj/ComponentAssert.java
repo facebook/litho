@@ -45,9 +45,9 @@ import org.hamcrest.core.IsEqual;
  * {@link ComponentAssert#assertThat(ComponentContext, Component)}</code> or <code>
  * {@link ComponentAssert#assertThat(Component.Builder)}</code>.
  *
- * <p>Alternatively, use {@link LegacyLithoAssertions} which provides entry points to all Litho
- * AssertJ helpers.
+ * @deprecated Use {@link LithoAssertions} which provides entry points to all Litho AssertJ helpers.
  */
+@Deprecated
 public final class ComponentAssert extends AbstractAssert<ComponentAssert, Component> {
 
   private final ComponentContext mComponentContext;

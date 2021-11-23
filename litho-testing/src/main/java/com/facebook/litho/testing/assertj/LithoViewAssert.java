@@ -229,7 +229,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
    * Assert that the LithoView under test has the provided Component class once in the Component
    * Tree hierarchy.
    */
-  public LithoViewAssert containsComponent(Class<Component> clazz) {
+  public LithoViewAssert containsComponent(Class<? extends Component> clazz) {
     return containsComponent(1, clazz);
   }
 

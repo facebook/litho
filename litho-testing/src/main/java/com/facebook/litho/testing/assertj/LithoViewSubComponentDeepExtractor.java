@@ -32,7 +32,10 @@ import org.assertj.core.util.Preconditions;
  *
  * <p>Components are extracted in a depth-first way so that they match the hierarchy indices when
  * going from top to bottom.
+ *
+ * @deprecated Use {@link LithoViewAssert#containsComponent)} instead.
  */
+@Deprecated
 public final class LithoViewSubComponentDeepExtractor
     implements Extractor<LithoView, List<InspectableComponent>> {
 

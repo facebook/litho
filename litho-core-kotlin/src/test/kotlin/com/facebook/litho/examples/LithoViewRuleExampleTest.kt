@@ -35,6 +35,7 @@ import com.facebook.litho.px
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.ComponentConditions.typeIs
+import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.useState
@@ -47,6 +48,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
 import org.junit.Test
@@ -60,6 +62,7 @@ class LithoViewRuleExampleTest {
   // start_example
   @Rule @JvmField val lithoViewRule = LithoViewRule()
   // end_example
+
   @Test
   fun `verify InnerComponent appears when TestComponent is clicked`() {
     class InnerComponent : KComponent() {
@@ -72,8 +75,12 @@ class LithoViewRuleExampleTest {
       override fun ComponentScope.render(): Component? {
         val showChild = useState { false }
 
-        return Row(style = Style.viewTag("test_view").onClick { showChild.update(true) }) {
-          child(Text(text = "some_text_2"))
+        return Row(
+            style =
+                Style.width(100.px).height(100.px).viewTag("test_view").onClick {
+                  showChild.update(true)
+                }) {
+          child(Text("some_text2"))
           if (showChild.value) {
             child(InnerComponent())
           }
@@ -81,26 +88,25 @@ class LithoViewRuleExampleTest {
       }
     }
 
-    val lithoView = lithoViewRule.render { TestComponent() }
-    lithoViewRule.assertThat(lithoView).isNotNull
-    lithoViewRule.assertThat(lithoView).hasVisibleText("some_text_2")
+    lithoViewRule.render { TestComponent() }
+    assertThat(lithoViewRule.lithoView).isNotNull
     /** can use all of the assertions from: [LithoViewAssert] class */
-    val nullComponent = lithoViewRule.findComponent(InnerComponent::class.java)
-    lithoViewRule.assertThat(nullComponent).isNull()
+    val nullComponent = lithoViewRule.findComponent(InnerComponent::class)
+    assertThat(nullComponent).isNull()
     // act_example_start
     lithoViewRule.act { clickOnTag("test_view") }
     // act_example_end
 
-    val component = lithoViewRule.findComponent(InnerComponent::class.java)
-    lithoViewRule.assertThat(component).isNotNull
-    lithoViewRule.assertThat(component).hasVisibleText("some_text")
+    val component = lithoViewRule.findComponent(InnerComponent::class)
+    assertThat(component).isNotNull()
+    assertThat(lithoViewRule.lithoView).hasVisibleText("some_text")
   }
 
   @Test
   fun `verify InnerComponent appears when TestComponent is visible`() {
     class InnerComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(style = Style.height(100.dp).width(100.dp)) { child(Text(text = "some_text")) }
+        return Row(style = Style.height(100.dp).width(100.dp)) { child(Text(text = "some_text2")) }
       }
     }
 
@@ -126,9 +132,9 @@ class LithoViewRuleExampleTest {
     /** After the onVisible is called */
     // visibility_test_end
 
-    val component = lithoViewRule.findComponent(InnerComponent::class.java)
-    lithoViewRule.assertThat(component).isNotNull
-    lithoViewRule.assertThat(component).hasVisibleText("some_text")
+    val component = lithoViewRule.findComponent(InnerComponent::class)
+    assertThat(component).isNotNull()
+    assertThat(lithoViewRule.lithoView).hasVisibleText("some_text2")
   }
 
   @Test
@@ -152,15 +158,48 @@ class LithoViewRuleExampleTest {
         }
       }
     }
+    with(lithoViewRule) {
+      render { TestComponent() }
+      assertThat(findAllComponents(InnerComponent::class, DeepComponent::class))
+          .isNotEmpty
+          .haveExactly(2, typeIs(InnerComponent::class))
+          .haveExactly(3, typeIs(DeepComponent::class))
+    }
+  }
 
+  @Test
+  fun `verify subcomponents existence with contains`() {
+    class DeepComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Row(style = Style.height(100.dp).width(100.dp))
+      }
+    }
+    class InnerComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return DeepComponent()
+      }
+    }
+    class InnerSecondComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return DeepComponent()
+      }
+    }
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(InnerComponent())
+          child(InnerComponent())
+          child(DeepComponent())
+          child(InnerSecondComponent())
+        }
+      }
+    }
+    // contains_components_start
     lithoViewRule.render { TestComponent() }
-    val innerComponentsList = lithoViewRule.findAllComponents(InnerComponent::class)
-    val deepComponentsList = lithoViewRule.findAllComponents(DeepComponent::class)
-    lithoViewRule.assertThat(innerComponentsList).isNotEmpty
-    lithoViewRule.assertThat(deepComponentsList).isNotEmpty
-
-    lithoViewRule.assertThat(innerComponentsList).haveExactly(2, typeIs(InnerComponent::class))
-    lithoViewRule.assertThat(deepComponentsList).haveExactly(3, typeIs(DeepComponent::class))
+    assertThat(lithoViewRule.lithoView)
+        .containsComponent(2, InnerComponent::class)
+        .containsComponents(DeepComponent::class, InnerSecondComponent::class)
+    // contains_components_end
   }
 
   @Test
@@ -168,10 +207,9 @@ class LithoViewRuleExampleTest {
     // has_props_start
     lithoViewRule.render { TestComponent() }
     val component = lithoViewRule.findComponent(InnerComponent::class)
-    lithoViewRule.assertThat(component).isNotNull
+    assertThat(component).isNotNull()
 
-    lithoViewRule
-        .assertThat(component)
+    assertThat(component)
         .hasProps(InnerComponent::value, "some_value")
         .hasPropsMatching(InnerComponent::value, IsInstanceOf.instanceOf(String::class.java))
         .hasProps(InnerComponent::style, Style.height(100.dp).width(100.dp))
@@ -186,9 +224,9 @@ class LithoViewRuleExampleTest {
       }
     }
     // start_render_example
-    val lithoView = lithoViewRule.render { TestComponent() }
+    lithoViewRule.render { TestComponent() }
     // end_render_example
-    lithoViewRule.assertThat(lithoView).isNotNull
+    assertThat(lithoViewRule.lithoView).isNotNull()
     /** can use all of the assertions from: [LithoViewAssert] class */
   }
 
@@ -197,19 +235,19 @@ class LithoViewRuleExampleTest {
     // find_direct_component_start
     lithoViewRule.render { TestComponent() }
     val innerComponent = lithoViewRule.findDirectComponent(InnerComponent::class)
-    lithoViewRule.assertThat(innerComponent).willRender()
+    assertThat(innerComponent).isNotNull()
     // find_direct_component_end
     // find_non_direct_component_start
     val textComponent = lithoViewRule.findComponent(Text::class)
-    lithoViewRule.assertThat(textComponent).willRender()
+    assertThat(textComponent).isNotNull()
     // find_non_direct_component_end
   }
 
   @Test
   fun `verify assertions on lithoview `() {
     // lithoview_assertion_start
-    val testLithoView = lithoViewRule.render { TestComponent() }
-    lithoViewRule.assertThat(testLithoView).hasVisibleText("some_value")
+    lithoViewRule.render { TestComponent() }
+    assertThat(lithoViewRule.lithoView).hasVisibleText("some_value")
     /** can use all of the assertions from: [LithoViewAssert] class */
     // lithoview_assertion_end
   }
@@ -261,18 +299,18 @@ class LithoViewRuleExampleTest {
     lithoViewRule.render { TestComponent() }
     LithoStats.resetAllCounters()
     /** Find [Component] based on the text or [Component] class */
-    Assertions.assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNull()
-    Assertions.assertThat(lithoViewRule.findComponent(Text::class)).isNull()
+    assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNull()
+    assertThat(lithoViewRule.findComponent(Text::class)).isNull()
 
     /** perform interaction defined in [LithoViewRule] */
     lithoViewRule.act { clickOnContentDescription("row") }
 
     /** check number of state updates */
-    Assertions.assertThat(LithoStats.getComponentTriggeredAsyncStateUpdateCount()).isEqualTo(1)
+    assertThat(LithoStats.getComponentTriggeredAsyncStateUpdateCount()).isEqualTo(1)
 
     /** Find [Component] based on the text or [Component] class */
-    Assertions.assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNotNull()
-    Assertions.assertThat(lithoViewRule.findComponent(Text::class)).isNotNull()
+    assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNotNull()
+    assertThat(lithoViewRule.findComponent(Text::class)).isNotNull()
     // test_interaction_end
   }
 

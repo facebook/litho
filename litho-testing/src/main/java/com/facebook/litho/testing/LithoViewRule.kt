@@ -37,14 +37,11 @@ import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.testing.assertj.ComponentAssert
-import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
-import org.assertj.core.api.ListAssert
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -386,21 +383,6 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   fun idle() {
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
-  }
-
-  /** Exposes assertion methods from [ComponentAssert] for [Component]s. */
-  fun assertThat(component: Component?): ComponentAssert {
-    return ComponentAssert.assertThat(context, component)
-  }
-
-  /** Exposes assertion methods from [LithoViewAssert] for [LithoView]. */
-  fun assertThat(lithoView: LithoView): LithoViewAssert {
-    return LithoViewAssert.assertThat(lithoView)
-  }
-
-  /** Exposes assertion methods from [ListAssert] for [List<Component>]. */
-  fun assertThat(componentsList: List<Component>): ListAssert<Component> {
-    return ListAssert<Component>(componentsList)
   }
 
   /**
