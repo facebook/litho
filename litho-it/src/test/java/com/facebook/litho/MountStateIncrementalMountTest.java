@@ -48,6 +48,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 import androidx.recyclerview.widget.RecyclerView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DynamicComponentGroupSection;
@@ -61,6 +62,7 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterDrawable;
@@ -70,8 +72,6 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -80,46 +80,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class MountStateIncrementalMountTest {
 
   private ComponentContext mContext;
-  final boolean mUseMountDelegateTarget;
-  final boolean mDelegateToRenderCoreMount;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, false},
-          {true, false},
-          {true, true},
-        });
-  }
-
-  public MountStateIncrementalMountTest(
-      boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
-    mUseMountDelegateTarget = useMountDelegateTarget;
-    mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-  }
 
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(
-        new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
+    mLithoViewRule.useLithoView(new LithoView(mContext));
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
@@ -164,7 +143,7 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
 
-    if (mUseMountDelegateTarget) {
+    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
       // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
       // top.
       assertThat(child2.isMounted()).isFalse();
@@ -465,7 +444,7 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
 
-    if (mUseMountDelegateTarget) {
+    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
       // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
       // top.
       assertThat(lifecycleTracker2.isMounted()).isFalse();
@@ -799,7 +778,8 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    final int expectedVisibleBoundsChangedCalls = mDelegateToRenderCoreMount ? 1 : 2;
+    final int expectedVisibleBoundsChangedCalls =
+        ComponentsConfiguration.delegateToRenderCoreMount ? 1 : 2;
     verify(childView1, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
     verify(childView2, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
     verify(childView3, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
@@ -893,7 +873,8 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    final int expectedVisibleBoundsChangedCalls = mDelegateToRenderCoreMount ? 1 : 2;
+    final int expectedVisibleBoundsChangedCalls =
+        ComponentsConfiguration.delegateToRenderCoreMount ? 1 : 2;
     verify(childView1, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
     verify(childView2, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
     verify(childView3, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
@@ -1070,7 +1051,13 @@ public class MountStateIncrementalMountTest {
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
-    verify(lithoView, times(mUseMountDelegateTarget && !mDelegateToRenderCoreMount ? 2 : 1))
+    verify(
+            lithoView,
+            times(
+                ComponentsConfiguration.useExtensionsWithMountDelegate
+                        && !ComponentsConfiguration.delegateToRenderCoreMount
+                    ? 2
+                    : 1))
         .notifyVisibleBoundsChanged();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
@@ -1407,7 +1394,7 @@ public class MountStateIncrementalMountTest {
     // When using Litho's inc-mount, the exiting item will be mounted twice due to an issue with
     // the calculation there. Inc-mount-ext does not have this issue.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
-        .isEqualTo(mUseMountDelegateTarget ? 1 : 2);
+        .isEqualTo(ComponentsConfiguration.useExtensionsWithMountDelegate ? 1 : 2);
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);
@@ -1431,7 +1418,7 @@ public class MountStateIncrementalMountTest {
     // When using Litho's inc-mount, the item we previously expected to exit is still there, so
     // we don't expect a mount to occur.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
-        .isEqualTo(mUseMountDelegateTarget ? 1 : 0);
+        .isEqualTo(ComponentsConfiguration.useExtensionsWithMountDelegate ? 1 : 0);
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);
@@ -1472,7 +1459,7 @@ public class MountStateIncrementalMountTest {
     return new LithoViewFactory() {
       @Override
       public LithoView createLithoView(ComponentContext context) {
-        return new LithoView(context, mUseMountDelegateTarget, mDelegateToRenderCoreMount);
+        return new LithoView(context);
       }
     };
   }
