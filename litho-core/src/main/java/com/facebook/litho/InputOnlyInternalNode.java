@@ -549,7 +549,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   @Override
   public InternalNode child(@Nullable InternalNode child) {
-    if (child != null) {
+    if (child instanceof InputOnlyInternalNode) {
       addChildAt(child, mChildren.size());
     }
 
