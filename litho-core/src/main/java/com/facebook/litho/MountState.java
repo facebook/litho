@@ -2314,8 +2314,6 @@ class MountState implements MountDelegateTarget {
   public void unbindMountItem(MountItem mountItem) {
     final LayoutOutput output = getLayoutOutput(mountItem);
 
-    maybeUnsetViewAttributes(mountItem);
-
     unbindAndUnmountLifecycle(mountItem);
 
     applyUnbindBinders(output, mountItem);
@@ -2339,6 +2337,7 @@ class MountState implements MountDelegateTarget {
     if (item.isBound()) {
       unbindComponentFromContent(item, component, content);
     }
+    maybeUnsetViewAttributes(item);
     if (mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
       final LithoLayoutData layoutData = (LithoLayoutData) item.getRenderTreeNode().getLayoutData();
       component.unmount(context, content, layoutData.interStagePropsContainer);
