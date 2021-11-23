@@ -1,14 +1,14 @@
 # Changelog
 
-## Version 0.41.1-SNAPSHOT
+## Version 0.41.1
 
-_release-date_
+_2021-11-23_
 
  * **Breaking:** Rename 'LithoAssertions' to 'LegacyLithoAssertions'. (Use [fastmod](https://github.com/facebookincubator/fastmod) on existing codebase with the command: `fastmod 'LithoAssertions' 'LegacyLithoAssertions' --dir .`)
  * Upgrade: Bump Yoga version to `1.19.0`.
 
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.1...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.0...v0.41.1).
 
 
 ## Version 0.41.0
