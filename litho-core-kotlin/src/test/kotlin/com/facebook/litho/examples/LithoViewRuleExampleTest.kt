@@ -106,7 +106,7 @@ class LithoViewRuleExampleTest {
   fun `verify InnerComponent appears when TestComponent is visible`() {
     class InnerComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(style = Style.height(100.dp).width(100.dp)) { child(Text(text = "some_text2")) }
+        return Row(style = Style.height(100.dp).width(100.dp)) { child(Text(text = "some_text")) }
       }
     }
 
@@ -116,7 +116,7 @@ class LithoViewRuleExampleTest {
 
         return Row(
             style = Style.width(100.px).height(100.px).onVisible { showChild.update(true) }) {
-          child(Text("some_text"))
+          child(Text("some_other_text"))
           if (showChild.value) {
             child(InnerComponent())
           }
@@ -127,14 +127,14 @@ class LithoViewRuleExampleTest {
     // visibility_test_start
     lithoViewRule.setRoot(TestComponent()).attachToWindow().measure()
     /** Before the onVisible is called */
+    assertThat(lithoViewRule.lithoView).doesNotContainComponents(InnerComponent::class)
+    /** Layout component and idle, triggering visibility event and any async updates */
     lithoViewRule.layout()
     lithoViewRule.idle()
     /** After the onVisible is called */
+    assertThat(lithoViewRule.lithoView).containsComponent(InnerComponent::class)
     // visibility_test_end
-
-    val component = lithoViewRule.findComponent(InnerComponent::class)
-    assertThat(component).isNotNull()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("some_text2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("some_text")
   }
 
   @Test
