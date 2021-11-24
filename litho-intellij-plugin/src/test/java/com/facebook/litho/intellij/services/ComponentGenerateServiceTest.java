@@ -66,6 +66,22 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
         "InitialMountSpec.java");
   }
 
+  @Test
+  public void
+      getSpecModel_whenGroupSectionSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel()
+          throws IOException {
+    getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel(
+        "InitialGroupSectionSpec.java");
+  }
+
+  @Test
+  public void
+      getSpecModel_whenDiffSectionSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel()
+          throws IOException {
+    getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel(
+        "InitialDiffSectionSpec.java");
+  }
+
   private void
       getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel(
           String fileName) throws IOException {
