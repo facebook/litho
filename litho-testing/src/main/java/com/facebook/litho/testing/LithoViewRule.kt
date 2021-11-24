@@ -21,6 +21,7 @@ import android.os.Looper
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.Component
@@ -320,6 +321,46 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
   }
 
+  /**
+   * Finds the first [View] with the specified text in the rendered hierarchy, returning null if is
+   * doesn't exist.
+   */
+  fun findViewWithTextOrNull(@StringRes resourceId: Int): View? {
+    val viewTree = ViewTree.of(lithoView)
+    val text = getApplicationContext<Context>().resources.getString(resourceId)
+    return findViewWithPredicateOrNull(viewTree, ViewPredicates.hasVisibleText(text))
+  }
+
+  /**
+   * Finds the first [View] with the specified text in the rendered hierarchy, throwing if it
+   * doesn't exist.
+   */
+  fun findViewWithText(@StringRes resourceId: Int): View {
+    val text = getApplicationContext<Context>().resources.getString(resourceId)
+    return findViewWithTextOrNull(text)
+        ?: throw RuntimeException("Did not find view with text '$text'")
+  }
+  /**
+   * Finds the first [View] with the specified content description in the rendered hierarchy,
+   * returning null if is doesn't exist.
+   */
+  fun findViewWithContentDescriptionOrNull(@StringRes resourceId: Int): View? {
+    val viewTree = ViewTree.of(lithoView)
+    val contentDescription = getApplicationContext<Context>().resources.getString(resourceId)
+    return findViewWithPredicateOrNull(
+        viewTree, ViewPredicates.hasContentDescription(contentDescription))
+  }
+
+  /**
+   * Finds the first [View] with the specified content description in the rendered hierarchy,
+   * throwing if it doesn't exist.
+   */
+  fun findViewWithContentDescription(@StringRes resourceId: Int): View {
+    val contentDescription = getApplicationContext<Context>().resources.getString(resourceId)
+    return findViewWithContentDescriptionOrNull(contentDescription)
+        ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
+  }
+
   /** Returns a component of the given class only if it is a direct child of the root component */
   fun findDirectComponent(clazz: KClass<out Component>): Component? {
     return findDirectComponentInLithoView(lithoView, clazz)
@@ -422,6 +463,26 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
       }
       lithoView.performClick()
     }
+
+    /**
+     * Clicks on a [View] with the specified text in the rendered hierarchy, throwing if the view
+     * doesn't exists
+     */
+    fun clickOnText(@StringRes resourceId: Int): Boolean =
+        findViewWithText(resourceId).performClick()
+
+    /**
+     * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
+     * doesn't exists
+     */
+    fun clickOnTag(@StringRes resourceId: Int): Boolean = findViewWithTag(resourceId).performClick()
+
+    /**
+     * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
+     * doesn't exists
+     */
+    fun clickOnContentDescription(@StringRes resourceId: Int): Boolean =
+        findViewWithContentDescription(resourceId).performClick()
   }
 
   companion object {
