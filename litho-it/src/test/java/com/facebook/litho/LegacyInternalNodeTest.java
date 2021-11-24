@@ -36,13 +36,11 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
-import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaNode;
 import org.junit.Before;
@@ -443,50 +441,6 @@ public class LegacyInternalNodeTest {
   @Test
   public void testContextSpecificComponentAssertionPasses() {
     acquireInternalNode().assertContextSpecificStyleNotSet();
-  }
-
-  @Test
-  public void testDeepClone() {
-    final ComponentContext context = new ComponentContext(getApplicationContext());
-    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
-    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
-
-    LithoLayoutResult layout =
-        Layout.createAndMeasureComponent(
-                layoutStateContext,
-                context,
-                Column.create(context)
-                    .child(Row.create(context).child(Column.create(context)))
-                    .child(Column.create(context).child(Row.create(context)))
-                    .child(SolidColor.create(context).color(Color.RED))
-                    .build(),
-                makeSizeSpec(0, UNSPECIFIED),
-                makeSizeSpec(0, UNSPECIFIED))
-            .mResult;
-
-    DefaultInternalNode cloned = (DefaultInternalNode) layout.getInternalNode().deepClone();
-
-    assertThat(cloned).isNotNull();
-
-    assertThat(cloned).isNotSameAs(layout);
-
-    assertThat(cloned.getYogaNode()).isNotSameAs(layout.getYogaNode());
-
-    assertThat(cloned.getChildCount()).isEqualTo(layout.getChildCount());
-
-    assertThat(cloned.getChildAt(0).getTailComponentKey())
-        .isEqualTo(layout.getChildAt(0).getInternalNode().getTailComponentKey());
-    assertThat(cloned.getChildAt(1).getTailComponentKey())
-        .isEqualTo(layout.getChildAt(1).getInternalNode().getTailComponentKey());
-    assertThat(cloned.getChildAt(2).getTailComponentKey())
-        .isEqualTo(layout.getChildAt(2).getInternalNode().getTailComponentKey());
-
-    assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
-    assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());
-    assertThat(cloned.getChildAt(2).getYogaNode()).isNotSameAs(layout.getChildAt(2).getYogaNode());
-
-    assertThat(cloned.getChildAt(0).getChildAt(0)).isNotSameAs(layout.getChildAt(0).getChildAt(0));
-    assertThat(cloned.getChildAt(1).getChildAt(0)).isNotSameAs(layout.getChildAt(1).getChildAt(0));
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {

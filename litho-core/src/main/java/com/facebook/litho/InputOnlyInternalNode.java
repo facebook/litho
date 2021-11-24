@@ -1411,22 +1411,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return reconcile(layoutStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
   }
 
-  @Override
-  public InternalNode deepClone() {
-
-    // 1. Clone this layout.
-    final InputOnlyInternalNode copy = clone();
-    copy.mChildren = new ArrayList<>(1);
-
-    // 2. Deep clone all children and add it to the cloned YogaNode
-    final int count = getChildCount();
-    for (int i = 0; i < count; i++) {
-      copy.child(getChildAt(i).deepClone());
-    }
-
-    return copy;
-  }
-
   public void setNestedTreeHolder(@Nullable InputOnlyNestedTreeHolder holder) {
     mNestedTreeHolder = holder;
   }

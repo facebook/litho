@@ -1619,26 +1619,6 @@ public class DefaultInternalNode
   }
 
   @Override
-  public DefaultInternalNode deepClone() {
-
-    // 1. Clone this layout.
-    final DefaultInternalNode copy = clone();
-
-    // 2. Clone the YogaNode of this layout and set it on the cloned layout.
-    YogaNode node = mYogaNode.cloneWithoutChildren();
-    copy.mYogaNode = node;
-    node.setData(copy);
-
-    // 3. Deep clone all children and add it to the cloned YogaNode
-    final int count = getChildCount();
-    for (int i = 0; i < count; i++) {
-      copy.child(getChildAt(i).deepClone());
-    }
-
-    return copy;
-  }
-
-  @Override
   public String getSimpleName() {
     return mComponents.isEmpty() ? "<null>" : mComponents.get(0).getSimpleName();
   }
