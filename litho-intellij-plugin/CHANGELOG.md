@@ -2,8 +2,10 @@
 
 ## Version 1.8.5
 
-_2021-11-15_
+_2021-11-25_
 
+* New: Required props autocompletion for KComponents and Litho widget wrappers
+* New: DiffSectionSpec Litho Structure View
 * Fix: Re-arrange litho actions in 'New' context menu
 
 ## Version 1.8.4
