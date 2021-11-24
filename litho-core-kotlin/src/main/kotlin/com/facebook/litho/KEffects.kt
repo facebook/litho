@@ -39,7 +39,7 @@ import com.facebook.litho.annotations.Hook
  * subscribe with the new id.
  */
 @Hook
-fun ComponentScope.useEffect(vararg deps: Any, onAttach: () -> CleanupFunc?) {
+fun ComponentScope.useEffect(vararg deps: Any?, onAttach: () -> CleanupFunc?) {
   val entries = useEffectEntries ?: ArrayList()
   useEffectEntries = entries
   val uniqueId = "${context.globalKey}:${entries.size}"
@@ -92,7 +92,7 @@ private enum class EffectPersistence {
 private class UseEffectAttachable(
     private val id: String,
     private val persistence: EffectPersistence,
-    private val deps: Array<out Any>?,
+    private val deps: Array<out Any?>?,
     private val attachCallback: () -> CleanupFunc?
 ) : Attachable {
 

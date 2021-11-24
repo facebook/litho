@@ -131,6 +131,41 @@ class KEffectsTest {
   }
 
   @Test
+  fun useEffect_withNullableDeps_callbacksAreInvokedOnlyIfDepsChange() {
+    class UseEffectComponent(val useEffectCalls: MutableList<String>, val dep: Int?, val seq: Int) :
+        KComponent() {
+      override fun ComponentScope.render(): Component? {
+        useEffect(dep) {
+          useEffectCalls.add("attach $seq")
+          onCleanup { useEffectCalls.add("detach $seq") }
+        }
+        return Row()
+      }
+    }
+
+    val useEffectCalls = mutableListOf<String>()
+
+    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 0) }
+    assertThat(useEffectCalls).containsExactly("attach 0")
+    useEffectCalls.clear()
+
+    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 1) }
+    assertThat(useEffectCalls).isEmpty()
+    useEffectCalls.clear()
+
+    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = 1, seq = 2) }
+    assertThat(useEffectCalls).containsExactly("detach 0", "attach 2")
+    useEffectCalls.clear()
+
+    lithoViewRule.render { UseEffectComponent(useEffectCalls, dep = null, seq = 3) }
+    assertThat(useEffectCalls).containsExactly("detach 2", "attach 3")
+    useEffectCalls.clear()
+
+    lithoViewRule.release()
+    assertThat(useEffectCalls).containsExactly("detach 3")
+  }
+
+  @Test
   fun useEffect_withMultipleDeps_callbacksAreInvokedIfAnyDepsChange() {
     class UseEffectComponent(
         val useEffectCalls: MutableList<String>,
