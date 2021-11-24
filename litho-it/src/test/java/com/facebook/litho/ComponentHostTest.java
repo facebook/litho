@@ -899,7 +899,7 @@ public class ComponentHostTest {
   }
 
   private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
-    NodeInfo nodeInfo = new DefaultNodeInfo();
+    NodeInfo nodeInfo = new NodeInfo();
     nodeInfo.setContentDescription(contentDescription);
 
     MountItem mountItem =
@@ -927,7 +927,7 @@ public class ComponentHostTest {
   }
 
   private MountItem unmount(int index, View view, int flags) {
-    NodeInfo nodeInfo = new DefaultNodeInfo();
+    NodeInfo nodeInfo = new NodeInfo();
 
     MountItem mountItem =
         MountItemTestHelper.create(

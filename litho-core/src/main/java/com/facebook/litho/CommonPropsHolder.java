@@ -659,7 +659,7 @@ class CommonPropsHolder implements CommonProps {
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new DefaultNodeInfo();
+      mNodeInfo = new NodeInfo();
     }
 
     return mNodeInfo;

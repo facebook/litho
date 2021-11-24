@@ -41,13 +41,13 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class NodeInfoTest {
 
-  private DefaultNodeInfo mNodeInfo;
-  private DefaultNodeInfo mUpdatedNodeInfo;
+  private NodeInfo mNodeInfo;
+  private NodeInfo mUpdatedNodeInfo;
 
   @Before
   public void setup() {
-    mNodeInfo = new DefaultNodeInfo();
-    mUpdatedNodeInfo = new DefaultNodeInfo();
+    mNodeInfo = new NodeInfo();
+    mUpdatedNodeInfo = new NodeInfo();
   }
 
   @Test
@@ -386,27 +386,27 @@ public class NodeInfoTest {
     assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_SET_FALSE);
   }
 
-  private static void testFlagIsSetThenClear(DefaultNodeInfo nodeInfo, String flagName) {
+  private static void testFlagIsSetThenClear(NodeInfo nodeInfo, String flagName) {
     assertThat(isFlagSet(nodeInfo, flagName)).isTrue();
     clearFlag(nodeInfo, flagName);
     assertEmptyFlags(nodeInfo);
   }
 
-  private static boolean isFlagSet(DefaultNodeInfo nodeInfo, String flagName) {
-    int flagPosition = Whitebox.getInternalState(DefaultNodeInfo.class, flagName);
+  private static boolean isFlagSet(NodeInfo nodeInfo, String flagName) {
+    int flagPosition = Whitebox.getInternalState(NodeInfo.class, flagName);
     int flags = Whitebox.getInternalState(nodeInfo, "mPrivateFlags");
 
     return ((flags & flagPosition) != 0);
   }
 
-  private static void clearFlag(DefaultNodeInfo nodeInfo, String flagName) {
-    int flagPosition = Whitebox.getInternalState(DefaultNodeInfo.class, flagName);
+  private static void clearFlag(NodeInfo nodeInfo, String flagName) {
+    int flagPosition = Whitebox.getInternalState(NodeInfo.class, flagName);
     int flags = Whitebox.getInternalState(nodeInfo, "mPrivateFlags");
     flags &= ~flagPosition;
     Whitebox.setInternalState(nodeInfo, "mPrivateFlags", flags);
   }
 
-  private static void assertEmptyFlags(DefaultNodeInfo nodeInfo) {
+  private static void assertEmptyFlags(NodeInfo nodeInfo) {
     assertThat(((int) getInternalState(nodeInfo, "mPrivateFlags")) == 0).isTrue();
   }
 }

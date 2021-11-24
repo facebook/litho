@@ -846,7 +846,7 @@ public class DefaultInternalNode
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new DefaultNodeInfo();
+      mNodeInfo = new NodeInfo();
     }
 
     return mNodeInfo;

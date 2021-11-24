@@ -61,7 +61,7 @@ public class PreloadingUtils {
                         StateContainer.class,
                         CommonPropsHolder.class,
                         LayoutProps.class,
-                        DefaultNodeInfo.class,
+                        NodeInfo.class,
                         DelegatingEventHandler.class,
                         StateValue.class,
                         Output.class,
