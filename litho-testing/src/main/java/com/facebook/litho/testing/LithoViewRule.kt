@@ -335,11 +335,9 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
    * Finds the first [View] with the specified text in the rendered hierarchy, throwing if it
    * doesn't exist.
    */
-  fun findViewWithText(@StringRes resourceId: Int): View {
-    val text = getApplicationContext<Context>().resources.getString(resourceId)
-    return findViewWithTextOrNull(text)
-        ?: throw RuntimeException("Did not find view with text '$text'")
-  }
+  fun findViewWithText(@StringRes resourceId: Int): View =
+      findViewWithText(getApplicationContext<Context>().resources.getString(resourceId))
+
   /**
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * returning null if is doesn't exist.
@@ -355,11 +353,9 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
    * Finds the first [View] with the specified content description in the rendered hierarchy,
    * throwing if it doesn't exist.
    */
-  fun findViewWithContentDescription(@StringRes resourceId: Int): View {
-    val contentDescription = getApplicationContext<Context>().resources.getString(resourceId)
-    return findViewWithContentDescriptionOrNull(contentDescription)
-        ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
-  }
+  fun findViewWithContentDescription(@StringRes resourceId: Int): View =
+      findViewWithContentDescription(
+          getApplicationContext<Context>().resources.getString(resourceId))
 
   /** Returns a component of the given class only if it is a direct child of the root component */
   fun findDirectComponent(clazz: KClass<out Component>): Component? {
