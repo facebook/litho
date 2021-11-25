@@ -858,10 +858,10 @@ public class MountState implements MountDelegateTarget {
     final RenderUnit renderUnit = item.getRenderUnit();
     final Object content = item.getContent();
     final Object layoutData = item.getRenderTreeNode().getLayoutData();
-    renderUnit.detachExtensions(context, content, layoutData);
     if (mountDelegate != null) {
       mountDelegate.onUnbindItem(renderUnit, content, layoutData);
     }
+    renderUnit.detachExtensions(context, content, layoutData);
     item.setIsBound(false);
   }
 

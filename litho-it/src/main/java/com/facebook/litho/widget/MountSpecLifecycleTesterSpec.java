@@ -171,16 +171,29 @@ public class MountSpecLifecycleTesterSpec {
       ComponentContext c,
       View view,
       @Prop LifecycleTracker lifecycleTracker,
+      @Prop(optional = true) float defaultScale,
       @FromPrepare String outputOnPrepare,
       @FromMeasure String outputOnMeasure,
       @FromBoundsDefined String outputOnBoundsDefined) {
     lifecycleTracker.addStep(LifecycleStep.ON_BIND);
+    if (defaultScale != 0) {
+      view.setScaleX(defaultScale);
+      view.setScaleY(defaultScale);
+    }
   }
 
   @UiThread
   @OnUnbind
-  static void onUnbind(ComponentContext c, View view, @Prop LifecycleTracker lifecycleTracker) {
+  static void onUnbind(
+      ComponentContext c,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @Prop(optional = true) float defaultScale) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
+    if (defaultScale != 0) {
+      view.setScaleX(defaultScale);
+      view.setScaleY(defaultScale);
+    }
   }
 
   @OnAttached
