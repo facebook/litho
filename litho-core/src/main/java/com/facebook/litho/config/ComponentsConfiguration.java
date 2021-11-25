@@ -271,6 +271,13 @@ public class ComponentsConfiguration {
   /** Same as autoClearingMountContentPoolShouldClearExternalComponents but for HostComponent. */
   public static boolean autoClearingMountContentPoolShouldClearHostComponent = true;
 
+  /**
+   * This toggles whether Litho's MountState uses the position of the item in the host view to
+   * mount/unmount or uses the position in the LayoutState. The default is to use the position in
+   * the LayoutState.
+   */
+  public static boolean shouldUsePositionInParentForMounting = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

@@ -162,6 +162,9 @@ class MountState implements MountDelegateTarget {
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
+  public final boolean mShouldUsePositionInParent =
+      ComponentsConfiguration.shouldUsePositionInParentForMounting;
+
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
@@ -1156,7 +1159,21 @@ class MountState implements MountDelegateTarget {
           // recursively unmounted.
           unmountItem(i, mHostsByMarker);
           mPrepareMountStats.unmountedCount++;
-        } else if (newPosition != i) {
+
+        } else if (mShouldUsePositionInParent
+            && oldItem.getRenderTreeNode().getPositionInParent()
+                != newRenderTreeNode.getPositionInParent()) {
+          // If a MountItem for this id exists and the hostMarker has not changed but its position
+          // in the outputs array has changed we need to update the position in the Host to ensure
+          // the z-ordering.
+          oldItem
+              .getHost()
+              .moveItem(
+                  oldItem,
+                  oldItem.getRenderTreeNode().getPositionInParent(),
+                  newRenderTreeNode.getPositionInParent());
+          mPrepareMountStats.movedCount++;
+        } else if (!mShouldUsePositionInParent && newPosition != i) {
           // If a MountItem for this id exists and the hostMarker has not changed but its position
           // in the outputs array has changed we need to update the position in the Host to ensure
           // the z-ordering.
@@ -1282,7 +1299,9 @@ class MountState implements MountDelegateTarget {
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
     }
 
-    mount(host, index, content, item, node);
+    final int positionInParent = item.getRenderTreeNode().getPositionInParent();
+
+    mount(host, mShouldUsePositionInParent ? positionInParent : index, content, item, node);
     setViewAttributes(item);
 
     return item;
@@ -2299,7 +2318,9 @@ class MountState implements MountDelegateTarget {
         }
       }
 
-      unmount(host, index, content, item, output);
+      final int positionInParent = item.getRenderTreeNode().getPositionInParent();
+
+      unmount(host, mShouldUsePositionInParent ? positionInParent : index, content, item, output);
       unbindMountItem(item);
     }
 
