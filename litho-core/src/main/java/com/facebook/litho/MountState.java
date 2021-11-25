@@ -76,6 +76,7 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -2215,7 +2216,13 @@ class MountState implements MountDelegateTarget {
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
-    final MountItem item = getItemAt(index);
+    MountItem item = getItemAt(index);
+    if (item != null) {
+      unmountItem(item, hostsByMarker);
+    }
+  }
+
+  private void unmountItem(@Nullable MountItem item, LongSparseArray<ComponentHost> hostsByMarker) {
     final long startTime = System.nanoTime();
 
     // Already has been unmounted.
@@ -2223,15 +2230,18 @@ class MountState implements MountDelegateTarget {
       return;
     }
 
+    final RenderTreeNode node = item.getRenderTreeNode();
+    final RenderUnit<?> unit = node.getRenderUnit();
+    final long id = unit.getId();
+
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
-    if (mLayoutOutputsIds[index] == ROOT_HOST_ID) {
+    if (id == ROOT_HOST_ID) {
       maybeUnsetViewAttributes(item);
       return;
     }
 
-    final long layoutOutputId = mLayoutOutputsIds[index];
-    mIndexToItemMap.remove(layoutOutputId);
+    mIndexToItemMap.remove(id);
 
     final Object content = item.getContent();
 
@@ -2245,30 +2255,11 @@ class MountState implements MountDelegateTarget {
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
     // sub tree, that will still have mounted items. (Different sequence number on LayoutOutput id)
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
-      final ComponentHost host = (ComponentHost) content;
 
-      // Concurrently remove items therefore traverse backwards.
-      for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
-        final MountItem mountItem = host.getMountItemAt(i);
-        if (mIndexToItemMap.indexOfValue(mountItem) == -1) {
-          final LayoutOutput output = getLayoutOutput(mountItem);
-          final Component component = output.getComponent();
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR,
-              "UnmountItem:ChildNotFound",
-              "Child of mount item not found in MountSate mIndexToItemMap"
-                  + ", child_component: "
-                  + component.getSimpleName());
-        }
-        final long childLayoutOutputId =
-            mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
+      final Host host = (Host) content;
 
-        for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
-          if (mLayoutOutputsIds[mountIndex] == childLayoutOutputId) {
-            unmountItem(mountIndex, hostsByMarker);
-            break;
-          }
-        }
+      for (int i = 0; i < node.getChildrenCount(); i++) {
+        unmountItem(mIndexToItemMap.get(node.getChildAt(i).getRenderUnit().getId()), hostsByMarker);
       }
 
       if (!hasUnmountDelegate && host.getMountItemCount() > 0) {
@@ -2291,7 +2282,7 @@ class MountState implements MountDelegateTarget {
     final Component component = output.getComponent();
 
     if (component.hasChildLithoViews()) {
-      mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
+      mCanMountIncrementallyMountItems.delete(id);
     }
 
     if (isHostSpec(component)) {
@@ -2318,9 +2309,20 @@ class MountState implements MountDelegateTarget {
         }
       }
 
-      final int positionInParent = item.getRenderTreeNode().getPositionInParent();
+      if (mShouldUsePositionInParent) {
+        final int index = item.getRenderTreeNode().getPositionInParent();
+        unmount(host, index, content, item, output);
+      } else {
 
-      unmount(host, mShouldUsePositionInParent ? positionInParent : index, content, item, output);
+        // Find the index in the layout state to unmount
+        for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
+          if (mLayoutOutputsIds[mountIndex] == id) {
+            unmount(host, mountIndex, content, item, output);
+            break;
+          }
+        }
+      }
+
       unbindMountItem(item);
     }
 
