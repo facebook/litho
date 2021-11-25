@@ -63,7 +63,7 @@ import org.robolectric.Shadows.shadowOf
  *  @Rule @JvmField val lithoViewRule = LithoViewRule()
  *  @Test
  *  fun test() {
- *    val testLithoView = lithoViewRule.render { TestComponent() }
+ *    lithoViewRule.render { TestComponent() }
  *
  *    // or you can use setRoot/measure/layout for more fine-grained control
  *    val lithoViewTest = lithoViewRule.attachToWindow().setRoot(TestComponent()).measure().layout()
@@ -246,12 +246,11 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   }
 
   /** Sets the new root to render. */
-  fun render(componentFunction: ComponentScope.() -> Component): LithoView {
+  fun render(componentFunction: ComponentScope.() -> Component) {
     attachToWindow()
         .setRoot(with(ComponentScope(context)) { componentFunction() })
         .measure()
         .layout()
-    return lithoView
   }
 
   /**
