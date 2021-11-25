@@ -19,6 +19,7 @@ package com.facebook.litho.testing.assertj;
 import com.facebook.litho.Component;
 import com.facebook.litho.LithoView;
 import java.util.List;
+import kotlin.Pair;
 import kotlin.reflect.KProperty1;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.ListAssert;
@@ -49,14 +50,20 @@ public class LithoAssertions {
     }
 
     /** Assert that a given {@link Component} has a property equaling the provided value. */
-    public <T1, T2> LithoComponentAssert hasProps(KProperty1<T2, T1> property, T1 value) {
-      return hasPropsMatching(property, IsEqual.equalTo(value));
+    public <T1, T2> LithoComponentAssert hasProps(Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
+      for (Pair<KProperty1<T2, T1>, T1> pair : propsValuePairs) {
+        MatcherAssert.assertThat(
+            pair.getFirst().get((T2) actual), IsEqual.equalTo(pair.getSecond()));
+      }
+      return this;
     }
 
     /** Assert that a given {@link Component} has a property matching the provided matcher. */
     public <T1, T2> LithoComponentAssert hasPropsMatching(
-        KProperty1<T2, T1> property, Matcher<T1> matcher) {
-      MatcherAssert.assertThat(property.get((T2) actual), matcher);
+        Pair<KProperty1<T2, T1>, Matcher<T1>>... propsMatcherPairs) {
+      for (Pair<KProperty1<T2, T1>, Matcher<T1>> pair : propsMatcherPairs) {
+        MatcherAssert.assertThat(pair.getFirst().get((T2) actual), pair.getSecond());
+      }
       return this;
     }
   }

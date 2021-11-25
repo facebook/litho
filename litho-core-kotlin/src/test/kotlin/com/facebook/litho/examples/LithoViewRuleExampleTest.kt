@@ -210,9 +210,10 @@ class LithoViewRuleExampleTest {
     assertThat(component).isNotNull()
 
     assertThat(component)
-        .hasProps(InnerComponent::value, "some_value")
-        .hasPropsMatching(InnerComponent::value, IsInstanceOf.instanceOf(String::class.java))
-        .hasProps(InnerComponent::style, Style.height(100.dp).width(100.dp))
+        .hasProps(
+            InnerComponent::value to "some_value",
+            InnerComponent::style to Style.height(100.dp).width(100.dp))
+        .hasPropsMatching(InnerComponent::value to IsInstanceOf.instanceOf(String::class.java))
     // has_props_end
   }
 
