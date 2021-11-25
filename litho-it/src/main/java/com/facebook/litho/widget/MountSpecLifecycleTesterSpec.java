@@ -137,6 +137,7 @@ public class MountSpecLifecycleTesterSpec {
       ComponentContext context,
       View view,
       @Prop LifecycleTracker lifecycleTracker,
+      @Prop(optional = true) float defaultAlpha,
       @FromPrepare String outputOnPrepare,
       @FromMeasure String outputOnMeasure,
       @FromBoundsDefined String outputOnBoundsDefined) {
@@ -146,13 +147,22 @@ public class MountSpecLifecycleTesterSpec {
       StaticContainer.sLastCreatedView = null;
     }
     lifecycleTracker.addStep(LifecycleStep.ON_MOUNT);
+    if (defaultAlpha != 0) {
+      view.setAlpha(defaultAlpha);
+    }
   }
 
   @UiThread
   @OnUnmount
   static void onUnmount(
-      ComponentContext context, View view, @Prop LifecycleTracker lifecycleTracker) {
+      ComponentContext context,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @Prop(optional = true) float defaultAlpha) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNMOUNT);
+    if (defaultAlpha != 0) {
+      view.setAlpha(defaultAlpha);
+    }
   }
 
   @UiThread

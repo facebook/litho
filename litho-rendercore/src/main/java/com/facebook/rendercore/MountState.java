@@ -835,10 +835,10 @@ public class MountState implements MountDelegateTarget {
       final RenderUnit unit,
       final Object content,
       final @Nullable MountDelegate mountDelegate) {
-    unit.unmountExtensions(context, content, node.getLayoutData());
     if (mountDelegate != null) {
       mountDelegate.onUnmountItem(unit, content, node.getLayoutData());
     }
+    unit.unmountExtensions(context, content, node.getLayoutData());
   }
 
   private static void bindRenderUnitToContent(
