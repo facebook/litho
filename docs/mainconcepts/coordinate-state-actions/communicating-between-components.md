@@ -2,12 +2,17 @@
 id: communicating-between-components
 title: Communicating between Components
 ---
+
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+
 ### Dispatching an event from a child to the parent
 In the Spec API, communicating from a child to a parent is done through an `EventHandler` which handles a custom event type. The `EventHandler` is defined in the parent Component and passed as Prop to the child component.
 You can read in more detail about events in the [Events Overview](/docs/mainconcepts/coordinate-state-actions/events) page for Specs.
 
+<FbInternalOnly>
 In the Kotlin API, the parent can simply pass a [lambda](https://kotlinlang.org/docs/lambdas.html) as callback instead of a reference to a generated `EventHandler`.
 You can read in more detail about events in Kotlin [here](/docs/fb/kotlin/event-handling).
+</FbInternalOnly>
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentReceivesEventFromChildSpec.java start=start_demo end=end_demo
 ```
