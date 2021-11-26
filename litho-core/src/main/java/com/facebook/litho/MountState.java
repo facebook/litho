@@ -1130,8 +1130,6 @@ class MountState implements MountDelegateTarget {
       final int newPosition = newLayoutState.getPositionForId(mLayoutOutputsIds[i]);
       final @Nullable RenderTreeNode newRenderTreeNode =
           newPosition != -1 ? newLayoutState.getMountableOutputAt(newPosition) : null;
-      final @Nullable LayoutOutput newLayoutOutput =
-          newRenderTreeNode != null ? getLayoutOutput(newRenderTreeNode) : null;
 
       final MountItem oldItem = getItemAt(i);
       final boolean hasUnmountDelegate =
