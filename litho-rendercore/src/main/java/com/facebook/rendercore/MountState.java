@@ -735,14 +735,14 @@ public class MountState implements MountDelegateTarget {
     // sub tree, that will still have mounted items. (Different sequence number on RenderTreeNode
     // id)
     if (node.getChildrenCount() > 0) {
-      final Host host = (Host) content;
 
-      // Concurrently remove items therefore traverse backwards.
+      // unmount all children
       for (int i = 0; i < node.getChildrenCount(); i++) {
         unmountItemRecursively(node.getChildAt(i));
       }
 
-      if (!hasUnmountDelegate && host.getMountItemCount() > 0) {
+      // check if all items are unmount from the host
+      if (!hasUnmountDelegate && ((Host) content).getMountItemCount() > 0) {
         throw new IllegalStateException(
             "Recursively unmounting items from a ComponentHost, left"
                 + " some items behind maybe because not tracked by its MountState");
