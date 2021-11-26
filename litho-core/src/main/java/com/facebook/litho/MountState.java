@@ -466,14 +466,14 @@ class MountState implements MountDelegateTarget {
   @Override
   public void mount(RenderTree renderTree) {
     final LayoutState layoutState = (LayoutState) renderTree.getRenderTreeData();
-    mount(layoutState, true);
+    mount(layoutState);
   }
 
   /**
    * Mount only. Similar shape to RenderCore's mount. For extras such as incremental mount,
    * visibility outputs etc register an extension. To do: extract transitions logic from here.
    */
-  void mount(LayoutState layoutState, boolean processVisibilityOutputs) {
+  void mount(LayoutState layoutState) {
     assertMainThread();
 
     if (layoutState == null) {
