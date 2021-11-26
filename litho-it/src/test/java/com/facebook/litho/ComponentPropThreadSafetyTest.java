@@ -58,7 +58,7 @@ public class ComponentPropThreadSafetyTest {
 
   @Test
   public void testThreadSafeConcurrentPropComponentAccess() {
-    TempComponentsConfigurations.setUseStatelessComponent(false);
+    TempComponentsConfigurations.setImmutabilityFlags(false);
 
     // TODO(festevezga, T68365308) - SimpleMountSpecTester is not spy-able
     TestDrawableComponent testComponent =
@@ -84,12 +84,12 @@ public class ComponentPropThreadSafetyTest {
 
     verify(testComponent).makeShallowCopy();
 
-    TempComponentsConfigurations.restoreUseStatelessComponent();
+    TempComponentsConfigurations.restoreImmutabilityFlags();
   }
 
   @Test
   public void testThreadSafeConcurrentPropListComponentAccess() {
-    TempComponentsConfigurations.setUseStatelessComponent(false);
+    TempComponentsConfigurations.setImmutabilityFlags(false);
 
     // TODO(festevezga, T68365308) - SimpleMountSpecTester is not spy-able
     TestDrawableComponent testComponent =
@@ -118,6 +118,6 @@ public class ComponentPropThreadSafetyTest {
 
     verify(testComponent, times(19)).makeShallowCopy();
 
-    TempComponentsConfigurations.restoreUseStatelessComponent();
+    TempComponentsConfigurations.restoreImmutabilityFlags();
   }
 }

@@ -2529,7 +2529,7 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testWillRenderLayoutsOnce() {
-    TempComponentsConfigurations.setUseStatelessComponent(false);
+    TempComponentsConfigurations.setImmutabilityFlags(false);
 
     ComponentContext c = mLithoViewRule.getComponentTree().getContext();
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
@@ -2556,7 +2556,7 @@ public class LayoutStateCalculateTest {
 
     verify(componentSpy, times(1)).render((ComponentContext) any());
 
-    TempComponentsConfigurations.restoreUseStatelessComponent();
+    TempComponentsConfigurations.restoreImmutabilityFlags();
   }
 
   @Test

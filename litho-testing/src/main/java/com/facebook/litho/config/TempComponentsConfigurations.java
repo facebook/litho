@@ -64,6 +64,16 @@ public class TempComponentsConfigurations {
         ComponentsConfiguration.create().reuseInternalNodes(value));
   }
 
+  public static void setImmutabilityFlags(boolean value) {
+    ComponentsConfiguration.useStatelessComponent = value;
+    ComponentsConfiguration.reuseInternalNodes = value;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create()
+            .useStatelessComponents(value)
+            .reuseInternalNodes(value)
+            .useInputOnlyInternalNodes(value));
+  }
+
   public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = value;
   }
@@ -78,6 +88,15 @@ public class TempComponentsConfigurations {
     ComponentsConfiguration.reuseInternalNodes = originalReuseInternalNodes;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
         ComponentsConfiguration.create().reuseInternalNodes(originalReuseInternalNodes));
+  }
+
+  public static void restoreImmutabilityFlags() {
+    ComponentsConfiguration.useStatelessComponent = originalUseStatelessComponent;
+    ComponentsConfiguration.reuseInternalNodes = originalReuseInternalNodes;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create()
+            .useStatelessComponents(originalUseStatelessComponent)
+            .reuseInternalNodes(originalReuseInternalNodes));
   }
 
   public static void setDelegateToRenderCoreMount(boolean value) {
