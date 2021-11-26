@@ -22,41 +22,25 @@ import static com.facebook.litho.LithoRenderUnit.getComponentContext;
 
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.Text;
-import java.util.Arrays;
-import java.util.Collection;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LegacyComponentGlobalKeyTest {
   private ComponentContext mContext;
-  private final boolean useStatelessComponent;
-  private final boolean mUseStatelessComponentDefault;
-
-  public LegacyComponentGlobalKeyTest(boolean useStatelessComponent) {
-    this.useStatelessComponent = useStatelessComponent;
-    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
-  }
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
-  public static Collection data() {
-    return Arrays.asList(new Object[][] {{false}, {true}});
-  }
 
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
-    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -223,6 +207,5 @@ public class LegacyComponentGlobalKeyTest {
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
   }
 }

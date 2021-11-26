@@ -38,57 +38,32 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecConditionalReParenting;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class MountStateRemountInPlaceTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
-  private final boolean useStatelessComponent;
-  private final boolean useStatelessComponentDefault;
-
   private ComponentContext mContext;
   private TestComponentsLogger mComponentsLogger;
 
-  public MountStateRemountInPlaceTest(boolean useStatelessComponent) {
-    this.useStatelessComponent = useStatelessComponent;
-    useStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
-  }
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
-  }
-
   @Before
   public void setup() {
-    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useStatelessComponent = useStatelessComponentDefault;
   }
 
   @Test

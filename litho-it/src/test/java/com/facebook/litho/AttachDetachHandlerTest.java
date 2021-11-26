@@ -22,56 +22,28 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.AttachDetachTester;
 import com.facebook.litho.widget.AttachDetachTesterSpec;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class AttachDetachHandlerTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
-
-  private boolean mOriginalUseStatelessComponent;
-  private final boolean mUseStatelessComponent;
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
-  public static Collection data() {
-    return Arrays.asList(new Object[][] {{false}, {true}});
-  }
-
-  public AttachDetachHandlerTest(boolean useStatelessComponent) {
-    mUseStatelessComponent = useStatelessComponent;
-  }
-
-  @Before
-  public void setup() {
-    mOriginalUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.useStatelessComponent = mOriginalUseStatelessComponent;
-  }
 
   @Test
   public void component_setRootWithLayout_onAttachedIsCalled() {
