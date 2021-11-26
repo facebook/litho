@@ -615,14 +615,13 @@ public class MountState implements MountDelegateTarget {
 
   // The content might be null because it's the LayoutSpec for the root host
   // (the very first RenderTreeNode).
-  private MountItem mountContentInHost(
-      int index, Object content, Host host, RenderTreeNode renderTreeNode) {
-    final MountItem item = new MountItem(renderTreeNode, host, content);
+  private MountItem mountContentInHost(Object content, Host host, RenderTreeNode node) {
+    final MountItem item = new MountItem(node, host, content);
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
-    mIdToMountedItemMap.put(renderTreeNode.getRenderUnit().getId(), item);
-    host.mount(renderTreeNode.getPositionInParent(), item);
+    mIdToMountedItemMap.put(node.getRenderUnit().getId(), item);
+    host.mount(node.getPositionInParent(), item);
 
     return item;
   }
@@ -697,7 +696,7 @@ public class MountState implements MountDelegateTarget {
     mountRenderUnitToContent(mMountDelegate, mContext, renderTreeNode, renderUnit, content);
 
     // 4. Mount the content into the selected host.
-    final MountItem item = mountContentInHost(index, content, host, renderTreeNode);
+    final MountItem item = mountContentInHost(content, host, renderTreeNode);
 
     // 5. Call attach binding functions
     bindRenderUnitToContent(mMountDelegate, mContext, item);
