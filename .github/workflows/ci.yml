@@ -115,8 +115,9 @@ jobs:
 
   deploy-check:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
-    needs: [tests]
-    if: ${{ github.event_name != 'pull_request' && github.repository == 'facebook/litho' }}
+#    needs: [tests]
+    needs: [build]
+#    if: ${{ github.event_name != 'pull_request' && github.repository == 'facebook/litho' }}
     runs-on: ubuntu-latest
 
     outputs:
@@ -128,7 +129,7 @@ jobs:
       - name: Check if SNAPSHOT version
         id: check_snapshot
         run: |
-          echo ::set-output name=IS_SNAPSHOT::`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties)`
+          echo ::set-output name=IS_SNAPSHOT::`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties`
 
   deploy:
     needs: [deploy-check]
@@ -158,5 +159,11 @@ jobs:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
+      - name: Update gradle.properties
+        run: echo -e "mavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}" >> gradle.properties
+
       - name: Publish Snapshots
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew uploadArchives --stacktrace
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew publish --no-daemon --no-parallel --info --stacktrace
+
+      - name: Release and close
+        run: ./gradlew closeAndReleaseRepository
