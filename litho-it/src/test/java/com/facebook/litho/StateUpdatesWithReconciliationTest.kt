@@ -21,6 +21,7 @@ import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
@@ -32,47 +33,19 @@ import com.facebook.litho.widget.Text
 import java.util.ArrayList
 import org.assertj.core.api.Java6Assertions
 import org.assertj.core.api.Java6Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.LooperMode
 import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner::class)
-class StateUpdatesWithReconciliationTest(
-    private val useStatelessComponent: Boolean,
-    private val reuseInternalNodes: Boolean
-) {
-  private val originalValueOfReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes
-  private val originalValueOfUseStatelessComponent = ComponentsConfiguration.useStatelessComponent
-
-  companion object {
-    @ParameterizedRobolectricTestRunner.Parameters(
-        name = "useStatelessComponent={0}, reuseInternalNodes={1}")
-    @JvmStatic
-    fun data(): List<Array<Boolean>> {
-      return mutableListOf(arrayOf(false, false), arrayOf(true, false), arrayOf(true, true))
-    }
-  }
+@RunWith(LithoTestRunner::class)
+class StateUpdatesWithReconciliationTest() {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
   @JvmField @Rule var lithoViewRule = LithoViewRule()
-  @Before
-  fun setup() {
-    ComponentsConfiguration.reuseInternalNodes = reuseInternalNodes
-    ComponentsConfiguration.useStatelessComponent = reuseInternalNodes || useStatelessComponent
-  }
-
-  @After
-  fun after() {
-    ComponentsConfiguration.reuseInternalNodes = originalValueOfReuseInternalNodes
-    ComponentsConfiguration.useStatelessComponent = originalValueOfUseStatelessComponent
-  }
 
   @Test
   fun `should not reuse layout when root with new props is set`() {

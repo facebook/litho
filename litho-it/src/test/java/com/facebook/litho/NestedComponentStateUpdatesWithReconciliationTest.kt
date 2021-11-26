@@ -16,53 +16,27 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Java6Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.LooperMode
 import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner::class)
-class NestedComponentStateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean) {
+@RunWith(LithoTestRunner::class)
+class NestedComponentStateUpdatesWithReconciliationTest() {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
   @JvmField @Rule var lithoViewRule = LithoViewRule()
-
-  private val originalValueOfReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes
-  private val originalValueOfUseStatelessComponent = ComponentsConfiguration.useStatelessComponent
-
-  companion object {
-    @ParameterizedRobolectricTestRunner.Parameters(name = "reuseInternalNodes={0}")
-    @JvmStatic
-    fun data(): List<Array<Boolean>> {
-      return mutableListOf(arrayOf(true), arrayOf(false))
-    }
-  }
-
-  @Before
-  fun setup() {
-    ComponentsConfiguration.reuseInternalNodes = reuseInternalNodes
-    ComponentsConfiguration.useStatelessComponent = reuseInternalNodes
-  }
-
-  @After
-  fun after() {
-    ComponentsConfiguration.reuseInternalNodes = originalValueOfReuseInternalNodes
-    ComponentsConfiguration.useStatelessComponent = originalValueOfUseStatelessComponent
-  }
 
   /*
 
