@@ -1,15 +1,18 @@
 ---
 id: custom-layout
-title: Custom Layout
+title: Manual Measurement
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout.
+Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout logic.
 
-Litho provides a custom layout API for accessing size information while the [`ComponentTree`](pathname:///javadoc/com/facebook/litho/ComponentTree.html) is being created and measured, as well as the possibility to measure a component in isolation.
+Litho provides a manual component measurement API for determining component sizes during layout creation, allowing developers to implement dynamic logic based on component sizes.
+
+<a name="warning" />
 
 :::caution IMPORTANT
- This API comes with a **non-negligible** performance overhead. Therefore, it is advisable to only use it when it is absolutely necessary.
+ This API comes with a **non-negligible** performance overhead.
+ Litho is built to optimise when a measure occurs for any component. Measuring a component with this API, ends up performing additional measurements to the ones intrinsic to Litho's lifecycle. Measurement can become a heavy operation, especially with more complex layouts, so be sure to only utilize this API when absolutely necessary.
 :::
 
 ## Use cases
@@ -18,8 +21,10 @@ Litho provides a custom layout API for accessing size information while the [`Co
 
 * **Children of a container have to be absolutely positioned manually based on their/parent size.** Yoga can absolutely position children in a parent. However, the position itself might depend on the child sizes after being measured using the parent size constraints. Margins or paddings need to be manually taken into account if required.
 
+* **Usage of this API should only be used during layout creation.** It's generally a mistake to do so otherwise, and may cause unintended behaviour.
+
 ## Size constraints
-Before diving into the API, you should be familiar with how the [`onMeasure`](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View` and what a [`MeasureSpec`](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an equivalent concept called [`SizeSpec`](pathname:///javadoc/com/facebook/litho/SizeSpec.html).
+Before diving into the API, you should be familiar with how the [`onMeasure`](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View` and what a [`MeasureSpec`](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an analogous concept called [`SizeSpec`](pathname:///javadoc/com/facebook/litho/SizeSpec.html).
 
 Similar to the Android `MeasureSpec` equivalent, Litho's `SizeSpec` is composed of a size and a mode. The possible modes, same as for `MeasureSpec`, are: `UNSPECIFIED`, `EXACTLY` and `AT_MOST`.
 
@@ -47,112 +52,23 @@ final int textComponentHeight = outputSize.height;
 ```
 
 ## SizeSpec information during layout
-During layout creation, the API can provide information about the `SizeSpecs` a component is going to be measured with. To access this information, the [`@OnCreateLayoutWithSizeSpec`](pathname:///javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec.html) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard ComponentContext, are two more integers representing the width spec and the height spec.
+During layout creation, the API can provide information about the `SizeSpec`s a component is going to be measured with. To access this information, the [`@OnCreateLayoutWithSizeSpec`](pathname:///javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec.html) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard `ComponentContext`, are two more integers representing the width spec and the height spec.
+
+Similar to Android's `MeasureSpec`, you can resolve the exact size of a width or height spec integers by using `SizeSpec.getSize(widthSpec)`, and the mode with `SizeSpec.getMode(widthSpec)`.
 
 In the following example, a `Text` component is measured to check if the given text fits in the available space. An `Image` component is otherwise used.
 
-```java
-@LayoutSpec
-class MyComponentSpec {
-
-  @OnCreateLayoutWithSizeSpec
-  static Component onCreateLayoutWithSizeSpec(ComponentContext c, int widthSpec, int heightSpec) {
-
-    final Component textComponent =
-        Text.create(c).textSizeSp(16).text("Some text to measure.").build();
-
-    // UNSPECIFIED sizeSpecs will measure the text as being one line only,
-    // having unlimited width.
-    final Size textOutputSize = new Size();
-    textComponent.measure(
-        c,
-        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
-        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
-        textOutputSize);
-
-    // Small component to use in case textComponent doesn’t fit within
-    // the current layout.
-    final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
-
-    // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
-    final int layoutWidth = SizeSpec.getSize(widthSpec);
-    final boolean textFits = (textOutputSize.width <= layoutWidth);
-
-    return textFits ? textComponent : imageComponent;
-  }
-}
+``` java file=sample/src/main/java/com/facebook/samples/litho/java/documentation/LongTextReplacerComponentSpec.java start=start_example end=end_example
 ```
 
-## Optimizing OnCreateLayoutWithSizeSpec
+## Kotlin Integration
 
-`@CreateLayoutWithSizeSpec` can be called more than once in cases where Yoga calls measure.  If the previous layout can be used for the new size spec this call can be avoided. Implementing the `OnShouldCreateLayoutWithNewSizeSpec` allows the spec to specify when the previous layout can be reused.
+Unfortunately, `KComponent`s do not currently support any analogous behaviour of `@OnCreateLayoutWithSizeSpec`. The good news is that such support should be added soon. For now, however, if your product requirements demand integration with this API, then the simple workaround would be to define the `KComponent` with width & height specs as props, then wrap the `KComponent` in a `LayoutSpec` with an `@OnCreateLayoutWithSizeSpec` method that delegates the values to your `KComponent`.
 
-[`@OnShouldCreateLayoutWithNewSizeSpec`](pathname:///javadoc/com/facebook/litho/annotations/OnShouldCreateLayoutWithNewSizeSpec.html) indicates that the annotated method will be called when the component checks if it can use the previous layout with a new size spec. This is used in conjunction with `@OnCreateLayoutWithSizeSpec`. The annotated method must have the following signature:
-
-```java
-@OnShouldCreateLayoutWithNewSizeSpec
-static boolean onShouldCreateLayoutWithNewSizeSpec(
-    ComponentContext c,
-    int newWidthSpec,
-    int newHeightSpec, ...)
+Here's a `KComponent` that uses width & height specs as props (based on the Java example above):
+``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LongTextReplacerKComponent.kt start=start_example end=end_example
 ```
 
-The annotated method should return `true` if and only if the Layout Spec should create a new layout for the new size spec. If the method returns `false` then the Component will use the previous layout. In addition,  outputs can be set in `onCreateLayoutWithSizeSpec` which can be referenced in `onShouldCreateLayoutWithNewSizeSpec` method as follows:
-
-```java
-@LayoutSpec
-class MyComponentSpec {
-
-  @OnCreateLayoutWithSizeSpec
-  static Component onCreateLayoutWithSizeSpec(
-      ComponentContext c,
-      int widthSpec,
-      int heightSpec,
-      Output<Integer> textWidth,
-      Output<Boolean> didItFit) {
-
-    final Component textComponent =
-        Text.create(c).textSizeSp(16).text("Some text to measure.").build();
-
-    // UNSPECIFIED sizeSpecs will measure the text as being one line only,
-    // having unlimited width.
-    final Size textOutputSize = new Size();
-    textComponent.measure(
-        c,
-        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
-        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
-        textOutputSize);
-
-    // Small component to use in case textComponent doesn’t fit within
-    // the current layout.
-    final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
-
-    // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
-    final int layoutWidth = SizeSpec.getSize(widthSpec);
-    final boolean textFits = (textOutputSize.width <= layoutWidth);
-
-    // set the outputs
-    textWidth.set(textOutputSize.width);
-    didItFit.set(textFits);
-
-    return textFits ? textComponent : imageComponent;
-  }
-
-  @OnShouldCreateLayoutWithNewSizeSpec
-  static boolean onShouldCreateLayoutWithNewSizeSpec(
-      ComponentContext c,
-      int newWidthSpec,
-      int newHeightSpec,
-      @FromPreviousCreateLayout int textWidth,
-      @FromPreviousCreateLayout boolean didItFit) {
-
-    final int newLayoutWidth = SizeSpec.getSize(newWidthSpec);
-    final boolean doesItStillFit = (textWidth <= newLayoutWidth);
-
-    // false if it still fits or if still doesn't fit
-    return doesItStillFit ^ didItFit;
-  }
-}
+And here's an example of what a wrapper `LayoutSpec` would look like that uses this `KComponent`:
+``` kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LongTextReplacerWrapperComponentSpec.kt start=start_example end=end_example
 ```
-
-<img src={useBaseUrl("/images/flow-chart-v0.22.1-layout-with-size-spec.svg")} alt="Layout Spec lifecycle flowchart" className="white-background" />

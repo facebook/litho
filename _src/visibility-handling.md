@@ -145,6 +145,8 @@ This is an implementation of `LithoLifecycleProvider` which has the state tied t
 
 You can use `AOSPLithoLifecycleProvider` when you want to associate a LithoView's visibility status with the lifecycle of a Fragment, Activity or custom LifecycleOwner, when `resumed` means the LithoView is on screen and `paused` means the LithoView is hidden.
 
+Click [here](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleDelegateActivity.java#L79) to see an example in the litho sample app.
+
 ```java
 final AOSPLithoLifecycleProvider lifecycleProvider = new AOSPLithoLifecycleProvider(fragment);
 ```
@@ -152,11 +154,11 @@ final AOSPLithoLifecycleProvider lifecycleProvider = new AOSPLithoLifecycleProvi
 #### Handling custom state changes: LithoLifecycleProviderDelegate
 `AOSPLithoLifecycleProvider` covers the most common cases, but there are scenarios where a LifecycleOwner's state doesn't match what we see on screen.
 Such examples are:
-- Fragments in a ViewPager, where the previous and next visible Fragments are prepared and in a `resumed` state before they're actually visible.
-- Adding a Fragment on top of another Fragment doesn't move the first Fragment to a `paused` state, and there's no indication that it's no longer visible to the user.
+- Fragments in a ViewPager, where the previous and next visible Fragments are prepared and in a `resumed` state before they're actually visible. Click [here](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/lifecycle/ScreenSlidePageFragment.java) to see an example in the litho sample app.
+
+- Adding a Fragment on top of another Fragment doesn't move the first Fragment to a `paused` state, and there's no indication that it's no longer visible to the user. Click [here](https://github.com/facebook/litho/blame/master/sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleFragment.java) to see an example in the litho sample app.
 
 When you need to handle these state changes manually, you can use `LithoLifecycleProviderDelegate`, a generic `LithoLifecycleProvider` implementation, to change state when appropriate.
-
 
 ```java
 final LithoLifecycleProviderDelegate lifecycleProvider = new LithoLifecycleProviderDelegate();
@@ -169,8 +171,6 @@ The Litho APIs for writing Lists (Sections, VerticalScrollSpec, HorizontalScroll
 - a ComponentTree for each item in the List (associated with a LithoView child of the root LithoView)
 
 If the root LithoView is subscribed to listen to a `LithoLifecycleProvider`, then all nested ComponentTrees/child LithoViews will listen to the outer `LithoLifecycleProvider` too and will receive the correct information about visibility/destroyed state.
-
-Demo apps for showcasing `LithoLifecycleProvider` common case usages are coming soon to our sample app!
 
 :::info
 The section below contains information about deprecated APIs. Please consider using `LithoLifecycleProvider` for manually informing a `LithoView` about visibility changes.

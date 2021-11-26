@@ -15,7 +15,7 @@ With incremental mount enabled (which it is by default), the `LithoView` will on
 
 ![Incremental Mount Diagram](/images/incremental-mount.png)
 
-If you are using the Litho [async RecyclerView](/docs/recycler-component) support, the framework will seamlessly perform incremental mount.
+If you are using `RecyclerCollectionComponent`, the framework will seamlessly perform incremental mount.
 
 ## Manual incremental mount
 

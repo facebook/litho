@@ -15,7 +15,7 @@ In this initial step, you'll display a view with "Hello World!".
 
 First, initialize `SoLoader` in your `Application` class:
 
-```java file=../sample-barebones/src/main/java/com/facebook/samples/lithobarebones/SampleApplication.java start=app_setup_start end=app_setup_end
+```java file=sample-barebones/src/main/java/com/facebook/samples/lithobarebones/SampleApplication.java start=app_setup_start end=app_setup_end
 ```
 
 Behind the scenes, Litho uses [Yoga](https://yogalayout.com/docs/) for layout. Yoga has native dependencies and [SoLoader](https://github.com/facebook/SoLoader) is brought in to take care of loading those. Initializing `SoLoader` here ensures that you're not referencing unloaded libraries later on.

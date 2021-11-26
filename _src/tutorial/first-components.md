@@ -11,7 +11,7 @@ extend it to accept **props** and get familiar with building layouts with Flexbo
 To display a "Hello World!" text on the screen with Litho you need to integrate Litho component
 hierarchy into your View hierarchy.
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/onboarding/HelloWorldActivity.java start=start_example end=end_example
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/HelloWorldActivity.java start=start_example end=end_example
 ```
 
 #### Key Points:
@@ -29,12 +29,12 @@ Welcome to your first Litho component spec! Previously you used a built-in `Text
 you'll define your own. Like Text, your new component can also take **props**. Props configure
 a component.
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/onboarding/FirstComponentSpec.java start=start end=end
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/FirstComponentSpec.java start=start end=end
 ```
 
 To use your component, you can just replace the Text component from above with your component,
 setting the `name` prop:
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/onboarding/FirstComponentSpecActivity.java start=start_example end=end_example
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/FirstComponentSpecActivity.java start=start_example end=end_example
 ```
 
 #### Key Points:
@@ -63,13 +63,13 @@ and they are used to arrange children vertically and horizontally, respectively.
 
 With their help a `Post` component that will render the UI of an Instagram post will look like that:
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/onboarding/PostSpec.java start=start_example end=end_example
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/PostSpec.java start=start_example end=end_example
 ```
 
 Though hierarchically components are placed correctly, this doesn't look nice, so, as a final touch
 let's apply some flexbox styles:
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/onboarding/PostStyledSpec.java start=start_example end=end_example
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/PostStyledSpec.java start=start_example end=end_example
 ```
 
 #### Key Points:
