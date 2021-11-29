@@ -264,8 +264,6 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public void unmountAllItems() {
-    unregisterAllExtensions();
-
     if (mRenderTree == null) {
       return;
     }
@@ -291,6 +289,8 @@ public class MountState implements MountDelegateTarget {
           item.getContent(),
           mMountDelegate);
     }
+
+    unregisterAllExtensions();
 
     mNeedsRemount = true;
   }
