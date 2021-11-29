@@ -4,7 +4,7 @@ title: Incremental Mount
 ---
 
 :::caution Content will be updated
-This page was moved from the old website without any change and might be updated
+This page was moved from the old website without any change and might be updated.
 :::
 
 Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.
@@ -17,7 +17,7 @@ With incremental mount enabled (which it is by default), the `LithoView` will on
 
 If you are using `RecyclerCollectionComponent`, the framework will seamlessly perform incremental mount.
 
-## Manual incremental mount
+## Manual Incremental Mount
 
 If you're not using the [Recycler](pathname:///javadoc/com/facebook/litho/widget/Recycler.html) component, you can still integrate incremental mount in your existing UI implementation. You'll have to explicitly notify the framework every time the `LithoView`'s visible region changes, by calling:
 
