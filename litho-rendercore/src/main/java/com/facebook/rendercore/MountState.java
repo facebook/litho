@@ -640,53 +640,12 @@ public class MountState implements MountDelegateTarget {
 
     // 2. Ensure render tree node's parent is mounted or throw exception depending on the
     // ensure-parent-mounted flag.
-    if (!isMounted(parentRenderUnit.getId())) {
-      if (mEnsureParentMounted) {
-        final int parentIndex = mRenderTree.getRenderTreeNodeIndex(parentRenderUnit.getId());
-        mountRenderUnit(parentIndex, hostTreeNode, processLogBuilder);
-      } else {
-        final String additionalProcessLog =
-            processLogBuilder != null ? processLogBuilder.toString() : "NA";
-        throw new HostNotMountedException(
-            renderUnit,
-            parentRenderUnit,
-            "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
-                + "Parent RenderUnit: "
-                + hostTreeNode.generateDebugString(mRenderTree)
-                + "'.\n"
-                + "Child RenderUnit: "
-                + renderTreeNode.generateDebugString(mRenderTree)
-                + "'.\n"
-                + "Entire tree:\n"
-                + mRenderTree.generateDebugString()
-                + ".\n"
-                + "Additional Process Log:\n"
-                + additionalProcessLog
-                + ".\n");
-      }
-    }
+    maybeEnsureParentIsMounted(
+        renderTreeNode, renderUnit, hostTreeNode, parentRenderUnit, processLogBuilder);
 
     final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
-
     final Object parentContent = mountItem.getContent();
-    if (!(parentContent instanceof Host)) {
-      throw new RuntimeException(
-          "Trying to mount a RenderTreeNode, its parent should be a Host, but was '"
-              + parentContent.getClass().getSimpleName()
-              + "'.\n"
-              + "Parent RenderUnit: "
-              + "id="
-              + parentRenderUnit.getId()
-              + "; contentType='"
-              + parentRenderUnit.getRenderContentType()
-              + "'.\n"
-              + "Child RenderUnit: "
-              + "id="
-              + renderUnit.getId()
-              + "; contentType='"
-              + renderUnit.getRenderContentType()
-              + "'.");
-    }
+    assertParentContentType(parentContent, renderUnit, parentRenderUnit);
 
     final Host host = (Host) parentContent;
 
@@ -905,6 +864,63 @@ public class MountState implements MountDelegateTarget {
 
     if (currentRenderUnit != renderUnit) {
       RenderCoreSystrace.endSection(); // UPDATE
+    }
+  }
+
+  private static void assertParentContentType(
+      final Object parentContent,
+      final RenderUnit<?> renderUnit,
+      final RenderUnit<?> parentRenderUnit) {
+    if (!(parentContent instanceof Host)) {
+      throw new RuntimeException(
+          "Trying to mount a RenderTreeNode, its parent should be a Host, but was '"
+              + parentContent.getClass().getSimpleName()
+              + "'.\n"
+              + "Parent RenderUnit: "
+              + "id="
+              + parentRenderUnit.getId()
+              + "; contentType='"
+              + parentRenderUnit.getRenderContentType()
+              + "'.\n"
+              + "Child RenderUnit: "
+              + "id="
+              + renderUnit.getId()
+              + "; contentType='"
+              + renderUnit.getRenderContentType()
+              + "'.");
+    }
+  }
+
+  private void maybeEnsureParentIsMounted(
+      final RenderTreeNode renderTreeNode,
+      final RenderUnit<?> renderUnit,
+      final RenderTreeNode hostTreeNode,
+      final RenderUnit<?> parentRenderUnit,
+      final @Nullable StringBuilder processLogBuilder) {
+    if (!isMounted(parentRenderUnit.getId())) {
+      if (mEnsureParentMounted) {
+        final int parentIndex = mRenderTree.getRenderTreeNodeIndex(parentRenderUnit.getId());
+        mountRenderUnit(parentIndex, hostTreeNode, processLogBuilder);
+      } else {
+        final String additionalProcessLog =
+            processLogBuilder != null ? processLogBuilder.toString() : "NA";
+        throw new HostNotMountedException(
+            renderUnit,
+            parentRenderUnit,
+            "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
+                + "Parent RenderUnit: "
+                + hostTreeNode.generateDebugString(mRenderTree)
+                + "'.\n"
+                + "Child RenderUnit: "
+                + renderTreeNode.generateDebugString(mRenderTree)
+                + "'.\n"
+                + "Entire tree:\n"
+                + mRenderTree.generateDebugString()
+                + ".\n"
+                + "Additional Process Log:\n"
+                + additionalProcessLog
+                + ".\n");
+      }
     }
   }
 }
