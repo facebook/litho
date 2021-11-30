@@ -178,7 +178,7 @@ public class LithoHostListenerCoordinator {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void enableIncrementalMount(LithoView lithoView) {
+  void enableIncrementalMount() {
     if (mIncrementalMountExtension != null) {
       return;
     }
@@ -274,15 +274,14 @@ public class LithoHostListenerCoordinator {
     return mEndToEndTestingExtension;
   }
 
-  void enableTransitions(LithoView lithoView) {
+  void enableTransitions() {
     if (mTransitionsExtension != null) {
       throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
     }
 
     mTransitionsExtension =
         TransitionsExtension.getInstance(
-            lithoView.delegateToRenderCore(),
-            (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
+            true, (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
     mMountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
 
     registerListener(mTransitionsExtension);
@@ -312,7 +311,7 @@ public class LithoHostListenerCoordinator {
   }
 
   @VisibleForTesting
-  void useVisibilityExtension(VisibilityMountExtension extension, LithoView lithoView) {
+  void useVisibilityExtension(VisibilityMountExtension extension) {
     mVisibilityExtension = extension;
     mMountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
     registerListener(mVisibilityExtension);

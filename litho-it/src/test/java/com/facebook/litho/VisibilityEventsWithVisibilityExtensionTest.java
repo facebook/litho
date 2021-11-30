@@ -166,7 +166,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
     if (mUseMountDelegateTarget) {
       LithoHostListenerCoordinator lithoHostListenerCoordinator =
           Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
-      lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension, mLithoView);
+      lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);
     } else {
       final MountDelegateTarget mountState = lithoView.getMountDelegateTarget();
       Whitebox.setInternalState(mountState, "mVisibilityExtension", visibilityOutputsExtension);

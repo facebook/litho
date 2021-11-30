@@ -741,7 +741,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       mLithoHostListenerCoordinator = new LithoHostListenerCoordinator(mMountDelegateTarget);
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
-      mLithoHostListenerCoordinator.enableTransitions(this);
+      mLithoHostListenerCoordinator.enableTransitions();
 
       if (ComponentsConfiguration.isEndToEndTestRun) {
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing();
@@ -759,7 +759,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
 
       if (componentTree.isIncrementalMountEnabled()) {
-        mLithoHostListenerCoordinator.enableIncrementalMount(this);
+        mLithoHostListenerCoordinator.enableIncrementalMount();
       } else {
         mLithoHostListenerCoordinator.disableIncrementalMount();
       }
