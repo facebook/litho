@@ -64,7 +64,8 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Boolean> isFullSpan,
       @Prop(optional = true) Diff<Map<String, Object>> customAttributes,
       @Prop(optional = true) Diff<Object> data,
-      @Prop(optional = true) Diff<ComponentsLogger> componentsLogger) {
+      @Prop(optional = true) Diff<ComponentsLogger> componentsLogger,
+      @Prop(optional = true) Diff<String> logTag) {
     final Object prevData = data.getPrevious();
     final Object nextData = data.getNext();
     final Component prevComponent = component.getPrevious();
@@ -107,6 +108,7 @@ public class SingleComponentSectionSpec {
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
+              .logTag(logTag != null ? logTag.getNext() : null)
               .build(),
           context.getTreePropsCopy(),
           nextData);
