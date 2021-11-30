@@ -123,6 +123,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
     }
 
     resetDynamicValues(content);
+    mAffectingDynamicValues.remove(component);
   }
 
   private static void resetDynamicValues(Object content) {
