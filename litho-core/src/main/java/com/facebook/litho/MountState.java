@@ -2232,6 +2232,8 @@ class MountState implements MountDelegateTarget {
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
     if (id == ROOT_HOST_ID) {
+      mDynamicPropsManager.onUnbindComponent(
+          getLayoutOutput(node).getComponent(), mRootHostMountItem.getContent());
       maybeUnsetViewAttributes(item);
       return;
     }

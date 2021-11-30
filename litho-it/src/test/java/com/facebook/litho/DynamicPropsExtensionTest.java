@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.graphics.Rect;
 import android.view.View;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -58,5 +59,31 @@ public class DynamicPropsExtensionTest {
     assertThat(content.getScaleX())
         .describedAs("scale should be restored to the initial value")
         .isEqualTo(0.5f);
+  }
+
+  @Test
+  public void whenDynamicValeIsSetOnLithoView_ShouldBeUnsetWhenRootIsUnmounted() {
+    ComponentContext c = mLithoViewRule.getContext();
+
+    final Component root =
+        Column.create(c)
+            .alpha(new DynamicValue<>(0.2f))
+            .child(
+                MountSpecLifecycleTester.create(c)
+                    .intrinsicSize(new Size(100, 100))
+                    .lifecycleTracker(new LifecycleTracker()))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(root).measure().layout();
+
+    assertThat(mLithoViewRule.getLithoView().getAlpha())
+        .describedAs("alpha should be applied from the dynamic value")
+        .isEqualTo(0.2f);
+
+    mLithoViewRule.getComponentTree().mountComponent(new Rect(0, -10, 1080, -5), true);
+
+    assertThat(mLithoViewRule.getLithoView().getAlpha())
+        .describedAs("alpha should be restored to default value")
+        .isEqualTo(1f);
   }
 }
