@@ -157,6 +157,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     mLithoViewRule.getLithoView().unmountAllItems();
 
+    verify(visibilityExtension).onUnbind(state);
     verify(visibilityExtension).onUnmount(state);
   }
 

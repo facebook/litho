@@ -351,9 +351,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
       if (mDelegateToRenderCore) {
         mMountDelegateTarget.detach();
-        if (mLithoHostListenerCoordinator != null) {
-          mLithoHostListenerCoordinator.onUnbind();
-        }
       } else {
         mMountState.detach();
       }
@@ -860,9 +857,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public void unbind() {
     if (mDelegateToRenderCore) {
       mMountDelegateTarget.detach();
-      if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onUnbind();
-      }
     } else {
       mMountState.unbind();
     }

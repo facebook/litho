@@ -2199,10 +2199,12 @@ class MountState implements MountDelegateTarget {
     }
 
     if (mVisibilityExtension != null) {
+      mVisibilityExtension.onUnbind(mVisibilityExtensionState);
       mVisibilityExtension.onUnmount(mVisibilityExtensionState);
     }
 
     if (mTransitionsExtension != null) {
+      mTransitionsExtension.onUnbind(mTransitionsExtensionState);
       mTransitionsExtension.onUnmount(mTransitionsExtensionState);
     }
 

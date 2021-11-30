@@ -453,6 +453,10 @@ public class MountState implements MountDelegateTarget {
 
       unbindRenderUnitFromContent(mMountDelegate, mContext, mountItem);
     }
+
+    if (mMountDelegate != null) {
+      mMountDelegate.unBind();
+    }
   }
 
   @Nullable
