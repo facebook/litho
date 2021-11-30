@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -195,6 +196,11 @@ public class IncrementalMountExtension
       final Object content,
       final @Nullable Object layoutData) {
     final long id = renderUnit.getId();
+
+    if (id == MountState.ROOT_HOST_ID && !extensionState.ownsReference(id)) {
+      extensionState.acquireMountReference(id, false);
+    }
+
     final IncrementalMountExtensionState state = extensionState.getState();
     state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(id);
 
@@ -211,6 +217,11 @@ public class IncrementalMountExtension
       final @Nullable Object layoutData) {
     final IncrementalMountExtensionState state = extensionState.getState();
     final long id = renderUnit.getId();
+
+    if (id == MountState.ROOT_HOST_ID && extensionState.ownsReference(id)) {
+      extensionState.releaseMountReference(id, false);
+    }
+
     state.mMountedOutputIdsWithNestedContent.remove(id);
   }
 

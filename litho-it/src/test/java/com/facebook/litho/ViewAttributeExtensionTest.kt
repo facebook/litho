@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Rect
 import android.view.View
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -57,5 +58,32 @@ class ViewAttributeExtensionTest {
     assertThat(content.alpha)
         .describedAs("alpha should be restored to the initial value")
         .isEqualTo(0.5f)
+  }
+
+  @Test
+  fun `when view attributes is set on LithoView should be unset when root is unmounted`() {
+
+    val c: ComponentContext = lithoViewRule.context
+
+    val root: Component =
+        Column.create(c)
+            .alpha(0.2f)
+            .child(
+                MountSpecLifecycleTester.create(c)
+                    .intrinsicSize(Size(100, 100))
+                    .lifecycleTracker(LifecycleTracker()))
+            .build()
+
+    lithoViewRule.render { root }
+
+    assertThat(lithoViewRule.lithoView.alpha)
+        .describedAs("alpha should be applied from the common props")
+        .isEqualTo(0.2f)
+
+    lithoViewRule.componentTree.mountComponent(Rect(0, -10, 1080, -5), true)
+
+    assertThat(lithoViewRule.lithoView.alpha)
+        .describedAs("alpha should be restored to the default value")
+        .isEqualTo(1f)
   }
 }

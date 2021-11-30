@@ -276,19 +276,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     // Let's unbind and unmount the root host.
-    MountItem item = mIdToMountedItemMap.get(ROOT_HOST_ID);
-    if (item != null) {
-      if (item.isBound()) {
-        unbindRenderUnitFromContent(mMountDelegate, mContext, item);
-      }
-      mIdToMountedItemMap.remove(ROOT_HOST_ID);
-      unmountRenderUnitFromContent(
-          mContext,
-          rootRenderTreeNode,
-          rootRenderTreeNode.getRenderUnit(),
-          item.getContent(),
-          mMountDelegate);
-    }
+    unmountRootItem();
 
     unregisterAllExtensions();
 
@@ -522,22 +510,10 @@ public class MountState implements MountDelegateTarget {
 
     final MountItem rootItem = mIdToMountedItemMap.get(ROOT_HOST_ID);
     final RenderTreeNode rootNode = mRenderTree.getRenderTreeNodeAtIndex(0);
-    final RenderUnit rootRenderUnit = rootNode.getRenderUnit();
 
     // If root mount item is null then mounting root node for the first time.
     if (rootItem == null) {
-      // Run mount callbacks.
-      mountRenderUnitToContent(mMountDelegate, mContext, rootNode, rootRenderUnit, mRootHost);
-
-      // Create root mount item.
-      final MountItem item = new MountItem(rootNode, mRootHost, mRootHost);
-
-      // Adds root mount item to map.
-      mIdToMountedItemMap.put(ROOT_HOST_ID, item);
-
-      // Run binder callbacks
-      bindRenderUnitToContent(mMountDelegate, mContext, item);
-
+      mountRootItem(rootNode);
     } else {
       // If root mount item is present then update it.
       updateMountItemIfNeeded(mMountDelegate, mContext, rootNode, rootItem);
@@ -632,6 +608,12 @@ public class MountState implements MountDelegateTarget {
 
   private void mountRenderUnit(
       int index, RenderTreeNode renderTreeNode, @Nullable StringBuilder processLogBuilder) {
+
+    if (renderTreeNode.getRenderUnit().getId() == ROOT_HOST_ID) {
+      mountRootItem(renderTreeNode);
+      return;
+    }
+
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
 
@@ -673,9 +655,10 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    // The root host item should never be unmounted as it's a reference
-    // to the top-level Host.
+    // The root host item cannot be unmounted as it's a reference
+    // to the top-level Host, and it is not mounted in a host.
     if (unit.getId() == ROOT_HOST_ID) {
+      unmountRootItem();
       return;
     }
 
@@ -726,6 +709,46 @@ public class MountState implements MountDelegateTarget {
 
       item.releaseMountContent(mContext);
     }
+  }
+
+  /**
+   * Since the root item is not itself mounted on a host, its unmount method is encapsulated into a
+   * different method.
+   */
+  private void unmountRootItem() {
+    MountItem item = mIdToMountedItemMap.get(ROOT_HOST_ID);
+    if (item != null) {
+
+      if (item.isBound()) {
+        unbindRenderUnitFromContent(mMountDelegate, mContext, item);
+      }
+
+      mIdToMountedItemMap.remove(ROOT_HOST_ID);
+
+      final RenderTreeNode rootRenderTreeNode = mRenderTree.getRoot();
+
+      unmountRenderUnitFromContent(
+          mContext,
+          rootRenderTreeNode,
+          rootRenderTreeNode.getRenderUnit(),
+          item.getContent(),
+          mMountDelegate);
+    }
+  }
+
+  private void mountRootItem(RenderTreeNode rootNode) {
+    // Run mount callbacks.
+    mountRenderUnitToContent(
+        mMountDelegate, mContext, rootNode, rootNode.getRenderUnit(), mRootHost);
+
+    // Create root mount item.
+    final MountItem item = new MountItem(rootNode, mRootHost, mRootHost);
+
+    // Adds root mount item to map.
+    mIdToMountedItemMap.put(ROOT_HOST_ID, item);
+
+    // Run binder callbacks
+    bindRenderUnitToContent(mMountDelegate, mContext, item);
   }
 
   @Override
