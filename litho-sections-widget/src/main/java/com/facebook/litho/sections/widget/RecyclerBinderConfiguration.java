@@ -62,6 +62,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mPostToFrontOfQueueForFirstChangeset;
   private final int mEstimatedViewportCount;
   @Nullable private final ErrorEventHandler mErrorEventHandler;
+  private final boolean mFixViewportUpdatesForAsyncInsert;
 
   public static Builder create() {
     return new Builder();
@@ -93,7 +94,8 @@ public class RecyclerBinderConfiguration {
       @Nullable ComponentWarmer componentWarmer,
       int estimatedViewportCount,
       @Nullable LithoViewFactory lithoViewFactory,
-      @Nullable ErrorEventHandler errorEventHandler) {
+      @Nullable ErrorEventHandler errorEventHandler,
+      boolean fixViewportUpdatesForAsyncInsert) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mComponentsConfiguration = componentsConfiguration;
@@ -116,6 +118,7 @@ public class RecyclerBinderConfiguration {
     mEstimatedViewportCount = estimatedViewportCount;
     mLithoViewFactory = lithoViewFactory;
     mErrorEventHandler = errorEventHandler;
+    mFixViewportUpdatesForAsyncInsert = fixViewportUpdatesForAsyncInsert;
   }
 
   public float getRangeRatio() {
@@ -207,6 +210,10 @@ public class RecyclerBinderConfiguration {
     return mComponentsConfiguration;
   }
 
+  public boolean isFixViewportUpdatesForAsyncInsert() {
+    return mFixViewportUpdatesForAsyncInsert;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -239,6 +246,7 @@ public class RecyclerBinderConfiguration {
     private boolean mIgnoreNullLayoutStateError =
         mComponentsConfiguration.getIgnoreNullLayoutStateError();
     private ErrorEventHandler mErrorEventHandler;
+    private boolean mFixViewportUpdatesForAsyncInsert;
 
     Builder() {}
 
@@ -266,6 +274,7 @@ public class RecyclerBinderConfiguration {
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
       this.mLithoViewFactory = configuration.mLithoViewFactory;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
+      this.mFixViewportUpdatesForAsyncInsert = configuration.mFixViewportUpdatesForAsyncInsert;
     }
 
     /**
@@ -416,6 +425,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder fixViewportUpdatesForAsyncInsert(boolean fixViewportUpdatesForAsyncInsert) {
+      mFixViewportUpdatesForAsyncInsert = fixViewportUpdatesForAsyncInsert;
+      return this;
+    }
+
     /**
      * This is a temporary hack that allows a surface to manually provide an estimated range. It
      * will go away so don't depend on it.
@@ -453,7 +467,8 @@ public class RecyclerBinderConfiguration {
           mComponentWarmer,
           mEstimatedViewportCount,
           mLithoViewFactory,
-          mErrorEventHandler);
+          mErrorEventHandler,
+          mFixViewportUpdatesForAsyncInsert);
     }
   }
 }

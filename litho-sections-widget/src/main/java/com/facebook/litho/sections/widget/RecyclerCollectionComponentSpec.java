@@ -329,6 +329,8 @@ public class RecyclerCollectionComponentSpec {
             .componentWarmer(binderConfiguration.getComponentWarmer())
             .lithoViewFactory(binderConfiguration.getLithoViewFactory())
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
+            .fixViewportUpdatesForAsyncInsert(
+                binderConfiguration.isFixViewportUpdatesForAsyncInsert())
             .startupLogger(startupLogger);
 
     if (binderConfiguration.getEstimatedViewportCount()

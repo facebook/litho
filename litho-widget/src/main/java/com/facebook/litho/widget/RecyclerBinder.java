@@ -152,6 +152,7 @@ public class RecyclerBinder
   private final boolean mRecyclerViewItemPrefetch;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
+  private final boolean mFixViewportUpdatesForAsyncInsert;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -468,6 +469,7 @@ public class RecyclerBinder
     private boolean recyclerViewItemPrefetch = false;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
+    private boolean fixViewportUpdatesForAsyncInsert = false;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -779,6 +781,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder fixViewportUpdatesForAsyncInsert(boolean fixViewportUpdatesForAsyncInsert) {
+      this.fixViewportUpdatesForAsyncInsert = fixViewportUpdatesForAsyncInsert;
+      return this;
+    }
+
     public Builder lithoLifecycleProvider(LithoLifecycleProvider lithoLifecycleProvider) {
       this.lifecycleProvider = lithoLifecycleProvider;
       return this;
@@ -1006,6 +1013,7 @@ public class RecyclerBinder
     mStartupLogger = builder.startupLogger;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
+    mFixViewportUpdatesForAsyncInsert = builder.fixViewportUpdatesForAsyncInsert;
   }
 
   /**
@@ -1338,7 +1346,11 @@ public class RecyclerBinder
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
-    mViewportManager.insertAffectsVisibleRange(operation.mPosition, 1, mEstimatedViewportCount);
+    final boolean shouldUpdate =
+        mViewportManager.insertAffectsVisibleRange(operation.mPosition, 1, mEstimatedViewportCount);
+    if (mFixViewportUpdatesForAsyncInsert) {
+      mViewportManager.setShouldUpdate(shouldUpdate);
+    }
   }
 
   @GuardedBy("this")
