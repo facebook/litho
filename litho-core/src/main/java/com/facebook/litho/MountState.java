@@ -2194,10 +2194,6 @@ class MountState implements MountDelegateTarget {
     mPreviousLocalVisibleRect.setEmpty();
     mNeedsRemount = true;
 
-    if (mMountDelegate != null) {
-      mMountDelegate.releaseAllAcquiredReferences();
-    }
-
     if (mVisibilityExtension != null) {
       mVisibilityExtension.onUnbind(mVisibilityExtensionState);
       mVisibilityExtension.onUnmount(mVisibilityExtensionState);
@@ -2208,8 +2204,11 @@ class MountState implements MountDelegateTarget {
       mTransitionsExtension.onUnmount(mTransitionsExtensionState);
     }
 
+    if (mMountDelegate != null) {
+      mMountDelegate.releaseAllAcquiredReferences();
+    }
+
     clearLastMountedTree();
-    clearVisibilityItems();
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
