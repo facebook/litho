@@ -28,6 +28,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
@@ -37,52 +38,21 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RunnableHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class MountSpecLifecycleTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public final @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
   public final @Rule ExpectedException mExpectedException = ExpectedException.none();
-
-  final boolean mUseMountDelegateTarget;
-  private boolean mConfigUseMountDelegateTarget;
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useMountDelegateTarget={0}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
-  }
-
-  public MountSpecLifecycleTest(boolean useMountDelegateTarget) {
-    mUseMountDelegateTarget = useMountDelegateTarget;
-  }
-
-  @Before
-  public void before() {
-    mConfigUseMountDelegateTarget = ComponentsConfiguration.useExtensionsWithMountDelegate;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = mUseMountDelegateTarget;
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.useExtensionsWithMountDelegate = mConfigUseMountDelegateTarget;
-  }
 
   @Test
   public void lifecycle_onSetComponentWithoutLayout_shouldNotCallLifecycleMethods() {
@@ -469,7 +439,7 @@ public class MountSpecLifecycleTest {
   @Test
   public void onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethodsInRenderCore() {
     // Only run when using mount delegate target - this test is specific for rendercore mountstate.
-    if (!mUseMountDelegateTarget) {
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
       return;
     }
 

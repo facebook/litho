@@ -192,13 +192,10 @@ class MountState implements MountDelegateTarget {
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (ComponentsConfiguration.enableTransitionsExtension) {
-      if (!mLithoView.usingExtensionsWithMountDelegate()) {
-        mTransitionsExtension =
-            TransitionsExtension.getInstance(
-                (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
-        registerMountDelegateExtension(mTransitionsExtension);
-        mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
-      }
+      mTransitionsExtension =
+          TransitionsExtension.getInstance((AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
+      registerMountDelegateExtension(mTransitionsExtension);
+      mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
     } else {
       mTransitionsExtension = null;
       mTransitionsExtensionState = null;

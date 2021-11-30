@@ -30,7 +30,9 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.Reducer;
 import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
@@ -101,8 +103,11 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     final LayoutState layoutState = mock(LayoutState.class);
     final RenderTree renderTree = mock(RenderTree.class);
+    final RenderTreeNode rootNode = mock(RenderTreeNode.class);
     when(layoutState.toRenderTree()).thenReturn(renderTree);
     when(renderTree.getRenderTreeData()).thenReturn(layoutState);
+    when(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode);
+    when(rootNode.getRenderUnit()).thenReturn(Reducer.sRootHostRenderUnit);
 
     mLithoViewRule.getLithoView().setMountStateDirty();
 
