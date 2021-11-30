@@ -1447,9 +1447,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public void unmountAllItems() {
     if (mDelegateToRenderCore) {
       mMountDelegateTarget.unmountAllItems();
-      if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onUnmount();
-      }
     } else {
       mMountState.unmountAllItems();
     }

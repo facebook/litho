@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Reducer;
 import com.facebook.rendercore.RenderTree;
@@ -123,6 +124,40 @@ public class VisibilityEventsWithVisibilityExtensionTest {
     mLithoViewRule.getLithoView().mount(layoutState, new Rect(0, 0, RIGHT, 10), false);
 
     verify(visibilityExtension).beforeMount(state, layoutState, rect);
+  }
+
+  @Test
+  public void visibilityExtensionOnUnmountAllItems_shouldUnmount() {
+    final Component content = Text.create(mContext).text("hello world").build();
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
+
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(content).visibleHandler(visibleEventHandler))
+            .build();
+
+    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+
+    final LayoutState layoutState = mock(LayoutState.class);
+    final RenderTree renderTree = mock(RenderTree.class);
+    final RenderTreeNode rootNode = mock(RenderTreeNode.class);
+    when(layoutState.toRenderTree()).thenReturn(renderTree);
+    when(renderTree.getRenderTreeData()).thenReturn(layoutState);
+    when(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode);
+    when(rootNode.getRenderUnit()).thenReturn(Reducer.sRootHostRenderUnit);
+
+    mLithoViewRule.getLithoView().setMountStateDirty();
+
+    VisibilityMountExtension visibilityExtension = spy(VisibilityMountExtension.getInstance());
+
+    useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityExtension);
+
+    final ExtensionState state =
+        mLithoView.getMountDelegateTarget().getExtensionState(visibilityExtension);
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    verify(visibilityExtension).onUnmount(state);
   }
 
   private void useVisibilityOutputsExtension(
