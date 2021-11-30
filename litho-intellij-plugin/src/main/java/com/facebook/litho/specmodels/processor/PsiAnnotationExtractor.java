@@ -60,7 +60,7 @@ public class PsiAnnotationExtractor {
     PsiClass annotationClass =
         PsiSearchUtils.getInstance().findClass(project, psiAnnotation.getQualifiedName());
     if (annotationClass == null) {
-      throw new RuntimeException("Annotation class not found, text is: " + text);
+      return false;
     }
 
     final Retention retention =
