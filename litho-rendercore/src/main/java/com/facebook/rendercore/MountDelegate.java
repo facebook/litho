@@ -258,6 +258,18 @@ public class MountDelegate {
     endNotifyVisibleBoundsChangedSection();
   }
 
+  public void onBoundsAppliedToItem(RenderTreeNode node, Object content) {
+    startNotifyVisibleBoundsChangedSection();
+
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      final MountExtension extension = mMountExtensions.get(i);
+      extension.onBoundsAppliedToItem(
+          getExtensionState(extension), node.getRenderUnit(), content, node.getLayoutData());
+    }
+
+    endNotifyVisibleBoundsChangedSection();
+  }
+
   public ExtensionState getExtensionState(MountExtension mountExtension) {
     return mExtensionStates.get(mountExtension);
   }

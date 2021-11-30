@@ -115,6 +115,12 @@ public abstract class MountExtension<Input, State> {
       final Object content,
       final @Nullable Object layoutData) {}
 
+  public void onBoundsAppliedToItem(
+      final ExtensionState<State> extensionState,
+      final RenderUnit<?> renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {}
+
   public static MountDelegateTarget getMountTarget(final ExtensionState<?> extensionState) {
     return extensionState.getMountDelegate().getMountDelegateTarget();
   }

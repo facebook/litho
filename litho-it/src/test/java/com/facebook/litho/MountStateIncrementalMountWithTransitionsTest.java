@@ -21,7 +21,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import com.facebook.litho.animation.AnimatedProperties;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.TestSingleComponentListSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
@@ -110,9 +109,6 @@ public class MountStateIncrementalMountWithTransitionsTest {
       and when the AnimatedRootHost.notifyVisibleBoundsChanged() nothing is mounted
       in the LV
     */
-    if (ComponentsConfiguration.delegateToRenderCoreMount) {
-      return;
-    }
 
     final LifecycleTracker lifecycleTracker0 = new LifecycleTracker();
     final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();

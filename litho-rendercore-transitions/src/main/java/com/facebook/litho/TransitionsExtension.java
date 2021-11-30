@@ -289,7 +289,7 @@ public class TransitionsExtension
   }
 
   @Override
-  public void onMountItem(
+  public void onBoundsAppliedToItem(
       final ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,

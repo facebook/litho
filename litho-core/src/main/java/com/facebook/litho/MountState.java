@@ -602,7 +602,7 @@ class MountState implements MountDelegateTarget {
 
   private void applyMountBinders(LayoutOutput layoutOutput, MountItem mountItem, int position) {
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onMountItem(
+      mTransitionsExtension.onBoundsAppliedToItem(
           mTransitionsExtensionState,
           mountItem.getRenderTreeNode().getRenderUnit(),
           mountItem.getContent(),

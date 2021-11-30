@@ -469,7 +469,7 @@ public class MountState implements MountDelegateTarget {
   }
 
   private static void updateBoundsForMountedRenderTreeNode(
-      RenderTreeNode renderTreeNode, MountItem item) {
+      RenderTreeNode renderTreeNode, MountItem item, @Nullable MountDelegate mountDelegate) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
     if (renderTreeNode.getRenderUnit().getId() == ROOT_HOST_ID) {
@@ -481,6 +481,10 @@ public class MountState implements MountDelegateTarget {
 
     BoundsUtils.applyBoundsToMountContent(
         item.getRenderTreeNode(), item.getContent(), forceTraversal /* force */);
+
+    if (mountDelegate != null) {
+      mountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
+    }
   }
 
   /** Updates the extensions of this {@link MountState} from the new {@link RenderTree}. */
@@ -638,6 +642,10 @@ public class MountState implements MountDelegateTarget {
     // 3. call the RenderUnit's Mount bindings.
     final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
 
+    if (mMountDelegate != null) {
+      mMountDelegate.startNotifyVisibleBoundsChangedSection();
+    }
+
     mountRenderUnitToContent(mMountDelegate, mContext, renderTreeNode, renderUnit, content);
 
     // 4. Mount the content into the selected host.
@@ -649,6 +657,10 @@ public class MountState implements MountDelegateTarget {
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     BoundsUtils.applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
+    if (mMountDelegate != null) {
+      mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
+      mMountDelegate.endNotifyVisibleBoundsChangedSection();
+    }
   }
 
   private void unmountItemRecursively(RenderTreeNode node) {
@@ -880,6 +892,7 @@ public class MountState implements MountDelegateTarget {
     currentMountItem.setIsBound(true);
 
     if (mountDelegate != null) {
+      mountDelegate.startNotifyVisibleBoundsChangedSection();
       mountDelegate.onUpdateItemsIfNeeded(
           currentRenderUnit, currentLayoutData, renderUnit, newLayoutData, content);
     }
@@ -887,7 +900,11 @@ public class MountState implements MountDelegateTarget {
     // Update the bounds of the mounted content. This needs to be done regardless of whether
     // the RenderUnit has been updated or not since the mounted item might might have the same
     // size and content but a different position.
-    updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem);
+    updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem, mountDelegate);
+
+    if (mountDelegate != null) {
+      mountDelegate.endNotifyVisibleBoundsChangedSection();
+    }
 
     if (currentRenderUnit != renderUnit) {
       RenderCoreSystrace.endSection(); // UPDATE
