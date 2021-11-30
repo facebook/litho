@@ -32,6 +32,7 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -262,6 +263,11 @@ public class TransitionsExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
+
+    if (renderUnit.getId() == MountState.ROOT_HOST_ID) {
+      return;
+    }
+
     final TransitionsExtensionState state = extensionState.getState();
 
     // If this item is a host and contains disappearing items, we need to remove them.
