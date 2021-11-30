@@ -89,6 +89,7 @@ public interface FrameworkLogEvents {
   String PARAM_ATTRIBUTION = "attribution";
   String PARAM_NO_OP_COUNT = "no_op_count";
   String PARAM_IS_DIRTY = "is_dirty";
+  String PARAM_HAD_PREVIOUS_CT = "had_previous_ct";
   String PARAM_VISIBILITY_HANDLERS_TOTAL_TIME = "visibility_handlers_total_time_ms";
   String PARAM_VISIBILITY_HANDLER = "visibility_handler";
   String PARAM_VISIBILITY_HANDLER_TIME = "visibility_handler_time_ms";
@@ -100,6 +101,7 @@ public interface FrameworkLogEvents {
   String PARAM_ROOT_COMPONENT = "root_component";
   String PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT = "wait_for_result";
   String PARAM_IS_MAIN_THREAD = "is_main_thread";
+  String PARAM_LAYOUT_VERSION = "layout_version";
 
   String PARAM_CHANGESET_EFFECTIVE_COUNT = "changeset_effective_count";
   String PARAM_CHANGESET_INSERT_SINGLE_COUNT = "changeset_insert_single_count";

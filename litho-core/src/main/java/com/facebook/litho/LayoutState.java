@@ -26,6 +26,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
@@ -1203,6 +1204,7 @@ public class LayoutState
         logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
         logLayoutState.markerAnnotate(PARAM_TREE_DIFF_ENABLED, diffTreeRoot != null);
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
+        logLayoutState.markerAnnotate(PARAM_LAYOUT_VERSION, layoutVersion);
       }
 
       layoutState =

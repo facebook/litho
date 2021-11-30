@@ -92,7 +92,6 @@ public class MountStateBetterLoggingTest {
     final TestPerfEvent mountEvent = (TestPerfEvent) perfEvents.get(0);
     final Map<String, Object> annotations = mountEvent.getAnnotations();
     assertThat(annotations)
-        .hasSize(18)
         .containsEntry("log_tag", "tag")
         .containsEntry("mounted_content", new String[] {"TestViewComponent", "TestViewComponent"})
         .containsEntry("mounted_count", 2)

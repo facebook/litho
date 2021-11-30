@@ -21,6 +21,7 @@ import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_HAD_PREVIOUS_CT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
@@ -425,6 +426,8 @@ class MountState implements MountDelegateTarget {
     }
 
     final boolean wasDirty = mIsDirty;
+    final boolean hadPreviousComponentTree =
+        (mLastMountedComponentTreeId != ComponentTree.INVALID_ID);
     mIsDirty = false;
     mNeedsRemount = false;
     if (localVisibleRect != null) {
@@ -438,7 +441,7 @@ class MountState implements MountDelegateTarget {
     processTestOutputs(layoutState);
 
     if (mountPerfEvent != null) {
-      logMountPerfEvent(logger, mountPerfEvent, wasDirty);
+      logMountPerfEvent(logger, mountPerfEvent, wasDirty, hadPreviousComponentTree);
     }
 
     if (isTracing) {
@@ -581,6 +584,8 @@ class MountState implements MountDelegateTarget {
     }
 
     final boolean wasDirty = mIsDirty;
+    final boolean hadPreviousComponentTree =
+        (mLastMountedComponentTreeId != ComponentTree.INVALID_ID);
     mIsDirty = false;
     mNeedsRemount = false;
 
@@ -589,7 +594,7 @@ class MountState implements MountDelegateTarget {
     mLastMountedLayoutState = layoutState;
 
     if (mountPerfEvent != null) {
-      logMountPerfEvent(logger, mountPerfEvent, wasDirty);
+      logMountPerfEvent(logger, mountPerfEvent, wasDirty, hadPreviousComponentTree);
     }
 
     if (isTracing) {
@@ -674,7 +679,10 @@ class MountState implements MountDelegateTarget {
   }
 
   private void logMountPerfEvent(
-      ComponentsLogger logger, PerfEvent mountPerfEvent, boolean isDirty) {
+      ComponentsLogger logger,
+      PerfEvent mountPerfEvent,
+      boolean isDirty,
+      boolean hadPreviousComponentTree) {
     if (!mMountStats.isLoggingEnabled) {
       logger.cancelPerfEvent(mountPerfEvent);
       return;
@@ -715,6 +723,7 @@ class MountState implements MountDelegateTarget {
 
     mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
     mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, isDirty);
+    mountPerfEvent.markerAnnotate(PARAM_HAD_PREVIOUS_CT, hadPreviousComponentTree);
 
     logger.logPerfEvent(mountPerfEvent);
   }
