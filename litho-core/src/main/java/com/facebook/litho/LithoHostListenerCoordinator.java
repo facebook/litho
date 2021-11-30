@@ -178,14 +178,14 @@ public class LithoHostListenerCoordinator {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void enableIncrementalMount(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
+  void enableIncrementalMount(LithoView lithoView) {
     if (mIncrementalMountExtension != null) {
       return;
     }
 
     mIncrementalMountExtension = IncrementalMountExtension.getInstance();
 
-    mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
+    mMountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
   }
 
@@ -198,13 +198,13 @@ public class LithoHostListenerCoordinator {
     mIncrementalMountExtension = null;
   }
 
-  void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
+  void enableVisibilityProcessing(LithoView lithoView) {
     if (mVisibilityExtension != null) {
       return;
     }
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
-    mountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
+    mMountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
     ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
     if (state != null) {
       VisibilityMountExtension.setRootHost(state, lithoView);
@@ -222,13 +222,13 @@ public class LithoHostListenerCoordinator {
     mVisibilityExtension = null;
   }
 
-  void enableEndToEndTestProcessing(MountDelegateTarget mountDelegateTarget) {
+  void enableEndToEndTestProcessing() {
     if (mEndToEndTestingExtension != null) {
       throw new IllegalStateException(
           "End to end test processing has already been enabled on this coordinator");
     }
 
-    mEndToEndTestingExtension = new EndToEndTestingExtension(mountDelegateTarget);
+    mEndToEndTestingExtension = new EndToEndTestingExtension(mMountDelegateTarget);
     mMountDelegateTarget.registerMountDelegateExtension(mEndToEndTestingExtension);
     registerListener(mEndToEndTestingExtension);
   }
@@ -274,7 +274,7 @@ public class LithoHostListenerCoordinator {
     return mEndToEndTestingExtension;
   }
 
-  void enableTransitions(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
+  void enableTransitions(LithoView lithoView) {
     if (mTransitionsExtension != null) {
       throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
     }
@@ -283,7 +283,7 @@ public class LithoHostListenerCoordinator {
         TransitionsExtension.getInstance(
             lithoView.delegateToRenderCore(),
             (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
-    mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
+    mMountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
 
     registerListener(mTransitionsExtension);
   }
