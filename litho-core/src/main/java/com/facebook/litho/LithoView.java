@@ -753,10 +753,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing(mMountDelegateTarget);
       }
 
-      if (mDelegateToRenderCore) {
-        mLithoHostListenerCoordinator.enableViewAttributes();
-      }
-
+      mLithoHostListenerCoordinator.enableViewAttributes();
       mLithoHostListenerCoordinator.enableDynamicProps();
     }
 
@@ -774,7 +771,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
     }
 
-    mLithoHostListenerCoordinator.setCollectNotifyVisibleBoundsChangedCalls(mDelegateToRenderCore);
+    mLithoHostListenerCoordinator.setCollectNotifyVisibleBoundsChangedCalls(true);
   }
 
   /** Change the root component synchronously. */
