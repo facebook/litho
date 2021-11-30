@@ -27,28 +27,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import androidx.test.core.app.ApplicationProvider;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class VisibilityEventsIncrementalMountDisabledTest {
 
   private static final int LEFT = 0;
@@ -57,33 +56,13 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configIncMountExtension;
-  final boolean mUseMountDelegateTarget;
-  final boolean mDelegateToRenderCore;
-
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, delegateToRenderCore={1}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, false},
-          {true, false},
-          {true, true}
-        });
-  }
-
-  public VisibilityEventsIncrementalMountDisabledTest(
-      boolean useMountDelegateTarget, boolean delegateToRenderCore) {
-    mUseMountDelegateTarget = useMountDelegateTarget;
-    mDelegateToRenderCore = delegateToRenderCore;
-  }
 
   @Before
   public void setup() {
 
     mContext = new ComponentContext(ApplicationProvider.getApplicationContext());
 
-    mLithoView = new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore);
+    mLithoView = new LithoView(mContext);
     mParent = new FrameLayout(mContext.getAndroidContext());
     mParent.setLeft(0);
     mParent.setTop(0);
@@ -1678,7 +1657,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap(LithoView lithoView) {
-    if (!mUseMountDelegateTarget) {
+    if (!ComponentsConfiguration.useExtensionsWithMountDelegate) {
       return ((MountState) lithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
     }
 

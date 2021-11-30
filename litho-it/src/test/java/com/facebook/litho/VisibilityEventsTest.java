@@ -29,12 +29,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.HorizontalScroll;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
@@ -46,18 +48,15 @@ import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.util.ReflectionHelpers;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class VisibilityEventsTest {
   private static final int LEFT = 0;
   private static final int RIGHT = 10;
@@ -65,32 +64,12 @@ public class VisibilityEventsTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configIncMountExtension;
-  final boolean mUseMountDelegateTarget;
-  final boolean mDelegateToRenderCore;
-
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, delegateToRenderCore={1}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, false},
-          {true, false},
-          {true, true}
-        });
-  }
-
-  public VisibilityEventsTest(boolean useMountDelegateTarget, boolean delegateToRenderCore) {
-    mUseMountDelegateTarget = useMountDelegateTarget;
-    mDelegateToRenderCore = delegateToRenderCore;
-  }
 
   @Before
   public void setup() {
     mContext = mLithoViewRule.getContext();
-    mLithoView = new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore);
+    mLithoView = new LithoView(mContext);
     mLithoViewRule.useLithoView(mLithoView);
 
     mParent = new FrameLayout(mContext.getAndroidContext());
@@ -2008,7 +1987,7 @@ public class VisibilityEventsTest {
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    if (!mUseMountDelegateTarget) {
+    if (!ComponentsConfiguration.useExtensionsWithMountDelegate) {
       return ((MountState) mLithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
     }
 

@@ -23,49 +23,27 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Rect;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
-import java.util.Arrays;
-import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LegacyMountStateIncrementalMountTest {
   private ComponentContext mContext;
-  final boolean mUseMountDelegateTarget;
-  final boolean mDelegateToRenderCoreMount;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, false},
-          {true, false},
-          {true, true},
-        });
-  }
-
-  public LegacyMountStateIncrementalMountTest(
-      boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
-    mUseMountDelegateTarget = useMountDelegateTarget;
-    mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-  }
 
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(
-        new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
+    mLithoViewRule.useLithoView(new LithoView(mContext));
   }
 
   @Test
