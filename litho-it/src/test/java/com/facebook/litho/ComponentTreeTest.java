@@ -282,14 +282,14 @@ public class ComponentTreeTest {
     new Thread() {
       @Override
       public void run() {
-        componentTree.setRootAndSizeSpec(asyncComponent, 0, 0);
+        componentTree.setRootAndSizeSpecSync(asyncComponent, 0, 0);
         endOfTest.countDown();
       }
     }.start();
 
     assertThat(syncLatch.await(5, TimeUnit.SECONDS)).describedAs("Timeout!").isTrue();
 
-    componentTree.setRootAndSizeSpec(component, 0, 0);
+    componentTree.setRootAndSizeSpecSync(component, 0, 0);
     assertEquals(measureListener.mWidth, 100);
     assertEquals(measureListener.mHeight, 100);
 
@@ -319,7 +319,7 @@ public class ComponentTreeTest {
   @Test
   public void testSetRootSynchThenAsyncThenSync() {
     ComponentTree componentTree = ComponentTree.create(mContext).build();
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(mContext).widthPx(200).heightPx(200).build(),
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
@@ -333,7 +333,7 @@ public class ComponentTreeTest {
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
 
     Size size = new Size();
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent,
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
@@ -441,7 +441,7 @@ public class ComponentTreeTest {
     LayoutState firstLayoutState = componentTree.getMainThreadLayoutState();
     assertThat(firstLayoutState).isNotNull();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
@@ -458,7 +458,7 @@ public class ComponentTreeTest {
     final TreeProps treeProps = new TreeProps();
     treeProps.put(Object.class, "hello world");
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
@@ -478,7 +478,7 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isNotNull();
 
-    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+    componentTree.setRootAndSizeSpecSync(mComponent, mWidthSpec, mHeightSpec);
 
     assertThat(componentTree.getRoot()).isEqualTo(mComponent);
   }
@@ -551,7 +551,7 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getCommittedLayoutState()).isNull();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(200, EXACTLY),
         makeSizeSpec(200, EXACTLY));
@@ -570,7 +570,7 @@ public class ComponentTreeTest {
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.attach();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         SimpleStateUpdateEmulator.create(mContext).caller(caller).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
@@ -2025,7 +2025,7 @@ public class ComponentTreeTest {
           }
         });
 
-    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+    componentTree.setRootAndSizeSpecSync(mComponent, mWidthSpec, mHeightSpec);
   }
 
   @Test
@@ -2046,7 +2046,7 @@ public class ComponentTreeTest {
           }
         });
 
-    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+    componentTree.setRootAndSizeSpecSync(mComponent, mWidthSpec, mHeightSpec);
   }
 
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {

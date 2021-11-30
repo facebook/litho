@@ -58,7 +58,7 @@ public class InternalNodeTest {
     final ComponentContext context = mLithoViewRule.getContext();
     mLithoViewRule
         .attachToWindow()
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             Column.create(context).build(),
             makeSizeSpec(0, UNSPECIFIED),
             makeSizeSpec(0, UNSPECIFIED))

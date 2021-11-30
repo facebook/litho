@@ -410,7 +410,7 @@ public class MountSpecLifecycleTest {
 
     mLithoViewRule
         .getComponentTree()
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             component, mLithoViewRule.getWidthSpec(), mLithoViewRule.getHeightSpec());
 
     mLithoViewRule.measure();
@@ -461,7 +461,7 @@ public class MountSpecLifecycleTest {
 
     mLithoViewRule
         .getComponentTree()
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             component, mLithoViewRule.getWidthSpec(), mLithoViewRule.getHeightSpec());
 
     mLithoViewRule.measure();

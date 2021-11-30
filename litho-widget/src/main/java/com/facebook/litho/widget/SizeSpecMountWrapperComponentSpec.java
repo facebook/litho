@@ -123,7 +123,8 @@ public class SizeSpecMountWrapperComponentSpec {
     int widthSpec = SizeSpec.makeSizeSpec(layout.getWidth(), SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(layout.getHeight(), SizeSpec.EXACTLY);
     final ComponentTree componentTree = getOrCreateComponentTree(c, componentTreeRef);
-    // This check is also done in the setRootAndSizeSpec method, but we need to do this here since
+    // This check is also done in the setRootAndSizeSpecSync method, but we need to do this here
+    // since
     // it will fail if a ErrorBoundariesConfiguration.rootWrapperComponentFactory was set.
     // TODO: T60426216
     if (!componentTree.hasCompatibleLayout(widthSpec, heightSpec)) {
@@ -172,7 +173,7 @@ public class SizeSpecMountWrapperComponentSpec {
 
   /**
    * Creates a TreeProp with the size information. We need to do this every time we call
-   * setRootAndSizeSpec on the new tree.
+   * setRootAndSizeSpecSync on the new tree.
    *
    * @param c
    * @param widthSpec

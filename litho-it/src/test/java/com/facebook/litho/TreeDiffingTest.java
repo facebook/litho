@@ -415,7 +415,7 @@ public class TreeDiffingTest {
 
     mLithoViewRule.setRoot(firstComponent).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpec(
+    mLithoViewRule.setRootAndSizeSpecSync(
         firstComponent,
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY));
@@ -442,7 +442,7 @@ public class TreeDiffingTest {
 
     mLithoViewRule.setRoot(component1).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpec(
+    mLithoViewRule.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
@@ -472,7 +472,7 @@ public class TreeDiffingTest {
 
     mLithoViewRule.setRoot(component1).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpec(
+    mLithoViewRule.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
@@ -503,7 +503,7 @@ public class TreeDiffingTest {
 
     mLithoViewRule.setRoot(component1).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpec(
+    mLithoViewRule.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
 

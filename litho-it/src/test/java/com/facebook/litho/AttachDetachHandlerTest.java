@@ -276,12 +276,12 @@ public class AttachDetachHandlerTest {
             .steps(steps)
             .children(new AttachDetachTester.Builder[] {c1})
             .build();
-    mLithoViewRule.setRootAndSizeSpec(
+    mLithoViewRule.setRootAndSizeSpecSync(
         component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     mLithoViewRule.attachToWindow().measure().layout();
 
-    mLithoViewRule.setRootAndSizeSpec(
+    mLithoViewRule.setRootAndSizeSpecSync(
         component, makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     assertThat(steps)
@@ -322,7 +322,7 @@ public class AttachDetachHandlerTest {
               @Override
               public void run() {
                 for (int i = 0; i < 10; i++) {
-                  componentTree.setRootAndSizeSpec(
+                  componentTree.setRootAndSizeSpecSync(
                       component,
                       makeSizeSpec(100 + 10 * i, EXACTLY),
                       makeSizeSpec(100 + 10 * i, EXACTLY));
@@ -338,7 +338,7 @@ public class AttachDetachHandlerTest {
               @Override
               public void run() {
                 for (int i = 0; i < 10; i++) {
-                  componentTree.setRootAndSizeSpec(
+                  componentTree.setRootAndSizeSpecSync(
                       component,
                       makeSizeSpec(200 + 10 * i, EXACTLY),
                       makeSizeSpec(200 + 10 * i, EXACTLY));

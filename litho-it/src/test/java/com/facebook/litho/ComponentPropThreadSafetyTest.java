@@ -70,7 +70,7 @@ public class ComponentPropThreadSafetyTest {
 
     final ComponentTree componentTree = ComponentTree.create(mContext, root).build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         TestWrappedComponentProp.create(mContext).wrapper(wrapper).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
@@ -104,7 +104,7 @@ public class ComponentPropThreadSafetyTest {
 
     final ComponentTree componentTree = ComponentTree.create(mContext, root).build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         TestWrappedComponentProp.create(mContext).componentList(componentList).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),

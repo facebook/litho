@@ -86,7 +86,7 @@ public class LegacyMountStateRemountTest {
                     .enabled(false))
             .build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
@@ -144,7 +144,7 @@ public class LegacyMountStateRemountTest {
                     .contentDescription("some description"))
             .build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
@@ -201,7 +201,7 @@ public class LegacyMountStateRemountTest {
                     .backgroundColor(Color.CYAN))
             .build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));

@@ -196,7 +196,7 @@ public class MountStateRemountTest {
 
     assertThat(component1.isMounted()).isTrue();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         Column.create(mContext).child(component2).build(),
         makeMeasureSpec(50, EXACTLY),
         makeMeasureSpec(50, EXACTLY));
@@ -285,7 +285,7 @@ public class MountStateRemountTest {
                     .contentDescription("some description"))
             .build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
@@ -347,7 +347,7 @@ public class MountStateRemountTest {
                     .enabled(false))
             .build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
@@ -403,7 +403,7 @@ public class MountStateRemountTest {
                     .backgroundColor(Color.CYAN))
             .build();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));

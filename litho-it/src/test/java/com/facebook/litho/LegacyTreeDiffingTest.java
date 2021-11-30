@@ -66,7 +66,7 @@ public class LegacyTreeDiffingTest {
     lithoView.setComponentTree(componentTree);
     lithoView.onAttachedToWindow();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = componentTree.getMainThreadLayoutState();
 
@@ -104,7 +104,7 @@ public class LegacyTreeDiffingTest {
     lithoView.setComponentTree(componentTree);
     lithoView.onAttachedToWindow();
 
-    componentTree.setRootAndSizeSpec(
+    componentTree.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = componentTree.getMainThreadLayoutState();
 

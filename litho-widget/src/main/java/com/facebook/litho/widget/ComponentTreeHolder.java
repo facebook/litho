@@ -309,7 +309,7 @@ public class ComponentTreeHolder {
               : null;
     }
 
-    componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size, treeProps);
+    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec, size, treeProps);
 
     synchronized (this) {
       if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {

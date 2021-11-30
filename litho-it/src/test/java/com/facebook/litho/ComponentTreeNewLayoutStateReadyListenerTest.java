@@ -73,7 +73,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
   @Test
   public void testListenerInvokedForSetRoot() {
     mComponentTree.setNewLayoutStateReadyListener(mListener);
-    mComponentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+    mComponentTree.setRootAndSizeSpecSync(mComponent, mWidthSpec, mHeightSpec);
 
     verify(mListener).onNewLayoutStateReady(mComponentTree);
   }

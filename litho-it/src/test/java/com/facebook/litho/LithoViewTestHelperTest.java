@@ -109,7 +109,7 @@ public class LithoViewTestHelperTest {
             .build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             component, makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED))
         .measure()
         .layout();

@@ -182,10 +182,14 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   }
 
   /** Sets the new root [Component] with new size spec to render. */
-  fun setRootAndSizeSpec(component: Component?, widthSpec: Int, heightSpec: Int): LithoViewRule {
+  fun setRootAndSizeSpecSync(
+      component: Component?,
+      widthSpec: Int,
+      heightSpec: Int
+  ): LithoViewRule {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
-    componentTree.setRootAndSizeSpec(component, this.widthSpec, this.heightSpec)
+    componentTree.setRootAndSizeSpecSync(component, this.widthSpec, this.heightSpec)
     return this
   }
 
@@ -490,7 +494,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         heightSpec: Int
     ): LithoLayoutResult? {
       return rule.attachToWindow()
-          .setRootAndSizeSpec(component, widthSpec, heightSpec)
+          .setRootAndSizeSpecSync(component, widthSpec, heightSpec)
           .measure()
           .layout()
           .currentRootNode

@@ -133,7 +133,7 @@ class KStateTest {
     val secondCountDownLatch = CountDownLatch(1)
 
     val thread1 = Thread {
-      lithoViewRule.setRootAndSizeSpec(
+      lithoViewRule.setRootAndSizeSpecSync(
           CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
           SizeSpec.makeSizeSpec(100, EXACTLY),
           SizeSpec.makeSizeSpec(100, EXACTLY))
@@ -142,7 +142,7 @@ class KStateTest {
     val thread2 = Thread {
       firstCountDownLatch.await()
 
-      lithoViewRule.setRootAndSizeSpec(
+      lithoViewRule.setRootAndSizeSpecSync(
           CountDownLatchComponent(secondCountDownLatch, null, initCounter),
           SizeSpec.makeSizeSpec(200, EXACTLY),
           SizeSpec.makeSizeSpec(200, EXACTLY))

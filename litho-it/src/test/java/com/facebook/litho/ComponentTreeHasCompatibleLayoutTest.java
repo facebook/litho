@@ -70,7 +70,7 @@ public class ComponentTreeHasCompatibleLayoutTest {
 
   @Test
   public void testMainThreadLayoutSet() {
-    mComponentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+    mComponentTree.setRootAndSizeSpecSync(mComponent, mWidthSpec, mHeightSpec);
     assertThat(mComponentTree.hasCompatibleLayout(mWidthSpec, mHeightSpec)).isTrue();
     assertThat(mComponentTree.hasCompatibleLayout(mWidthSpec2, mHeightSpec2)).isFalse();
   }

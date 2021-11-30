@@ -58,7 +58,8 @@ public class ResolveAttributeTest {
     final Column column = Column.create(c).backgroundAttr(testAttrDrawable, 0).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -74,7 +75,8 @@ public class ResolveAttributeTest {
     final Column column = Column.create(c).widthAttr(testAttrDimen, default_dimen).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -90,7 +92,8 @@ public class ResolveAttributeTest {
     final Column column = Column.create(c).backgroundAttr(undefinedAttrDrawable, test_bg).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -108,7 +111,8 @@ public class ResolveAttributeTest {
     final Column column = Column.create(c).widthAttr(undefinedAttrDimen, test_dimen).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -124,7 +128,8 @@ public class ResolveAttributeTest {
     final Column column = Column.create(c).widthAttr(undefinedAttrDimen, test_dimen_float).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -141,7 +146,8 @@ public class ResolveAttributeTest {
         Column.create(c).paddingAttr(LEFT, undefinedAttrDimen, test_dimen_float).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 

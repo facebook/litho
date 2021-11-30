@@ -127,7 +127,7 @@ public class MountStateRemountInPlaceTest {
     tracker.reset();
 
     mLithoViewRule
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             root, makeSizeSpec(20, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY))
         .measure()
         .layout();
@@ -421,7 +421,7 @@ public class MountStateRemountInPlaceTest {
 
     mLithoViewRule
         .attachToWindow()
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             LayoutSpecConditionalReParenting.create(c)
                 .firstComponent(component)
                 .reParent(false)
@@ -433,7 +433,7 @@ public class MountStateRemountInPlaceTest {
 
     mLithoViewRule
         .attachToWindow()
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             LayoutSpecConditionalReParenting.create(c)
                 .firstComponent(component)
                 .reParent(true)

@@ -112,7 +112,7 @@ class HorizontalScrollSpec {
 
     // Measure the component with undefined width spec, as the contents of the
     // hscroll have unlimited horizontal space.
-    childComponentTree.setRootAndSizeSpec(
+    childComponentTree.setRootAndSizeSpecSync(
         contentProps, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
 
     measuredWidth = contentSize.width;
@@ -153,7 +153,7 @@ class HorizontalScrollSpec {
       final int measuredHeight;
 
       Size contentSize = new Size();
-      childComponentTree.setRootAndSizeSpec(
+      childComponentTree.setRootAndSizeSpecSync(
           contentProps,
           SizeSpec.makeSizeSpec(0, UNSPECIFIED),
           SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),

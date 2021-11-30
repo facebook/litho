@@ -213,7 +213,7 @@ public class LayoutStateFutureReleaseTest {
       e.printStackTrace();
     }
 
-    componentTree.setRootAndSizeSpec(column, mWidthSpec, mHeightSpec, new Size());
+    componentTree.setRootAndSizeSpecSync(column, mWidthSpec, mHeightSpec, new Size());
 
     try {
       waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS);

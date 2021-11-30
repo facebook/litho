@@ -160,7 +160,7 @@ public class VerticalScrollSpec {
               .build();
     }
 
-    childComponentTree.setRootAndSizeSpec(
+    childComponentTree.setRootAndSizeSpecSync(
         childComponent, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
 
     // Compute the appropriate size depending on the heightSpec

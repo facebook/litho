@@ -4,7 +4,7 @@
 
 _release-date_
 
- * TBA
+ * Refactor: Rename `setRootAndSizeSpec` to `setRootAndSizeSpecSync` in `ComponentTree`.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.1...master).
 

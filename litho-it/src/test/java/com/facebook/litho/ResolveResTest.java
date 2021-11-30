@@ -50,7 +50,8 @@ public class ResolveResTest {
     final Column column = Column.create(c).widthRes(test_dimen).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -64,7 +65,8 @@ public class ResolveResTest {
     final Column column = Column.create(c).paddingRes(LEFT, test_dimen).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
@@ -78,7 +80,8 @@ public class ResolveResTest {
     final Column column = Column.create(c).widthRes(test_dimen_float).build();
 
     mLithoViewRule
-        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .setRootAndSizeSpecSync(
+            column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 

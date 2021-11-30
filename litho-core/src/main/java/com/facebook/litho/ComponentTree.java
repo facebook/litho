@@ -1796,7 +1796,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /** Compute a new layout with the given component root and sizes */
-  public void setRootAndSizeSpec(Component root, int widthSpec, int heightSpec) {
+  public void setRootAndSizeSpecSync(Component root, int widthSpec, int heightSpec) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -1813,7 +1813,7 @@ public class ComponentTree implements LithoLifecycleListener {
         null);
   }
 
-  public void setRootAndSizeSpec(Component root, int widthSpec, int heightSpec, Size output) {
+  public void setRootAndSizeSpecSync(Component root, int widthSpec, int heightSpec, Size output) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -1830,7 +1830,7 @@ public class ComponentTree implements LithoLifecycleListener {
         null);
   }
 
-  public void setRootAndSizeSpec(
+  public void setRootAndSizeSpecSync(
       Component root, int widthSpec, int heightSpec, Size output, @Nullable TreeProps treeProps) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");

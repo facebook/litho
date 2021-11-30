@@ -2746,7 +2746,7 @@ public class LayoutStateCalculateTest {
         .isTrue();
 
     mLithoViewRule
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             SolidColor.create(mContext).color(Color.BLACK).build(),
             SizeSpec.makeSizeSpec(100, EXACTLY),
             SizeSpec.makeSizeSpec(100, EXACTLY))
@@ -2758,7 +2758,7 @@ public class LayoutStateCalculateTest {
         .isFalse();
 
     mLithoViewRule
-        .setRootAndSizeSpec(
+        .setRootAndSizeSpecSync(
             Column.create(mContext)
                 .child(Text.create(mContext).text("hello world").build())
                 .child(SolidColor.create(mContext).color(Color.BLACK).build())

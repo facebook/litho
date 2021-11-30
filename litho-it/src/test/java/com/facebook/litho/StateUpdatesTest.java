@@ -347,7 +347,7 @@ public class StateUpdatesTest {
         new Thread() {
           @Override
           public void run() {
-            componentTree.setRootAndSizeSpec(
+            componentTree.setRootAndSizeSpecSync(
                 StateUpdateTestLayout.create(mContext)
                     .awaitable(waitForFirstLayoutToStart)
                     .countDownLatch(waitForFirstThreadToStart)
@@ -369,7 +369,7 @@ public class StateUpdatesTest {
             } catch (InterruptedException e) {
               e.printStackTrace();
             }
-            componentTree.setRootAndSizeSpec(
+            componentTree.setRootAndSizeSpecSync(
                 StateUpdateTestLayout.create(mContext)
                     .awaitable(null)
                     .countDownLatch(waitForFirstLayoutToStart)
