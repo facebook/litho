@@ -48,7 +48,7 @@ setting the `name` prop:
 
 :::tip
 Your component class is generated at build time via the annotation processor. To get proper IDE
-autocompletion without having to rebuild, make sure you've installed the [Litho Android Studio plugin](/docs/devtools/android-studio-plugin)!
+autocompletion without having to rebuild, make sure you've installed the [Litho Android Studio plugin](../devtools/android-studio-plugin.md)!
 :::
 
 ## Introducing Layout
@@ -57,7 +57,7 @@ Enough of HelloWorlds – let's get to building our Instagram app!
 
 You'll start with creating a component for an Instagram post and that requires layouting 2 images
 and a text in a particular way. Layouts in Litho are defined via the Flexbox API. You can read more
-about different layouting options in [Layout with Flexbox](docs/mainconcepts/uicomposition/flexbox-yoga)
+about different layouting options in [Layout with Flexbox](../mainconcepts/uicomposition/flexbox-yoga.mdx)
 doc, but for now it's enough to know that the main Flexbox primitives are **Column** and **Row**,
 and they are used to arrange children vertically and horizontally, respectively.
 

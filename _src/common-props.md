@@ -155,7 +155,7 @@ MyComponent.create(c)
   .clickHandler(RootComponent.onSomeEvent(c))
 ```
 
-See: [Event Handling](events-touch-handling) docs for more info.
+See: [Event Handling](events-touch-handling.md) docs for more info.
 
 ### Clickable
 

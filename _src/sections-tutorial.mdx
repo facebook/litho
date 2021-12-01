@@ -5,14 +5,14 @@ title: Sections Tutorial
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 :::note
-This part builds on the work you did in [the litho tutorial](tutorial). Make sure you've read through that tutorial before returning to this one.
+This part builds on the work you did in [the litho tutorial](tutorial.mdx). Make sure you've read through that tutorial before returning to this one.
 :::
 
-Recall in [the litho tutorial](tutorial) that we left off with a vertically scrolling list with alternating background colors. In this optional part of this tutorial, we will add an horizontal scrolling unit at the top of the list by modifying `ListSectionSpec` to leverage the composability of the Litho and Sections API.
+Recall in [the litho tutorial](tutorial.mdx) that we left off with a vertically scrolling list with alternating background colors. In this optional part of this tutorial, we will add an horizontal scrolling unit at the top of the list by modifying `ListSectionSpec` to leverage the composability of the Litho and Sections API.
 
 
 ## 1. Refactoring ListSectionSpec
-Let us revisit [ListSectionSpec](tutorial#3-creating-a-list-of-items).  Each `SingleComponentSection` inside the for loop renders almost the same component, only the number changes.  In other words, each of our `ListItem` components are backed by a model object of the same type: `int`.
+Let us revisit [ListSectionSpec](tutorial.mdx#3-creating-a-list-of-items).  Each `SingleComponentSection` inside the for loop renders almost the same component, only the number changes.  In other words, each of our `ListItem` components are backed by a model object of the same type: `int`.
 
 Litho provides another core section `DataDiffSection` that is specifically used to render components backed by a list of models. In this step we will refactor `ListSectionSpec` to use `DataDiffSection`.
 
@@ -68,7 +68,7 @@ Here's a quick explanation of what's going on:
  - This custom event handler will call the `onRender` method defined in `ListSectionSpec` with all the right parameters whenever it receives a `RenderEvent`.
  - All of this event handler code is auto-generated from the `@OnEvent` annotation.
 
- You can read more Events and Litho's event handling system [here](/docs/mainconcepts/coordinate-state-actions/events).
+ You can read more Events and Litho's event handling system [here](./mainconcepts/coordinate-state-actions/events.md).
 
 Run the app. You should see the same thing as before.
 
