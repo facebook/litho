@@ -21,6 +21,7 @@ import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.TypeSpec;
 import com.google.common.annotations.VisibleForTesting;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiArrayType;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.Nullable;
 
 /** Converts {@link PsiType} to {@link TypeName}. */
 class PsiTypeUtils {
@@ -84,25 +86,12 @@ class PsiTypeUtils {
           @Override
           public TypeSpec visitClassType(PsiClassType classType) {
             final PsiClass psiClass = classType.resolve();
-            if (psiClass == null) {
+            if (psiClass == null && !ApplicationManager.getApplication().isUnitTestMode()) {
               return visitType(classType);
             }
-            // In case of Generic like E extends ..., getQualifiedName() returns null;
-            final String qualifiedName =
-                psiClass.getQualifiedName() != null
-                    ? psiClass.getQualifiedName()
-                    : classType.getCanonicalText();
-            final PsiClass superClass = psiClass.getSuperClass();
-            final PsiReferenceList superInterfaces = psiClass.getImplementsList();
-
-            final List<TypeSpec> superInterfaceSpecs =
-                superInterfaces != null
-                        && superInterfaces.getReferencedTypes() != null
-                        && superInterfaces.getReferencedTypes().length > 0
-                    ? Arrays.stream(superInterfaces.getReferencedTypes())
-                        .map(PsiTypeUtils::generateTypeSpec)
-                        .collect(Collectors.toList())
-                    : Collections.emptyList();
+            final String qualifiedName = getQualifiedName(psiClass, classType);
+            final List<TypeSpec> superInterfaceSpecs = getSuperInterfaceSpecs(psiClass);
+            final TypeSpec superClassSpec = getSuperClassSpec(psiClass);
 
             final List<TypeSpec> typeArguments =
                 guessClassName(qualifiedName).equals(ClassNames.DIFF)
@@ -112,12 +101,6 @@ class PsiTypeUtils {
                         .map(PsiTypeUtils::generateTypeSpec)
                         .collect(Collectors.toList())
                     : Collections.emptyList();
-
-            TypeSpec superClassSpec =
-                (superClass != null && !superClass.isInterface())
-                    ? generateTypeSpec(PsiTypesUtil.getClassType(superClass))
-                    : null;
-
             return new TypeSpec.DeclaredTypeSpec(
                 getTypeName(type),
                 qualifiedName,
@@ -126,6 +109,40 @@ class PsiTypeUtils {
                 () -> copyOf(typeArguments));
           }
         });
+  }
+
+  private static List<TypeSpec> getSuperInterfaceSpecs(@Nullable PsiClass psiClass) {
+    if (psiClass == null) {
+      return Collections.emptyList();
+    }
+    final PsiReferenceList superInterfaces = psiClass.getImplementsList();
+    return superInterfaces != null
+            && superInterfaces.getReferencedTypes() != null
+            && superInterfaces.getReferencedTypes().length > 0
+        ? Arrays.stream(superInterfaces.getReferencedTypes())
+            .map(PsiTypeUtils::generateTypeSpec)
+            .collect(Collectors.toList())
+        : Collections.emptyList();
+  }
+
+  private static String getQualifiedName(@Nullable PsiClass psiClass, PsiClassType classType) {
+    // In case of Generic like E extends ..., getQualifiedName() returns null;]
+    final String canonicalText = classType.getCanonicalText();
+    if (psiClass == null) {
+      int pos = canonicalText.indexOf('<');
+      return pos == -1 ? canonicalText : canonicalText.substring(0, pos);
+    }
+    return psiClass.getQualifiedName() != null ? psiClass.getQualifiedName() : canonicalText;
+  }
+
+  private static @Nullable TypeSpec getSuperClassSpec(@Nullable PsiClass psiClass) {
+    if (psiClass == null) {
+      return null;
+    }
+    final PsiClass superClass = psiClass.getSuperClass();
+    return (superClass != null && !superClass.isInterface())
+        ? generateTypeSpec(PsiTypesUtil.getClassType(superClass))
+        : null;
   }
 
   private static TypeName[] getTypeNameArray(PsiType[] psiTypes) {

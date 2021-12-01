@@ -21,8 +21,8 @@ class TestDiffSectionSpec {
   public static void onCreateChangeSet(
           com.facebook.litho.sections.SectionContext context,
           com.facebook.litho.sections.ChangeSet changeSet,
-          @com.facebook.litho.annotations.Prop Diff<Component> component,
-          @com.facebook.litho.annotations.Prop(optional = true) Diff<Object> data) {
+          @com.facebook.litho.annotations.Prop com.facebook.litho.Diff<Component> component,
+          @com.facebook.litho.annotations.Prop(optional = true) com.facebook.litho.Diff<Object> data) {
     final Object prevData = data.getPrevious();
     final Object nextData = data.getNext();
     final com.facebook.litho.Component prevComponent = component.getPrevious();

@@ -26,6 +26,8 @@ public class DiffSectionSpecModelFactoryTestHelper {
       DiffSectionSpecModel diffSectionSpecModel) {
     assertThat(diffSectionSpecModel.getSpecName()).isEqualTo("TestDiffSectionSpec");
     assertThat(diffSectionSpecModel.getDelegateMethods()).hasSize(1);
+    assertThat(diffSectionSpecModel.getDelegateMethods().get(0).annotations.get(0).toString())
+        .isEqualTo("@com.facebook.litho.sections.annotations.OnDiff()");
     assertThat(diffSectionSpecModel.getProps()).hasSize(2);
   }
 }

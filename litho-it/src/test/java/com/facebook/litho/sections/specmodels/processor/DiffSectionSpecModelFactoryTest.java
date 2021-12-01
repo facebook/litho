@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.specmodels.processor;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.Component;
@@ -96,5 +97,13 @@ public class DiffSectionSpecModelFactoryTest {
   public void create_forGroupSectionSpec_populateGenericInfo() {
     DiffSectionSpecModelFactoryTestHelper.create_forDiffSectionSpec_populateGenericSpecInfo(
         mDiffSectionSpecModel);
+  }
+
+  @Test
+  public void testUpdateStateWithTransitionMethodsIsNotNull() {
+    assertThat(mDiffSectionSpecModel.getUpdateStateWithTransitionMethods())
+        .describedAs(
+            "UpdateStateWithTransitionMethods cannot be null as otherwise the Litho Structure will not render")
+        .isNotNull();
   }
 }
