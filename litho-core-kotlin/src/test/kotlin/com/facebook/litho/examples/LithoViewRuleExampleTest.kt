@@ -129,8 +129,7 @@ class LithoViewRuleExampleTest {
     /** Before the onVisible is called */
     assertThat(lithoViewRule.lithoView).doesNotContainComponents(InnerComponent::class)
     /** Layout component and idle, triggering visibility event and any async updates */
-    lithoViewRule.layout()
-    lithoViewRule.idle()
+    lithoViewRule.layout().idle()
     /** After the onVisible is called */
     assertThat(lithoViewRule.lithoView).containsComponent(InnerComponent::class)
     // visibility_test_end
