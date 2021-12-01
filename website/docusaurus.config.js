@@ -23,6 +23,8 @@ const siteTitle = fbContent({internal: 'Litho @FB', external: 'Litho'});
 
 module.exports = {
   onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
+  trailingSlash: true,
   title: siteTitle,
   tagline: 'A declarative UI framework for Android',
   url: fbContent({
