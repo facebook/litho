@@ -114,6 +114,8 @@ public class ComponentsConfiguration {
 
   public static @Nullable Boolean overrideLayoutDiffing = null;
 
+  public static boolean overrideFixViewportUpdatesForAsyncInsert = false;
+
   /**
    * Sets if layout diffing is enabled. This should be used in conjugation with
    * {@link#isReconciliationEnabled}.

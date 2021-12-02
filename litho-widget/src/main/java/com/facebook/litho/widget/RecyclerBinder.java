@@ -1013,7 +1013,9 @@ public class RecyclerBinder
     mStartupLogger = builder.startupLogger;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
-    mFixViewportUpdatesForAsyncInsert = builder.fixViewportUpdatesForAsyncInsert;
+    mFixViewportUpdatesForAsyncInsert =
+        builder.fixViewportUpdatesForAsyncInsert
+            || ComponentsConfiguration.overrideFixViewportUpdatesForAsyncInsert;
   }
 
   /**
