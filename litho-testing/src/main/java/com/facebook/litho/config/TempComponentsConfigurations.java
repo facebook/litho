@@ -41,6 +41,8 @@ public class TempComponentsConfigurations {
   private static final boolean originalEnsureParentMountedInRenderCore =
       ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
 
+  private static final boolean originalLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
+
   public static void setShouldAddHostViewForRootComponent(boolean value) {
     ComponentsConfiguration.shouldDisableBgFgOutputs = value;
     ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
@@ -118,5 +120,13 @@ public class TempComponentsConfigurations {
   public static void restoreEnsureParentMountedInRenderCoreMountState() {
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState =
         originalEnsureParentMountedInRenderCore;
+  }
+
+  public static void setLayoutCaching(boolean value) {
+    ComponentsConfiguration.enableLayoutCaching = value;
+  }
+
+  public static void restoreLayoutCaching() {
+    ComponentsConfiguration.enableLayoutCaching = originalLayoutCaching;
   }
 }

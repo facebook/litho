@@ -367,7 +367,7 @@ public class ComponentsConfiguration {
   public static class Builder {
     boolean mUseCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
-    boolean mUseInputOnlyInternalNodes = false;
+    boolean mUseInputOnlyInternalNodes = true;
     boolean mReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     boolean mUseStatelessComponents = ComponentsConfiguration.useStatelessComponent;
     boolean mShouldReuseOutputs = false;
