@@ -131,7 +131,7 @@ class LithoViewRuleExampleTest {
     /** Layout component and idle, triggering visibility event and any async updates */
     lithoViewRule.layout().idle()
     /** After the onVisible is called */
-    assertThat(lithoViewRule.lithoView).containsComponent(InnerComponent::class)
+    assertThat(lithoViewRule.lithoView).hasExactlyOne(InnerComponent::class)
     // visibility_test_end
     assertThat(lithoViewRule.lithoView).hasVisibleText("some_text")
   }
@@ -196,7 +196,7 @@ class LithoViewRuleExampleTest {
     // contains_components_start
     lithoViewRule.render { TestComponent() }
     assertThat(lithoViewRule.lithoView)
-        .containsComponent(2, InnerComponent::class)
+        .hasExactly(2, InnerComponent::class)
         .containsComponents(DeepComponent::class, InnerSecondComponent::class)
     // contains_components_end
   }
