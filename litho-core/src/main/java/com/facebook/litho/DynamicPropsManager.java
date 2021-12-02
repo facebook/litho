@@ -263,6 +263,9 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         dependentComponents.toArray(new Component[dependentComponents.size()]);
     for (Component component : dependentComponentSnapshot) {
       final Object content = mContents.get(component);
+      if (content == null) {
+        continue;
+      }
 
       if (hasCommonDynamicPropsToBind(component)) {
         final SparseArray<DynamicValue<?>> commonDynamicProps = component.getCommonDynamicProps();
