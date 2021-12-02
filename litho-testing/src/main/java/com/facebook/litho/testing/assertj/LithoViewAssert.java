@@ -305,6 +305,30 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
+  /**
+   * Assert that the LithoView will render content, the root component won't return null nor a child
+   * with height and width equal to 0
+   */
+  public LithoViewAssert willRenderContent() {
+    Assertions.assertThat(actual.getMountItemCount() > 0 || actual.getChildCount() > 0)
+        .overridingErrorMessage(
+            "Expected content to be visible, but current LithoView childCount = 0 and we did not mount any content");
+    return this;
+  }
+
+  /**
+   * Assert that the LithoView will not render content, the root component will either return null
+   * or a child with width and height equal to 0
+   */
+  public LithoViewAssert willNotRenderContent() {
+    Assertions.assertThat(actual.getMountItemCount() == 0 && actual.getChildCount() == 0)
+        .overridingErrorMessage(
+            "Expected no content in the current LithoView, but found child count = %d and mounted item count = %d with LithoView hierarchy:\n %s",
+            actual.getChildCount(), actual.getMountItemCount(), actual.toString())
+        .isTrue();
+    return this;
+  }
+
   public static OccurrenceCount times(int i) {
     return new OccurrenceCount(i, i + " times");
   }

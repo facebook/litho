@@ -410,7 +410,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
    * </code> returns null.
    *
-   * @deprecated Use {@link #isNotNull()} instead.
+   * @deprecated Use {@link LithoViewAssert#willNotRenderContent()} ()} that will check if the root
+   *     component will return null or a child with width oir height equal to 0
    */
   @Deprecated
   public ComponentAssert wontRender() {
@@ -424,7 +425,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Assert that a given {@link Component} produces a non-null layout.
    *
-   * @deprecated Use {@link #isNotNull()} instead.
+   * @deprecated Use {@link LithoViewAssert#willRenderContent()} that will check if the root
+   *     component won't return null or a child with height and width equal to 0
    */
   @Deprecated
   public ComponentAssert willRender() {
@@ -447,7 +449,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /** @deprecated Use {@link #isNotNull()} instead. */
+  /** @deprecated see {@link #wontRender()} */
   @Deprecated
   public ComponentAssert willNotRender() {
     return wontRender();
