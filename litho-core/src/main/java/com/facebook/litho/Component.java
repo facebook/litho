@@ -66,6 +66,7 @@ import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.AuditableMountContent;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
@@ -166,7 +167,7 @@ public abstract class Component
   private @Nullable SparseIntArray mChildCounters;
 
   /** Count the times a manual key is used so that clashes can be resolved. */
-  private @Nullable Map<String, Integer> mManualKeysCounter;
+  @DoNotStrip private @Nullable Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
