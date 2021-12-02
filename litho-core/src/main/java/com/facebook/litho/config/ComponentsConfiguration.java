@@ -187,7 +187,7 @@ public class ComponentsConfiguration {
    * LayoutState based on the Component's global key instead of reading fields from the Component
    * instance.
    */
-  public static boolean useStatelessComponent = false;
+  public static boolean useStatelessComponent = true;
 
   public static boolean reuseInternalNodes = false;
 
