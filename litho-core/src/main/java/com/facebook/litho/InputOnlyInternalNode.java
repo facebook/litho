@@ -451,21 +451,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
       // Transfer the layout props to YogaNode
       currentInternalNode.writeToYogaNode(writer, node);
-
-      // Validate layout props for the root
-      if (parentNode == null) {
-        final @Nullable String props = writer.validateLayoutPropsForRoot();
-        if (props != null) {
-          final String msg =
-              props
-                  + " cannot be set on the root layout.\n"
-                  + "layout-stack: "
-                  + TextUtils.join(
-                      " -> ",
-                      Component.generateHierarchy(currentInternalNode.getTailComponentKey()));
-          Log.w(INVALID_LAYOUT_PROPS, msg);
-        }
-      }
     }
 
     final @Nullable LithoLayoutResult parentLayoutResult =
