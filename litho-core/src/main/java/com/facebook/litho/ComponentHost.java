@@ -735,8 +735,8 @@ public class ComponentHost extends Host implements DisappearingHost {
       StringBuilder componentNames = new StringBuilder("[");
       for (int i = 0; i < mountItemCount; i++) {
         MountItem item = mMountItems.get(i);
-        String componentName = getLayoutOutput(item).getComponent().getSimpleName();
-        componentNames.append(componentName);
+        componentNames.append(
+            (item != null) ? getLayoutOutput(item).getComponent().getSimpleName() : "null");
         if (i < mountItemCount - 1) {
           componentNames.append(", ");
         } else {
