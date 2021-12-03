@@ -352,7 +352,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Verifies that the component contains only the given sub-components and nothing else, in order.
    *
-   * @deprecated Use {@link LithoViewAssert#containsComponents(int, Class)} instead.
+   * @deprecated Use {@link LithoViewAssert#hasExactly(int, Class)} instead.
    */
   @Deprecated
   public ComponentAssert containsOnlySubComponents(SubComponent... subComponents) {
@@ -380,7 +380,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /**
    * Extract the sub components from the underlying Component, returning a ListAssert over it
    *
-   * @deprecated Use {@link LithoViewAssert#containsComponent(int, Class)} instead.
+   * @deprecated Use {@link LithoViewAssert#hasExactly(int, Class)} instead.
    */
   @Deprecated
   @CheckReturnValue
@@ -392,7 +392,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * Extract the sub components recursively from the underlying Component, returning a ListAssert
    * over it.
    *
-   * @deprecated Use {@link LithoViewAssert#containsComponent(int, Class)} instead.
+   * @deprecated Use {@link LithoViewAssert#hasExactly(int, Class)} instead.
    */
   @Deprecated
   @CheckReturnValue
