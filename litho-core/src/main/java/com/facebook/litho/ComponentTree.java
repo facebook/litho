@@ -2352,8 +2352,6 @@ public class ComponentTree implements LithoLifecycleListener {
     List<Component> components = null;
     List<String> componentKeys = null;
     @Nullable List<ScopedComponentInfo> scopedComponentInfos = null;
-    @Nullable Map<String, Component> attachables = null;
-    LayoutStateContext layoutStateContext = null;
 
     int rootWidth = 0;
     int rootHeight = 0;
@@ -2405,8 +2403,6 @@ public class ComponentTree implements LithoLifecycleListener {
           rootWidth = localLayoutState.getWidth();
           rootHeight = localLayoutState.getHeight();
         }
-
-        layoutStateContext = localLayoutState.getLayoutStateContext();
       }
 
       if (layoutStateStateHandler != null) {
