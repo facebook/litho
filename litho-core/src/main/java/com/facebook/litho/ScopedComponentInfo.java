@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.util.SparseIntArray;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ class ScopedComponentInfo implements Cloneable {
   private @Nullable SparseIntArray mChildCounters;
 
   /** Count the times a manual key is used so that clashes can be resolved. */
-  private @Nullable Map<String, Integer> mManualKeysCounter;
+  @DoNotStrip private @Nullable Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
