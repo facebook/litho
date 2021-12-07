@@ -273,6 +273,9 @@ public class ComponentsConfiguration {
   /** Same as autoClearingMountContentPoolShouldClearExternalComponents but for HostComponent. */
   public static boolean autoClearingMountContentPoolShouldClearHostComponent = true;
 
+  /** This toggles whether fury should instrument the Litho event callback event */
+  public static boolean furyEventCallbackInstrumentation = false;
+
   /**
    * This toggles whether Litho's MountState uses the position of the item in the host view to
    * mount/unmount or uses the position in the LayoutState. The default is to use the position in
