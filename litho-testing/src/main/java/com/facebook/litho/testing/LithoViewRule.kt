@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing
 
+import android.app.Activity
 import android.content.Context
 import android.os.Looper
 import android.view.View
@@ -46,6 +47,7 @@ import kotlin.reflect.KClass
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 
 @JvmField val DEFAULT_WIDTH_SPEC: Int = MeasureSpec.makeMeasureSpec(1080, MeasureSpec.EXACTLY)
@@ -72,7 +74,12 @@ import org.robolectric.Shadows.shadowOf
  * }
  * ```
  */
-class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null) : TestRule {
+class LithoViewRule
+@JvmOverloads
+constructor(
+    val componentsConfiguration: ComponentsConfiguration? = null,
+    val themeResId: Int? = null
+) : TestRule {
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
@@ -110,7 +117,13 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     return object : Statement() {
       override fun evaluate() {
         try {
-          context = ComponentContext(getApplicationContext<Context>())
+          if (themeResId != null) {
+            val activity = Robolectric.buildActivity(Activity::class.java).create().get()
+            activity.setTheme(themeResId)
+            context = ComponentContext(activity)
+          } else {
+            context = ComponentContext(getApplicationContext<Context>())
+          }
           context.setLayoutStateContextForTesting()
           stateHandler = StateHandler()
           threadLooperController.init()
