@@ -258,7 +258,7 @@ if you want to ensure that a component with a given set of props exists in the c
 ```java
 @Test
 public void testSubComponentLegacyBridge() {
-  final ComponentContext c = mComponentsRule.getContext();
+  final ComponentContext c = mLithoViewRule.getContext();
 
   assertThat(c, mComponent)
       .has(

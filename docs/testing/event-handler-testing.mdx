@@ -94,11 +94,11 @@ the TestSpec matchers we have learned about before.
 ```java
 @RunWith(LithoTestRunner.class)
 public class LearningStateComponentSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Test
   public void testComponentOnClick() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final Component component = LearningStateComponent.create(
         c)
         .canClick(true)
@@ -114,7 +114,7 @@ public class LearningStateComponentSpecTest {
 
   @Test
   public void testNoComponentOnClick() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final Component component = LearningStateComponent.create(
         c)
         .canClick(false)

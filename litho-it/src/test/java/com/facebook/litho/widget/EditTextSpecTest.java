@@ -20,7 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
@@ -30,13 +30,13 @@ import org.junit.runner.RunWith;
 /** Tests {@link EditText} component. */
 @RunWith(LithoTestRunner.class)
 public class EditTextSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private static final String TEXT = "Hello Components";
 
   @Test
   public void testEditTextWithText() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
             EditText.create(c).textChangedEventHandler(null).textSizePx(10).text(TEXT));

@@ -31,7 +31,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.it.R;
-import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
@@ -47,7 +46,6 @@ public class ComponentStyleTest {
   private int mLargeDimen;
   private ComponentContext mContext;
 
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before

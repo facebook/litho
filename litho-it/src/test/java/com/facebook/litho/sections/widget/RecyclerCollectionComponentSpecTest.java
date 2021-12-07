@@ -50,7 +50,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
-import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.state.StateUpdatesTestHelper;
@@ -74,7 +73,6 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class RecyclerCollectionComponentSpecTest {
 
-  @Rule public final ComponentsRule componentsRule = new ComponentsRule();
   @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private ComponentContext mComponentContext;

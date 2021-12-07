@@ -25,7 +25,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class DemoListComponentTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
   private Component mComponent;
 
   @Before
@@ -50,7 +50,7 @@ public class DemoListComponentTest {
   @Before
   public void setUp() {
     mComponent =
-        DemoListRootComponent.create(mComponentsRule.getContext())
+        DemoListRootComponent.create(mLithoViewRule.getContext())
             .demos(new ArrayList<Demos.DemoGrouping>())
             .previousIndices(null)
             .build();
@@ -58,16 +58,16 @@ public class DemoListComponentTest {
 
   @Test
   public void testSubComponents() {
-    assertThat(mComponentsRule.getContext(), mComponent)
+    assertThat(mLithoViewRule.getContext(), mComponent)
         .containsOnlySubComponents(SubComponent.of(RecyclerCollectionComponent.class));
   }
 
   @Test
   public void testNumOfSubComponents() {
-    assertThat(mComponentsRule.getContext(), mComponent)
-        .has(numOfSubComponents(mComponentsRule.getContext(), is(1)));
+    assertThat(mLithoViewRule.getContext(), mComponent)
+        .has(numOfSubComponents(mLithoViewRule.getContext(), is(1)));
 
-    assertThat(mComponentsRule.getContext(), mComponent)
-        .has(numOfSubComponents(mComponentsRule.getContext(), greaterThan(0)));
+    assertThat(mLithoViewRule.getContext(), mComponent)
+        .has(numOfSubComponents(mLithoViewRule.getContext(), greaterThan(0)));
   }
 }

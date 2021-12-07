@@ -30,7 +30,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class FeedItemComponentSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private Component mComponent;
 
@@ -51,7 +51,7 @@ public class FeedItemComponentSpecTest {
         "These tests can only be run in debug mode.",
         ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     mComponent =
         FeedItemComponent.create(c)
             .artist(new Artist("Sindre Sorhus", "Rockstar Developer", 2010))
@@ -60,14 +60,14 @@ public class FeedItemComponentSpecTest {
 
   @Test
   public void recursiveSubComponentExists() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     assertThat(c, mComponent).extractingSubComponentAt(0).extractingSubComponents(c).hasSize(2);
   }
 
   @Test
   public void testLithoViewSubComponentMatching() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final LithoView lithoView = ComponentTestHelper.mountComponent(c, mComponent);
 
     assertThat(lithoView).has(deepSubComponentWith(textEquals("Sindre Sorhus")));
@@ -75,7 +75,7 @@ public class FeedItemComponentSpecTest {
 
   @Test
   public void subComponentLegacyBridge() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)

@@ -30,7 +30,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Card;
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class FeedItemCardSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private Component mComponent;
   private static final Artist ARTIST = new Artist("Sindre Sorhus", "JavaScript Rockstar", 2010);
@@ -56,14 +56,14 @@ public class FeedItemCardSpecTest {
         ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     mComponent = FeedItemCard.create(c).artist(ARTIST).build();
   }
 
   @Test
   public void testShallowSubComponents() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)
         .extractingSubComponents(c)
@@ -80,7 +80,7 @@ public class FeedItemCardSpecTest {
 
   @Test
   public void testDeepSubComponents() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     // N.B. This manual way of testing is not recommended and will be replaced by more high-level
     // matchers, but illustrates how it can be used in case more fine-grained assertions are
@@ -103,7 +103,7 @@ public class FeedItemCardSpecTest {
 
   @Test
   public void testDeepSubComponentText() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     assertThat(c, mComponent)
         .has(
@@ -114,14 +114,14 @@ public class FeedItemCardSpecTest {
 
   @Test
   public void testDeepSubComponentTextType() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     assertThat(c, mComponent).has(deepSubComponentWith(c, inspectedTypeIs(Text.class)));
   }
 
   @Test
   public void testDeepMatcherMatching() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     // You can also test nested sub-components by passing in another Matcher where
     // you would normally provide a Component. In this case we provide a Matcher

@@ -23,7 +23,6 @@ import static org.junit.Assume.assumeThat;
 import android.view.View;
 import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
 import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout;
@@ -52,7 +51,6 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class LithoMetadataExceptionWrapperTest {
 
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
@@ -78,7 +76,7 @@ public class LithoMetadataExceptionWrapperTest {
           public void describeTo(Description description) {}
         });
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     mLithoViewRule
         .setRoot(
@@ -99,7 +97,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("layout_stack: TestCrasherOnCreateLayout");
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     mLithoViewRule.setRoot(TestCrasherOnCreateLayout.create(c)).measure().layout().attachToWindow();
   }
@@ -282,7 +280,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("custom_key: custom_value");
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     mLithoViewRule
         .setRoot(
             Column.create(c)
@@ -304,7 +302,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expectMessage("custom_key: custom_value");
     mExpectedException.expectMessage("custom_key2: custom_value2");
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     mLithoViewRule
         .setRoot(
             Column.create(c)
@@ -328,7 +326,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("custom_key: custom_value");
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -358,7 +356,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("component_scope: OnMeasureCallbackComponent");
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -385,7 +383,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("Real Cause => java.lang.RuntimeException: Exception Level 3");
 
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(

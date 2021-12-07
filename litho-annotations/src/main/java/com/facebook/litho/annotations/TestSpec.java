@@ -36,7 +36,7 @@ package com.facebook.litho.annotations;
  * <pre>
  * <code>{@literal @}Test
  *  public void testMyLayoutSpec() {
- *    final ComponentContext c = mComponentsRule.getContext();
+ *    final ComponentContext c = mLithoViewRule.getContext();
  *    assertThat(c, mComponent)
  *        .has(subComponentWith(c,
  *            TestMyLayoutSpec.matcher(c)

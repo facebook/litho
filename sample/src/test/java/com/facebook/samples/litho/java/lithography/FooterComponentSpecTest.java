@@ -26,7 +26,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestText;
 import org.junit.Before;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class FooterComponentSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setUp() {
@@ -48,7 +48,7 @@ public class FooterComponentSpecTest {
 
   @Test
   public void subComponentWithMatcherWithConsistentHierarchyExperiment() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final Component component = FooterComponent.create(c).text("I hate Mumunmununsdays").build();
 
     assertThat(c, component)

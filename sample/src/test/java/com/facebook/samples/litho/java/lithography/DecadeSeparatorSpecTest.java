@@ -29,7 +29,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class DecadeSeparatorSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private Component mComponent;
 
@@ -53,25 +53,25 @@ public class DecadeSeparatorSpecTest {
         ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
     mComponent =
-        DecadeSeparator.create(mComponentsRule.getContext()).decade(new Decade(2010)).build();
+        DecadeSeparator.create(mLithoViewRule.getContext()).decade(new Decade(2010)).build();
   }
 
   @Test
   public void subComponentsWithManualExtraction() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
 
     assertThat(c, mComponent).extractingSubComponentAt(0).extractingSubComponents(c).hasSize(3);
   }
 
   @Test
   public void testSubComponentByClass() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     assertThat(c, mComponent).hasSubComponents(SubComponent.of(Text.class));
   }
 
   @Test
   public void subComponentByClassWithExtraction() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)
         .extractingSubComponents(c)
@@ -87,7 +87,7 @@ public class DecadeSeparatorSpecTest {
 
   @Test
   public void subComponentWithText() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)
         .has(subComponentWith(c, textEquals("2010")))

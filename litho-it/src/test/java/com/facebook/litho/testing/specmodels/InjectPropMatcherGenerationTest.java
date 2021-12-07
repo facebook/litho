@@ -23,7 +23,7 @@ import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestText;
@@ -39,7 +39,7 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class InjectPropMatcherGenerationTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setUp() {
@@ -51,7 +51,7 @@ public class InjectPropMatcherGenerationTest {
 
   @Test
   public void testInjectPropMatching() {
-    final ComponentContext c = mComponentsRule.getContext();
+    final ComponentContext c = mLithoViewRule.getContext();
     final MyInjectProp component =
         new MyInjectProp(c.getAndroidContext()).create(c).normalString("normal string").build();
     // Faking some DI mechanism doing its thing.
