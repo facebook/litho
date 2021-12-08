@@ -138,7 +138,7 @@ public class MountItemsPool {
 
       ItemPool pool = poolsMap.get(lifecycle);
       if (pool == null) {
-        pool = new DefaultItemPool();
+        pool = new DefaultItemPool(lifecycle);
         poolsMap.put(lifecycle, pool);
       }
 
@@ -171,7 +171,7 @@ public class MountItemsPool {
 
         // RenderUnit might produce a null pool. In this case, just create a default one.
         if (pool == null) {
-          pool = new DefaultItemPool();
+          pool = new DefaultItemPool(lifecycle);
         }
 
         poolsMap.put(lifecycle, pool);
@@ -348,7 +348,13 @@ public class MountItemsPool {
   }
 
   private static class DefaultItemPool implements ItemPool {
+
     private final Pools.SimplePool mPool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
+    private final Object mLifecycle;
+
+    public DefaultItemPool(Object lifecycle) {
+      mLifecycle = lifecycle;
+    }
 
     @Override
     public Object acquire(Context c, RenderUnit renderUnit) {
@@ -357,7 +363,16 @@ public class MountItemsPool {
 
     @Override
     public void release(Object item) {
-      mPool.release(item);
+      try {
+        mPool.release(item);
+      } catch (IllegalStateException e) {
+        String metadata =
+            "Lifecycle: "
+                + ((mLifecycle instanceof Class)
+                    ? " <cls>" + ((Class) mLifecycle).getName() + "</cls>"
+                    : mLifecycle.toString());
+        throw new IllegalStateException(metadata, e);
+      }
     }
 
     @Override
