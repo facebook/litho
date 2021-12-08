@@ -50,6 +50,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   public static final int KEY_BACKGROUND_COLOR = 7;
   public static final int KEY_ROTATION = 8;
   public static final int KEY_BACKGROUND_DRAWABLE = 9;
+  public static final int KEY_FOREGROUND_COLOR = 10;
 
   private final Map<DynamicValue<?>, Set<Component>> mDependentComponents = new HashMap<>();
   private final Map<Component, Set<DynamicValue<?>>> mAffectingDynamicValues = new HashMap<>();
@@ -242,6 +243,9 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       case KEY_BACKGROUND_DRAWABLE:
         target.setBackground(DynamicPropsManager.<Drawable>resolve(value));
         break;
+
+      case KEY_FOREGROUND_COLOR:
+        ViewUtils.setViewForeground(target, DynamicPropsManager.<Integer>resolve(value));
     }
   }
 

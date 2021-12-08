@@ -237,6 +237,16 @@ inline fun Style.foreground(foreground: Drawable?): Style =
     this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
 
 /**
+ * Sets ColorDrawable of the given color as a background on the View this Component mounts to.
+ * Setting this property will cause the Component to be represented as a View at mount time if it
+ * wasn't going to already.
+ *
+ * See [android.view.View.setForeground]
+ */
+inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
+    this + ObjectStyleItem(ObjectField.FOREGROUND, ComparableColorDrawable.create(foregroundColor))
+
+/**
  * Sets a listener that will invoke the given lambda when this Component is clicked. Setting this
  * property will cause the Component to be represented as a View at mount time if it wasn't going to
  * already.

@@ -25,6 +25,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.animated.alpha
 import com.facebook.litho.animated.backgroundColor
 import com.facebook.litho.animated.elevation
+import com.facebook.litho.animated.foregroundColor
 import com.facebook.litho.animated.rotation
 import com.facebook.litho.animated.scaleX
 import com.facebook.litho.animated.scaleY
@@ -35,8 +36,6 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.view.backgroundColor
-import com.facebook.litho.view.elevation
 import com.facebook.yoga.YogaAlign
 
 class AllCommonDynamicPropsKComponent : KComponent() {
@@ -48,14 +47,16 @@ class AllCommonDynamicPropsKComponent : KComponent() {
     val rotation = useBinding(0f)
     val elevation = useBinding(1f)
 
-    val color = useBinding(Color.RED)
+    val bgColor = useBinding(Color.RED)
+    val fgColor = useBinding(Color.GREEN)
 
     val square =
         Column(
             style =
                 Style.width(100.dp)
                     .height(100.dp)
-                    .backgroundColor(color)
+                    .foregroundColor(fgColor)
+                    .backgroundColor(bgColor)
                     .alignSelf(YogaAlign.CENTER)
                     .scaleX(scale)
                     .scaleY(scale)
@@ -84,9 +85,16 @@ class AllCommonDynamicPropsKComponent : KComponent() {
       child(
           SeekBar(
               initialValue = 0f,
-              label = "Color",
+              label = "background Color",
               onProgressChanged = {
-                color.set(Color.HSVToColor(floatArrayOf(evaluate(it, 0f, 360f), 1f, 1f)))
+                bgColor.set(Color.HSVToColor(floatArrayOf(evaluate(it, 0f, 360f), 1f, 1f)))
+              }))
+      child(
+          SeekBar(
+              initialValue = 0f,
+              label = "foreground Color",
+              onProgressChanged = {
+                fgColor.set(Color.HSVToColor(floatArrayOf(evaluate(it, 0f, 360f), 1f, 1f)))
               }))
       child(
           SeekBar(

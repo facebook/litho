@@ -1390,7 +1390,7 @@ class MountState implements MountDelegateTarget {
       setViewStateListAnimator(view, viewNodeInfo);
       if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
         setViewBackground(view, viewNodeInfo);
-        setViewForeground(view, viewNodeInfo);
+        ViewUtils.setViewForeground(view, viewNodeInfo.getForeground());
 
         // when background outputs are disabled, they are wrapped by a ComponentHost.
         // A background can set the padding of a view, but ComponentHost should not have
@@ -1407,7 +1407,7 @@ class MountState implements MountDelegateTarget {
 
         setViewPadding(view, viewNodeInfo);
 
-        setViewForeground(view, viewNodeInfo);
+        ViewUtils.setViewForeground(view, viewNodeInfo.getForeground());
 
         setViewLayoutDirection(view, viewNodeInfo);
       }
@@ -2022,19 +2022,6 @@ class MountState implements MountDelegateTarget {
       view.setBackgroundDrawable(drawable);
     } else {
       view.setBackground(drawable);
-    }
-  }
-
-  private static void setViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final Drawable foreground = viewNodeInfo.getForeground();
-    if (foreground != null) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        throw new IllegalStateException(
-            "MountState has a ViewNodeInfo with foreground however "
-                + "the current Android version doesn't support foreground on Views");
-      }
-
-      view.setForeground(foreground);
     }
   }
 

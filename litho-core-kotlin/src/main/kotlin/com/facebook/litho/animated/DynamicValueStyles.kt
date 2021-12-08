@@ -20,6 +20,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.DynamicPropsManager.KEY_ALPHA
 import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR
 import com.facebook.litho.DynamicPropsManager.KEY_ELEVATION
+import com.facebook.litho.DynamicPropsManager.KEY_FOREGROUND_COLOR
 import com.facebook.litho.DynamicPropsManager.KEY_ROTATION
 import com.facebook.litho.DynamicPropsManager.KEY_SCALE_X
 import com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y
@@ -38,6 +39,7 @@ internal enum class DynamicField {
   ALPHA,
   BACKGROUND,
   ELEVATION,
+  FOREGROUND,
   ROTATION,
   SCALE_X,
   SCALE_Y,
@@ -57,6 +59,7 @@ internal data class DynamicStyleItem(val field: DynamicField, val value: Dynamic
       DynamicField.ALPHA -> dynamicProps.put(KEY_ALPHA, value)
       DynamicField.BACKGROUND -> dynamicProps.put(KEY_BACKGROUND_COLOR, value)
       DynamicField.ELEVATION -> dynamicProps.put(KEY_ELEVATION, value)
+      DynamicField.FOREGROUND -> dynamicProps.put(KEY_FOREGROUND_COLOR, value)
       DynamicField.ROTATION -> dynamicProps.put(KEY_ROTATION, value)
       DynamicField.SCALE_X -> dynamicProps.put(KEY_SCALE_X, value)
       DynamicField.SCALE_Y -> dynamicProps.put(KEY_SCALE_Y, value)
@@ -71,6 +74,9 @@ inline fun Style.alpha(alpha: DynamicValue<Float>): Style =
 
 inline fun Style.backgroundColor(background: DynamicValue<Int>): Style =
     this + DynamicStyleItem(DynamicField.BACKGROUND, background)
+
+inline fun Style.foregroundColor(foreground: DynamicValue<Int>): Style =
+    this + DynamicStyleItem(DynamicField.FOREGROUND, foreground)
 
 inline fun Style.elevation(elevation: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ELEVATION, elevation)

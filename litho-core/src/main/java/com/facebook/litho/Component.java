@@ -22,6 +22,7 @@ import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE;
 import static com.facebook.litho.DynamicPropsManager.KEY_ELEVATION;
+import static com.facebook.litho.DynamicPropsManager.KEY_FOREGROUND_COLOR;
 import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
@@ -2371,6 +2372,11 @@ public abstract class Component
 
     public T foregroundColor(@ColorInt int foregroundColor) {
       return foreground(ComparableColorDrawable.create(foregroundColor));
+    }
+
+    public T foregroundColor(DynamicValue<Integer> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_FOREGROUND_COLOR, value);
+      return getThis();
     }
 
     public T foregroundRes(@DrawableRes int resId) {
