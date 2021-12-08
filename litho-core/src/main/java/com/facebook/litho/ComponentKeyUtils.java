@@ -214,7 +214,7 @@ public class ComponentKeyUtils {
         | IllegalAccessException
         | InstantiationException
         | InvocationTargetException e) {
-      return _class.getSimpleName();
+      return "<cls>" + _class.getName() + "</cls>";
     }
   }
 }
