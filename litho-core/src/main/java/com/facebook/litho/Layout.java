@@ -529,6 +529,13 @@ class Layout {
       return null;
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          "resume:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
+    }
+
     resume(layoutStateContext, root);
 
     if (logLayoutState != null) {
@@ -547,6 +554,10 @@ class Layout {
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
 
     return result;

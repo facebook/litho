@@ -98,16 +98,26 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           parentContext = node.getComponentContextAt(1);
         }
 
-        final @Nullable LithoLayoutResult nestedTree =
-            Layout.create(
-                layoutStateContext,
-                parentContext,
-                (NestedTreeHolderResult) result,
-                widthSpec,
-                heightSpec);
+        try {
+          if (isTracing) {
+            ComponentsSystrace.beginSection("resolveNestedTree:" + node.getSimpleName());
+          }
 
-        outputWidth = nestedTree != null ? nestedTree.getWidth() : 0;
-        outputHeight = nestedTree != null ? nestedTree.getHeight() : 0;
+          final @Nullable LithoLayoutResult nestedTree =
+              Layout.create(
+                  layoutStateContext,
+                  parentContext,
+                  (NestedTreeHolderResult) result,
+                  widthSpec,
+                  heightSpec);
+
+          outputWidth = nestedTree != null ? nestedTree.getWidth() : 0;
+          outputHeight = nestedTree != null ? nestedTree.getHeight() : 0;
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+        }
       } else if (diffNode != null
           && diffNode.getLastWidthSpec() == widthSpec
           && diffNode.getLastHeightSpec() == heightSpec
@@ -117,7 +127,17 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       } else {
         final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-        component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size, null);
+        try {
+          if (isTracing) {
+            ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
+          }
+
+          component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size, null);
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+        }
 
         if (size.width < 0 || size.height < 0) {
           throw new IllegalStateException(

@@ -436,7 +436,16 @@ public class DefaultInternalNode
 
     applyOverridesRecursive(this);
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("yogaCalculateLayout:" + getHeadComponent().getSimpleName());
+    }
+
     mYogaNode.calculateLayout(width, height);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     return this;
   }

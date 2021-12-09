@@ -536,7 +536,15 @@ public class ComponentUtils {
    * utility will rethrow the exception out of Litho.
    */
   static void handle(ComponentContext c, Exception exception) {
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
     try {
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("handleError");
+      }
+
       if (c.getComponentScope() != null) {
         // acquire component hierarchy metadata leveraging the global key
         LithoMetadataExceptionWrapper metadataExceptionWrapper = wrapWithMetadata(c, exception);
@@ -554,6 +562,10 @@ public class ComponentUtils {
       throw wrapWithMetadata(c, exception);
     } catch (Exception e) {
       throw wrapWithMetadata(c, e);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 

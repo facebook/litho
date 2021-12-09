@@ -489,13 +489,33 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       throw new IllegalStateException("Cannot calculate a layout without a layout state.");
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
     applyOverridesRecursive(c.getRenderContext().mLayoutStateContext, this);
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("freeze:" + getHeadComponent().getSimpleName());
+    }
+
     freezeRecursive(this, null);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     // Unlike DefaultInternalNode which creates the YogaNode tree at the same time as the
     // InternalNode tree, InputOnlyInternalNode creates the YogaNode tree during layout calculation.
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
+    }
+
     final YogaNode root =
         buildYogaTree(c.getRenderContext(), this, c.getRenderContext().mCurrentLayoutRoot, null);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     if (isLayoutDirectionInherit() && isLayoutDirectionRTL(mContext)) {
       root.setDirection(YogaDirection.RTL);
@@ -516,7 +536,15 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec);
 
+    if (isTracing) {
+      ComponentsSystrace.beginSection("yogaCalculateLayout:" + getHeadComponent().getSimpleName());
+    }
+
     root.calculateLayout(width, height);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     return (LithoLayoutResult) root.getData();
   }
