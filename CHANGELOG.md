@@ -5,6 +5,7 @@
 _release-date_
 
  * Refactor: Rename `setRootAndSizeSpec` to `setRootAndSizeSpecSync` in `ComponentTree`.
+ * New: Foreground color is supported as a common `DynamicValue`.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.1...master).
 
