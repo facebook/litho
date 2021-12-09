@@ -33,7 +33,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.it.R;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import org.junit.Before;
@@ -44,43 +44,43 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class ResolveAttributeTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
-    mLithoViewRule.useContext(
+    mLegacyLithoViewRule.useContext(
         new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme)));
   }
 
   @Test
   public void testResolveDrawableAttribute() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).backgroundAttr(testAttrDrawable, 0).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
     Drawable d = c.getResources().getDrawable(test_bg);
-    Drawable drawable = mLithoViewRule.getCurrentRootNode().getBackground();
+    Drawable drawable = mLegacyLithoViewRule.getCurrentRootNode().getBackground();
     assertThat(shadowOf(drawable).getCreatedFromResId())
         .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 
   @Test
   public void testResolveDimenAttribute() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).widthAttr(testAttrDimen, default_dimen).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
-    final LithoLayoutResult node = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult node = mLegacyLithoViewRule.getCurrentRootNode();
 
     int dimen = c.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     assertThat((int) node.getWidth()).isEqualTo(dimen);
@@ -88,16 +88,16 @@ public class ResolveAttributeTest {
 
   @Test
   public void testDefaultDrawableAttribute() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).backgroundAttr(undefinedAttrDrawable, test_bg).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
-    final LithoLayoutResult node = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult node = mLegacyLithoViewRule.getCurrentRootNode();
 
     Drawable d = c.getResources().getDrawable(test_bg);
     Drawable drawable = node.getBackground();
@@ -107,16 +107,16 @@ public class ResolveAttributeTest {
 
   @Test
   public void testDefaultDimenAttribute() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).widthAttr(undefinedAttrDimen, test_dimen).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
-    final LithoLayoutResult node = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult node = mLegacyLithoViewRule.getCurrentRootNode();
 
     int dimen = c.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     assertThat((int) node.getWidth()).isEqualTo(dimen);
@@ -124,16 +124,16 @@ public class ResolveAttributeTest {
 
   @Test
   public void testFloatDimenWidthAttribute() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).widthAttr(undefinedAttrDimen, test_dimen_float).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
-    final LithoLayoutResult node = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult node = mLegacyLithoViewRule.getCurrentRootNode();
 
     int dimen = c.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getWidth()).isEqualTo(dimen);
@@ -141,17 +141,17 @@ public class ResolveAttributeTest {
 
   @Test
   public void testFloatDimenPaddingAttribute() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column =
         Column.create(c).paddingAttr(LEFT, undefinedAttrDimen, test_dimen_float).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
-    final LithoLayoutResult node = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult node = mLegacyLithoViewRule.getCurrentRootNode();
 
     int dimen = c.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getPaddingLeft()).isEqualTo(dimen);

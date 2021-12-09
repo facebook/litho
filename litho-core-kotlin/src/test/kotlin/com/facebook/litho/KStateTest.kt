@@ -22,7 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.exactly
@@ -47,7 +47,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class KStateTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
   private fun <T> ComponentScope.useCustomState(value: T): State<T> {

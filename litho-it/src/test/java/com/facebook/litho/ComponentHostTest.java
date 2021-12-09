@@ -52,7 +52,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.collection.SparseArrayCompat;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -83,11 +83,11 @@ public class ComponentHostTest {
   private static final String sViewComponentKey = "view_key";
   private ComponentContext mContext;
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() throws Exception {
-    mContext = mLithoViewRule.getContext();
+    mContext = mLegacyLithoViewRule.getContext();
     mViewComponent = TestViewComponent.create(mContext).key(sViewComponentKey).build();
     mDrawableComponent = SimpleMountSpecTester.create(mContext).key(sDrawableComponentKey).build();
 
@@ -860,20 +860,21 @@ public class ComponentHostTest {
                             .clickHandler(NoOpEventHandler.getNoOpEventHandler())))
             .build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    TouchExpansionDelegate delegate = mLithoViewRule.getLithoView().getTouchExpansionDelegate();
+    TouchExpansionDelegate delegate =
+        mLegacyLithoViewRule.getLithoView().getTouchExpansionDelegate();
     assertThat(delegate)
         .describedAs("Should be not null for the host view of the Text")
         .isNotNull();
 
-    final View child1 = mLithoViewRule.getLithoView().getChildAt(0);
+    final View child1 = mLegacyLithoViewRule.getLithoView().getChildAt(0);
     assertThat(child1).isInstanceOf(ComponentHost.class);
     assertThat(((ComponentHost) child1).getTouchExpansionDelegate())
         .describedAs("should be null for the Text")
         .isNull();
 
-    final View child2 = mLithoViewRule.getLithoView().getChildAt(1);
+    final View child2 = mLegacyLithoViewRule.getLithoView().getChildAt(1);
     assertThat(child2).isInstanceOf(ComponentHost.class);
     assertThat(((ComponentHost) child2).getTouchExpansionDelegate())
         .describedAs("Should be not null for the host view of the Text Input")

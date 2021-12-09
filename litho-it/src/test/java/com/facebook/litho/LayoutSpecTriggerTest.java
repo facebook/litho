@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecTriggerTester;
 import com.facebook.litho.widget.Text;
@@ -36,11 +36,11 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LayoutSpecTriggerTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void layoutSpec_setRootAndTriggerEvent_eventIsTriggered() {
-    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final ComponentContext componentContext = mLegacyLithoViewRule.getContext();
     final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
     final Handle triggerHandle = new Handle();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
@@ -50,15 +50,15 @@ public class LayoutSpecTriggerTest {
             .triggerObjectRef(triggerObjectRef)
             .handle(triggerHandle)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     final Object bazObject = new Object();
 
     // We need to use a ComponentContext with a ComponentTree on it
     LayoutSpecTriggerTester.triggerTestEvent(
-        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+        mLegacyLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
 
     assertThat(getSteps(info))
         .describedAs("Should call @OnTrigger method")
@@ -71,7 +71,7 @@ public class LayoutSpecTriggerTest {
 
   @Test
   public void layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_child() {
-    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final ComponentContext componentContext = mLegacyLithoViewRule.getContext();
     final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
     final Handle triggerHandle = new Handle();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
@@ -85,15 +85,15 @@ public class LayoutSpecTriggerTest {
                     .handle(triggerHandle)
                     .build())
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     final Object bazObject = new Object();
 
     // We need to use a ComponentContext with a ComponentTree on it
     LayoutSpecTriggerTester.triggerTestEvent(
-        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+        mLegacyLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
 
     assertThat(getSteps(info))
         .describedAs("Should call @OnTrigger method")
@@ -106,7 +106,7 @@ public class LayoutSpecTriggerTest {
 
   @Test
   public void layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_root() {
-    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final ComponentContext componentContext = mLegacyLithoViewRule.getContext();
     final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
     final Handle triggerHandle = new Handle();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
@@ -125,15 +125,15 @@ public class LayoutSpecTriggerTest {
                                     .handle(triggerHandle)
                                     .build())))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     final Object bazObject = new Object();
 
     // We need to use a ComponentContext with a ComponentTree on it
     LayoutSpecTriggerTester.triggerTestEvent(
-        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+        mLegacyLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
 
     assertThat(getSteps(info))
         .describedAs("Should call @OnTrigger method")
@@ -147,7 +147,7 @@ public class LayoutSpecTriggerTest {
   @Test
   public void
       layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_deeper_in_hierarchy() {
-    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final ComponentContext componentContext = mLegacyLithoViewRule.getContext();
     final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
     final Handle triggerHandle = new Handle();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
@@ -169,15 +169,15 @@ public class LayoutSpecTriggerTest {
                                             .handle(triggerHandle)
                                             .build()))))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     final Object bazObject = new Object();
 
     // We need to use a ComponentContext with a ComponentTree on it
     LayoutSpecTriggerTester.triggerTestEvent(
-        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+        mLegacyLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
 
     assertThat(getSteps(info))
         .describedAs("Should call @OnTrigger method")

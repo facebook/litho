@@ -21,7 +21,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecLifecycleTesterSpec;
@@ -37,7 +37,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class LayoutSpecLifecycleStatelessTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
 
@@ -45,8 +45,8 @@ public class LayoutSpecLifecycleStatelessTest {
   public void lifecycle_onSetRootWithoutLayout_shouldNotCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
+    mLegacyLithoViewRule.setRoot(component);
 
     assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
   }
@@ -56,10 +56,10 @@ public class LayoutSpecLifecycleStatelessTest {
     ComponentsConfiguration.isAnimationDisabled = false;
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -77,12 +77,12 @@ public class LayoutSpecLifecycleStatelessTest {
   public void lifecycle_release_shouldCallLifecycleMethodOnDetach() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
     info.clear();
-    mLithoViewRule.release();
+    mLegacyLithoViewRule.release();
 
     assertThat(getSteps(info))
         .describedAs("Should call onDetached")
@@ -93,15 +93,15 @@ public class LayoutSpecLifecycleStatelessTest {
   public void lifecycle_subsequentSetRoot_shouldCallLifecycleMethod() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
     info.clear();
 
     final LayoutSpecLifecycleTester newComponent =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(newComponent);
-    mLithoViewRule.attachToWindow().measure().layout();
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
+    mLegacyLithoViewRule.setRoot(newComponent);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -118,12 +118,12 @@ public class LayoutSpecLifecycleStatelessTest {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     LayoutSpecLifecycleTesterSpec.Caller caller = new LayoutSpecLifecycleTesterSpec.Caller();
     final Component component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext())
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .steps(info)
             .caller(caller)
             .build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
     info.clear();
     caller.updateStateSync();
     assertThat(getSteps(info))
@@ -143,12 +143,12 @@ public class LayoutSpecLifecycleStatelessTest {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     LayoutSpecLifecycleTesterSpec.Caller caller = new LayoutSpecLifecycleTesterSpec.Caller();
     final Component component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext())
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .steps(info)
             .caller(caller)
             .build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
     info.clear();
     caller.updateStateWithTransition();
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
@@ -167,12 +167,12 @@ public class LayoutSpecLifecycleStatelessTest {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     LayoutSpecLifecycleTesterSpec.Caller caller = new LayoutSpecLifecycleTesterSpec.Caller();
     final Component component =
-        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext())
+        LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .steps(info)
             .caller(caller)
             .build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
     info.clear();
     EventWithoutAnnotation eventDispatched = new EventWithoutAnnotation(1, true, "hello");
     caller.dispatchEventWithoutAnnotation(eventDispatched);

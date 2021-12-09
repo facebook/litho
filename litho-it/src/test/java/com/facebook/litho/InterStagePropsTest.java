@@ -22,7 +22,7 @@ import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecInterStagePropsTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
@@ -38,12 +38,12 @@ import org.robolectric.annotation.LooperMode;
 public class InterStagePropsTest {
 
   private ComponentContext mContext;
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setUp() {
-    mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(new LithoView(mContext));
+    mContext = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule.useLithoView(new LithoView(mContext));
   }
 
   @Test
@@ -53,7 +53,7 @@ public class InterStagePropsTest {
         new SimpleStateUpdateEmulatorSpec.Caller();
 
     final Component root = createComponent(lifecycleTracker, stateUpdater);
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
@@ -71,11 +71,11 @@ public class InterStagePropsTest {
         new SimpleStateUpdateEmulatorSpec.Caller();
 
     final Component root = createComponent(lifecycleTracker, stateUpdater);
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.detachFromWindow();
+    mLegacyLithoViewRule.detachFromWindow();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("On Unbind should be called")
@@ -89,7 +89,7 @@ public class InterStagePropsTest {
         new SimpleStateUpdateEmulatorSpec.Caller();
 
     final Component root = createComponent(lifecycleTracker, stateUpdater);
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("On Mount should be called")
@@ -103,11 +103,11 @@ public class InterStagePropsTest {
         new SimpleStateUpdateEmulatorSpec.Caller();
 
     final Component root = createComponent(lifecycleTracker, stateUpdater);
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.getLithoView().unmountAllItems();
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("On Unmount should be called")
@@ -116,11 +116,13 @@ public class InterStagePropsTest {
 
   private Component createComponent(
       LifecycleTracker lifecycleTracker, SimpleStateUpdateEmulatorSpec.Caller stateUpdater) {
-    return Column.create(mLithoViewRule.getContext())
+    return Column.create(mLegacyLithoViewRule.getContext())
         .child(
-            MountSpecInterStagePropsTester.create(mLithoViewRule.getContext())
+            MountSpecInterStagePropsTester.create(mLegacyLithoViewRule.getContext())
                 .lifecycleTracker(lifecycleTracker))
-        .child(SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
+        .child(
+            SimpleStateUpdateEmulator.create(mLegacyLithoViewRule.getContext())
+                .caller(stateUpdater))
         .build();
   }
 }

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import android.graphics.Rect;
 import android.widget.FrameLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -53,13 +53,13 @@ public class VisibilityEventsWithVisibilityExtensionTest {
   private LithoView mLithoView;
   private FrameLayout mParent;
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
-    mContext = mLithoViewRule.getContext();
+    mContext = mLegacyLithoViewRule.getContext();
     mLithoView = new LithoView(mContext);
-    mLithoViewRule.useLithoView(mLithoView);
+    mLegacyLithoViewRule.useLithoView(mLithoView);
 
     mParent = new FrameLayout(mContext.getAndroidContext());
     mParent.setLeft(0);
@@ -85,7 +85,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
@@ -99,18 +99,18 @@ public class VisibilityEventsWithVisibilityExtensionTest {
     when(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode);
     when(rootNode.getRenderUnit()).thenReturn(Reducer.sRootHostRenderUnit);
 
-    mLithoViewRule.getLithoView().setMountStateDirty();
+    mLegacyLithoViewRule.getLithoView().setMountStateDirty();
 
     VisibilityMountExtension visibilityExtension = spy(VisibilityMountExtension.getInstance());
 
-    useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityExtension);
+    useVisibilityOutputsExtension(mLegacyLithoViewRule.getLithoView(), visibilityExtension);
 
     final ExtensionState state =
         mLithoView.getMountDelegateTarget().getExtensionState(visibilityExtension);
 
     final Rect rect = new Rect(0, 0, RIGHT, 10);
 
-    mLithoViewRule.getLithoView().mount(layoutState, new Rect(0, 0, RIGHT, 10), false);
+    mLegacyLithoViewRule.getLithoView().mount(layoutState, new Rect(0, 0, RIGHT, 10), false);
 
     verify(visibilityExtension).beforeMount(state, layoutState, rect);
   }
@@ -125,7 +125,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
             .child(Wrapper.create(mContext).delegate(content).visibleHandler(visibleEventHandler))
             .build();
 
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     final LayoutState layoutState = mock(LayoutState.class);
     final RenderTree renderTree = mock(RenderTree.class);
@@ -135,16 +135,16 @@ public class VisibilityEventsWithVisibilityExtensionTest {
     when(renderTree.getRenderTreeNodeAtIndex(0)).thenReturn(rootNode);
     when(rootNode.getRenderUnit()).thenReturn(Reducer.sRootHostRenderUnit);
 
-    mLithoViewRule.getLithoView().setMountStateDirty();
+    mLegacyLithoViewRule.getLithoView().setMountStateDirty();
 
     VisibilityMountExtension visibilityExtension = spy(VisibilityMountExtension.getInstance());
 
-    useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityExtension);
+    useVisibilityOutputsExtension(mLegacyLithoViewRule.getLithoView(), visibilityExtension);
 
     final ExtensionState state =
         mLithoView.getMountDelegateTarget().getExtensionState(visibilityExtension);
 
-    mLithoViewRule.getLithoView().unmountAllItems();
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
 
     verify(visibilityExtension).onUnbind(state);
     verify(visibilityExtension).onUnmount(state);

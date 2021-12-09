@@ -27,7 +27,7 @@ import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LithoViewFactory;
@@ -47,7 +47,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class MountStateIncrementalMountWithTransitionsTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
   private final StateCaller mStateCaller = new StateCaller();
   public static final String RED_TRANSITION_KEY = "red";
@@ -66,14 +66,14 @@ public class MountStateIncrementalMountWithTransitionsTest {
 
     final Component root = getPartiallyVisibleRootWithAnimatingComponents(trackers);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .setSizeSpecs(SizeSpec.makeSizeSpec(1040, EXACTLY), SizeSpec.makeSizeSpec(60, EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     final List<LithoView> lithoViews = new ArrayList<>();
     final SectionsRecyclerView sectionsRecyclerView =
-        (SectionsRecyclerView) mLithoViewRule.getLithoView().getChildAt(0);
+        (SectionsRecyclerView) mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     sectionsRecyclerView.obtainLithoViewChildren(lithoViews);
 
@@ -114,21 +114,21 @@ public class MountStateIncrementalMountWithTransitionsTest {
     final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
 
     final MountSpecLifecycleTester component0 =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker0)
             .intrinsicSize(new Size(10, 40))
             .build();
 
     List<Component> animatingComponents = new ArrayList<>();
     animatingComponents.add(
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker1)
             .intrinsicSize(new Size(40, 40))
             .widthPx(40)
             .heightPx(40)
             .build());
 
-    final SectionContext sectionContext = new SectionContext(mLithoViewRule.getContext());
+    final SectionContext sectionContext = new SectionContext(mLegacyLithoViewRule.getContext());
     final RecyclerBinderConfiguration binderConfig =
         RecyclerBinderConfiguration.create().lithoViewFactory(getLithoViewFactory()).build();
     RecyclerConfiguration config =
@@ -138,7 +138,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
             .build();
 
     final Component childOfAnimatingComponent =
-        RecyclerCollectionComponent.create(mLithoViewRule.getContext())
+        RecyclerCollectionComponent.create(mLegacyLithoViewRule.getContext())
             .heightPx(40)
             .topPaddingPx(40)
             .section(
@@ -178,7 +178,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
         };
 
     final TestAnimationsComponent root =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.sequence(
@@ -188,10 +188,10 @@ public class MountStateIncrementalMountWithTransitionsTest {
             .testComponent(partiallyVisibleAnimatingComponent)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .setSizeSpecs(SizeSpec.makeSizeSpec(40, EXACTLY), SizeSpec.makeSizeSpec(80, EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(lifecycleTracker0.isMounted()).isTrue();
     assertThat(lifecycleTracker1.isMounted()).isFalse();
@@ -206,7 +206,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
     List<Component> animatingComponents = new ArrayList<>();
     for (LifecycleTracker tracker : animatingComponentTrackers) {
       animatingComponents.add(
-          MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+          MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
               .lifecycleTracker(tracker)
               .intrinsicSize(new Size(40, 40))
               .build());
@@ -245,7 +245,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
     }
 
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(Transition.sequence(transitions))
             .testComponent(partiallyVisibleAnimatingComponent)
@@ -254,7 +254,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
     final List<Component> data = new ArrayList<>();
 
     data.add(
-        Row.create(mLithoViewRule.getContext())
+        Row.create(mLegacyLithoViewRule.getContext())
             .heightDip(40)
             .widthDip(40)
             .backgroundColor(Color.parseColor("#ee1111"))
@@ -262,14 +262,14 @@ public class MountStateIncrementalMountWithTransitionsTest {
 
     data.add(component);
 
-    final SectionContext sectionContext = new SectionContext(mLithoViewRule.getContext());
+    final SectionContext sectionContext = new SectionContext(mLegacyLithoViewRule.getContext());
     final RecyclerBinderConfiguration binderConfig =
         RecyclerBinderConfiguration.create().lithoViewFactory(getLithoViewFactory()).build();
     RecyclerConfiguration config =
         ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build();
 
     final Component root =
-        RecyclerCollectionComponent.create(mLithoViewRule.getContext())
+        RecyclerCollectionComponent.create(mLegacyLithoViewRule.getContext())
             .section(TestSingleComponentListSection.create(sectionContext).data(data).build())
             .recyclerConfiguration(config)
             .build();

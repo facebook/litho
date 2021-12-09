@@ -28,7 +28,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
 import com.nhaarman.mockitokotlin2.mock
@@ -41,7 +41,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class AccessibilityStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun contentDescription_whenSet_isSetOnView() {
@@ -99,7 +99,7 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNull()
   }
@@ -114,7 +114,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.onInitializeAccessibilityNodeInfo { eventHandler })
       }
     }
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.internalNode
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
@@ -126,7 +127,7 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px).accessibilityRole(null))
       }
     }
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.accessibilityRole).isNull()
   }
@@ -138,7 +139,7 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px).accessibilityRoleDescription(null))
       }
     }
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.accessibilityRoleDescription).isNull()
   }

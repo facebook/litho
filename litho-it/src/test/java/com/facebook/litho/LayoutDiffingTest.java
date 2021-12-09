@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.widget.MountSpecWithShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
@@ -50,7 +50,7 @@ public class LayoutDiffingTest {
   private final boolean mUsesInputOnlyInternalNode;
   private final boolean mOriginalValueOfUseInputOnlyInternalNodes;
 
-  public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
 
@@ -95,10 +95,13 @@ public class LayoutDiffingTest {
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object firstObjectForShouldUpdate = new Object();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             createRootComponentWithStateUpdater(
-                mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations, stateUpdater))
+                mLegacyLithoViewRule.getContext(),
+                firstObjectForShouldUpdate,
+                operations,
+                stateUpdater))
         .setSizePx(100, 100)
         .measure()
         .layout()
@@ -118,7 +121,7 @@ public class LayoutDiffingTest {
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper();
-    mLithoViewRule.layout();
+    mLegacyLithoViewRule.layout();
 
     assertThat(operations).isEmpty();
   }
@@ -129,10 +132,10 @@ public class LayoutDiffingTest {
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object firstObjectForShouldUpdate = new Object();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             createRootComponent(
-                mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations))
+                mLegacyLithoViewRule.getContext(), firstObjectForShouldUpdate, operations))
         .setSizePx(100, 100)
         .measure()
         .layout()
@@ -144,17 +147,19 @@ public class LayoutDiffingTest {
     operations.clear();
 
     // Do two prop updates sequentially without draining the main thread queue
-    mLithoViewRule.setRootAsync(
-        createRootComponent(mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations));
+    mLegacyLithoViewRule.setRootAsync(
+        createRootComponent(
+            mLegacyLithoViewRule.getContext(), firstObjectForShouldUpdate, operations));
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    mLithoViewRule.setRootAsync(
-        createRootComponent(mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations));
+    mLegacyLithoViewRule.setRootAsync(
+        createRootComponent(
+            mLegacyLithoViewRule.getContext(), firstObjectForShouldUpdate, operations));
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper();
-    mLithoViewRule.layout();
+    mLegacyLithoViewRule.layout();
 
     assertThat(operations).isEmpty();
   }
@@ -171,10 +176,10 @@ public class LayoutDiffingTest {
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object firstObjectForShouldUpdate = new Object();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             createRootComponent(
-                mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations))
+                mLegacyLithoViewRule.getContext(), firstObjectForShouldUpdate, operations))
         .setSizePx(100, 100)
         .measure()
         .layout()
@@ -186,17 +191,19 @@ public class LayoutDiffingTest {
     final Object secondObjectForShouldUpdate = new Object();
 
     // Do two prop updates sequentially without draining the main thread queue
-    mLithoViewRule.setRootAsync(
-        createRootComponent(mLithoViewRule.getContext(), secondObjectForShouldUpdate, operations));
+    mLegacyLithoViewRule.setRootAsync(
+        createRootComponent(
+            mLegacyLithoViewRule.getContext(), secondObjectForShouldUpdate, operations));
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    mLithoViewRule.setRootAsync(
-        createRootComponent(mLithoViewRule.getContext(), secondObjectForShouldUpdate, operations));
+    mLegacyLithoViewRule.setRootAsync(
+        createRootComponent(
+            mLegacyLithoViewRule.getContext(), secondObjectForShouldUpdate, operations));
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper();
-    mLithoViewRule.layout();
+    mLegacyLithoViewRule.layout();
 
     // In this case, we did change the object for shouldUpdate in layout 1 even though
     // it was the same for layouts 2. We expect to see unmount and mount.
@@ -210,10 +217,10 @@ public class LayoutDiffingTest {
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object firstObjectForShouldUpdate = new Object();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             createRootComponent(
-                mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations))
+                mLegacyLithoViewRule.getContext(), firstObjectForShouldUpdate, operations))
         .setSizePx(100, 100)
         .measure()
         .layout()
@@ -225,17 +232,19 @@ public class LayoutDiffingTest {
     final Object secondObjectForShouldUpdate = new Object();
 
     // Do two prop updates sequentially without draining the main thread queue
-    mLithoViewRule.setRootAsync(
-        createRootComponent(mLithoViewRule.getContext(), firstObjectForShouldUpdate, operations));
+    mLegacyLithoViewRule.setRootAsync(
+        createRootComponent(
+            mLegacyLithoViewRule.getContext(), firstObjectForShouldUpdate, operations));
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    mLithoViewRule.setRootAsync(
-        createRootComponent(mLithoViewRule.getContext(), secondObjectForShouldUpdate, operations));
+    mLegacyLithoViewRule.setRootAsync(
+        createRootComponent(
+            mLegacyLithoViewRule.getContext(), secondObjectForShouldUpdate, operations));
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper();
-    mLithoViewRule.layout();
+    mLegacyLithoViewRule.layout();
 
     // Similar to the previous test, but the object changes on the second layout instead.
     assertThat(operations).containsExactly(LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_MOUNT);
@@ -243,14 +252,14 @@ public class LayoutDiffingTest {
 
   @Test
   public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
             .build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
-    final View view = mLithoViewRule.getLithoView().getChildAt(0);
+    final View view = mLegacyLithoViewRule.getLithoView().getChildAt(0);
     assertThat(view).isNotNull();
     assertThat(view).isInstanceOf(TextView.class);
     assertThat(((TextView) view).getText()).isEqualTo("0");
@@ -262,14 +271,14 @@ public class LayoutDiffingTest {
   public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem_with_reuse() {
     TempComponentsConfigurations.setReuseInternalNode(true);
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
             .build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
-    final View view = mLithoViewRule.getLithoView().getChildAt(0);
+    final View view = mLegacyLithoViewRule.getLithoView().getChildAt(0);
     assertThat(view).isNotNull();
     assertThat(view).isInstanceOf(TextView.class);
     assertThat(((TextView) view).getText()).isEqualTo("0");
@@ -281,7 +290,7 @@ public class LayoutDiffingTest {
 
   @Test
   public void onSetRootWithSameComponent_thenShouldNotRemeasureMountSpec() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object objectForShouldUpdate = new Object();
 
@@ -300,20 +309,20 @@ public class LayoutDiffingTest {
                             .operationsOutput(operations)))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT);
 
     operations.clear();
 
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
     assertThat(operations).isEmpty();
   }
 
   @Test
   public void onSetRootWithSimilarComponent_thenShouldNotRemeasureMountSpec() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object objectForShouldUpdate = new Object();
 
@@ -332,7 +341,7 @@ public class LayoutDiffingTest {
                             .operationsOutput(operations)))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT);
 
@@ -353,14 +362,14 @@ public class LayoutDiffingTest {
                             .operationsOutput(operations)))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(next).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(next).measure().layout();
 
     assertThat(operations).isEmpty();
   }
 
   @Test
   public void onSetRootWithSimilarComponentWithShouldUpdateTrue_thenShouldRemeasureMountSpec() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
     final Object objectForShouldUpdate = new Object();
 
@@ -379,7 +388,7 @@ public class LayoutDiffingTest {
                             .operationsOutput(operations)))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
     assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT);
 
@@ -400,7 +409,7 @@ public class LayoutDiffingTest {
                             .operationsOutput(operations)))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(next).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(next).measure().layout();
 
     assertThat(operations)
         .containsExactly(

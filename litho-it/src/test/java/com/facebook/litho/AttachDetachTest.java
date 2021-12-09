@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.HorizontalScroll;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
@@ -29,13 +29,13 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class AttachDetachTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void horizontalScroll_releaseTree_childComponentShouldCallOnDetached() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
-    mLithoViewRule.setRoot(
+    mLegacyLithoViewRule.setRoot(
         HorizontalScroll.create(c)
             .contentProps(
                 MountSpecLifecycleTester.create(c)
@@ -44,8 +44,8 @@ public class AttachDetachTest {
                     .build())
             .build());
 
-    mLithoViewRule.attachToWindow().measure().layout();
-    mLithoViewRule.release();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.release();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs(

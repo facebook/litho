@@ -23,7 +23,7 @@ import static org.junit.Assume.assumeThat;
 import android.view.View;
 import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
 import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -51,7 +51,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class LithoMetadataExceptionWrapperTest {
 
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
   @Test
@@ -76,9 +76,9 @@ public class LithoMetadataExceptionWrapperTest {
           public void describeTo(Description description) {}
         });
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             Wrapper.create(c)
                 .delegate(
@@ -97,9 +97,13 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("layout_stack: TestCrasherOnCreateLayout");
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
 
-    mLithoViewRule.setRoot(TestCrasherOnCreateLayout.create(c)).measure().layout().attachToWindow();
+    mLegacyLithoViewRule
+        .setRoot(TestCrasherOnCreateLayout.create(c))
+        .measure()
+        .layout()
+        .attachToWindow();
   }
 
   @Test
@@ -128,14 +132,14 @@ public class LithoMetadataExceptionWrapperTest {
         });
 
     final List<String> info = new ArrayList<>();
-    final ComponentContext context = mLithoViewRule.getContext();
+    final ComponentContext context = mLegacyLithoViewRule.getContext();
     final Component component =
         OnErrorPassUpParentTester.create(context)
             .child(OnErrorPassUpChildTester.create(context).info(info).build())
             .info(info)
             .build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
   }
 
   @Test
@@ -164,15 +168,15 @@ public class LithoMetadataExceptionWrapperTest {
         });
 
     final List<String> info = new ArrayList<>();
-    final ComponentContext context = mLithoViewRule.getContext();
+    final ComponentContext context = mLegacyLithoViewRule.getContext();
     final Component component =
         OnErrorPassUpParentTester.create(context)
             .child(OnErrorNotPresentChild.create(context).build())
             .info(info)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
   }
 
   @Test
@@ -183,7 +187,7 @@ public class LithoMetadataExceptionWrapperTest {
     final ComponentContext c =
         new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setRoot(TestCrasherOnCreateLayout.create(c))
         .measure()
@@ -198,7 +202,7 @@ public class LithoMetadataExceptionWrapperTest {
 
     final ComponentContext c =
         new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setSizePx(100, 100)
         .setRoot(TestCrasherOnCreateLayout.create(c))
@@ -230,14 +234,14 @@ public class LithoMetadataExceptionWrapperTest {
                         }))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setRoot(component)
         .attachToWindow()
         .measure()
         .layout();
 
-    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
+    emulateClickEvent(mLegacyLithoViewRule.getLithoView(), 7, 7);
   }
 
   @Test
@@ -265,14 +269,15 @@ public class LithoMetadataExceptionWrapperTest {
                         }))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setRoot(component)
         .attachToWindow()
         .measure()
         .layout();
 
-    TriggerCallbackComponent.doTrigger(mLithoViewRule.getComponentTree().getContext(), handle);
+    TriggerCallbackComponent.doTrigger(
+        mLegacyLithoViewRule.getComponentTree().getContext(), handle);
   }
 
   @Test
@@ -280,8 +285,8 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("custom_key: custom_value");
 
-    final ComponentContext c = mLithoViewRule.getContext();
-    mLithoViewRule
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule
         .setRoot(
             Column.create(c)
                 .child(
@@ -302,8 +307,8 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expectMessage("custom_key: custom_value");
     mExpectedException.expectMessage("custom_key2: custom_value2");
 
-    final ComponentContext c = mLithoViewRule.getContext();
-    mLithoViewRule
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule
         .setRoot(
             Column.create(c)
                 .child(
@@ -326,7 +331,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("custom_key: custom_value");
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -346,9 +351,9 @@ public class LithoMetadataExceptionWrapperTest {
                                 })))
             .build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
+    emulateClickEvent(mLegacyLithoViewRule.getLithoView(), 7, 7);
   }
 
   @Test
@@ -356,7 +361,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("component_scope: OnMeasureCallbackComponent");
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -375,7 +380,7 @@ public class LithoMetadataExceptionWrapperTest {
                                 })))
             .build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
   }
 
   @Test
@@ -383,7 +388,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("Real Cause => java.lang.RuntimeException: Exception Level 3");
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -406,6 +411,6 @@ public class LithoMetadataExceptionWrapperTest {
                                 })))
             .build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
   }
 }

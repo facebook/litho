@@ -57,7 +57,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -92,7 +92,7 @@ import org.robolectric.shadows.ShadowAccessibilityManager;
 @RunWith(LithoTestRunner.class)
 public class LayoutStateCalculateTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mContext;
 
@@ -103,7 +103,7 @@ public class LayoutStateCalculateTest {
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
-    mContext = mLithoViewRule.getContext();
+    mContext = mLegacyLithoViewRule.getContext();
   }
 
   @After
@@ -125,7 +125,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -146,7 +146,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -180,7 +180,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -217,7 +217,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -250,7 +250,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -283,7 +283,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -316,7 +316,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -349,7 +349,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -408,7 +408,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -485,7 +485,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -556,7 +556,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -646,7 +646,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -739,7 +739,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -747,7 +747,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState sameComponentLayoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -847,7 +847,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -855,7 +855,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState sameComponentLayoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -900,7 +900,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState1 =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -908,7 +908,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState2 =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -954,7 +954,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState1 =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -962,7 +962,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState2 =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -987,7 +987,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -1052,7 +1052,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        mLithoViewRule.getComponentTree().getContext(),
+        mLegacyLithoViewRule.getComponentTree().getContext(),
         component,
         -1,
         makeSizeSpec(100, EXACTLY),
@@ -1064,7 +1064,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
+    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1107,7 +1107,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        mLithoViewRule.getComponentTree().getContext(),
+        mLegacyLithoViewRule.getComponentTree().getContext(),
         component,
         -1,
         makeSizeSpec(100, EXACTLY),
@@ -1119,7 +1119,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
+    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1160,7 +1160,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        mLithoViewRule.getComponentTree().getContext(),
+        mLegacyLithoViewRule.getComponentTree().getContext(),
         component,
         -1,
         makeSizeSpec(100, AT_MOST),
@@ -1172,7 +1172,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
+    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1213,7 +1213,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        mLithoViewRule.getComponentTree().getContext(),
+        mLegacyLithoViewRule.getComponentTree().getContext(),
         component,
         -1,
         makeSizeSpec(50, AT_MOST),
@@ -1225,7 +1225,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
+    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1251,7 +1251,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1289,7 +1289,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1328,7 +1328,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1384,7 +1384,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1426,7 +1426,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1465,7 +1465,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1489,7 +1489,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1523,7 +1523,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1550,7 +1550,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1589,7 +1589,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1624,7 +1624,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1665,7 +1665,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1750,7 +1750,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1847,7 +1847,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1930,7 +1930,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -1968,7 +1968,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2002,7 +2002,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2018,7 +2018,7 @@ public class LayoutStateCalculateTest {
   public void testLayoutOutputForRootNestedTreeComponent() {
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             TestSizeDependentComponent.create(new ComponentContext(getApplicationContext()))
                 .setFixSizes(true)
                 .setDelegate(false)
@@ -2066,7 +2066,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -2107,7 +2107,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -2148,7 +2148,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -2189,7 +2189,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -2228,7 +2228,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             componentWithNullLayout,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -2249,7 +2249,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -2315,7 +2315,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        mLithoViewRule.getComponentTree().getContext(),
+        mLegacyLithoViewRule.getComponentTree().getContext(),
         component,
         -1,
         makeSizeSpec(350, EXACTLY),
@@ -2338,7 +2338,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(0, UNSPECIFIED),
@@ -2370,7 +2370,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(0, UNSPECIFIED),
@@ -2405,7 +2405,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(0, UNSPECIFIED),
@@ -2435,7 +2435,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2461,7 +2461,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2487,7 +2487,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2514,7 +2514,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -2530,7 +2530,7 @@ public class LayoutStateCalculateTest {
   public void testWillRenderLayoutsOnce() {
     TempComponentsConfigurations.setImmutabilityFlags(false);
 
-    ComponentContext c = mLithoViewRule.getComponentTree().getContext();
+    ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
     c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
@@ -2642,7 +2642,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        mLithoViewRule.getComponentTree().getContext(),
+        mLegacyLithoViewRule.getComponentTree().getContext(),
         root,
         -1,
         makeSizeSpec(100, EXACTLY),
@@ -2687,7 +2687,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         LayoutState.calculate(
-            ComponentTree.create(mLithoViewRule.getContext())
+            ComponentTree.create(mLegacyLithoViewRule.getContext())
                 .logger(logger, "test")
                 .build()
                 .getContext(),
@@ -2706,9 +2706,10 @@ public class LayoutStateCalculateTest {
 
     final Component component = Text.create(mContext).text("hello world").build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost innerHost =
+        (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     assertThat(innerHost.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
@@ -2721,9 +2722,9 @@ public class LayoutStateCalculateTest {
 
     final Component component = SolidColor.create(mContext).color(Color.BLACK).build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The parent output of the drawable must not implement virtual views")
         .isFalse();
   }
@@ -2732,19 +2733,20 @@ public class LayoutStateCalculateTest {
   public void onMountItemUpdatesImplementVirtualViews_ComponentHostShouldAlsoUpdate() {
     enableAccessibility();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(Text.create(mContext).text("hello world").build())
         .attachToWindow()
         .measure()
         .layout();
 
-    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost innerHost =
+        (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     assertThat(innerHost.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             SolidColor.create(mContext).color(Color.BLACK).build(),
             SizeSpec.makeSizeSpec(100, EXACTLY),
@@ -2752,11 +2754,11 @@ public class LayoutStateCalculateTest {
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The parent output of the drawable must not implement virtual views")
         .isFalse();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             Column.create(mContext)
                 .child(Text.create(mContext).text("hello world").build())
@@ -2768,11 +2770,11 @@ public class LayoutStateCalculateTest {
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The root output must not implement virtual views")
         .isFalse();
 
-    final ComponentHost host = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost host = (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
     assertThat(host.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue();
@@ -2780,7 +2782,7 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void onMountHierarchyWithParentDisabled_shouldDisableDescendants() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final ItemCardComponentSpec.TreeProps props = new ItemCardComponentSpec.TreeProps();
     final Output<View> view = new Output<>();
     final Output<Boolean> clicked = new Output<>();
@@ -2811,7 +2813,7 @@ public class LayoutStateCalculateTest {
     final Component root =
         ItemCardComponent.create(c).body(Text.create(c).text("hello").build()).id(1).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setTreeProp(ItemCardComponentSpec.TreeProps.class, props)
         .setRoot(root)
         .attachToWindow()
@@ -2824,7 +2826,7 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void onLayoutCreateInMeasure_shouldBeReusedDuringLayoutIfCompatibleMeasures() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final Component component =
         ComponentCaching.create(c)
@@ -2834,14 +2836,14 @@ public class LayoutStateCalculateTest {
             .heightSpec(MeasureSpecUtils.exactly(100))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).layout().measure();
 
     assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT);
   }
 
   @Test
   public void onLayoutCreateInMeasure_shouldBeNotReusedDuringLayoutIfIncompatibleMeasures() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final Component component =
         ComponentCaching.create(c)
@@ -2850,7 +2852,7 @@ public class LayoutStateCalculateTest {
             .heightSpec(MeasureSpecUtils.exactly(100))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).layout().measure();
 
     assertThat(LifecycleStep.getSteps(steps))
         .contains(LifecycleStep.ON_CREATE_LAYOUT, LifecycleStep.ON_CREATE_LAYOUT);

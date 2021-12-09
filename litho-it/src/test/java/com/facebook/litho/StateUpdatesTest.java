@@ -30,7 +30,7 @@ import android.view.View;
 import com.facebook.litho.StateUpdateTestComponent.TestStateContainer;
 import com.facebook.litho.components.StateUpdateTestLayout;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
@@ -64,7 +64,7 @@ public class StateUpdatesTest {
   private String mTestComponentKey;
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -81,13 +81,13 @@ public class StateUpdatesTest {
     mTestComponent = new StateUpdateTestComponent();
     mTestComponentKey = mTestComponent.getKey();
 
-    mLithoViewRule.setRoot(mTestComponent);
-    mComponentTree = mLithoViewRule.getComponentTree();
+    mLegacyLithoViewRule.setRoot(mTestComponent);
+    mComponentTree = mLegacyLithoViewRule.getComponentTree();
 
     if (enableComponentTreeSpy) {
       mComponentTree = spy(mComponentTree);
     }
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(mWidthSpec, mHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(mWidthSpec, mHeightSpec);
   }
 
   @After
@@ -109,8 +109,8 @@ public class StateUpdatesTest {
             return Column.create(c).child(child1).child(child2).build();
           }
         };
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule
         .attachToWindow()
         .measure()
         .layout()
@@ -134,8 +134,8 @@ public class StateUpdatesTest {
                 .build();
           }
         };
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule
         .attachToWindow()
         .measure()
         .layout()
@@ -175,8 +175,8 @@ public class StateUpdatesTest {
     final Component child1 = new StateUpdateTestComponent();
     child1.setKey("key");
 
-    mLithoViewRule.setRoot(child1);
-    mLithoViewRule
+    mLegacyLithoViewRule.setRoot(child1);
+    mLegacyLithoViewRule
         .attachToWindow()
         .measure()
         .layout()

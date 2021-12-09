@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CardHeaderComponent;
 import com.facebook.rendercore.MountDelegateTarget;
@@ -30,13 +30,13 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class MountStateMountTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mContext;
 
   @Before
   public void setup() {
-    mContext = mLithoViewRule.getContext();
+    mContext = mLegacyLithoViewRule.getContext();
   }
 
   @Test
@@ -44,13 +44,13 @@ public class MountStateMountTest {
     final Component root =
         Column.create(mContext).child(CardHeaderComponent.create(mContext).title("Title")).build();
 
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     final MountDelegateTarget mountDelegateTarget =
-        mLithoViewRule.getLithoView().getMountDelegateTarget();
+        mLegacyLithoViewRule.getLithoView().getMountDelegateTarget();
     assertThat(mountDelegateTarget.needsRemount()).isFalse();
 
-    mLithoViewRule.getLithoView().unmountAllItems();
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
     assertThat(mountDelegateTarget.needsRemount()).isTrue();
   }
 }

@@ -28,7 +28,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.view.View;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsResetValueTester;
 import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec;
@@ -46,7 +46,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class DynamicPropsTest {
   private ComponentContext mContext;
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -99,14 +99,14 @@ public class DynamicPropsTest {
             .alpha(alphaDV)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component1)
         .setSizeSpecs(makeSizeSpec(80, EXACTLY), makeSizeSpec(80, EXACTLY))
         .attachToWindow()
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     // Ensure we have one view.
     assertThat(lithoView.getChildCount()).isEqualTo(1);
@@ -121,7 +121,7 @@ public class DynamicPropsTest {
 
     // Mount component2, which is identical to component1, except with a different bg, invoking
     // an update sequence.
-    mLithoViewRule.setRoot(component2);
+    mLegacyLithoViewRule.setRoot(component2);
 
     // Grab the host again
     hostView = lithoView.getChildAt(0);
@@ -359,10 +359,10 @@ public class DynamicPropsTest {
         new DynamicPropsResetValueTesterSpec.Caller();
     final Component component =
         DynamicPropsResetValueTester.create(mContext).caller(stateUpdateCaller).build();
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
     final MountDelegateTarget mountDelegateTarget =
-        mLithoViewRule.getLithoView().getMountDelegateTarget();
+        mLegacyLithoViewRule.getLithoView().getMountDelegateTarget();
 
     long text1HostId = -1;
     long text2HostId = -1;

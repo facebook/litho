@@ -33,7 +33,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
@@ -49,7 +49,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ViewStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun background_whenSet_isRespected() {
@@ -318,7 +318,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
@@ -333,7 +333,8 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.internalNode
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
   }
@@ -347,7 +348,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.internalNode
     assertThat(node?.getOrCreateNodeInfo()?.clipToOutline).isTrue
 
     node?.getOrCreateNodeInfo()?.setClipToOutline(false)
@@ -363,7 +364,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.transitionName).isEqualTo("test")
   }
@@ -377,7 +378,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.internalNode
     assertThat(node?.testKey).isEqualTo("test")
   }
 

@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,12 +27,12 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class WrapperTest {
 
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void testWrapperWithNullComponentReturnsNullLayout() {
-    ComponentContext c = mLithoViewRule.getContext();
+    ComponentContext c = mLegacyLithoViewRule.getContext();
     Wrapper wrapper = Wrapper.create(c).delegate(null).build();
-    assertThat(LithoViewRule.getRootLayout(mLithoViewRule, wrapper)).isNull();
+    assertThat(LegacyLithoViewRule.getRootLayout(mLegacyLithoViewRule, wrapper)).isNull();
   }
 }

@@ -20,7 +20,7 @@ import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import androidx.core.view.ViewCompat;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
@@ -34,14 +34,16 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LayoutWithSizeSpecLifecycleTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void onSetRootWithoutLayoutWithSizeSpec_shouldNotCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutWithSizeSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutWithSizeSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
+            .steps(info)
+            .build();
+    mLegacyLithoViewRule.setRoot(component);
 
     assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
   }
@@ -50,10 +52,12 @@ public class LayoutWithSizeSpecLifecycleTest {
   public void onSetRootWithLayoutWithSizeSpecAtRoot_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutWithSizeSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutWithSizeSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
+            .steps(info)
+            .build();
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -64,7 +68,7 @@ public class LayoutWithSizeSpecLifecycleTest {
   @Test
   public void onSetRootWithLayoutWithSizeSpecWhichDoesNotRemeasure_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -73,8 +77,8 @@ public class LayoutWithSizeSpecLifecycleTest {
                     .importantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES))
             .build();
 
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -85,7 +89,7 @@ public class LayoutWithSizeSpecLifecycleTest {
   @Test
   public void onSetRootWithLayoutWithSizeSpecWhichRemeasure_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final LifecycleTracker tracker = new LifecycleTracker();
 
     final Component mountable_0 =
@@ -98,7 +102,7 @@ public class LayoutWithSizeSpecLifecycleTest {
             .child(Text.create(c).text("Hello World"))
             .build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")

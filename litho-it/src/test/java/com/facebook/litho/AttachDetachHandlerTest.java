@@ -23,7 +23,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.AttachDetachTester;
 import com.facebook.litho.widget.AttachDetachTesterSpec;
@@ -41,7 +41,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class AttachDetachHandlerTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
 
@@ -49,17 +49,20 @@ public class AttachDetachHandlerTest {
   public void component_setRootWithLayout_onAttachedIsCalled() {
     final List<String> steps = new ArrayList<>();
     final Component root =
-        AttachDetachTester.create(mLithoViewRule.getContext()).name("root").steps(steps).build();
-    mLithoViewRule.setRoot(root);
+        AttachDetachTester.create(mLegacyLithoViewRule.getContext())
+            .name("root")
+            .steps(steps)
+            .build();
+    mLegacyLithoViewRule.setRoot(root);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
 
     final AttachDetachHandler attachDetachHandler =
-        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+        mLegacyLithoViewRule.getComponentTree().getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
   }
 
@@ -67,17 +70,20 @@ public class AttachDetachHandlerTest {
   public void component_setEmptyRootAfterAttach_onDetachedIsCalled() {
     final List<String> steps = new ArrayList<>();
     final Component root =
-        AttachDetachTester.create(mLithoViewRule.getContext()).name("root").steps(steps).build();
-    mLithoViewRule.setRoot(root);
+        AttachDetachTester.create(mLegacyLithoViewRule.getContext())
+            .name("root")
+            .steps(steps)
+            .build();
+    mLegacyLithoViewRule.setRoot(root);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
     steps.clear();
 
-    mLithoViewRule.setRoot(Column.create(mLithoViewRule.getContext()).build());
+    mLegacyLithoViewRule.setRoot(Column.create(mLegacyLithoViewRule.getContext()).build());
 
     assertThat(steps)
         .describedAs("Should call @OnDetached method")
@@ -88,17 +94,20 @@ public class AttachDetachHandlerTest {
   public void component_releaseLithoView_onDetachedIsCalled() {
     final List<String> steps = new ArrayList<>();
     final Component root =
-        AttachDetachTester.create(mLithoViewRule.getContext()).name("root").steps(steps).build();
-    mLithoViewRule.setRoot(root);
+        AttachDetachTester.create(mLegacyLithoViewRule.getContext())
+            .name("root")
+            .steps(steps)
+            .build();
+    mLegacyLithoViewRule.setRoot(root);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     final AttachDetachHandler attachDetachHandler =
-        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+        mLegacyLithoViewRule.getComponentTree().getAttachDetachHandler();
 
     steps.clear();
 
-    mLithoViewRule.release();
+    mLegacyLithoViewRule.release();
 
     assertThat(steps)
         .describedAs("Should call @OnDetached method")
@@ -109,7 +118,7 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void component_replaceRootWithSameComponent_onDetachedIsNotCalled() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final AttachDetachTester.Builder c3 = AttachDetachTester.create(c).name("c3");
     final AttachDetachTester.Builder c4 = AttachDetachTester.create(c).name("c4");
     final AttachDetachTester.Builder c1 =
@@ -122,9 +131,9 @@ public class AttachDetachHandlerTest {
             .name("r1")
             .steps(steps)
             .build();
-    mLithoViewRule.setRoot(r1);
+    mLegacyLithoViewRule.setRoot(r1);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(steps)
         .describedAs("Should call @OnAttached methods in expected order")
@@ -136,7 +145,7 @@ public class AttachDetachHandlerTest {
             "r1:" + AttachDetachTesterSpec.ON_ATTACHED);
 
     final AttachDetachHandler attachDetachHandler =
-        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+        mLegacyLithoViewRule.getComponentTree().getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(5);
 
     steps.clear();
@@ -158,7 +167,7 @@ public class AttachDetachHandlerTest {
             .name("r2")
             .steps(steps)
             .build();
-    mLithoViewRule.setRoot(r2);
+    mLegacyLithoViewRule.setRoot(r2);
 
     assertThat(steps)
         .describedAs("Should call @OnDetached and @OnAttached methods in expect order")
@@ -185,7 +194,7 @@ public class AttachDetachHandlerTest {
             .name("r3")
             .steps(steps)
             .build();
-    mLithoViewRule.setRoot(r3);
+    mLegacyLithoViewRule.setRoot(r3);
 
     assertThat(steps)
         .describedAs("Should call @OnDetached methods in expect order")
@@ -197,7 +206,7 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void component_replaceRootWithDifferentComponent_onDetachedIsNotCalled() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final AttachDetachTester.Builder c3 = AttachDetachTester.create(c).name("c3");
     final AttachDetachTester.Builder c4 = AttachDetachTester.create(c).name("c4");
     final AttachDetachTester.Builder c1 =
@@ -210,9 +219,9 @@ public class AttachDetachHandlerTest {
             .name("r1")
             .steps(steps)
             .build();
-    mLithoViewRule.setRoot(r1);
+    mLegacyLithoViewRule.setRoot(r1);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(steps)
         .describedAs("Should call @OnAttached methods in expected order")
@@ -224,7 +233,7 @@ public class AttachDetachHandlerTest {
             "r1:" + AttachDetachTesterSpec.ON_ATTACHED);
 
     final AttachDetachHandler attachDetachHandler =
-        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+        mLegacyLithoViewRule.getComponentTree().getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(5);
 
     steps.clear();
@@ -247,7 +256,7 @@ public class AttachDetachHandlerTest {
             .key("newKey")
             .steps(steps)
             .build();
-    mLithoViewRule.setRoot(r2);
+    mLegacyLithoViewRule.setRoot(r2);
 
     assertThat(steps)
         .describedAs("Should call @OnDetached and @OnAttached methods in expect order")
@@ -267,7 +276,7 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void component_setRootAndSizeSpecTwice_onAttachAndOnDetachedAreCalledOnlyOnce() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<String> steps = new ArrayList<>();
     final AttachDetachTester.Builder c1 = AttachDetachTester.create(c).name("c1");
     final Component component =
@@ -276,12 +285,12 @@ public class AttachDetachHandlerTest {
             .steps(steps)
             .children(new AttachDetachTester.Builder[] {c1})
             .build();
-    mLithoViewRule.setRootAndSizeSpecSync(
+    mLegacyLithoViewRule.setRootAndSizeSpecSync(
         component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
-    mLithoViewRule.setRootAndSizeSpecSync(
+    mLegacyLithoViewRule.setRootAndSizeSpecSync(
         component, makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     assertThat(steps)
@@ -292,7 +301,7 @@ public class AttachDetachHandlerTest {
 
     steps.clear();
 
-    mLithoViewRule.release();
+    mLegacyLithoViewRule.release();
 
     assertThat(steps)
         .describedAs("Should call @OnDetached only once for each component")
@@ -304,7 +313,7 @@ public class AttachDetachHandlerTest {
   @Test
   public void component_setRootAndSizeSpecConcurrently_onAttachAndOnDetachedAreCalledOnlyOnce()
       throws InterruptedException {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<String> steps = new ArrayList<>();
     final AttachDetachTester.Builder c1 = AttachDetachTester.create(c).name("c1");
     final Component component =
@@ -314,7 +323,7 @@ public class AttachDetachHandlerTest {
             .children(new AttachDetachTester.Builder[] {c1})
             .build();
 
-    final ComponentTree componentTree = mLithoViewRule.getComponentTree();
+    final ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
     final CountDownLatch latch1 = new CountDownLatch(1);
     final Thread thread1 =
         new Thread(
@@ -367,21 +376,21 @@ public class AttachDetachHandlerTest {
     final ConcurrentHashMap<String, Object> extraThreadInfo = new ConcurrentHashMap<>();
 
     final Component root =
-        AttachDetachTester.create(mLithoViewRule.getContext())
+        AttachDetachTester.create(mLegacyLithoViewRule.getContext())
             .name("root")
             .steps(steps)
             .extraThreadInfo(extraThreadInfo)
             .build();
 
-    mLithoViewRule.attachToWindow().measure().layout();
-    mLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root);
 
     assertThat(steps)
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
 
     final AttachDetachHandler attachDetachHandler =
-        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+        mLegacyLithoViewRule.getComponentTree().getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
 
     final Boolean isMainThreadLayout =
@@ -399,14 +408,14 @@ public class AttachDetachHandlerTest {
     final ConcurrentHashMap<String, Object> extraThreadInfo = new ConcurrentHashMap<>();
 
     final Component root =
-        AttachDetachTester.create(mLithoViewRule.getContext())
+        AttachDetachTester.create(mLegacyLithoViewRule.getContext())
             .name("root")
             .steps(steps)
             .extraThreadInfo(extraThreadInfo)
             .build();
 
-    mLithoViewRule.attachToWindow().measure().layout();
-    mLithoViewRule.setRootAsync(root);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRootAsync(root);
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
     shadowOf(getMainLooper()).idle();
@@ -416,7 +425,7 @@ public class AttachDetachHandlerTest {
         .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
 
     final AttachDetachHandler attachDetachHandler =
-        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+        mLegacyLithoViewRule.getComponentTree().getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
 
     final Boolean isMainThreadLayout =

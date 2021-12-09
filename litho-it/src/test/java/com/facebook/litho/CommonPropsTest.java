@@ -38,7 +38,7 @@ import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
@@ -54,7 +54,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class CommonPropsTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private InputOnlyInternalNode mNode;
   private NodeInfo mNodeInfo;
@@ -396,15 +396,15 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawable() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(Text.create(c).text("Hello World").backgroundRes(background_with_padding))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
-    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode().getChildAt(0);
+    final LithoLayoutResult result = mLegacyLithoViewRule.getCurrentRootNode().getChildAt(0);
 
     assertThat(result.getPaddingLeft()).isEqualTo(48);
     assertThat(result.getPaddingTop()).isEqualTo(0);
@@ -414,7 +414,7 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawableIsOverwritten() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .child(
@@ -427,9 +427,9 @@ public class CommonPropsTest {
                     .paddingPx(YogaEdge.BOTTOM, 8))
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
-    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode().getChildAt(0);
+    final LithoLayoutResult result = mLegacyLithoViewRule.getCurrentRootNode().getChildAt(0);
 
     assertThat(result.getPaddingLeft()).isEqualTo(8);
     assertThat(result.getPaddingTop()).isEqualTo(8);

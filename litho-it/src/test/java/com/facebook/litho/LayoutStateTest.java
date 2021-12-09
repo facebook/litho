@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -29,11 +29,11 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LayoutStateTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
-    ComponentContext context = mLithoViewRule.getContext();
+    ComponentContext context = mLegacyLithoViewRule.getContext();
 
     final LayoutState layoutState = new LayoutState(context);
     final RenderTree renderTree = layoutState.toRenderTree();

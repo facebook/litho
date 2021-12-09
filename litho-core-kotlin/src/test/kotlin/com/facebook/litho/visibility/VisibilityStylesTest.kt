@@ -23,7 +23,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
 import java.util.concurrent.atomic.AtomicBoolean
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class VisibilityStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun onVisible_whenSet_firesWhenVisible() {

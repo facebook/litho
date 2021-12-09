@@ -21,7 +21,7 @@ import android.view.View;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.it.R;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LegacyApplyStylesTest {
 
-  public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -45,16 +45,16 @@ public class LegacyApplyStylesTest {
   @Test
   public void
       styles_withAccessibilityAndContentDescriptionStyle_appliesAccessibilityAndContentDescription() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_AccessibilityAndContentDescription)
                         .flexGrow(1)
@@ -64,7 +64,7 @@ public class LegacyApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(
@@ -75,16 +75,16 @@ public class LegacyApplyStylesTest {
 
   @Test
   public void styles_withDuplicateParentStateStyle_appliesDuplicateParentState() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_DuplicateParentState)
                         .flexGrow(1)
@@ -94,7 +94,7 @@ public class LegacyApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(
@@ -104,16 +104,16 @@ public class LegacyApplyStylesTest {
 
   @Test
   public void styles_withBackgroundForegroundStyle_appliesBackgroundAndForeground() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_BackgroundForeground)
                         .flexGrow(1)
@@ -123,7 +123,7 @@ public class LegacyApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(

@@ -22,7 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -37,7 +37,7 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(AndroidJUnit4::class)
 class UseCallbackTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun useCallbackWithCollection_whenUseCallbackCapturesState_stateInCallbackIsUpToDate() {

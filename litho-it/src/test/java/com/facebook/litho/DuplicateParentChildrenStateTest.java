@@ -28,7 +28,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class DuplicateParentChildrenStateTest {
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private int mUnspecifiedSizeSpec;
 
@@ -90,7 +90,7 @@ public class DuplicateParentChildrenStateTest {
 
     LayoutState layoutState =
         calculate(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             mUnspecifiedSizeSpec,

@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.widget.Text
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -34,7 +34,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class KErrorTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
 
   @Test

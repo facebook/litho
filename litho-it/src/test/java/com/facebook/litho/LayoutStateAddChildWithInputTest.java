@@ -19,7 +19,7 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 public class LayoutStateAddChildWithInputTest {
   private ComponentContext mContext;
 
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -47,7 +47,8 @@ public class LayoutStateAddChildWithInputTest {
             .child(TestLayoutComponent.create(mContext))
             .build();
 
-    InternalNode node = LithoViewRule.getRootLayout(mLithoViewRule, component).getInternalNode();
+    InternalNode node =
+        LegacyLithoViewRule.getRootLayout(mLegacyLithoViewRule, component).getInternalNode();
 
     assertThat(node.getChildCount()).isEqualTo(2);
     assertThat(node.getChildAt(0).getChildCount()).isEqualTo(0);

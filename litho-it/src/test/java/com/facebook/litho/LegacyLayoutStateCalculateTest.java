@@ -50,7 +50,7 @@ import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -72,7 +72,7 @@ import org.robolectric.shadows.ShadowAccessibilityManager;
 @RunWith(LithoTestRunner.class)
 public class LegacyLayoutStateCalculateTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mContext;
 
@@ -83,7 +83,7 @@ public class LegacyLayoutStateCalculateTest {
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
-    mContext = mLithoViewRule.getComponentTree().getContext();
+    mContext = mLegacyLithoViewRule.getComponentTree().getContext();
   }
 
   @Test
@@ -737,17 +737,17 @@ public class LegacyLayoutStateCalculateTest {
   public void onMountItemUpdatesImplementVirtualViews_ComponentHostShouldAlsoUpdate() {
     enableAccessibility();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(Text.create(mContext).text("hello world").build())
         .attachToWindow()
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             SolidColor.create(mContext).color(Color.BLACK).build(),
             SizeSpec.makeSizeSpec(100, EXACTLY),
@@ -755,11 +755,11 @@ public class LegacyLayoutStateCalculateTest {
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The parent output of the drawable must not implement virtual views")
         .isFalse();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             Column.create(mContext)
                 .child(Text.create(mContext).text("hello world").build())
@@ -771,11 +771,11 @@ public class LegacyLayoutStateCalculateTest {
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The root output must not implement virtual views")
         .isFalse();
 
-    final ComponentHost host = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost host = (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
     assertThat(host.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue();
@@ -855,9 +855,9 @@ public class LegacyLayoutStateCalculateTest {
 
     final Component component = Text.create(mContext).text("hello world").build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+    assertThat(mLegacyLithoViewRule.getLithoView().implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue();
   }

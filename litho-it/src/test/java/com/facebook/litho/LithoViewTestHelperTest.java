@@ -22,7 +22,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LithoViewTestHelperTest {
 
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void skipIfRelease() {
@@ -100,7 +100,7 @@ public class LithoViewTestHelperTest {
 
   @Test
   public void viewToStringForE2E_withExtraDescription_componentKeyIsPrinted() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
         Column.create(c)
             .key("column")
@@ -108,14 +108,14 @@ public class LithoViewTestHelperTest {
             .child(Text.create(c).key("text").widthPx(100).heightPx(100).text("Hello, World"))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             component, makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED))
         .measure()
         .layout();
     final String string =
         LithoViewTestHelper.viewToStringForE2E(
-            mLithoViewRule.getLithoView(),
+            mLegacyLithoViewRule.getLithoView(),
             0,
             false,
             new DebugComponentDescriptionHelper.ExtraDescription() {

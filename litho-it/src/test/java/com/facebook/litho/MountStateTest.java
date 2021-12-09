@@ -25,7 +25,7 @@ import android.graphics.Color;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
 import com.facebook.litho.widget.EmptyComponent;
@@ -43,13 +43,13 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class MountStateTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mContext;
 
   @Before
   public void setup() {
-    mContext = mLithoViewRule.getContext();
+    mContext = mLegacyLithoViewRule.getContext();
   }
 
   @Test
@@ -62,7 +62,7 @@ public class MountStateTest {
             .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -70,12 +70,12 @@ public class MountStateTest {
         .layout();
 
     final DynamicPropsManager dynamicPropsManager =
-        mLithoViewRule.getLithoView().getDynamicPropsManager();
+        mLegacyLithoViewRule.getLithoView().getDynamicPropsManager();
 
     assertThat(dynamicPropsManager).isNotNull();
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isTrue();
 
-    mLithoViewRule.detachFromWindow();
+    mLegacyLithoViewRule.detachFromWindow();
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isFalse();
   }
 
@@ -89,7 +89,7 @@ public class MountStateTest {
             .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -97,10 +97,10 @@ public class MountStateTest {
         .layout();
 
     final DynamicPropsManager dynamicPropsManager =
-        mLithoViewRule.getLithoView().getDynamicPropsManager();
+        mLegacyLithoViewRule.getLithoView().getDynamicPropsManager();
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isTrue();
 
-    mLithoViewRule.setRoot(Column.create(mContext).build());
+    mLegacyLithoViewRule.setRoot(Column.create(mContext).build());
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isFalse();
   }
 
@@ -117,7 +117,7 @@ public class MountStateTest {
             .delegate(SolidColor.create(mContext).color(Color.BLACK).build())
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -126,7 +126,7 @@ public class MountStateTest {
 
     final Component emptyRoot = Wrapper.create(mContext).delegate(null).build();
 
-    mLithoViewRule.setRoot(emptyRoot);
+    mLegacyLithoViewRule.setRoot(emptyRoot);
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
@@ -145,25 +145,25 @@ public class MountStateTest {
             .child(TextInput.create(mContext).widthDip(100).heightDip(100))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    View view = mLithoViewRule.getLithoView().getChildAt(0);
+    View view = mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     final Component newRoot =
         Row.create(mContext)
             .child(TextInput.create(mContext).initialText("testing").widthDip(120).heightDip(120))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(newRoot)
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
 
-    View newView = mLithoViewRule.getLithoView().getChildAt(0);
+    View newView = mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     assertThat(newView).isSameAs(view);
 
@@ -184,7 +184,7 @@ public class MountStateTest {
             .child(TextInput.create(mContext).widthDip(100).heightDip(100))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -196,7 +196,7 @@ public class MountStateTest {
             .child(Progress.create(mContext).widthDip(100).heightDip(100))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(newRoot)
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
 
@@ -210,17 +210,17 @@ public class MountStateTest {
     TempComponentsConfigurations.setUseExtensionsWithMountDelegate(true);
     TempComponentsConfigurations.setUseStatelessComponent(true);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .attachToWindow()
-        .setRoot(EmptyComponent.create(mLithoViewRule.getContext()))
+        .setRoot(EmptyComponent.create(mLegacyLithoViewRule.getContext()))
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getCurrentRootNode()).isNull();
-    assertThat(mLithoViewRule.getLithoView().getChildCount()).isEqualTo(0);
+    assertThat(mLegacyLithoViewRule.getCurrentRootNode()).isNull();
+    assertThat(mLegacyLithoViewRule.getLithoView().getChildCount()).isEqualTo(0);
 
-    final RenderTree tree = mLithoViewRule.getCommittedLayoutState().toRenderTree();
+    final RenderTree tree = mLegacyLithoViewRule.getCommittedLayoutState().toRenderTree();
 
     assertThat(tree.getMountableOutputCount()).isEqualTo(1);
     assertThat(tree.getRoot()).isSameAs(tree.getRenderTreeNodeAtIndex(0));
@@ -257,7 +257,7 @@ public class MountStateTest {
                             .build()))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .attachToWindow()
         .setRoot(root)
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -265,7 +265,7 @@ public class MountStateTest {
         .layout();
 
     final ComponentHost parentOfParent =
-        (ComponentHost) mLithoViewRule.findViewWithTagOrNull("root");
+        (ComponentHost) mLegacyLithoViewRule.findViewWithTagOrNull("root");
 
     final RenderTreeNode parentNode = parentOfParent.getMountItemAt(0).getRenderTreeNode();
 
@@ -273,11 +273,11 @@ public class MountStateTest {
     final long childId = parentNode.getChildAt(0).getRenderUnit().getId();
 
     // Unmount the parent
-    mLithoViewRule.getLithoView().getMountDelegateTarget().notifyUnmount(parentId);
+    mLegacyLithoViewRule.getLithoView().getMountDelegateTarget().notifyUnmount(parentId);
 
     // Attempt to mount the child (border drawable)
     // If there is a problem, a crash will occur here.
-    mLithoViewRule.getLithoView().getMountDelegateTarget().notifyMount(childId);
+    mLegacyLithoViewRule.getLithoView().getMountDelegateTarget().notifyMount(childId);
 
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
     TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();

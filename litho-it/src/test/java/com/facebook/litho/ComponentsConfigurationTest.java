@@ -30,7 +30,7 @@ import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class ComponentsConfigurationTest {
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   ComponentContext mComponentContext = new ComponentContext(getApplicationContext());
   ComponentsConfiguration.Builder mDefaultBuilder =
       ComponentsConfiguration.getDefaultComponentsConfigurationBuilder();
@@ -67,7 +67,7 @@ public class ComponentsConfigurationTest {
         RecyclerBinderConfiguration.create()
             .componentsConfiguration(ComponentsConfiguration.getDefaultComponentsConfiguration())
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             RecyclerCollectionComponent.create(mComponentContext)
                 .recyclerConfiguration(
@@ -84,10 +84,10 @@ public class ComponentsConfigurationTest {
                         .build())
                 .build())
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
     final LithoView childView =
-        (LithoView) findViewWithTag(mLithoViewRule.getLithoView(), "rv_row");
+        (LithoView) findViewWithTag(mLegacyLithoViewRule.getLithoView(), "rv_row");
     assertThat(childView).isNotNull();
     ComponentsConfiguration componentsConfiguration =
         Whitebox.getInternalState(childView.getComponentTree(), "mComponentsConfiguration");

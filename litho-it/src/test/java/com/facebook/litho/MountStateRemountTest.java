@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -53,7 +53,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class MountStateRemountTest {
   private ComponentContext mContext;
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -92,7 +92,7 @@ public class MountStateRemountTest {
     final TestComponent component3 = create(mContext).build();
     final TestComponent component4 = create(mContext).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             Column.create(mContext)
                 .widthPx(100)
@@ -107,7 +107,7 @@ public class MountStateRemountTest {
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    mLithoViewRule.setRoot(
+    mLegacyLithoViewRule.setRoot(
         Column.create(mContext)
             .widthPx(100)
             .heightPx(100)
@@ -121,7 +121,7 @@ public class MountStateRemountTest {
     assertThat(component4.isMounted()).isFalse();
 
     final MountDelegateTarget mountDelegateTarget =
-        mLithoViewRule.getLithoView().getMountDelegateTarget();
+        mLegacyLithoViewRule.getLithoView().getMountDelegateTarget();
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
@@ -142,19 +142,19 @@ public class MountStateRemountTest {
   @Test
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(TestViewComponent.create(mContext).build())
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
 
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
-    assertThat(mLithoViewRule.getLithoView().getChildCount()).isEqualTo(1);
+    assertThat(mLegacyLithoViewRule.getLithoView().getChildCount()).isEqualTo(1);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(TestDrawableComponent.create(mContext).build())
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
 
-    assertThat(mLithoViewRule.getLithoView().getDrawables().get(0)).isNotNull();
+    assertThat(mLegacyLithoViewRule.getLithoView().getDrawables().get(0)).isNotNull();
   }
 
   @Test
@@ -213,7 +213,7 @@ public class MountStateRemountTest {
     final TestComponent component3 = create(mContext).build();
     final TestComponent component4 = create(mContext).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             Column.create(mContext)
                 .widthPx(100)
@@ -228,7 +228,7 @@ public class MountStateRemountTest {
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    mLithoViewRule.setRoot(
+    mLegacyLithoViewRule.setRoot(
         Column.create(mContext)
             .widthPx(100)
             .heightPx(100)

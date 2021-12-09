@@ -18,7 +18,7 @@ package com.facebook.litho.sections.widget
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
@@ -32,7 +32,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionIdTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   private fun emptyComponent(): Component = EmptyComponent.create(lithoViewRule.context).build()
 

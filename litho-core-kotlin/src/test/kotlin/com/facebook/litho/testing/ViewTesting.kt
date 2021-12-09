@@ -32,14 +32,14 @@ fun atMost(px: Int) = View.MeasureSpec.makeMeasureSpec(px, View.MeasureSpec.AT_M
 fun unspecified() = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
 
 /** Shorthand helper to create a root component that needs a ComponentScope. */
-fun LithoViewRule.setRoot(componentFunction: ComponentScope.() -> Component) =
+fun LegacyLithoViewRule.setRoot(componentFunction: ComponentScope.() -> Component) =
     setRoot(with(ComponentScope(context)) { componentFunction() })
 
 /**
  * Measures/lays out/attaches to window if not already done, then matches the hierarchy against the
  * provided [ViewMatchNode].
  */
-fun LithoViewRule.assertMatches(matchNode: ViewMatchNode) {
+fun LegacyLithoViewRule.assertMatches(matchNode: ViewMatchNode) {
   measure().layout().attachToWindow()
   ViewAssertions.assertThat(lithoView).matches(matchNode)
 }

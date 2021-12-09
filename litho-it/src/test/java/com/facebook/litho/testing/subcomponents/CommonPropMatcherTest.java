@@ -26,7 +26,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Card;
 import com.facebook.litho.widget.TestCard;
@@ -39,7 +39,7 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class CommonPropMatcherTest {
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setUp() {
@@ -51,7 +51,7 @@ public class CommonPropMatcherTest {
 
   @Test
   public void testTransitionKeyMatcher() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final String key = "nocolusion";
 
     final Component component =

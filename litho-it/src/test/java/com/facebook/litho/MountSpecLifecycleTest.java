@@ -26,8 +26,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.LithoStatsRule;
-import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
@@ -50,7 +50,7 @@ import org.robolectric.shadows.ShadowLooper;
 @RunWith(LithoTestRunner.class)
 public class MountSpecLifecycleTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public final @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
   public final @Rule ExpectedException mExpectedException = ExpectedException.none();
 
@@ -58,10 +58,10 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onSetComponentWithoutLayout_shouldNotCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("No lifecycle methods should be called")
@@ -72,13 +72,13 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onLayout_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .intrinsicSize(new Size(800, 600))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods in expected order")
@@ -109,13 +109,13 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onLayoutWithExactSize_shouldCallLifecycleMethodsExceptMeasure() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .intrinsicSize(new Size(800, 600))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.setSizePx(600, 800).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setSizePx(600, 800).attachToWindow().measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods in expected order")
@@ -135,17 +135,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onDetach_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.detachFromWindow();
+    mLegacyLithoViewRule.detachFromWindow();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should only call")
@@ -156,17 +156,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onReAttach_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .intrinsicSize(new Size(800, 600))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout().detachFromWindow();
+    mLegacyLithoViewRule.attachToWindow().measure().layout().detachFromWindow();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should only call")
@@ -177,17 +177,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onRemeasureWithSameSpecs_shouldNotCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.measure();
+    mLegacyLithoViewRule.measure();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("No lifecycle methods should be called")
@@ -198,17 +198,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onRemeasureWithDifferentSpecs_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(makeSizeSpec(800, EXACTLY), makeSizeSpec(600, UNSPECIFIED))
         .measure();
 
@@ -225,17 +225,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onRemeasureWithExactSize_shouldNotCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .intrinsicSize(new Size(800, 600))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.setSizePx(800, 600).measure();
+    mLegacyLithoViewRule.setSizePx(800, 600).measure();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs(
@@ -247,17 +247,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onReLayoutAfterMeasureWithExactSize_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .intrinsicSize(new Size(800, 600))
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.setSizePx(800, 600).measure().layout();
+    mLegacyLithoViewRule.setSizePx(800, 600).measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods in expected order")
@@ -275,17 +275,18 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onReLayoutAfterMeasureWithExactSizeAsNonRoot_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(Column.create(mLithoViewRule.getContext()).child(component).build());
+    mLegacyLithoViewRule.setRoot(
+        Column.create(mLegacyLithoViewRule.getContext()).child(component).build());
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.setSizePx(800, 600).measure().layout();
+    mLegacyLithoViewRule.setSizePx(800, 600).measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods in expected order")
@@ -304,17 +305,17 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onSetShallowCopy_shouldNotCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
-    mLithoViewRule.setRoot(component.makeShallowCopy());
+    mLegacyLithoViewRule.setRoot(component.makeShallowCopy());
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("No lifecycle methods should be called")
@@ -325,18 +326,18 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onRemeasureWithCompatibleSpecs_shouldNotRemount() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
 
-    mLithoViewRule.setRoot(component).measure().layout().attachToWindow();
+    mLegacyLithoViewRule.setRoot(component).measure().layout().attachToWindow();
 
     lifecycleTracker.reset();
 
     // Force measure call to propagate to ComponentTree
-    mLithoViewRule.getLithoView().requestLayout();
-    mLithoViewRule.measure().layout();
+    mLegacyLithoViewRule.getLithoView().requestLayout();
+    mLegacyLithoViewRule.measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("No lifecycle methods should be called because measure was compatible")
@@ -347,24 +348,24 @@ public class MountSpecLifecycleTest {
   public void lifecycle_onSetSemanticallySimilarComponent_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
 
     final LifecycleTracker newLifecycleTracker = new LifecycleTracker();
-    mLithoViewRule.setRoot(
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+    mLegacyLithoViewRule.setRoot(
+        MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .intrinsicSize(new Size(800, 600))
             .lifecycleTracker(newLifecycleTracker)
             .build());
 
-    mLithoViewRule.measure().layout();
+    mLegacyLithoViewRule.measure().layout();
 
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods on old instance in expected order")
@@ -396,24 +397,24 @@ public class MountSpecLifecycleTest {
   public void onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethods() {
     final Looper looper = ShadowLooper.getLooperForThread(Thread.currentThread());
     final ComponentTree tree =
-        ComponentTree.create(mLithoViewRule.getContext())
+        ComponentTree.create(mLegacyLithoViewRule.getContext())
             .shouldPreallocateMountContentPerMountSpec(true)
             .preAllocateMountContentHandler(new RunnableHandler.DefaultHandler(looper))
             .build();
-    mLithoViewRule.useComponentTree(tree);
+    mLegacyLithoViewRule.useComponentTree(tree);
 
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        PreallocatedMountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        PreallocatedMountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .steps(info)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .getComponentTree()
         .setRootAndSizeSpecSync(
-            component, mLithoViewRule.getWidthSpec(), mLithoViewRule.getHeightSpec());
+            component, mLegacyLithoViewRule.getWidthSpec(), mLegacyLithoViewRule.getHeightSpec());
 
-    mLithoViewRule.measure();
+    mLegacyLithoViewRule.measure();
 
     ShadowLooper.runUiThreadTasks();
 
@@ -447,24 +448,24 @@ public class MountSpecLifecycleTest {
 
     final Looper looper = ShadowLooper.getLooperForThread(Thread.currentThread());
     final ComponentTree tree =
-        ComponentTree.create(mLithoViewRule.getContext())
+        ComponentTree.create(mLegacyLithoViewRule.getContext())
             .shouldPreallocateMountContentPerMountSpec(true)
             .preAllocateMountContentHandler(new RunnableHandler.DefaultHandler(looper))
             .build();
-    mLithoViewRule.useComponentTree(tree);
+    mLegacyLithoViewRule.useComponentTree(tree);
 
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        PreallocatedMountSpecLifecycleTester.create(mLithoViewRule.getContext())
+        PreallocatedMountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .steps(info)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .getComponentTree()
         .setRootAndSizeSpecSync(
-            component, mLithoViewRule.getWidthSpec(), mLithoViewRule.getHeightSpec());
+            component, mLegacyLithoViewRule.getWidthSpec(), mLegacyLithoViewRule.getHeightSpec());
 
-    mLithoViewRule.measure();
+    mLegacyLithoViewRule.measure();
 
     ShadowLooper.runUiThreadTasks();
 
@@ -487,9 +488,9 @@ public class MountSpecLifecycleTest {
   public void shouldUpdate_shouldUpdateIsCalled_prevAndNextAreInRightOrder() {
     final Object firstObject = new Object();
     final List<Diff<Object>> shouldUpdateCalls = new ArrayList<>();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
-            RecordsShouldUpdate.create(mLithoViewRule.getContext())
+            RecordsShouldUpdate.create(mLegacyLithoViewRule.getContext())
                 .shouldUpdateCalls(shouldUpdateCalls)
                 .testProp(firstObject)
                 .build())
@@ -498,9 +499,9 @@ public class MountSpecLifecycleTest {
         .attachToWindow();
 
     final Object secondObject = new Object();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
-            RecordsShouldUpdate.create(mLithoViewRule.getContext())
+            RecordsShouldUpdate.create(mLegacyLithoViewRule.getContext())
                 .shouldUpdateCalls(shouldUpdateCalls)
                 .testProp(secondObject)
                 .build())
@@ -526,27 +527,30 @@ public class MountSpecLifecycleTest {
         new SimpleStateUpdateEmulatorSpec.Caller();
 
     final Component root =
-        Column.create(mLithoViewRule.getContext())
+        Column.create(mLegacyLithoViewRule.getContext())
             .child(
-                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
                     .intrinsicSize(new Size(800, 600))
                     .lifecycleTracker(info_child1)
                     .key("some_key"))
             .child(
-                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
                     .intrinsicSize(new Size(800, 600))
                     .lifecycleTracker(info_child2)
                     .key("other_key"))
             .child(
-                SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
+                SimpleStateUpdateEmulator.create(mLegacyLithoViewRule.getContext())
+                    .caller(stateUpdater))
             .build();
 
-    mLithoViewRule.useComponentTree(
-        ComponentTree.create(mLithoViewRule.getContext()).isReconciliationEnabled(false).build());
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.useComponentTree(
+        ComponentTree.create(mLegacyLithoViewRule.getContext())
+            .isReconciliationEnabled(false)
+            .build());
+    mLegacyLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     final MountDelegateTarget mountDelegateTarget =
-        mLithoViewRule.getLithoView().getMountDelegateTarget();
+        mLegacyLithoViewRule.getLithoView().getMountDelegateTarget();
     assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1);
 
     info_child1.reset();

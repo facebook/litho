@@ -41,7 +41,7 @@ import android.graphics.drawable.Drawable;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -63,7 +63,7 @@ public class TreeDiffingTest {
   private static Drawable sBlackDrawable;
   private static Drawable sTransparentDrawable;
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private int mUnspecifiedSpec;
 
@@ -91,7 +91,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY));
@@ -115,7 +115,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -138,18 +138,18 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasureFunction() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component_0 = Text.create(c).text("hello-world").build();
 
-    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
-    final DiffNode diffNode = mLithoViewRule.getCommittedLayoutState().getDiffTree();
+    final DiffNode diffNode = mLegacyLithoViewRule.getCommittedLayoutState().getDiffTree();
 
     final Component component_1 = Text.create(c).text("hello-world").build();
 
-    mLithoViewRule.setRoot(component_1).layout().measure();
+    mLegacyLithoViewRule.setRoot(component_1).layout().measure();
 
-    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult result = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(result.getWidth()).isEqualTo((int) diffNode.getLastMeasuredWidth());
     assertThat(result.getHeight()).isEqualTo((int) diffNode.getLastMeasuredHeight());
@@ -157,18 +157,18 @@ public class TreeDiffingTest {
 
   @Test
   public void tesLastConstraints() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component_0 = Text.create(c).text("hello-world").build();
 
-    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
-    final DiffNode diffNode = mLithoViewRule.getCommittedLayoutState().getDiffTree();
+    final DiffNode diffNode = mLegacyLithoViewRule.getCommittedLayoutState().getDiffTree();
 
     final Component component_1 = Text.create(c).text("hello-world").build();
 
-    mLithoViewRule.setRoot(component_1).layout().measure();
+    mLegacyLithoViewRule.setRoot(component_1).layout().measure();
 
-    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult result = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(diffNode.getLastWidthSpec()).isEqualTo(result.getWidthSpec());
     assertThat(diffNode.getLastHeightSpec()).isEqualTo(result.getHeightSpec());
@@ -176,14 +176,14 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasures() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component_0 =
         Column.create(c)
             .child(Text.create(c).text("hello-world").build())
             .child(Text.create(c).text("hello-world").build())
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
     final Component component_1 =
         Column.create(c)
@@ -191,9 +191,9 @@ public class TreeDiffingTest {
             .child(Text.create(c).text("hello-world").build())
             .build();
 
-    mLithoViewRule.setRoot(component_1).layout().measure();
+    mLegacyLithoViewRule.setRoot(component_1).layout().measure();
 
-    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult result = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(result.getChildAt(0).areCachedMeasuresValid()).isTrue();
     assertThat(result.getChildAt(1).areCachedMeasuresValid()).isTrue();
@@ -201,14 +201,14 @@ public class TreeDiffingTest {
 
   @Test
   public void testPartiallyCachedMeasures() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component_0 =
         Column.create(c)
             .child(Text.create(c).text("hello-world-1").build())
             .child(Text.create(c).text("hello-world-2").build())
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
     final Component component_1 =
         Column.create(c)
@@ -216,9 +216,9 @@ public class TreeDiffingTest {
             .child(Text.create(c).text("hello-world-3").build())
             .build();
 
-    mLithoViewRule.setRoot(component_1).layout().measure();
+    mLegacyLithoViewRule.setRoot(component_1).layout().measure();
 
-    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult result = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(result.getChildAt(0).areCachedMeasuresValid()).isTrue();
     assertThat(result.getChildAt(1).areCachedMeasuresValid()).isFalse();
@@ -253,7 +253,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -261,7 +261,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -305,14 +305,14 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -344,7 +344,7 @@ public class TreeDiffingTest {
 
   @Test
   public void testComponentHostMoveItem() {
-    ComponentContext c = mLithoViewRule.getComponentTree().getContext();
+    ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
     ComponentHost hostHolder = new ComponentHost(c);
 
     MountItem mountItem = mock(MountItem.class);
@@ -371,7 +371,7 @@ public class TreeDiffingTest {
 
   @Test
   public void testComponentHostMoveItemPartial() {
-    ComponentContext c = mLithoViewRule.getComponentTree().getContext();
+    ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
     ComponentHost hostHolder = new ComponentHost(c);
 
     MountItem mountItem = mock(MountItem.class);
@@ -408,28 +408,28 @@ public class TreeDiffingTest {
 
   @Test
   public void testLayoutOutputUpdateState() {
-    ComponentContext c = mLithoViewRule.getContext();
+    ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component firstComponent = TestDrawableComponent.create(c).color(Color.BLACK).build();
     final Component secondComponent = TestDrawableComponent.create(c).color(Color.BLACK).build();
     final Component thirdComponent = TestDrawableComponent.create(c).color(Color.WHITE).build();
 
-    mLithoViewRule.setRoot(firstComponent).attachToWindow();
+    mLegacyLithoViewRule.setRoot(firstComponent).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpecSync(
+    mLegacyLithoViewRule.setRootAndSizeSpecSync(
         firstComponent,
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY));
-    LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    LayoutState state = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
 
-    mLithoViewRule.setRoot(secondComponent);
-    LayoutState secondState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(secondComponent);
+    LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
 
-    mLithoViewRule.setRoot(thirdComponent);
-    LayoutState thirdState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(thirdComponent);
+    LayoutState thirdState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
   }
@@ -440,21 +440,21 @@ public class TreeDiffingTest {
     final Component component2 = new TestLayoutSpecBgState(false);
     final Component component3 = new TestLayoutSpecBgState(true);
 
-    mLithoViewRule.setRoot(component1).attachToWindow();
+    mLegacyLithoViewRule.setRoot(component1).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpecSync(
+    mLegacyLithoViewRule.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
-    LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    LayoutState state = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertOutputsState(state, STATE_UNKNOWN);
 
-    mLithoViewRule.setRoot(component2);
-    LayoutState secondState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(component2);
+    LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(secondState.getMountableOutputCount()).isEqualTo(4);
 
-    mLithoViewRule.setRoot(component3);
-    LayoutState thirdState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(component3);
+    LayoutState thirdState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(thirdState.getMountableOutputCount()).isEqualTo(4);
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
@@ -470,25 +470,25 @@ public class TreeDiffingTest {
     final Component component2 = new TestLayoutSpecInnerState(false);
     final Component component3 = new TestLayoutSpecInnerState(true);
 
-    mLithoViewRule.setRoot(component1).attachToWindow();
+    mLegacyLithoViewRule.setRoot(component1).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpecSync(
+    mLegacyLithoViewRule.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
-    LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    LayoutState state = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(state.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UNKNOWN);
 
-    mLithoViewRule.setRoot(component2);
-    LayoutState secondState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(component2);
+    LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(secondState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UNKNOWN);
     assertThat(getLayoutOutput(secondState.getMountableOutputAt(3)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
 
-    mLithoViewRule.setRoot(component3);
-    LayoutState thirdState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(component3);
+    LayoutState thirdState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UNKNOWN);
@@ -501,16 +501,16 @@ public class TreeDiffingTest {
     final Component component1 = new TestLayoutWithStateIdClash(false);
     final Component component2 = new TestLayoutWithStateIdClash(true);
 
-    mLithoViewRule.setRoot(component1).attachToWindow();
+    mLegacyLithoViewRule.setRoot(component1).attachToWindow();
 
-    mLithoViewRule.setRootAndSizeSpecSync(
+    mLegacyLithoViewRule.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
-    LayoutState state = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    LayoutState state = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertOutputsState(state, STATE_UNKNOWN);
 
-    mLithoViewRule.setRoot(component2);
-    LayoutState secondState = mLithoViewRule.getComponentTree().getMainThreadLayoutState();
+    mLegacyLithoViewRule.setRoot(component2);
+    LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
     assertThat(STATE_DIRTY)
@@ -529,7 +529,7 @@ public class TreeDiffingTest {
 
   @Test
   public void testDiffTreeUsedIfRootMeasureSpecsAreDifferentButChildHasSame() {
-    ComponentContext c = mLithoViewRule.getComponentTree().getContext();
+    ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
     final TestComponent component = TestDrawableComponent.create(c).color(BLACK).build();
 
     final Component layoutComponent = new TestSimpleContainerLayout2(component);
@@ -560,7 +560,7 @@ public class TreeDiffingTest {
 
   @Test
   public void testDiffTreeUsedIfMeasureSpecsAreSame() {
-    ComponentContext c = mLithoViewRule.getComponentTree().getContext();
+    ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
     final TestComponent component = TestDrawableComponent.create(c).color(BLACK).build();
 
     final Component layoutComponent = new TestSimpleContainerLayout(component, 0);
@@ -596,7 +596,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -604,7 +604,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -627,7 +627,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -635,7 +635,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),

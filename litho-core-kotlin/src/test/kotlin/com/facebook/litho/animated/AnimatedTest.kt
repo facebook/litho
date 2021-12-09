@@ -27,7 +27,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.unspecified
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
@@ -45,7 +45,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class AnimatedTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   private lateinit var listener: AnimationFinishListener
   private lateinit var listener2: AnimationFinishListener

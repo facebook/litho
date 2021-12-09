@@ -50,7 +50,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -73,7 +73,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class RecyclerCollectionComponentSpecTest {
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mComponentContext;
   private Component mLoadingComponent;
@@ -251,12 +251,12 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testInitialState() throws Exception {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(mRecyclerCollectionComponent)
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
-    ViewTreeAssert.assertThat(ViewTree.of(mLithoViewRule.getLithoView()))
+    ViewTreeAssert.assertThat(ViewTree.of(mLegacyLithoViewRule.getLithoView()))
         .hasVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -265,9 +265,9 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testNestedIncrementalMountDisabled() {
-    mLithoViewRule.useComponentTree(
+    mLegacyLithoViewRule.useComponentTree(
         ComponentTree.create(mComponentContext).incrementalMount(false).build());
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             RecyclerCollectionComponent.create(mComponentContext)
                 .section(
@@ -280,17 +280,17 @@ public class RecyclerCollectionComponentSpecTest {
                         .build())
                 .build())
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
     final LithoView childView =
-        (LithoView) findViewWithTag(mLithoViewRule.getLithoView(), "rv_row").getParent();
+        (LithoView) findViewWithTag(mLegacyLithoViewRule.getLithoView(), "rv_row").getParent();
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
   }
 
   @Test
   public void testNestedIncrementalMountNormal() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(
             RecyclerCollectionComponent.create(mComponentContext)
                 .section(
@@ -303,17 +303,17 @@ public class RecyclerCollectionComponentSpecTest {
                         .build())
                 .build())
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
     final LithoView childView =
-        (LithoView) findViewWithTag(mLithoViewRule.getLithoView(), "rv_row").getParent();
+        (LithoView) findViewWithTag(mLegacyLithoViewRule.getLithoView(), "rv_row").getParent();
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
   }
 
   @Test
   public void rcc_insertLayoutSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
-    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final ComponentContext componentContext = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
         LayoutSpecWorkingRangeTester.create(componentContext).steps(info).heightPx(100).build();
@@ -325,11 +325,11 @@ public class RecyclerCollectionComponentSpecTest {
                     .component(component)
                     .build())
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(rcc)
         .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should register and enter working range in expected order")
@@ -338,7 +338,7 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void rcc_insertMountSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
-    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final ComponentContext componentContext = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
         MountSpecWorkingRangeTester.create(componentContext).steps(info).heightPx(100).build();
@@ -350,11 +350,11 @@ public class RecyclerCollectionComponentSpecTest {
                     .component(component)
                     .build())
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(rcc)
         .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should register and enter working range in expected order")

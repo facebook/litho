@@ -21,7 +21,7 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LithoLifecycleProviderTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private LithoView mLithoView;
   private LayoutSpecLifecycleTester mComponent;
@@ -48,7 +48,7 @@ public class LithoLifecycleProviderTest {
 
   @Before
   public void setup() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
     mSteps = new ArrayList<>();
     lifecycleTracker = new LifecycleTracker();
@@ -60,7 +60,7 @@ public class LithoLifecycleProviderTest {
             .lifecycleTracker(lifecycleTracker)
             .build();
     mLithoView = LithoView.create(c, Column.create(c).build(), mLithoLifecycleProviderDelegate);
-    mLithoViewRule.useLithoView(mLithoView);
+    mLegacyLithoViewRule.useLithoView(mLithoView);
   }
 
   @After
@@ -72,13 +72,13 @@ public class LithoLifecycleProviderTest {
 
   @Test
   public void lithoLifecycleProviderDelegateInvisibleToVisibleTest() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(mComponent)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
         .measure()
         .layout();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 10), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 10), true);
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
 
@@ -98,10 +98,10 @@ public class LithoLifecycleProviderTest {
 
   @Test
   public void lithoLifecycleProviderDelegateInvisibleToInvisibleTest() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(mComponent)
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
 
@@ -121,10 +121,10 @@ public class LithoLifecycleProviderTest {
 
   @Test
   public void lithoLifecycleProviderDelegateVisibleToVisibleTest() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(mComponent)
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
 
@@ -144,10 +144,10 @@ public class LithoLifecycleProviderTest {
 
   @Test
   public void lithoLifecycleProviderDelegateVisibleToDestroyedTest() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(mMountableComponent)
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
@@ -168,28 +168,29 @@ public class LithoLifecycleProviderTest {
 
   @Test
   public void lithoLifecycleProviderComponentTreeResetVisibilityFlags() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(mComponent)
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY));
-    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+    mLegacyLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
     boolean hasVisibilityHint =
-        Whitebox.getInternalState(mLithoViewRule.getLithoView(), "mHasVisibilityHint");
+        Whitebox.getInternalState(mLegacyLithoViewRule.getLithoView(), "mHasVisibilityHint");
     boolean pauseMountingWhileVisibilityHintFalse =
         Whitebox.getInternalState(
-            mLithoViewRule.getLithoView(), "mPauseMountingWhileVisibilityHintFalse");
+            mLegacyLithoViewRule.getLithoView(), "mPauseMountingWhileVisibilityHintFalse");
     assertThat(hasVisibilityHint).isTrue();
     assertThat(pauseMountingWhileVisibilityHintFalse).isTrue();
 
-    mLithoViewRule.useComponentTree(ComponentTree.create(mLithoViewRule.getContext()).build());
+    mLegacyLithoViewRule.useComponentTree(
+        ComponentTree.create(mLegacyLithoViewRule.getContext()).build());
 
     hasVisibilityHint =
-        Whitebox.getInternalState(mLithoViewRule.getLithoView(), "mHasVisibilityHint");
+        Whitebox.getInternalState(mLegacyLithoViewRule.getLithoView(), "mHasVisibilityHint");
     pauseMountingWhileVisibilityHintFalse =
         Whitebox.getInternalState(
-            mLithoViewRule.getLithoView(), "mPauseMountingWhileVisibilityHintFalse");
+            mLegacyLithoViewRule.getLithoView(), "mPauseMountingWhileVisibilityHintFalse");
 
     assertThat(hasVisibilityHint).isFalse();
     assertThat(pauseMountingWhileVisibilityHintFalse).isFalse();

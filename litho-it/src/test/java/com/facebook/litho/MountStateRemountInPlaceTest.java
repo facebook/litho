@@ -34,7 +34,7 @@ import static org.mockito.Mockito.spy;
 
 import android.graphics.Color;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -54,7 +54,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class MountStateRemountInPlaceTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mContext;
   private TestComponentsLogger mComponentsLogger;
@@ -111,7 +111,7 @@ public class MountStateRemountInPlaceTest {
     final Component root =
         MountSpecLifecycleTester.create(mContext).lifecycleTracker(tracker).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(20, SizeSpec.EXACTLY))
@@ -125,7 +125,7 @@ public class MountStateRemountInPlaceTest {
 
     tracker.reset();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             root, makeSizeSpec(20, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY))
         .measure()
@@ -410,11 +410,11 @@ public class MountStateRemountInPlaceTest {
     }
 
     ComponentContext c = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
-    mLithoViewRule.useContext(c);
+    mLegacyLithoViewRule.useContext(c);
 
     Component component = TextInput.create(c).heightDip(100).widthDip(100).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .attachToWindow()
         .setRootAndSizeSpecSync(
             LayoutSpecConditionalReParenting.create(c)
@@ -426,7 +426,7 @@ public class MountStateRemountInPlaceTest {
         .measure()
         .layout();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .attachToWindow()
         .setRootAndSizeSpecSync(
             LayoutSpecConditionalReParenting.create(c)

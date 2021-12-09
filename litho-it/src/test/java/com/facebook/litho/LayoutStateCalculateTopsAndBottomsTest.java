@@ -28,7 +28,7 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LayoutStateCalculateTopsAndBottomsTest {
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void testCalculateTopsAndBottoms() {
@@ -66,7 +66,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     LayoutState layoutState =
         LayoutState.calculate(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -123,7 +123,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     LayoutState layoutState =
         LayoutState.calculate(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +36,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class LegacyDynamicPropsTest {
   private ComponentContext mContext;
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {

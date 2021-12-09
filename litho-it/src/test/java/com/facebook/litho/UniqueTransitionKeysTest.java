@@ -19,7 +19,7 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.View;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class UniqueTransitionKeysTest {
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private final InlineLayoutSpec mHasNonUniqueTransitionKeys =
       new InlineLayoutSpec() {
@@ -74,7 +74,7 @@ public class UniqueTransitionKeysTest {
   public void testGetTransitionKeyMapping() {
     LayoutState layoutState =
         LayoutState.calculate(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             mHasUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
@@ -91,7 +91,7 @@ public class UniqueTransitionKeysTest {
 
     LayoutState layoutState =
         LayoutState.calculate(
-            mLithoViewRule.getComponentTree().getContext(),
+            mLegacyLithoViewRule.getComponentTree().getContext(),
             mHasNonUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),

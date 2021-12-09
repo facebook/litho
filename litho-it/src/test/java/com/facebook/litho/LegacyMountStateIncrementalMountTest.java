@@ -22,7 +22,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import org.junit.After;
@@ -37,27 +37,27 @@ import org.robolectric.annotation.LooperMode;
 public class LegacyMountStateIncrementalMountTest {
   private ComponentContext mContext;
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
-    mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(new LithoView(mContext));
+    mContext = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule.useLithoView(new LithoView(mContext));
   }
 
   @Test
   public void testRootViewAttributes_incrementalMountAfterUnmount_setViewAttributes() {
     final Component root = Text.create(mContext).text("Test").contentDescription("testcd").build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
     assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
 
     lithoView.unmountAllItems();

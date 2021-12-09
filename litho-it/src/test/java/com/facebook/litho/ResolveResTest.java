@@ -24,7 +24,7 @@ import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -36,68 +36,68 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class ResolveResTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
-    mLithoViewRule.useContext(
+    mLegacyLithoViewRule.useContext(
         new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme)));
   }
 
   @Test
   public void testDefaultDimenWidthRes() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).widthRes(test_dimen).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
     int dimen = c.getResources().getDimensionPixelSize(test_dimen);
-    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
+    assertThat(mLegacyLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testDefaultDimenPaddingRes() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).paddingRes(LEFT, test_dimen).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
     int dimen = c.getResources().getDimensionPixelSize(test_dimen);
-    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
+    assertThat(mLegacyLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testFloatDimenWidthRes() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Column column = Column.create(c).widthRes(test_dimen_float).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRootAndSizeSpecSync(
             column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
         .measure()
         .layout();
 
     int dimen = c.getResources().getDimensionPixelSize(test_dimen_float);
-    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
+    assertThat(mLegacyLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testFloatDimenPaddingRes() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Row row =
         Row.create(c).child(TextInput.create(c).paddingRes(LEFT, test_dimen_float)).build();
 
-    mLithoViewRule.attachToWindow().setSizePx(100, 100).setRoot(row).measure().layout();
+    mLegacyLithoViewRule.attachToWindow().setSizePx(100, 100).setRoot(row).measure().layout();
 
     int dimen = c.getResources().getDimensionPixelSize(test_dimen_float);
-    assertThat(mLithoViewRule.getLithoView().getChildAt(0).getPaddingLeft()).isEqualTo(dimen);
+    assertThat(mLegacyLithoViewRule.getLithoView().getChildAt(0).getPaddingLeft()).isEqualTo(dimen);
   }
 }

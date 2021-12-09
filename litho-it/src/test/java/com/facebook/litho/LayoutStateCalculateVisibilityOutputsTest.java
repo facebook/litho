@@ -22,7 +22,7 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -36,13 +36,13 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LayoutStateCalculateVisibilityOutputsTest {
 
-  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private ComponentContext mContext;
 
   @Before
   public void setup() throws Exception {
-    mContext = mLithoViewRule.getComponentTree().getContext();
+    mContext = mLegacyLithoViewRule.getComponentTree().getContext();
     ComponentsPools.clearMountContentPools();
   }
 

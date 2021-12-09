@@ -40,7 +40,7 @@ import com.facebook.litho.Transition;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.dataflow.MockTimingSource;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.TestAnimationMount;
@@ -92,7 +92,7 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class AnimationTest {
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
   private static final String TRANSITION_KEY = "TRANSITION_KEY";
   private final StateCaller mStateCaller = new StateCaller();
@@ -137,11 +137,11 @@ public class AnimationTest {
   @Test
   public void animationProperties_animatingPropertyX_elementShouldAnimateInTheXAxis() {
     final TestAnimationsComponent component = getAnimatingXPropertyComponent();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // 160 is equal to height and width of 200 - 40 for the size of the row.
     assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
@@ -170,7 +170,7 @@ public class AnimationTest {
   public void animationProperties_animatingPropertyY_elementShouldAnimateInTheYAxis() {
 
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -198,11 +198,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
     assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
@@ -229,7 +229,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_animatingPropertyScale_elementShouldAnimateXandYScale() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -254,11 +254,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     assertThat(view.getScaleX()).describedAs("view scale X initial position").isEqualTo(2);
     assertThat(view.getScaleY()).describedAs("view scale Y initial position").isEqualTo(2);
@@ -283,7 +283,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_animatingPropertyAlpha_elementShouldAnimateAlpha() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -308,11 +308,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     assertThat(view.getAlpha()).describedAs("view alpha initial state").isEqualTo(0.5f);
 
@@ -333,7 +333,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_animatingPropertyRotation_elementShouldAnimateRotation() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -358,11 +358,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     assertThat(view.getRotation()).describedAs("view rotation initial state").isEqualTo(0);
 
@@ -385,7 +385,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_animatingPropertyHeight_elementShouldAnimateHeight() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -411,11 +411,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view.getHeight()).describedAs("view height initial state").isEqualTo(40);
     assertThat(view.getWidth()).describedAs("view width initial state").isEqualTo(40);
 
@@ -438,7 +438,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_animatingPropertyWidth_elementShouldAnimateWidth() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -464,11 +464,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view.getHeight()).describedAs("view height initial state").isEqualTo(40);
     assertThat(view.getWidth()).describedAs("view width initial state").isEqualTo(40);
 
@@ -491,7 +491,7 @@ public class AnimationTest {
   @Test
   public void animation_appearAnimation_elementShouldAppearAnimatingAlpha() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -524,18 +524,18 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
 
     // View should be null as state is null
     assertThat(view).describedAs("view before appearing").isNull();
     mStateCaller.update();
 
     // After state update we should have the view added but with alpha equal to 0
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view).describedAs("view after toggle").isNotNull();
     assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
 
@@ -551,7 +551,7 @@ public class AnimationTest {
   @Test
   public void animation_disappearAnimation_elementShouldDisappearAnimatingAlpha() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -584,18 +584,18 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     // We move 10 frames to account for the appear animation.
     mTransitionTestRule.step(10);
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
     // The view is not null
     assertThat(view).describedAs("view before disappearing").isNotNull();
     assertThat(view.getAlpha()).describedAs("view before disappearing").isEqualTo(1);
     mStateCaller.update();
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // After state update, even if the row was removed from the component, it still not null as we
     // are going to animate it. Alpha stays at 1 before advancing frames.
@@ -612,7 +612,7 @@ public class AnimationTest {
     assertThat(view.getAlpha()).describedAs("view after 10 frames").isEqualTo(0.030153751f);
     mTransitionTestRule.step(1);
 
-    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
+    view = mLegacyLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after last re-measure and re-layout").isNull();
   }
 
@@ -620,7 +620,7 @@ public class AnimationTest {
   public void
       animation_disappearAnimationWithRemountToRoot_elementShouldDisappearWithoutCrashing() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.parallel(
@@ -743,8 +743,8 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     // We move 100 frames to be sure any appearing animation finished.
@@ -762,7 +762,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_differentInterpolator_elementShouldAnimateInTheXAxis() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -790,11 +790,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // 160 is equal to height and width of 200 - 40 for the size of the row.
     assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
@@ -823,7 +823,7 @@ public class AnimationTest {
   @Test
   public void animationProperties_nullInterpolator_elementShouldAnimateInTheXAxis() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -851,11 +851,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // 160 is equal to height and width of 200 - 40 for the size of the row.
     assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
@@ -883,11 +883,11 @@ public class AnimationTest {
 
   @Test
   public void animation_unmountingLithoViewMidAnimation_shouldNotCrash() {
-    mLithoViewRule.setRoot(getAnimatingXPropertyComponent());
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(getAnimatingXPropertyComponent());
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // 160 is equal to height and width of 200 - 40 for the size of the row.
     assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
@@ -907,7 +907,7 @@ public class AnimationTest {
     assertThat(view.getY()).describedAs("view Y axis after 5 frames").isEqualTo(0);
 
     // This line would unmount the animating mountitem and the framework should stop the animation.
-    mLithoViewRule.getLithoView().unmountAllItems();
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
 
     // After unmounting all items it should not crash.
     mTransitionTestRule.step(5);
@@ -918,9 +918,9 @@ public class AnimationTest {
     ComponentContext componentContext =
         new ComponentContext(ApplicationProvider.getApplicationContext());
 
-    mLithoViewRule.setRoot(getNonAnimatingComponent());
+    mLegacyLithoViewRule.setRoot(getNonAnimatingComponent());
     // We measure and layout this non animating component to initialize the transition extension.
-    mLithoViewRule.measure().layout();
+    mLegacyLithoViewRule.measure().layout();
 
     // We need an other litho view where we are going to measure and layout an other similar tree
     // (the real difference here is that the root components are not animating)
@@ -936,15 +936,15 @@ public class AnimationTest {
     ComponentTree animatingComponentTree = ComponentTree.create(componentContext).build();
     animatingComponentTree.setRoot(getAnimatingXPropertyComponent());
 
-    mLithoViewRule.useComponentTree(animatingComponentTree);
+    mLegacyLithoViewRule.useComponentTree(animatingComponentTree);
     // We measure this component tree so we initialize the mRootTransition in the extension, but we
     // end up not running a layout here.
-    mLithoViewRule.measure();
+    mLegacyLithoViewRule.measure();
 
     // Finally we set a new animating component tree to the initial litho view and run measure and
     // layout.
-    mLithoViewRule.useComponentTree(nonAnimatingComponentTree);
-    mLithoViewRule.measure().layout();
+    mLegacyLithoViewRule.useComponentTree(nonAnimatingComponentTree);
+    mLegacyLithoViewRule.measure().layout();
     // Should not crash.
   }
 
@@ -954,7 +954,7 @@ public class AnimationTest {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
 
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -994,21 +994,21 @@ public class AnimationTest {
                 })
             .build();
 
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     mTransitionTestRule.step(1);
 
     // Grab the parent of the parent
     final ComponentHost parentOfParent =
-        (ComponentHost) mLithoViewRule.findViewWithTagOrNull("parent_of_parent");
+        (ComponentHost) mLegacyLithoViewRule.findViewWithTagOrNull("parent_of_parent");
 
     // Grab the id of the 1st child - this is the parent we will unmount
     final long id = parentOfParent.getMountItemAt(0).getRenderTreeNode().getRenderUnit().getId();
 
     // Manually unmount the parent of the disappearing item
-    mLithoViewRule.getLithoView().getMountDelegateTarget().notifyUnmount(id);
+    mLegacyLithoViewRule.getLithoView().getMountDelegateTarget().notifyUnmount(id);
 
     // Update so the disappearing item triggers a disappear animation.
     // If there's a problem, a crash will occur here.
@@ -1021,7 +1021,7 @@ public class AnimationTest {
   @Test
   public void animation_unmountElementMidAppearAnimation_elementShouldBeUnmounted() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.stagger(
@@ -1061,18 +1061,18 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     // The bug only happens if you start the animation in the middle twice.
-    View view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
+    View view = mLegacyLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
 
     // View should be null as state is null
     assertThat(view).describedAs("view before appearing").isNull();
     mStateCaller.update();
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view after toggle").isNotNull();
     // After state update we should have the view added but with alpha equal to 0
     assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
@@ -1081,19 +1081,19 @@ public class AnimationTest {
     // Update state again the element should not be there.
     mStateCaller.update();
 
-    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
+    view = mLegacyLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view unmount mid animation").isNull();
 
     mTransitionTestRule.step(1);
     // Now if we do this again we expect the appearing items to the same thing.
     mStateCaller.update();
     mTransitionTestRule.step(1);
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view after toggle").isNotNull();
     // After state update we should have the view added but with alpha equal to 0
     assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
     mStateCaller.update();
-    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
+    view = mLegacyLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view unmount mid animation").isNull();
   }
 
@@ -1101,7 +1101,7 @@ public class AnimationTest {
   public void
       animation_disappearAnimationMovingAnItemToTheSameIndex_elementShouldDisappearWithoutCrashing() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create("text_like")
@@ -1175,8 +1175,8 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     // We move 100 frames to be sure any appearing animation finished.
@@ -1194,31 +1194,31 @@ public class AnimationTest {
   @Test
   public void
       animationTransitionsExtension_reUsingLithoViewWithSameComponentTrees_shouldNotCrash() {
-    ComponentContext componentContext = mLithoViewRule.getContext();
+    ComponentContext componentContext = mLegacyLithoViewRule.getContext();
 
     ComponentTree animatingComponentTree = ComponentTree.create(componentContext).build();
     animatingComponentTree.setRoot(getAnimatingXPropertyComponent());
 
-    mLithoViewRule.useComponentTree(animatingComponentTree);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.useComponentTree(animatingComponentTree);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     mStateCaller.update();
 
     mTransitionTestRule.step(5);
 
-    LithoView lithoView1 = mLithoViewRule.getLithoView();
+    LithoView lithoView1 = mLegacyLithoViewRule.getLithoView();
     lithoView1.setComponentTree(null);
     LithoView lithoView2 = new LithoView(componentContext);
     lithoView2.setComponentTree(animatingComponentTree);
-    mLithoViewRule.useLithoView(lithoView2).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.useLithoView(lithoView2).attachToWindow().measure().layout();
     animatingComponentTree.setRoot(getNonAnimatingComponent());
     mStateCaller.update();
     mTransitionTestRule.step(1);
 
     lithoView2.setComponentTree(null);
     lithoView1.setComponentTree(animatingComponentTree);
-    mLithoViewRule.useLithoView(lithoView1);
+    mLegacyLithoViewRule.useLithoView(lithoView1);
 
     mTransitionTestRule.step(1000);
   }
@@ -1227,7 +1227,7 @@ public class AnimationTest {
   public void
       animationProperties_animatingPropertyOnRootComponent_elementShouldAnimateInTheXAxis() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -1252,11 +1252,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View lithoView = mLithoViewRule.getLithoView();
+    View lithoView = mLegacyLithoViewRule.getLithoView();
 
     // 160 is equal to height and width of 200 - 40 for the size of the row.
     assertThat(lithoView.getX())
@@ -1304,7 +1304,7 @@ public class AnimationTest {
   }
 
   private TestAnimationsComponent getAnimatingXPropertyComponent() {
-    return TestAnimationsComponent.create(mLithoViewRule.getContext())
+    return TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
         .stateCaller(mStateCaller)
         .transition(
             Transition.create(TRANSITION_KEY)
@@ -1335,7 +1335,7 @@ public class AnimationTest {
   }
 
   private Component getNonAnimatingComponent() {
-    return TestAnimationsComponent.create(mLithoViewRule.getContext())
+    return TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
         .stateCaller(mStateCaller)
         .transition(null)
         .testComponent(
@@ -1363,7 +1363,7 @@ public class AnimationTest {
   @Test
   public void transitionAnimation_interruption_overridesCurrentTransition() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -1387,11 +1387,11 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    final View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    final View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     assertThat(view.getX()).describedAs("x pos before transition").isEqualTo(160);
 
@@ -1420,7 +1420,7 @@ public class AnimationTest {
       animation_disappearAnimationOnNestedLithoViews_elementShouldDisappearAnimatingAlpha() {
     final StateCaller innerStateCaller = new StateCaller();
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -1456,15 +1456,15 @@ public class AnimationTest {
                   }
                 })
             .build();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     // We move 10 frames to account for the appear animation.
     mTransitionTestRule.step(10);
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
-    View innerView = mLithoViewRule.findViewWithTag("TestAnimationMount");
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View innerView = mLegacyLithoViewRule.findViewWithTag("TestAnimationMount");
     // Here we get inner LithoView
     LithoView innerLithoView = (LithoView) innerView.getParent();
 
@@ -1472,7 +1472,7 @@ public class AnimationTest {
     mStateCaller.update();
     innerStateCaller.update();
     // We look for the same view
-    innerView = mLithoViewRule.findViewWithTag("TestAnimationMount");
+    innerView = mLegacyLithoViewRule.findViewWithTag("TestAnimationMount");
 
     assertThat(innerLithoView)
         .describedAs("We mantain the same LithoView")
@@ -1484,23 +1484,23 @@ public class AnimationTest {
     LithoView secondLithoView = new LithoView(mActivityController.get());
     secondLithoView.setComponentTree(null);
     final TestAnimationsComponent component = getAnimatingXPropertyComponent();
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
     FrameLayout fl = new FrameLayout(mActivityController.get());
-    ComponentTree componentTree = mLithoViewRule.getComponentTree();
+    ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
 
-    fl.addView(mLithoViewRule.getLithoView());
+    fl.addView(mLegacyLithoViewRule.getLithoView());
     fl.addView(secondLithoView);
     mActivityController.get().setContentView(fl);
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // 160 is equal to height and width of 200 - 40 for the size of the row.
     assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
     assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
 
-    mLithoViewRule.useComponentTree(null);
+    mLegacyLithoViewRule.useComponentTree(null);
 
     secondLithoView.setComponentTree(componentTree);
 
@@ -1519,9 +1519,9 @@ public class AnimationTest {
     assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
 
     secondLithoView.setComponentTree(null);
-    mLithoViewRule.useComponentTree(componentTree);
+    mLegacyLithoViewRule.useComponentTree(componentTree);
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
     assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
   }
@@ -1529,7 +1529,7 @@ public class AnimationTest {
   @Test
   public void animation_disappearAnimationNewComponentTree_disappearingElementsContentsRemoved() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.create(TRANSITION_KEY)
@@ -1563,20 +1563,21 @@ public class AnimationTest {
                 })
             .build();
     final Component nonAnimatingComponent = getNonAnimatingComponent();
-    ComponentTree newComponentTree = ComponentTree.create(mLithoViewRule.getContext()).build();
+    ComponentTree newComponentTree =
+        ComponentTree.create(mLegacyLithoViewRule.getContext()).build();
     newComponentTree.setRoot(nonAnimatingComponent);
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
     // We move 10 frames to account for the appear animation.
     mTransitionTestRule.step(10);
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
     // The view is not null
     assertThat(view).describedAs("view before disappearing").isNotNull();
     assertThat(view.getAlpha()).describedAs("view before disappearing").isEqualTo(1);
     mStateCaller.update();
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLegacyLithoViewRule.findViewWithTag(TRANSITION_KEY);
 
     // After state update, even if the row was removed from the component, it still not null as we
     // are going to animate it. Alpha stays at 1 before advancing frames.
@@ -1588,30 +1589,32 @@ public class AnimationTest {
     assertThat(view.getAlpha()).describedAs("view after 5 frames").isEqualTo(0.5868241f);
 
     assertThat(
-            (Boolean) Whitebox.invokeMethod(mLithoViewRule.getLithoView(), "hasDisappearingItems"))
+            (Boolean)
+                Whitebox.invokeMethod(mLegacyLithoViewRule.getLithoView(), "hasDisappearingItems"))
         .describedAs("root host has disappearing items before updating the tree")
         .isTrue();
 
     // Change component tree mid animation.
-    mLithoViewRule.useComponentTree(newComponentTree);
+    mLegacyLithoViewRule.useComponentTree(newComponentTree);
 
     assertThat(
-            (Boolean) Whitebox.invokeMethod(mLithoViewRule.getLithoView(), "hasDisappearingItems"))
+            (Boolean)
+                Whitebox.invokeMethod(mLegacyLithoViewRule.getLithoView(), "hasDisappearingItems"))
         .describedAs("root host does not have disappearing items after setting tree")
         .isFalse();
 
-    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
+    view = mLegacyLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after setting new tree").isNull();
   }
 
   @Test
   public void animation_clipChildren_shouldBeFalseDuringAnimation() {
     final TestAnimationsComponent component = getAnimatingXPropertyComponent();
-    mLithoViewRule.setRoot(component);
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mLegacyLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLegacyLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    assertThat(mLithoViewRule.getLithoView().getClipChildren())
+    assertThat(mLegacyLithoViewRule.getLithoView().getClipChildren())
         .describedAs("before animation, clip children is set to true")
         .isTrue();
 
@@ -1619,13 +1622,13 @@ public class AnimationTest {
 
     mTransitionTestRule.step(5);
 
-    assertThat(mLithoViewRule.getLithoView().getClipChildren())
+    assertThat(mLegacyLithoViewRule.getLithoView().getClipChildren())
         .describedAs("during animation, clip children is set to false")
         .isFalse();
 
     mTransitionTestRule.step(5);
 
-    assertThat(mLithoViewRule.getLithoView().getClipChildren())
+    assertThat(mLegacyLithoViewRule.getLithoView().getClipChildren())
         .describedAs("after animation, clip children is set to true")
         .isTrue();
   }

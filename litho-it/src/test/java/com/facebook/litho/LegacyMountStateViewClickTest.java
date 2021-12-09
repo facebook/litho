@@ -23,7 +23,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ViewGroup;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleLayoutSpecWithClickHandlersTester;
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LegacyMountStateViewClickTest {
   private ComponentContext mContext;
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -86,24 +86,24 @@ public class LegacyMountStateViewClickTest {
   @Test
   public void testRootHostClickableUnmount() {
     final Component component =
-        SimpleLayoutSpecWithClickHandlersTester.create(mLithoViewRule.getContext()).build();
+        SimpleLayoutSpecWithClickHandlersTester.create(mLegacyLithoViewRule.getContext()).build();
 
-    mLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component);
 
-    setupLithoViewParentAndComponentTree(mLithoViewRule.getLithoView(), component);
+    setupLithoViewParentAndComponentTree(mLegacyLithoViewRule.getLithoView(), component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
-    assertThat(mLithoViewRule.getLithoView().isClickable()).isTrue();
-    assertThat(mLithoViewRule.getLithoView().isLongClickable()).isTrue();
+    assertThat(mLegacyLithoViewRule.getLithoView().isClickable()).isTrue();
+    assertThat(mLegacyLithoViewRule.getLithoView().isLongClickable()).isTrue();
 
-    mLithoViewRule.getLithoView().unmountAllItems();
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
 
-    assertThat(mLithoViewRule.getLithoView().isClickable()).isFalse();
-    assertThat(mLithoViewRule.getLithoView().isLongClickable()).isFalse();
+    assertThat(mLegacyLithoViewRule.getLithoView().isClickable()).isFalse();
+    assertThat(mLegacyLithoViewRule.getLithoView().isLongClickable()).isFalse();
   }
 
-  // When testing a LithoView via a LithoViewRule - we must set the parent and component tree
+  // When testing a LithoView via a LegacyLithoViewRule - we must set the parent and component tree
   // prior to attach / measure / layout for that LithoView otherwise mounting will not behave
   // properly.
   private void setupLithoViewParentAndComponentTree(LithoView lithoView, Component component) {

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Handle;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,24 +30,24 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class EventTriggerTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
   public void testCanTriggerEvent() {
-    final ComponentContext mComponentContext = mLithoViewRule.getContext();
+    final ComponentContext mComponentContext = mLegacyLithoViewRule.getContext();
     final Handle handle = new Handle();
     final ComponentWithTrigger component =
         ComponentWithTrigger.create(mComponentContext).handle(handle).uniqueString("A").build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
-    final ComponentTree tree = mLithoViewRule.getComponentTree();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+    final ComponentTree tree = mLegacyLithoViewRule.getComponentTree();
 
     assertThat(ComponentWithTrigger.testTriggerMethod(tree.getContext(), handle)).isEqualTo("A");
   }
 
   @Test
   public void testCanTriggerEventOnNestedComponent() {
-    final ComponentContext mComponentContext = mLithoViewRule.getContext();
+    final ComponentContext mComponentContext = mLegacyLithoViewRule.getContext();
     final Handle handle = new Handle();
     final ComponentContainer component =
         ComponentContainer.create(mComponentContext)
@@ -55,8 +55,8 @@ public class EventTriggerTest {
             .uniqueString("A")
             .build();
 
-    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
-    final ComponentTree tree = mLithoViewRule.getComponentTree();
+    mLegacyLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+    final ComponentTree tree = mLegacyLithoViewRule.getComponentTree();
 
     assertThat(ComponentWithTrigger.testTriggerMethod(tree.getContext(), handle)).isEqualTo("A");
   }

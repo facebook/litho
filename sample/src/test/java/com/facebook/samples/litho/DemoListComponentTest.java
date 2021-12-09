@@ -25,7 +25,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class DemoListComponentTest {
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   private Component mComponent;
 
   @Before
@@ -50,7 +50,7 @@ public class DemoListComponentTest {
   @Before
   public void setUp() {
     mComponent =
-        DemoListRootComponent.create(mLithoViewRule.getContext())
+        DemoListRootComponent.create(mLegacyLithoViewRule.getContext())
             .demos(new ArrayList<Demos.DemoGrouping>())
             .previousIndices(null)
             .build();
@@ -58,16 +58,16 @@ public class DemoListComponentTest {
 
   @Test
   public void testSubComponents() {
-    assertThat(mLithoViewRule.getContext(), mComponent)
+    assertThat(mLegacyLithoViewRule.getContext(), mComponent)
         .containsOnlySubComponents(SubComponent.of(RecyclerCollectionComponent.class));
   }
 
   @Test
   public void testNumOfSubComponents() {
-    assertThat(mLithoViewRule.getContext(), mComponent)
-        .has(numOfSubComponents(mLithoViewRule.getContext(), is(1)));
+    assertThat(mLegacyLithoViewRule.getContext(), mComponent)
+        .has(numOfSubComponents(mLegacyLithoViewRule.getContext(), is(1)));
 
-    assertThat(mLithoViewRule.getContext(), mComponent)
-        .has(numOfSubComponents(mLithoViewRule.getContext(), greaterThan(0)));
+    assertThat(mLegacyLithoViewRule.getContext(), mComponent)
+        .has(numOfSubComponents(mLegacyLithoViewRule.getContext(), greaterThan(0)));
   }
 }

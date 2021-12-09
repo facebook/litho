@@ -24,7 +24,7 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.START;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -36,13 +36,13 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class InternalNodeResolvedPaddingTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private Component.Builder builder;
 
   @Before
   public void setup() {
-    final ComponentContext context = mLithoViewRule.getContext();
+    final ComponentContext context = mLegacyLithoViewRule.getContext();
     builder = Column.create(context);
   }
 
@@ -57,7 +57,7 @@ public class InternalNodeResolvedPaddingTest {
   }
 
   private LithoLayoutResult calculateLayout() {
-    return mLithoViewRule
+    return mLegacyLithoViewRule
         .attachToWindow()
         .setRoot(builder.build())
         .measure()

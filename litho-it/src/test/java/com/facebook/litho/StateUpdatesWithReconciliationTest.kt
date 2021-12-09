@@ -20,7 +20,7 @@ import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
@@ -46,7 +46,7 @@ class StateUpdatesWithReconciliationTest() {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  @JvmField @Rule var lithoViewRule = LithoViewRule()
+  @JvmField @Rule var lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun `should not reuse layout when root with new props is set`() {

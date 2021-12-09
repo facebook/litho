@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import androidx.annotation.Nullable;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
@@ -46,7 +46,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class NestedTreeResolutionTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void before() {
@@ -73,12 +73,12 @@ public class NestedTreeResolutionTest {
 
   @Test
   public void onRenderComponentWithSizeSpec_shouldContainNestTreeHolderAndNestedProps() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final RootComponentWithTreeProps component = RootComponentWithTreeProps.create(c).build();
 
-    mLithoViewRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout();
+    mLegacyLithoViewRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout();
 
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
@@ -93,14 +93,14 @@ public class NestedTreeResolutionTest {
 
   @Test
   public void onRenderComponentWithSizeSpecWithoutReuse_shouldCallOnCreateLayoutTwice() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final RootComponentWithTreeProps component =
         RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
 
     final ExtraProps props = new ExtraProps();
     props.steps = new ArrayList<>();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setTreeProp(ExtraProps.class, props)
         .attachToWindow()
         .setSizePx(100, 100)
@@ -108,7 +108,7 @@ public class NestedTreeResolutionTest {
         .setRoot(component)
         .layout();
 
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
@@ -123,7 +123,7 @@ public class NestedTreeResolutionTest {
 
   @Test
   public void onRenderComponentWithSizeSpec_shouldNotTransferLayoutDirectionIfExplicitlySet() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final RootComponentWithTreeProps component =
         RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
 
@@ -131,7 +131,7 @@ public class NestedTreeResolutionTest {
     props.steps = new ArrayList<>();
     props.mDirection = YogaDirection.RTL;
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setTreeProp(ExtraProps.class, props)
         .attachToWindow()
         .setSizePx(100, 100)
@@ -139,7 +139,7 @@ public class NestedTreeResolutionTest {
         .setRoot(component)
         .layout();
 
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
@@ -152,14 +152,14 @@ public class NestedTreeResolutionTest {
 
   @Test
   public void onRenderComponentWithSizeSpec_shouldTransferLayoutDirectionIfNotExplicitlySet() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final RootComponentWithTreeProps component =
         RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
 
     final ExtraProps props = new ExtraProps();
     props.steps = new ArrayList<>();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setTreeProp(ExtraProps.class, props)
         .attachToWindow()
         .setSizePx(100, 100)
@@ -167,7 +167,7 @@ public class NestedTreeResolutionTest {
         .setRoot(component)
         .layout();
 
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
@@ -179,7 +179,7 @@ public class NestedTreeResolutionTest {
 
   @Test
   public void onRenderComponentWithSizeSpec_shouldInheritLayoutDirectionIfExplicitlySetOnParent() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final RootComponentWithTreeProps component =
         RootComponentWithTreeProps.create(c)
             .shouldNotUpdateState(true)
@@ -189,7 +189,7 @@ public class NestedTreeResolutionTest {
     final ExtraProps props = new ExtraProps();
     props.steps = new ArrayList<>();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setTreeProp(ExtraProps.class, props)
         .attachToWindow()
         .setSizePx(100, 100)
@@ -197,7 +197,7 @@ public class NestedTreeResolutionTest {
         .setRoot(component)
         .layout();
 
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
@@ -224,7 +224,7 @@ public class NestedTreeResolutionTest {
           }
         };
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
 
     final List<LifecycleStep.StepInfo> info_0 = new ArrayList<>();
     final LifecycleTracker tracker_0 = new LifecycleTracker();
@@ -239,7 +239,7 @@ public class NestedTreeResolutionTest {
             .child(Text.create(c).text("Hello World"))
             .build();
 
-    mLithoViewRule.setRoot(root_0).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root_0).attachToWindow().measure().layout();
 
     assertThat(getSteps(info_0))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -287,7 +287,7 @@ public class NestedTreeResolutionTest {
             .child(Text.create(c).text("Hello World"))
             .build();
 
-    mLithoViewRule.setRoot(root_1);
+    mLegacyLithoViewRule.setRoot(root_1);
 
     assertThat(getSteps(info_0)).describedAs("Should not call any lifecycle methods.").isEmpty();
 
@@ -339,7 +339,7 @@ public class NestedTreeResolutionTest {
           }
         };
 
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
 
     final List<LifecycleStep.StepInfo> info_0 = new ArrayList<>();
     final LifecycleTracker tracker_0 = new LifecycleTracker();
@@ -350,7 +350,7 @@ public class NestedTreeResolutionTest {
     final Component root_0 =
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info_0).body(mountable_0).build();
 
-    mLithoViewRule.setRoot(root_0).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root_0).attachToWindow().measure().layout();
 
     assertThat(getSteps(info_0))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -388,7 +388,7 @@ public class NestedTreeResolutionTest {
     final Component root_1 =
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info_1).body(mountable_1).build();
 
-    mLithoViewRule.setRoot(root_1);
+    mLegacyLithoViewRule.setRoot(root_1);
 
     assertThat(getSteps(info_0)).describedAs("Should not call any lifecycle methods.").isEmpty();
 
@@ -427,7 +427,7 @@ public class NestedTreeResolutionTest {
     final Component root_2 =
         LayoutWithSizeSpecLifecycleTester.create(c).steps(info_2).body(mountable_2).build();
 
-    mLithoViewRule.setRoot(root_2);
+    mLegacyLithoViewRule.setRoot(root_2);
 
     assertThat(getSteps(info_1)).describedAs("Should not call any lifecycle methods.").isEmpty();
 

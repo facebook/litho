@@ -57,7 +57,7 @@ import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
@@ -92,13 +92,13 @@ public class MountStateIncrementalMountTest {
   private ComponentContext mContext;
   private ShadowLooper mLayoutThreadShadowLooper;
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
-    mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(new LithoView(mContext));
+    mContext = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule.useLithoView(new LithoView(mContext));
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
@@ -115,14 +115,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -169,14 +169,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
@@ -211,14 +211,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 10, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
@@ -238,14 +238,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 20), true);
     assertThat(child1.isMounted()).isTrue();
@@ -265,14 +265,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 10, 10, 20), true);
     assertThat(child1.isMounted()).isFalse();
@@ -292,14 +292,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 0, 0), true);
     assertThat(child1.isMounted()).isFalse();
@@ -319,14 +319,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 30), true);
     assertThat(child1.isMounted()).isTrue();
@@ -342,14 +342,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(0))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 0), true);
     assertThat(child1.isMounted()).isFalse();
@@ -368,14 +368,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(-10, 0, -5, 10), true);
     assertThat(child1.isMounted()).isFalse();
@@ -416,14 +416,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
@@ -473,14 +473,14 @@ public class MountStateIncrementalMountTest {
             .child(SimpleMountSpecTester.create(mContext))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 50, 20), true);
     assertThat(child.isMounted()).isFalse();
@@ -504,14 +504,14 @@ public class MountStateIncrementalMountTest {
         View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
     parent.layout(0, 0, 10, 1000);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(Row.create(mContext).build())
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
     parent.addView(lithoView);
 
     lithoView.setTranslationY(105);
@@ -551,14 +551,14 @@ public class MountStateIncrementalMountTest {
         View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
     parent.layout(0, 0, 10, 1000);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(Row.create(mContext).build())
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
     parent.addView(lithoView);
 
     lithoView.setTranslationY(105);
@@ -610,14 +610,14 @@ public class MountStateIncrementalMountTest {
         View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
     parent.layout(0, 0, 10, 1000);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(Row.create(mContext).build())
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
     parent.addView(lithoView);
 
     lithoView.setTranslationY(95);
@@ -714,14 +714,14 @@ public class MountStateIncrementalMountTest {
             .child(SimpleMountSpecTester.create(mContext))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 5, 5), true);
     assertThat(child1.isMounted()).isTrue();
@@ -755,14 +755,14 @@ public class MountStateIncrementalMountTest {
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
     final Component root = TestViewComponent.create(mContext).testView(mountedView).build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     verify(childView1).notifyVisibleBoundsChanged();
     verify(childView2).notifyVisibleBoundsChanged();
@@ -806,14 +806,14 @@ public class MountStateIncrementalMountTest {
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
     final Component root = TestViewComponent.create(mContext).testView(mountedView).build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
@@ -889,14 +889,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -935,14 +935,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
@@ -979,14 +979,14 @@ public class MountStateIncrementalMountTest {
             .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
     assertThat(lithoView.mountStateNeedsRemount()).isFalse();
 
     lithoView.unmountAllItems();
@@ -1001,14 +1001,14 @@ public class MountStateIncrementalMountTest {
     enableAccessibility();
     final Component root = Text.create(mContext).text("Test").contentDescription("testcd").build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
     View innerView = lithoView.getChildAt(0);
     assertThat(innerView.getContentDescription()).isEqualTo("testcd");
 
@@ -1037,14 +1037,14 @@ public class MountStateIncrementalMountTest {
 
     final Component root =
         TestViewComponent.create(mContext, true, true, true).testView(viewGroup).build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoViewParent = mLithoViewRule.getLithoView();
+    final LithoView lithoViewParent = mLegacyLithoViewRule.getLithoView();
 
     verify(lithoView).notifyVisibleBoundsChanged();
     reset(lithoView);
@@ -1082,22 +1082,23 @@ public class MountStateIncrementalMountTest {
         new SimpleStateUpdateEmulatorSpec.Caller();
 
     final Component root =
-        Column.create(mLithoViewRule.getContext())
+        Column.create(mLegacyLithoViewRule.getContext())
             .child(
-                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
                     .intrinsicSize(new Size(10, 10))
                     .lifecycleTracker(info_child1)
                     .key("some_key"))
             .child(
-                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
                     .intrinsicSize(new Size(10, 10))
                     .lifecycleTracker(info_child2)
                     .key("other_key"))
             .child(
-                SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
+                SimpleStateUpdateEmulator.create(mLegacyLithoViewRule.getContext())
+                    .caller(stateUpdater))
             .build();
 
-    mLithoViewRule.setRoot(root).setSizePx(10, 20).attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(root).setSizePx(10, 20).attachToWindow().measure().layout();
 
     final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
     parent.measure(
@@ -1105,7 +1106,7 @@ public class MountStateIncrementalMountTest {
         View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
     parent.layout(0, 0, 10, 20);
 
-    parent.addView(mLithoViewRule.getLithoView(), 0, 20);
+    parent.addView(mLegacyLithoViewRule.getLithoView(), 0, 20);
 
     assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_MOUNT);
     assertThat(info_child2.getSteps()).describedAs("Mounted.").contains(ON_MOUNT);
@@ -1115,7 +1116,7 @@ public class MountStateIncrementalMountTest {
     info_child1.reset();
     info_child2.reset();
 
-    mLithoViewRule.getLithoView().setTranslationY(-12);
+    mLegacyLithoViewRule.getLithoView().setTranslationY(-12);
     assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
   }
 
@@ -1145,14 +1146,14 @@ public class MountStateIncrementalMountTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
 
@@ -1197,14 +1198,14 @@ public class MountStateIncrementalMountTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
-    final LithoView lithoView = mLithoViewRule.getLithoView();
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
 
     assertThat(child1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
 
@@ -1274,7 +1275,7 @@ public class MountStateIncrementalMountTest {
                     .build())
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(rcc)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(19, EXACTLY))
@@ -1313,10 +1314,10 @@ public class MountStateIncrementalMountTest {
                     .build())
             .build();
 
-    mLithoViewRule.setRoot(rcc2);
+    mLegacyLithoViewRule.setRoot(rcc2);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged();
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged();
 
     assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);
   }
@@ -1361,7 +1362,7 @@ public class MountStateIncrementalMountTest {
             .build();
 
     // Set LithoView with height so that it can fully show exactly 3 items (3 children per item).
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(rcc)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(CHILD_HEIGHT * 9, EXACTLY))
@@ -1370,7 +1371,8 @@ public class MountStateIncrementalMountTest {
 
     // Obtain the RV for scrolling later
     final RecyclerView recyclerView =
-        ((SectionsRecyclerView) mLithoViewRule.getLithoView().getChildAt(0)).getRecyclerView();
+        ((SectionsRecyclerView) mLegacyLithoViewRule.getLithoView().getChildAt(0))
+            .getRecyclerView();
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child

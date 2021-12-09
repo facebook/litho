@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.widget.Text
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class UseRefTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun useRef_onMutation_doesNotTriggerLayout() {

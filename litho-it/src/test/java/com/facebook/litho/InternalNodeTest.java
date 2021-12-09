@@ -28,7 +28,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -43,8 +43,9 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTest {
 
-  public final @Rule LithoViewRule mLithoViewRule =
-      new LithoViewRule(ComponentsConfiguration.create().useInputOnlyInternalNodes(true).build());
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule =
+      new LegacyLithoViewRule(
+          ComponentsConfiguration.create().useInputOnlyInternalNodes(true).build());
 
   private final boolean mDefaultUseInputOnlyInternalNodes;
 
@@ -54,8 +55,8 @@ public class InternalNodeTest {
   }
 
   private InternalNode acquireInternalNode() {
-    final ComponentContext context = mLithoViewRule.getContext();
-    mLithoViewRule
+    final ComponentContext context = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule
         .attachToWindow()
         .setRootAndSizeSpecSync(
             Column.create(context).build(),
@@ -64,7 +65,7 @@ public class InternalNodeTest {
         .measure()
         .layout();
 
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     return root.getInternalNode();
   }

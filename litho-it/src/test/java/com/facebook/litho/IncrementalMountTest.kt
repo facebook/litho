@@ -24,7 +24,7 @@ import com.facebook.litho.sections.common.DynamicComponentGroupSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sections.widget.RecyclerConfiguration
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.MountSpecLifecycleTester
 import com.facebook.litho.widget.SectionsRecyclerView
@@ -40,7 +40,7 @@ import org.robolectric.annotation.LooperMode
 class IncrementalMountTest {
 
   private lateinit var context: ComponentContext
-  @JvmField @Rule var lithoViewRule = LithoViewRule()
+  @JvmField @Rule var lithoViewRule = LegacyLithoViewRule()
 
   @Before
   fun setup() {

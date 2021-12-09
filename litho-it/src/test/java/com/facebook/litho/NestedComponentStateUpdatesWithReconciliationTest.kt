@@ -17,7 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
@@ -36,7 +36,7 @@ import org.robolectric.shadows.ShadowLooper
 class NestedComponentStateUpdatesWithReconciliationTest() {
 
   @JvmField @Rule var backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
-  @JvmField @Rule var lithoViewRule = LithoViewRule()
+  @JvmField @Rule var lithoViewRule = LegacyLithoViewRule()
 
   /*
 

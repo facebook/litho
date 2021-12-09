@@ -22,7 +22,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.it.R;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class ApplyStylesTest {
 
-  public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
@@ -46,56 +46,57 @@ public class ApplyStylesTest {
 
   @Test
   public void styles_withWidthHeightStyle_appliesWidthHeight() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
         .setRoot(
-            Column.create(mLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_WidthHeight)
+            Column.create(mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_WidthHeight)
                 .build())
         .measure()
         .layout()
         .attachToWindow();
 
-    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(37);
-    assertThat(mLithoViewRule.getLithoView().getHeight()).isEqualTo(100);
+    assertThat(mLegacyLithoViewRule.getLithoView().getWidth()).isEqualTo(37);
+    assertThat(mLegacyLithoViewRule.getLithoView().getHeight()).isEqualTo(100);
   }
 
   @Test
   public void styles_withMinWidthHeightStyle_appliesMinWidthHeight() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
         .setRoot(
-            Column.create(mLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_MinWidthHeight)
+            Column.create(
+                    mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_MinWidthHeight)
                 .build())
         .measure()
         .layout()
         .attachToWindow();
 
-    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(50);
-    assertThat(mLithoViewRule.getLithoView().getHeight()).isEqualTo(75);
+    assertThat(mLegacyLithoViewRule.getLithoView().getWidth()).isEqualTo(50);
+    assertThat(mLegacyLithoViewRule.getLithoView().getHeight()).isEqualTo(75);
   }
 
   @Test
   public void styles_withPaddingLeftTopRightBottomStyle_appliesPadding() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
             Row.create(
-                    mLithoViewRule.getContext(),
+                    mLegacyLithoViewRule.getContext(),
                     0,
                     R.style.ApplyStylesTest_PaddingLeftTopRightBottom)
-                .child(Column.create(mLithoViewRule.getContext()).flexGrow(1).wrapInView())
+                .child(Column.create(mLegacyLithoViewRule.getContext()).flexGrow(1).wrapInView())
                 .build())
         .measure()
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(
@@ -105,19 +106,19 @@ public class ApplyStylesTest {
 
   @Test
   public void styles_withPaddingAllStyle_appliesPadding() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_PaddingAll)
-                .child(Column.create(mLithoViewRule.getContext()).flexGrow(1).wrapInView())
+            Row.create(mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_PaddingAll)
+                .child(Column.create(mLegacyLithoViewRule.getContext()).flexGrow(1).wrapInView())
                 .build())
         .measure()
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(
@@ -128,19 +129,20 @@ public class ApplyStylesTest {
   @Ignore("T66670905")
   @Test
   public void styles_withPaddingStartEndStyle_appliesPadding() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_PaddingStartEnd)
-                .child(Column.create(mLithoViewRule.getContext()).flexGrow(1).wrapInView())
+            Row.create(
+                    mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_PaddingStartEnd)
+                .child(Column.create(mLegacyLithoViewRule.getContext()).flexGrow(1).wrapInView())
                 .build())
         .measure()
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(ViewMatchNode.forType(View.class).bounds(20, 0, 100 - 20 - 40, 100)));
@@ -148,15 +150,15 @@ public class ApplyStylesTest {
 
   @Test
   public void styles_withMarginLeftTopRightBottomStyle_appliesMargin() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_MarginLeftTopRightBottom)
                         .flexGrow(1)
@@ -166,7 +168,7 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(
@@ -176,14 +178,15 @@ public class ApplyStylesTest {
 
   @Test
   public void styles_withMarginAllStyle_appliesMargin() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .child(
-                    Column.create(mLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_MarginAll)
+                    Column.create(
+                            mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_MarginAll)
                         .flexGrow(1)
                         .wrapInView())
                 .build())
@@ -191,7 +194,7 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(
@@ -202,15 +205,17 @@ public class ApplyStylesTest {
   @Ignore("T66670905")
   @Test
   public void styles_withMarginStartEndStyle_appliesMargin() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_MarginStartEnd)
+                            mLegacyLithoViewRule.getContext(),
+                            0,
+                            R.style.ApplyStylesTest_MarginStartEnd)
                         .flexGrow(1)
                         .wrapInView())
                 .build())
@@ -218,7 +223,7 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    ViewAssertions.assertThat(mLegacyLithoViewRule.getLithoView())
         .matches(
             ViewMatchNode.forType(LithoView.class)
                 .child(ViewMatchNode.forType(View.class).bounds(10, 0, 100 - 10 - 30, 100)));
@@ -226,16 +231,16 @@ public class ApplyStylesTest {
 
   @Test
   public void styles_withBackgroundForegroundStyle_appliesBackgroundAndForeground() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_BackgroundForeground)
                         .flexGrow(1)
@@ -245,7 +250,8 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost innerHost =
+        (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     ViewAssertions.assertThat(innerHost)
         .matches(
@@ -258,16 +264,16 @@ public class ApplyStylesTest {
   @Test
   public void
       styles_withAccessibilityAndContentDescriptionStyle_appliesAccessibilityAndContentDescription() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_AccessibilityAndContentDescription)
                         .flexGrow(1)
@@ -277,7 +283,8 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost innerHost =
+        (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     ViewAssertions.assertThat(innerHost)
         .matches(
@@ -290,16 +297,16 @@ public class ApplyStylesTest {
 
   @Test
   public void styles_withDuplicateParentStateStyle_appliesDuplicateParentState() {
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
         .setRoot(
-            Row.create(mLithoViewRule.getContext())
+            Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
                 .child(
                     Column.create(
-                            mLithoViewRule.getContext(),
+                            mLegacyLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_DuplicateParentState)
                         .flexGrow(1)
@@ -309,7 +316,8 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    final ComponentHost innerHost =
+        (ComponentHost) mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     ViewAssertions.assertThat(innerHost)
         .matches(

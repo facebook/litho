@@ -18,7 +18,7 @@ package com.facebook.litho.animation;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TransitionEndCallbackTestComponent;
@@ -31,7 +31,7 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TransitionEndEventTest {
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
 
   @Test
@@ -40,11 +40,11 @@ public class TransitionEndEventTest {
         new TransitionEndCallbackTestComponentSpec.Caller();
     stateUpdater.setTestType(TransitionEndCallbackTestComponentSpec.TestType.SAME_KEY);
     final TransitionEndCallbackTestComponent component =
-        TransitionEndCallbackTestComponent.create(mLithoViewRule.getContext())
+        TransitionEndCallbackTestComponent.create(mLegacyLithoViewRule.getContext())
             .caller(stateUpdater)
             .build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(stateUpdater.getTransitionEndMessage())
         .describedAs("Before starting animations")
@@ -66,11 +66,11 @@ public class TransitionEndEventTest {
         new TransitionEndCallbackTestComponentSpec.Caller();
     stateUpdater.setTestType(TransitionEndCallbackTestComponentSpec.TestType.DISAPPEAR);
     final TransitionEndCallbackTestComponent component =
-        TransitionEndCallbackTestComponent.create(mLithoViewRule.getContext())
+        TransitionEndCallbackTestComponent.create(mLegacyLithoViewRule.getContext())
             .caller(stateUpdater)
             .build();
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(stateUpdater.getTransitionEndMessage())
         .describedAs("Before starting animations")

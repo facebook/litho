@@ -30,7 +30,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -64,13 +64,13 @@ public class VisibilityEventsTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
-    mContext = mLithoViewRule.getContext();
+    mContext = mLegacyLithoViewRule.getContext();
     mLithoView = new LithoView(mContext);
-    mLithoViewRule.useLithoView(mLithoView);
+    mLegacyLithoViewRule.useLithoView(mLithoView);
 
     mParent = new FrameLayout(mContext.getAndroidContext());
     mParent.setLeft(0);
@@ -82,7 +82,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEvent() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -92,7 +92,7 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
@@ -103,7 +103,7 @@ public class VisibilityEventsTest {
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 20, 20), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 20, 20), true);
 
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
@@ -112,7 +112,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEventWithHeightRatio() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -123,44 +123,44 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
         .measure()
         .layout();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 1), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 1), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 2), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 2), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 3), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 3), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 4), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 4), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 5), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 5), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 6), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 6), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 7), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 7), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -168,7 +168,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEventWithWidthRatio() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -179,7 +179,7 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
@@ -190,12 +190,12 @@ public class VisibilityEventsTest {
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 10), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 10), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 10), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 10), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -203,7 +203,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEventWithHeightAndWidthRatio() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -215,7 +215,7 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
@@ -223,25 +223,25 @@ public class VisibilityEventsTest {
         .layout();
 
     // Neither width or height are in visible range
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 6), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 6), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     // Width but not height are in visible range
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 6), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 6), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     // Height but not width are in visible range
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 8), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 8), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     // Height and width are both in visible range
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 8), true);
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 8), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -249,12 +249,12 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFocusedOccupiesHalfViewport() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -268,12 +268,12 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFocusedOccupiesLessThanHalfViewport() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(3).build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -301,7 +301,7 @@ public class VisibilityEventsTest {
                     .heightPx(7)
                     .marginPx(YogaEdge.TOP, 3))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
@@ -333,7 +333,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFullImpressionEvent() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -343,7 +343,7 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -357,7 +357,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibility1fTop() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -368,7 +368,7 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -382,7 +382,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibility1fBottom() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -392,7 +392,7 @@ public class VisibilityEventsTest {
             .heightPx(5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -406,7 +406,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testInvisibleEvent() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -415,7 +415,7 @@ public class VisibilityEventsTest {
             .heightPx(5)
             .marginPx(YogaEdge.TOP, 5)
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -446,7 +446,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -500,7 +500,7 @@ public class VisibilityEventsTest {
                     .heightPx(5)
                     .marginPx(YogaEdge.TOP, 5))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -536,7 +536,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -567,7 +567,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(1000, EXACTLY))
@@ -623,7 +623,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleAndInvisibleEvents() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final LayoutSpecLifecycleTester component =
         LayoutSpecLifecycleTester.create(c)
@@ -633,7 +633,7 @@ public class VisibilityEventsTest {
             .marginPx(YogaEdge.TOP, 5)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -648,7 +648,9 @@ public class VisibilityEventsTest {
         .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
     steps.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE);
@@ -657,7 +659,9 @@ public class VisibilityEventsTest {
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     steps.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -666,7 +670,9 @@ public class VisibilityEventsTest {
         .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
     steps.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 10, RIGHT, 15), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 10, RIGHT, 15), true);
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("Invisible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE);
@@ -677,7 +683,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testMultipleVisibleEvents() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
@@ -697,7 +703,7 @@ public class VisibilityEventsTest {
             .child(component3)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -720,7 +726,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -737,7 +745,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -753,7 +763,9 @@ public class VisibilityEventsTest {
 
     steps1.clear();
     steps2.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -770,7 +782,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testMultipleVisibleAndInvisibleEvents() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
@@ -790,7 +802,7 @@ public class VisibilityEventsTest {
             .child(component3)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(15, EXACTLY), makeSizeSpec(15, EXACTLY))
@@ -819,7 +831,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -842,7 +856,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -865,7 +881,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -888,7 +906,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -911,7 +931,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -934,7 +956,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 5, RIGHT, 11), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 5, RIGHT, 11), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -957,7 +981,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testSkipFullyVisible() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
@@ -977,7 +1001,7 @@ public class VisibilityEventsTest {
             .child(component3)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(15, EXACTLY), makeSizeSpec(15, EXACTLY))
@@ -1013,7 +1037,9 @@ public class VisibilityEventsTest {
     steps2.clear();
     steps3.clear();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -1044,7 +1070,9 @@ public class VisibilityEventsTest {
     steps2.clear();
     steps3.clear();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -1077,7 +1105,9 @@ public class VisibilityEventsTest {
     steps2.clear();
     steps3.clear();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -1104,7 +1134,9 @@ public class VisibilityEventsTest {
     steps2.clear();
     steps3.clear();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -1128,7 +1160,9 @@ public class VisibilityEventsTest {
     steps2.clear();
     steps3.clear();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
@@ -1161,7 +1195,9 @@ public class VisibilityEventsTest {
     steps2.clear();
     steps3.clear();
 
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Visible event should not be dispatched")
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
@@ -1191,7 +1227,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testDispatchFocusedHandler() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
     final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
@@ -1211,7 +1247,7 @@ public class VisibilityEventsTest {
             .child(component3)
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(15, EXACTLY))
@@ -1247,7 +1283,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 15), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 15), true);
 
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Focused visible event should not be dispatched")
@@ -1271,7 +1309,9 @@ public class VisibilityEventsTest {
     steps1.clear();
     steps2.clear();
     steps3.clear();
-    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    mLegacyLithoViewRule
+        .getLithoView()
+        .notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
 
     assertThat(LifecycleStep.getSteps(steps1))
         .describedAs("Focused visible event should be dispatched")
@@ -1307,7 +1347,7 @@ public class VisibilityEventsTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
@@ -1342,7 +1382,7 @@ public class VisibilityEventsTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
@@ -1364,7 +1404,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule.setRoot(newRoot);
+    mLegacyLithoViewRule.setRoot(newRoot);
 
     measureAndLayout(mLithoView);
 
@@ -1395,7 +1435,7 @@ public class VisibilityEventsTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
@@ -1415,7 +1455,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(newRoot)
         .attachToWindow()
@@ -1443,7 +1483,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(root)
         .attachToWindow()
@@ -1455,7 +1495,7 @@ public class VisibilityEventsTest {
 
     component.getDispatchedEventHandlers().clear();
 
-    mLithoViewRule.useComponentTree(null);
+    mLegacyLithoViewRule.useComponentTree(null);
 
     assertThat(component.getDispatchedEventHandlers()).containsExactly(invisibleEventHandler);
   }
@@ -1473,7 +1513,7 @@ public class VisibilityEventsTest {
                     .widthPx(10)
                     .heightPx(10))
             .build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(root)
         .attachToWindow()
@@ -1513,7 +1553,7 @@ public class VisibilityEventsTest {
     final View view = (View) mLithoView.getParent();
     view.setHasTransientState(true);
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(root)
         .attachToWindow()
@@ -1551,7 +1591,7 @@ public class VisibilityEventsTest {
             .build();
 
     final Component root = Column.create(mContext).child(wrappedContent).build();
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(root)
         .attachToWindow()
@@ -1629,7 +1669,7 @@ public class VisibilityEventsTest {
                     .fullImpressionHandler(fullImpressionVisibleEventHandler3))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(root)
         .attachToWindow()
@@ -1683,7 +1723,7 @@ public class VisibilityEventsTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(root)
         .attachToWindow()
@@ -1729,7 +1769,7 @@ public class VisibilityEventsTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
         .setRoot(mountedTestComponentInner)
         .attachToWindow()
@@ -1801,7 +1841,7 @@ public class VisibilityEventsTest {
                     .heightPx(5))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).incrementalMount(false).build())
         .setRoot(root)
         .attachToWindow()
@@ -1866,7 +1906,7 @@ public class VisibilityEventsTest {
                     .heightPx(10))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).incrementalMount(false).build())
         .setRoot(root)
         .attachToWindow()
@@ -1907,7 +1947,7 @@ public class VisibilityEventsTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).incrementalMount(false).build())
         .setRoot(root)
         .attachToWindow()
@@ -1970,7 +2010,7 @@ public class VisibilityEventsTest {
                     .nullOutput(nullOutput))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(root)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
@@ -2029,7 +2069,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEventHorizontalScroll() {
-    final ComponentContext c = mLithoViewRule.getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<List<LifecycleStep.StepInfo>> stepsList = new ArrayList<>();
     final int numberOfItems = 2;
 
@@ -2039,7 +2079,7 @@ public class VisibilityEventsTest {
             .contentProps(createHorizontalScrollChildren(c, numberOfItems, stepsList))
             .build();
 
-    mLithoViewRule
+    mLegacyLithoViewRule
         .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
@@ -2055,7 +2095,8 @@ public class VisibilityEventsTest {
         .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     HorizontalScrollView lScrollView =
-        ((HorizontalScrollView) (mLithoViewRule.getLithoView().getMountItemAt(0).getContent()));
+        ((HorizontalScrollView)
+            (mLegacyLithoViewRule.getLithoView().getMountItemAt(0).getContent()));
     ReflectionHelpers.setField(lScrollView, "mScrollX", 10);
     ReflectionHelpers.setField(lScrollView, "mScrollY", 0);
     lScrollView.scrollBy(10, 0);

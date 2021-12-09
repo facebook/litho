@@ -24,7 +24,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.rotation
 import com.facebook.litho.view.scale
@@ -44,7 +44,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionDepsTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
   private val updatedAlpha =

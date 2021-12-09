@@ -23,7 +23,7 @@ import static com.facebook.litho.it.R.attr.testAttrLargeText;
 import static com.facebook.litho.it.R.style.PaddingStyle;
 import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.litho.it.R.style.TextSizeStyle;
-import static com.facebook.litho.testing.LithoViewRule.getRootLayout;
+import static com.facebook.litho.testing.LegacyLithoViewRule.getRootLayout;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.it.R;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import org.junit.Before;
@@ -46,12 +46,12 @@ public class ComponentStyleTest {
   private int mLargeDimen;
   private ComponentContext mContext;
 
-  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Before
   public void setup() {
     mContext = new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme));
-    mLithoViewRule.useContext(mContext);
+    mLegacyLithoViewRule.useContext(mContext);
     mDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     mLargeDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_large_dimen);
   }
@@ -72,7 +72,8 @@ public class ComponentStyleTest {
   @Test
   public void testStyleLayout() {
     Component component = Text.create(mContext, 0, PaddingStyle).text("text").build();
-    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result =
+        getRootLayout(mLegacyLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mDimen);
   }
 
@@ -80,7 +81,8 @@ public class ComponentStyleTest {
   public void testOverrideStyleLayout() {
     Component component =
         Text.create(mContext, 0, PaddingStyle).text("text").paddingPx(ALL, mDimen * 2).build();
-    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result =
+        getRootLayout(mLegacyLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
@@ -100,7 +102,8 @@ public class ComponentStyleTest {
   @Test
   public void testAttributeStyleLayout() {
     Component component = Text.create(mContext, testAttrLargePadding, 0).text("text").build();
-    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result =
+        getRootLayout(mLegacyLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 
@@ -111,7 +114,8 @@ public class ComponentStyleTest {
             .text("text")
             .paddingPx(ALL, mDimen * 2)
             .build();
-    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result =
+        getRootLayout(mLegacyLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
@@ -126,7 +130,8 @@ public class ComponentStyleTest {
   public void testStyleResOverridenByAttrResForLayout() {
     Component component =
         Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").build();
-    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result =
+        getRootLayout(mLegacyLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 }

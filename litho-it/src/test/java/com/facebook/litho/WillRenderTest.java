@@ -27,7 +27,7 @@ import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertTha
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.View;
-import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class WillRenderTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private final InlineLayoutSpec mNullSpec =
       new InlineLayoutSpec() {
@@ -85,9 +85,13 @@ public class WillRenderTest {
 
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
-    final ComponentContext c = mLithoViewRule.getContext();
-    mLithoViewRule.attachToWindow().setRoot(Wrapper.create(c).delegate(null)).layout().measure();
-    assertThat(mLithoViewRule.getCommittedLayoutState().getLayoutRoot()).isNull();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    mLegacyLithoViewRule
+        .attachToWindow()
+        .setRoot(Wrapper.create(c).delegate(null))
+        .layout()
+        .measure();
+    assertThat(mLegacyLithoViewRule.getCommittedLayoutState().getLayoutRoot()).isNull();
   }
 
   @Test
@@ -118,10 +122,10 @@ public class WillRenderTest {
   public void testWillRender_cachedLayoutUsedInDifferentComponentHierarchy() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutSpecWillRenderTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutSpecWillRenderTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -137,10 +141,12 @@ public class WillRenderTest {
   public void testWillRender_cachedLayoutUsedInSameComponentHierarchy() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
-        LayoutSpecWillRenderReuseTester.create(mLithoViewRule.getContext()).steps(info).build();
-    mLithoViewRule.setRoot(component);
+        LayoutSpecWillRenderReuseTester.create(mLegacyLithoViewRule.getContext())
+            .steps(info)
+            .build();
+    mLegacyLithoViewRule.setRoot(component);
 
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")

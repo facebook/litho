@@ -24,7 +24,7 @@ import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec
 import com.facebook.litho.testing.error.TestCrasherOnMount
@@ -68,7 +68,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(LithoTestRunner::class)
 class ComponentErrorBoundaryTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Rule @JvmField val expectedException = ExpectedException.none()
 

@@ -24,7 +24,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
-import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.SectionsRecyclerView
@@ -41,7 +41,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionOnViewPortChangedTest {
 
-  @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun `test Collection pagination callback receives correct updates`() {
