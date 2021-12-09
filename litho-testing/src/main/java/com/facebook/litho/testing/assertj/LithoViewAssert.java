@@ -230,15 +230,15 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
    * Assert that the LithoView under test has the provided Component class once in the Component
    * Tree hierarchy.
    */
-  public LithoViewAssert hasExactlyOne(Class<? extends Component> clazz) {
-    return hasExactly(1, clazz);
+  public LithoViewAssert containsExactlyOne(Class<? extends Component> clazz) {
+    return containsExactly(1, clazz);
   }
 
   /**
    * Assert that the LithoView under test has the provided Component class in the Component Tree
    * hierarchy given number of times
    */
-  public LithoViewAssert hasExactly(int times, Class<? extends Component> clazz) {
+  public LithoViewAssert containsExactly(int times, Class<? extends Component> clazz) {
     List<? extends Component> componentsList = findAllComponentsInLithoView(actual, clazz);
     new ListAssert(componentsList).haveExactly(times, typeIs(clazz));
     return this;
@@ -248,16 +248,16 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
    * Assert that the LithoView under test has the provided Component class once in the Component
    * Tree hierarchy.
    */
-  public LithoViewAssert hasExactlyOne(KClass<? extends Component> clazz) {
-    return hasExactly(1, clazz);
+  public LithoViewAssert containsExactlyOne(KClass<? extends Component> clazz) {
+    return containsExactly(1, clazz);
   }
 
   /**
    * Assert that the LithoView under test has the provided Component class in the Component Tree
    * hierarchy given number of times
    */
-  public LithoViewAssert hasExactly(int times, KClass<? extends Component> clazz) {
-    hasExactly(times, JvmClassMappingKt.getJavaClass(clazz));
+  public LithoViewAssert containsExactly(int times, KClass<? extends Component> clazz) {
+    containsExactly(times, JvmClassMappingKt.getJavaClass(clazz));
     return this;
   }
 

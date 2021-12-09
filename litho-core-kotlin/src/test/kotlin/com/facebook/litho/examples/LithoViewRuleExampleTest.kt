@@ -37,7 +37,6 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.ComponentConditions.typeIs
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.assertj.LithoViewAssert
-import com.facebook.litho.testing.setRoot
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -47,7 +46,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import java.util.concurrent.atomic.AtomicReference
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
@@ -88,18 +86,14 @@ class LithoViewRuleExampleTest {
       }
     }
 
-    lithoViewRule.render { TestComponent() }
-    assertThat(lithoViewRule.lithoView).isNotNull
+    val testLithoView = lithoViewRule.render { TestComponent() }
     /** can use all of the assertions from: [LithoViewAssert] class */
-    val nullComponent = lithoViewRule.findComponent(InnerComponent::class)
-    assertThat(nullComponent).isNull()
+    assertThat(testLithoView).willRenderContent().doesNotContainComponents(InnerComponent::class)
     // act_example_start
-    lithoViewRule.act { clickOnTag("test_view") }
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
     // act_example_end
 
-    val component = lithoViewRule.findComponent(InnerComponent::class)
-    assertThat(component).isNotNull()
-    assertThat(lithoViewRule.lithoView).hasVisibleText("some_text")
+    assertThat(testLithoView).containsExactlyOne(InnerComponent::class).hasVisibleText("some_text")
   }
 
   @Test
@@ -125,15 +119,17 @@ class LithoViewRuleExampleTest {
     }
 
     // visibility_test_start
-    lithoViewRule.setRoot(TestComponent()).attachToWindow().measure()
+    val testLithoView =
+        lithoViewRule.createTestLithoView { TestComponent() }.attachToWindow().measure()
     /** Before the onVisible is called */
-    assertThat(lithoViewRule.lithoView).doesNotContainComponents(InnerComponent::class)
+    assertThat(testLithoView.findComponent(InnerComponent::class)).isNull()
     /** Layout component and idle, triggering visibility event and any async updates */
-    lithoViewRule.layout().idle()
+    testLithoView.layout()
+    lithoViewRule.idle()
     /** After the onVisible is called */
-    assertThat(lithoViewRule.lithoView).hasExactlyOne(InnerComponent::class)
+    assertThat(testLithoView).containsExactlyOne(InnerComponent::class)
     // visibility_test_end
-    assertThat(lithoViewRule.lithoView).hasVisibleText("some_text")
+    assertThat(testLithoView).hasVisibleText("some_text")
   }
 
   @Test
@@ -157,8 +153,8 @@ class LithoViewRuleExampleTest {
         }
       }
     }
-    with(lithoViewRule) {
-      render { TestComponent() }
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    with(testLithoView) {
       assertThat(findAllComponents(InnerComponent::class, DeepComponent::class))
           .isNotEmpty
           .haveExactly(2, typeIs(InnerComponent::class))
@@ -194,9 +190,9 @@ class LithoViewRuleExampleTest {
       }
     }
     // contains_components_start
-    lithoViewRule.render { TestComponent() }
-    assertThat(lithoViewRule.lithoView)
-        .hasExactly(2, InnerComponent::class)
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    assertThat(testLithoView)
+        .containsExactly(2, InnerComponent::class)
         .containsComponents(DeepComponent::class, InnerSecondComponent::class)
     // contains_components_end
   }
@@ -204,9 +200,9 @@ class LithoViewRuleExampleTest {
   @Test
   fun `verify InnerComponent has given props`() {
     // has_props_start
-    lithoViewRule.render { TestComponent() }
-    val component = lithoViewRule.findComponent(InnerComponent::class)
-    assertThat(component).isNotNull()
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    assertThat(testLithoView).willRenderContent()
+    val component = testLithoView.findComponent(InnerComponent::class)
 
     assertThat(component)
         .hasProps(
@@ -224,21 +220,21 @@ class LithoViewRuleExampleTest {
       }
     }
     // start_render_example
-    lithoViewRule.render { TestComponent() }
+    val testLithoView = lithoViewRule.render { TestComponent() }
     // end_render_example
-    assertThat(lithoViewRule.lithoView).isNotNull()
+    assertThat(testLithoView).willRenderContent()
     /** can use all of the assertions from: [LithoViewAssert] class */
   }
 
   @Test
   fun `verify children of the component`() {
     // find_direct_component_start
-    lithoViewRule.render { TestComponent() }
-    val innerComponent = lithoViewRule.findDirectComponent(InnerComponent::class)
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val innerComponent = testLithoView.findDirectComponent(InnerComponent::class)
     assertThat(innerComponent).isNotNull()
     // find_direct_component_end
     // find_non_direct_component_start
-    val textComponent = lithoViewRule.findComponent(Text::class)
+    val textComponent = testLithoView.findComponent(Text::class)
     assertThat(textComponent).isNotNull()
     // find_non_direct_component_end
   }
@@ -246,8 +242,8 @@ class LithoViewRuleExampleTest {
   @Test
   fun `verify assertions on lithoview `() {
     // lithoview_assertion_start
-    lithoViewRule.render { TestComponent() }
-    assertThat(lithoViewRule.lithoView).hasVisibleText("some_value")
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    assertThat(testLithoView).hasVisibleText("some_value")
     /** can use all of the assertions from: [LithoViewAssert] class */
     // lithoview_assertion_end
   }
@@ -263,16 +259,16 @@ class LithoViewRuleExampleTest {
     }
 
     val mockClickHandler: TestClickHandler = mock()
-    lithoViewRule.render { TestClickComponent(mockClickHandler) }
-    lithoViewRule.act { clickOnRootView() }
+    val testLithoView = lithoViewRule.render { TestClickComponent(mockClickHandler) }
+    lithoViewRule.act(testLithoView) { clickOnRootView() }
 
     verify(mockClickHandler).onClick(any())
   }
 
   @Test(expected = IllegalStateException::class)
   fun `verify runtime exception thrown when clicking on a non-clickable view`() {
-    lithoViewRule.render { Row() }
-    lithoViewRule.act { clickOnRootView() }
+    val testLithoView = lithoViewRule.render { Row() }
+    lithoViewRule.act(testLithoView) { clickOnRootView() }
   }
 
   @Test
@@ -296,21 +292,21 @@ class LithoViewRuleExampleTest {
     // component_for_action_end
 
     // test_interaction_start
-    lithoViewRule.render { TestComponent() }
+    val testLithoView = lithoViewRule.render { TestComponent() }
     LithoStats.resetAllCounters()
     /** Find [Component] based on the text or [Component] class */
-    assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNull()
-    assertThat(lithoViewRule.findComponent(Text::class)).isNull()
+    assertThat(testLithoView.findViewWithTextOrNull("Text")).isNull()
+    assertThat(testLithoView.findComponent(Text::class)).isNull()
 
     /** perform interaction defined in [LithoViewRule] */
-    lithoViewRule.act { clickOnContentDescription("row") }
+    lithoViewRule.act(testLithoView) { clickOnContentDescription("row") }
 
     /** check number of state updates */
     assertThat(LithoStats.getComponentTriggeredAsyncStateUpdateCount()).isEqualTo(1)
 
     /** Find [Component] based on the text or [Component] class */
-    assertThat(lithoViewRule.findViewWithTextOrNull("Text")).isNotNull()
-    assertThat(lithoViewRule.findComponent(Text::class)).isNotNull()
+    assertThat(testLithoView.findViewWithTextOrNull("Text")).isNotNull()
+    assertThat(testLithoView.findComponent(Text::class)).isNotNull()
     // test_interaction_end
   }
 
@@ -330,9 +326,9 @@ class LithoViewRuleExampleTest {
     }
 
     lithoViewRule.render { TestComponent() }
-    Assertions.assertThat(stateRef.get()).isEqualTo(false)
+    assertThat(stateRef.get()).isEqualTo(false)
     lithoViewRule.idle()
-    Assertions.assertThat(stateRef.get()).isEqualTo(true)
+    assertThat(stateRef.get()).isEqualTo(true)
     // idle_component_end
   }
 

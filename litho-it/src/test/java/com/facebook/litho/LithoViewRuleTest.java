@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithTreeProp;
 import com.facebook.litho.widget.TextDrawable;
@@ -36,15 +37,17 @@ public class LithoViewRuleTest {
   public void onLithoViewRuleWithTreeProp_shouldPropagateTreeProp() {
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component = ComponentWithTreeProp.create(c).build();
+    final TestLithoView testLithoView;
+    testLithoView =
+        mLithoViewRule
+            .setTreeProp(SimpleTreeProp.class, new SimpleTreeProp("test"))
+            .createTestLithoView()
+            .attachToWindow()
+            .setRoot(component)
+            .measure()
+            .layout();
 
-    mLithoViewRule
-        .setTreeProp(SimpleTreeProp.class, new SimpleTreeProp("test"))
-        .attachToWindow()
-        .setRoot(component)
-        .measure()
-        .layout();
-
-    Object item = mLithoViewRule.getLithoView().getMountItemAt(0).getContent();
+    Object item = testLithoView.getLithoView().getMountItemAt(0).getContent();
     assertThat(item).isInstanceOf(TextDrawable.class);
     assertThat(((TextDrawable) item).getText()).isEqualTo("test");
   }
@@ -53,6 +56,6 @@ public class LithoViewRuleTest {
   public void onLithoViewRuleWithoutTreeProp_shouldThrowException() {
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component = ComponentWithTreeProp.create(c).build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    mLithoViewRule.createTestLithoView().attachToWindow().setRoot(component).measure().layout();
   }
 }

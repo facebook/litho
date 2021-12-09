@@ -18,6 +18,7 @@ package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.TestLithoView;
 import java.util.List;
 import kotlin.Pair;
 import kotlin.reflect.KProperty1;
@@ -36,6 +37,10 @@ public class LithoAssertions {
 
   public static LithoViewAssert assertThat(LithoView lithoView) {
     return LithoViewAssert.assertThat(lithoView);
+  }
+
+  public static LithoViewAssert assertThat(TestLithoView testLithoView) {
+    return LithoViewAssert.assertThat(testLithoView.getLithoView());
   }
 
   public static ListAssert<Component> assertThat(List<Component> componentsList) {

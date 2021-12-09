@@ -9,6 +9,7 @@ load(
     "LITHO_KOTLIN_TARGET",
     "LITHO_TESTING_HELPER_TARGET",
     "LITHO_TESTING_SUBCOMPONENTS_TARGET",
+    "LITHO_TESTING_TARGET",
     "LITHO_TESTING_WHITEBOX_TARGET",
     "litho_android_library",
     "make_dep_path",
@@ -32,6 +33,7 @@ litho_android_library(
     deps = COMMON_DEPS + [
         LITHO_KOTLIN_TARGET,
         LITHO_KOTLIN_STDLIB_TARGET,
+        LITHO_TESTING_TARGET,
         LITHO_TESTING_HELPER_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),

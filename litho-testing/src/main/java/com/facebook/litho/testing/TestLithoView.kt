@@ -16,68 +16,60 @@
 
 package com.facebook.litho.testing
 
-import android.app.Activity
 import android.content.Context
-import android.os.Looper
 import android.view.View
-import android.view.View.MeasureSpec
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
-import com.facebook.litho.ComponentsPools
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
-import com.facebook.litho.StateHandler
-import com.facebook.litho.TreeProps
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
-import com.facebook.rendercore.MountItemsPool
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
-import org.junit.rules.TestRule
-import org.junit.runner.Description
-import org.junit.runners.model.Statement
-import org.robolectric.Robolectric
-import org.robolectric.Shadows.shadowOf
+import org.robolectric.Shadows
 
 /**
- * This test utility allows clients to test assertion on the view hierarchy rendered by a Litho
- * components. The utility has methods to override the default {@link LithoView}, {@link
- * ComponentTree}, width, and height specs.
+ * Holder class for the result of [LithoViewRule.render] call, exposing methods to for finding the
+ * views/components and assertions
  *
  * ```
  *  @RunWith(AndroidJUnit4::class)
  *  class LithoSampleTest {
  *
- *  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+ *  @Rule @JvmField val lithoViewRule = LithoViewRule()
  *  @Test
  *  fun test() {
- *    lithoViewRule.render { TestComponent() }
+ *   val testLithoView =  lithoViewRule.render { TestComponent() }
  *
- *    // or you can use setRoot/measure/layout for more fine-grained control
- *    val lithoViewTest = lithoViewRule.attachToWindow().setRoot(TestComponent()).measure().layout()
- *    // Test your assertions on the litho view.
+ *   LithoAssertions.assertThat(testLithoView)
+ *   .willRenderContent()
+ *   .containsComponents(AnotherTestComponent::class)
+ *   .containsContentDescription(R.string.content_descr)
+ *
+ *   lithoViewRule.act(testLithoView) { clickOnTag("test_tag") }
+ *
+ *   LithoAssertions.assertThat(testLithoView)
+ *   .containsComponents(NewTestComponent::class)
+ *
  *    }
  * }
  * ```
  */
-@Deprecated("Please use LithoViewRule and TestLithoView instead")
-class LegacyLithoViewRule
-@JvmOverloads
-constructor(
-    val componentsConfiguration: ComponentsConfiguration? = null,
-    val themeResId: Int? = null
-) : TestRule {
+class TestLithoView
+internal constructor(
+    val context: ComponentContext,
+    val componentsConfiguration: ComponentsConfiguration? = null
+) {
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
@@ -102,54 +94,18 @@ constructor(
     get() = componentTree.committedLayoutState
   val currentRootNode: LithoLayoutResult?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE) get() = committedLayoutState?.layoutRoot
-  var widthSpec = DEFAULT_WIDTH_SPEC
-  var heightSpec = DEFAULT_HEIGHT_SPEC
-  lateinit var context: ComponentContext
-  lateinit var stateHandler: StateHandler
+
+  private var widthSpec = DEFAULT_WIDTH_SPEC
+  private var heightSpec = DEFAULT_HEIGHT_SPEC
   private var _lithoView: LithoView? = null
   private var _componentTree: ComponentTree? = null
-  private val threadLooperController: ThreadLooperController = ThreadLooperController()
-  private val interactionsScope = InteractionsScope()
-
-  override fun apply(base: Statement, description: Description): Statement {
-    return object : Statement() {
-      override fun evaluate() {
-        try {
-          if (themeResId != null) {
-            val activity = Robolectric.buildActivity(Activity::class.java).create().get()
-            activity.setTheme(themeResId)
-            context = ComponentContext(activity)
-          } else {
-            context = ComponentContext(getApplicationContext<Context>())
-          }
-          context.setLayoutStateContextForTesting()
-          stateHandler = StateHandler()
-          threadLooperController.init()
-          base.evaluate()
-        } finally {
-          threadLooperController.clean()
-          ComponentsPools.clearMountContentPools()
-          MountItemsPool.clear()
-          _componentTree = null
-          _lithoView = null
-          widthSpec = DEFAULT_WIDTH_SPEC
-          heightSpec = DEFAULT_HEIGHT_SPEC
-        }
-      }
-    }
-  }
-
-  fun useContext(c: ComponentContext): LegacyLithoViewRule {
-    context = c
-    return this
-  }
 
   /** Sets a new [LithoView] which should be used to render. */
-  fun useLithoView(lithoView: LithoView): LegacyLithoViewRule {
+  fun useLithoView(lithoView: LithoView): TestLithoView {
     _lithoView = lithoView
     if (lithoView.componentContext !== context) {
       throw RuntimeException(
-          "You must use the same ComponentContext for the LithoView as what is on the LegacyLithoViewRule @Rule!")
+          "You must use the same ComponentContext for the LithoView as what is on the LithoViewRule @Rule!")
     }
     lithoView.componentTree.let {
       if (it == null && _componentTree != null) {
@@ -162,32 +118,31 @@ constructor(
   }
 
   /** Sets a new [ComponentTree] which should be used to render. */
-  fun useComponentTree(componentTree: ComponentTree?): LegacyLithoViewRule {
+  fun useComponentTree(componentTree: ComponentTree?): TestLithoView {
     _componentTree = componentTree
     lithoView.componentTree = componentTree
     return this
   }
-
   /** Sets the new root [Component] to render. */
-  fun setRoot(component: Component?): LegacyLithoViewRule {
+  fun setRoot(component: Component?): TestLithoView {
     componentTree.setRoot(component)
     return this
   }
 
   /** Sets the new root [Component.Builder] to render. */
-  fun setRoot(builder: Component.Builder<*>): LegacyLithoViewRule {
+  fun setRoot(builder: Component.Builder<*>): TestLithoView {
     componentTree.setRoot(builder.build())
     return this
   }
 
   /** Sets the new root [Component] to render asynchronously. */
-  fun setRootAsync(component: Component?): LegacyLithoViewRule {
+  fun setRootAsync(component: Component?): TestLithoView {
     componentTree.setRootAsync(component)
     return this
   }
 
   /** Sets the new root [Component.Builder] to render asynchronously. */
-  fun setRootAsync(builder: Component.Builder<*>): LegacyLithoViewRule {
+  fun setRootAsync(builder: Component.Builder<*>): TestLithoView {
     componentTree.setRootAsync(builder.build())
     return this
   }
@@ -197,7 +152,7 @@ constructor(
       component: Component?,
       widthSpec: Int,
       heightSpec: Int
-  ): LegacyLithoViewRule {
+  ): TestLithoView {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
     componentTree.setRootAndSizeSpecSync(component, this.widthSpec, this.heightSpec)
@@ -205,29 +160,20 @@ constructor(
   }
 
   /** Sets a new width and height which should be used to render. */
-  fun setSizePx(widthPx: Int, heightPx: Int): LegacyLithoViewRule {
-    widthSpec = MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY)
-    heightSpec = MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY)
+  fun setSizePx(widthPx: Int, heightPx: Int): TestLithoView {
+    widthSpec = View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY)
+    heightSpec = View.MeasureSpec.makeMeasureSpec(heightPx, View.MeasureSpec.EXACTLY)
     return this
   }
 
   /** Sets a new width spec and height spec which should be used to render. */
-  fun setSizeSpecs(widthSpec: Int, heightSpec: Int): LegacyLithoViewRule {
+  fun setSizeSpecs(widthSpec: Int, heightSpec: Int): TestLithoView {
     this.widthSpec = widthSpec
     this.heightSpec = heightSpec
     return this
   }
-
-  /** Sets a new [TreeProp] for the next layout pass. */
-  fun setTreeProp(klass: Class<*>, instance: Any?): LegacyLithoViewRule {
-    val props = context.treeProps ?: TreeProps()
-    props.put(klass, instance)
-    context.treeProps = props
-    return this
-  }
-
   /** Explicitly calls measure on the current root [LithoView] */
-  fun measure(): LegacyLithoViewRule {
+  fun measure(): TestLithoView {
     lithoView.measure(widthSpec, heightSpec)
     return this
   }
@@ -236,36 +182,28 @@ constructor(
    * Explicitly calls layout on the current root [LithoView]. If there are any async events
    * triggered by layout use together with [idle]
    */
-  fun layout(): LegacyLithoViewRule {
+  fun layout(): TestLithoView {
     val lithoView: LithoView = lithoView
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
     return this
   }
 
   /** Explicitly attaches current root [LithoView] */
-  fun attachToWindow(): LegacyLithoViewRule {
+  fun attachToWindow(): TestLithoView {
     lithoView.onAttachedToWindowForTest()
     return this
   }
 
   /** Explicitly detaches current root [LithoView] */
-  fun detachFromWindow(): LegacyLithoViewRule {
+  fun detachFromWindow(): TestLithoView {
     lithoView.onDetachedFromWindowForTest()
     return this
   }
 
   /** Explicitly releases current root [LithoView] */
-  fun release(): LegacyLithoViewRule {
+  fun release(): TestLithoView {
     lithoView.release()
     return this
-  }
-
-  /** Sets the new root to render. */
-  fun render(componentFunction: ComponentScope.() -> Component) {
-    attachToWindow()
-        .setRoot(with(ComponentScope(context)) { componentFunction() })
-        .measure()
-        .layout()
   }
 
   /**
@@ -412,31 +350,6 @@ constructor(
   }
 
   /**
-   * Perform any interactions defined in the [InteractionScope] or on the [LegacyLithoViewRule].
-   *
-   * During tests we need to make sure that everything is in sync in the Main Thread and in the
-   * Background Thread, just like in real life use case. This functions takes off the responsibility
-   * from you to use the Loopers and manage the thread synchronisation. You only need to pass here
-   * one of the defined interactions from [LegacyLithoViewRule] or [InteractionScope], and we will
-   * take care of all of the rest
-   */
-  fun act(action: InteractionsScope.() -> Unit): LegacyLithoViewRule {
-    interactionsScope.action()
-    idle()
-    return this
-  }
-
-  /**
-   * Runs through all tasks on the background thread and main lopper, blocking until it completes.
-   * Use if there are any async events triggered by layout ( ie visibility events) to manually drain
-   * the queue
-   */
-  fun idle() {
-    threadLooperController.runToEndOfTasksSync()
-    shadowOf(Looper.getMainLooper()).idle()
-  }
-
-  /**
    * Class which exposes interactions that can take place on a view. Exposing interactions in this
    * class ensures that they are only accessible within [act], where the proper threading is taken
    * into account to properly update the components and views.
@@ -468,7 +381,7 @@ constructor(
      * you'd like more specifically click on portions of the view.
      */
     fun clickOnRootView() {
-      checkNotNull(shadowOf(lithoView).onClickListener) {
+      checkNotNull(Shadows.shadowOf(lithoView).onClickListener) {
         "No click handling found on root view.  The root view must be clickable in order to use this function."
       }
       lithoView.performClick()
@@ -494,26 +407,9 @@ constructor(
     fun clickOnContentDescription(@StringRes resourceId: Int): Boolean =
         findViewWithContentDescription(resourceId).performClick()
   }
-
-  companion object {
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmStatic
-    fun getRootLayout(
-        rule: LegacyLithoViewRule,
-        component: Component?,
-        widthSpec: Int,
-        heightSpec: Int
-    ): LithoLayoutResult? {
-      return rule.attachToWindow()
-          .setRootAndSizeSpecSync(component, widthSpec, heightSpec)
-          .measure()
-          .layout()
-          .currentRootNode
-    }
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    @JvmStatic
-    fun getRootLayout(rule: LegacyLithoViewRule, component: Component?): LithoLayoutResult? {
-      return rule.attachToWindow().setRoot(component).measure().layout().currentRootNode
-    }
-  }
 }
+
+@JvmField
+val DEFAULT_WIDTH_SPEC: Int = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY)
+@JvmField
+val DEFAULT_HEIGHT_SPEC: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
