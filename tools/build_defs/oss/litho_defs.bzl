@@ -298,7 +298,7 @@ def litho_android_library(name, srcs = None, *args, **kwargs):
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
-    native.android_library(name, srcs = srcs, *args, **kwargs)
+    native.android_library(name = name, srcs = srcs, *args, **kwargs)
 
 def litho_android_test_library(**kwargs):
     annotation_processor_params = kwargs.pop("annotation_processor_params", [])
