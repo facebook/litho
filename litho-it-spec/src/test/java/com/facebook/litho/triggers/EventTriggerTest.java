@@ -21,47 +21,16 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Handle;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
-import java.util.Arrays;
-import java.util.Collection;
-import org.junit.After;
-import org.junit.Before;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class EventTriggerTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-
-  private final boolean useStatelessComponent;
-  private final boolean mUseStatelessComponentDefault;
-
-  public EventTriggerTest(boolean useStatelessComponent) {
-    this.useStatelessComponent = useStatelessComponent;
-    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
-  }
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
-  }
-
-  @Before
-  public void setup() {
-    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
-  }
 
   @Test
   public void testCanTriggerEvent() {

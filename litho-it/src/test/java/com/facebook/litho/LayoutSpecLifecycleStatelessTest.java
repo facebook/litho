@@ -28,8 +28,6 @@ import com.facebook.litho.widget.LayoutSpecLifecycleTesterSpec;
 import com.facebook.litho.widget.events.EventWithoutAnnotation;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,23 +37,9 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class LayoutSpecLifecycleStatelessTest {
 
-  private boolean mUseStatelessComponent;
-  private boolean mUseStatelessComponentConfig;
-
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
-
-  @Before
-  public void setUp() {
-    mUseStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
-    ComponentsConfiguration.useStatelessComponent = true;
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentConfig;
-  }
 
   @Test
   public void lifecycle_onSetRootWithoutLayout_shouldNotCallLifecycleMethods() {

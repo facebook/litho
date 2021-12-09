@@ -31,7 +31,6 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.mountCompone
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -396,10 +395,6 @@ public class MountStateRemountInPlaceTest {
     secondTree.setRoot(Column.create(mContext).child(thirdComponent).build());
 
     mountComponent(firstLithoView, secondTree);
-
-    if (!ComponentsConfiguration.useStatelessComponent) {
-      verify(thirdComponent).makeShallowCopy();
-    }
 
     assertThat(thirdComponent.wasOnMountCalled()).isTrue();
     assertThat(thirdComponent.wasOnBindCalled()).isTrue();

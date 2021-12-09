@@ -56,7 +56,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
@@ -1065,7 +1064,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1120,7 +1119,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1173,7 +1172,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1226,7 +1225,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (mLithoViewRule.getComponentTree().useStatelessComponent()) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();

@@ -49,7 +49,6 @@ public class InternalNodeTest {
   private final boolean mDefaultUseInputOnlyInternalNodes;
 
   public InternalNodeTest() {
-    ComponentsConfiguration.useStatelessComponent = true;
     mDefaultUseInputOnlyInternalNodes =
         ComponentsConfiguration.getDefaultComponentsConfiguration().getUseInputOnlyInternalNodes();
   }

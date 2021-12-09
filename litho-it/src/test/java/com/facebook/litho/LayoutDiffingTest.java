@@ -243,10 +243,6 @@ public class LayoutDiffingTest {
 
   @Test
   public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem() {
-
-    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
-    ComponentsConfiguration.reuseInternalNodes = false;
-
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
@@ -260,8 +256,6 @@ public class LayoutDiffingTest {
     assertThat(((TextView) view).getText()).isEqualTo("0");
     view.callOnClick();
     assertThat(((TextView) view).getText()).isEqualTo("1");
-
-    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
   }
 
   @Test

@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
@@ -320,10 +321,8 @@ class StateUpdatesWithReconciliationTest() {
    */
   @Test
   fun `should apply state updates when two different state updates occur simultaneously in the background, stateless version`() {
-    val defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes
-    val defaultStatelessness = ComponentsConfiguration.useStatelessComponent
-    ComponentsConfiguration.reuseInternalNodes = true
-    ComponentsConfiguration.useStatelessComponent = true
+    TempComponentsConfigurations.setImmutabilityFlags(true)
+
     val c = lithoViewRule.context
     lithoViewRule.setSizePx(100, 100).measure().layout().attachToWindow()
     val stateUpdater1 = SimpleStateUpdateEmulatorSpec.Caller()
@@ -360,8 +359,8 @@ class StateUpdatesWithReconciliationTest() {
     lithoViewRule.layout()
     assertThat(lithoViewRule.lithoView).hasVisibleText("First: 2")
     assertThat(lithoViewRule.lithoView).hasVisibleText("Second: 2")
-    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode
-    ComponentsConfiguration.useStatelessComponent = defaultStatelessness
+
+    TempComponentsConfigurations.restoreImmutabilityFlags()
   }
 
   @Test

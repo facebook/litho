@@ -30,12 +30,10 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.Component.MountType;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNodeFactory;
-import java.util.Arrays;
-import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +42,6 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
 /** Tests {@link Component} */
 @PrepareForTest({
@@ -58,12 +55,10 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
   "android.*",
   "com.facebook.yoga.*"
 })
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class SpecGeneratedComponentLifecycleTest {
 
   private static final String KEY = "globalKey";
-  private final boolean mUseStatelessComponent;
-  private boolean mUseStatelessComponentConfig;
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   private static final int A_HEIGHT = 11;
@@ -80,22 +75,8 @@ public class SpecGeneratedComponentLifecycleTest {
   private boolean mPreviousOnErrorConfig;
   private LayoutStateContext mLayoutStateContext;
 
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
-  }
-
-  public SpecGeneratedComponentLifecycleTest(boolean useStatelessComponent) {
-    mUseStatelessComponent = useStatelessComponent;
-  }
-
   @Before
   public void setUp() {
-    mUseStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
     mockStatic(Layout.class);
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
@@ -158,7 +139,6 @@ public class SpecGeneratedComponentLifecycleTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentConfig;
     NodeConfig.sInternalNodeFactory = null;
   }
 

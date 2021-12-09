@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import android.util.Pair;
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -48,31 +47,15 @@ public class StatelessComponentGlobalKeyTest {
 
   private static final String mLogTag = "logTag";
 
-  private final boolean mUseStatelessComponentDefault;
-
   private ComponentContext mContext;
   private TestComponentsReporter mComponentsReporter;
-
-  public StatelessComponentGlobalKeyTest() {
-    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
-  }
 
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
-    ComponentsConfiguration.useStatelessComponent = true;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useStatelessComponents(true));
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useStatelessComponents(false));
   }
 
   @Test
