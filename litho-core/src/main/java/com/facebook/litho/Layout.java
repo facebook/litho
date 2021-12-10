@@ -488,7 +488,8 @@ class Layout {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("measureTree:" + root.getSimpleName());
+      ComponentsSystrace.beginSection(
+          "measureTree:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
     }
 
     if (diff != null && root.implementsLayoutDiffing()) {

@@ -100,7 +100,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
         try {
           if (isTracing) {
-            ComponentsSystrace.beginSection("resolveNestedTree:" + node.getSimpleName());
+            ComponentsSystrace.beginSection("resolveNestedTree:" + component.getSimpleName());
           }
 
           final @Nullable LithoLayoutResult nestedTree =

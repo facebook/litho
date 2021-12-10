@@ -554,7 +554,7 @@ public class LayoutState
       // If the nested tree is defined, it has been resolved during a measure call during
       // layout calculation.
       if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + node.getSimpleName())
+        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.getSimpleName())
             .arg("widthSpec", "EXACTLY " + result.getWidth())
             .arg("heightSpec", "EXACTLY " + result.getHeight())
             .arg("rootComponentId", node.getTailComponent().getId())
@@ -693,7 +693,7 @@ public class LayoutState
 
       // Notify component about its final size.
       if (isTracing) {
-        ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
+        ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
       }
 
       try {

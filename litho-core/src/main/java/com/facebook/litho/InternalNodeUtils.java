@@ -290,7 +290,7 @@ public class InternalNodeUtils {
     /* Call onBoundsDefined for the DrawableComponent */
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
+      ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
     }
 
     try {
