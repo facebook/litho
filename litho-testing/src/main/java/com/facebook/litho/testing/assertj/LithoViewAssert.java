@@ -104,6 +104,13 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
+  /** Assert that any view in the given Component has the provided content description. */
+  public LithoViewAssert hasContentDescription(@StringRes int resourceId) {
+    assertThatViewTree().hasContentDescription(resourceId);
+
+    return this;
+  }
+
   /**
    * Assert that the given component contains the drawable identified by the provided drawable
    * resource id.
