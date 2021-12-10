@@ -17,7 +17,6 @@
 package com.facebook.litho.testing.shadows;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -38,11 +37,6 @@ public class ColorDrawableShadow extends ShadowDrawable {
   @Implementation
   public void draw(Canvas canvas) {
     canvas.drawColor(mRealColorDrawable.getColor());
-  }
-
-  @Implementation
-  public void setColorFilter(ColorFilter colorFilter) {
-    mRealColorDrawable.setColorFilter(colorFilter);
   }
 
   @Override

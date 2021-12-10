@@ -172,12 +172,22 @@ public final class ViewPredicates {
           return ComponentQueries.hasDrawable((ComponentHost) input, drawable);
         }
 
-        final String drawnDrawableDescription = getDrawnDrawableDescription(drawable);
-        String drawnViewDescription = getDrawnViewDescription(input);
+        String drawnDrawableDescription =
+            extractResourceIdFromDrawnDescription(getDrawnDrawableDescription(drawable));
+        String drawnViewDescription =
+            extractResourceIdFromDrawnDescription(getDrawnViewDescription(input));
         return !drawnDrawableDescription.isEmpty()
             && drawnViewDescription.contains(drawnDrawableDescription);
       }
     };
+  }
+
+  private static String extractResourceIdFromDrawnDescription(String description) {
+    int resourceIdIndex = description.indexOf("resource:");
+    if (resourceIdIndex == -1) {
+      return description;
+    }
+    return description.substring(resourceIdIndex);
   }
 
   public static Predicate<View> hasVisibleDrawable(final Drawable drawable) {
