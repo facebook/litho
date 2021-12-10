@@ -1773,7 +1773,7 @@ public abstract class Component
 
   final CommonProps getOrCreateCommonProps() {
     if (mCommonProps == null) {
-      mCommonProps = new CommonPropsHolder();
+      mCommonProps = new CommonProps();
     }
 
     return mCommonProps;

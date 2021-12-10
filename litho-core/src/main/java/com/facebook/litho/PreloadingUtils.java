@@ -59,7 +59,7 @@ public class PreloadingUtils {
                         HostComponent.class,
                         DrawableComponent.class,
                         StateContainer.class,
-                        CommonPropsHolder.class,
+                        CommonProps.class,
                         LayoutProps.class,
                         NodeInfo.class,
                         DelegatingEventHandler.class,

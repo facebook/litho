@@ -66,7 +66,7 @@ public class CommonPropsTest {
     mNode = mock(InputOnlyInternalNode.class);
     mNodeInfo = mock(NodeInfo.class);
     when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
-    mCommonProps = new CommonPropsHolder();
+    mCommonProps = new CommonProps();
     mComponentContext = new ComponentContext(getApplicationContext());
   }
 
@@ -449,10 +449,10 @@ public class CommonPropsTest {
 
   @Test
   public void testDifferentObjectWithSameContentEquivalentTo() {
-    mCommonProps = new CommonPropsHolder();
+    mCommonProps = new CommonProps();
     setCommonProps(mCommonProps);
 
-    CommonPropsHolder mCommonProps2 = new CommonPropsHolder();
+    CommonProps mCommonProps2 = new CommonProps();
     setCommonProps(mCommonProps2);
 
     assertThat(mCommonProps.isEquivalentTo(mCommonProps2)).isEqualTo(true);
@@ -460,11 +460,11 @@ public class CommonPropsTest {
 
   @Test
   public void testDifferentObjectWithDifferentContentEquivalentTo() {
-    mCommonProps = new CommonPropsHolder();
+    mCommonProps = new CommonProps();
     setCommonProps(mCommonProps);
     mCommonProps.duplicateParentState(false);
 
-    CommonPropsHolder mCommonProps2 = new CommonPropsHolder();
+    CommonProps mCommonProps2 = new CommonProps();
     setCommonProps(mCommonProps2);
     mCommonProps2.duplicateParentState(true);
 

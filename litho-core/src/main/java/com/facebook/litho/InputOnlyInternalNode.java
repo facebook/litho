@@ -183,7 +183,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   protected @Nullable YogaMeasureFunction mYogaMeasureFunction;
 
-  private @Nullable CommonPropsHolder.DefaultLayoutProps mDebugLayoutProps;
+  private @Nullable CommonProps.DefaultLayoutProps mDebugLayoutProps;
 
   private boolean mIsClone = false;
   private boolean mFrozen;
@@ -840,7 +840,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public LayoutProps getDebugLayoutEditor() {
     if (ComponentsConfiguration.isDebugModeEnabled) {
-      mDebugLayoutProps = new CommonPropsHolder.DefaultLayoutProps();
+      mDebugLayoutProps = new CommonProps.DefaultLayoutProps();
       return mDebugLayoutProps;
     }
     return null;
