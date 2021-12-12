@@ -104,7 +104,7 @@ import com.facebook.yoga.YogaDirection;
  *    .build()
  * }</pre>
  *
- * @uidocs https://fburl.com/Text:b8f5
+ * @uidocs
  * @prop text Text to display.
  * @prop ellipsize If set, specifies the position of the text to be ellipsized.
  * @prop minLines Minimum number of lines to show.

@@ -31,7 +31,7 @@ import com.facebook.litho.annotations.PropDefault;
 /**
  * A component that renders a solid color.
  *
- * @uidocs https://fburl.com/SolidColor:b0df
+ * @uidocs
  * @prop color Color to be shown.
  * @prop alpha The alpha of the color, in the range [0.0, 1.0]
  */

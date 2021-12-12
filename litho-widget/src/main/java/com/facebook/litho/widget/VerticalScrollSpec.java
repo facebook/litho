@@ -59,7 +59,7 @@ import com.facebook.litho.annotations.State;
  *
  * <p>See also: {@link com.facebook.litho.widget.HorizontalScroll} for horizontal scrollability.
  *
- * @uidocs https://fburl.com/VerticalScroll:3f2b
+ * @uidocs
  * @prop scrollbarEnabled whether the vertical scrollbar should be drawn
  * @prop scrollbarFadingEnabled whether the scrollbar should fade out when the view is not scrolling
  * @props initialScrollOffsetPixels initial vertical scroll offset, in pixels

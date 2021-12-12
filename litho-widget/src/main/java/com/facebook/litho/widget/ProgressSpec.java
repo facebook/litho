@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 /**
  * Renders an infinitely spinning progress bar.
  *
- * @uidocs https://fburl.com/Progress:3805
+ * @uidocs
  * @prop indeterminateDrawable Drawable to be shown to show progress.
  * @prop color Tint color for the drawable.
  */

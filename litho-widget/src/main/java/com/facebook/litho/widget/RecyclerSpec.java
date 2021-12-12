@@ -57,7 +57,7 @@ import java.util.List;
 /**
  * Components that renders a {@link RecyclerView}.
  *
- * @uidocs https://fburl.com/Recycler:a3f7
+ * @uidocs
  * @prop binder Binder for RecyclerView.
  * @prop refreshHandler Event handler for refresh event.
  * @prop hasFixedSize If set, makes RecyclerView not affected by adapter changes.

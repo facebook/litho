@@ -60,7 +60,7 @@ import java.util.List;
  * A component that wraps another component and allow it to be horizontally scrollable. It's
  * analogous to a {@link android.widget.HorizontalScrollView}.
  *
- * @uidocs https://fburl.com/HorizontalScroll:e378
+ * @uidocs
  */
 @MountSpec
 class HorizontalScrollSpec {

@@ -68,7 +68,7 @@ import javax.annotation.Nullable;
  * <p>If no optional values are provided the component will look like it's material design
  * counterpart.
  *
- * @uidocs https://fburl.com/Spinner:3bf4
+ * @uidocs
  * @prop-required selectedOption The initially selected option for the spinner
  * @prop-required options The options available from the dropdown
  * @prop-required onItemSelectedListener The listener for dropdown selections

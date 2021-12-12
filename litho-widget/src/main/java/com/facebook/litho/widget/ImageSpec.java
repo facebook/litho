@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
 /**
  * A component that is able to display drawable resources. It takes a drawable resource ID as prop.
  *
- * @uidocs https://fburl.com/Image:9b31
+ * @uidocs
  * @prop drawable Drawable to display.
  * @prop scaleType Scale type for the drawable within the container.
  */
