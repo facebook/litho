@@ -10,8 +10,10 @@ import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
 In the Spec API, communicating from a child to a parent is done through an `EventHandler`, which handles a custom event type. The `EventHandler` is defined in the parent component and passed as a Prop to the child component.  For more information on Spec events, see the document [Events Overview](/docs/mainconcepts/coordinate-state-actions/events).
 
 <FbInternalOnly>
+
 In the Kotlin API, the parent component can simply pass a [lambda](https://kotlinlang.org/docs/lambdas.html) as the callback instead of a reference to a generated `EventHandler`.
 For more information on Kotlin events, see [Event Handling](/docs/fb/kotlin/event-handling).
+
 </FbInternalOnly>
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/ParentComponentReceivesEventFromChildSpec.java start=start_demo end=end_demo
