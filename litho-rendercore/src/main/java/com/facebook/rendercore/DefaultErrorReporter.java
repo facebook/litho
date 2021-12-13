@@ -34,13 +34,19 @@ public class DefaultErrorReporter implements ErrorReporterDelegate {
       @Nullable Map<String, Object> metadata) {
     switch (level) {
       case WARNING:
-        Log.w(CATEGORY_PREFIX + categoryKey, message, cause);
+        if (BuildConfig.DEBUG) {
+          Log.w(CATEGORY_PREFIX + categoryKey, message, cause);
+        }
         break;
       case ERROR:
-        Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        if (BuildConfig.DEBUG) {
+          Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        }
         break;
       case FATAL:
-        Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        if (BuildConfig.DEBUG) {
+          Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        }
         throw new RuntimeException(message);
     }
   }

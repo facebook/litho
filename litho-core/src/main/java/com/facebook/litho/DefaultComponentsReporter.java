@@ -20,6 +20,7 @@ import static com.facebook.litho.ComponentsReporter.map;
 
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
 import java.util.Map;
@@ -38,13 +39,19 @@ public class DefaultComponentsReporter implements ErrorReporterDelegate {
       @Nullable Map<String, Object> metadata) {
     switch (level) {
       case WARNING:
-        Log.w(CATEGORY_PREFIX + categoryKey, message, cause);
+        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+          Log.w(CATEGORY_PREFIX + categoryKey, message, cause);
+        }
         break;
       case ERROR:
-        Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+          Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        }
         break;
       case FATAL:
-        Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+          Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        }
         throw new RuntimeException(message);
     }
   }
