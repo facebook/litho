@@ -46,33 +46,33 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     final Component component = node.getTailComponent();
     final ComponentContext componentScopedContext = node.getTailComponentContext();
 
+    if (layoutStateContext.isLayoutReleased()) {
+      return 0;
+    }
+
+    final DiffNode diffNode = result.areCachedMeasuresValid() ? result.getDiffNode() : null;
+
+    final int widthSpec;
+    final int heightSpec;
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
+    heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+
+    if (isTracing) {
+      ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
+          .arg("widthSpec", SizeSpec.toString(widthSpec))
+          .arg("heightSpec", SizeSpec.toString(heightSpec))
+          .arg("componentId", component.getId())
+          .flush();
+    }
     try {
-      if (layoutStateContext.isLayoutReleased()) {
-        return 0;
-      }
-
-      final DiffNode diffNode = result.areCachedMeasuresValid() ? result.getDiffNode() : null;
-
-      final int widthSpec;
-      final int heightSpec;
-      final boolean isTracing = ComponentsSystrace.isTracing();
-
-      widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
-      heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
-
-      if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
-            .arg("widthSpec", SizeSpec.toString(widthSpec))
-            .arg("heightSpec", SizeSpec.toString(heightSpec))
-            .arg("componentId", component.getId())
-            .flush();
-      }
 
       result.setLastWidthSpec(widthSpec);
       result.setLastHeightSpec(heightSpec);
 
-      int outputWidth = 0;
-      int outputHeight = 0;
+      int outputWidth;
+      int outputHeight;
 
       if (Component.isNestedTree(layoutStateContext, component)
           || result instanceof NestedTreeHolderResult) {
@@ -98,11 +98,10 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           parentContext = node.getComponentContextAt(1);
         }
 
+        if (isTracing) {
+          ComponentsSystrace.beginSection("resolveNestedTree:" + component.getSimpleName());
+        }
         try {
-          if (isTracing) {
-            ComponentsSystrace.beginSection("resolveNestedTree:" + component.getSimpleName());
-          }
-
           final @Nullable LithoLayoutResult nestedTree =
               Layout.create(
                   layoutStateContext,
@@ -127,12 +126,14 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       } else {
         final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
+        if (isTracing) {
+          ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
+        }
         try {
-          if (isTracing) {
-            ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
-          }
-
           component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size, null);
+        } catch (Exception e) {
+          ComponentUtils.handle(componentScopedContext, e);
+          return YogaMeasureOutput.make(0, 0);
         } finally {
           if (isTracing) {
             ComponentsSystrace.endSection();
@@ -173,14 +174,11 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       result.setLastWidthSpec(widthSpec);
       result.setLastHeightSpec(heightSpec);
 
+      return YogaMeasureOutput.make(outputWidth, outputHeight);
+    } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
-
-      return YogaMeasureOutput.make(outputWidth, outputHeight);
-    } catch (Exception e) {
-      ComponentUtils.handle(componentScopedContext, e);
-      return YogaMeasureOutput.make(0, 0);
     }
   }
 }
