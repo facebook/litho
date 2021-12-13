@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.8.6
+
+_2021_12_13_
+
+* Fix: Don't throw an error if annotation is not found
+
 ## Version 1.8.5
 
 _2021-11-25_
