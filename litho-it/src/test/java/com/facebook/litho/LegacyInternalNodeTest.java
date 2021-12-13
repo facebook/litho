@@ -438,11 +438,6 @@ public class LegacyInternalNodeTest {
     assertThat(textSize.height).isGreaterThan(0);
   }
 
-  @Test
-  public void testContextSpecificComponentAssertionPasses() {
-    acquireInternalNode().assertContextSpecificStyleNotSet();
-  }
-
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
     long flagPosition = Whitebox.getInternalState(DefaultInternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");

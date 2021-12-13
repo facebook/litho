@@ -20,7 +20,6 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.Layout.isLayoutDirectionRTL;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -35,7 +34,6 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.animation.StateListAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -44,7 +42,6 @@ import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.util.Log;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -1593,38 +1590,6 @@ public class DefaultInternalNode
     }
 
     a.recycle();
-  }
-
-  /** Log a warning if the given node has context specific style set. */
-  @SuppressLint("LongLogTag")
-  @Override
-  public void assertContextSpecificStyleNotSet() {
-    List<CharSequence> errorTypes = null;
-    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "alignSelf");
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "positionType");
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flex");
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flexGrow");
-    }
-    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "margin");
-    }
-
-    if (errorTypes != null) {
-      final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      final String msg =
-          "You should not set "
-              + errorStr
-              + " to a root layout in "
-              + getTailComponent().getClass().getSimpleName();
-      Log.w(CONTEXT_SPECIFIC_STYLE_SET, msg);
-    }
   }
 
   @Override

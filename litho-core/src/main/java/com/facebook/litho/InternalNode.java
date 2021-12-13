@@ -159,8 +159,6 @@ public interface InternalNode extends Node<LithoRenderContext> {
 
   int getChildIndex(InternalNode child);
 
-  void assertContextSpecificStyleNotSet();
-
   boolean isClone();
 
   /**

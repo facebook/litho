@@ -985,12 +985,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         || mImportantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   }
 
-  /** Crash if the given node has context specific style set. */
-  @Override
-  public void assertContextSpecificStyleNotSet() {
-    // No-Op
-  }
-
   @Override
   public boolean isLayoutDirectionInherit() {
     return mLayoutDirection == null || mLayoutDirection == YogaDirection.INHERIT;

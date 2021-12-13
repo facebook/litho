@@ -415,12 +415,6 @@ class Layout {
       layout = currentLayout;
     }
 
-    if (layout != null) {
-      // This is checking only nested tree roots however should be moved to check all the tree
-      // roots.
-      layout.getInternalNode().assertContextSpecificStyleNotSet();
-    }
-
     return layout;
   }
 
