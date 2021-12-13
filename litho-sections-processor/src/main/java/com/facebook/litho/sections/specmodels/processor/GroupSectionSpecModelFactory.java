@@ -18,6 +18,7 @@ package com.facebook.litho.sections.specmodels.processor;
 
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -36,8 +37,10 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecGenerator;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
 import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
@@ -65,11 +68,15 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 /** Factory for creating {@link GroupSectionSpecModel}s. */
 public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSectionSpecModel> {
 
   public static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
+      new ArrayList<>();
+
+  public static final List<Class<? extends Annotation>> UNSUPPORTED_METHOD_ANNOTATIONS =
       new ArrayList<>();
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
       new BuilderMethodModel(
@@ -90,6 +97,9 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
     DELEGATE_METHOD_ANNOTATIONS.add(OnViewportChanged.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
+    // Caution: If you add more methods to 'UNSUPPORTED_METHOD_ANNOTATIONS' list, make sure to
+    // update the respective error message in 'createModel' method below.
+    UNSUPPORTED_METHOD_ANNOTATIONS.add(OnCreateLayout.class);
   }
 
   private final SpecGenerator<GroupSectionSpecModel> mSpecGenerator;
@@ -126,6 +136,21 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       EnumSet<RunMode> runMode) {
+    ImmutableList<SpecMethodModel<DelegateMethod, Void>> unsupportedMethods =
+        DelegateMethodExtractor.getDelegateMethods(
+            element,
+            UNSUPPORTED_METHOD_ANNOTATIONS,
+            ImmutableList.of(),
+            ImmutableList.of(),
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            messager);
+    if (!unsupportedMethods.isEmpty()) {
+      messager.printMessage(
+          Diagnostic.Kind.ERROR,
+          "@OnCreateLayout can not be used in the @GroupSectionSpec annotated class "
+              + element.getSimpleName()
+              + ", please use @OnCreateChildren instead.");
+    }
     return new GroupSectionSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(GroupSectionSpec.class).value(),
