@@ -40,7 +40,7 @@ class KCachedTest {
   @Before
   fun setUp() {
     context = ComponentContext(getApplicationContext<Context>())
-    emptyComponent = EmptyComponent.create(context).build()
+    emptyComponent = ComponentScope(context).EmptyComponent()
   }
 
   @Test

@@ -18,6 +18,7 @@ package com.facebook.litho.sections.widget
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text
@@ -34,7 +35,8 @@ class CollectionIdTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
-  private fun emptyComponent(): Component = EmptyComponent.create(lithoViewRule.context).build()
+  private fun emptyComponent(): EmptyComponent =
+      ComponentScope(lithoViewRule.context).EmptyComponent()
 
   private fun textComponent(): Component = Text.create(lithoViewRule.context).text("Hello").build()
 
