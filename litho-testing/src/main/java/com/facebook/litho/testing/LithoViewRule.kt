@@ -132,7 +132,7 @@ constructor(
     val testLithoView = TestLithoView(context, componentsConfiguration)
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
-    widthPx?.let { heightPx?.let { testLithoView.setSizeSpecs(widthPx, heightPx) } }
+    widthPx?.let { heightPx?.let { testLithoView.setSizePx(widthPx, heightPx) } }
     componentFunction?.let {
       testLithoView.setRoot(with(ComponentScope(context)) { componentFunction() })
     }
@@ -140,8 +140,21 @@ constructor(
   }
 
   /** Sets the new root to render. */
-  fun render(componentFunction: ComponentScope.() -> Component): TestLithoView {
-    return TestLithoView(context, componentsConfiguration)
+  @JvmOverloads
+  fun render(
+      lithoView: LithoView? = null,
+      componentTree: ComponentTree? = null,
+      widthPx: Int? = null,
+      heightPx: Int? = null,
+      componentFunction: ComponentScope.() -> Component
+  ): TestLithoView {
+    val testLithoView =
+        createTestLithoViewWith(
+            lithoView = lithoView,
+            componentTree = componentTree,
+            widthPx = widthPx,
+            heightPx = heightPx)
+    return testLithoView
         .attachToWindow()
         .setRoot(with(ComponentScope(context)) { componentFunction() })
         .measure()
