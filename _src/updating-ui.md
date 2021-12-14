@@ -8,7 +8,7 @@ Conceptually, components are like pure functions. They accept arbitrary immutabl
 Components are immutable objects and the framework views the props of a component as read-only attributes. Once a component is created, its props cannot be mutated during its lifecycle without breaking the assumption that components must be immutable for [asynchronous layout](asynchronous-layout.md) to be performed safely and correctly.
 
 Of course, application UIs are dynamic and change over time as a result of network changes or user input, so you need a way of informing the framework when these changes occur. So without mutating the props, how do you update a component?
-There are two ways of updating the UI: passing new [props](props.md) or updating the internal [state](./mainconcepts/coordinate-state-actions/state-overview.md) of a component.
+There are two ways of updating the UI: passing new [props](./mainconcepts/passing-data-to-components/props.md) or updating the internal [state](./mainconcepts/coordinate-state-actions/state-overview.md) of a component.
 
 Every time something needs to be updated on screen, the framework will recreate the ComponentTree that represents the UI, which will be made up of new instances of Components created with the new data values that reflect the desired changes.
 
