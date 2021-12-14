@@ -1281,11 +1281,6 @@ public abstract class Component
     return mCommonDynamicProps;
   }
 
-  @Nullable
-  final CommonPropsCopyable getCommonPropsCopyable() {
-    return mCommonProps;
-  }
-
   /**
    * @return The error handler dispatching to either the parent component if available, or reraising
    *     the exception. Null if the component isn't initialized.

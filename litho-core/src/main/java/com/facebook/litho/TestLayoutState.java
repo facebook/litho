@@ -121,7 +121,7 @@ public class TestLayoutState {
       return null;
     }
 
-    final CommonPropsCopyable commonProps = component.getCommonPropsCopyable();
+    final CommonProps commonProps = component.getCommonProps();
     if (commonProps != null && (!isLayoutSpecWithSizeSpec(component))) {
       commonProps.copyInto(c, node);
     }

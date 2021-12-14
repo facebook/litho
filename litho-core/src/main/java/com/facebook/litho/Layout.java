@@ -269,7 +269,7 @@ class Layout {
     // 9. Copy the common props
     // Skip if resolving a layout with size spec because common props were copied in the previous
     // layout pass.
-    final CommonPropsCopyable commonProps = component.getCommonPropsCopyable();
+    final CommonProps commonProps = component.getCommonProps();
     if (commonProps != null && !(isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
       commonProps.copyInto(c, node);
     }
