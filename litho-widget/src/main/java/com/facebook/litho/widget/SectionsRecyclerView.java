@@ -27,7 +27,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
-import com.facebook.rendercore.AuditableMountContent;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -36,7 +35,7 @@ import javax.annotation.Nullable;
  * and pull-to-refresh
  */
 public class SectionsRecyclerView extends SwipeRefreshLayout
-    implements HasLithoViewChildren, ComponentsPools.LoggingMountContent, AuditableMountContent {
+    implements HasLithoViewChildren, ComponentsPools.LoggingMountContent {
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
@@ -227,34 +226,6 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
   @Override
   public void onMountContentRecycled() {
     mIsFirstLayout = true;
-  }
-
-  @Override
-  public void auditAfterOnBind() {
-    if (mRecyclerView instanceof LithoRecyclerView) {
-      ((LithoRecyclerView) mRecyclerView).auditAfterOnBind();
-    }
-  }
-
-  @Override
-  public void auditAfterOnUnbind() {
-    if (mRecyclerView instanceof LithoRecyclerView) {
-      ((LithoRecyclerView) mRecyclerView).auditAfterOnUnbind();
-    }
-  }
-
-  @Override
-  public void logError(String message, Exception e) {
-    if (mRecyclerView instanceof LithoRecyclerView) {
-      ((LithoRecyclerView) mRecyclerView).logError(message, e);
-    }
-  }
-
-  @Override
-  public void logUsage(String usageDescription) {
-    if (mRecyclerView instanceof LithoRecyclerView) {
-      ((LithoRecyclerView) mRecyclerView).logUsage(usageDescription);
-    }
   }
 
   /** Pass to a SectionsRecyclerView to do custom logging. */

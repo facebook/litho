@@ -19,24 +19,18 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import com.facebook.rendercore.AuditableMountContent;
 
 /**
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
  * RecyclerSpec}
  */
-public class LithoRecyclerView extends RecyclerView
-    implements HasPostDispatchDrawListener, AuditableMountContent {
+public class LithoRecyclerView extends RecyclerView implements HasPostDispatchDrawListener {
 
   private @Nullable TouchInterceptor mTouchInterceptor;
   private @Nullable PostDispatchDrawListener mPostDispatchDrawListener;
-
-  private boolean mIsBound = false;
-  private final StringBuilder mUsageStringBuilder = new StringBuilder();
 
   public LithoRecyclerView(Context context) {
     this(context, null);
@@ -94,46 +88,6 @@ public class LithoRecyclerView extends RecyclerView
   @Override
   public void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener) {
     mPostDispatchDrawListener = null;
-  }
-
-  @Override
-  public void auditAfterOnBind() {
-    if (mIsBound) {
-      throw new RuntimeException(
-          "LithoRecyclerView is already bound and is being bound again!"
-              + "\nUsage Log:\n"
-              + mUsageStringBuilder.toString());
-    }
-
-    mIsBound = true;
-  }
-
-  @Override
-  public void auditAfterOnUnbind() {
-    // Don't crash if already unbound here, since this might happen.
-    mIsBound = false;
-  }
-
-  @Override
-  public void logError(String message, Exception e) {
-    // ERROR: <message>: <exception message>
-    // <stack-trace line 1>
-    // <stack-trace line 2>
-    // ...
-    // <stack-trace line n>
-    mUsageStringBuilder.append("ERROR: ");
-    mUsageStringBuilder.append(message);
-    mUsageStringBuilder.append(": ");
-    mUsageStringBuilder.append(e.getMessage());
-    mUsageStringBuilder.append("\n");
-    mUsageStringBuilder.append(Log.getStackTraceString(e));
-    mUsageStringBuilder.append("\n");
-  }
-
-  @Override
-  public void logUsage(String usageDescription) {
-    mUsageStringBuilder.append(usageDescription);
-    mUsageStringBuilder.append("\n");
   }
 
   /** Allows to override {@link #onInterceptTouchEvent(MotionEvent)} behavior */
