@@ -460,10 +460,9 @@ public class LayoutStateCreateTreeTest {
 
     final InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     final NodeInfo nodeInfo = node.getOrCreateNodeInfo();
-    final CopyableLayoutProps input = component.getCommonProps().getLayoutProps();
     final LayoutProps output = spy(LayoutProps.class);
 
-    input.copyInto(output);
+    component.getCommonProps().copyLayoutProps(output);
 
     verify(output).layoutDirection(YogaDirection.INHERIT);
     verify(output).alignSelf(YogaAlign.AUTO);

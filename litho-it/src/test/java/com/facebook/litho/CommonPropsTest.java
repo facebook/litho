@@ -216,10 +216,8 @@ public class CommonPropsTest {
     mCommonProps.stateListAnimator(stateListAnimator);
 
     mCommonProps.copyInto(mComponentContext, mNode);
-    final CopyableLayoutProps input = mCommonProps.getLayoutProps();
     final LayoutProps output = spy(LayoutProps.class);
-
-    input.copyInto(output);
+    mCommonProps.copyLayoutProps(output);
 
     verify(output).layoutDirection(YogaDirection.INHERIT);
     verify(output).alignSelf(YogaAlign.AUTO);

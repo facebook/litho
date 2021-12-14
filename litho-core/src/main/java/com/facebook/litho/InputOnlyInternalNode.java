@@ -1481,9 +1481,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
           }
 
           // Copy the layout props into this InternalNode.
-          if (props.getLayoutProps() != null) {
-            props.getLayoutProps().copyInto(target);
-          }
+          props.copyLayoutProps(target);
         }
       }
     }

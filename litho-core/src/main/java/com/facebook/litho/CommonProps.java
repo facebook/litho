@@ -51,7 +51,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   private byte mPrivateFlags;
   @Nullable private OtherProps mOtherProps;
   @Nullable private NodeInfo mNodeInfo;
-  @Nullable private CopyableLayoutProps mLayoutProps;
+  @Nullable private DefaultLayoutProps mLayoutProps;
   @Nullable private Drawable mBackground;
   @Nullable private String mTestKey;
   @Nullable private Object mComponentTag;
@@ -595,8 +595,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     return mNodeInfo;
   }
 
-  public @Nullable CopyableLayoutProps getLayoutProps() {
-    return mLayoutProps;
+  void copyLayoutProps(LayoutProps layoutProps) {
+    if (mLayoutProps != null) {
+      mLayoutProps.copyInto(layoutProps);
+    }
   }
 
   public int getDefStyleAttr() {
@@ -915,7 +917,8 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
   }
 
-  public static final class DefaultLayoutProps implements CopyableLayoutProps {
+  public static final class DefaultLayoutProps
+      implements LayoutProps, Equivalence<DefaultLayoutProps> {
     private static final int PFLAG_WIDTH_IS_SET = 1 << 0;
     private static final int PFLAG_WIDTH_PERCENT_IS_SET = 1 << 1;
     private static final int PFLAG_MIN_WIDTH_IS_SET = 1 << 2;
@@ -1211,8 +1214,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       mBorderEdges.set(edge, borderWidth);
     }
 
-    @Override
-    public void copyInto(LayoutProps target) {
+    void copyInto(LayoutProps target) {
       if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
         target.widthPx(mWidthPx);
       }
@@ -1355,16 +1357,15 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     @Override
-    public boolean isEquivalentTo(CopyableLayoutProps o) {
-      if (this == o) {
+    public boolean isEquivalentTo(DefaultLayoutProps other) {
+      if (this == other) {
         return true;
       }
 
-      if (o == null) {
+      if (other == null) {
         return false;
       }
 
-      DefaultLayoutProps other = (DefaultLayoutProps) o;
       return mPrivateFlags == other.mPrivateFlags
           && mWidthPx == other.mWidthPx
           && Float.compare(other.mWidthPercent, mWidthPercent) == 0
