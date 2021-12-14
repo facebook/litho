@@ -16,6 +16,5 @@
   -->
 
 <resources>
-  <string name="app_name">Litho Sample</string>
-  <string name="name_string" description="name string for documentation example">Rohit Sharma</string>
+  <dimen name="primary_text_size">16dp</dimen>
 </resources>

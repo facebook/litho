@@ -35,6 +35,9 @@ module.exports = {
           'mainconcepts/uicomposition/mount-specs',
           'mainconcepts/uicomposition/flexbox-yoga',
         ],
+        'Passing Data To Components': [
+          'mainconcepts/passing-data-to-components/props',
+        ],
         'Coordinating State and Actions': [
           'mainconcepts/coordinate-state-actions/state-overview',
           'mainconcepts/coordinate-state-actions/hoisting-state',
@@ -221,7 +224,7 @@ module.exports = {
             'writing-components',
             'using-components',
           ],
-          'Reference': ['props', 'common-props', 'cached-values'],
+          'Reference': ['common-props', 'cached-values'],
           'Handling Events': ['events-touch-handling', 'visibility-handling'],
           'Sections': ['sections-tutorial', 'communicating-with-the-ui'],
           'Common use cases': [
