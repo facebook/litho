@@ -172,7 +172,7 @@ module.exports = {
     'Contributing to the Documentation': [
       'fb/documentation/contributing-documentation',
       'fb/documentation/formatting-tips',
-      'fb/documentation/writing-tips',
+      'fb/documentation/writing-guide',
     ]}),
     ...fbInternalOnly({
       '[Internal]': [
