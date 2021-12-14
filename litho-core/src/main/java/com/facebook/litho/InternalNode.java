@@ -355,7 +355,7 @@ public interface InternalNode extends Node<LithoRenderContext> {
    * node which will be resolved after layout calculation for components which implement {@link
    * OnCreateLayoutWithSizeSpec}.
    */
-  interface NestedTreeHolder extends InternalNode, Copyable<InternalNode> {
+  interface NestedTreeHolder extends InternalNode {
 
     /**
      * The {@link TreeProps} to to be set into the new {@link ComponentContext} before resolving the
@@ -363,6 +363,8 @@ public interface InternalNode extends Node<LithoRenderContext> {
      */
     @Nullable
     TreeProps getPendingTreeProps();
+
+    void copyInto(InternalNode node);
   }
 
   @IntDef({

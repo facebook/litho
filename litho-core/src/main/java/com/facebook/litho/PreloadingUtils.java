@@ -83,7 +83,6 @@ public class PreloadingUtils {
                         LithoLayoutData.class,
                         LayoutStateOutputIdCalculator.class,
                         Column.class,
-                        Copyable.class,
                         Edges.class,
                         Row.class,
                         InterStagePropsContainer.class,
