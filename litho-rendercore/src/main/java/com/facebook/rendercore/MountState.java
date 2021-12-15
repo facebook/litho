@@ -124,9 +124,16 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.endSection();
 
     // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is found.
-    final Locale lc = Locale.US;
-    final StringBuilder mountLoopLogBuilder = new StringBuilder();
-    mountLoopLogBuilder.append("Start of mount loop log:\n");
+    // We only want to collect logs when we're not ensuring the parent is mounted. When false,
+    // we will throw an exception that contains these logs. The StringBuilder is not needed when
+    // mEnsureParentMount is true.
+    @Nullable final StringBuilder mountLoopLogBuilder;
+    if (!mEnsureParentMounted) {
+      mountLoopLogBuilder = new StringBuilder();
+      mountLoopLogBuilder.append("Start of mount loop log:\n");
+    } else {
+      mountLoopLogBuilder = null;
+    }
 
     // Starting from 1 as the RenderTreeNode in position 0 always represents the root which is
     // handled in prepareMount()
@@ -198,13 +205,15 @@ public class MountState implements MountDelegateTarget {
         }
       }
 
-      mountLoopLogBuilder.append(
-          String.format(
-              lc,
-              "Processing index %d: isMountable = %b, isMounted = %b\n",
-              i,
-              isMountable,
-              isMounted));
+      if (!mEnsureParentMounted) {
+        mountLoopLogBuilder.append(
+            String.format(
+                Locale.US,
+                "Processing index %d: isMountable = %b, isMounted = %b\n",
+                i,
+                isMountable,
+                isMounted));
+      }
 
       if (!isMountable) {
         if (isMounted) {
