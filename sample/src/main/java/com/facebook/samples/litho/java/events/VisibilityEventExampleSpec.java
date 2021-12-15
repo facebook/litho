@@ -86,4 +86,4 @@ class VisibilityEventExampleSpec {
         "The component's visible size is " + visibleHeight + "h" + visibleWidth + "w");
   }
 }
-// end_example_0
+// end_example
