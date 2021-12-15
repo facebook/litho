@@ -659,7 +659,8 @@ public class TransitionsExtension
     final MountDelegateTarget mountTarget = getMountTarget(extensionState);
     int mountItemCount = mountTarget.getRenderUnitCount();
     final TransitionsExtensionState state = extensionState.getState();
-    if (state.mLastTransitionsExtensionInput == null || mountItemCount == 0) {
+    final TransitionsExtensionInput lastInput = state.mLastTransitionsExtensionInput;
+    if (lastInput == null || mountItemCount == 0) {
       return;
     }
 
@@ -674,8 +675,7 @@ public class TransitionsExtension
       // if any of this disappearing item's parents are unmounted, mount them now
       mountParentIndicesIfNeeded(index, extensionState);
 
-      final int lastDescendantIndex =
-          findLastDescendantIndex(state.mLastTransitionsExtensionInput, index);
+      final int lastDescendantIndex = findLastDescendantIndex(lastInput, index);
 
       // iterate over disappearing item and all its descendants, ensure they are mounted, and
       // add them to the locked disappearing mount items map.
@@ -686,8 +686,7 @@ public class TransitionsExtension
         final RenderUnit renderUnit = node.getRenderUnit();
 
         state.mLockedDisappearingMountitems.put(
-            renderUnit,
-            state.mLastTransitionsExtensionInput.getAnimatableItem(node.getRenderUnit().getId()));
+            renderUnit, lastInput.getAnimatableItem(node.getRenderUnit().getId()));
       }
 
       // Reference to the root of the disappearing subtree
@@ -704,11 +703,11 @@ public class TransitionsExtension
           remountAtEndOfHost
               ?
               // Ensure index is at end of host for both the incoming and outgoing frame.
-              // This means either the mount-item-count of the root in the outgoing frame,
+              // This means either the child count of the root in the outgoing frame,
               // or the child count of the root in the incoming frame. Whichever is greater.
               Math.max(
-                  mountTarget.getRootItem().getHost().getMountItemCount(),
-                  newTransitionsExtensionInput.getMountableOutputAt(0).getChildrenCount())
+                  getMountableOutputCountOfRoot(lastInput),
+                  getMountableOutputCountOfRoot(newTransitionsExtensionInput))
               : index;
 
       // Moving item to the root if needed.
@@ -722,6 +721,14 @@ public class TransitionsExtension
       // set the index to the last descendant index + 1
       index = lastDescendantIndex + 1;
     }
+  }
+
+  private static int getMountableOutputCountOfRoot(final TransitionsExtensionInput input) {
+    if (input.getMountableOutputAt(0) == null) {
+      return 0;
+    }
+
+    return input.getMountableOutputAt(0).getChildrenCount();
   }
 
   private static void unmountDisappearingItem(
