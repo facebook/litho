@@ -46,6 +46,7 @@ module.exports = {
           'mainconcepts/coordinate-state-actions/trigger-events',
           'mainconcepts/coordinate-state-actions/treeprops',
           'mainconcepts/coordinate-state-actions/componenttree',
+          'mainconcepts/coordinate-state-actions/visibility-handling',
         ],
         'Handling User Interactions': [],
       },
@@ -225,7 +226,7 @@ module.exports = {
             'using-components',
           ],
           'Reference': ['common-props', 'cached-values'],
-          'Handling Events': ['events-touch-handling', 'visibility-handling'],
+          'Handling Events': ['events-touch-handling'],
           'Sections': ['sections-tutorial', 'communicating-with-the-ui'],
           'Common use cases': [
             'updating-ui',

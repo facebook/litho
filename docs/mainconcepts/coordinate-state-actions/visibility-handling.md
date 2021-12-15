@@ -3,20 +3,23 @@ id: visibility-handling
 title: Visibility Handling
 ---
 
-### Types of Visibility Range
+Litho provides predefined APIs to support a range of use cases where components
+require callbacks when the on-screen position relative to the visible view port changes.
 
-The framework currently supports six types of Visibility Event:
+### Types of Visibility Callbacks
 
-- [Visible Event](pathname:///javadoc/com/facebook/litho/VisibleEvent.html): this event is triggered when at least one pixel of the Component is visible.
-- [Invisible Event](pathname:///javadoc/com/facebook/litho/InvisibleEvent.html): this event is triggered when the Component no longer has any pixels on the screen.
-- [Focused Visible Event](pathname:///javadoc/com/facebook/litho/FocusedVisibleEvent.html): this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
-- [Unfocused Visible Event](pathname:///javadoc/com/facebook/litho/UnfocusedVisibleEvent.html): this event is triggered when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.
-- [Full Impression Visible Event](pathname:///javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): If the Component is smaller than the viewport, this event is triggered when the entire Component is visible in the viewport. If the Component is bigger than the viewport, then just covering the viewport won't trigger the event. It will be triggered when all the edges have passed through the viewport once.
-- [VisibilityChangedEvent](pathname:///javadoc/com/facebook/litho/VisibilityChangedEvent.html): this event is triggered when the visibility of the Component on the screen changes.
+The framework currently supports six types of Visibility callbacks:
+
+- [Visible](pathname:///javadoc/com/facebook/litho/VisibleEvent.html): Invoked when at least one pixel of the Component is visible.
+- [Invisible](pathname:///javadoc/com/facebook/litho/InvisibleEvent.html): Invoked when the Component no longer has any pixels on the screen.
+- [Focused Visible](pathname:///javadoc/com/facebook/litho/FocusedVisibleEvent.html): Invoked when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
+- [Unfocused Visible](pathname:///javadoc/com/facebook/litho/UnfocusedVisibleEvent.html): Invoked when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.
+- [Full Impression Visible Event](pathname:///javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): If the Component is smaller than the viewport, this callback is invoked when the entire Component is visible in the viewport. If the Component is bigger than the viewport, then just covering the viewport won't invoke this callback: it will be invoked when all the edges have passed through the viewport once.
+- [Visibility Changed](pathname:///javadoc/com/facebook/litho/VisibilityChangedEvent.html): Invoked everytime the bounds of the Component changes.
 
 ### Usage
 
-To register visibility event handlers for a component you can follow the same [steps](/docs/mainconcepts/coordinate-state-actions/events) as for setting any other event handler.
+* **Java API:** To register visibility callbacks for a component you can follow the same [steps](/docs/mainconcepts/coordinate-state-actions/events) as for setting any other event handler.
 
 Here is an example:
 
@@ -79,12 +82,12 @@ class MyLayoutSpec {
 ```
 
 :::info
-VisibilityChangedEvents should be used with particular care since they will be dispatched on every frame while scrolling. No heavy work should be done inside the VisibilityChangedEvents handlers. Visible, Invisible, Focused, Unfocused and Full Impression events are the recommended over VisibilityChanged events whenever possible.
+VisibilityChangedEvents should be used with particular care since they will be invoked on every frame while scrolling. No heavy work should be done inside the VisibilityChangedEvents callback. Visible, Invisible, Focused, Unfocused and Full Impression are recommended over VisibilityChanged whenever possible.
 :::
 
 ### Custom visibility percentage
-By default, `VisibleEvent` is triggered when at least 1 pixel of the Component is visible. In some cases you may want to listen to custom visibility events and perform an action when the Component is only partially visible.
-You can specify a ratio of the Component width or height for when the visibility event is dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
+By default, `VisibleEvent` is triggered when at least 1 pixel of the Component is visible. In some cases you may want to listen to custom visibility changes, and perform an action when the Component is only partially visible.
+You can specify a ratio of the Component width or height for the visibility callback to be dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
 
 ```java
 @OnCreateLayout
