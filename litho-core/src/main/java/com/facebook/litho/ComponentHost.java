@@ -479,6 +479,28 @@ public class ComponentHost extends Host implements DisappearingHost {
     if (item == null) {
       return;
     }
+
+    // Check if we're trying to move a mount item from a place where it doesn't exist.
+    // If so, fail early and throw exception with description.
+    if (isIllegalMountItemMove(item, oldIndex)) {
+      final String givenMountItemDescription = item.getRenderTreeNode().generateDebugString(null);
+      final MountItem existingMountItem = mMountItems.get(oldIndex);
+      final String existingMountItemDescription =
+          existingMountItem != null
+              ? existingMountItem.getRenderTreeNode().generateDebugString(null)
+              : "null";
+
+      throw new IllegalStateException(
+          "Attempting to move MountItem from index: "
+              + oldIndex
+              + " to index: "
+              + newIndex
+              + ", but given MountItem does not exist at provided old index.\nGiven MountItem: "
+              + givenMountItemDescription
+              + "\nExisting MountItem at old index: "
+              + existingMountItemDescription);
+    }
+
     maybeMoveTouchExpansionIndexes(item, oldIndex, newIndex);
 
     final Object content = item.getContent();
@@ -509,6 +531,17 @@ public class ComponentHost extends Host implements DisappearingHost {
     ComponentHostUtils.moveItem(oldIndex, newIndex, mMountItems, mScrapMountItemsArray);
 
     releaseScrapDataStructuresIfNeeded();
+  }
+
+  private boolean isIllegalMountItemMove(MountItem mountItem, int moveFromIndex) {
+    // If the mount item exists at the given index in the mount items array, this is a legal move.
+    if (mMountItems != null && mountItem == mMountItems.get(moveFromIndex)) {
+      return false;
+    }
+
+    // If the mount item exists at the given index in the scrap array, this is a legal move.
+    // Otherwise, it is illegal.
+    return mScrapMountItemsArray == null || mountItem != mScrapMountItemsArray.get(moveFromIndex);
   }
 
   /**
