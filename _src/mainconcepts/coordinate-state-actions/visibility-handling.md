@@ -6,7 +6,7 @@ title: Visibility Handling
 Litho provides predefined APIs to support a range of use cases where components
 require callbacks when the on-screen position relative to the visible view port changes.
 
-### Types of Visibility Callbacks
+## Types of Visibility Callbacks
 
 The framework currently supports six types of Visibility callbacks:
 
@@ -17,68 +17,19 @@ The framework currently supports six types of Visibility callbacks:
 - [Full Impression Visible Event](pathname:///javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): If the Component is smaller than the viewport, this callback is invoked when the entire Component is visible in the viewport. If the Component is bigger than the viewport, then just covering the viewport won't invoke this callback: it will be invoked when all the edges have passed through the viewport once.
 - [Visibility Changed](pathname:///javadoc/com/facebook/litho/VisibilityChangedEvent.html): Invoked everytime the bounds of the Component changes.
 
-### Usage
+## Usage
 
-* **Java API:** To register visibility callbacks for a component you can follow the same [steps](/docs/mainconcepts/coordinate-state-actions/events) as for setting any other event handler.
+### Java API:
 
-Here is an example:
+#### Delcaring Visibility Event Callbacks:
 
-```java
-@LayoutSpec
-class MyLayoutSpec {
+Visibility callbacks are declared like all other events in Litho. Please see the documentation for [events](/docs/mainconcepts/coordinate-state-actions/events) to learn more.
 
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
+#### Using Visibility Event handlers:
 
-    return Column.create(c)
-        .alignItems(YogaAlign.STRETCH)
-        .child(Text.create(c)
-            .text("This is MY layout spec")
-            .visibleHandler(MyLayout.onTitleVisible(c))
-            .invisibleHandler(MyLayout.onTitleInvisible(c))
-            .focusedHandler(MyLayout.onComponentFocused(c, "someStringParam"))
-            .fullImpressionHandler(MyLayout.onComponentFullImpression(c)))
-            .visibilityChangedHandler(MyLayout.onComponentVisibilityChanged(c))
-        .build();
-  }
+Visibility handlers can be set on any component. Here is a comprehensive example of its usage:
 
-  @OnEvent(VisibleEvent.class)
-  static void onTitleVisible(ComponentContext c) {
-    Log.d("VisibilityRanges", "The title entered the Visible Range");
-  }
-
-  @OnEvent(InvisibleEvent.class)
-  static void onTitleInvisible(ComponentContext c) {
-    Log.d("VisibilityRanges", "The title is no longer visible");
-  }
-
-  @OnEvent(FocusedVisibleEvent.class)
-  static void onComponentFocused(
-      ComponentContext c,
-      @Param String stringParam) {
-    Log.d(
-        "VisibilityRanges",
-        "The component is focused with param: " + stringParam);
-  }
-
-  @OnEvent(FullImpressionVisibleEvent.class)
-  static void onComponentFullImpression(ComponentContext c) {
-    Log.d("VisibilityRanges", "The component has logged a full impression");
-  }
-
-  @OnEvent(VisibilityChangedEvent.class)
-  static void onComponentVisibilityChanged(
-      ComponentContext c,
-      @FromEvent int visibleTop,
-      @FromEvent int visibleLeft,
-      @FromEvent int visibleHeight,
-      @FromEvent int visibleWidth,
-      @FromEvent float percentVisibleHeight,
-      @FromEvent float percentVisibleWidth) {
-      Log.d("VisibilityRanges", "The component visible size is " + visibleHeight + "h" + visibleWidth + "w");
-  }
-
-}
+``` java file=sample/src/main/java/com/facebook/samples/litho/java/events/VisibilityEventExampleSpec.java start=start_example end=end_example
 ```
 
 :::info
