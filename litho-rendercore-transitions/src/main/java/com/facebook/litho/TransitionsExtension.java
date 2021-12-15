@@ -42,6 +42,7 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.transitions.DisappearingHost;
+import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.utils.BoundsUtils;
@@ -729,11 +730,25 @@ public class TransitionsExtension
       final boolean isRoot) {
     final TransitionsExtensionState state = extensionState.getState();
     final Object content = mountItem.getContent();
-    if ((content instanceof Host) && !(content instanceof RootHost)) {
+
+    if (mountItem.getRenderTreeNode().getRenderUnit() instanceof TransitionRenderUnit
+        && (content instanceof Host)
+        && !(content instanceof RootHost)) {
       final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
-        unmountDisappearingItem(extensionState, contentHost.getMountItemAt(j), false);
+        try {
+          unmountDisappearingItem(extensionState, contentHost.getMountItemAt(j), false);
+        } catch (RuntimeException e) {
+          final String message =
+              "content: <cls>"
+                  + mountItem.getContent().getClass()
+                  + "</cls>\n"
+                  + "renderunit: <cls>"
+                  + mountItem.getRenderTreeNode().getRenderUnit().getClass()
+                  + "</cls>";
+          throw new RuntimeException(message, e);
+        }
       }
 
       if (contentHost.getMountItemCount() > 0) {
