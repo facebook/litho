@@ -35,9 +35,6 @@ public class TempComponentsConfigurations {
   private static final boolean originalDelegateToRenderCoreMount =
       ComponentsConfiguration.delegateToRenderCoreMount;
 
-  private static final boolean originalExtensionsWithMountDelegate =
-      ComponentsConfiguration.useExtensionsWithMountDelegate;
-
   private static final boolean originalEnsureParentMountedInRenderCore =
       ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
 
@@ -107,14 +104,6 @@ public class TempComponentsConfigurations {
 
   public static void restoreDelegateToRenderCoreMount() {
     ComponentsConfiguration.delegateToRenderCoreMount = originalDelegateToRenderCoreMount;
-  }
-
-  public static void setUseExtensionsWithMountDelegate(boolean value) {
-    ComponentsConfiguration.useExtensionsWithMountDelegate = value;
-  }
-
-  public static void restoreUseExtensionsWithMountDelegate() {
-    ComponentsConfiguration.useExtensionsWithMountDelegate = originalExtensionsWithMountDelegate;
   }
 
   public static void restoreEnsureParentMountedInRenderCoreMountState() {

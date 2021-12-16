@@ -98,39 +98,29 @@ public class AnimationTest {
   private final StateCaller mStateCaller = new StateCaller();
   private ActivityController<Activity> mActivityController;
 
-  final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
 
-  boolean mConfigUseMountDelegateTarget;
   boolean mConfigDelegateToRenderCoreMount;
 
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
+  @ParameterizedRobolectricTestRunner.Parameters(name = "delegateToRenderCoreMount={0}")
   public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, false}, {true, false}, {true, true},
-        });
+    return Arrays.asList(new Object[][] {{false}, {true}});
   }
 
-  public AnimationTest(boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
-    mUseMountDelegateTarget = useMountDelegateTarget;
+  public AnimationTest(boolean delegateToRenderCoreMount) {
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
   }
 
   @Before
   public void setUp() {
     mActivityController = Robolectric.buildActivity(Activity.class, new Intent());
-    mConfigUseMountDelegateTarget = ComponentsConfiguration.useExtensionsWithMountDelegate;
     mConfigDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
 
-    ComponentsConfiguration.useExtensionsWithMountDelegate = mUseMountDelegateTarget;
     ComponentsConfiguration.delegateToRenderCoreMount = mDelegateToRenderCoreMount;
   }
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useExtensionsWithMountDelegate = mConfigUseMountDelegateTarget;
     ComponentsConfiguration.delegateToRenderCoreMount = mConfigDelegateToRenderCoreMount;
   }
 

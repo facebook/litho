@@ -152,7 +152,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
   private void useVisibilityOutputsExtension(
       LithoView lithoView, VisibilityMountExtension visibilityOutputsExtension) {
-    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
       LithoHostListenerCoordinator lithoHostListenerCoordinator =
           Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
       lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);

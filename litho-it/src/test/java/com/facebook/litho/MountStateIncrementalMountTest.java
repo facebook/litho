@@ -143,7 +143,7 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
 
-    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
       // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
       // top.
       assertThat(child2.isMounted()).isFalse();
@@ -444,7 +444,7 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
 
-    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
       // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
       // top.
       assertThat(lifecycleTracker2.isMounted()).isFalse();
@@ -1051,14 +1051,7 @@ public class MountStateIncrementalMountTest {
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
-    verify(
-            lithoView,
-            times(
-                ComponentsConfiguration.useExtensionsWithMountDelegate
-                        && !ComponentsConfiguration.delegateToRenderCoreMount
-                    ? 2
-                    : 1))
-        .notifyVisibleBoundsChanged();
+    verify(lithoView, times(1)).notifyVisibleBoundsChanged();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
@@ -1396,7 +1389,7 @@ public class MountStateIncrementalMountTest {
     // When using Litho's inc-mount, the exiting item will be mounted twice due to an issue with
     // the calculation there. Inc-mount-ext does not have this issue.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
-        .isEqualTo(ComponentsConfiguration.useExtensionsWithMountDelegate ? 1 : 2);
+        .isEqualTo(ComponentsConfiguration.delegateToRenderCoreMount ? 1 : 2);
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);
@@ -1420,7 +1413,7 @@ public class MountStateIncrementalMountTest {
     // When using Litho's inc-mount, the item we previously expected to exit is still there, so
     // we don't expect a mount to occur.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
-        .isEqualTo(ComponentsConfiguration.useExtensionsWithMountDelegate ? 1 : 0);
+        .isEqualTo(ComponentsConfiguration.delegateToRenderCoreMount ? 1 : 0);
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);

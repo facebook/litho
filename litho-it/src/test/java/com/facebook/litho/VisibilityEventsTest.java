@@ -2027,7 +2027,7 @@ public class VisibilityEventsTest {
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    if (!ComponentsConfiguration.useExtensionsWithMountDelegate) {
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
       return ((MountState) mLithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
     }
 

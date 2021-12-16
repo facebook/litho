@@ -55,13 +55,11 @@ public class MountStateLoggingTest {
     // These tests assume ComponentsLogger usage which RenderCore MountState does not use.
     // Ensure rendercore mountstate is disabled for all these tests.
     TempComponentsConfigurations.setDelegateToRenderCoreMount(false);
-    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(false);
   }
 
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
-    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
   }
 
   @Test

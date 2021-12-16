@@ -86,7 +86,6 @@ public class MountStateTestItemTest {
 
   @Test
   public void testEndToEndExtensionsWorkWithRenderCoreMountState() {
-    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(true);
     TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
 
     final LithoView lithoView =
@@ -101,7 +100,6 @@ public class MountStateTestItemTest {
 
     LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
 
-    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
   }
 

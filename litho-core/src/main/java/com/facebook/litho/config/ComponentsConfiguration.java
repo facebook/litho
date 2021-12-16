@@ -153,8 +153,6 @@ public class ComponentsConfiguration {
    */
   public static boolean boostPerfLayoutStateFuture;
 
-  public static boolean useExtensionsWithMountDelegate = false;
-
   public static boolean delegateToRenderCoreMount = false;
 
   /**

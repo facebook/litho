@@ -107,10 +107,8 @@ public class MountStateTest {
   @Test
   public void onSetRootWithNoOutputsWithRenderCore_shouldSuccessfullyCompleteMount() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-    final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
 
     final Component root =
         Wrapper.create(mContext)
@@ -129,16 +127,13 @@ public class MountStateTest {
     mLegacyLithoViewRule.setRoot(emptyRoot);
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
   }
 
   @Test
   public void onSetRootWithSimilarComponent_MountContentShouldUsePools() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-    final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
 
     final Component root =
         Column.create(mContext)
@@ -168,16 +163,13 @@ public class MountStateTest {
     assertThat(newView).isSameAs(view);
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
   }
 
   @Test
   public void onSetRootWithDifferentComponent_MountContentPoolsShouldNoCollide() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-    final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
 
     final Component root =
         Column.create(mContext)
@@ -201,13 +193,11 @@ public class MountStateTest {
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
   }
 
   @Test
   public void onSetRootWithNullComponentWithStatelessness_shouldMountWithoutCrashing() {
     TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(true);
     TempComponentsConfigurations.setUseStatelessComponent(true);
 
     mLegacyLithoViewRule
@@ -227,14 +217,12 @@ public class MountStateTest {
     assertThat(tree.getRenderTreeNodeIndex(ROOT_HOST_ID)).isEqualTo(0);
 
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
-    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
     TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 
   @Test
   public void mountingChildForUnmountedParentInRenderCore_shouldMountWithoutCrashing() {
     TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(true);
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     TempComponentsConfigurations.setEnsureParentMountedInRenderCoreMountState(true);
 
@@ -280,7 +268,6 @@ public class MountStateTest {
     mLegacyLithoViewRule.getLithoView().getMountDelegateTarget().notifyMount(childId);
 
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
-    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
     TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
   }

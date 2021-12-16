@@ -22,24 +22,20 @@ import org.junit.runners.model.FrameworkMethod;
 public class RenderCoreMountStateTestRunConfiguration implements LithoTestRunConfiguration {
 
   private boolean defaultDelegateToRenderCore;
-  private boolean defaultUseExtensions;
   private boolean defaultEnsureParentMounted;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
     defaultDelegateToRenderCore = ComponentsConfiguration.delegateToRenderCoreMount;
-    defaultUseExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
     defaultEnsureParentMounted = ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = true;
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
     ComponentsConfiguration.delegateToRenderCoreMount = defaultDelegateToRenderCore;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = defaultUseExtensions;
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = defaultEnsureParentMounted;
   }
 }
