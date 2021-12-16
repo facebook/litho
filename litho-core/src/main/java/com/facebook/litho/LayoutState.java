@@ -37,7 +37,6 @@ import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.collection.ArraySet;
 import androidx.collection.LongSparseArray;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -142,7 +141,7 @@ public class LayoutState
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final LongSparseArray<AnimatableItem> mAnimatableItems = new LongSparseArray<>(8);
-  private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
+  private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
 
   private final Map<Integer, LithoLayoutResult> mLastMeasuredLayouts;
 
