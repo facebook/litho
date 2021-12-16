@@ -41,6 +41,13 @@ internal enum class VisibilityField {
   ON_VISIBILITY_CHANGED,
 }
 
+/** Enums for [VisibilityFloatStyleItem]. */
+@PublishedApi
+internal enum class VisibilityFloatField {
+  VISIBLE_HEIGHT_RATIO,
+  VISIBLE_WIDTH_RATIO,
+}
+
 @PublishedApi
 internal data class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
@@ -60,6 +67,18 @@ internal data class VisibilityStyleItem(val field: VisibilityField, val value: A
       VisibilityField.ON_VISIBILITY_CHANGED, ->
           commonProps.visibilityChangedHandler(
               eventHandler(value as (VisibilityChangedEvent) -> Unit))
+    }.exhaustive
+  }
+}
+
+@PublishedApi
+internal class VisibilityFloatStyleItem(val field: VisibilityFloatField, val value: Float) :
+    StyleItem {
+  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    val commonProps = component.getCommonPropsHolder()
+    when (field) {
+      VisibilityFloatField.VISIBLE_HEIGHT_RATIO -> commonProps.visibleHeightRatio(value)
+      VisibilityFloatField.VISIBLE_WIDTH_RATIO -> commonProps.visibleWidthRatio(value)
     }.exhaustive
   }
 }
@@ -104,3 +123,16 @@ inline fun Style.onFullImpression(
 inline fun Style.onVisibilityChanged(
     noinline onVisibilityChanged: (VisibilityChangedEvent) -> Unit
 ): Style = this + VisibilityStyleItem(VisibilityField.ON_VISIBILITY_CHANGED, onVisibilityChanged)
+/**
+ * Defines a ratio of the Component height for the visibility callback to be dispatched use together
+ * with [onVisible] and/or with [onInvisible].
+ */
+inline fun Style.visibleHeightRatio(visibleHeightRatio: Float): Style =
+    this + VisibilityFloatStyleItem(VisibilityFloatField.VISIBLE_HEIGHT_RATIO, visibleHeightRatio)
+
+/**
+ * Defines a ratio of the Component width for the visibility callback to be dispatched use together
+ * with [onVisible] and/or with [onInvisible].
+ */
+inline fun Style.visibleWidthRatio(visibleWidthRatio: Float): Style =
+    this + VisibilityFloatStyleItem(VisibilityFloatField.VISIBLE_WIDTH_RATIO, visibleWidthRatio)
