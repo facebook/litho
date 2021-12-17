@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.treeprops
+package com.facebook.samples.litho.documentation.treeprops
 
-import android.graphics.Typeface
+import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.TreePropProvider
 import com.facebook.litho.getTreeProp
-import com.facebook.litho.widget.Text
 
-class TreePropsChildComponent : KComponent() {
+// start_example
+class TopGroupKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    // using_tree_prop_start
-    val color = getTreeProp<Int>()
-    val typeface = getTreeProp<Typeface>()
-    val title = getTreeProp<String>()
-    // using_tree_prop_end
-    return Text(text = title, typeface = typeface, backgroundColor = color)
+    val parentLogContext = getTreeProp<LogContext>()
+    val topGroupLogContext = LogContext.append(parentLogContext, "top")
+
+    return TreePropProvider(LogContext::class.java to topGroupLogContext) {
+      Column {
+        child(LeafKComponent())
+        child(BottomGroupKComponent())
+      }
+    }
   }
 }
+// end_example

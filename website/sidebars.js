@@ -37,6 +37,7 @@ module.exports = {
         ],
         'Passing Data To Components': [
           'mainconcepts/passing-data-to-components/props',
+          'mainconcepts/passing-data-to-components/treeprops',
         ],
         'Coordinating State and Actions': [
           'mainconcepts/coordinate-state-actions/state-overview',
@@ -44,7 +45,6 @@ module.exports = {
           'mainconcepts/coordinate-state-actions/events',
           'mainconcepts/coordinate-state-actions/communicating-between-components',
           'mainconcepts/coordinate-state-actions/trigger-events',
-          'mainconcepts/coordinate-state-actions/treeprops',
           'mainconcepts/coordinate-state-actions/componenttree',
           'mainconcepts/coordinate-state-actions/visibility-handling',
         ],

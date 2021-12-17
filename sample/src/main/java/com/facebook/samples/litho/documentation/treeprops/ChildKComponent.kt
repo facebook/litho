@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.treeprops
+package com.facebook.samples.litho.documentation.treeprops
 
-import android.graphics.Typeface
+import android.net.Uri
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.getTreeProp
 import com.facebook.litho.widget.Text
 
-class TreePropsChildComponent : KComponent() {
+// start_example
+class ChildKComponent(private val imageUri: Uri) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    // using_tree_prop_start
-    val color = getTreeProp<Int>()
-    val typeface = getTreeProp<Typeface>()
-    val title = getTreeProp<String>()
-    // using_tree_prop_end
-    return Text(text = title, typeface = typeface, backgroundColor = color)
+  override fun ComponentScope.render(): Component {
+    val prefetcher = getTreeProp<Prefetcher>()
+
+    prefetcher?.prefetch(imageUri)
+    // ...
+    return Text("Prefetch image when this component is created")
   }
 }
+// end_example

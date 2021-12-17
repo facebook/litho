@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.treeprops
+package com.facebook.samples.litho.documentation.treeprops;
 
-import android.graphics.Typeface
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentScope
-import com.facebook.litho.KComponent
-import com.facebook.litho.getTreeProp
-import com.facebook.litho.widget.Text
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.widget.Text;
 
-class TreePropsChildComponent : KComponent() {
-
-  override fun ComponentScope.render(): Component? {
-    // using_tree_prop_start
-    val color = getTreeProp<Int>()
-    val typeface = getTreeProp<Typeface>()
-    val title = getTreeProp<String>()
-    // using_tree_prop_end
-    return Text(text = title, typeface = typeface, backgroundColor = color)
+// start_example
+@LayoutSpec
+public class LeafComponentSpec {
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c, @TreeProp LogContext parentLogContext) {
+    return Text.create(c).text(LogContext.append(parentLogContext, "leaf").toString()).build();
   }
 }
+// end_example
