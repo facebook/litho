@@ -111,6 +111,7 @@ import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
+import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 
 class Demos {
@@ -215,6 +216,12 @@ class Demos {
                             SingleDemo(
                                 name = "[KComponent] Error Boundaries",
                                 klass = ErrorHandlingKotlinActivity::class.java))),
+                    DemoGrouping(
+                        name = "State",
+                        listOf(
+                            SingleDemo(
+                                name = "Updating State<T> from child component",
+                                component = StateParentChildComponent()))),
                     DemoGrouping(
                         name = "Common Props",
                         listOf(
