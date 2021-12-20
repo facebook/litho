@@ -1768,8 +1768,11 @@ public abstract class Component
 
   static boolean isNestedTree(
       final LayoutStateContext layoutStateContext, @Nullable Component component) {
-    return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.hasCachedLayout(layoutStateContext)));
+    return isLayoutSpecWithSizeSpec(component);
+  }
+
+  static boolean hasCachedLayout(final LayoutStateContext context, final Component component) {
+    return component.hasCachedLayout(context);
   }
 
   /** @return whether the given component is a pure render component. */

@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static com.facebook.litho.Component.hasCachedLayout;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
@@ -187,7 +188,9 @@ class Layout {
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution =
-          isNestedTree(layoutStateContext, component) && !resolveNestedTree;
+          (isNestedTree(layoutStateContext, component)
+                  || hasCachedLayout(layoutStateContext, component))
+              && !resolveNestedTree;
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
@@ -261,7 +264,9 @@ class Layout {
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure
-          || (isNestedTree(layoutStateContext, component) && !resolveNestedTree)) {
+          || ((isNestedTree(layoutStateContext, component)
+                  || hasCachedLayout(layoutStateContext, component))
+              && !resolveNestedTree)) {
         node.setMeasureFunction(sMeasureFunction);
       }
     }

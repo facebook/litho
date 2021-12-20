@@ -16,8 +16,12 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Component.hasCachedLayout;
+import static com.facebook.litho.Component.isNestedTree;
+
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
@@ -43,7 +47,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     final InternalNode node = result.getInternalNode();
     final LayoutStateContext layoutStateContext = result.getLayoutStateContext();
 
-    final Component component = node.getTailComponent();
+    final Component component = Preconditions.checkNotNull(node.getTailComponent());
     final ComponentContext componentScopedContext = node.getTailComponentContext();
 
     if (layoutStateContext.isLayoutReleased()) {
@@ -74,7 +78,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       int outputWidth;
       int outputHeight;
 
-      if (Component.isNestedTree(layoutStateContext, component)
+      if (isNestedTree(layoutStateContext, component)
+          || hasCachedLayout(layoutStateContext, component)
           || result instanceof NestedTreeHolderResult) {
 
         final LayoutState layoutState = layoutStateContext.getLayoutState();
