@@ -35,11 +35,7 @@ class StateParentChildComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val clicks = useState { 0 }
     return Column {
-      child(
-        ChildComponent { clickNumber ->
-          clicks.update { c -> c + clickNumber }
-        }
-      )
+      child(ChildComponent { clickNumber -> clicks.update { c -> c + clickNumber } })
       child(
           Text(
               style = Style.alignSelf(YogaAlign.CENTER).margin(vertical = 16.dp),
