@@ -338,7 +338,7 @@ class Layout {
     }
 
     final String globalKey = Preconditions.checkNotNull(node.getTailComponentKey());
-    final LithoLayoutResult currentLayout = holder.getNestedResult();
+    final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // The resolved layout to return.
     final LithoLayoutResult layout;
@@ -353,7 +353,7 @@ class Layout {
             currentLayout.getLastMeasuredHeight())) {
 
       // Check if cached layout can be used.
-      final LithoLayoutResult cachedLayout =
+      final @Nullable LithoLayoutResult cachedLayout =
           consumeCachedLayout(
               layoutStateContext, parentContext, component, holder, widthSpec, heightSpec);
 
