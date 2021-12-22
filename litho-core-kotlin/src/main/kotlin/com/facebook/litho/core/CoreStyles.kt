@@ -149,6 +149,22 @@ inline fun Style.minHeight(minHeight: Dimen): Style =
 inline fun Style.maxHeight(maxHeight: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MAX_HEIGHT, maxHeight)
 
+/** Sets a specific minimum percent width for this component when its parent lays it out. */
+inline fun Style.minWidthPercent(minWidthPercent: Float): Style =
+    this + CoreFloatStyleItem(CoreFloatField.MIN_WIDTH_PERCENT, minWidthPercent)
+
+/** Sets a specific maximum percent width for this component when its parent lays it out. */
+inline fun Style.maxWidthPercent(maxWidthPercent: Float): Style =
+    this + CoreFloatStyleItem(CoreFloatField.MAX_WIDTH_PERCENT, maxWidthPercent)
+
+/** Sets a specific minimum percent height for this component when its parent lays it out. */
+inline fun Style.minHeightPercent(minHeightPercent: Float): Style =
+    this + CoreFloatStyleItem(CoreFloatField.MIN_HEIGHT_PERCENT, minHeightPercent)
+
+/** Sets a specific maximum percent height for this component when its parent lays it out. */
+inline fun Style.maxHeightPercent(maxHeightPercent: Float): Style =
+    this + CoreFloatStyleItem(CoreFloatField.MAX_HEIGHT_PERCENT, maxHeightPercent)
+
 /** Defines padding on the component on a per-edge basis. */
 inline fun Style.padding(
     all: Dimen? = null,
