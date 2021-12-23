@@ -236,7 +236,10 @@ module.exports = {
         theme: {
           customCss: require.resolve('./src/css/custom.scss'),
         },
-        enableEditor: true,
+        enableEditor: fbContent({
+          internal: 'top',
+          external: true,
+        }),
         staticDocsProject: 'litho',
         trackingFile: 'xplat/staticdocs/WATCHED_FILES',
       },
