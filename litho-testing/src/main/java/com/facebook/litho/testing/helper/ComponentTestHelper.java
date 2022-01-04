@@ -447,8 +447,6 @@ public final class ComponentTestHelper {
   private static List<Component> extractImmediateSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
 
-    NodeConfig.sInternalNodeFactory = new TestInternalNodeFactory();
-
     ComponentTree tree = ComponentTree.create(context).build();
     ComponentContext c =
         new ComponentContext(
@@ -461,8 +459,6 @@ public final class ComponentTestHelper {
 
     InternalNode root =
         resolveImmediateSubtree(layoutStateContext, c, component, widthSpec, heightSpec);
-
-    NodeConfig.sInternalNodeFactory = null;
 
     return extractImmediateSubComponents(root);
   }
