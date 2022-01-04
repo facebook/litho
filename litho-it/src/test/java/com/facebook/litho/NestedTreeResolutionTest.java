@@ -18,12 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-import androidx.annotation.Nullable;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
@@ -37,7 +32,6 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,24 +45,6 @@ public class NestedTreeResolutionTest {
   @Before
   public void before() {
     ComponentsConfiguration.isEndToEndTestRun = true;
-    NodeConfig.sInternalNodeFactory =
-        new NodeConfig.InternalNodeFactory() {
-          @Override
-          public InternalNode create(ComponentContext c) {
-            return spy(new InputOnlyInternalNode<>(c));
-          }
-
-          @Override
-          public InternalNode.NestedTreeHolder createNestedTreeHolder(
-              ComponentContext c, @Nullable TreeProps props) {
-            return spy(new InputOnlyNestedTreeHolder(c, props));
-          }
-        };
-  }
-
-  @After
-  public void after() {
-    NodeConfig.sInternalNodeFactory = null;
   }
 
   @Test
@@ -116,9 +92,6 @@ public class NestedTreeResolutionTest {
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-
-    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-    verify(holder.getInternalNode(), times(2)).copyInto(any(InternalNode.class));
   }
 
   @Test
@@ -151,79 +124,7 @@ public class NestedTreeResolutionTest {
   }
 
   @Test
-  public void onRenderComponentWithSizeSpec_shouldTransferLayoutDirectionIfNotExplicitlySet() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
-    final RootComponentWithTreeProps component =
-        RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
-
-    final ExtraProps props = new ExtraProps();
-    props.steps = new ArrayList<>();
-
-    mLegacyLithoViewRule
-        .setTreeProp(ExtraProps.class, props)
-        .attachToWindow()
-        .setSizePx(100, 100)
-        .measure()
-        .setRoot(component)
-        .layout();
-
-    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
-
-    assertThat(root).isNotNull();
-    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
-    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-
-    assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.LTR);
-    verify(holder.getNestedResult().getInternalNode(), times(1)).layoutDirection(YogaDirection.LTR);
-  }
-
-  @Test
-  public void onRenderComponentWithSizeSpec_shouldInheritLayoutDirectionIfExplicitlySetOnParent() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
-    final RootComponentWithTreeProps component =
-        RootComponentWithTreeProps.create(c)
-            .shouldNotUpdateState(true)
-            .layoutDirection(YogaDirection.RTL)
-            .build();
-
-    final ExtraProps props = new ExtraProps();
-    props.steps = new ArrayList<>();
-
-    mLegacyLithoViewRule
-        .setTreeProp(ExtraProps.class, props)
-        .attachToWindow()
-        .setSizePx(100, 100)
-        .measure()
-        .setRoot(component)
-        .layout();
-
-    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
-
-    assertThat(root).isNotNull();
-    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
-    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-
-    assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.RTL);
-    verify(holder.getNestedResult().getInternalNode(), times(1)).layoutDirection(YogaDirection.RTL);
-  }
-
-  @Test
   public void onReRenderComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
-    final NodeConfig.InternalNodeFactory current = NodeConfig.sInternalNodeFactory;
-    NodeConfig.sInternalNodeFactory =
-        new NodeConfig.InternalNodeFactory() {
-          @Override
-          public InternalNode create(ComponentContext c) {
-            return spy(new InputOnlyInternalNode<>(c));
-          }
-
-          @Override
-          public InternalNode.NestedTreeHolder createNestedTreeHolder(
-              ComponentContext c, @Nullable TreeProps props) {
-            return spy(new InputOnlyNestedTreeHolder(c, props));
-          }
-        };
-
     final ComponentContext c = mLegacyLithoViewRule.getContext();
 
     final List<LifecycleStep.StepInfo> info_0 = new ArrayList<>();
@@ -318,27 +219,10 @@ public class NestedTreeResolutionTest {
             LifecycleStep.ON_BOUNDS_DEFINED,
             // Mount phase
             LifecycleStep.ON_BIND);
-
-    NodeConfig.sInternalNodeFactory = current;
   }
 
   @Test
   public void onReRenderSimpleComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
-    final NodeConfig.InternalNodeFactory current = NodeConfig.sInternalNodeFactory;
-    NodeConfig.sInternalNodeFactory =
-        new NodeConfig.InternalNodeFactory() {
-          @Override
-          public InternalNode create(ComponentContext c) {
-            return spy(new InputOnlyInternalNode<>(c));
-          }
-
-          @Override
-          public InternalNode.NestedTreeHolder createNestedTreeHolder(
-              ComponentContext c, @Nullable TreeProps props) {
-            return spy(new InputOnlyNestedTreeHolder(c, props));
-          }
-        };
-
     final ComponentContext c = mLegacyLithoViewRule.getContext();
 
     final List<LifecycleStep.StepInfo> info_0 = new ArrayList<>();
@@ -454,7 +338,5 @@ public class NestedTreeResolutionTest {
             // Mount phase
             LifecycleStep.ON_MOUNT, // Because shouldUpdate returns true
             LifecycleStep.ON_BIND);
-
-    NodeConfig.sInternalNodeFactory = current;
   }
 }
