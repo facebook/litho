@@ -704,7 +704,7 @@ class Layout {
               + " Component#measureMightNotCacheInternalNode.");
     }
 
-    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
+    final @Nullable LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
 
     if (cachedLayout != null) {
 
