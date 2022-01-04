@@ -355,8 +355,7 @@ class Layout {
 
       // Check if cached layout can be used.
       final @Nullable LithoLayoutResult cachedLayout =
-          consumeCachedLayout(
-              layoutStateContext, parentContext, component, holder, widthSpec, heightSpec);
+          consumeCachedLayout(layoutStateContext, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
         // Use the cached layout.
@@ -690,7 +689,6 @@ class Layout {
   @Nullable
   static LithoLayoutResult consumeCachedLayout(
       final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
       final Component component,
       final NestedTreeHolderResult holder,
       final int widthSpec,
