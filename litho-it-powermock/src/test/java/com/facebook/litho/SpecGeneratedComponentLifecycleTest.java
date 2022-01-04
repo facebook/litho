@@ -217,7 +217,6 @@ public class SpecGeneratedComponentLifecycleTest {
   @After
   public void after() {
     clearSpyNodes();
-    NodeConfig.sInternalNodeFactory = null;
   }
 
   @Test

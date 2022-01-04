@@ -30,8 +30,6 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.DefaultInternalNode;
-import com.facebook.litho.DefaultNestedTreeHolder;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
@@ -40,7 +38,6 @@ import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LayoutState;
 import com.facebook.litho.LayoutStateContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.NodeConfig;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreeProps;
@@ -622,54 +619,5 @@ public final class ComponentTestHelper {
   /** Access the shadow of the default layout thread looper for testing purposes only. */
   public static ShadowLooper getDefaultLayoutThreadShadowLooper() {
     return shadowOf(getDefaultLayoutThreadLooper());
-  }
-
-  @Deprecated
-  private static class TestDefaultInternalNode extends DefaultInternalNode {
-
-    public TestDefaultInternalNode(ComponentContext c) {
-      super(c);
-    }
-
-    @Override
-    public InternalNode child(
-        LayoutStateContext layoutContext, ComponentContext c, Component child) {
-      if (child != null) {
-        return child(TestLayoutState.newImmediateLayoutBuilder(layoutContext, getContext(), child));
-      }
-      return this;
-    }
-  }
-
-  @Deprecated
-  private static class TestNestedTreeHolder extends DefaultNestedTreeHolder {
-
-    protected TestNestedTreeHolder(ComponentContext context, @Nullable TreeProps props) {
-      super(context, props);
-    }
-
-    @Override
-    public InternalNode child(
-        LayoutStateContext layoutContext, ComponentContext c, Component child) {
-      if (child != null) {
-        return child(TestLayoutState.newImmediateLayoutBuilder(layoutContext, getContext(), child));
-      }
-      return this;
-    }
-  }
-
-  @Deprecated
-  private static class TestInternalNodeFactory implements NodeConfig.InternalNodeFactory {
-
-    @Override
-    public InternalNode create(ComponentContext c) {
-      return new TestDefaultInternalNode(c);
-    }
-
-    @Override
-    public InternalNode.NestedTreeHolder createNestedTreeHolder(
-        ComponentContext c, @Nullable TreeProps props) {
-      return new TestNestedTreeHolder(c, props);
-    }
   }
 }

@@ -156,7 +156,6 @@ public class NestedTreeResolutionPowermockTest {
   @After
   public void after() {
     clearSpyNodes();
-    NodeConfig.sInternalNodeFactory = null;
   }
 
   @Test

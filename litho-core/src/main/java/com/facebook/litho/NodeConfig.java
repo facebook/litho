@@ -28,21 +28,11 @@ public class NodeConfig {
     YogaNode create(YogaConfig config);
   }
 
-  public interface InternalNodeFactory {
-    InternalNode create(ComponentContext componentContext);
-
-    InternalNode.NestedTreeHolder createNestedTreeHolder(
-        ComponentContext c, @Nullable TreeProps props);
-  }
-
   /**
    * Custom factory for Yoga nodes. Used to enable direct byte buffers to set Yoga style properties
    * (rather than JNI)
    */
   public static volatile @Nullable InternalYogaNodeFactory sYogaNodeFactory;
-
-  /** Factory to create custom InternalNodes for Components. */
-  public static volatile @Nullable InternalNodeFactory sInternalNodeFactory;
 
   private static final YogaConfig sYogaConfig = LithoYogaFactory.createYogaConfig();
 
