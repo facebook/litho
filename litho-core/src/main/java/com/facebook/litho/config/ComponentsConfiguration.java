@@ -281,6 +281,8 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUsePositionInParentForMounting = false;
 
+  public static boolean canRemeasureCachedLayouts = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

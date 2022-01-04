@@ -24,6 +24,7 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
+import static com.facebook.litho.config.ComponentsConfiguration.canRemeasureCachedLayouts;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -580,23 +581,18 @@ class Layout {
   }
 
   @VisibleForTesting
-  static void remeasure(
+  static LithoLayoutResult remeasure(
       final LayoutStateContext layoutStateContext,
-      final @Nullable LithoLayoutResult layout,
+      final LithoLayoutResult layout,
       final int widthSpec,
-      final int heightSpec,
-      final @Nullable LithoLayoutResult current) {
-    if (layout == null) {
-      return;
-    }
-
-    measure(
+      final int heightSpec) {
+    return measure(
         layoutStateContext,
         layout.getContext(),
         layout.getInternalNode(),
         widthSpec,
         heightSpec,
-        current,
+        null,
         layout.getDiffNode());
   }
 
@@ -728,8 +724,12 @@ class Layout {
               cachedLayout.getLastMeasuredHeight());
 
       // Transfer the cached layout to the node it if it's compatible.
-      if (isFromCurrentLayout && hasValidDirection && hasCompatibleSizeSpec) {
-        return cachedLayout;
+      if (isFromCurrentLayout && hasValidDirection) {
+        if (hasCompatibleSizeSpec) {
+          return cachedLayout;
+        } else if (canRemeasureCachedLayouts && !isLayoutSpecWithSizeSpec(component)) {
+          return remeasure(layoutStateContext, cachedLayout, widthSpec, heightSpec);
+        }
       }
     }
 
