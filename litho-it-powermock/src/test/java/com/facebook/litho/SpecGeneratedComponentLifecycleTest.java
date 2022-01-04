@@ -26,19 +26,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.Component.MountType;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNodeFactory;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -47,6 +52,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 @PrepareForTest({
   DiffNode.class,
   Layout.class,
+  InternalNodeUtils.class,
 })
 @PowerMockIgnore({
   "org.mockito.*",
@@ -65,6 +71,7 @@ public class SpecGeneratedComponentLifecycleTest {
   private static final int A_WIDTH = 12;
   private int mNestedTreeWidthSpec;
   private int mNestedTreeHeightSpec;
+  private static final int NODE_LIST_SIZE = 100;
 
   private DefaultLayoutResult mResult;
   private InputOnlyInternalNode mNode;
@@ -74,23 +81,93 @@ public class SpecGeneratedComponentLifecycleTest {
   private ComponentTree mComponentTree;
   private boolean mPreviousOnErrorConfig;
   private LayoutStateContext mLayoutStateContext;
+  private final List<InputOnlyInternalNode> mInputOnlyInternalNodes =
+      new ArrayList<>(NODE_LIST_SIZE);
+  private final List<InputOnlyNestedTreeHolder> mInputOnlyNestedTreeHolders =
+      new ArrayList<>(NODE_LIST_SIZE);
+  private int mNextInputOnlyInternalNode;
+  private int mNextInputOnlyNestedTreeHolder;
+
+  private InputOnlyInternalNode getNextInputOnlyInternalNode() {
+    if (mNextInputOnlyInternalNode >= NODE_LIST_SIZE) {
+      throw new IllegalStateException("Increase NODE_LIST_SIZE");
+    }
+
+    return mInputOnlyInternalNodes.get(mNextInputOnlyInternalNode++);
+  }
+
+  private InputOnlyNestedTreeHolder getNextInputOnlyNestedTreeHolder() {
+    if (mNextInputOnlyNestedTreeHolder >= NODE_LIST_SIZE) {
+      throw new IllegalStateException("Increase NODE_LIST_SIZE");
+    }
+
+    return mInputOnlyNestedTreeHolders.get(mNextInputOnlyNestedTreeHolder++);
+  }
+
+  private void createSpyNodes() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+    for (int i = 0, size = NODE_LIST_SIZE; i < size; i++) {
+      mInputOnlyInternalNodes.add(spy(new InputOnlyInternalNode(c)));
+      mInputOnlyNestedTreeHolders.add(spy(new InputOnlyNestedTreeHolder(c, null)));
+    }
+  }
+
+  private void clearSpyNodes() {
+    mInputOnlyNestedTreeHolders.clear();
+    mInputOnlyInternalNodes.clear();
+    mNextInputOnlyInternalNode = 0;
+    mNextInputOnlyNestedTreeHolder = 0;
+  }
 
   @Before
   public void setUp() {
+    createSpyNodes();
     mockStatic(Layout.class);
-    NodeConfig.sInternalNodeFactory =
-        new NodeConfig.InternalNodeFactory() {
-          @Override
-          public InternalNode create(ComponentContext componentContext) {
-            return spy(new InputOnlyInternalNode<>(componentContext));
-          }
 
-          @Override
-          public InternalNode.NestedTreeHolder createNestedTreeHolder(
-              ComponentContext c, @Nullable TreeProps props) {
-            return spy(new InputOnlyNestedTreeHolder(c, props));
-          }
-        };
+    try {
+      whenNew(InputOnlyInternalNode.class)
+          .withArguments((ComponentContext) any())
+          .thenAnswer(
+              new Answer<InputOnlyInternalNode>() {
+                @Override
+                public InputOnlyInternalNode answer(InvocationOnMock invocation) throws Throwable {
+                  final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
+                  final InputOnlyInternalNode node = getNextInputOnlyInternalNode();
+                  Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
+                  if (c.useStatelessComponent()) {
+                    Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
+                  }
+
+                  return node;
+                }
+              });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    try {
+      whenNew(InputOnlyNestedTreeHolder.class)
+          .withArguments((ComponentContext) any(), (TreeProps) any())
+          .thenAnswer(
+              new Answer<InputOnlyNestedTreeHolder>() {
+                @Override
+                public InputOnlyNestedTreeHolder answer(InvocationOnMock invocation)
+                    throws Throwable {
+                  final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
+                  final TreeProps props = (TreeProps) invocation.getArguments()[1];
+                  final InputOnlyNestedTreeHolder node = getNextInputOnlyNestedTreeHolder();
+                  Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
+                  if (c.useStatelessComponent()) {
+                    Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
+                  }
+                  Whitebox.setInternalState(node, "mPendingTreeProps", TreeProps.copy(props));
+
+                  return node;
+                }
+              });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     when(Layout.create(
             (LayoutStateContext) any(),
@@ -139,6 +216,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
   @After
   public void after() {
+    clearSpyNodes();
     NodeConfig.sInternalNodeFactory = null;
   }
 
