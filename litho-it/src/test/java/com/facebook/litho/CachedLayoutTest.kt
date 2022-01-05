@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.Conditions.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
