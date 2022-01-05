@@ -113,6 +113,7 @@ import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
+import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
 
 class Demos {
   companion object {
@@ -230,6 +231,12 @@ class Demos {
                                 component = BorderEffectsComponentKotlin()),
                             SingleDemo(
                                 name = "TreeProps", component = TreePropsExampleComponent()))),
+                    DemoGrouping(
+                        name = "Triggers",
+                        listOf(
+                            SingleDemo(
+                                name = "Tooltip Trigger",
+                                component = TooltipTriggerExampleKComponent()))),
                     DemoGrouping(
                         name = "Logging",
                         listOf(
