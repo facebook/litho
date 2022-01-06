@@ -39,7 +39,7 @@ inline class Dimen(val encodedValue: Long) {
 }
 
 /** Resolve a dimen resource ID as a [Dimen] value. */
-inline fun ComponentScope.dimenRes(@DimenRes id: Int): Dimen =
+inline fun ResourcesScope.dimenRes(@DimenRes id: Int): Dimen =
     resourceResolver.resolveDimenSizeRes(id).px
 
 /** Resolve a dimen resource ID as a [Dimen] value. */

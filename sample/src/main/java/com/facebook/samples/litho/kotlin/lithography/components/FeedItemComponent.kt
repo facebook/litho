@@ -22,6 +22,7 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
@@ -72,13 +73,13 @@ private val recyclerConfiguration =
         .snapMode(SnapUtil.SNAP_TO_CENTER)
         .build()
 
-private fun ComponentScope.imageBlock(artist: Artist): Component =
+private fun ResourcesScope.imageBlock(artist: Artist): Component =
     when (artist.images.size) {
       1 -> SingleImageComponent(imageUri = artist.images[0], imageAspectRatio = 2f)
       else -> imageRecycler(artist)
     }
 
-private fun ComponentScope.imageRecycler(artist: Artist): Component =
+private fun ResourcesScope.imageRecycler(artist: Artist): Component =
     RecyclerCollectionComponent.create(context)
         .recyclerConfiguration(recyclerConfiguration)
         .section(ImagesSection.create(SectionContext(context)).images(artist.images).build())

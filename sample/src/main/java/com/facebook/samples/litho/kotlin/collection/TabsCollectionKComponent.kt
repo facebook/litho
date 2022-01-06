@@ -21,6 +21,7 @@ import android.graphics.Typeface
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Row
 import com.facebook.litho.State
 import com.facebook.litho.Style
@@ -71,7 +72,7 @@ class TabsCollectionKComponent : KComponent() {
     }
   }
 
-  private fun ComponentScope.tabBar(selectedTab: State<Tab>): Component = Row {
+  private fun ResourcesScope.tabBar(selectedTab: State<Tab>): Component = Row {
     Tab.values().forEach { tab ->
       val isSelected = tab == selectedTab.value
       child(

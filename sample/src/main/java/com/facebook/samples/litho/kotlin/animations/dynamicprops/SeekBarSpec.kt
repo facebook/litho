@@ -19,7 +19,7 @@ package com.facebook.samples.litho.kotlin.animations.dynamicprops
 import android.content.Context
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentScope
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.annotations.MountSpec
@@ -78,7 +78,7 @@ object SeekBarSpec {
   }
 }
 
-fun ComponentScope.SeekBar(
+fun ResourcesScope.SeekBar(
     initialValue: Float = 1f,
     label: CharSequence? = null,
     style: Style? = null,

@@ -19,6 +19,7 @@ package com.facebook.samples.litho.kotlin.collection
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.State
 import com.facebook.litho.Style
 import com.facebook.litho.sections.widget.Collection
@@ -43,11 +44,11 @@ class SubCollectionsKComponent : KComponent() {
     }
   }
 
-  fun ComponentScope.header(): SubCollection {
+  private fun ResourcesScope.header(): SubCollection {
     return SubCollection { child(isSticky = true, component = Text("Header")) }
   }
 
-  fun ComponentScope.body(nestedContentVisible: State<Boolean>): SubCollection {
+  private fun ResourcesScope.body(nestedContentVisible: State<Boolean>): SubCollection {
     val nestedContent = SubCollection {
       (0..3).forEach { child(id = it, component = Text("  Nested Body Item $it")) }
     }
@@ -62,8 +63,8 @@ class SubCollectionsKComponent : KComponent() {
 }
 
 object FooterUtils {
-  fun getFooter(componentScope: ComponentScope): SubCollection {
-    with(componentScope) {
+  fun getFooter(resourcesScope: ResourcesScope): SubCollection {
+    with(resourcesScope) {
       return SubCollection { child(Text("Footer")) }
     }
   }

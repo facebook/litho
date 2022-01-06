@@ -22,6 +22,7 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
@@ -75,7 +76,7 @@ class AnimatedBadgeKotlin : KComponent() {
     }
   }
 
-  private fun ComponentScope.buildComment1(expanded: Boolean): Component =
+  private fun ResourcesScope.buildComment1(expanded: Boolean): Component =
       Column(style = Style.padding(all = 8f.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
@@ -119,7 +120,7 @@ class AnimatedBadgeKotlin : KComponent() {
         child(Text("So awesome!", textSize = 18f.dp))
       }
 
-  private fun ComponentScope.buildComment2(expanded: Boolean): Component =
+  private fun ResourcesScope.buildComment2(expanded: Boolean): Component =
       Column(style = Style.padding(all = 8f.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
         child(
             Row(alignItems = YogaAlign.CENTER) {

@@ -17,14 +17,14 @@
 package com.facebook.samples.litho.kotlin.collection
 
 import com.facebook.litho.ClickEvent
-import com.facebook.litho.ComponentScope
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 
 @Suppress("FunctionName")
-inline fun ComponentScope.Button(
+inline fun ResourcesScope.Button(
     text: String,
     noinline onClick: (ClickEvent) -> Unit,
 ): Text =

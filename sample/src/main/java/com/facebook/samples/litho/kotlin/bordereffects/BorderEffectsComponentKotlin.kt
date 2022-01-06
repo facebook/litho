@@ -53,7 +53,7 @@ class BorderEffectsComponentKotlin : KComponent() {
         disablePTR = true)
   }
 
-  private fun ComponentScope.onRender(event: RenderEvent<out Component>): RenderInfo {
+  private fun onRender(event: RenderEvent<out Component>): RenderInfo {
     return ComponentRenderInfo.create().component(event.model).build()
   }
 }

@@ -22,6 +22,7 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Row
 import com.facebook.litho.State
 import com.facebook.litho.Style
@@ -127,7 +128,7 @@ class BoundsAnimationComponent : KComponent() {
     }
   }
 
-  private fun ComponentScope.getAffectedChildren(isExpanded: State<Boolean>): Component =
+  private fun ResourcesScope.getAffectedChildren(isExpanded: State<Boolean>): Component =
       Row(
           style =
               Style.transitionKey(
@@ -169,7 +170,7 @@ class BoundsAnimationComponent : KComponent() {
                         .backgroundColor(Color.RED)))
       }
 
-  private fun ComponentScope.getAffectedSiblings(isExpanded: State<Boolean>): Component =
+  private fun ResourcesScope.getAffectedSiblings(isExpanded: State<Boolean>): Component =
       Row(
           style =
               Style.transitionKey(
@@ -202,7 +203,7 @@ class BoundsAnimationComponent : KComponent() {
                         .margin(start = 8.dp)))
       }
 
-  private fun ComponentScope.getAffectedParents(isExpanded: State<Boolean>): Component =
+  private fun ResourcesScope.getAffectedParents(isExpanded: State<Boolean>): Component =
       Row(
           justifyContent = YogaJustify.CENTER,
           style =
@@ -225,7 +226,7 @@ class BoundsAnimationComponent : KComponent() {
                         .backgroundColor(Color.YELLOW)))
       }
 
-  private fun ComponentScope.getAllTogether(isExpanded: State<Boolean>): Component =
+  private fun ResourcesScope.getAllTogether(isExpanded: State<Boolean>): Component =
       Column(
           style =
               Style.transitionKey(

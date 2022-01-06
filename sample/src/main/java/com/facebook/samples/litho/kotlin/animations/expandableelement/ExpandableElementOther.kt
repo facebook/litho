@@ -23,6 +23,7 @@ import android.graphics.drawable.shapes.OvalShape
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
@@ -55,7 +56,7 @@ class ExpandableElementOther(
         seen = seen)
   }
 
-  private fun ComponentScope.getSenderTitle(): Component =
+  private fun ResourcesScope.getSenderTitle(): Component =
       Row(
           style =
               Style.margin(all = 5.dp)

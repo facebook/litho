@@ -21,8 +21,8 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import androidx.annotation.ColorInt
 import androidx.annotation.Px
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
+import com.facebook.litho.ResourcesScope
 
 private fun RoundedRect(@ColorInt fillColor: Int, @Px cornerRadiusPx: Float): Drawable =
     ShapeDrawable(RoundRectShape(FloatArray(8) { cornerRadiusPx }, null, null)).apply {
@@ -30,12 +30,12 @@ private fun RoundedRect(@ColorInt fillColor: Int, @Px cornerRadiusPx: Float): Dr
     }
 
 /** Create a Rectangle drawable with rounded corners */
-fun ComponentScope.RoundedRect(@ColorInt fillColor: Int, cornerRadius: Dimen): Drawable =
+fun ResourcesScope.RoundedRect(@ColorInt fillColor: Int, cornerRadius: Dimen): Drawable =
     RoundedRect(fillColor, cornerRadius.toPixels(resourceResolver).toFloat())
 
 /**
  * Create a Rectangle drawable with rounded corners. Kotlin resolves numbers >= 0x80000000 as a
  * Long. This is a convenience function that accepts [fillColor] as a Long.
  */
-fun ComponentScope.RoundedRect(@ColorInt fillColor: Long, cornerRadius: Dimen): Drawable =
+fun ResourcesScope.RoundedRect(@ColorInt fillColor: Long, cornerRadius: Dimen): Drawable =
     RoundedRect(fillColor.toInt(), cornerRadius)

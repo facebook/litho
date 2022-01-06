@@ -20,6 +20,7 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -47,7 +48,7 @@ class SectionComponent(private val words: List<String>) : KComponent() {
     }
   }
 
-  private fun ComponentScope.onRender(event: RenderEvent<String>): RenderInfo {
+  private fun ResourcesScope.onRender(event: RenderEvent<String>): RenderInfo {
     return ComponentRenderInfo.create().component(Text(text = event.model)).build()
   }
 }
