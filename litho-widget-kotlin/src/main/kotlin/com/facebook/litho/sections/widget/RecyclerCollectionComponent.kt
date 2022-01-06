@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView.ItemAnimator
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.Section
@@ -40,7 +40,7 @@ import com.facebook.litho.widget.StickyHeaderControllerFactory
  * the underlying RecyclerView instead.
  */
 @Suppress("FunctionName")
-inline fun ComponentScope.RecyclerCollectionComponent(
+inline fun ResourcesScope.RecyclerCollectionComponent(
     section: Section,
     recyclerConfiguration: RecyclerConfiguration =
         RecyclerCollectionComponentSpec.recyclerConfiguration,

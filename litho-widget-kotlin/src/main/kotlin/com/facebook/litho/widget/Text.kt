@@ -23,9 +23,9 @@ import android.graphics.Typeface.NORMAL
 import android.text.TextUtils
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
@@ -39,7 +39,7 @@ const val CLIP_TO_BOUNDS = TextSpec.clipToBounds
  * auto-generated or modified to have the final set of parameters.
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ComponentScope.Text(
+inline fun ResourcesScope.Text(
     text: CharSequence?,
     style: Style? = null,
     @ColorInt textColor: Int = Color.BLACK,

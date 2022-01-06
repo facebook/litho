@@ -19,14 +19,14 @@ package com.facebook.litho.widget
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sp
 
 /** Builder function for creating [SpinnerSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ComponentScope.Spinner(
+inline fun ResourcesScope.Spinner(
     options: List<String>,
     selectedOption: String,
     @LayoutRes itemLayout: Int = android.R.layout.simple_dropdown_item_1line,

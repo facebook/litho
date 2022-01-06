@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget
 
-import com.facebook.litho.ComponentScope
+import com.facebook.litho.ResourcesScope
 
 /** A component that doesn't render anything. */
-inline fun ComponentScope.EmptyComponent(): EmptyComponent = EmptyComponent.create(context).build()
+inline fun ResourcesScope.EmptyComponent(): EmptyComponent = EmptyComponent.create(context).build()

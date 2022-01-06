@@ -21,8 +21,8 @@ import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
+import com.facebook.litho.ResourcesScope
 import kotlin.collections.Collection
 
 /**
@@ -49,7 +49,7 @@ import kotlin.collections.Collection
  * @param start Spacing at the front of the first item
  * @param end Spacing at the end of the last item
  */
-fun ComponentScope.LinearSpacing(
+fun ResourcesScope.LinearSpacing(
     all: Dimen? = null,
     between: Dimen? = null,
     start: Dimen? = null,

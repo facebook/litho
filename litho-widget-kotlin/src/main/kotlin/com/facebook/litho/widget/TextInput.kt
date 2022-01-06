@@ -23,8 +23,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.ColorInt
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
 import com.facebook.litho.kotlinStyle
@@ -32,7 +32,7 @@ import com.facebook.litho.sp
 
 /** Builder function for creating [TextInputSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ComponentScope.TextInput(
+inline fun ResourcesScope.TextInput(
     initialText: CharSequence,
     style: Style? = null,
     hint: CharSequence = "",
