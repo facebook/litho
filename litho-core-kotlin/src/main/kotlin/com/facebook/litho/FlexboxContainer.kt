@@ -30,7 +30,7 @@ import com.facebook.yoga.YogaWrap
  * ```
  */
 @Suppress("FunctionName")
-inline fun ComponentScope.Column(
+inline fun ResourcesScope.Column(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -47,7 +47,7 @@ inline fun ComponentScope.Column(
 
 /** Constructs a new [Column] without any children. */
 @Suppress("FunctionName")
-inline fun ComponentScope.Column(
+inline fun ResourcesScope.Column(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -57,7 +57,7 @@ inline fun ComponentScope.Column(
 ): Column = createColumn(alignContent, alignItems, justifyContent, wrap, isReversed, style, null)
 
 /** Internal function to allow [Column] to be inlineable. */
-fun ComponentScope.createColumn(
+fun ResourcesScope.createColumn(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -65,7 +65,7 @@ fun ComponentScope.createColumn(
     isReversed: Boolean = false,
     style: Style? = null,
     resolvedContainerScope: FlexboxContainerScope?
-) =
+): Column =
     Column(
             alignContent,
             alignItems,
@@ -85,7 +85,7 @@ fun ComponentScope.createColumn(
  * ```
  */
 @Suppress("FunctionName")
-inline fun ComponentScope.Row(
+inline fun ResourcesScope.Row(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -102,7 +102,7 @@ inline fun ComponentScope.Row(
 
 /** Constructs a new [Column] without any children. */
 @Suppress("FunctionName")
-inline fun ComponentScope.Row(
+inline fun ResourcesScope.Row(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -112,7 +112,7 @@ inline fun ComponentScope.Row(
 ): Row = createRow(alignContent, alignItems, justifyContent, wrap, isReversed, style, null)
 
 /** Internal function to allow [Row] to be inlineable. */
-fun ComponentScope.createRow(
+fun ResourcesScope.createRow(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -120,7 +120,7 @@ fun ComponentScope.createRow(
     isReversed: Boolean = false,
     style: Style? = null,
     resolvedContainerScope: FlexboxContainerScope?
-) =
+): Row =
     Row(
             alignContent,
             alignItems,
@@ -131,7 +131,7 @@ fun ComponentScope.createRow(
         .apply { style?.applyToComponent(resourceResolver, this) }
 
 /**
- * The implicit receiver for the trailing lambda on [ComponentScope.Column] or [ComponentScope.Row].
+ * The implicit receiver for the trailing lambda on [ResourcesScope.Column] or [ResourcesScope.Row].
  * The receiver gives the ability to add children to this container.
  */
 @ContainerDsl
