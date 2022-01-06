@@ -16,14 +16,19 @@
 
 package com.facebook.litho
 
+import android.content.Context
+
 /**
- * The implicit receiver for [KComponent.render] call. This class exposes the ability to use hooks,
- * like [useState], and convenience functions, like [dp].
+ * The receiver for [KComponent] methods which need to access resources and widgets like [Row], [Column], and [Text]. This
+ * class exposes the ability to
+ * access functions defined in [Resources] like [stringRes]/[drawableRes] etc.
  */
-class ComponentScope(override val context: ComponentContext) : ResourcesScope {
-  // TODO: Extract into more generic container to track hooks when needed
-  internal var useStateIndex = 0
-  internal var useCachedIndex = 0
-  internal var transitions: MutableList<Transition>? = null
-  internal var useEffectEntries: MutableList<Attachable>? = null
+interface ResourcesScope {
+  val context: ComponentContext
+  val androidContext: Context
+    get() = context.androidContext
+  val resourceResolver: ResourceResolver
+    get() = context.resourceResolver
+
+  fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
 }
