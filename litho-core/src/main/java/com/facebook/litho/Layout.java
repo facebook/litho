@@ -165,6 +165,8 @@ class Layout {
     final InternalNode node;
     final ComponentContext c;
     final String globalKey;
+    final boolean isNestedTree = isNestedTree(layoutStateContext, component);
+    final boolean hasCachedLayout = hasCachedLayout(layoutStateContext, component);
     final @Nullable ScopedComponentInfo scopedComponentInfo;
 
     try {
@@ -189,9 +191,7 @@ class Layout {
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution =
-          (isNestedTree(layoutStateContext, component)
-                  || hasCachedLayout(layoutStateContext, component))
-              && !resolveNestedTree;
+          (isNestedTree || hasCachedLayout) && !resolveNestedTree;
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
@@ -264,10 +264,7 @@ class Layout {
     // another component.
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
-      if (isMountSpecWithMeasure
-          || ((isNestedTree(layoutStateContext, component)
-                  || hasCachedLayout(layoutStateContext, component))
-              && !resolveNestedTree)) {
+      if (isMountSpecWithMeasure || ((isNestedTree || hasCachedLayout) && !resolveNestedTree)) {
         node.setMeasureFunction(sMeasureFunction);
       }
     }
