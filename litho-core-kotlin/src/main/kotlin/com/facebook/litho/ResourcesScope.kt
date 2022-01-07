@@ -19,9 +19,9 @@ package com.facebook.litho
 import android.content.Context
 
 /**
- * The receiver for [KComponent] methods which need to access resources and widgets like [Row], [Column], and [Text]. This
- * class exposes the ability to
- * access functions defined in [Resources] like [stringRes]/[drawableRes] etc.
+ * The receiver for [KComponent] methods which need to access resources and widgets like [Row],
+ * [Column], and [Text]. This class exposes the ability to access functions defined in [Resources]
+ * like [stringRes]/[drawableRes] etc.
  */
 interface ResourcesScope {
   val context: ComponentContext
