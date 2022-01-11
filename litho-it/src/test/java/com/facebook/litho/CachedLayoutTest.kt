@@ -16,12 +16,15 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.Conditions.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
+import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester
 import com.facebook.litho.widget.MountSpecLifecycleTester
+import com.facebook.litho.widget.Text
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -36,7 +39,7 @@ class CachedLayoutTest {
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   val commonAssertion =
-      fun(steps: List<LifecycleStep.StepInfo>) {
+      fun(steps: List<StepInfo>) {
         assertThat(LifecycleStep.getSteps(steps))
             .describedAs("cached layout spec should be resolved only once")
             .containsExactly(
@@ -50,7 +53,7 @@ class CachedLayoutTest {
   fun `when component has compatible cached layout it should not be recreated or remeasured`() {
 
     val tracker = LifecycleTracker()
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val steps = mutableListOf<StepInfo>()
     val sizeSpec = Size(exactly(1080), 0)
     val root = TrackingComponent(tracker, steps, sizeSpec, commonAssertion)
 
@@ -69,7 +72,7 @@ class CachedLayoutTest {
   fun `when component has incompatible cached layout it should be recreated or remeasured`() {
 
     val tracker = LifecycleTracker()
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val steps = mutableListOf<StepInfo>()
     val size = Size(exactly(200), 200)
     val root = TrackingComponent(tracker, steps, size, commonAssertion)
 
@@ -90,7 +93,7 @@ class CachedLayoutTest {
     TempComponentsConfigurations.setCanRemeasureCachedLayouts(true)
 
     val tracker = LifecycleTracker()
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val steps = mutableListOf<StepInfo>()
     val size = Size(exactly(200), 200)
     val root = TrackingComponent(tracker, steps, size, commonAssertion)
 
@@ -103,11 +106,39 @@ class CachedLayoutTest {
     TempComponentsConfigurations.restoreCanRemeasureCachedLayouts()
   }
 
+  @Test
+  fun `when component with flex has incompatible cached layout it should only be remeasured`() {
+
+    TempComponentsConfigurations.setCanRemeasureCachedLayouts(true)
+
+    val c: ComponentContext = lithoViewRule.context
+    val tracker = LifecycleTracker()
+    val steps = mutableListOf<StepInfo>()
+    val size = Size(exactly(200), 200)
+    val root =
+        Row.create(c)
+            .child(
+                LayoutWithSizeSpecLifecycleTester.create(c)
+                    .steps(mutableListOf<StepInfo>())
+                    .causeYogaRemeasure(true)
+                    .body(TrackingComponent(tracker, steps, size, commonAssertion)))
+            .child(Text.create(c).text("Hello World"))
+            .build()
+
+    lithoViewRule.render { root }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("cached layout spec should be resolved only once")
+        .containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
+
+    TempComponentsConfigurations.restoreCanRemeasureCachedLayouts()
+  }
+
   class TrackingComponent(
       private val tracker: LifecycleTracker,
-      private val steps: List<LifecycleStep.StepInfo>,
+      private val steps: List<StepInfo>,
       private val sizeSpec: Size,
-      private val assertion: ((List<LifecycleStep.StepInfo>) -> Unit)?
+      private val assertion: ((List<StepInfo>) -> Unit)?
   ) : KComponent() {
     override fun ComponentScope.render(): Component {
       val mountSpec =

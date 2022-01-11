@@ -350,56 +350,63 @@ class Layout {
             currentLayout.getLastMeasuredWidth(),
             currentLayout.getLastMeasuredHeight())) {
 
-      // Check if cached layout can be used.
-      final @Nullable LithoLayoutResult cachedLayout =
-          consumeCachedLayout(layoutStateContext, component, holder, widthSpec, heightSpec);
-
-      if (cachedLayout != null) {
-        // Use the cached layout.
-        layout = cachedLayout;
+      if (currentLayout != null
+          && canRemeasureCachedLayouts
+          && !isLayoutSpecWithSizeSpec(component)) {
+        layout = remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec);
       } else {
-        final int prevWidthSpec = parentContext.getWidthSpec();
-        final int prevHeightSpec = parentContext.getHeightSpec();
 
-        if (!parentContext.useStatelessComponent()) {
-          parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
-        }
+        // Check if cached layout can be used.
+        final @Nullable LithoLayoutResult cachedLayout =
+            consumeCachedLayout(layoutStateContext, component, holder, widthSpec, heightSpec);
 
-        // Set the size specs in ComponentContext for the nested tree
-        parentContext.setWidthSpec(widthSpec);
-        parentContext.setHeightSpec(heightSpec);
+        if (cachedLayout != null) {
+          // Use the cached layout.
+          layout = cachedLayout;
+        } else {
+          final int prevWidthSpec = parentContext.getWidthSpec();
+          final int prevHeightSpec = parentContext.getHeightSpec();
 
-        // Create a new layout.
-        final @Nullable InternalNode newNode =
-            create(layoutStateContext, parentContext, component, true, true, globalKey);
-
-        if (parentContext.useStatelessComponent()) {
-          parentContext.setWidthSpec(prevWidthSpec);
-          parentContext.setHeightSpec(prevHeightSpec);
-        }
-
-        if (newNode != null) {
-          holder.getInternalNode().copyInto(newNode);
-
-          // If the resolved tree inherits the layout direction, then set it now.
-          if (newNode.isLayoutDirectionInherit()) {
-            newNode.layoutDirection(holder.getResolvedLayoutDirection());
+          if (!parentContext.useStatelessComponent()) {
+            parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
           }
 
-          // Set the DiffNode for the nested tree's result to consume during measurement.
-          layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
+          // Set the size specs in ComponentContext for the nested tree
+          parentContext.setWidthSpec(widthSpec);
+          parentContext.setHeightSpec(heightSpec);
 
-          layout =
-              measure(
-                  layoutStateContext,
-                  parentContext,
-                  newNode,
-                  widthSpec,
-                  heightSpec,
-                  null,
-                  holder.getDiffNode());
-        } else {
-          layout = null;
+          // Create a new layout.
+          final @Nullable InternalNode newNode =
+              create(layoutStateContext, parentContext, component, true, true, globalKey);
+
+          if (parentContext.useStatelessComponent()) {
+            parentContext.setWidthSpec(prevWidthSpec);
+            parentContext.setHeightSpec(prevHeightSpec);
+          }
+
+          if (newNode != null) {
+            holder.getInternalNode().copyInto(newNode);
+
+            // If the resolved tree inherits the layout direction, then set it now.
+            if (newNode.isLayoutDirectionInherit()) {
+              newNode.layoutDirection(holder.getResolvedLayoutDirection());
+            }
+
+            // Set the DiffNode for the nested tree's result to consume during measurement.
+            layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
+
+            layout =
+                measure(
+                    layoutStateContext,
+                    parentContext,
+                    newNode,
+                    widthSpec,
+                    heightSpec,
+                    null,
+                    holder.getDiffNode());
+          } else {
+            layout = null;
+          }
         }
       }
 
