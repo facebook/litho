@@ -17,8 +17,6 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -189,7 +187,7 @@ public class ComponentKeyUtils {
       if (entry.getValue().equals(id)) {
         Object type = entry.getKey();
         if (type instanceof Class) {
-          return getComponentSimpleName(((Class<?>) type));
+          return "<cls>" + ((Class<?>) type).getName() + "</cls>";
         } else {
           return type.toString();
         }
@@ -197,24 +195,5 @@ public class ComponentKeyUtils {
     }
 
     return unresolved;
-  }
-
-  /**
-   * Since component class names are obfuscated, this utility method tries to recover from an actual
-   * instance of the Component using the {@link Component#getSimpleName()} method.
-   */
-  private static String getComponentSimpleName(Class<?> _class) {
-    try {
-      Constructor<Component> constructor = (Constructor<Component>) _class.getDeclaredConstructor();
-      constructor.setAccessible(true);
-      Component component = constructor.newInstance();
-      return component.getSimpleName();
-    } catch (ClassCastException
-        | NoSuchMethodException
-        | IllegalAccessException
-        | InstantiationException
-        | InvocationTargetException e) {
-      return "<cls>" + _class.getName() + "</cls>";
-    }
   }
 }

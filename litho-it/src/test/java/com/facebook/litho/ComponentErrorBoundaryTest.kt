@@ -346,7 +346,8 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
     assertThat(errorOutput[0].message).contains("onEventVisible crash")
     assertThat(errorOutput[0].message)
-        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+        .contains(
+            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
   }
 
   @Test
@@ -379,7 +380,8 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
     assertThat(errorOutput[0].message).contains("onEventInvisible crash")
     assertThat(errorOutput[0].message)
-        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+        .contains(
+            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
   }
 
   @Test
@@ -421,7 +423,8 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
     assertThat(errorOutput[0].message).contains("onDetached crash")
     assertThat(errorOutput[0].message)
-        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+        .contains(
+            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
   }
 
   @Test
@@ -448,7 +451,8 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
     assertThat(errorOutput[0].message).contains("onTrigger crash")
     assertThat(errorOutput[0].message)
-        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+        .contains(
+            "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
   }
 
   @Test
@@ -488,7 +492,7 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
     assertThat(errorOutput[0].message).contains("onBindDynamicValue crash")
     assertThat(errorOutput[0].message)
-        .contains("layout_stack: DynamicPropCrasher -> TestErrorBoundary")
+        .contains("layout_stack:", "DynamicPropCrasher", "->", "TestErrorBoundary")
   }
 
   @Test
@@ -603,7 +607,7 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
-          .contains("layout_stack: CrashingMountable -> TestErrorBoundary")
+          .contains("layout_stack:", "CrashingMountable", "->", "TestErrorBoundary")
     } else {
       assertThat(errorOutput[0])
           .isInstanceOf(MountPhaseException::class.java)
@@ -632,7 +636,8 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
-          .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+          .contains(
+              "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
     } else {
       assertThat(errorOutput[0])
           .isInstanceOf(RuntimeException::class.java)
@@ -679,7 +684,8 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
       assertThat(errorOutput[0].message)
-          .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+          .contains(
+              "layout_stack:", "TestCrashFromEachLayoutLifecycleMethod", "->", "TestErrorBoundary")
     } else {
       assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
