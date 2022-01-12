@@ -95,7 +95,10 @@ module.exports = {
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
 
-    'Debugging': ['debugging-tips'],
+    'Debugging': [
+        'debugging/debugging-tips',
+        'debugging/debugging-sections',
+    ],
     'Developer Tools': [
         'devtools/android-studio-plugin',
         'devtools/flipper-plugins',
