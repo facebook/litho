@@ -215,7 +215,8 @@ public class LithoMetadataExceptionWrapperTest {
   public void onClickEvent_withLogTag_showsLogTagInStack() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("log_tag: myLogTag");
-    mExpectedException.expectMessage("component_scope: OnClickCallbackComponent");
+    mExpectedException.expectMessage(
+        "component_scope: <cls>com.facebook.litho.widget.OnClickCallbackComponent</cls>");
 
     final ComponentContext c =
         new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
@@ -248,7 +249,8 @@ public class LithoMetadataExceptionWrapperTest {
   public void onTrigger_withLogTag_showsLogTagInStack() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("log_tag: myLogTag");
-    mExpectedException.expectMessage("component_scope: TriggerCallbackComponent");
+    mExpectedException.expectMessage(
+        "component_scope: <cls>com.facebook.litho.widget.TriggerCallbackComponent</cls>");
 
     final ComponentContext c =
         new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
@@ -359,7 +361,8 @@ public class LithoMetadataExceptionWrapperTest {
   @Test
   public void onMeasureCrash_showsDebugMetadata() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("component_scope: OnMeasureCallbackComponent");
+    mExpectedException.expectMessage(
+        "component_scope: <cls>com.facebook.litho.widget.OnMeasureCallbackComponent</cls>");
 
     final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
