@@ -8,15 +8,9 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-A TreeProp is a special type of [prop](props.md), which is transparently passed
-from a parent component to its children. It provides a convenient way to share
-contextual data or utilities in a tree without having to explicitly pass props
-to every component in your hierarchy.
+A TreeProp is a special type of [prop](props.md) that is transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass props to every component in your hierarchy.
 
-A good candidate, for example, is a prefetcher which fetches network images
-ahead of render time. The prefetcher is widely used since images are common. The
-prefetcher implementation might be something we define for any Component that
-needs to use it without having to pass it as prop in the entire component hierarchy.
+A good example of a TreeProp is a 'prefetcher', which fetches network images ahead of render time. Since images are commonplace, the prefetcher is widely used. The prefetcher implementation might be defined for any Component that needs to use it, without having to pass it as a prop in the entire component hierarchy.
 
 ## Declaring a TreeProp
 
@@ -29,14 +23,14 @@ needs to use it without having to pass it as prop in the entire component hierar
   ]}>
   <TabItem value="kotlin">
 
-In order to declare a TreeProp you need to use `TreePropProvider`.
+In order to declare a TreeProp you need to use `TreePropProvider`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentKComponent.kt start=start_example end=end_example
 ```
   </TabItem>
   <TabItem value="java">
 
-Each TreeProp is declared and created from a method annotated with `@OnCreateTreeProp`.
+Each TreeProp is declared and created from a method annotated with `@OnCreateTreeProp`:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentComponentSpec.java start=start_example end=end_example
 ```
@@ -66,7 +60,7 @@ The child component can access the TreeProp value through a `ComponentScope.getT
 
   <TabItem value="java">
 
-The child component can access the TreeProp value through a param annotated with `@TreeProp` that has the same type as the return type of one of the `@OnCreateTreeProp` methods defined in the ancestors of child component.
+The child component can access the TreeProp value through a parameter annotated with `@TreeProp` that has the same type as the return type of one of the `@OnCreateTreeProp` methods defined in the ancestors of child component.
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ChildComponentSpec.java start=start_example end=end_example
 ```
@@ -74,10 +68,11 @@ The child component can access the TreeProp value through a param annotated with
 </Tabs>
 
 :::caution IMPORTANT
-Once created, the TreeProp value will be passed down to all children, but will not be accessible from the component that created this TreeProp.
+Once created, the TreeProp value is passed down to all children but isn't accessible from the component that created the TreeProp.
 :::
 
-If you want to access a TreeProp from the component that created this TreeProp, you can transform it into [State](../coordinate-state-actions/state-overview.md) like this:
+If you want to access a TreeProp from the component that created it, you can transform it into [State](../coordinate-state-actions/state-overview.md) as follows:
+
 <Tabs
   groupId="tree_prop_tab_group"
   defaultValue="kotlin"
@@ -99,19 +94,18 @@ If you want to access a TreeProp from the component that created this TreeProp, 
 
 ## TreeProps with Lists
 
-TreeProps can be used in Components, Sections and Collections Kotlin API. They can even be
-modified between them. Let's consider the example of a logging data structure we
-pass down from the root component to capture information about the hierarchy.
+TreeProps can be used in Components, Sections and the Collections Kotlin API. They can even be modified between them.
+
+The following code is an example of a logging data structure that is passed down from the root component to capture information about the hierarchy.
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/LogContext.java start=start_example end=end_example
 ```
 
 :::tip
-Immutable TreeProps are easier to reason about, so try to follow that design
-pattern whenever possible.
+Immutable TreeProps are easier to understand so try to follow that design pattern whenever possible.
 :::
 
-We now create a component hierarchy that looks like this:
+The following diagram shows the component hierarchy.
 
 <img src={useBaseUrl("/images/treeprop-sections.png")} />
 
@@ -124,53 +118,48 @@ We now create a component hierarchy that looks like this:
   ]}>
   <TabItem value="kotlin">
 
-We start by setting up the `RootComponent` with the `Collection` as one of its children:
+Start by setting up the `RootComponent` with the `Collection` as one of its children:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/RootKComponent.kt start=start_example end=end_example
 ```
 
-The TopGroupKComponent takes in the root TreeProp and adds its "top" tag to it.
+The TopGroupKComponent takes in the root TreeProp and adds its `"top"` tag to it:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/TopGroupKComponent.kt start=start_example end=end_example
 ```
 
-We're omitting the bottom part here for brevity, but you can find it in the
-repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
+The bottom part here has been omitted for brevity, but you can find it in the repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
 
-The leaf node simply renders the TreeProp as text in our example case here, but
-would normally perform some sort of logging based on the context.
+The leaf node renders the TreeProp as text in the example case but would normally perform some sort of logging based on the context:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/LeafKComponent.kt start=start_example end=end_example
 ```
   </TabItem>
   <TabItem value="java">
 
-We start by setting up the `RootComponent` with the `RecyclerCollectionComponent` as one of its children:
+Start by setting up the `RootComponent` with the `RecyclerCollectionComponent` as one of its children:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/RootComponentSpec.java start=start_example end=end_example
 ```
 
-The TopGroupSection takes in the root TreeProp and adds its "top" tag to it.
+The TopGroupSection takes in the root TreeProp and adds its `"top"` tag to it:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/TopGroupSectionSpec.java start=start_example end=end_example
 ```
 
-We're omitting the bottom part here for brevity, but you can find it in the
-repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
+The bottom part has been omitted here for brevity, but you can find it in the repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
 
-The leaf node simply renders the TreeProp as text in our example case here, but
-would normally perform some sort of logging based on the context.
+The leaf node simply renders the TreeProp as text in our example case here, but would normally perform some sort of logging based on the context:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/LeafComponentSpec.java start=start_example end=end_example
 ```
   </TabItem>
 </Tabs>
 
-The result on screen will be three rows of text that read
+The on-screen result is three rows of text that read:
 
 - `"root:leaf"`
 - `"root:top:leaf"`
 - `"root:top:bottom:leaf"`
 
-This illustrates how TreeProps propagate through both component and section
-trees and can be used to selectively share information with their children.
+This illustrates how TreeProps propagate through both component and section trees and can be used to selectively share information with their children.
