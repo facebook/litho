@@ -14,16 +14,16 @@ Dynamic props are properties that are applied directly to a `View` or `Drawable`
 
 ## `DynamicValue`
 
-To control a dynamic prop you should create a `DynamicValue` and assign it to that prop. You can then keep a reference to the `DynamicValue` and use it to directly set values e.g. in a callback or an `Animator`. Use the `set()` function to set new values from the main thread. In `KComponents` a `DynamicValue` can be created using `useBinding()`.
+To control a dynamic prop, you should create a `DynamicValue` and assign it to that prop. You can then keep a reference to the `DynamicValue` and use it to directly set values (such as in a callback or an `Animator`). Use the `set()` function to set new values from the main thread. In `KComponents`, a `DynamicValue` can be created using `useBinding()`.
 
 :::caution
 `DynamicValue`s should only be updated on the main thread.
 :::
 
-
 ## Common Dynamic Props
 
 The dynamic properties that are available for all `Component`s are:
+
 * Alpha
 * Scale X/Y
 * Translation X/Y
@@ -32,7 +32,9 @@ The dynamic properties that are available for all `Component`s are:
 * Rotation
 * Elevation (from Lollipop and above)
 
-To use these, create and pass a `DynamicValue<T>` object to the component. For Spec components these props can be set in the builder:
+To use these, create and pass a `DynamicValue<T>` object to the component.
+
+For Spec components these props can be set in the builder:
 
 ```kotlin
 MyComponent.create(c).alpha(dynamicAlpha).build()
@@ -45,7 +47,7 @@ MyKComponent(style = Style.alpha(dynamicAlpha))
 
 The `DynamicValue` can be updated by calling its [`set()`](pathname:///javadoc/com/facebook/litho/DynamicValue.html#set-T-) function.
 
-In the following sample we have a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to `DynamicValue`s which are updated by two SeekBars.
+The following code sample shows a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to DynamicValue`s which are updated by two SeekBars.
 
 <Tabs
   groupId="state"
@@ -68,35 +70,36 @@ In the following sample we have a `Component` that renders a square in the middl
 
 </Tabs>
 
+The following short animation illustrates the component in action.
+
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/common_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-See the [All Common Dynamic Props](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AllCommonDynamicPropsKComponent.kt) example in the Sample app to see how other common dynamic props can be modified.
+To see how other common dynamic props can be modified, see the [All Common Dynamic Props](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AllCommonDynamicPropsKComponent.kt) example in the Sample app, which is illustrated in the following animation.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/all_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-
 ## Custom Dynamic Props for MountSpecs
 
 :::note
-`MountSpec`s are only available in the Spec api, and there is currently no equivalent in the KComponent api.
+`MountSpec`s are only available in the Spec API.  There is currently no equivalent in the KComponent API.
 :::
 
-`MountSpec`s can define custom dynamic props. Props annotaed with `@Prop(dynamic = true)` can be set to a `DynamicValue`. Setting this value will trigger a custom `@OnBindDynamicValue` function in the component.
+`MountSpec`s can define custom dynamic props. Props annotated with `@Prop(dynamic = true)` can be set to a `DynamicValue`. Setting this value will trigger a custom `@OnBindDynamicValue` function in the component.
 
-Consider a `MountSpec` that renders a clock face.
+Consider a `MountSpec` that renders a clock face:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/ClockFaceSpec.kt  start=start_example end=end_example
 ```
 
-Here the `MountSpec` delegates the drawing of a clock face to `SimpleClockView`. Marking the `time` prop with `@Prop(dynamic = true)` will cause an additional method to be generated in the builder that accepts a `DynamicValue`. The method to set a static value will also remain be available. When `set()` is called on the `DynamicValue` the `@OnBindDynamicValue` function will be executed. In this example the new time is passed to the `ClockView` to draw the updated clock face.
+Here, the `MountSpec` delegates the drawing of a clock face to `SimpleClockView`. Marking the `time` prop with `@Prop(dynamic = true)` will cause an additional method to be generated in the builder that accepts a `DynamicValue`. The method to set a static value will also remain available. When `set()` is called on the `DynamicValue`, the `@OnBindDynamicValue` function will be executed. In this example, the new time is passed to the `ClockView` to draw the updated clock face.
 
-Now we can create a slider to set the time on the clock face.
+Next, consider a slider to set the time on the clock face.
 
 <Tabs
   groupId="state"
@@ -119,17 +122,16 @@ Now we can create a slider to set the time on the clock face.
 
 </Tabs>
 
-
+This is illustrated in the following short animation.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/custom_prop_slider.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-
 ## Animating Dynamic Props
 
-Dynamic Props values can be used with Android Animators to create custom animations. In the following example we use a [`ValueAnimator`](https://developer.android.com/reference/android/animation/ValueAnimator) to animate the dynamic value `time`, defined in the previous value.
+Dynamic Props values can be used with Android Animators to create custom animations. The following example uses a [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) to animate the dynamic value `time`, defined in the previous value.
 
 <Tabs
   groupId="state"
@@ -152,12 +154,11 @@ Dynamic Props values can be used with Android Animators to create custom animati
 
 </Tabs>
 
-We create a `DynamicValue` to represent time. We pass this to the `Component` as a prop and keep a reference to it so it can be updated. In a click event we set up a ValueAnimator that updates the time `DynamicValue` each frame. We store the [`ValueAnimator`](https://developer.android.com/reference/android/animation/ValueAnimator) in a reference so that it can be canceled if necessary.
-
+A `DynamicValue` is used to represent time.  This is passed to the `Component` as a prop and kept as a reference to it so it can be updated. In a click event, a ValueAnimator is set up that updates the time `DynamicValue` each frame (see the following animation). The [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) is stored in a reference so that it can be cancelled if necessary.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/custom_prop_animation.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-For more examples of creating Animations using Common Dynamic Props, see our [Animations Cook Book](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/animations/animationcookbook) in the Sample App.
+For more examples of creating Animations using Common Dynamic Props, see the [Animations Cook Book](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/animations/animationcookbook) in the Sample App.
