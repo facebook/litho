@@ -98,6 +98,7 @@ module.exports = {
     'Debugging': [
         'debugging/debugging-tips',
         'debugging/debugging-sections',
+        ...fbInternalOnly(['debugging/fb/debugging-time-travel'])
     ],
     'Developer Tools': [
         'devtools/android-studio-plugin',
