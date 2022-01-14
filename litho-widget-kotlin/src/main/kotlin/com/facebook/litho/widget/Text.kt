@@ -21,6 +21,7 @@ import android.graphics.Typeface
 import android.graphics.Typeface.DEFAULT
 import android.graphics.Typeface.NORMAL
 import android.text.TextUtils
+import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import com.facebook.litho.Dimen
@@ -61,7 +62,7 @@ inline fun ResourcesScope.Text(
     handle: Handle? = null,
     @ColorInt backgroundColor: Int? = null,
     @ColorInt highlightColor: Int? = null,
-    @StyleRes defStyleAttr: Int = 0,
+    @AttrRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0,
 ): Text =
     Text.create(context, defStyleAttr, defStyleRes)
