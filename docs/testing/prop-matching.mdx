@@ -5,30 +5,21 @@ title: Matching @Prop
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::note
-Checkout the [getting started](unit-testing.mdx) section to setup the test environment correctly.
+:::tip Tips
+For help with setting up the Test environment, see the [Getting Started](unit-testing.mdx) page.
+
+Before learning about prop matching, it's recommended you become familiar with the [**sub-component testing**](subcomponent-testing.mdx).
 :::
 
-:::tip
-Checkout the [**sub-component testing**](subcomponent-testing.mdx) section before diving into
-prop matching.
-:::
-
-In this article, we will drill a bit deeper and explore TestSpecs as a way to test individual
-props of those components, even if we don't know all of them.
+Within this page, you'll explore TestSpecs to test individual props of Components, even if you don't know all of them.
 
 ## Complex Components
 
-Composability is one of the big strengths Litho has to offer. It allows you to
-encapsulate your logic in small components and compose them together
-effortlessly into larger ones. But despite all good efforts, sometimes there is
-no clear dividing line and your component may grow beyond its original scope.
+Composability is one of Litho's greatest strengths. It enables you to encapsulate your logic in small components and combine them effortlessly into larger ones. But, despite all good efforts, there is sometimes no clear dividing line and your component may grow beyond its original scope.
 
-Having more complex components shouldn't prevent you from using them
-confidently. That's why we have a set of powerful APIs to test your components
-no matter the size.
+Having complex components shouldn't prevent you from using them confidently. A set of powerful APIs give you the ability to test your components no matter what their size or complexity.
 
-For this example, let's consider this LayoutSpec:
+Consider the following LayoutSpec 'ComplexComponentSpec':
 
 ```java
 @LayoutSpec
@@ -49,27 +40,18 @@ public class ComplexComponentSpec {
 }
 ```
 
-### Testing complex components
+### Testing Complex Components
 
-When we look at the props of our `ComplexComponent`, we see a lot of opaque
-objects that we may have trouble getting ahold of for our tests. `StoryProps`
-might be something we obtain through some dependency injection mechanism. A
-`DraweeController` is an implementation detail we shouldn't have to worry about
-for ensuring that the component tree has the right shape.
-
-However, if you remember the `SubComponent.of` API, we need to specify all
-non-optional props for it to succeed. Let's see what this would look like:
+Within the props of the `ComplexComponentSpec`, there are a a lot of opaque objects that we may have trouble getting hold of for our tests. `StoryProps` might be something we obtain through some dependency injection mechanism. A `DraweeController` is an implementation detail we shouldn't have to worry about for ensuring that the component tree has the right shape. However, if you recall from the `SubComponent.of` API, it's necessary to specify all non-optional props for it to succeed.
 
 <img src={useBaseUrl("/images/complex-component-0.svg")} align="right" width="200px" className="white-background"/>
 
 <br />
 
-As always, we create a standard JUnit test suite and run it with a
-`RobolectricTestRunner`-compatible implementation like `LithoTestRunner`.
+To carry out the testing, you create a standard JUnit test suite and run it with a `RobolectricTestRunner`-compatible implementation like `LithoTestRunner`.
 
-For the purpose of this article, we assume that we have a `FeedItemComponent`
-that contains our `ComplexComponent`. The `FeedItemComponent` contains the logic
-for populating our complex props which we want to verify.
+As shown in the diagram to the right, assume that a `FeedItemComponent` contains the `ComplexComponent` specified above.
+The `FeedItemComponent` contains the logic for populating our complex props which we want to verify, as shown in the following code:
 
 <br clear="right" />
 <br />
@@ -93,19 +75,13 @@ public void testComplexSubComponent() {
 
 ```
 
-Sadly, this test fails with this error message:
+Sadly, this test fails with the following error message:
 
-```
-java.lang.IllegalStateException: The following props are not marked as optional
-and were not supplied: [storyProps, imageRequest, draweeController,
-titleTextSize, visiblePhotoCount]
+```bash
+java.lang.IllegalStateException: The following props are not marked as optional and were not supplied: [storyProps, imageRequest, draweeController,titleTextSize, visiblePhotoCount]
 ```
 
-But what if we can't provide these props in our tests? Or if we don't
-want to test implementation details like the image loading controller?
-
-We could simply choose not to test any props at all and decide to verify only
-the presence of our component.
+If it's not possible to provide these props in your tests, or if you we don't want to test implementation details like the image loading controller, you could simply choose not to test any props at all and decide to verify only the presence of your component:
 
 ```java
 @Test
@@ -120,46 +96,35 @@ public void testComplexSpecIsPresent() {
 }
 ```
 
-Clearly, having this test is better than nothing. In the same way that
-having some Starbucks coffee after a cross-Atlantic flight is better than no
-coffee at all ... but I digress.
-
-What if there was a way to match just _some_ of our props?
+While this type of testing is not perfect, it's better than nothing.
 
 ## Props Matching with `@TestSpec`
 
-TestSpecs allow you to match against exactly those props that you choose to
-test. Just as LayoutSpecs and MountSpecs, TestSpecs make use of the powerful
-annotation processing mechanism Java offers and generate code for you.
+TestSpecs enable you to exactly match against those props that you want to test. Just as with LayoutSpecs and MountSpecs, TestSpecs make use of the powerful annotation processing mechanism Java offers and generate code for you.
 
-We start by creating a new class as part of our testing project and link to the
-original spec we want to generate our TestSpec for.
+To start your testing project, create a new class and link it the original spec for which you want to generate the TestSpec:
 
 ```java
 @TestSpec(ComplexComponentSpec.class)
 public interface TestComplexComponentSpec {}
 ```
 
-There are a few things to note here:
+The above two lines are enough to generate a powerful 'matcher' that can be used in your tests.
 
-- The class you reference in `@TestSpec` must be a LayoutSpec or MountSpec.
-- You must link to the Spec and not the generated component, e.g.
-  `ComplexComponentSpec.class` not `ComplexComponent.class`.
-- In contrast to other specs, TestSpecs are generated from an interface, not a
-  class.
-- The interface must be empty, i.e. cannot have any members.
-- By convention, you prefix your TestSpec with `Test`, followed by the original
-  spec name.
+There are a few items of note:
 
-And that's it. Those two lines are enough to generate us a powerful matcher that
-we can use in our tests.
+* The class you reference in `@TestSpec` must be a LayoutSpec or MountSpec.
+* You must link to the Spec and not the generated component, for example, `ComplexComponentSpec.class` not `ComplexComponent.class`.
+* In contrast to other specs, TestSpecs are generated from an interface, not a class.
+* The interface must be empty: it cannot have any members.
+* By convention, you prefix your TestSpec with `Test`, followed by the original spec name.
+
+Now that the TestSpec is created, it's time to put it to use.
 
 ### Using `@TestSpec`
 
-Now that we have our TestSpec generated, let's put it into use. Where normal
-components have a `create` function, test specs come with a `matcher` function.
-It does take the same props as the underlying component but, and this won't come
-as a surprise, allows omitting non-optional props.
+Where normal components have a `create` function, test specs come with a `matcher` function.
+It does take the same props as the underlying component but enable you to omit non-optional props, as shown in the following code:
 
 ```java
 @Test
@@ -176,10 +141,9 @@ public void testComplexTestSpecProps() {
 }
 ```
 
-Obviously, this outrageous omission of puppies couldn't possibly pass the test
-run and will fail with a helpful error message:
+This omission of puppies (.shouldHavePuppies(false)) couldn't possibly pass the test run. It will fail with the following 'helpful' error message:
 
-```
+```bash
 java.lang.AssertionError:
 Expecting:
  <FeedItemComponent{0, 0 - 100, 100}
@@ -195,19 +159,14 @@ Expecting:
   FooterComponent{0, 50 - 100, 66}
     Text{8, 8 - 92, 8 text="Two Brothers"}>
 to have:
- <sub component with <Sub-component of type <ComplexComponent> with
- prop <shouldHavePuppies> is <false> (doesn't match true)>>
+ <sub component with <Sub-component of type <ComplexComponent> with prop <shouldHavePuppies> is <false> (doesn't match true)>>
 ```
 
-Here we can see a brief overview of the hierarchy we were matching against and
-the matcher that failed.
+From the error message, you can see a brief overview of the hierarchy you were matching against and the matcher that failed.
 
 ### Advanced Matchers
 
-But wait, there's more! Instead of just matching against partial props, you can
-also provide hamcrest matchers in any place that accepts concrete values. For
-props that take resource types, you can make use of all the same matchers you
-find in regular components.
+Instead of just matching against partial props, you can also provide 'hamcrest' matchers in any place that accepts concrete values. For props that take resource types, you can make use of all the same matchers you find in regular components:
 
 ```
 @Test
@@ -229,24 +188,15 @@ public void testComplexTestSpecAdvancedProps() {
 
 ### Matching Matchers
 
-There is one type of prop that requires some special treatment: components.
-While we could just match against child components via normal equality (and
-there is indeed support for this), it is not particularly helpful. We rarely
-know what exact instance of a component is passed down to the props and we face
-many of the same problems we discussed before: The props of the Component may
-not be known in full or perhaps we don't want to provide them all.
+There is one type of prop that requires some special treatment: a Component.
 
-<img src={useBaseUrl("/images/complex-component-0.svg")} align="right" width="200px" className="white-background"/>
+While you could just match against child components via normal equality (there is support for this), it is not particularly helpful. Rarely is it known what exact instance of a component is passed down to the props and you'll face many of the same problems discussed above: the props of the Component may not be known in full or perhaps you don't want to provide them all.
 
-The solution to this is obvious: We match matchers! For any prop that takes a
-Component, the TestSpec generates a matcher that takes another matcher. This
-allows for **declarative matching against entire trees of components**.
+The solution to these problems is to match matchers!
 
-For our example, let's suppose that our `FeedItemComponent` wraps the
-`ComplexComponent` in a `Card`.
+For any prop that takes a Component, the TestSpec generates a matcher that takes another matcher. This allows for **declarative matching against entire trees of components**.
 
-<br clear="right" />
-<br />
+Continuing with the given example, suppose that the `FeedItemComponent` wraps the `ComplexComponent` in a `Card`, as shown in the following code:
 
 ```java
 @Test
@@ -265,21 +215,15 @@ public void testComplexTestSpecProps() {
 }
 ```
 
-Notice the `TestCard` we use to declare our hierarchy here. The `litho-testing`
-package comes with TestSpecs for all standard Litho widgets.
+Notice the `TestCard` used to declare the hierarchy; the `litho-testing` package comes with TestSpecs for all standard Litho widgets.
 
 ## A Note on Buck
 
-If you use gradle, this should Just Work™ and shouldn't require any additional
-setup.
+If you use Gradle, it should 'just work' and shouldn't require any additional setup.
 
-With Buck or Blaze/Bazel, however, you may need some additional configuration
-for the annotation processing step to work.
+With Buck or Blaze/Bazel, you may need some additional configuration for the annotation processing step to work.
 
-In order to save you copy-pasting boilerplate all over your project, it is
-recommended keep a rule definition like this in a well-known place
-(e.g. `//tools/build_defs/android/litho_testspec.bzl`). You would obviously have to adjust
-the library paths to the corresponding targets in your code base.
+In order to save your copy-pasting boilerplate all over your project, it is recommended to keep a rule definition like this in a well-known location (such as `//tools/build_defs/android/litho_testspec.bzl`). You would obviously have to adjust the library paths to the corresponding targets in your code base.
 
 ```python
 """Provides macros for working with litho testspec."""
@@ -329,8 +273,7 @@ def litho_testspec(
   )
 ```
 
-In the definitions for your test suite, you can then create a separate target
-for your test specs:
+In the definitions for your test suite, you can then create a separate target for your test specs:
 
 ```python
 load("//buck_imports:litho_testspec.bzl", "litho_testspec")
@@ -354,23 +297,18 @@ robolectric_test(
 )
 ```
 
-This ensures that test specs are processed by the dedicated
-`ComponentsTestingProcessor`.
+This ensures that test specs are processed by the dedicated `ComponentsTestingProcessor`.
 
 ## TL;DR
 
-**Step 1**
-
-Create a TestSpec for your LayoutSpec or MountSpec.
+**Step 1** - Create a TestSpec for your LayoutSpec or MountSpec.
 
 ```java
 @TestSpec(MyLayoutSpec.class)
 public interface TestMyLayoutSpec {}
 ```
 
-**Step 2**
-
-Use the generated test matcher in your suite.
+**Step 2** - Use the generated test matcher in your suite.
 
 ```java
 @Test
