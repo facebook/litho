@@ -69,12 +69,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final @Nullable RenderTreeNode parent) {
 
     return new RenderTreeNode(
-        parent,
-        unit,
-        layoutData,
-        bounds,
-        unit.output.getViewNodeInfo() != null ? unit.output.getViewNodeInfo().getPadding() : null,
-        parent != null ? parent.getChildrenCount() : 0);
+        parent, unit, layoutData, bounds, null, parent != null ? parent.getChildrenCount() : 0);
   }
 
   static Rect getMountBounds(Rect outRect, Rect bounds, int x, int y) {
