@@ -37,6 +37,10 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   final LayoutOutput output;
   final @Nullable ComponentContext mContext;
 
+  private boolean mIsShouldUpdateCachingEnabled;
+  private boolean mIsShouldUpdateResultCached;
+  private boolean mCachedShouldUpdateResult;
+
   LithoRenderUnit(long id, LayoutOutput output, @Nullable ComponentContext context) {
     super(getRenderType(output));
     addMountUnmountExtensions(extension(this, LithoMountBinder.INSTANCE));
@@ -86,6 +90,17 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
     // Avoid recycling hosts in Litho
     return this.output.getComponent().poolSize() == 0
         || this.output.getComponent() instanceof HostComponent;
+  }
+
+  @Override
+  protected void onStartUpdateRenderUnit() {
+    mIsShouldUpdateCachingEnabled = true;
+  }
+
+  @Override
+  protected void onEndUpdateRenderUnit() {
+    mIsShouldUpdateCachingEnabled = false;
+    mIsShouldUpdateResultCached = false;
   }
 
   @Override
@@ -150,6 +165,10 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final LithoRenderUnit next,
       final @Nullable Object currentData,
       final @Nullable Object nextData) {
+    if (current.mIsShouldUpdateCachingEnabled && current.mIsShouldUpdateResultCached) {
+      return current.mCachedShouldUpdateResult;
+    }
+
     final LithoLayoutData currentLithoData = verifyAndGetLithoLayoutData(currentData);
     final LithoLayoutData nextLithoData = verifyAndGetLithoLayoutData(nextData);
 
@@ -161,14 +180,22 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
 
     final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
 
-    return MountState.shouldUpdateMountItem(
-        next.output,
-        (LithoLayoutData) nextData,
-        nextContext,
-        current.output,
-        (LithoLayoutData) currentData,
-        currentContext,
-        updateValueFromLayoutOutput);
+    final boolean result =
+        MountState.shouldUpdateMountItem(
+            next.output,
+            (LithoLayoutData) nextData,
+            nextContext,
+            current.output,
+            (LithoLayoutData) currentData,
+            currentContext,
+            updateValueFromLayoutOutput);
+
+    if (current.mIsShouldUpdateCachingEnabled && !current.mIsShouldUpdateResultCached) {
+      current.mCachedShouldUpdateResult = result;
+      current.mIsShouldUpdateResultCached = true;
+    }
+
+    return result;
   }
 
   public static class LithoMountBinder implements Binder<LithoRenderUnit, Object> {

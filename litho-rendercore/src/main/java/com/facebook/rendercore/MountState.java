@@ -885,6 +885,8 @@ public class MountState implements MountDelegateTarget {
 
     // Re initialize the MountItem internal state with the new attributes from RenderTreeNode
     currentMountItem.update(renderTreeNode);
+    
+    currentRenderUnit.onStartUpdateRenderUnit();
 
     if (currentRenderUnit != renderUnit) {
       RenderCoreSystrace.beginSection("Update Item: ", renderUnit.getDescription());
@@ -914,6 +916,8 @@ public class MountState implements MountDelegateTarget {
     if (mountDelegate != null) {
       mountDelegate.endNotifyVisibleBoundsChangedSection();
     }
+
+    currentRenderUnit.onEndUpdateRenderUnit();
 
     if (currentRenderUnit != renderUnit) {
       RenderCoreSystrace.endSection(); // UPDATE
