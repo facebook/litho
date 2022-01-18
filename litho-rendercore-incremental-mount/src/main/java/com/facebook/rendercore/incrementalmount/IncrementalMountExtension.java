@@ -330,6 +330,8 @@ public class IncrementalMountExtension
   private static void performIncrementalMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {
+    RenderCoreSystrace.beginSection("performIncrementalMount");
+    
     final IncrementalMountExtensionState state = extensionState.getState();
     final List<IncrementalMountOutput> byTopBounds = state.mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds =
@@ -439,6 +441,8 @@ public class IncrementalMountExtension
     }
 
     state.mComponentIdsMountedInThisFrame.clear();
+    
+    RenderCoreSystrace.endSection();
   }
 
   private static void setupPreviousMountableOutputData(

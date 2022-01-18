@@ -24,6 +24,7 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderCoreExtensionHost;
+import com.facebook.rendercore.RenderCoreSystrace;
 import java.util.Map;
 import java.util.Set;
 
@@ -154,6 +155,8 @@ public class RenderCoreExtension<Input, State> {
   }
 
   public static void recursivelyNotifyVisibleBoundsChanged(final @Nullable Object content) {
+    RenderCoreSystrace.beginSection("recursivelyNotifyVisibleBoundsChanged");
+    
     if (content instanceof RenderCoreExtensionHost) {
       final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
       host.notifyVisibleBoundsChanged();
@@ -164,5 +167,7 @@ public class RenderCoreExtension<Input, State> {
         recursivelyNotifyVisibleBoundsChanged(child);
       }
     }
+    
+    RenderCoreSystrace.endSection();
   }
 }

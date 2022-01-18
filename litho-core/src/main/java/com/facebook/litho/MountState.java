@@ -902,6 +902,13 @@ class MountState implements MountDelegateTarget {
       boolean useUpdateValueFromLayoutOutput,
       int componentTreeId,
       int index) {
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("updateMountItemIfNeeded");
+    }
+
     final LayoutOutput nextLayoutOutput = getLayoutOutput(node);
     final Component layoutOutputComponent = nextLayoutOutput.getComponent();
     final LayoutOutput currentLayoutOutput = getLayoutOutput(currentMountItem);
@@ -980,6 +987,10 @@ class MountState implements MountDelegateTarget {
           currentLayoutOutput.getNodeInfo());
     }
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
     return shouldUpdate;
   }
 
@@ -1042,12 +1053,21 @@ class MountState implements MountDelegateTarget {
       Component nextComponent,
       ComponentContext nextScopedContext) {
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
     try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("MountState.shouldUpdate");
+      }
       return currentComponent.shouldComponentUpdate(
           currentScopedContext, currentComponent, nextScopedContext, nextComponent);
     } catch (Exception e) {
       ComponentUtils.handle(nextScopedContext, e);
       return true;
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
@@ -1129,6 +1149,12 @@ class MountState implements MountDelegateTarget {
       return mPrepareMountStats;
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("unmountOrMoveOldItems");
+    }
+
     // Traversing from the beginning since mLayoutOutputsIds unmounting won't remove entries there
     // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
     // all its mounted children.
@@ -1190,6 +1216,10 @@ class MountState implements MountDelegateTarget {
       }
     }
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
     return mPrepareMountStats;
   }
 
@@ -1222,6 +1252,12 @@ class MountState implements MountDelegateTarget {
       final LayoutOutput layoutOutput,
       final LayoutState layoutState) {
     // 1. Resolve the correct host to mount our content to.
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("mountRenderTreeNode");
+    }
+
     final long startTime = System.nanoTime();
 
     // parent should never be null
@@ -1280,6 +1316,10 @@ class MountState implements MountDelegateTarget {
 
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(scopedContext, context.getLogger()));
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -2114,6 +2154,12 @@ class MountState implements MountDelegateTarget {
   private static void mountViewIncrementally(View view, boolean processVisibilityOutputs) {
     assertMainThread();
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("recursivelyNotifyVisibleBoundsChanged");
+    }
+
     if (view instanceof LithoView) {
       final LithoView lithoView = (LithoView) view;
       if (lithoView.isIncrementalMountEnabled()) {
@@ -2133,6 +2179,10 @@ class MountState implements MountDelegateTarget {
         final View childView = viewGroup.getChildAt(i);
         mountViewIncrementally(childView, processVisibilityOutputs);
       }
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -2573,6 +2623,12 @@ class MountState implements MountDelegateTarget {
       return;
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("MountState.bind");
+    }
+
     for (int i = 0, size = mLayoutOutputsIds.length; i < size; i++) {
       final MountItem mountItem = getItemAt(i);
       if (mountItem == null || mountItem.isBound()) {
@@ -2593,6 +2649,10 @@ class MountState implements MountDelegateTarget {
         applyBoundsToMountContent(
             view, view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), true);
       }
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -2620,6 +2680,12 @@ class MountState implements MountDelegateTarget {
     if (localVisibleRect.left != mPreviousLocalVisibleRect.left
         || localVisibleRect.right != mPreviousLocalVisibleRect.right) {
       return false;
+    }
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("performIncrementalMount");
     }
 
     final ArrayList<IncrementalMountOutput> layoutOutputTops =
@@ -2710,6 +2776,10 @@ class MountState implements MountDelegateTarget {
     }
 
     mComponentIdsMountedInThisFrame.clear();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     return true;
   }

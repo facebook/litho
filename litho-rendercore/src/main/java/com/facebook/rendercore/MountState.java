@@ -424,6 +424,8 @@ public class MountState implements MountDelegateTarget {
     if (mRenderTree == null) {
       return;
     }
+    
+    RenderCoreSystrace.beginSection("MountState.bind");
 
     for (int i = 0, size = mRenderTree.getMountableOutputCount(); i < size; i++) {
       final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
@@ -443,6 +445,8 @@ public class MountState implements MountDelegateTarget {
         BoundsUtils.applyBoundsToMountContent(mountItem.getRenderTreeNode(), view, true);
       }
     }
+    
+    RenderCoreSystrace.endSection();
   }
 
   /** Unbinds all the MountItems currently mounted on this MountState. */
@@ -451,6 +455,8 @@ public class MountState implements MountDelegateTarget {
     if (mRenderTree == null) {
       return;
     }
+
+    RenderCoreSystrace.beginSection("MountState.unbind");
 
     for (int i = 0, size = mRenderTree.getMountableOutputCount(); i < size; i++) {
       final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
@@ -466,6 +472,8 @@ public class MountState implements MountDelegateTarget {
     if (mMountDelegate != null) {
       mMountDelegate.unBind();
     }
+
+    RenderCoreSystrace.endSection();
   }
 
   @Nullable
@@ -523,6 +531,8 @@ public class MountState implements MountDelegateTarget {
    * @param previousRenderTree
    */
   private void prepareMount(@Nullable RenderTree previousRenderTree) {
+    RenderCoreSystrace.beginSection("prepareMount");
+    
     unmountOrMoveOldItems(previousRenderTree);
 
     final MountItem rootItem = mIdToMountedItemMap.get(ROOT_HOST_ID);
@@ -535,6 +545,8 @@ public class MountState implements MountDelegateTarget {
       // If root mount item is present then update it.
       updateMountItemIfNeeded(mMountDelegate, mContext, rootNode, rootItem);
     }
+    
+    RenderCoreSystrace.endSection();
   }
 
   /**
@@ -548,6 +560,8 @@ public class MountState implements MountDelegateTarget {
     if (mRenderTree == null || previousRenderTree == null) {
       return;
     }
+    
+    RenderCoreSystrace.beginSection("unmountOrMoveOldItems");
 
     // Traversing from the beginning since mRenderUnitIds unmounting won't remove entries there
     // but only from mIndexToMountedItemMap. If an host changes we're going to unmount it and
@@ -604,6 +618,8 @@ public class MountState implements MountDelegateTarget {
         }
       }
     }
+    
+    RenderCoreSystrace.endSection();
   }
 
   // The content might be null because it's the LayoutSpec for the root host
@@ -630,6 +646,8 @@ public class MountState implements MountDelegateTarget {
       mountRootItem(renderTreeNode);
       return;
     }
+    
+    RenderCoreSystrace.beginSection("mountRenderTreeNode");
 
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
@@ -670,6 +688,8 @@ public class MountState implements MountDelegateTarget {
       mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
       mMountDelegate.endNotifyVisibleBoundsChangedSection();
     }
+    
+    RenderCoreSystrace.endSection();
   }
 
   private void unmountItemRecursively(RenderTreeNode node) {
@@ -876,6 +896,9 @@ public class MountState implements MountDelegateTarget {
       Context context,
       RenderTreeNode renderTreeNode,
       MountItem currentMountItem) {
+    
+    RenderCoreSystrace.beginSection("updateMountItemIfNeeded");
+    
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final Object newLayoutData = renderTreeNode.getLayoutData();
     final RenderTreeNode currentNode = currentMountItem.getRenderTreeNode();
@@ -922,6 +945,8 @@ public class MountState implements MountDelegateTarget {
     if (currentRenderUnit != renderUnit) {
       RenderCoreSystrace.endSection(); // UPDATE
     }
+
+    RenderCoreSystrace.endSection();
   }
 
   private static void assertParentContentType(
