@@ -7,25 +7,25 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://reactjs.org/docs/components-and-props.html), the inputs that a `Component` takes are known as *props*.
+Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://reactjs.org/docs/components-and-props.html), inputs to a `Component` are known as *props*.
 
 In the Spec API, props for a given `Component` are the union of all arguments annotated with `@Prop`. You can access the value of the props in all the methods that declare it as a `@Prop` parameter. The same prop can be defined and accessed in multiple lifecycle methods. The annotation processor will ensure you're using consistent prop types and consistent annotation parameters across all the spec methods.
 
-In the Kotlin API, props are just `val` properties on Component and can be accessed in the `render` function and its hooks.
+In the Kotlin API, props are just `val` properties on a Component and can be accessed in the `render` function and its hooks.
 
 ## Props Immutability
 
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
 
 :::important
-The props objects should be made immutable. Due to background layout, props may be accessed on multiple threads. Props immutability ensures that no thread safety issues can happen during the component's lifecycle.
+Props should be immutable. Due to background layout, props may be accessed on multiple threads. The immutability of props ensures that no thread safety issues can occur during the component's lifecycle.
 :::
 
 ## How to use Props
 
-### Define Props on Component
+### Define Props on a Component
 
-Let's understand this using an example below.
+The way props are defined is shown in the following sample:
 
 <Tabs
   groupId="props_tab_group"
@@ -36,14 +36,14 @@ Let's understand this using an example below.
   ]}>
   <TabItem value="kotlin_props_tab">
 
-Props are just `val` properties on component
+Props are just `val` properties of a Component.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/KotlinApiComponent.kt start=start_example end=end_example
 ```
   </TabItem>
   <TabItem value="java_props_tab">
 
-Props are defined using the `@Prop` annotation
+Props are defined using the `@Prop` annotation.
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/FirstComponentSpec.java start=start_example end=end_example
 ```
@@ -52,9 +52,11 @@ Props are defined using the `@Prop` annotation
 
 The props parameters will hold the value passed down from the Component's parent when the Component was created (or their default values).
 
-Props are defined and used the same way in `LayoutSpec`s and `MountSpec`s.
+Props are defined and used the same way as in `LayoutSpec`s and `MountSpec`s.
 
-### Set Props on Component
+### Set Props on a Component
+
+The following code shows how to set Props on a Component.
 
 <Tabs
   groupId="props_tab_group"
@@ -67,15 +69,14 @@ Props are defined and used the same way in `LayoutSpec`s and `MountSpec`s.
 
 You can simply pass the prop by its name in the KComponent.
 
-
 ```kotlin
 KotlinApiComponent(name = "Linda")
 ```
   </TabItem>
   <TabItem value="java_props_tab">
 
-The annotation processor creates a `Builder` class for your Component automatically with setters for each unique prop defined on the spec.
-You pass down values for these props by calling the appropriate methods on the generated Component Builder.
+The annotation processor creates a `Builder` class for your Component automatically, with setters, for each unique prop defined on the spec.
+You pass down values for these props by calling the appropriate methods on the generated Component Builder:
 
 ```java
 FirstComponent.create(c).name("Linda").build()
@@ -85,7 +86,7 @@ FirstComponent.create(c).name("Linda").build()
 
 ## Optional Props and Prop Defaults
 
-Litho provides a way to mark props as optional and define their default values.
+Litho provides a way to mark props as optional and define their default values:
 
 <Tabs
   groupId="props_tab_group"
@@ -103,27 +104,23 @@ In the Kotlin API, default values are always explicit because optional props are
    </TabItem>
   <TabItem value="java_props_tab">
 
-In the Spec API, you can mark a prop as optional by setting `optional = true` flag on its `@Prop` annotation as seen in the example below.
+In the Spec API, you can mark a prop as optional by setting `optional = true` flag on its `@Prop` annotation, as seen in the example below.
 It needs to be marked as such in all the methods that declare this prop, otherwise the annotation processor will throw an exception.
-By default, if an optional prop's value is not provided when component is created, then a default value for its Java type would be used, i.e `null`, `0`, `false`.
+By default, if an optional prop's value is not provided when the component is created, a default value for its Java type is used (`null`, `0`, or `false`).
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/OptionalPropComponentSpec.java start=start_example end=end_example
 ```
 
-You will often want to define explicit default value for an optional prop instead of simply using Java's defaults. And to do that you should declare a constant (i.e. `static final`) field with the same name and type as the original prop and mark it with [`@PropDefault`](pathname:///javadoc/com/facebook/litho/annotations/PropDefault.html) annotation. Like in the following example:
-
+Instead of using the Java defaults, you may want to define an explicit default value for an optional prop. To create that default value, declare a `static final` field with the same name and type as the original prop and mark it with the [`@PropDefault`](pathname:///javadoc/com/facebook/litho/annotations/PropDefault.html) annotation, as shown in the following example:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropDefaultComponentSpec.java start=start_example end=end_example
 ```
   </TabItem>
 </Tabs>
 
-
 ## Android Resources as Props
 
-When creating layouts, it is very common to use values from Android's resource system such as dimensions, colors, strings, etc. Litho Spec API provides convenient ways to set prop values from Android resources using annotations.
-
-Let's consider a simple example:
+When creating layouts, it's common to use values from Android's resource system, such as dimensions, colours, strings, and so on. The Litho Spec API provides convenient ways to set prop values from Android resources using annotations, as shown in the following examples:
 
 <Tabs
   groupId="props_tab_group"
@@ -135,19 +132,19 @@ Let's consider a simple example:
 
 <TabItem value="kotlin_props_tab">
 
-In the following example, `PropWithoutResourceTypeKComponent` is expected to take `color` as an integer, `size` in pixels, and a `name` string.
+Here, `PropWithoutResourceTypeKComponent` is expected to take `color` as an integer, `size` in pixels, and a `name` string.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropWithoutResourceTypeKComponent.kt start=start_example end=end_example
 ```
 
-And if you decide to set these props using resource values you'll have to do the following:
+If you decide to set these props using resource values, it's recommended you do the following:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropResourceTypeParentKComponent.kt start=start_prop_without_resource_type_usage end=end_prop_without_resource_type_usage
 ```
 
 But Litho provides a nicer way to provide prop values via resource ids.
 
-In the Kotlin API, there is no way to generate multiple variants of the same setter for a prop, but you can use helper functions to retrieve an actual value of the resource by its ID, for example `stringRes()`, `dimenRes()`, `colorRes()`, `colorAttr`, etc.
+In the Kotlin API, there is no way to generate multiple variants of the same setter for a prop, but you can use helper functions to retrieve the value of a resource by its ID, for example `stringRes()`, `dimenRes()`, `colorRes()`, `colorAttr`, and so on.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropResourceTypeParentKComponent.kt start=start_prop_with_resource_type_usage end=end_prop_with_resource_type_usage
 ```
@@ -161,7 +158,7 @@ In the following example, `PropWithoutResourceTypeComponentSpec` is expected to 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropWithoutResourceTypeComponentSpec.java start=start_example end=end_example
 ```
 
-And if you decide to set these props using resource values you'll have to do the following:
+If you decide to set these props using resource values, it's recommended you do the following:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropResourceTypeParentComponentSpec.java start=start_prop_without_resource_type_usage end=end_prop_without_resource_type_usage
 ```
@@ -171,15 +168,16 @@ But Litho provides a nicer way to provide prop values via resource ids. You can 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropWithResourceTypeComponentSpec.java start=start_example end=end_example
 ```
 
-With these params applied, for each resource prop `PropWithResourceTypeComponentSpec`'s builder will have not only the main setter (like `name()`), but also its variants for resource ids with *Res*, *Attr*, *Dip*, *Sp* or *Px* suffixes, depending on prop's resource type (like `nameRes()` or `sizePx()`).
+With these params applied, for each resource prop `PropWithResourceTypeComponentSpec`'s builder will have not only the main setter (like `name()`), but also its variants for resource ids with *Res*, *Attr*, *Dip*, *Sp* or *Px* suffixes, depending on prop's resource type (such as `nameRes()` or `sizePx()`).
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropResourceTypeParentComponentSpec.java start=start_prop_with_resource_type_usage end=end_prop_with_resource_type_usage
 ```
 
 Other supported resource types are `ResType.STRING_ARRAY`, `ResType.INT`, `ResType.INT_ARRAY`, `ResType.BOOL`, `ResType.COLOR`, `ResType.DIMEN_OFFSET`, `ResType.FLOAT`, and `ResType.DRAWABLE`.
 
-`PropDefault` also support values from Resources via setting a `resType` and `resId`. Let's define
-a `PropDefault` with a resource value:
+`PropDefault` also supports values from Resources by setting a `resType` and `resId`.
+
+The following example shows how to define a `PropDefault` with a resource value:
 
 ```java
 @PropDefault(resType = ResType.DIMEN_SIZE, resId = R.dimen.vertical_spacing) static float spacingVertical;
@@ -189,9 +187,7 @@ a `PropDefault` with a resource value:
 
 ## Variable Arguments in Props
 
-Sometimes, you want to support passing a list of items. This can unfortunately
-be a bit painful since it requires the developer to make a list, add all the
-items to it, and pass list to the component.
+Sometimes, passing a list of items can be a bit painful as it requires the Developer to create a list structure, add all the items to it, then pass the list to the Component:
 
 <Tabs
   groupId="props_tab_group"
@@ -202,7 +198,7 @@ items to it, and pass list to the component.
   ]}>
    <TabItem value="kotlin_props_tab">
 
-In the Kotlin API, you can use [Variable number of arguments](https://kotlinlang.org/docs/functions.html#variable-number-of-arguments-varargs) provided by the language itself to achieve this behaviour.
+In the Kotlin API, you can use the [variable number of arguments (varargs) modifier](https://kotlinlang.org/docs/functions.html#variable-number-of-arguments-varargs) provided by the language itself to achieve this behaviour.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropKComponent.kt start=start_example end=end_example
 ```
@@ -215,8 +211,7 @@ It can then be used as follows:
 
   <TabItem value="java_props_tab">
 
-In the Spec API, The `varArg` parameter in `@Prop` annotation aims to make this a little easier. This allows to set the prop in multiple ways.
-You can set a list of strings by using a method named for the actual prop — `names(...)`, or you can just set one or many individual strings by using a method named for a value of a `varArg` parameter in `@Prop` annotation, i.e.  `name(...)` in following example.
+In the Spec API, the `varArg` parameter in the `@Prop` annotation aims to make this a little easier, enabling you to set the Prop using multiple methods. You can set a list of strings by using a method named for the prop: `names(...)`.  Alternatively, you can set one or many individual strings using a method named for a value of a `varArg` parameter in the `@Prop` annotation: `name(...)`, as shown in the following example:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropComponentSpec.java start=start_example end=end_example
 ```
@@ -228,7 +223,7 @@ It can then be used as follows:
   </TabItem>
  </Tabs>
 
-Variable Arguments also works with Android resources as props.
+Variable Arguments also work with Android resources as props:
 
  <Tabs
    groupId="props_tab_group"
@@ -239,7 +234,7 @@ Variable Arguments also works with Android resources as props.
    ]}>
     <TabItem value="kotlin_props_tab">
 
-  In Kotlin variable arguments can be used with Android resources naturally by simply using helper functions to resolve actual value by resource id. In the following example you can see how to provide multiple strings as props, mixing `String` variables and Android string resources:
+  In Kotlin, variable arguments can be used with Android resources by using the helper functions to resolve the value by resource ID. The following example shows how to provide multiple strings as props, mixing `String` variables and Android string resources:
 
   ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropParentKComponent.kt start=start_var_arg_res_type_usage end=end_var_arg_res_type_usage
   ```
@@ -247,15 +242,14 @@ Variable Arguments also works with Android resources as props.
 
   <TabItem value="java_props_tab">
 
-  For instance, given a Component like this:
-
+  Given the following component:
 
   ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentWithResourceTypeSpec.java start=start_example end=end_example
   ```
 
-  You can add multiple strings mixing `String` variables and Android string resources:
+  You can add multiple strings mixing `String` variables with Android string resources:
 
   ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropParentComponentSpec.java start=start_var_arg_res_type_usage end=end_var_arg_res_type_usage
   ```
-  </TabItem>
-  </Tabs>
+ </TabItem>
+ </Tabs>
