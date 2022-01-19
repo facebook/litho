@@ -595,7 +595,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     return mNodeInfo;
   }
 
-  void copyLayoutProps(LayoutProps layoutProps) {
+  public void copyLayoutProps(LayoutProps layoutProps) {
     if (mLayoutProps != null) {
       mLayoutProps.copyInto(layoutProps);
     }

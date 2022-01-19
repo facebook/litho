@@ -23,7 +23,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
 
-interface LayoutProps {
+public interface LayoutProps {
   void widthPx(@Px int width);
 
   void widthPercent(float percent);
