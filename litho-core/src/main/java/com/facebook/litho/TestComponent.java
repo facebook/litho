@@ -49,4 +49,9 @@ public class TestComponent extends Component {
   public String getSimpleName() {
     return "TestComponent(" + mWrappedComponent.getSimpleName() + ")";
   }
+
+  @Override
+  protected @Nullable ComponentContext getScopedContext() {
+    return mWrappedComponent.getScopedContext();
+  }
 }

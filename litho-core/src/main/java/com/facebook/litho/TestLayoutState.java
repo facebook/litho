@@ -70,6 +70,12 @@ public class TestLayoutState {
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component) {
+
+    // this can be false for a mocked component
+    if (component.getMountType().toString() == null) {
+      return null;
+    }
+
     if (component.canResolve()) {
       if (component instanceof Wrapper) {
         return createImmediateLayout(layoutStateContext, c, component);
@@ -81,7 +87,10 @@ public class TestLayoutState {
     final ComponentContext scopedContext =
         component.updateInternalChildState(layoutStateContext, c, null);
 
-    node.appendComponent(new TestComponent(component), scopedContext.getGlobalKey(), null);
+    node.appendComponent(
+        new TestComponent(component),
+        scopedContext.getGlobalKey(),
+        scopedContext.useStatelessComponent() ? scopedContext.getScopedComponentInfo() : null);
 
     return node;
   }
@@ -92,6 +101,12 @@ public class TestLayoutState {
    */
   private static InternalNode resolve(
       LayoutStateContext layoutContext, ComponentContext c, Component component) {
+
+    // this can be false for a mocked component
+    if (component.getMountType().toString() == null) {
+      return null;
+    }
+
     boolean reverse = getInternalState(component, "reverse");
     YogaAlign alignItems = getInternalState(component, "alignItems");
     YogaAlign alignContent = getInternalState(component, "alignContent");
@@ -143,6 +158,11 @@ public class TestLayoutState {
       final ComponentContext c,
       final Component component) {
 
+    // this can be false for a mocked component
+    if (component.getMountType().toString() == null) {
+      return null;
+    }
+
     final InternalNode node;
     final InternalNode layoutCreatedInWillRender =
         component.consumeLayoutCreatedInWillRender(layoutStateContext, c);
@@ -178,7 +198,8 @@ public class TestLayoutState {
       } else {
         node = resolveImmediateSubTree(layoutStateContext, c, root);
         if (Component.isLayoutSpec(root) && root.canResolve()) {
-          node.appendComponent(root, root.getKey(), null);
+          node.appendComponent(
+              root, root.getKey(), c.useStatelessComponent() ? c.getScopedComponentInfo() : null);
         }
       }
     }
@@ -199,7 +220,10 @@ public class TestLayoutState {
       }
     }
 
-    node.appendComponent(component, component.getKey(), null);
+    node.appendComponent(
+        component,
+        component.getKey(),
+        c.useStatelessComponent() ? c.getScopedComponentInfo() : null);
     component.onPrepare(c);
 
     return node;
@@ -207,6 +231,12 @@ public class TestLayoutState {
 
   static @Nullable InternalNode resolveImmediateSubTree(
       LayoutStateContext layoutStateContext, final ComponentContext c, Component component) {
+
+    // this can be false for a mocked component
+    if (component.getMountType().toString() == null) {
+      return null;
+    }
+
     if (component instanceof Wrapper) {
       Component delegate = ((Wrapper) component).delegate;
       if (delegate == null) {
@@ -219,18 +249,21 @@ public class TestLayoutState {
     }
 
     InternalNode node = createInternalNode(c);
-    node.appendComponent(new TestComponent(component), component.getKey(), null);
+    node.appendComponent(
+        new TestComponent(component),
+        component.getKey(),
+        c.useStatelessComponent() ? new ScopedComponentInfo(component, c, null) : null);
 
     return node;
   }
 
   private static InternalNode createInternalNode(ComponentContext c) {
-    return new DefaultInternalNode(c);
+    return new InputOnlyInternalNode<>(c);
   }
 
   private static InternalNode createNestedTreeHolder(
       ComponentContext c, @Nullable TreeProps treeProps) {
-    return new DefaultNestedTreeHolder(c, treeProps);
+    return new InputOnlyNestedTreeHolder(c, treeProps);
   }
 
   // Mimicks implementation of Layout.create but uses a custom InternalNode for shallow child
