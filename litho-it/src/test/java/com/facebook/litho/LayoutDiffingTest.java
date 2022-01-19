@@ -22,64 +22,29 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.TextView;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecWithShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.TextViewCounter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LayoutDiffingTest {
-
-  private final boolean mUsesInputOnlyInternalNode;
-  private final boolean mOriginalValueOfUseInputOnlyInternalNodes;
 
   public @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "usesInputOnlyInternalNode={0}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
-  }
-
-  public LayoutDiffingTest(boolean usesInputOnlyInternalNode) {
-    mUsesInputOnlyInternalNode = usesInputOnlyInternalNode;
-    mOriginalValueOfUseInputOnlyInternalNodes =
-        ComponentsConfiguration.getDefaultComponentsConfiguration().getUseInputOnlyInternalNodes();
-  }
-
-  @Before
-  public void before() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useInputOnlyInternalNodes(mUsesInputOnlyInternalNode));
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .useInputOnlyInternalNodes(mOriginalValueOfUseInputOnlyInternalNodes));
-  }
 
   /**
    * In this scenario, we make sure that if a state update happens in the background followed by a

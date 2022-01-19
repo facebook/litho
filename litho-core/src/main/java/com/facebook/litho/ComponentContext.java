@@ -660,10 +660,6 @@ public class ComponentContext implements Cloneable {
     return mComponentTree.getRecyclingMode();
   }
 
-  boolean isInputOnlyInternalNodeEnabled() {
-    return mComponentTree != null && mComponentTree.isInputOnlyInternalNodeEnabled();
-  }
-
   boolean isInternalNodeReuseEnabled() {
     return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
   }

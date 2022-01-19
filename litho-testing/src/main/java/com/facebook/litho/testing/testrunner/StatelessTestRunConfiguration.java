@@ -34,10 +34,7 @@ public class StatelessTestRunConfiguration implements LithoTestRunConfiguration 
 
     ComponentsConfiguration.useStatelessComponent = true;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .useStatelessComponents(true)
-            .useInputOnlyInternalNodes(true)
-            .reuseInternalNodes(true));
+        ComponentsConfiguration.create().useStatelessComponents(true).reuseInternalNodes(true));
   }
 
   @Override

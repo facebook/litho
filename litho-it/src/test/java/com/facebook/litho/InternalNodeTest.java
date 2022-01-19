@@ -27,14 +27,12 @@ import static com.facebook.yoga.YogaDirection.INHERIT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.drawable.ColorDrawable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
 import com.facebook.litho.widget.Text;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,16 +41,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTest {
 
-  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule =
-      new LegacyLithoViewRule(
-          ComponentsConfiguration.create().useInputOnlyInternalNodes(true).build());
-
-  private final boolean mDefaultUseInputOnlyInternalNodes;
-
-  public InternalNodeTest() {
-    mDefaultUseInputOnlyInternalNodes =
-        ComponentsConfiguration.getDefaultComponentsConfiguration().getUseInputOnlyInternalNodes();
-  }
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private InternalNode acquireInternalNode() {
     final ComponentContext context = mLegacyLithoViewRule.getContext();
@@ -81,16 +70,7 @@ public class InternalNodeTest {
 
   @Before
   public void setup() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useInputOnlyInternalNodes(true));
     ComponentsReporter.provide(mComponentsReporter);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .useInputOnlyInternalNodes(mDefaultUseInputOnlyInternalNodes));
   }
 
   @Test

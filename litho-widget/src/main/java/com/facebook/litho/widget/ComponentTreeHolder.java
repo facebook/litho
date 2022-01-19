@@ -63,7 +63,6 @@ public class ComponentTreeHolder {
   private final boolean mUseRenderUnitIdMap;
 
   private @Nullable Boolean mUseStateLessComponent;
-  private @Nullable Boolean mInputOnlyInternalNode;
   private @Nullable Boolean mInternalNodeReuseEnabled;
   private @Nullable Boolean mIsLayoutCachingEnabled;
 
@@ -499,17 +498,13 @@ public class ComponentTreeHolder {
 
       if (mUseStateLessComponent != null) {
         builder.overrideStatelessConfigs(
-            mUseStateLessComponent,
-            mInputOnlyInternalNode,
-            mInternalNodeReuseEnabled,
-            mIsLayoutCachingEnabled);
+            mUseStateLessComponent, mInternalNodeReuseEnabled, mIsLayoutCachingEnabled);
       }
 
       mComponentTree = builder.build();
 
       if (mUseStateLessComponent == null) {
         mUseStateLessComponent = mComponentTree.useStatelessComponent();
-        mInputOnlyInternalNode = mComponentTree.isInputOnlyInternalNodeEnabled();
         mInternalNodeReuseEnabled = mComponentTree.isInternalNodeReuseEnabled();
         mIsLayoutCachingEnabled = mComponentTree.isLayoutCachingEnabled();
       }

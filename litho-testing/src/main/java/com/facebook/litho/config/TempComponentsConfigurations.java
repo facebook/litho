@@ -70,10 +70,7 @@ public class TempComponentsConfigurations {
     ComponentsConfiguration.useStatelessComponent = value;
     ComponentsConfiguration.reuseInternalNodes = value;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .useStatelessComponents(value)
-            .reuseInternalNodes(value)
-            .useInputOnlyInternalNodes(value));
+        ComponentsConfiguration.create().useStatelessComponents(value).reuseInternalNodes(value));
   }
 
   public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {

@@ -115,7 +115,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private final boolean mAreTransitionsEnabled;
   private final boolean mReuseInternalNodes;
   private final boolean mIsLayoutCachingEnabled;
-  private final boolean mUseInputOnlyInternalNodes;
   private final boolean mUseRenderUnitIdMap;
   private final ComponentsConfiguration mComponentsConfiguration;
 
@@ -185,10 +184,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
     return mLifecycleProvider != null;
-  }
-
-  public boolean isInputOnlyInternalNodeEnabled() {
-    return mUseInputOnlyInternalNodes;
   }
 
   public boolean isInternalNodeReuseEnabled() {
@@ -452,8 +447,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mIsLayoutCachingEnabled =
         mComponentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
     mReuseInternalNodes = mIsLayoutCachingEnabled || mComponentsConfiguration.reuseInternalNodes();
-    mUseInputOnlyInternalNodes =
-        mReuseInternalNodes || mComponentsConfiguration.getUseInputOnlyInternalNodes();
     useStatelessComponent = mReuseInternalNodes || mComponentsConfiguration.useStatelessComponent();
 
     final StateHandler builderStateHandler = builder.stateHandler;
@@ -3535,10 +3528,7 @@ public class ComponentTree implements LithoLifecycleListener {
     @Deprecated
     public Builder reuseInternalNodes(boolean shouldReuseInternalNodes) {
       overrideStatelessConfigs(
-          shouldReuseInternalNodes,
-          shouldReuseInternalNodes,
-          shouldReuseInternalNodes,
-          isLayoutCachingEnabled);
+          shouldReuseInternalNodes, shouldReuseInternalNodes, isLayoutCachingEnabled);
       return this;
     }
 
@@ -3559,12 +3549,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
     public void overrideStatelessConfigs(
         boolean useStateLessComponent,
-        boolean inputOnlyInternalNode,
         boolean internalNodeReuseEnabled,
         boolean isLayoutCachingEnabled) {
       this.componentsConfiguration =
           ComponentsConfiguration.create(this.componentsConfiguration)
-              .useInputOnlyInternalNodes(inputOnlyInternalNode)
               .useStatelessComponents(useStateLessComponent)
               .reuseInternalNodes(internalNodeReuseEnabled)
               .build();

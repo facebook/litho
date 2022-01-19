@@ -49,16 +49,12 @@ import java.util.List;
 public class InternalNodeUtils {
 
   static InternalNode create(ComponentContext context) {
-    return context.isInputOnlyInternalNodeEnabled()
-        ? new InputOnlyInternalNode<>(context)
-        : new DefaultInternalNode(context);
+    return new InputOnlyInternalNode<>(context);
   }
 
   static InternalNode.NestedTreeHolder createNestedTreeHolder(
       final ComponentContext context, final @Nullable TreeProps props) {
-    return context.isInputOnlyInternalNodeEnabled()
-        ? new InputOnlyNestedTreeHolder(context, props)
-        : new DefaultNestedTreeHolder(context, props);
+    return new InputOnlyNestedTreeHolder(context, props);
   }
 
   /**
