@@ -97,9 +97,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   public boolean isRecyclingDisabled() {
     return false;
   }
-  
+
   protected void onStartUpdateRenderUnit() {}
-  
+
   protected void onEndUpdateRenderUnit() {}
 
   @Nullable

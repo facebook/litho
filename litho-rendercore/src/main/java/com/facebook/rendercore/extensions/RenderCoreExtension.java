@@ -156,7 +156,7 @@ public class RenderCoreExtension<Input, State> {
 
   public static void recursivelyNotifyVisibleBoundsChanged(final @Nullable Object content) {
     RenderCoreSystrace.beginSection("recursivelyNotifyVisibleBoundsChanged");
-    
+
     if (content instanceof RenderCoreExtensionHost) {
       final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
       host.notifyVisibleBoundsChanged();
@@ -167,7 +167,7 @@ public class RenderCoreExtension<Input, State> {
         recursivelyNotifyVisibleBoundsChanged(child);
       }
     }
-    
+
     RenderCoreSystrace.endSection();
   }
 }
