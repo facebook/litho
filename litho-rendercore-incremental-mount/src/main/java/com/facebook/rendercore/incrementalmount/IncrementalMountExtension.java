@@ -456,21 +456,50 @@ public class IncrementalMountExtension
         state.mInput.getOutputsOrderedByBottomBounds();
     final int mountableOutputCount = state.mInput.getIncrementalMountOutputCount();
 
-    state.mPreviousTopsIndex = mountableOutputCount;
-    for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.bottom <= byTopBounds.get(i).getBounds().top) {
-        state.mPreviousTopsIndex = i;
-        break;
+    state.mPreviousTopsIndex = 
+        binarySearchTopBoundary(localVisibleRect.bottom, byTopBounds, mountableOutputCount);
+    state.mPreviousBottomsIndex = 
+        binarySearchBottomBoundary(localVisibleRect.top, byBottomBounds, mountableOutputCount);
+  }
+
+  private static int binarySearchTopBoundary(
+      final int rectBottom, final List<IncrementalMountOutput> byTopBounds, final int totalCount) {
+    int low = 0;
+    int high = totalCount - 1;
+
+    while (low <= high) {
+      int mid = low + ((high - low) / 2);
+
+      if (rectBottom > byTopBounds.get(mid).getBounds().top) {
+        low = mid + 1;
+      } else if (mid > 0 && rectBottom <= byTopBounds.get(mid - 1).getBounds().top) {
+        high = mid - 1;
+      } else if (mid == 0 || rectBottom > byTopBounds.get(mid - 1).getBounds().top) {
+        return mid;
       }
     }
 
-    state.mPreviousBottomsIndex = mountableOutputCount;
-    for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.top < byBottomBounds.get(i).getBounds().bottom) {
-        state.mPreviousBottomsIndex = i;
-        break;
+    return totalCount;
+  }
+
+  private static int binarySearchBottomBoundary(
+      final int rectTop, final List<IncrementalMountOutput> byBottomBounds, final int totalCount) {
+    int low = 0;
+    int high = totalCount - 1;
+
+    while (low <= high) {
+      int mid = low + ((high - low) / 2);
+
+      if (rectTop >= byBottomBounds.get(mid).getBounds().bottom) {
+        low = mid + 1;
+      } else if (mid > 0 && rectTop < byBottomBounds.get(mid - 1).getBounds().bottom) {
+        high = mid - 1;
+      } else if (mid == 0 || rectTop >= byBottomBounds.get(mid - 1).getBounds().bottom) {
+        return mid;
       }
     }
+
+    return totalCount;
   }
 
   @VisibleForTesting
