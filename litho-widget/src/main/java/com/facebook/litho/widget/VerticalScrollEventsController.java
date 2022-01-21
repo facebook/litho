@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 
 /**
@@ -39,6 +40,18 @@ public class VerticalScrollEventsController {
   public void smoothScrollTo(int y) {
     if (mScrollView != null) {
       mScrollView.smoothScrollTo(mScrollView.getScrollX(), y);
+    }
+  }
+
+  public void scrollToTop() {
+    if (mScrollView != null) {
+      mScrollView.fullScroll(View.FOCUS_UP);
+    }
+  }
+
+  public void scrollToBottom() {
+    if (mScrollView != null) {
+      mScrollView.fullScroll(View.FOCUS_DOWN);
     }
   }
 }
