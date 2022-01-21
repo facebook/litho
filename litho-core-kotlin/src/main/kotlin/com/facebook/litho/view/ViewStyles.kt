@@ -25,6 +25,7 @@ import androidx.annotation.ColorInt
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.Dimen
+import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
@@ -47,6 +48,7 @@ internal enum class ObjectField {
   FOCUSABLE,
   FOREGROUND,
   ON_CLICK,
+  ON_INTERCEPT_TOUCH,
   ON_LONG_CLICK,
   ON_TOUCH,
   OUTLINE_PROVIDER,
@@ -101,6 +103,9 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.ON_LONG_CLICK ->
           commonProps.longClickHandler(
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
+      ObjectField.ON_INTERCEPT_TOUCH ->
+          commonProps.interceptTouchHandler(
+              eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean)))
       ObjectField.ON_TOUCH ->
           commonProps.touchHandler(eventHandler(value as ((TouchEvent) -> Unit)))
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
@@ -269,6 +274,19 @@ inline fun Style.onLongClick(noinline onLongClick: (LongClickEvent) -> Boolean):
  */
 inline fun Style.onTouch(noinline onTouch: (TouchEvent) -> Boolean): Style =
     this + ObjectStyleItem(ObjectField.ON_TOUCH, onTouch)
+
+/**
+ * Sets a listener that will intercept all touch screen motion events. This allows you to watch
+ * events as they are dispatched to your children, and take ownership of the current gesture at any
+ * point. Implementations should return true if they intercepted the event and wish to receive
+ * subsequent events, and false otherwise. Setting this property will cause the Component to be
+ * represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.ViewGroup.onInterceptTouchEvent]
+ */
+inline fun Style.onInterceptTouch(
+    noinline onInterceptTouch: (InterceptTouchEvent) -> Boolean
+): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, onInterceptTouch)
 
 /**
  * Sets the degree that this component is rotated around the pivot point. Increasing the value
