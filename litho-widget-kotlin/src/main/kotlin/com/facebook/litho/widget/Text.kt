@@ -60,6 +60,7 @@ inline fun ResourcesScope.Text(
     accessibleClickableSpans: Boolean = false,
     clipToBounds: Boolean = CLIP_TO_BOUNDS,
     handle: Handle? = null,
+    customEllipsisText: CharSequence? = null,
     @ColorInt backgroundColor: Int? = null,
     @ColorInt highlightColor: Int? = null,
     @AttrRes defStyleAttr: Int = 0,
@@ -82,6 +83,7 @@ inline fun ResourcesScope.Text(
         .shouldIncludeFontPadding(includeFontPadding)
         .accessibleClickableSpans(accessibleClickableSpans)
         .clipToBounds(clipToBounds)
+        .apply { customEllipsisText?.let { customEllipsisText(customEllipsisText) } }
         .apply { ellipsize?.let { ellipsize(it) } }
         .handle(handle)
         .apply { backgroundColor?.let { backgroundColor(backgroundColor) } }
