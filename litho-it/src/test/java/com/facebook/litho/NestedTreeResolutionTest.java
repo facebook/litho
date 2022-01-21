@@ -59,7 +59,7 @@ public class NestedTreeResolutionTest {
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
 
-    DefaultNestedTreeHolderResult holder = (DefaultNestedTreeHolderResult) root.getChildAt(1);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
     assertThat(
             ((InputOnlyNestedTreeHolder) holder.getInternalNode())
                 .mNestedTreePadding.get(YogaEdge.ALL))

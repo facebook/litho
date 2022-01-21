@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Looper;
+import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
@@ -475,6 +476,36 @@ public class ComponentContext implements Cloneable {
     return mComponentTree == null || mComponentTree.getLogger() == null
         ? mLogger
         : mComponentTree.getLogger();
+  }
+
+  /**
+   * A utility function to find the View with a given tag under the current Component's LithoView.
+   * To set a view tag, use the .viewTag() common prop or Style.viewTag. An appropriate time to call
+   * this is in your Component's onVisible callback.
+   *
+   * <p>As with View.findViewWithTag in general, this must be called on the main thread.
+   *
+   * <p>Note that null may be returned if the associated View doesn't exist or isn't mounted: with
+   * incremental mount turned on (which is the default), if the component is off-screen, it won't be
+   * mounted.
+   *
+   * <p>Finally, note that you should never hold a reference to the view returned by this function
+   * as Litho may unmount your Component and mount it to a different View.
+   */
+  public @Nullable <T extends View> T findViewWithTag(String tag) {
+    ThreadUtils.assertMainThread();
+
+    if (mComponentTree == null) {
+      throw new RuntimeException(
+          "Calling findViewWithTag on a ComponentContext which isn't associated with a ComponentTree. Make sure it's one received in `render` or `onCreateLayout`");
+    }
+    final LithoView lithoView = mComponentTree.getLithoView();
+    // LithoView isn't mounted
+    if (lithoView == null) {
+      return null;
+    }
+
+    return lithoView.findViewWithTag(tag);
   }
 
   ComponentTree getComponentTree() {
