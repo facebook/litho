@@ -456,9 +456,9 @@ public class IncrementalMountExtension
         state.mInput.getOutputsOrderedByBottomBounds();
     final int mountableOutputCount = state.mInput.getIncrementalMountOutputCount();
 
-    state.mPreviousTopsIndex = 
+    state.mPreviousTopsIndex =
         binarySearchTopBoundary(localVisibleRect.bottom, byTopBounds, mountableOutputCount);
-    state.mPreviousBottomsIndex = 
+    state.mPreviousBottomsIndex =
         binarySearchBottomBoundary(localVisibleRect.top, byBottomBounds, mountableOutputCount);
   }
 
