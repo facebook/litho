@@ -17,7 +17,8 @@
 package com.facebook.litho.componentsfinder
 
 import com.facebook.litho.Component
-import com.facebook.litho.InternalNode
+import com.facebook.litho.LithoLayoutResult
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult
 import com.facebook.litho.LithoView
 import kotlin.reflect.KClass
 
@@ -39,7 +40,7 @@ import kotlin.reflect.KClass
  * with FBStory as a root
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
-  val internalNode = getInternalNode(lithoView) ?: return null
+  val internalNode = getLayoutRoot(lithoView)?.internalNode ?: return null
   return internalNode.components.firstOrNull { it.javaClass == clazz }
 }
 
@@ -53,8 +54,8 @@ fun findDirectComponentInLithoView(lithoView: LithoView, clazz: KClass<out Compo
 
 /** Returns a component of the given class from the ComponentTree or null if not found */
 fun findComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
-  val internalNode = getInternalNode(lithoView) ?: return null
-  return findComponentRecursively(clazz, internalNode)
+  val layoutRoot = getLayoutRoot(lithoView) ?: return null
+  return findComponentRecursively(clazz, layoutRoot)
 }
 
 /** Returns a component of the given class from the ComponentTree or null if not found */
@@ -71,7 +72,7 @@ fun findAllComponentsInLithoView(
     vararg clazz: Class<out Component?>
 ): List<Component> {
   val componentsList = mutableListOf<Component>()
-  val internalNode = getInternalNode(lithoView) ?: return componentsList
+  val internalNode = getLayoutRoot(lithoView) ?: return componentsList
   findComponentsRecursively(clazz, internalNode, componentsList)
   return componentsList
 }
@@ -87,17 +88,17 @@ fun findAllComponentsInLithoView(
   val javaClasses = mutableListOf<Class<out Component>>()
   clazz.forEach { javaClasses.add(it.java) }
   val componentsList = mutableListOf<Component>()
-  val internalNode = getInternalNode(lithoView) ?: return componentsList
-  findComponentsRecursively(javaClasses.toTypedArray(), internalNode, componentsList)
+  val layoutRoot = getLayoutRoot(lithoView) ?: return componentsList
+  findComponentsRecursively(javaClasses.toTypedArray(), layoutRoot, componentsList)
   return componentsList
 }
 
-private fun getInternalNode(lithoView: LithoView): InternalNode? {
+private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
   val commitedLayoutState =
       lithoView.componentTree?.committedLayoutState
           ?: throw IllegalStateException(
               "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
-  return commitedLayoutState.layoutRoot?.internalNode
+  return commitedLayoutState.layoutRoot
 }
 
 /**
@@ -106,19 +107,24 @@ private fun getInternalNode(lithoView: LithoView): InternalNode? {
  */
 private fun findComponentRecursively(
     clazz: Class<out Component?>,
-    internalNode: InternalNode
+    layoutResult: LithoLayoutResult?
 ): Component? {
+  layoutResult ?: return null
 
+  val internalNode = layoutResult.internalNode
   val component = internalNode.components.firstOrNull { it.javaClass == clazz }
   if (component != null) {
     return component
   }
-
-  val childCount = internalNode.childCount
-  for (i in 0 until childCount) {
-    val childComponent = findComponentRecursively(clazz, internalNode.getChildAt(i))
-    if (childComponent != null) {
-      return childComponent
+  if (layoutResult is NestedTreeHolderResult) {
+    return findComponentRecursively(clazz, layoutResult.nestedResult)
+  } else {
+    val childCount = internalNode.childCount
+    for (i in 0 until childCount) {
+      val childComponent = findComponentRecursively(clazz, layoutResult.getChildAt(i))
+      if (childComponent != null) {
+        return childComponent
+      }
     }
   }
   return null
@@ -129,16 +135,23 @@ private fun findComponentRecursively(
  */
 private fun findComponentsRecursively(
     clazzArray: Array<out Class<out Component?>>,
-    internalNode: InternalNode,
+    layoutResult: LithoLayoutResult?,
     componentsList: MutableList<Component>
 ) {
+  layoutResult ?: return
+
+  val internalNode = layoutResult.internalNode
   val components = internalNode.components.filter { clazzArray.contains(it.javaClass) }
   if (components != null) {
     componentsList.addAll(components)
   }
 
-  val childCount = internalNode.childCount
-  for (i in 0 until childCount) {
-    findComponentsRecursively(clazzArray, internalNode.getChildAt(i), componentsList)
+  if (layoutResult is NestedTreeHolderResult) {
+    findComponentsRecursively(clazzArray, layoutResult.nestedResult, componentsList)
+  } else {
+    val childCount = internalNode.childCount
+    for (i in 0 until childCount) {
+      findComponentsRecursively(clazzArray, layoutResult.getChildAt(i), componentsList)
+    }
   }
 }
