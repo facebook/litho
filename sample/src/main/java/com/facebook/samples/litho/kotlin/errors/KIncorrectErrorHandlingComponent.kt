@@ -21,6 +21,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import java.lang.Exception
 
+// start_example
 class KIncorrectErrorHandlingComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
@@ -35,3 +36,4 @@ class KIncorrectErrorHandlingComponent : KComponent() {
     }
   }
 }
+// end_example

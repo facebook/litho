@@ -21,6 +21,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
+// start_example
 @LayoutSpec
 class IncorrectErrorHandlingComponentSpec {
 
@@ -36,3 +37,4 @@ class IncorrectErrorHandlingComponentSpec {
     }
   }
 }
+// end_example
