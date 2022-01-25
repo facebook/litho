@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore;
 
+import android.util.LongSparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -30,7 +31,7 @@ public class RenderTree {
   private final int mWidthSpec;
   private final int mHeightSpec;
   private final @Nullable Map<RenderCoreExtension<?, ?>, Object> mResults;
-
+  private final LongSparseArray<Integer> mIdToIndexMap = new LongSparseArray<>();
   private @Nullable Object mRenderTreeData;
 
   public RenderTree(
@@ -44,6 +45,10 @@ public class RenderTree {
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mResults = results;
+
+    for (int i = 0; i < mFlatList.length; i++) {
+      mIdToIndexMap.put(mFlatList[i].getRenderUnit().getId(), i);
+    }
   }
 
   public int getWidth() {
@@ -63,13 +68,7 @@ public class RenderTree {
   }
 
   public int getRenderTreeNodeIndex(long renderUnitId) {
-    for (int i = 0; i < mFlatList.length; i++) {
-      if (mFlatList[i].getRenderUnit().getId() == renderUnitId) {
-        return i;
-      }
-    }
-
-    return -1;
+    return mIdToIndexMap.get(renderUnitId, -1);
   }
 
   public RenderTreeNode getRenderTreeNodeAtIndex(int index) {
