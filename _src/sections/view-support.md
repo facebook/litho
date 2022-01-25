@@ -3,9 +3,11 @@ id: view-support
 title: 'Advanced: Mixing with Android Views'
 ---
 
-Sections work best when combined with the rendering optimizations that Litho Components offer. However, the API also provides **support for rendering Android `View`s** instead of (or along with) Components. This makes the transition to Sections easier and you can still take advantage of the performance benefits regardless of your product's UI using traditional Android Views, Litho Components or a mix of the two.
+Sections work best when combined with the rendering optimisations that Litho Components offer. However, the API also provides **support for rendering Android** `View`s instead of (or along with) Components. This makes the transition to Sections easier; you can still take advantage of the performance benefits regardless of your product's UI using traditional Android Views, Litho Components or a mix of the two.
 
-View support is available only through `DataDiffSection`. Let's recap how you declare what the framework should render for a certain item:
+View support is available only through `DataDiffSection`.
+
+The following code shows how to declare what the framework should render for a certain item:
 
 ```java
 @GroupSectionSpec
@@ -34,11 +36,11 @@ class MyGroupSectionSpec {
 }
 ```
 
-When an item needs to be rendered on the screen, the framework dispatches a `RenderEvent` and it calls the event handler passed as prop to the `DataDiffSection` to create a `RenderInfo` for that item. `RenderInfo` holds information that allows the framework to understand how a certain item should be rendered.
+When an item needs to be rendered on-screen, the framework dispatches a `RenderEvent` and calls the event handler passed as prop to the `DataDiffSection` to create a `RenderInfo` for that item. `RenderInfo` holds information that allows the framework to understand how a certain item should be rendered.
 
 ### ViewRenderInfo
 
-Most commonly used implementation of `RenderInfo` is [`ComponentRenderInfo`](pathname:///javadoc/com/facebook/litho/widget/ComponentRenderInfo.html) and we have seen in the previous example how it can be used to declare an item to be rendered using Litho Components. If you want to render items with Views instead, all you have to do is to return a different `RenderInfo` implementation - [`ViewRenderInfo`](pathname:///javadoc/com/facebook/litho/widget/ViewRenderInfo.html) instance from the `RenderEvent` handler.
+The most commonly used implementation of `RenderInfo` is [ComponentRenderInfo](pathname:///javadoc/com/facebook/litho/widget/ComponentRenderInfo.html). The GroupSectionSpec above shows how it can be used to declare an item to be rendered using Litho Components. If you want to render items with Views instead, all you have to do is to return a different `RenderInfo` implementation, namely a [`ViewRenderInfo`](pathname:///javadoc/com/facebook/litho/widget/ViewRenderInfo.html) instance, from the `RenderEvent` handler, as shown in the following code:
 
 ```java
 @OnEvent(RenderEvent.class)
@@ -53,9 +55,9 @@ static RenderInfo onRenderEvent(
 }
 ```
 
-`ViewRenderInfo` has two mandatory props that need to be passed to it: a [ViewCreator](pathname:///javadoc/com/facebook/litho/viewcompat/ViewCreator.html) and a [ViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/ViewBinder.html). `ViewCreator` and `ViewBinder` are the logical equivalent of `onCreateViewHolder()` and `onBindViewHolder()` methods of the `RecyclerView.Adapter`.
+`ViewRenderInfo` has two mandatory props that need to be passed to it: a [ViewCreator](pathname:///javadoc/com/facebook/litho/viewcompat/ViewCreator.html) and a [ViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/ViewBinder.html). These props are the logical equivalent of the `onCreateViewHolder()` and `onBindViewHolder()` methods of the `RecyclerView.Adapter`.
 
-The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if you only need to implement one of the `ViewBinder` methods, typically `bind(View)`.
+The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if you only need to implement one of the `ViewBinder` methods, typically `bind(View)`:
 
 ```java
 private static SimpleViewBinder VIEW_BINDER =
@@ -67,7 +69,7 @@ private static SimpleViewBinder VIEW_BINDER =
     }
 ```
 
-Views created by the same `ViewCreator` instance will be recycled in the same pool in `RecyclerView`. You can create a static instance of `ViewCreator` for different view types which you will use in the sections and pass static instance to `ViewRenderInfo.Builder#viewCreator()` method to ensure efficient recycling. You can use the `model` or the `index` params in `RenderEvent` handler to decide amongst multiple view types and return the appropriate `ViewCreator` instance.
+Views created by the same `ViewCreator` instance will be recycled in the same pool in `RecyclerView`. You can create a static instance of `ViewCreator` for different view types, which you will use in the sections, then pass a static instance to the `ViewRenderInfo.Builder#viewCreator()` method to ensure efficient recycling. You can use the `model` or the `index` parameters in the `RenderEvent` handler to decide amongst multiple view types and return the appropriate `ViewCreator` instance:
 
 ```java
 private static ViewCreator VIEW_CREATOR =
@@ -82,8 +84,7 @@ private static ViewCreator VIEW_CREATOR =
 
 ### Mixing Components and Views
 
-If your Section needs to render items partly with Litho Components, partly with Views, you can do that by returning the appropriate `RenderInfo` implementation from the `RenderEvent` handler.
-Here's how you could do that:
+If your Section needs to render items with a mixture of Litho Components and Views, you can do that by returning the appropriate `RenderInfo` implementation from the `RenderEvent` handler, as shown in the following code:
 
 ```java
 @OnEvent(RenderEvent.class)
