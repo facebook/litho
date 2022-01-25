@@ -4,26 +4,36 @@ title: Nested scrolling and measurement
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size. In this guide we'll talk about ways of measuring the height of a horizontal scrolling list (we'll call it h-scroll).
+This page details ways of measuring the height of a horizontal scrolling list (h-scroll).
 
-Working with h-scroll is not always trivial because **different height settings have different performance implications**.
+Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size. Working with h-scroll is not always trivial because different height settings have different performance implications.
 
-To see how to create a horizontally scrolling list using a `RecyclerCollectionComponent`, check out [this](recycler-collection-component.md#horizontal-lists) guide.
+To see how to create a h-scroll, using a `RecyclerCollectionComponent`, refer to the 'Horizontal Lists' section of the [Adding and Adapting RecyclerCollection to your App](recycler-collection-component.md#horizontal-lists) page.
 
-### Setting the height of a horizontal `RecyclerCollectionComponent`
+## Setting the Height of a Horizontal RecyclerCollectionComponent
+
 The code samples below are extracted from the [h-scroll height codelab](https://github.com/facebook/litho/tree/master/codelabs/hscroll-height).
 
-You can set the height of horizontally scrolling `RecyclerCollectionComponent` in three ways.
+You can set the height of a horizontally scrolling `RecyclerCollectionComponent` using three methods:
 
-**1) The most performant way: A fixed height is set on the H-Scroll component.**
+* [Fixed height method](#fixed-height-method) - a fixed height is set on the H-Scroll component.  This is the most performant method and is recommended where possible.
+* [Unknown height method](#unknown-height-method) - height is not known when the Component is created so let the h-scroll set its height to the height of the first item.
+* [Dynamic height method](#dynamic-height-method) - lets the h-scroll dynamically change its height to fit the tallest item.  This is the least performant method.
 
-In this case, the client knows the height of the h-scroll when it creates it. The height cannot be changed once the h-scroll gets measured.
+Each of these methods is detailed in the following sub-sections.
 
-Children of this h-scroll are measured with at most the height of the h-scroll; taller children will be clipped and smaller children will be positioned at the start of the h-scroll.
+### Fixed Height Method
 
-In Litho this is the most efficient way to set the height of an h-scroll and it's advisable to use this option whenever possible.
+Using this method, a fixed height is set on the h-Scroll Component.  The client knows the height of the h-scroll when it creates it, but it cannot be changed once the h-scroll gets measured.
 
-To do this, just set the height through the `height` prop on your `RecyclerCollectionComponent`:
+Children of this h-scroll are measured with, at most, the height of the h-scroll.  Taller children will be clipped, and smaller children will be positioned at the start of the h-scroll.
+
+:::note
+In Litho, this is the most performant (efficient) way to set the height of a h-scroll. It's recommended to use this option whenever possible.
+:::
+
+To use this preferred method, set the height through the `height` prop on your `RecyclerCollectionComponent`:
+
 ```java
 @LayoutSpec
 object FixedHeightHscrollComponentSpec {
@@ -48,14 +58,20 @@ object FixedHeightHscrollComponentSpec {
     }
 }
 ```
+
+The code produces the structure shown in the following image.
+
 ![fixedheight](/images/fixed-height-hscroll.png)
 
-Notice the gray background is the actual bounds of the h-scroll, and the children have smaller heights.
+Notice the grey background is the actual bounds of the h-scroll, and the children have smaller heights.
 
-**2) Height is not known when component is created: Let the h-scroll set its height to the height of the first item.**
+### Unknown Height Method
 
-In cases where the height of the h-scroll is not known at the time it is created, the height will be determined by measuring the first child of the h-scroll and setting that as the height of the h-scroll. This measurement happens once only, when the h-scroll is first measured, and the height cannot be changed after that. All other children heights will be measured with at most the height of the h-scroll and position at the start of the h-scroll.
-To enable this, instead of passing a `height` prop on the `RecyclerCollectionComponent`, tell it through the `canMeasureRecycler` prop it should measure itself.
+Using this method, the height is unknown when the Component is created. The height is determined by measuring the first child of the h-scroll and setting that as the height of the h-scroll.
+
+This measurement occurs only when the h-scroll is first measured, after which the height cannot be changed. All other children heights will be measured with, at most, the height of the h-scroll and position at the start of the h-scroll.
+
+To enable this, instead of passing a `height` prop on the `RecyclerCollectionComponent`, specify it through the `canMeasureRecycler` prop it should measure itself:
 
 ```java
 @LayoutSpec
@@ -94,28 +110,35 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
     }
 }
 ```
+The code produces the structure shown in the following image.
+
 ![canmeasure](/images/canmeasure.png)
 
-In this case, the first child has a height of 100dip; the second child has a height of 200dip but it's cropped to fit the size of the h-scroll as determined by the first child. Once measured like this, the height cannot be changed.
-The gray background represents the actual bounds of the h-scroll.
+In this case, the first child has a height of 100dip; the second child has a height of 200dip, but it's cropped to fit the size of the h-scroll as determined by the first child. Once measured like this, the height cannot be changed. The grey background represents the bounds of the h-scroll.
 
 :::note
-If you don't set a non-zero height on the `RecyclerCollectionComponent` and `canMeasureRecycler` is not enabled, your RecyclerCollectionComponent will end up with a height of 0.
+If you don't set a non-zero height on the `RecyclerCollectionComponent` and `canMeasureRecycler` is not enabled, your RecyclerCollectionComponent will end up with a height of zero.
 :::
 
-**3) The underperformant way: Let the h-scroll dynamically change its height to fit the tallest item**
-
-H-Scrolls can be configured to support items of different heights or remeasuring the height if the height of the children could change after the initial measurement. In this case, the initial height of the h-scroll is determined by the height of the tallest child.
-Initial height: The initial height of the h-scroll is determined by the height of the tallest child.
-Expanding more than the height of the h-scroll: If a child wants to expand to become taller than the current height of the h-scroll, the h-scroll will be remeasured with the new height of the child. Other items will not be remeasured.
-Collapsing the highest child: If the child with the biggest height collapses, then the h-scroll will again determine what its height should be by remeasuring all the items.
+### Dynamic Height Method
 
 :::caution
-Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
+This is the least performant (inefficient) method. Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
 :::
 
-Measuring all the children to determine the tallest comes with a high performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
-If you must do this, you can pass your own [RecyclerConfiguration](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable `hasDynamicItemHeight` on the [RecyclerBinderConfigurationer](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
+Using this method, the H-scroll dynamically changes its height to fit the tallest item.
+
+H-Scrolls can be configured to support items of different height or remeasuring of the height if the height of the children could change after the initial measurement.
+
+In this case:
+
+* The initial height of the h-scroll is determined by the height of the tallest child.
+* If a child wants to expand to become taller than the current height of the h-scroll, the h-scroll will be remeasured with the new height of the child. Other items will not be remeasured.
+* If the child with the biggest height collapses, then the h-scroll will again determine what its height should be by remeasuring all the items.
+
+Measuring all the children to determine the tallest comes with a high-performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
+
+If you must use this method, you can pass your own [RecyclerConfiguration](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable `hasDynamicItemHeight` on the [RecyclerBinderConfigurationer](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`, as shown in the following code:
 
 ```java
 RecyclerCollectionComponent.create(c)
@@ -130,7 +153,7 @@ RecyclerCollectionComponent.create(c)
     .build()
 ```
 
-In the video below you can see that the h-scroll will remeasure to always adjust height to accommodate the tallest item, but it won't collapse to fit a smaller maximum height.
+In the short video below, you can see that the h-scroll will remeasure to always adjust height to accommodate the tallest item, but it won't collapse to fit a smaller maximum height.
 
 <video loop="true" autoplay="true" controls="true" class="video" width="600px" height="100%">
   <source type="video/mp4" src={useBaseUrl("/videos/dynamicheight.mov")}></source>
