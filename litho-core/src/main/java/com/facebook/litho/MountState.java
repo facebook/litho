@@ -295,7 +295,10 @@ class MountState implements MountDelegateTarget {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      String sectionName = isIncrementalMountEnabled ? "incrementalMount" : "mount";
+      String sectionName =
+          mIsDirty
+              ? (isIncrementalMountEnabled ? "incrementalMountDirty" : "mountDirty")
+              : (isIncrementalMountEnabled ? "incrementalMount" : "mount");
       ComponentsSystrace.beginSectionWithArgs(sectionName)
           .arg("treeId", layoutState.getComponentTreeId())
           .arg("component", componentTree.getSimpleName())
