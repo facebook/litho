@@ -4,19 +4,17 @@ title: Sub-Component Testing
 ---
 
 :::note
-Checkout the [getting started](unit-testing.mdx) section to setup the test environment correctly.
+The [Getting Started](unit-testing.mdx) page contains information to help you setup your test environment.
 :::
 
-This document outlines APIs for testing assertions about the component hierarchy.
-Litho's testing APIs are similar to the APIs of
-[AssertJ](https://joel-costigliola.github.io/assertj/) and
-[Hamcrest](http://hamcrest.org/JavaHamcrest/). If you have used the two before,
-this should feel very familiar. This guide will describe the APIs and its usage.
+This page outlines APIs for testing assertions about the component hierarchy.
+
+Litho's testing APIs are similar to the APIs of [AssertJ](https://joel-costigliola.github.io/assertj/) and [Hamcrest](http://hamcrest.org/JavaHamcrest/).
+If you have used those two before, the content of this page should be very familiar.
 
 ## Basic Sub-Component Matching
 
-To demonstrate the usage of these APIs consider the following component that truncates the text
-passed and appends ellipsis.
+To demonstrate the use of the Litho testing APIs, consider the following component that truncates passed text and appends an ellipsis:
 
 ```java
 @LayoutSpec
@@ -31,8 +29,7 @@ class TruncatingComponentSpec {
 ```
 
 :::note
-As a quick side note; for trivial components like these it is often more appropriate
-to exploit the fact that these are pure functions that can be statically invoked.
+For trivial components, it is often more appropriate to exploit the fact that they are pure functions that can be statically invoked.
 Whenever possible, test your business logic in isolation.
 :::
 
@@ -65,7 +62,7 @@ public class TruncatingComponentTest {
 }
 ```
 
-### Testing assertion on the component hierarchy
+### Testing Assertion on the Component Hierarchy
 
 ```java
 @Test
@@ -79,20 +76,15 @@ public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() 
 }
 ```
 
-#### Understanding the API usage
+#### Understanding the API Usage
 
-* `LegacyLithoAssertions.assertThat(ComponentContext, Component)` will create and mount the layout.
-* `has(ComponentContext, Condition)` tests if the component hierarchy passes the assertion of the
-Condition. This is a standard AssertJ API; checkout all the
-[default APIs here](http://joel-costigliola.github.io/assertj/assertj-core-conditions.html).
-* `subComponentWith(ComponentContext, Condition)` is a utility method from Litho's testing APIs
-to compose Conditions together.
-* `textEquals(String)` is another utility method which creates a Condition that passes only for a
-Component of type `Text` which has its text property set to the String argument.
-* `subComponentWith(c, textEquals("Mr. Meeseeks")` create a Condition which is exactly what it reads
-like; 'passes for a component of type Text with its text property set to "Mr. Meeseeks"'.
+* `LegacyLithoAssertions.assertThat(ComponentContext, Component)` creates and mounts the layout.
+* `has(ComponentContext, Condition)` tests if the component hierarchy passes the assertion of the Condition. This is a standard AssertJ API; to see all AssertJ APIs, refer to the [AssertJ Core Conditions](http://joel-costigliola.github.io/assertj/assertj-core-conditions.html) website.
+* `subComponentWith(ComponentContext, Condition)` is a utility method from Litho's testing APIs to compose Conditions together.
+* `textEquals(String)` is another utility method that creates a Condition that passes only for a Component of type `Text`, which has its text property set to the String argument.
+* `subComponentWith(c, textEquals("Mr. Meeseeks")` creates a Condition that 'passes for a component of type Text with its text property set to "Mr. Meeseeks"'.
 
-**The following is a more complex composition of similar assertions**
+**The following code is a more complex composition of similar assertions**:
 
 ```java
 LegacyLithoAssertions.assertThat(c, component)
@@ -107,13 +99,12 @@ LegacyLithoAssertions.assertThat(c, component)
 ```
 
 :::note
-The above assertions are just for illustrative purposes. This is not a good test!
+The above assertions are only for the purpose of illustration. This is not a good test!
 :::
 
-## Matching against complex hierarchies
+## Matching Against Complex Hierarchies
 
-Consider a more complex LayoutSpec; it still has the same text truncation logic,
-but with some new UI elements; wrapping the Text in a Column and a Card.
+Consider the following more complex LayoutSpec. It still has the same text truncation logic, with some new UI elements, and wraps the Text in a Column and a Card.
 
 ```java
 @LayoutSpec
@@ -129,7 +120,7 @@ public class TruncatingComponentSpec {
 }
 ```
 
-**The original test will start failing now.**
+**The original test will start failing now:**
 
 ```java
 @Test
@@ -142,8 +133,7 @@ public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() 
 }
 ```
 
-The error messages should provide sufficient information to understand why the test failed. The
-error message prints out the component hierarchy, and the assertion that failed.
+The error messages should provide sufficient information to understand why the test failed. The error message prints out the component hierarchy, and the assertion that failed:
 
 ```log
 Expecting:
@@ -157,12 +147,9 @@ to have:
  <sub component with <text <is "Szechuan Sauce">>>
 ```
 
-Here the `Text` component was expected to be a direct descendant of `TruncatingComponent`, but the
-error message shows that the Text component is several levels below the TruncatingComponent.
+Here, the `Text` component was expected to be a direct descendant of `TruncatingComponent`.  However, the error message shows that the Text component is several levels below the TruncatingComponent.
 
-This test can be fixed by using a different Condition API called `deepSubComponentWith`. As the name
-suggests this condition will test against all the components in the hierarchy, and not just the immediate
-descendant.
+This test can be fixed by using a different Condition API called `deepSubComponentWith`. As the name suggests, this condition will test against all the components in the hierarchy, and not just the immediate descendant.
 
 ```java
 @Test
@@ -178,18 +165,16 @@ public void whenTextLengthIsLessThan16_shouldContainTextComponentWithFullText() 
 ```
 
 :::info
-Find all the Component conditions in the [JavaDoc here](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
+For information on all Component conditions, see the [ComponentConditions](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html) JavaDoc.
 :::
 
 ## Custom Conditions
 
-Custom Conditions can be created by implementing the `Condition<InspectableComponent>` interface
-which consists of a single method: `matches(InspectableComponent)`.
-[InspectableComponent](pathname:///javadoc/com/facebook/litho/testing/subcomponents/InspectableComponent.html)
-is a wrapper around a `Component` with additional information about the component.
+Custom Conditions can be created by implementing the `Condition<InspectableComponent>` interface which consists of a single method: `matches(InspectableComponent)`.
 
+[InspectableComponent](pathname:///javadoc/com/facebook/litho/testing/subcomponents/InspectableComponent.html) is a wrapper around a `Component` with additional information about the component.
 
-### Creating a custom condition
+### Creating a Custom Condition
 
 ```java
 public static Condition<InspectableComponent> hasBackground() {
@@ -201,10 +186,9 @@ public static Condition<InspectableComponent> hasBackground() {
     }
   };
 }
-
 ```
 
-### Using a custom condition
+### Using a Custom Condition
 
 ```java
 @Test
@@ -219,13 +203,12 @@ public void whenTruncatingComponentIsRendered_shouldHaveBackground() {
 
 ## Simple Sub-Component Matching
 
-To test for the mere presence of a component of a certain type use the
-[SubComponent.of](pathname:///javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html) API.
+To test for the mere presence of a component of a certain type, use the [SubComponent.of](pathname:///javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html) API.
 
-Consider a hypothetical LayoutSpec called `StoryComponentSpec`, which composes a
-`HeaderComponentSpec`, a `MessageComponentSpec`, a `LikersComponentSpec`, and a
-`FeedbackComponentSpec`. The following test can be used to assert the presence of
-these components in the hierarchy.
+Consider a hypothetical LayoutSpec called `StoryComponentSpec`, which consists of a `HeaderComponentSpec`, `MessageComponentSpec`, `LikersComponentSpec`, and a
+`FeedbackComponentSpec`.
+
+The following test can be used to assert the presence of those components in the hierarchy:
 
 ```java
 public class StoryComponentTest {
@@ -248,12 +231,9 @@ public class StoryComponentTest {
 }
 ```
 
-### Using with legacy APIs
+### Using with Legacy APIs
 
-Litho provides a bridge interface [legacySubComponent](pathname:///javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html#legacySubComponent-com.facebook.litho.testing.subcomponents.SubComponent-)
-which enables using the `SubComponent.of` API with the `subComponentWith` APIs. It accepts a
-`SubComponent` and works with both shallow and deep sub-component traversals. This is great
-if you want to ensure that a component with a given set of props exists in the component tree.
+Litho provides a bridge interface [legacySubComponent](pathname:///javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html#legacySubComponent-com.facebook.litho.testing.subcomponents.SubComponent-) that enables use of the `SubComponent.of` API with the `subComponentWith` APIs. It accepts a `SubComponent` and works with both shallow and deep sub-component traversals. This is ideal if you want to ensure that a component with a given set of props exists in the component tree.
 
 ```java
 @Test
@@ -272,9 +252,9 @@ public void testSubComponentLegacyBridge() {
 
 ## Resources
 
-To learn more, check out these resources:
+To learn more, see the following resources:
 
-- [LithoViewSubComponentExtractor](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentExtractor.html)
-- [LithoViewSubComponentDeepExtractor](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentDeepExtractor.html)
-- [ComponentConditions](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
-- [AssertJ Conditions](http://joel-costigliola.github.io/assertj/assertj-core-conditions.html)
+* [LithoViewSubComponentExtractor](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentExtractor.html)
+* [LithoViewSubComponentDeepExtractor](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentDeepExtractor.html)
+* [ComponentConditions](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
+* [AssertJ Conditions](http://joel-costigliola.github.io/assertj/assertj-core-conditions.html)
