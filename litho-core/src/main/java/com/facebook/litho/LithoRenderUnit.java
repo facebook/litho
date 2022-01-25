@@ -88,6 +88,11 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   }
 
   @Override
+  protected Class getDescription() {
+    return this.output.getComponent().getClass();
+  }
+
+  @Override
   protected void onStartUpdateRenderUnit() {
     mIsShouldUpdateCachingEnabled = true;
   }
