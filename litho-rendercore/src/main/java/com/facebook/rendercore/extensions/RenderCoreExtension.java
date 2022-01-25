@@ -17,7 +17,6 @@
 package com.facebook.rendercore.extensions;
 
 import android.graphics.Rect;
-import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
@@ -27,6 +26,7 @@ import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderCoreSystrace;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * The base class for all RenderCore Extensions.
@@ -157,14 +157,21 @@ public class RenderCoreExtension<Input, State> {
   public static void recursivelyNotifyVisibleBoundsChanged(final @Nullable Object content) {
     RenderCoreSystrace.beginSection("recursivelyNotifyVisibleBoundsChanged");
 
-    if (content instanceof RenderCoreExtensionHost) {
-      final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
-      host.notifyVisibleBoundsChanged();
-    } else if (content instanceof ViewGroup) {
-      final ViewGroup parent = (ViewGroup) content;
-      for (int i = 0; i < parent.getChildCount(); i++) {
-        final View child = parent.getChildAt(i);
-        recursivelyNotifyVisibleBoundsChanged(child);
+    if (content != null) {
+      final Stack<Object> contentStack = new Stack<>();
+      contentStack.add(content);
+
+      while (!contentStack.isEmpty()) {
+        final Object currentContent = contentStack.pop();
+
+        if (currentContent instanceof RenderCoreExtensionHost) {
+          ((RenderCoreExtensionHost) currentContent).notifyVisibleBoundsChanged();
+        } else if (currentContent instanceof ViewGroup) {
+          final ViewGroup currentViewGroup = (ViewGroup) currentContent;
+          for (int i = currentViewGroup.getChildCount() - 1; i >= 0; i--) {
+            contentStack.push(currentViewGroup.getChildAt(i));
+          }
+        }
       }
     }
 
