@@ -44,7 +44,7 @@ public class SimpleViewUnit extends RenderUnit<View> {
   }
 
   @Override
-  public Object getRenderContentType() {
+  public Class<?> getRenderContentType() {
     return view.getClass();
   }
 

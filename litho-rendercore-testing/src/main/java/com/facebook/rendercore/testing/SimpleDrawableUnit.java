@@ -42,7 +42,7 @@ public class SimpleDrawableUnit extends RenderUnit<Drawable> {
   }
 
   @Override
-  public Object getRenderContentType() {
+  public Class<?> getRenderContentType() {
     return drawable.getClass();
   }
 }

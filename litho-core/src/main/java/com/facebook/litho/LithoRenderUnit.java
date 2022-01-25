@@ -126,7 +126,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   }
 
   @Override
-  public Object getRenderContentType() {
+  public Class<?> getRenderContentType() {
     return output.getComponent().getClass();
   }
 

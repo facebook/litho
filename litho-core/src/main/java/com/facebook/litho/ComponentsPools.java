@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItemsPool;
-import com.facebook.rendercore.MountItemsPool.MountContentCreator;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,27 +117,25 @@ public class ComponentsPools {
    * Can be called to fill up a mount content pool for the specified MountContent types. If a pool
    * doesn't exist for a Mount Content type, a default one will be created with the specified size.
    */
-  public static void prefillMountContentPool(
-      Context context,
-      int poolSize,
-      Class componentClass,
-      MountContentCreator mountContentCreator) {
+  public static void prefillMountContentPool(Context context, int poolSize, RenderUnit renderUnit) {
     if (poolSize == 0) {
       return;
     }
 
     if (ComponentsConfiguration.delegateToRenderCoreMount) {
-      MountItemsPool.prefillMountContentPool(
-          context, poolSize, componentClass, mountContentCreator);
+      MountItemsPool.prefillMountContentPool(context, poolSize, renderUnit);
       return;
     }
 
     final MountContentPool pool =
         getDefaultMountContentPool(
-            context, Component.getOrCreateId(componentClass), componentClass, poolSize);
+            context,
+            Component.getOrCreateId(renderUnit.getRenderContentType()),
+            renderUnit.getRenderContentType(),
+            poolSize);
     if (pool != null) {
       for (int i = 0; i < poolSize; i++) {
-        pool.release(mountContentCreator.createMountContent(context));
+        pool.release(renderUnit.createContent(context));
       }
     }
   }
@@ -173,7 +170,7 @@ public class ComponentsPools {
   }
 
   private static @Nullable MountContentPool getDefaultMountContentPool(
-      Context context, int typeId, Class componentClass, int poolSize) {
+      Context context, int typeId, Class<?> componentClass, int poolSize) {
 
     synchronized (sMountContentLock) {
       SparseArray<MountContentPool> poolsArray = sMountContentPoolsByContext.get(context);

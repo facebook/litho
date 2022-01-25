@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pools;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -96,57 +96,31 @@ public class MountItemsPool {
     }
   }
 
-  /** Factory for creating mount content objects when filling an entire pool. */
-  public interface MountContentCreator {
-    Object createMountContent(Context context);
-  }
-
   /**
    * Can be called to fill up a mount content pool for the specified MountContent types. If a pool
    * doesn't exist for a Mount Content type, a default one will be created with the specified size.
-   *
-   * @param mountContentCreators a map of mount content types with corresponding factories to create
-   *     a mount content instance.
+   * PoolSize will only be respected if the RenderUnit does not provide a custom Pool
+   * implementation.
    */
-  public static void prefillMountContentPool(
-      Context context, int poolSize, Class lifecycle, MountContentCreator mountContentCreator) {
+  public static void prefillMountContentPool(Context context, int poolSize, RenderUnit renderUnit) {
     if (poolSize == 0) {
       return;
     }
 
-    final ItemPool pool = getDefaultMountContentPool(context, lifecycle);
+    final ItemPool pool = getMountContentPool(context, renderUnit, poolSize);
     if (pool != null) {
       for (int i = 0; i < poolSize; i++) {
-        pool.release(mountContentCreator.createMountContent(context));
+        pool.release(renderUnit.createContent(context));
       }
-    }
-  }
-
-  private static @Nullable ItemPool getDefaultMountContentPool(Context context, Class lifecycle) {
-    synchronized (sMountContentLock) {
-      Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
-      if (poolsMap == null) {
-        final Context rootContext = getRootContext(context);
-        if (sDestroyedRootContexts.containsKey(rootContext)) {
-          return null;
-        }
-
-        ensureActivityCallbacks(context);
-        poolsMap = new HashMap<Object, ItemPool>();
-        sMountContentPoolsByContext.put(context, poolsMap);
-      }
-
-      ItemPool pool = poolsMap.get(lifecycle);
-      if (pool == null) {
-        pool = new DefaultItemPool(lifecycle);
-        poolsMap.put(lifecycle, pool);
-      }
-
-      return pool;
     }
   }
 
   private static @Nullable ItemPool getMountContentPool(Context context, RenderUnit renderUnit) {
+    return getMountContentPool(context, renderUnit, DEFAULT_POOL_SIZE);
+  }
+
+  private static @Nullable ItemPool getMountContentPool(
+      Context context, RenderUnit renderUnit, int size) {
     if (renderUnit.isRecyclingDisabled()) {
       return null;
     }
@@ -171,7 +145,7 @@ public class MountItemsPool {
 
         // RenderUnit might produce a null pool. In this case, just create a default one.
         if (pool == null) {
-          pool = new DefaultItemPool(lifecycle);
+          pool = new DefaultItemPool(lifecycle, size);
         }
 
         poolsMap.put(lifecycle, pool);
@@ -347,13 +321,14 @@ public class MountItemsPool {
     void maybePreallocateContent(Context c, RenderUnit renderUnit);
   }
 
-  private static class DefaultItemPool implements ItemPool {
+  static class DefaultItemPool implements ItemPool {
 
-    private final Pools.SimplePool mPool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
+    private final Pools.SimplePool mPool;
     private final Object mLifecycle;
 
-    public DefaultItemPool(Object lifecycle) {
+    public DefaultItemPool(Object lifecycle, int size) {
       mLifecycle = lifecycle;
+      mPool = new Pools.SimplePool(size);
     }
 
     @Override
