@@ -9,10 +9,10 @@ import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
 ## Introduction to Sections API
 
 :::info
-The Sections API, which is built on top of Litho, is a declarative, composable, and thread-safe API for writing highly-optimized list screens.
+The Sections API, which is built on top of Litho, is a declarative, composable, and thread-safe API for writing highly-optimised List screens.
 :::
 
-The Sections API tries to address issues experiences at Facebook when writing complex lists, such as maintaining many view types, handling multiple data sources, and composing lists together.
+The Sections API tries to address issues experiences at Facebook when writing complex Lists, such as maintaining many view types, handling multiple data sources, and composing Lists together.
 
 Litho Components are used for various aspects of the UI. Sections are a way of composing data into a list of Litho Components or Views.
 If you visualize your screen as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen. The following diagram shows the relationship between Sections and Litho components.
@@ -40,11 +40,11 @@ RecyclerCollectionComponent.create(c)
 ```
 
 For now, this is all you need to know about adding Sections to your layout.
-For advanced use cases, such as snapping and horizontal lists, see the [RecyclerCollectionComponent](recycler-collection-component.md) page.
+For advanced use cases, such as snapping and horizontal Lists, see the [RecyclerCollectionComponent](recycler-collection-component.md) page.
 
 ### DiffSection
 
-Most lists are composed of groups of homogeneous items interleaved with one-off items: picture a list of contacts sorted alphabetically and separated by headers indicating the first letter of the contact's name.
+Most Lists are composed of groups of homogeneous items interleaved with one-off items: picture a list of contacts sorted alphabetically and separated by headers indicating the first letter of the contact's name.
 
 Following this model, the Sections API ships two `DiffSectionSpec` implementations that can be combined to represent the structure of nearly any surface: `SingleComponentSection` and `DataDiffSection`.
 
@@ -211,10 +211,3 @@ Afterwards, read any/all of the following documents:
 If you need assistance, consult the internal wiki page [Debugging Litho Sections Surfaces with the Flipper Sections Plugin](https://fburl.com/wiki/sr02b53q).
 
 </FbInternalOnly>
-
-
-<OssOnly>
-
-<div/>
-
-</OssOnly>
