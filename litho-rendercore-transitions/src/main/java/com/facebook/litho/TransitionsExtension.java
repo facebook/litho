@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension
@@ -1042,14 +1043,20 @@ public class TransitionsExtension
 
   private static void recursivelyNotifyVisibleBoundsChanged(View view) {
     assertMainThread();
-    if (view instanceof AnimatedRootHost) {
-      ((AnimatedRootHost) view)
-          .notifyVisibleBoundsChanged(new Rect(0, 0, view.getWidth(), view.getHeight()), false);
-    } else if (view instanceof ViewGroup) {
-      final ViewGroup parent = (ViewGroup) view;
-      for (int i = 0; i < parent.getChildCount(); i++) {
-        final View child = parent.getChildAt(i);
-        recursivelyNotifyVisibleBoundsChanged(child);
+
+    final Stack<View> viewStack = new Stack<>();
+    viewStack.push(view);
+
+    while (!viewStack.isEmpty()) {
+      final View currView = viewStack.pop();
+      if (currView instanceof AnimatedRootHost) {
+        ((AnimatedRootHost) currView)
+            .notifyVisibleBoundsChanged(new Rect(0, 0, currView.getWidth(), currView.getHeight()), false);
+      } else if (currView instanceof ViewGroup) {
+        final ViewGroup parent = (ViewGroup) currView;
+        for (int i = parent.getChildCount() - 1; i >= 0; i--) {
+          viewStack.push(parent.getChildAt(i));
+        }
       }
     }
   }
