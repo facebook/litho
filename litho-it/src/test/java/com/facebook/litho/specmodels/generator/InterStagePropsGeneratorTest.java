@@ -169,8 +169,6 @@ public class InterStagePropsGeneratorTest {
             "@java.lang.Override\n"
                 + "public MountTest makeShallowCopy() {\n"
                 + "  MountTest component = (MountTest) super.makeShallowCopy();\n"
-                + "  component.setInterStagePropsContainer(createInterStagePropsContainer());\n"
-                + "  component.setPrepareInterStagePropsContainer(createPrepareInterStagePropsContainer());\n"
                 + "  return component;\n"
                 + "}\n");
   }

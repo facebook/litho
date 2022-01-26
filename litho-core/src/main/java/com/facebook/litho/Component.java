@@ -1260,24 +1260,6 @@ public abstract class Component
   }
 
   /**
-   * If this component instance had its layout created on a different thread, we need to create a
-   * copy to create its layout on this thread, otherwise we'll end up accessing the internal data
-   * structures of the same instance on different threads. This can happen when the component is
-   * passed as a prop and the same instance can be used in layout calculations on main and
-   * background threads. https://github.com/facebook/litho/issues/360
-   */
-  final Component getThreadSafeInstance() {
-    // Needed for tests, mocks can run into this.
-    if (mLayoutVersionGenerator == null) {
-      return this;
-    }
-
-    final boolean shouldCreateNewInstance = mLayoutVersionGenerator.getAndSet(true);
-
-    return shouldCreateNewInstance ? makeShallowCopy() : this;
-  }
-
-  /**
    * @return true if component has common dynamic props, false - otherwise. If so {@link
    *     #getCommonDynamicProps()} will return not null value
    * @see DynamicPropsManager
@@ -1300,14 +1282,6 @@ public abstract class Component
     final Component component = makeShallowCopy();
     component.mId = sIdGenerator.incrementAndGet();
     return component;
-  }
-
-  /** Returns an updated shallow copy of this component with the same global key. */
-  final Component makeUpdatedShallowCopy(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext parentContext,
-      final String globalKeyToReuse) {
-    return this;
   }
 
   static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
@@ -1369,20 +1343,6 @@ public abstract class Component
     }
 
     return scopedContext.getScopedComponentInfo().getStateContainer();
-  }
-
-  protected final void setStateContainer(StateContainer stateContainer) {
-    return;
-  }
-
-  protected final void setInterStagePropsContainer(
-      InterStagePropsContainer interStagePropsContainer) {
-    return;
-  }
-
-  protected final void setPrepareInterStagePropsContainer(
-      PrepareInterStagePropsContainer interStagePropsContainer) {
-    return;
   }
 
   protected @Nullable StateContainer createStateContainer() {

@@ -728,35 +728,6 @@ public class ComponentBodyGenerator {
           componentParam.getName());
     }
 
-    if (hasDeepCopy) {
-      builder.beginControlFlow("if (!deepCopy)");
-    }
-
-    final String stateContainerClassName = getStateContainerClassName(specModel);
-    if (hasState) {
-      builder.addStatement(
-          "component.setStateContainer(new $T())", ClassName.bestGuess(stateContainerClassName));
-    }
-
-    final boolean hasInterStageProps =
-        specModel.getInterStageInputs() != null && !specModel.getInterStageInputs().isEmpty();
-    if (hasInterStageProps) {
-      builder.addStatement(
-          "component.setInterStagePropsContainer(createInterStagePropsContainer())");
-    }
-
-    boolean hasPrepareInterstageProps =
-        specModel.getPrepareInterStageInputs() != null
-            && !specModel.getPrepareInterStageInputs().isEmpty();
-    if (hasPrepareInterstageProps) {
-      builder.addStatement(
-          "component.setPrepareInterStagePropsContainer(createPrepareInterStagePropsContainer())");
-    }
-
-    if (hasDeepCopy) {
-      builder.endControlFlow();
-    }
-
     builder.addStatement("return component");
 
     return typeSpecDataHolder.addMethod(builder.build()).build();

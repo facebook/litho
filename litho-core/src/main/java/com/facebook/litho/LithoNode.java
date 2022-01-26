@@ -1231,8 +1231,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
       final String key = mComponentGlobalKeys.get(i);
-      final Component component =
-          mComponents.get(i).makeUpdatedShallowCopy(layoutStateContext, parentContext, key);
+      final Component component = mComponents.get(i);
       updated.add(component);
       updatedKeys.add(key);
 

@@ -45,7 +45,6 @@ class StateUpdateTestComponent extends SpecGeneratedComponent {
 
   StateUpdateTestComponent() {
     super("StateUpdateTest");
-    setStateContainer(new TestStateContainer());
   }
 
   @Override

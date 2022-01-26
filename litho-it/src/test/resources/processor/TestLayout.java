@@ -142,7 +142,6 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   public TestLayout makeShallowCopy() {
     TestLayout component = (TestLayout) super.makeShallowCopy();
     component.child = component.child != null ? component.child.makeShallowCopy() : null;
-    component.setStateContainer(new TestLayoutStateContainer());
     return component;
   }
 

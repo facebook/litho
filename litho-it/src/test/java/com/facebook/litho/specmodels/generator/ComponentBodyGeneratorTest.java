@@ -563,7 +563,6 @@ public class ComponentBodyGeneratorTest {
                 + "public Test makeShallowCopy() {\n"
                 + "  Test component = (Test) super.makeShallowCopy();\n"
                 + "  component.arg4 = component.arg4 != null ? component.arg4.makeShallowCopy() : null;\n"
-                + "  component.setStateContainer(new TestStateContainer());\n"
                 + "  return component;\n"
                 + "}\n");
   }
@@ -579,7 +578,6 @@ public class ComponentBodyGeneratorTest {
             "@java.lang.Override\n"
                 + "public TestWithTransition makeShallowCopy() {\n"
                 + "  TestWithTransition component = (TestWithTransition) super.makeShallowCopy();\n"
-                + "  component.setStateContainer(new TestWithTransitionStateContainer());\n"
                 + "  return component;\n"
                 + "}\n");
   }
