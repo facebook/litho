@@ -40,7 +40,7 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   private final LayoutStateContext mLayoutContext;
   private final ComponentContext mContext;
 
-  private final InputOnlyInternalNode mInternalNode;
+  private final InternalNode mInternalNode;
 
   private final List<LithoLayoutResult> mChildren = new ArrayList<>();
   private final YogaNode mYogaNode;
@@ -64,7 +64,7 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   public DefaultLayoutResult(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
-      final InputOnlyInternalNode internalNode,
+      final InternalNode internalNode,
       final YogaNode yogaNode,
       final @Nullable LithoLayoutResult parent) {
     mLayoutContext = layoutStateContext;

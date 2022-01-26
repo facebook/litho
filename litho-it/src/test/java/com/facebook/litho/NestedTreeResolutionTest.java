@@ -60,9 +60,7 @@ public class NestedTreeResolutionTest {
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
 
     NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-    assertThat(
-            ((InputOnlyNestedTreeHolder) holder.getInternalNode())
-                .mNestedTreePadding.get(YogaEdge.ALL))
+    assertThat(((NestedTreeHolder) holder.getInternalNode()).mNestedTreePadding.get(YogaEdge.ALL))
         .isEqualTo(5.0f);
     assertThat(holder.getNestedResult().getPaddingTop()).isEqualTo(5);
   }

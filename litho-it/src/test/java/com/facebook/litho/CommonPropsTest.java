@@ -56,14 +56,14 @@ public class CommonPropsTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
-  private InputOnlyInternalNode mNode;
+  private InternalNode mNode;
   private NodeInfo mNodeInfo;
   private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
-    mNode = mock(InputOnlyInternalNode.class);
+    mNode = mock(InternalNode.class);
     mNodeInfo = mock(NodeInfo.class);
     when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
     mCommonProps = new CommonProps();

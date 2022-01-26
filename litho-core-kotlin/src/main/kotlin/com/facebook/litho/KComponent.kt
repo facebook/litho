@@ -283,7 +283,7 @@ abstract class KComponent : Component() {
   final override fun resolve(
       layoutContext: LayoutStateContext,
       c: ComponentContext
-  ): InternalNode? = super.resolve(layoutContext, c)
+  ): InternalNode<*>? = super.resolve(layoutContext, c)
 
   final override fun shouldAlwaysRemeasure() = false
 

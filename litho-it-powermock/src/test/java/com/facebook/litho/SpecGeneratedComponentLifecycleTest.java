@@ -74,29 +74,28 @@ public class SpecGeneratedComponentLifecycleTest {
   private static final int NODE_LIST_SIZE = 100;
 
   private DefaultLayoutResult mResult;
-  private InputOnlyInternalNode mNode;
+  private InternalNode mNode;
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
   private ComponentTree mComponentTree;
   private boolean mPreviousOnErrorConfig;
   private LayoutStateContext mLayoutStateContext;
-  private final List<InputOnlyInternalNode> mInputOnlyInternalNodes =
+  private final List<InternalNode> mInternalNodes = new ArrayList<>(NODE_LIST_SIZE);
+  private final List<NestedTreeHolder> mInputOnlyNestedTreeHolders =
       new ArrayList<>(NODE_LIST_SIZE);
-  private final List<InputOnlyNestedTreeHolder> mInputOnlyNestedTreeHolders =
-      new ArrayList<>(NODE_LIST_SIZE);
-  private int mNextInputOnlyInternalNode;
+  private int mNextInternalNode;
   private int mNextInputOnlyNestedTreeHolder;
 
-  private InputOnlyInternalNode getNextInputOnlyInternalNode() {
-    if (mNextInputOnlyInternalNode >= NODE_LIST_SIZE) {
+  private InternalNode getNextInternalNode() {
+    if (mNextInternalNode >= NODE_LIST_SIZE) {
       throw new IllegalStateException("Increase NODE_LIST_SIZE");
     }
 
-    return mInputOnlyInternalNodes.get(mNextInputOnlyInternalNode++);
+    return mInternalNodes.get(mNextInternalNode++);
   }
 
-  private InputOnlyNestedTreeHolder getNextInputOnlyNestedTreeHolder() {
+  private NestedTreeHolder getNextInputOnlyNestedTreeHolder() {
     if (mNextInputOnlyNestedTreeHolder >= NODE_LIST_SIZE) {
       throw new IllegalStateException("Increase NODE_LIST_SIZE");
     }
@@ -107,15 +106,15 @@ public class SpecGeneratedComponentLifecycleTest {
   private void createSpyNodes() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
     for (int i = 0, size = NODE_LIST_SIZE; i < size; i++) {
-      mInputOnlyInternalNodes.add(spy(new InputOnlyInternalNode(c)));
-      mInputOnlyNestedTreeHolders.add(spy(new InputOnlyNestedTreeHolder(c, null)));
+      mInternalNodes.add(spy(new InternalNode(c)));
+      mInputOnlyNestedTreeHolders.add(spy(new NestedTreeHolder(c, null)));
     }
   }
 
   private void clearSpyNodes() {
     mInputOnlyNestedTreeHolders.clear();
-    mInputOnlyInternalNodes.clear();
-    mNextInputOnlyInternalNode = 0;
+    mInternalNodes.clear();
+    mNextInternalNode = 0;
     mNextInputOnlyNestedTreeHolder = 0;
   }
 
@@ -125,14 +124,14 @@ public class SpecGeneratedComponentLifecycleTest {
     mockStatic(Layout.class);
 
     try {
-      whenNew(InputOnlyInternalNode.class)
+      whenNew(InternalNode.class)
           .withArguments((ComponentContext) any())
           .thenAnswer(
-              new Answer<InputOnlyInternalNode>() {
+              new Answer<InternalNode>() {
                 @Override
-                public InputOnlyInternalNode answer(InvocationOnMock invocation) throws Throwable {
+                public InternalNode answer(InvocationOnMock invocation) throws Throwable {
                   final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
-                  final InputOnlyInternalNode node = getNextInputOnlyInternalNode();
+                  final InternalNode node = getNextInternalNode();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
                   if (c.useStatelessComponent()) {
                     Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
@@ -146,16 +145,15 @@ public class SpecGeneratedComponentLifecycleTest {
     }
 
     try {
-      whenNew(InputOnlyNestedTreeHolder.class)
+      whenNew(NestedTreeHolder.class)
           .withArguments((ComponentContext) any(), (TreeProps) any())
           .thenAnswer(
-              new Answer<InputOnlyNestedTreeHolder>() {
+              new Answer<NestedTreeHolder>() {
                 @Override
-                public InputOnlyNestedTreeHolder answer(InvocationOnMock invocation)
-                    throws Throwable {
+                public NestedTreeHolder answer(InvocationOnMock invocation) throws Throwable {
                   final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
                   final TreeProps props = (TreeProps) invocation.getArguments()[1];
-                  final InputOnlyNestedTreeHolder node = getNextInputOnlyNestedTreeHolder();
+                  final NestedTreeHolder node = getNextInputOnlyNestedTreeHolder();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
                   if (c.useStatelessComponent()) {
                     Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
@@ -191,7 +189,7 @@ public class SpecGeneratedComponentLifecycleTest {
         .thenCallRealMethod();
 
     mDiffNode = mock(DiffNode.class);
-    mNode = mock(InputOnlyInternalNode.class);
+    mNode = mock(InternalNode.class);
     mResult = mock(DefaultLayoutResult.class);
     mYogaNode = YogaNodeFactory.create();
     mYogaNode.setData(mNode);

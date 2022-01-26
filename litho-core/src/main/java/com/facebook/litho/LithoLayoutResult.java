@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;

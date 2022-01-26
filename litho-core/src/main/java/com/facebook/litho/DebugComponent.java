@@ -53,7 +53,7 @@ public final class DebugComponent {
 
   private String mGlobalKey;
   private LithoLayoutResult mResult;
-  private InternalNode mNode;
+  private InternalNode<?> mNode;
   private int mComponentIndex;
 
   private DebugComponent() {}
@@ -61,7 +61,7 @@ public final class DebugComponent {
   static synchronized @Nullable DebugComponent getInstance(
       LithoLayoutResult result, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
-    final InternalNode node = result.getInternalNode();
+    final InternalNode<?> node = result.getInternalNode();
     final ComponentContext context = result.getContext();
 
     if (componentIndex >= node.getComponents().size()) {
@@ -119,7 +119,7 @@ public final class DebugComponent {
     }
   }
 
-  static void applyOverrides(ComponentContext context, InternalNode node) {
+  static void applyOverrides(ComponentContext context, InternalNode<?> node) {
     if (node.getComponents() == null || node.getComponents().isEmpty()) {
       return;
     }

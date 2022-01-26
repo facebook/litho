@@ -83,6 +83,7 @@ litho_android_test_library(
         LITHO_TESTING_COMPONENTS_FINDER_TARGET,
     ],
     exported_deps = [
+        LITHO_KOTLIN_TARGET,
         LITHO_TESTING_HELPER_TARGET,
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),

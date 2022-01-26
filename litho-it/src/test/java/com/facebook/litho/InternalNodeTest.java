@@ -59,11 +59,11 @@ public class InternalNodeTest {
     return root.getInternalNode();
   }
 
-  private static InternalNode.NestedTreeHolder acquireNestedTreeHolder() {
+  private static NestedTreeHolder acquireNestedTreeHolder() {
     final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
 
-    return new InputOnlyNestedTreeHolder(context, null);
+    return new NestedTreeHolder(context, null);
   }
 
   private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
@@ -84,7 +84,7 @@ public class InternalNodeTest {
 
   @Test
   public void testImportantForAccessibilityFlag() {
-    final InputOnlyInternalNode node = (InputOnlyInternalNode) acquireInternalNode();
+    final InternalNode node = (InternalNode) acquireInternalNode();
     node.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     assertThat(isFlagSet(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
@@ -93,7 +93,7 @@ public class InternalNodeTest {
 
   @Test
   public void testDuplicateParentStateFlag() {
-    final InputOnlyInternalNode node = (InputOnlyInternalNode) acquireInternalNode();
+    final InternalNode node = (InternalNode) acquireInternalNode();
     node.duplicateParentState(false);
     assertThat(isFlagSet(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
@@ -102,7 +102,7 @@ public class InternalNodeTest {
 
   @Test
   public void testBackgroundFlag() {
-    final InputOnlyInternalNode node = (InputOnlyInternalNode) acquireInternalNode();
+    final InternalNode node = (InternalNode) acquireInternalNode();
     node.backgroundColor(0xFFFF0000);
     assertThat(isFlagSet(node, "PFLAG_BACKGROUND_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_BACKGROUND_IS_SET");
@@ -111,7 +111,7 @@ public class InternalNodeTest {
 
   @Test
   public void testForegroundFlag() {
-    final InputOnlyInternalNode node = (InputOnlyInternalNode) acquireInternalNode();
+    final InternalNode node = (InternalNode) acquireInternalNode();
     node.foregroundColor(0xFFFF0000);
     assertThat(isFlagSet(node, "PFLAG_FOREGROUND_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FOREGROUND_IS_SET");
@@ -120,7 +120,7 @@ public class InternalNodeTest {
 
   @Test
   public void testTransitionKeyFlag() {
-    final InputOnlyInternalNode node = (InputOnlyInternalNode) acquireInternalNode();
+    final InternalNode node = (InternalNode) acquireInternalNode();
     node.transitionKey("key", "");
     assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
@@ -129,7 +129,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNodeSetFlags() {
-    InternalNode.NestedTreeHolder orig = acquireNestedTreeHolder();
+    NestedTreeHolder orig = acquireNestedTreeHolder();
     InternalNode dest = acquireInternalNode();
 
     orig.importantForAccessibility(0);
@@ -143,7 +143,7 @@ public class InternalNodeTest {
     orig.unfocusedHandler(null);
     orig.visibilityChangedHandler(null);
 
-    ((InputOnlyNestedTreeHolder) orig).transferInto(dest);
+    ((NestedTreeHolder) orig).transferInto(dest);
 
     assertThat(isFlagSet(dest, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
     assertThat(isFlagSet(dest, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
@@ -261,14 +261,14 @@ public class InternalNodeTest {
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InputOnlyInternalNode.class, flagName);
+    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
 
     return ((flags & flagPosition) != 0);
   }
 
   private static void clearFlag(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InputOnlyInternalNode.class, flagName);
+    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
     flags &= ~flagPosition;
     Whitebox.setInternalState(internalNode, "mPrivateFlags", flags);

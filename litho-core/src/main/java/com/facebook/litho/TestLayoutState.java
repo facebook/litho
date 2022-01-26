@@ -258,12 +258,12 @@ public class TestLayoutState {
   }
 
   private static InternalNode createInternalNode(ComponentContext c) {
-    return new InputOnlyInternalNode<>(c);
+    return new InternalNode(c);
   }
 
   private static InternalNode createNestedTreeHolder(
       ComponentContext c, @Nullable TreeProps treeProps) {
-    return new InputOnlyNestedTreeHolder(c, treeProps);
+    return new NestedTreeHolder(c, treeProps);
   }
 
   // Mimicks implementation of Layout.create but uses a custom InternalNode for shallow child

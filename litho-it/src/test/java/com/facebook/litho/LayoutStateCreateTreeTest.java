@@ -587,7 +587,7 @@ public class LayoutStateCreateTreeTest {
 
     protected InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
       LithoLayoutResult result = mock(LithoLayoutResult.class);
-      InputOnlyInternalNode node = mock(InputOnlyInternalNode.class);
+      InternalNode node = mock(InternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
       when(node.calculateLayout(any(RenderState.LayoutContext.class), anyInt(), anyInt()))

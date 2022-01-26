@@ -532,7 +532,7 @@ public class LayoutState
   private static void collectResults(
       final ComponentContext parentContext,
       final LithoLayoutResult result,
-      final InternalNode node,
+      final InternalNode<?> node,
       final LayoutState layoutState,
       @Nullable RenderTreeNode parent,
       final @Nullable DiffNode parentDiffNode,

@@ -19,7 +19,6 @@ package com.facebook.litho;
 import android.graphics.PathEffect;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
-import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.yoga.YogaNode;
 
@@ -29,8 +28,7 @@ import com.facebook.yoga.YogaNode;
  * properties and held separately so that they can be copied into the actual nested tree layout
  * before measuring it.
  */
-public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeYogaLayoutProps>
-    implements NestedTreeHolder {
+public class NestedTreeHolder extends InternalNode<NestedTreeYogaLayoutProps> {
 
   final @Nullable TreeProps mPendingTreeProps;
 
@@ -38,12 +36,11 @@ public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeY
   @Nullable Edges mNestedTreePadding;
   @Nullable boolean[] mNestedIsPaddingPercentage;
 
-  protected InputOnlyNestedTreeHolder(ComponentContext context, @Nullable TreeProps props) {
+  protected NestedTreeHolder(ComponentContext context, @Nullable TreeProps props) {
     super(context);
     mPendingTreeProps = TreeProps.copy(props);
   }
 
-  @Override
   public @Nullable TreeProps getPendingTreeProps() {
     return mPendingTreeProps;
   }
@@ -79,15 +76,10 @@ public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeY
         context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
   }
 
-  @Override
   public void copyInto(InternalNode target) {
-    // If copying into an InputOnlyInternalNode the defer copying, and set this NestedTreeHolder
-    // on the target. The props will be transferred to the nested result during layout calculation.
-    if (target instanceof InputOnlyInternalNode) {
-      ((InputOnlyInternalNode) target).setNestedTreeHolder(this);
-    } else {
-      transferInto(target);
-    }
+    // Defer copying, and set this NestedTreeHolder on the target. The props will be
+    // transferred to the nested result during layout calculation.
+    target.setNestedTreeHolder(this);
   }
 
   public void transferInto(InternalNode target) {
