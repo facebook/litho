@@ -236,6 +236,7 @@ class Collection(
 @ContainerDsl
 class CollectionContainerScope(override val context: ComponentContext) : ResourcesScope {
 
+  @Suppress("KtDataClass")
   internal data class CollectionData(
       val id: Any? = null,
       val component: Component? = null,
