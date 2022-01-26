@@ -21,7 +21,6 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static com.facebook.litho.it.R.drawable.background_without_padding;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -155,15 +154,6 @@ public class LithoNodeTest {
     assertThat(isFlagSet(dest, "PFLAG_INVISIBLE_HANDLER_IS_SET")).isTrue();
     assertThat(isFlagSet(dest, "PFLAG_UNFOCUSED_HANDLER_IS_SET")).isTrue();
     assertThat(isFlagSet(dest, "PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET")).isTrue();
-  }
-
-  @Test
-  public void testPaddingIsNotSetFromDrawable() {
-    LithoNode node = acquireInternalNode();
-
-    node.backgroundRes(background_without_padding);
-
-    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isFalse();
   }
 
   @Test

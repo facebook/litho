@@ -91,13 +91,10 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
-  private static final String INVALID_LAYOUT_PROPS = "YogaLayoutProps:ContextSpecificStyleSet";
-
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L;
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
   protected static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
-  protected static final long PFLAG_PADDING_IS_SET = 1L << 10;
   protected static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
   protected static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
   protected static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
@@ -1173,11 +1170,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     mFrozen = false;
   }
 
-  void updateWith(
-      final ComponentContext c,
-      final List<Component> components,
-      final List<String> componentKeys,
-      final @Nullable DiffNode diffNode) {
+  void updateWith(final List<Component> components, final List<String> componentKeys) {
 
     // 1. Set new ComponentContext, YogaNode, and components.
     mComponents = components;
@@ -1611,12 +1604,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
         current.getUpdatedComponents(layoutStateContext, head, headKey);
 
     // 4. Update the layout with the updated context, components, and YogaNode.
-    final Component tailComponent = updated.first.get(0);
-    layout.updateWith(
-        Preconditions.checkNotNull(tailComponent.getScopedContext()),
-        updated.first,
-        updated.second,
-        null);
+    layout.updateWith(updated.first, updated.second);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
