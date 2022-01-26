@@ -45,7 +45,7 @@ class CollectionIdTest {
   @Test
   fun `test generated ids are unique`() {
     val ids =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               child(null)
               child(emptyComponent())
@@ -60,7 +60,7 @@ class CollectionIdTest {
   @Test
   fun `test generated ids are stable across recreations`() {
     val ids1 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               child(null)
               child(emptyComponent())
@@ -70,7 +70,7 @@ class CollectionIdTest {
             .getIds()
 
     val ids2 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               child(null)
               child(emptyComponent())
@@ -85,7 +85,7 @@ class CollectionIdTest {
   @Test
   fun `test generated ids for same component type are stable`() {
     val ids1 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               child(textComponent())
               child(textComponent())
@@ -93,7 +93,7 @@ class CollectionIdTest {
             .getIds()
 
     val ids2 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               child(textComponent())
               // Insert new content. Should not affect ids of existing children
@@ -113,7 +113,7 @@ class CollectionIdTest {
   @Test
   fun `test generated ids in SubCollections are not impacted by other children`() {
     val ids1 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               subCollection(id = "something") {
                 child(null)
@@ -126,7 +126,7 @@ class CollectionIdTest {
             .getIds()
 
     val ids2 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               child(emptyComponent()) // <-- Should not affect id assignment in SubCollection
               subCollection(id = "something") {
@@ -145,7 +145,7 @@ class CollectionIdTest {
   @Test
   fun `test ids in SubCollections do not clash`() {
     val ids1 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               subCollection(id = "something") {
                 child(null)
@@ -158,7 +158,7 @@ class CollectionIdTest {
             .getIds()
 
     val ids2 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               subCollection(id = "something else") {
                 child(null)
@@ -176,7 +176,7 @@ class CollectionIdTest {
   @Test
   fun `test ids in nested SubCollections do not clash`() {
     val ids1 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               subCollection(id = "something") {
                 subCollection(id = 2) {
@@ -191,7 +191,7 @@ class CollectionIdTest {
             .getIds()
 
     val ids2 =
-        CollectionContainerScope()
+        CollectionContainerScope(lithoViewRule.context)
             .apply {
               subCollection(id = "something else") {
                 subCollection(id = 2) {

@@ -51,7 +51,7 @@ class PaginationCollectionKComponent : KComponent() {
       if (paginatedData.value.hasNext) {
         child(
             Column(alignItems = YogaAlign.CENTER) {
-              child(Progress(style = Style.height(50.dp).height(50.dp)))
+              child(component = Progress(style = Style.height(50.dp).height(50.dp)))
             })
       }
     }

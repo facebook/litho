@@ -19,53 +19,41 @@ package com.facebook.samples.litho.kotlin.collection
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.ResourcesScope
 import com.facebook.litho.State
 import com.facebook.litho.Style
 import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.SubCollection
+import com.facebook.litho.sections.widget.CollectionContainerScope
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 
-class SubCollectionsKComponent : KComponent() {
+class ModularCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     val nestedContentVisible = useState { true }
 
-    val header = header()
-    val body = body(nestedContentVisible)
-    val footer = FooterUtils.getFooter(this)
-
     return Collection {
-      subCollection(header)
-      subCollection(body)
-      subCollection(footer)
+      addHeader()
+      addBody(nestedContentVisible)
+      addFooter()
     }
   }
 
-  private fun ResourcesScope.header(): SubCollection {
-    return SubCollection { child(isSticky = true, component = Text("Header")) }
+  private fun CollectionContainerScope.addHeader() {
+    child(isSticky = true, component = Text("Header"))
   }
 
-  private fun ResourcesScope.body(nestedContentVisible: State<Boolean>): SubCollection {
-    val nestedContent = SubCollection {
+  private fun CollectionContainerScope.addBody(nestedContentVisible: State<Boolean>) {
+    child(
+        Text(
+            "${if (nestedContentVisible.value) "-" else "+"} Body",
+            style = Style.onClick { nestedContentVisible.update(!nestedContentVisible.value) }))
+    if (nestedContentVisible.value) {
       (0..3).forEach { child(id = it, component = Text("  Nested Body Item $it")) }
     }
-    return SubCollection {
-      child(
-          Text(
-              "${if (nestedContentVisible.value) "-" else "+"} Body",
-              style = Style.onClick { nestedContentVisible.update(!nestedContentVisible.value) }))
-      if (nestedContentVisible.value) subCollection(nestedContent)
-    }
   }
-}
 
-object FooterUtils {
-  fun getFooter(resourcesScope: ResourcesScope): SubCollection {
-    with(resourcesScope) {
-      return SubCollection { child(Text("Footer")) }
-    }
+  private fun CollectionContainerScope.addFooter() {
+    child(Text("Footer"))
   }
 }

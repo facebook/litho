@@ -26,6 +26,7 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
+import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
@@ -118,7 +119,7 @@ class Collection(
 
   override fun ComponentScope.render(): Component? {
     val sectionContext = SectionContext(context)
-    val containerScope = CollectionContainerScope()
+    val containerScope = CollectionContainerScope(context)
     containerScope.init()
 
     val combinedOnViewportChanged: OnViewportChanged =
@@ -232,7 +233,7 @@ class Collection(
 }
 
 @ContainerDsl
-class CollectionContainerScope {
+class CollectionContainerScope(override val context: ComponentContext) : ResourcesScope {
 
   internal data class CollectionData(
       val id: Any? = null,

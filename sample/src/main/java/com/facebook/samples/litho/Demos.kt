@@ -98,6 +98,7 @@ import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.FriendsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.HorizontalScrollKComponent
+import com.facebook.samples.litho.kotlin.collection.ModularCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.MultiListCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PaginationCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComponent
@@ -105,7 +106,6 @@ import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SelectionCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
-import com.facebook.samples.litho.kotlin.collection.SubCollectionsKComponent
 import com.facebook.samples.litho.kotlin.collection.TabsCollectionKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
@@ -202,7 +202,8 @@ class Demos {
                             SingleDemo(
                                 name = "Selection", component = SelectionCollectionKComponent()),
                             SingleDemo(
-                                name = "SubCollections", component = SubCollectionsKComponent()),
+                                name = "Modular Collection",
+                                component = ModularCollectionKComponent()),
                             SingleDemo(name = "Friends", component = FriendsCollectionKComponent()),
                             SingleDemo(
                                 name = "Horizontal Scroll",

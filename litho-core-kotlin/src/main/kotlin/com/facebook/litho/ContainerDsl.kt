@@ -21,6 +21,8 @@ package com.facebook.litho
  * functions like `child()` to add children, they can only apply to the closest receiver annotated
  * with ContainerDsl.
  *
+ * Any class annotated with this marker should also extend ResourcesScope
+ *
  * See https://kotlinlang.org/docs/type-safe-builders.html#scope-control-dslmarker
  */
 @DslMarker annotation class ContainerDsl

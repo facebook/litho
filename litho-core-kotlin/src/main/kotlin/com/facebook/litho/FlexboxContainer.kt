@@ -39,7 +39,7 @@ inline fun ResourcesScope.Column(
     style: Style? = null,
     init: FlexboxContainerScope.() -> Unit,
 ): Column {
-  val containerScope = FlexboxContainerScope()
+  val containerScope = FlexboxContainerScope(context)
   containerScope.init()
   return createColumn(
       alignContent, alignItems, justifyContent, wrap, isReversed, style, containerScope)
@@ -94,7 +94,7 @@ inline fun ResourcesScope.Row(
     style: Style? = null,
     init: FlexboxContainerScope.() -> Unit,
 ): Row {
-  val containerScope = FlexboxContainerScope()
+  val containerScope = FlexboxContainerScope(context)
   containerScope.init()
   return createRow(
       alignContent, alignItems, justifyContent, wrap, isReversed, style, containerScope)
@@ -135,9 +135,10 @@ fun ResourcesScope.createRow(
  * The receiver gives the ability to add children to this container.
  */
 @ContainerDsl
-inline class FlexboxContainerScope(
-    internal val children: MutableList<Component?> = mutableListOf()
-) {
+class FlexboxContainerScope(
+    override val context: ComponentContext,
+    internal val children: MutableList<Component?> = mutableListOf(),
+) : ResourcesScope {
 
   /** Adds a Component as a child to the Row or Column being initialized. */
   fun child(component: Component?) {
