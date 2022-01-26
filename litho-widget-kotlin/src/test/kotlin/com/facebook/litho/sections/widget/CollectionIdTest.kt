@@ -99,8 +99,6 @@ class CollectionIdTest {
               // Insert new content. Should not affect ids of existing children
               child(emptyComponent())
               child(id = 1, component = textComponent())
-              subCollection { child(textComponent()) }
-              subCollection(id = 2) { child(textComponent()) }
               // End new content.
               child(textComponent())
             }
@@ -108,103 +106,5 @@ class CollectionIdTest {
 
     assertThat(ids2.first()).isEqualTo(ids1.first())
     assertThat(ids2.last()).isEqualTo(ids1.last())
-  }
-
-  @Test
-  fun `test generated ids in SubCollections are not impacted by other children`() {
-    val ids1 =
-        CollectionContainerScope(lithoViewRule.context)
-            .apply {
-              subCollection(id = "something") {
-                child(null)
-                child(emptyComponent())
-                child(id = 1, component = emptyComponent())
-                child(id = null, component = emptyComponent())
-                child(deps = arrayOf()) { emptyComponent() }
-              }
-            }
-            .getIds()
-
-    val ids2 =
-        CollectionContainerScope(lithoViewRule.context)
-            .apply {
-              child(emptyComponent()) // <-- Should not affect id assignment in SubCollection
-              subCollection(id = "something") {
-                child(null)
-                child(emptyComponent())
-                child(id = 1, component = emptyComponent())
-                child(id = null, component = emptyComponent())
-                child(deps = arrayOf()) { emptyComponent() }
-              }
-            }
-            .getIds()
-
-    assertThat(ids1).hasSameElementsAs(ids2.subList(1, ids2.size))
-  }
-
-  @Test
-  fun `test ids in SubCollections do not clash`() {
-    val ids1 =
-        CollectionContainerScope(lithoViewRule.context)
-            .apply {
-              subCollection(id = "something") {
-                child(null)
-                child(emptyComponent())
-                child(id = 1, component = emptyComponent())
-                child(id = null, component = emptyComponent())
-                child(deps = arrayOf()) { emptyComponent() }
-              }
-            }
-            .getIds()
-
-    val ids2 =
-        CollectionContainerScope(lithoViewRule.context)
-            .apply {
-              subCollection(id = "something else") {
-                child(null)
-                child(emptyComponent())
-                child(id = 1, component = emptyComponent())
-                child(id = null, component = emptyComponent())
-                child(deps = arrayOf()) { emptyComponent() }
-              }
-            }
-            .getIds()
-
-    assertThat(ids1).doesNotContainAnyElementsOf(ids2)
-  }
-
-  @Test
-  fun `test ids in nested SubCollections do not clash`() {
-    val ids1 =
-        CollectionContainerScope(lithoViewRule.context)
-            .apply {
-              subCollection(id = "something") {
-                subCollection(id = 2) {
-                  child(null)
-                  child(emptyComponent())
-                  child(id = 1, component = emptyComponent())
-                  child(id = null, component = emptyComponent())
-                  child(deps = arrayOf()) { emptyComponent() }
-                }
-              }
-            }
-            .getIds()
-
-    val ids2 =
-        CollectionContainerScope(lithoViewRule.context)
-            .apply {
-              subCollection(id = "something else") {
-                subCollection(id = 2) {
-                  child(null)
-                  child(emptyComponent())
-                  child(id = 1, component = emptyComponent())
-                  child(id = null, component = emptyComponent())
-                  child(deps = arrayOf()) { emptyComponent() }
-                }
-              }
-            }
-            .getIds()
-
-    assertThat(ids1).doesNotContainAnyElementsOf(ids2)
   }
 }
