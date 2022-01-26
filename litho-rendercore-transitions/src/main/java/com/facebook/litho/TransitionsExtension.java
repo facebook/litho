@@ -1051,7 +1051,8 @@ public class TransitionsExtension
       final View currView = viewStack.pop();
       if (currView instanceof AnimatedRootHost) {
         ((AnimatedRootHost) currView)
-            .notifyVisibleBoundsChanged(new Rect(0, 0, currView.getWidth(), currView.getHeight()), false);
+            .notifyVisibleBoundsChanged(
+                new Rect(0, 0, currView.getWidth(), currView.getHeight()), false);
       } else if (currView instanceof ViewGroup) {
         final ViewGroup parent = (ViewGroup) currView;
         for (int i = parent.getChildCount() - 1; i >= 0; i--) {
