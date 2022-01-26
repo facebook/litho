@@ -36,7 +36,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
@@ -64,7 +63,6 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -151,20 +149,9 @@ public abstract class Component
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable ComponentContext mScopedContext;
 
-  private boolean mIsLayoutStarted = false;
-
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   private @Nullable CommonProps mCommonProps;
   private @Nullable SparseArray<DynamicValue<?>> mCommonDynamicProps;
-
-  /**
-   * Holds onto how many direct component children of each type this Component has. Used for
-   * automatically generating unique global keys for all sibling components of the same type.
-   */
-  private @Nullable SparseIntArray mChildCounters;
-
-  /** Count the times a manual key is used so that clashes can be resolved. */
-  @DoNotStrip private @Nullable Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -995,10 +982,7 @@ public abstract class Component
 
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mGlobalKey = null;
-      component.mIsLayoutStarted = false;
       component.mScopedContext = null;
-      component.mChildCounters = null;
-      component.mManualKeysCounter = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -1288,14 +1272,6 @@ public abstract class Component
     layoutStateContext.markLayoutStarted();
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  private final synchronized void markLayoutStarted() {
-    if (mIsLayoutStarted) {
-      throw new IllegalStateException("Duplicate layout of a component: " + this);
-    }
-    mIsLayoutStarted = true;
-  }
-
   protected void bindDynamicProp(int dynamicPropIndex, @Nullable Object value, Object content) {
     throw new RuntimeException("Components that have dynamic Props must override this method");
   }
@@ -1443,35 +1419,6 @@ public abstract class Component
     }
   }
 
-  private final void generateErrorEventHandler(
-      final ComponentContext parentContext, final ComponentContext scopedContext) {
-    if (hasOwnErrorHandler()) {
-      mErrorEventHandler =
-          new EventHandler<>(this, ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
-    } else {
-      mErrorEventHandler = parentContext.getErrorEventHandler();
-    }
-  }
-
-  /**
-   * Returns the number of children of a given type {@code this} component has and then increments
-   * it by 1.
-   *
-   * @param component the child component
-   * @return the number of children of {@param component} type
-   */
-  private final synchronized int getChildCountAndIncrement(Component component) {
-    if (mChildCounters == null) {
-      mChildCounters = new SparseIntArray();
-    }
-
-    final int typeId = component.getTypeId();
-    final int count = mChildCounters.get(typeId, 0);
-    mChildCounters.put(typeId, count + 1);
-
-    return count;
-  }
-
   /**
    * Returns the number of children of a given type {@param childComponent} component has and then
    * increments it by 1.
@@ -1483,18 +1430,6 @@ public abstract class Component
       final Component parentComponent,
       final Component childComponent) {
     return parentContext.getScopedComponentInfo().getChildCountAndIncrement(childComponent);
-  }
-
-  private final synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
-    if (mManualKeysCounter == null) {
-      mManualKeysCounter = new HashMap<>();
-    }
-
-    int manualKeyIndex =
-        mManualKeysCounter.containsKey(manualKey) ? mManualKeysCounter.get(manualKey) : 0;
-
-    mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
-    return manualKeyIndex;
   }
 
   /**
