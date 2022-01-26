@@ -118,7 +118,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   protected List<Component> mComponents = new ArrayList<>(2);
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
+  private final List<ScopedComponentInfo> mScopedComponentInfos = new ArrayList<>(2);
 
   @ThreadConfined(ThreadConfined.ANY)
   private List<String> mComponentGlobalKeys = new ArrayList<>(2);
@@ -187,7 +187,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   protected LithoNode(ComponentContext componentContext) {
     mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
-    mScopedComponentInfos = new ArrayList<>(2);
   }
 
   public void addChildAt(LithoNode child, int index) {
@@ -640,7 +639,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     return mComponentGlobalKeys;
   }
 
-  @Nullable
   public List<ScopedComponentInfo> getScopedComponentInfos() {
     return mScopedComponentInfos;
   }
@@ -683,9 +681,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   public @Nullable ComponentContext getHeadComponentContext() {
-    return mScopedComponentInfos != null
-        ? mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext()
-        : mComponents.get(mComponents.size() - 1).getScopedContext();
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
   }
 
   public int getImportantForAccessibility() {
@@ -721,19 +717,15 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   public @Nullable ComponentContext getTailComponentContext() {
-    return mScopedComponentInfos != null
-        ? mScopedComponentInfos.get(0).getContext()
-        : mComponents.get(0).getScopedContext();
+    return mScopedComponentInfos.get(0).getContext();
   }
 
   public @Nullable ScopedComponentInfo getTailScopedComponentInfo() {
-    return mScopedComponentInfos != null ? mScopedComponentInfos.get(0) : null;
+    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0);
   }
 
   public @Nullable ComponentContext getComponentContextAt(int index) {
-    return mScopedComponentInfos != null
-        ? mScopedComponentInfos.get(index).getContext()
-        : mComponents.get(index).getScopedContext();
+    return mScopedComponentInfos.get(index).getContext();
   }
 
   @Nullable
@@ -1150,19 +1142,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     return getDrawablePadding(drawable, rect) ? rect : null;
   }
 
-  /**
-   * Release properties which are not longer required for the current layout pass or release
-   * properties which should be reset during reconciliation.
-   */
-  protected void clean() {
-    // 1. Release or clone props.
-    mComponents = new ArrayList<>(8);
-    mChildren = new ArrayList<>(4);
-    mComponentGlobalKeys = new ArrayList<>(8);
-    mDebugComponents = null;
-    mFrozen = false;
-  }
-
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(
       @Nullable EventHandler<T> currentHandler, @Nullable EventHandler<T> newHandler) {
     if (currentHandler == null) {
@@ -1189,7 +1168,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component next,
-      final @Nullable ScopedComponentInfo nextScopedComponentInfo,
+      final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey) {
     final StateHandler stateHandler = layoutStateContext.getStateHandler();
     final Set<String> keys;
@@ -1338,17 +1317,12 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       final ComponentContext parentContext,
       final LithoNode current,
       final Component next,
-      final @Nullable ScopedComponentInfo nextScopedComponentInfo,
+      final ScopedComponentInfo nextScopedComponentInfo,
       @Nullable final String nextKey,
       final Set<String> keys) {
     final int mode =
         getReconciliationMode(
-            Preconditions.checkNotNull(
-                nextScopedComponentInfo != null
-                    ? nextScopedComponentInfo.getContext()
-                    : next.getScopedContext()),
-            current,
-            keys);
+            Preconditions.checkNotNull(nextScopedComponentInfo.getContext()), current, keys);
     final LithoNode layout;
 
     switch (mode) {
@@ -1421,9 +1395,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       final Component component = components.get(index);
       final String key = componentKeys == null ? null : componentKeys.get(index);
       final ScopedComponentInfo scopedComponentInfo =
-          child.mScopedComponentInfos != null
-              ? (ScopedComponentInfo) child.mScopedComponentInfos.get(index)
-              : null;
+          (ScopedComponentInfo) child.mScopedComponentInfos.get(index);
 
       // 3.2 Reconcile child layout.
       final LithoNode copy;
@@ -1461,12 +1433,10 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   static void commitToLayoutState(LayoutStateContext c, LithoNode node) {
-    final @Nullable List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
+    final List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
 
-    if (scopedComponentInfos != null) {
-      for (ScopedComponentInfo info : scopedComponentInfos) {
-        info.commitToLayoutState(c.getStateHandler());
-      }
+    for (ScopedComponentInfo info : scopedComponentInfos) {
+      info.commitToLayoutState(c.getStateHandler());
     }
   }
 

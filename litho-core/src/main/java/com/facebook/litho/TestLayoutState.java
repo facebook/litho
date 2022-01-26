@@ -277,7 +277,7 @@ public class TestLayoutState {
     final LithoNode node;
     final ComponentContext c;
     final String globalKey;
-    final @Nullable ScopedComponentInfo scopedComponentInfo;
+    final ScopedComponentInfo scopedComponentInfo;
 
     try {
 
