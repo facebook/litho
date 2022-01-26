@@ -198,18 +198,16 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   public void addComponentNeedingPreviousRenderData(
       final String globalKey,
       final Component component,
-      final @Nullable ScopedComponentInfo scopedComponentInfo) {
+      final ScopedComponentInfo scopedComponentInfo) {
     if (mComponentsNeedingPreviousRenderData == null) {
       mComponentsNeedingPreviousRenderData = new HashMap<>(1);
     }
     mComponentsNeedingPreviousRenderData.put(globalKey, component);
 
-    if (scopedComponentInfo != null && mScopedComponentInfosNeedingPreviousRenderData == null) {
+    if (mScopedComponentInfosNeedingPreviousRenderData == null) {
       mScopedComponentInfosNeedingPreviousRenderData = new HashMap<>(1);
     }
-    if (mScopedComponentInfosNeedingPreviousRenderData != null) {
-      mScopedComponentInfosNeedingPreviousRenderData.put(globalKey, scopedComponentInfo);
-    }
+    mScopedComponentInfosNeedingPreviousRenderData.put(globalKey, scopedComponentInfo);
   }
 
   public void addTransition(Transition transition) {
@@ -244,12 +242,10 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   public void appendComponent(
-      Component component, String key, @Nullable ScopedComponentInfo scopedComponentInfo) {
+      Component component, String key, ScopedComponentInfo scopedComponentInfo) {
     mComponents.add(component);
     mComponentGlobalKeys.add(key);
-    if (mScopedComponentInfos != null) {
-      mScopedComponentInfos.add(scopedComponentInfo);
-    }
+    mScopedComponentInfos.add(scopedComponentInfo);
   }
 
   public void appendUnresolvedComponent(Component component) {

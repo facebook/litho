@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 
@@ -30,10 +29,10 @@ final class LayoutSpecAttachable implements Attachable {
 
   private final String mGlobalKey;
   private final Component mComponent;
-  private final @Nullable ScopedComponentInfo mScopedComponentInfo;
+  private final ScopedComponentInfo mScopedComponentInfo;
 
   public LayoutSpecAttachable(
-      String globalKey, Component component, @Nullable ScopedComponentInfo scopedComponentInfo) {
+      String globalKey, Component component, ScopedComponentInfo scopedComponentInfo) {
     mGlobalKey = globalKey;
     mComponent = component;
     mScopedComponentInfo = scopedComponentInfo;
@@ -48,10 +47,7 @@ final class LayoutSpecAttachable implements Attachable {
   @Override
   public void attach() {
     final ComponentContext scopedContext =
-        Preconditions.checkNotNull(
-            mScopedComponentInfo != null
-                ? mScopedComponentInfo.getContext()
-                : mComponent.getScopedContext());
+        Preconditions.checkNotNull(mScopedComponentInfo.getContext());
 
     try {
       mComponent.onAttached(scopedContext);
@@ -64,10 +60,7 @@ final class LayoutSpecAttachable implements Attachable {
   @Override
   public void detach() {
     final ComponentContext scopedContext =
-        Preconditions.checkNotNull(
-            mScopedComponentInfo != null
-                ? mScopedComponentInfo.getContext()
-                : mComponent.getScopedContext());
+        Preconditions.checkNotNull(mScopedComponentInfo.getContext());
 
     try {
       mComponent.onDetached(scopedContext);

@@ -165,7 +165,7 @@ class Layout {
     final String globalKey;
     final boolean isNestedTree = isNestedTree(layoutStateContext, component);
     final boolean hasCachedLayout = hasCachedLayout(layoutStateContext, component);
-    final @Nullable ScopedComponentInfo scopedComponentInfo;
+    final ScopedComponentInfo scopedComponentInfo;
 
     try {
 
