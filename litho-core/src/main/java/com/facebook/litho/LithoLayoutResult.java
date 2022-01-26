@@ -44,7 +44,7 @@ public interface LithoLayoutResult extends ComponentLayout, LayoutResult {
 
   ComponentContext getContext();
 
-  LithoNode getInternalNode();
+  LithoNode getNode();
 
   int getChildCount();
 
@@ -122,7 +122,7 @@ public interface LithoLayoutResult extends ComponentLayout, LayoutResult {
   /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
   interface NestedTreeHolderResult extends LithoLayoutResult {
 
-    NestedTreeHolder getInternalNode();
+    NestedTreeHolder getNode();
 
     @Nullable
     LithoLayoutResult getNestedResult();

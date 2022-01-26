@@ -56,7 +56,7 @@ public class LithoNodeTest {
 
     final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
-    return root.getInternalNode();
+    return root.getNode();
   }
 
   private static NestedTreeHolder acquireNestedTreeHolder() {

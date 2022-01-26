@@ -102,7 +102,7 @@ class Layout {
 
       layout =
           current
-              .getInternalNode()
+              .getNode()
               .reconcile(
                   layoutStateContext,
                   c,
@@ -329,7 +329,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
 
-    final LithoNode node = holder.getInternalNode();
+    final LithoNode node = holder.getNode();
     final Component component = node.getTailComponent();
     if (component == null) {
       throw new IllegalArgumentException("A component is required to resolve a nested tree.");
@@ -368,7 +368,7 @@ class Layout {
           final int prevHeightSpec = parentContext.getHeightSpec();
 
           if (!parentContext.useStatelessComponent()) {
-            parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
+            parentContext.setTreeProps(holder.getNode().getPendingTreeProps());
           }
 
           // Set the size specs in ComponentContext for the nested tree
@@ -385,7 +385,7 @@ class Layout {
           }
 
           if (newNode != null) {
-            holder.getInternalNode().copyInto(newNode);
+            holder.getNode().copyInto(newNode);
 
             // If the resolved tree inherits the layout direction, then set it now.
             if (newNode.isLayoutDirectionInherit()) {
@@ -592,7 +592,7 @@ class Layout {
     return measure(
         layoutStateContext,
         layout.getContext(),
-        layout.getInternalNode(),
+        layout.getNode(),
         widthSpec,
         heightSpec,
         null,
@@ -613,7 +613,7 @@ class Layout {
   static void applyDiffNodeToUnchangedNodes(
       final LithoLayoutResult result, final boolean isTreeRoot, final @Nullable DiffNode diffNode) {
 
-    final LithoNode layoutNode = result.getInternalNode();
+    final LithoNode layoutNode = result.getNode();
 
     try {
       // Root of the main tree or of a nested tree.
@@ -661,7 +661,7 @@ class Layout {
    */
   private static void applyDiffNodeToLayoutNode(
       final LithoLayoutResult result, final DiffNode diffNode) {
-    final LithoNode layoutNode = result.getInternalNode();
+    final LithoNode layoutNode = result.getNode();
     final Component component = layoutNode.getTailComponent();
     if (component != null) {
       final @Nullable ScopedComponentInfo scopedComponentInfo =

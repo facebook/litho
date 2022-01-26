@@ -318,7 +318,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
@@ -333,8 +333,7 @@ class ViewStylesTest {
       }
     }
 
-    val node =
-        LegacyLithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.node
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
   }
@@ -348,7 +347,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.node
     assertThat(node?.getOrCreateNodeInfo()?.clipToOutline).isTrue
 
     node?.getOrCreateNodeInfo()?.setClipToOutline(false)
@@ -364,7 +363,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
     val nodeInfo = node?.orCreateNodeInfo
     assertThat(nodeInfo?.transitionName).isEqualTo("test")
   }
@@ -378,7 +377,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.node
     assertThat(node?.testKey).isEqualTo("test")
   }
 

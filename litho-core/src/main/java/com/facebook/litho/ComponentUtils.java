@@ -408,7 +408,7 @@ public class ComponentUtils {
         continue;
       }
 
-      final LithoNode node = result.getInternalNode();
+      final LithoNode node = result.getNode();
 
       final Component component = node.getTailComponent();
       if (component == null) {

@@ -171,7 +171,7 @@ public class NestedTreeResolutionPowermockTest {
 
     LithoLayoutResult.NestedTreeHolderResult holder =
         (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
-    verify(holder.getInternalNode(), times(2)).copyInto(any(LithoNode.class));
+    verify(holder.getNode(), times(2)).copyInto(any(LithoNode.class));
   }
 
   @Test
@@ -189,7 +189,7 @@ public class NestedTreeResolutionPowermockTest {
         (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
 
     assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.LTR);
-    verify(holder.getNestedResult().getInternalNode(), times(1)).layoutDirection(YogaDirection.LTR);
+    verify(holder.getNestedResult().getNode(), times(1)).layoutDirection(YogaDirection.LTR);
   }
 
   @Test
@@ -211,7 +211,7 @@ public class NestedTreeResolutionPowermockTest {
         (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
 
     assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.RTL);
-    verify(holder.getNestedResult().getInternalNode(), times(1)).layoutDirection(YogaDirection.RTL);
+    verify(holder.getNestedResult().getNode(), times(1)).layoutDirection(YogaDirection.RTL);
   }
 
   private LithoView getLithoView(

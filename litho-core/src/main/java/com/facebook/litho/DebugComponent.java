@@ -61,7 +61,7 @@ public final class DebugComponent {
   static synchronized @Nullable DebugComponent getInstance(
       LithoLayoutResult result, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
-    final LithoNode<?> node = result.getInternalNode();
+    final LithoNode<?> node = result.getNode();
     final ComponentContext context = result.getContext();
 
     if (componentIndex >= node.getComponents().size()) {
@@ -73,7 +73,7 @@ public final class DebugComponent {
 
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mResult = result;
-    debugComponent.mNode = result.getInternalNode();
+    debugComponent.mNode = result.getNode();
     debugComponent.mComponentIndex = componentIndex;
     node.registerDebugComponent(debugComponent);
 
@@ -93,14 +93,14 @@ public final class DebugComponent {
     if (root == null) {
       return null;
     }
-    final LithoNode node = root.getInternalNode();
+    final LithoNode node = root.getNode();
     final int outerWrapperComponentIndex = Math.max(0, node.getComponents().size() - 1);
     return DebugComponent.getInstance(root, outerWrapperComponentIndex);
   }
 
   @Nullable
   public static DebugComponent getRootInstance(LithoLayoutResult rootResult) {
-    final LithoNode rootNode = rootResult.getInternalNode();
+    final LithoNode rootNode = rootResult.getNode();
     final int outerWrapperComponentIndex = Math.max(0, rootNode.getComponents().size() - 1);
     return DebugComponent.getInstance(rootResult, outerWrapperComponentIndex);
   }
@@ -159,7 +159,7 @@ public final class DebugComponent {
 
     for (int i = 0, count = mResult.getChildCount(); i < count; i++) {
       final LithoLayoutResult childNode = mResult.getChildAt(i);
-      final int index = Math.max(0, childNode.getInternalNode().getComponents().size() - 1);
+      final int index = Math.max(0, childNode.getNode().getComponents().size() - 1);
       DebugComponent component = getInstance(childNode, index);
       if (component != null) {
         children.add(component);
@@ -173,7 +173,7 @@ public final class DebugComponent {
     if (nestedTree != null) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final LithoLayoutResult childNode = nestedTree.getChildAt(i);
-        int index = Math.max(0, childNode.getInternalNode().getComponents().size() - 1);
+        int index = Math.max(0, childNode.getNode().getComponents().size() - 1);
         DebugComponent component = getInstance(childNode, index);
         if (component != null) {
           children.add(component);

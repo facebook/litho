@@ -38,7 +38,7 @@ public final class DebugLayoutNode {
 
   DebugLayoutNode(LithoLayoutResult result) {
     mResult = result;
-    mNode = result.getInternalNode();
+    mNode = result.getNode();
   }
 
   @Nullable

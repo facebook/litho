@@ -957,7 +957,7 @@ public class ComponentHostTest {
 
     LithoLayoutResult result = mock(LithoLayoutResult.class);
     LithoNode node = mock(LithoNode.class);
-    when(result.getInternalNode()).thenReturn(node);
+    when(result.getNode()).thenReturn(node);
     when(node.hasTouchExpansion()).thenReturn(true);
     when(result.getTouchExpansionLeft()).thenReturn(1);
     when(result.getTouchExpansionTop()).thenReturn(1);

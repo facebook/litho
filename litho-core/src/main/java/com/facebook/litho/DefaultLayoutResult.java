@@ -158,7 +158,7 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   }
 
   @Override
-  public LithoNode getInternalNode() {
+  public LithoNode getNode() {
     return mNode;
   }
 

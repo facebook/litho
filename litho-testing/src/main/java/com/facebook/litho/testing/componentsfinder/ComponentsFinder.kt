@@ -40,7 +40,7 @@ import kotlin.reflect.KClass
  * with FBStory as a root
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
-  val internalNode = getLayoutRoot(lithoView)?.internalNode ?: return null
+  val internalNode = getLayoutRoot(lithoView)?.node ?: return null
   return internalNode.components.firstOrNull { it.javaClass == clazz }
 }
 
@@ -111,7 +111,7 @@ private fun findComponentRecursively(
 ): Component? {
   layoutResult ?: return null
 
-  val internalNode = layoutResult.internalNode
+  val internalNode = layoutResult.node
   val component = internalNode.components.firstOrNull { it.javaClass == clazz }
   if (component != null) {
     return component
@@ -140,7 +140,7 @@ private fun findComponentsRecursively(
 ) {
   layoutResult ?: return
 
-  val internalNode = layoutResult.internalNode
+  val internalNode = layoutResult.node
   val components = internalNode.components.filter { clazzArray.contains(it.javaClass) }
   if (components != null) {
     componentsList.addAll(components)

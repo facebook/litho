@@ -292,7 +292,7 @@ public class LayoutState
     final @Nullable InterStagePropsContainer interStageProps =
         result.getContext().useStatelessComponent()
             ? result.getContext().getScopedComponentInfo().getInterStagePropsContainer()
-            : Preconditions.checkNotNull(result.getInternalNode().getTailComponent())
+            : Preconditions.checkNotNull(result.getNode().getTailComponent())
                 .getInterStagePropsContainer();
 
     return createRenderTreeNode(
@@ -591,7 +591,7 @@ public class LayoutState
       collectResults(
           parentContext,
           nestedTree,
-          nestedTree.getInternalNode(),
+          nestedTree.getNode(),
           layoutState,
           parent,
           parentDiffNode,
@@ -779,7 +779,7 @@ public class LayoutState
     for (int i = 0, size = result.getChildCount(); i < size; i++) {
       final LithoLayoutResult child = result.getChildAt(i);
       collectResults(
-          scopedContext, child, child.getInternalNode(), layoutState, parent, diffNode, hierarchy);
+          scopedContext, child, child.getNode(), layoutState, parent, diffNode, hierarchy);
     }
 
     layoutState.mCurrentX -= result.getX();
@@ -872,7 +872,7 @@ public class LayoutState
       }
     }
 
-    final List<Attachable> attachables = result.getInternalNode().getAttachables();
+    final List<Attachable> attachables = result.getNode().getAttachables();
     if (attachables != null) {
       if (layoutState.mAttachables == null) {
         layoutState.mAttachables = new ArrayList<>();
@@ -1244,9 +1244,7 @@ public class LayoutState
                 c,
                 component,
                 isReconcilable
-                    ? Preconditions.checkNotNull(currentLayoutRoot)
-                        .getInternalNode()
-                        .getHeadComponentKey()
+                    ? Preconditions.checkNotNull(currentLayoutRoot).getNode().getHeadComponentKey()
                     : null,
                 widthSpec,
                 heightSpec,
@@ -1282,7 +1280,7 @@ public class LayoutState
                 diffTreeRoot);
       }
 
-      final @Nullable LithoNode node = root != null ? root.getInternalNode() : null;
+      final @Nullable LithoNode node = root != null ? root.getNode() : null;
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
@@ -1423,7 +1421,7 @@ public class LayoutState
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
     final @Nullable LithoLayoutResult root = layoutState.mLayoutRoot;
-    final @Nullable LithoNode node = root != null ? root.getInternalNode() : null;
+    final @Nullable LithoNode node = root != null ? root.getNode() : null;
 
     final int rootWidth = root != null ? root.getWidth() : 0;
     final int rootHeight = root != null ? root.getHeight() : 0;
@@ -1559,7 +1557,7 @@ public class LayoutState
     }
 
     final Component currentRootComponent =
-        Preconditions.checkNotNull(currentLayoutResult.getInternalNode().getHeadComponent());
+        Preconditions.checkNotNull(currentLayoutResult.getNode().getHeadComponent());
 
     if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
       return false;

@@ -592,7 +592,7 @@ public class LayoutStateCreateTreeTest {
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
       when(node.calculateLayout(any(RenderState.LayoutContext.class), anyInt(), anyInt()))
           .thenReturn(result);
-      when(result.getInternalNode()).thenReturn(node);
+      when(result.getNode()).thenReturn(node);
       return node;
     }
 

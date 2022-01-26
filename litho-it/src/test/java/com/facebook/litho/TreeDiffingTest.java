@@ -332,8 +332,8 @@ public class TreeDiffingTest {
   }
 
   private void checkAllComponentsHaveMeasureCache(LithoLayoutResult node) {
-    if (node.getInternalNode().getTailComponent() != null
-        && node.getInternalNode().getTailComponent().canMeasure()) {
+    if (node.getNode().getTailComponent() != null
+        && node.getNode().getTailComponent().canMeasure()) {
       assertCachedMeasurementsDefined(node);
     }
     int numChildren = node.getChildCount();

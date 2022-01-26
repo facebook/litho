@@ -44,7 +44,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       float height,
       YogaMeasureMode heightMode) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final LayoutStateContext layoutStateContext = result.getLayoutStateContext();
 
     final Component component = Preconditions.checkNotNull(node.getTailComponent());
@@ -94,7 +94,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         final ComponentContext parentContext;
         if (size == 1) {
           if (result.getParent() != null) {
-            final LithoNode internalNode = result.getParent().getInternalNode();
+            final LithoNode internalNode = result.getParent().getNode();
             parentContext = internalNode.getTailComponentContext();
           } else {
             parentContext = layoutState.getComponentContext();

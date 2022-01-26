@@ -317,7 +317,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
         diff = current.getCurrentDiffTree();
       }
     } else if (parent.getDiffNode() != null) { // Otherwise get it from the parent
-      final int index = parent.getInternalNode().getChildIndex(this);
+      final int index = parent.getNode().getChildIndex(this);
       if (index != -1 && index < parent.getDiffNode().getChildCount()) {
         diff = parent.getDiffNode().getChildAt(index);
       } else {
@@ -1687,7 +1687,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       final @Nullable LithoLayoutResult current) {
     final ComponentTree tree = context.getComponentTree();
     if (current != null && tree != null && tree.isLayoutCachingEnabled()) {
-      return current.getInternalNode() == node || node.isClone();
+      return current.getNode() == node || node.isClone();
     } else {
       return false;
     }

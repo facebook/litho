@@ -39,8 +39,8 @@ public class DefaultNestedTreeHolderResult extends DefaultLayoutResult
   }
 
   @Override
-  public NestedTreeHolder getInternalNode() {
-    return (NestedTreeHolder) super.getInternalNode();
+  public NestedTreeHolder getNode() {
+    return (NestedTreeHolder) super.getNode();
   }
 
   @Override

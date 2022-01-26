@@ -47,8 +47,7 @@ public class LayoutStateAddChildWithInputTest {
             .child(TestLayoutComponent.create(mContext))
             .build();
 
-    LithoNode node =
-        LegacyLithoViewRule.getRootLayout(mLegacyLithoViewRule, component).getInternalNode();
+    LithoNode node = LegacyLithoViewRule.getRootLayout(mLegacyLithoViewRule, component).getNode();
 
     assertThat(node.getChildCount()).isEqualTo(2);
     assertThat(node.getChildAt(0).getChildCount()).isEqualTo(0);

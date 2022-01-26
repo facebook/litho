@@ -25,7 +25,7 @@ public class LithoYogaBaselineFunction implements YogaBaselineFunction {
   @Override
   public float baseline(YogaNode cssNode, float width, float height) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
 
     // TODO: Get the inter stage props from the LayoutResult

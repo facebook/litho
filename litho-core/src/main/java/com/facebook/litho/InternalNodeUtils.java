@@ -63,13 +63,13 @@ public class InternalNodeUtils {
    */
   static boolean hasValidLayoutDirectionInNestedTree(
       NestedTreeHolderResult holder, LithoLayoutResult nestedTree) {
-    return nestedTree.getInternalNode().isLayoutDirectionInherit()
+    return nestedTree.getNode().isLayoutDirectionInherit()
         || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
   }
 
   /** Creates a {@link LithoRenderUnit} for the content output iff the result mounts content. */
   static @Nullable LithoRenderUnit createContentRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
 
     if (component == null || component.getMountType() == NONE) {
@@ -120,7 +120,7 @@ public class InternalNodeUtils {
   static @Nullable LithoRenderUnit createHostRenderUnit(LithoLayoutResult result) {
     final LayoutState layoutState =
         Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final boolean isRoot =
         !layoutState.mShouldAddHostViewForRootComponent
             && (result.getParent() == null
@@ -175,7 +175,7 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the background output iff the result has a background.
    */
   static @Nullable LithoRenderUnit createBackgroundRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
     final Drawable background = result.getBackground();
 
@@ -192,7 +192,7 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the foreground output iff the result has a foreground.
    */
   static @Nullable LithoRenderUnit createForegroundRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
     final Drawable foreground = node.getForeground();
 
@@ -229,7 +229,7 @@ public class InternalNodeUtils {
     final Component component = DrawableComponent.create(drawable);
     final LayoutState layoutState =
         Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final String componentKey = node.getTailComponentKey();
     final @Nullable DiffNode diffNode = result.getDiffNode();
 
@@ -420,7 +420,7 @@ public class InternalNodeUtils {
       throw new RuntimeException("This result does not support drawing border color");
     }
 
-    final LithoNode node = result.getInternalNode();
+    final LithoNode node = result.getNode();
     final boolean isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL;
     final float[] borderRadius = node.getBorderRadius();
     final int[] borderColors = node.getBorderColors();

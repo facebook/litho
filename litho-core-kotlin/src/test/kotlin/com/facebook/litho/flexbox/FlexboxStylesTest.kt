@@ -544,7 +544,7 @@ class FlexboxStylesTest {
       }
     }
 
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.internalNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.node
     assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
