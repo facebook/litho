@@ -30,9 +30,7 @@ public class LithoYogaBaselineFunction implements YogaBaselineFunction {
 
     // TODO: Get the inter stage props from the LayoutResult
     final @Nullable InterStagePropsContainer interStageProps =
-        result.getContext().useStatelessComponent()
-            ? result.getContext().getScopedComponentInfo().getInterStagePropsContainer()
-            : component.getInterStagePropsContainer();
+        result.getContext().getScopedComponentInfo().getInterStagePropsContainer();
 
     return component.onMeasureBaseline(
         result.getContext(), (int) width, (int) height, interStageProps);

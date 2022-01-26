@@ -236,8 +236,7 @@ public class LayoutState
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
     mComponentKeys = new ArrayList<>();
-    mScopedComponentInfos =
-        context.useStatelessComponent() ? new ArrayList<ScopedComponentInfo>() : null;
+    mScopedComponentInfos = new ArrayList<ScopedComponentInfo>();
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
@@ -290,10 +289,7 @@ public class LayoutState
 
     // TODO: Get the inter stage props from the LayoutResult
     final @Nullable InterStagePropsContainer interStageProps =
-        result.getContext().useStatelessComponent()
-            ? result.getContext().getScopedComponentInfo().getInterStagePropsContainer()
-            : Preconditions.checkNotNull(result.getNode().getTailComponent())
-                .getInterStagePropsContainer();
+        result.getContext().getScopedComponentInfo().getInterStagePropsContainer();
 
     return createRenderTreeNode(
         unit,

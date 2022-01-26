@@ -116,9 +116,7 @@ public class NestedTreeResolutionPowermockTest {
                   final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
                   final LithoNode node = getNextInternalNode();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
-                  if (c.useStatelessComponent()) {
-                    Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
-                  }
+                  Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
 
                   return node;
                 }
@@ -138,9 +136,7 @@ public class NestedTreeResolutionPowermockTest {
                   final TreeProps props = (TreeProps) invocation.getArguments()[1];
                   final NestedTreeHolder node = getNextInputOnlyNestedTreeHolder();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
-                  if (c.useStatelessComponent()) {
-                    Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
-                  }
+                  Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
                   Whitebox.setInternalState(node, "mPendingTreeProps", TreeProps.copy(props));
 
                   return node;

@@ -188,9 +188,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   protected LithoNode(ComponentContext componentContext) {
     mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
-    if (componentContext.useStatelessComponent()) {
-      mScopedComponentInfos = new ArrayList<>(2);
-    }
+    mScopedComponentInfos = new ArrayList<>(2);
   }
 
   public void addChildAt(LithoNode child, int index) {
@@ -1440,7 +1438,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
 
     switch (mode) {
       case ReconciliationMode.REUSE:
-        if (isInternalNodeReuseEnabled || layoutStateContext.useStatelessComponent()) {
+        if (isInternalNodeReuseEnabled) {
           commitToLayoutStateRecursively(layoutStateContext, current);
         }
         layout = current;
@@ -1491,8 +1489,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     // 2. Shallow copy this layout.
     final LithoNode<?> layout;
 
-    if (layoutStateContext.isInternalNodeReuseEnabled()
-        || layoutStateContext.useStatelessComponent()) {
+    if (layoutStateContext.isInternalNodeReuseEnabled()) {
       layout = current.clone();
       layout.mChildren = new ArrayList<>(current.getChildCount());
       layout.mDebugComponents = null;

@@ -510,7 +510,6 @@ public class ComponentUtils {
     final LithoMetadataExceptionWrapper metadataWrapper =
         wrapWithMetadata(parent, exceptionToThrow);
     metadataWrapper.addComponentNameForLayoutStack(component.getSimpleName());
-    metadataWrapper.addParentStateConfigValue(parent.mWasStatelessWhenCreated);
 
     // This means it was already handled by this handler so throw it up to the next frame until we
     // get a new handler or get to the root

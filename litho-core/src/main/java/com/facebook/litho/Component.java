@@ -62,7 +62,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -188,7 +187,6 @@ public abstract class Component
 
   protected Component() {
     mTypeId = getOrCreateId(getClass());
-    init();
   }
 
   /**
@@ -197,15 +195,6 @@ public abstract class Component
    */
   protected Component(int identityHashCode) {
     mTypeId = getOrCreateId(identityHashCode);
-    init();
-  }
-
-  private final void init() {
-    if (!ComponentsConfiguration.useStatelessComponent) {
-      mStateContainer = createStateContainer();
-      mInterStagePropsContainer = createInterStagePropsContainer();
-      mPrepareInterStagePropsContainer = createPrepareInterStagePropsContainer();
-    }
   }
 
   @Override
@@ -748,27 +737,16 @@ public abstract class Component
       @Nullable Component currentComponent,
       final @Nullable ComponentContext nextScopedContext,
       @Nullable Component nextComponent) {
-    final boolean useStatelessComponent =
-        previousScopedContext != null
-            ? previousScopedContext.useStatelessComponent()
-            : (nextScopedContext != null && nextScopedContext.useStatelessComponent());
-
-    final boolean shouldUpdate;
-    if (useStatelessComponent) {
-      shouldUpdate =
-          shouldUpdate(
-              currentComponent,
-              currentComponent == null || previousScopedContext == null
-                  ? null
-                  : currentComponent.getStateContainer(previousScopedContext),
-              nextComponent,
-              nextComponent == null || nextScopedContext == null
-                  ? null
-                  : nextComponent.getStateContainer(nextScopedContext));
-    } else {
-      shouldUpdate =
-          shouldUpdate(previousScopedContext, currentComponent, nextScopedContext, nextComponent);
-    }
+    final boolean shouldUpdate =
+        shouldUpdate(
+            currentComponent,
+            currentComponent == null || previousScopedContext == null
+                ? null
+                : currentComponent.getStateContainer(previousScopedContext),
+            nextComponent,
+            nextComponent == null || nextScopedContext == null
+                ? null
+                : nextComponent.getStateContainer(nextScopedContext));
 
     if (!implementsShouldUpdate()) {
       return shouldUpdate
@@ -787,21 +765,17 @@ public abstract class Component
       final @Nullable Component previous,
       final @Nullable ComponentContext nextScopedContext,
       final @Nullable Component next) {
-    final boolean isComponentStateless =
-        previousScopedContext != null
-            ? previousScopedContext.useStatelessComponent()
-            : (nextScopedContext != null && nextScopedContext.useStatelessComponent());
 
     final StateContainer prevStateContainer =
         previous == null
             ? null
-            : (isComponentStateless && previousScopedContext == null
+            : (previousScopedContext == null
                 ? null
                 : Component.getStateContainer(previousScopedContext, previous));
     final StateContainer nextStateContainer =
         next == null
             ? null
-            : (isComponentStateless && nextScopedContext == null
+            : (nextScopedContext == null
                 ? null
                 : Component.getStateContainer(nextScopedContext, next));
 
@@ -1174,7 +1148,7 @@ public abstract class Component
 
     layout = layoutStateContext.consumeLayoutCreatedInWillRender(mId);
 
-    if (layout != null && context.useStatelessComponent()) {
+    if (layout != null) {
       assertSameBaseContext(context, layout.getAndroidContext());
     }
 
@@ -1211,11 +1185,7 @@ public abstract class Component
    */
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
-    if (scopedContext.useStatelessComponent()) {
-      return scopedContext.getScopedComponentInfo().getErrorEventHandler();
-    }
-
-    return mErrorEventHandler;
+    return scopedContext.getScopedComponentInfo().getErrorEventHandler();
   }
 
   protected final @Nullable EventHandler<ErrorEvent> getErrorHandler() {
@@ -1230,14 +1200,10 @@ public abstract class Component
   /** Get a key that is unique to this component within its tree. */
   static @Nullable String getGlobalKey(
       @Nullable ComponentContext scopedContext, Component component) {
-    if (scopedContext != null && scopedContext.useStatelessComponent()) {
-      if (scopedContext == null) {
-        return null;
-      }
-      return scopedContext.getGlobalKey();
+    if (scopedContext == null) {
+      return null;
     }
-
-    return component.mGlobalKey;
+    return scopedContext.getGlobalKey();
   }
 
   /** Set a key for this component that is unique within its tree. */
@@ -1341,44 +1307,11 @@ public abstract class Component
       final LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final String globalKeyToReuse) {
-    if (parentContext.useStatelessComponent()) {
-      return this;
-    }
-
-    final Component clone = makeShallowCopy();
-
-    // set the global key so that it is not generated again and overridden.
-    clone.setGlobalKey(globalKeyToReuse);
-
-    // copy the inter-stage props so that they are set again.
-    if (!parentContext.useStatelessComponent()) {
-      clone.copyInterStageImpl(clone.getInterStagePropsContainer(), getInterStagePropsContainer());
-      clone.copyPrepareInterStageImpl(
-          clone.getPrepareInterStagePropsContainer(), getPrepareInterStagePropsContainer());
-    }
-
-    // update the cloned component with the new context.
-    final ComponentContext scopedContext =
-        clone.updateInternalChildState(layoutStateContext, parentContext, globalKeyToReuse);
-
-    // create updated tree props for children.
-    final TreeProps treeProps =
-        getTreePropsForChildren(scopedContext, parentContext.getTreeProps());
-
-    scopedContext.setParentTreeProps(parentContext.getTreeProps());
-
-    // set updated tree props on the component.
-    scopedContext.setTreeProps(treeProps);
-
-    return clone;
+    return this;
   }
 
   static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
-    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
-      layoutStateContext.markLayoutStarted();
-    } else {
-      component.markLayoutStarted();
-    }
+    layoutStateContext.markLayoutStarted();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -1421,15 +1354,8 @@ public abstract class Component
   }
 
   protected static @Nullable StateContainer getStateContainer(
-      final @Nullable ComponentContext scopedContext, Component component) {
-    if (scopedContext != null && scopedContext.useStatelessComponent()) {
-      return scopedContext.getScopedComponentInfo().getStateContainer();
-    } else {
-      if (component.mStateContainer == null) {
-        component.mStateContainer = component.createStateContainer();
-      }
-      return component.mStateContainer;
-    }
+      final ComponentContext scopedContext, Component component) {
+    return scopedContext.getScopedComponentInfo().getStateContainer();
   }
 
   final @Nullable StateContainer getStateContainer(final @Nullable ComponentContext scopedContext) {
@@ -1442,37 +1368,21 @@ public abstract class Component
       return null;
     }
 
-    if (useStatelessComponent(scopedContext.getComponentTree())) {
-      return scopedContext.getScopedComponentInfo().getStateContainer();
-    } else {
-      if (mStateContainer == null) {
-        mStateContainer = createStateContainer();
-      }
-      return mStateContainer;
-    }
+    return scopedContext.getScopedComponentInfo().getStateContainer();
   }
 
   protected final void setStateContainer(StateContainer stateContainer) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return;
-    }
-    mStateContainer = stateContainer;
+    return;
   }
 
   protected final void setInterStagePropsContainer(
       InterStagePropsContainer interStagePropsContainer) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return;
-    }
-    mInterStagePropsContainer = interStagePropsContainer;
+    return;
   }
 
   protected final void setPrepareInterStagePropsContainer(
       PrepareInterStagePropsContainer interStagePropsContainer) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return;
-    }
-    mPrepareInterStagePropsContainer = interStagePropsContainer;
+    return;
   }
 
   protected @Nullable StateContainer createStateContainer() {
@@ -1487,32 +1397,14 @@ public abstract class Component
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       final ComponentContext scopedContext,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    if (scopedContext.useStatelessComponent()) {
-      return interStagePropsContainer != null
-          ? interStagePropsContainer
-          : scopedContext.getScopedComponentInfo().getInterStagePropsContainer();
-    } else {
-      if (mInterStagePropsContainer == null) {
-        mInterStagePropsContainer = createInterStagePropsContainer();
-      }
-      return mInterStagePropsContainer;
-    }
+    return interStagePropsContainer != null
+        ? interStagePropsContainer
+        : scopedContext.getScopedComponentInfo().getInterStagePropsContainer();
   }
 
   protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
       final ComponentContext scopedContext) {
-    if (scopedContext.useStatelessComponent()) {
-      return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
-    } else {
-      if (mPrepareInterStagePropsContainer == null) {
-        mPrepareInterStagePropsContainer = createPrepareInterStagePropsContainer();
-      }
-      return mPrepareInterStagePropsContainer;
-    }
-  }
-
-  private static boolean useStatelessComponent(@Nullable ComponentTree componentTree) {
-    return componentTree != null && componentTree.useStatelessComponent();
+    return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
   }
 
   @Nullable
@@ -1558,21 +1450,8 @@ public abstract class Component
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(layoutStateContext, parentContext, this, globalKey);
 
-    if (!parentContext.useStatelessComponent()) {
-      setScopedContext(scopedContext);
-
-      final LithoNode layoutCreatedInWillRender = getLayoutCreatedInWillRender(layoutStateContext);
-      if (layoutCreatedInWillRender != null) {
-        assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
-      }
-    }
-
     applyStateUpdates(
         layoutStateContext.getStateHandler(), parentContext, scopedContext, globalKey);
-
-    if (!parentContext.useStatelessComponent()) {
-      generateErrorEventHandler(parentContext, scopedContext);
-    }
 
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {
@@ -1643,11 +1522,7 @@ public abstract class Component
       final ComponentContext parentContext,
       final Component parentComponent,
       final Component childComponent) {
-    if (parentContext.useStatelessComponent()) {
-      return parentContext.getScopedComponentInfo().getChildCountAndIncrement(childComponent);
-    } else {
-      return parentComponent.getChildCountAndIncrement(childComponent);
-    }
+    return parentContext.getScopedComponentInfo().getChildCountAndIncrement(childComponent);
   }
 
   private final synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
@@ -1670,11 +1545,7 @@ public abstract class Component
       final ComponentContext parentContext,
       final Component parentComponent,
       final String manualKey) {
-    if (parentContext.useStatelessComponent()) {
-      return parentContext.getScopedComponentInfo().getManualKeyUsagesCountAndIncrement(manualKey);
-    } else {
-      return parentComponent.getManualKeyUsagesCountAndIncrement(manualKey);
-    }
+    return parentContext.getScopedComponentInfo().getManualKeyUsagesCountAndIncrement(manualKey);
   }
 
   /**
@@ -1779,42 +1650,20 @@ public abstract class Component
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */
-  private static void registerWorkingRange(
-      String name, WorkingRange workingRange, Component component, String globalKey) {
-    if (component.mWorkingRangeRegistrations == null) {
-      component.mWorkingRangeRegistrations = new ArrayList<>();
-    }
-    // This method is not called in stateless so it's safe to pass null scopedComponentInfo here
-    component.mWorkingRangeRegistrations.add(
-        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey, null));
-  }
-
-  /** Store a working range information into a list for later use by {@link LayoutState}. */
   protected static void registerWorkingRange(
       ComponentContext scopedContext,
       String name,
       WorkingRange workingRange,
       Component component,
       String globalKey) {
-    if (scopedContext.useStatelessComponent()) {
-      scopedContext
-          .getScopedComponentInfo()
-          .registerWorkingRange(name, workingRange, component, globalKey);
-    } else {
-      registerWorkingRange(name, workingRange, component, globalKey);
-    }
+    scopedContext
+        .getScopedComponentInfo()
+        .registerWorkingRange(name, workingRange, component, globalKey);
   }
 
   static void addWorkingRangeToNode(
       LithoNode node, ComponentContext scopedContext, Component component) {
-    if (scopedContext.useStatelessComponent()) {
-      scopedContext.getScopedComponentInfo().addWorkingRangeToNode(node);
-    } else {
-      if (component.mWorkingRangeRegistrations != null
-          && !component.mWorkingRangeRegistrations.isEmpty()) {
-        node.addWorkingRanges(component.mWorkingRangeRegistrations);
-      }
-    }
+    scopedContext.getScopedComponentInfo().addWorkingRangeToNode(node);
   }
 
   protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {

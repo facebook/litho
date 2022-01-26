@@ -34,9 +34,5 @@ import java.lang.Exception
 @Hook
 fun ComponentScope.useErrorBoundary(onError: (exception: Exception) -> Unit) {
   val errorEventHandler = eventHandler<ErrorEvent> { onError(it.exception) }
-  if (context.useStatelessComponent()) {
-    context.scopedComponentInfo.setErrorEventHandlerDuringRender(errorEventHandler)
-  } else {
-    context.componentScope.setErrorEventHandlerDuringRender(errorEventHandler)
-  }
+  context.scopedComponentInfo.setErrorEventHandlerDuringRender(errorEventHandler)
 }

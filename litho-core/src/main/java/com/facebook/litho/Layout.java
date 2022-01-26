@@ -107,9 +107,7 @@ class Layout {
                   layoutStateContext,
                   c,
                   updated,
-                  updatedScopedContext.useStatelessComponent()
-                      ? updatedScopedContext.getScopedComponentInfo()
-                      : null,
+                  updatedScopedContext.getScopedComponentInfo(),
                   globalKeyToReuse);
     }
 
@@ -187,7 +185,7 @@ class Layout {
 
       component = c.getComponentScope();
 
-      scopedComponentInfo = c.useStatelessComponent() ? c.getScopedComponentInfo() : null;
+      scopedComponentInfo = c.getScopedComponentInfo();
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution =
@@ -367,10 +365,6 @@ class Layout {
           final int prevWidthSpec = parentContext.getWidthSpec();
           final int prevHeightSpec = parentContext.getHeightSpec();
 
-          if (!parentContext.useStatelessComponent()) {
-            parentContext.setTreeProps(holder.getNode().getPendingTreeProps());
-          }
-
           // Set the size specs in ComponentContext for the nested tree
           parentContext.setWidthSpec(widthSpec);
           parentContext.setHeightSpec(heightSpec);
@@ -379,10 +373,8 @@ class Layout {
           final @Nullable LithoNode newNode =
               create(layoutStateContext, parentContext, component, true, true, globalKey);
 
-          if (parentContext.useStatelessComponent()) {
-            parentContext.setWidthSpec(prevWidthSpec);
-            parentContext.setHeightSpec(prevHeightSpec);
-          }
+          parentContext.setWidthSpec(prevWidthSpec);
+          parentContext.setHeightSpec(prevHeightSpec);
 
           if (newNode != null) {
             holder.getNode().copyInto(newNode);
@@ -451,8 +443,7 @@ class Layout {
       final boolean reuseGlobalKey,
       @Nullable final String globalKeyToReuse) {
 
-    final Component component =
-        parent.useStatelessComponent() ? original : original.getThreadSafeInstance();
+    final Component component = original;
 
     if (reuseGlobalKey) {
       if (globalKeyToReuse == null) {

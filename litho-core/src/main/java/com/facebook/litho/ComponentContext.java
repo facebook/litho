@@ -41,8 +41,6 @@ import java.lang.ref.WeakReference;
  */
 public class ComponentContext implements Cloneable {
 
-  final @Nullable Boolean mWasStatelessWhenCreated;
-
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
   // TODO: T48229786 move to CT
@@ -122,7 +120,6 @@ public class ComponentContext implements Cloneable {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
-    mWasStatelessWhenCreated = null;
     mContext = context;
     mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
     mResourceResolver = new ResourceResolver(this);
@@ -156,7 +153,6 @@ public class ComponentContext implements Cloneable {
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
-    mWasStatelessWhenCreated = mLayoutStateContext != null ? useStatelessComponent() : null;
   }
 
   ComponentContext makeNewCopy() {
@@ -200,12 +196,10 @@ public class ComponentContext implements Cloneable {
     componentContext.mGlobalKey = globalKey;
     componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
 
-    if (componentContext.useStatelessComponent()) {
-      final EventHandler<ErrorEvent> errorEventHandler =
-          ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
-      componentContext.mScopedComponentInfo =
-          new ScopedComponentInfo(scope, componentContext, errorEventHandler);
-    }
+    final EventHandler<ErrorEvent> errorEventHandler =
+        ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
+    componentContext.mScopedComponentInfo =
+        new ScopedComponentInfo(scope, componentContext, errorEventHandler);
 
     return componentContext;
   }
@@ -307,30 +301,22 @@ public class ComponentContext implements Cloneable {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
-    if (useStatelessComponent()) {
-      return mGlobalKey;
-    }
-
-    return Component.getGlobalKey(this, mComponentScope);
+    return mGlobalKey;
   }
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
-      if (useStatelessComponent()) {
-        try {
-          final EventHandler<ErrorEvent> errorEventHandler =
-              getScopedComponentInfo().getErrorEventHandler();
-          if (errorEventHandler != null) {
-            return errorEventHandler;
-          }
-        } catch (IllegalStateException e) {
-          if (mComponentTree != null) {
-            return mComponentTree.getErrorEventHandler();
-          }
-          return DefaultErrorEventHandler.INSTANCE;
+      try {
+        final EventHandler<ErrorEvent> errorEventHandler =
+            getScopedComponentInfo().getErrorEventHandler();
+        if (errorEventHandler != null) {
+          return errorEventHandler;
         }
-      } else if (mComponentScope.getErrorHandler() != null) {
-        return mComponentScope.getErrorHandler();
+      } catch (IllegalStateException e) {
+        if (mComponentTree != null) {
+          return mComponentTree.getErrorEventHandler();
+        }
+        return DefaultErrorEventHandler.INSTANCE;
       }
     }
 
@@ -703,10 +689,6 @@ public class ComponentContext implements Cloneable {
       // Should not be possible!
       throw new RuntimeException(e);
     }
-  }
-
-  boolean useStatelessComponent() {
-    return mComponentTree != null && mComponentTree.useStatelessComponent();
   }
 
   boolean shouldReuseOutputs() {

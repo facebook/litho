@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
@@ -404,6 +405,8 @@ class StateUpdatesWithReconciliationTest() {
 
   @Test
   fun `ensure state is not lost when multiple different components update state`() {
+    TempComponentsConfigurations.setReuseInternalNode(true)
+
     val c = lithoViewRule.context
     val caller_1 = SimpleStateUpdateEmulatorSpec.Caller()
     val caller_2 = SimpleStateUpdateEmulatorSpec.Caller()
@@ -428,6 +431,8 @@ class StateUpdatesWithReconciliationTest() {
     caller_1.increment()
     assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 3")
     assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+
+    TempComponentsConfigurations.restoreReuseInternalNode()
   }
 
   @Test

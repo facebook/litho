@@ -62,7 +62,6 @@ public class ComponentTreeHolder {
   private final ComponentsConfiguration mComponentsConfiguration;
   private final boolean mUseRenderUnitIdMap;
 
-  private @Nullable Boolean mUseStateLessComponent;
   private @Nullable Boolean mInternalNodeReuseEnabled;
   private @Nullable Boolean mIsLayoutCachingEnabled;
 
@@ -496,15 +495,13 @@ public class ComponentTreeHolder {
           .useRenderUnitIdMap(mUseRenderUnitIdMap)
           .build();
 
-      if (mUseStateLessComponent != null) {
-        builder.overrideStatelessConfigs(
-            mUseStateLessComponent, mInternalNodeReuseEnabled, mIsLayoutCachingEnabled);
+      if (mIsLayoutCachingEnabled != null) {
+        builder.overrideStatelessConfigs(mInternalNodeReuseEnabled, mIsLayoutCachingEnabled);
       }
 
       mComponentTree = builder.build();
 
-      if (mUseStateLessComponent == null) {
-        mUseStateLessComponent = mComponentTree.useStatelessComponent();
+      if (mIsLayoutCachingEnabled == null) {
         mInternalNodeReuseEnabled = mComponentTree.isInternalNodeReuseEnabled();
         mIsLayoutCachingEnabled = mComponentTree.isLayoutCachingEnabled();
       }

@@ -380,8 +380,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
 
-  private final boolean useStatelessComponent;
-
   private final boolean isReconciliationEnabled;
 
   private final boolean mMoveLayoutsBetweenThreads;
@@ -447,7 +445,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mIsLayoutCachingEnabled =
         mComponentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
     mReuseInternalNodes = mIsLayoutCachingEnabled || mComponentsConfiguration.reuseInternalNodes();
-    useStatelessComponent = mReuseInternalNodes || mComponentsConfiguration.useStatelessComponent();
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -1259,10 +1256,6 @@ public class ComponentTree implements LithoLifecycleListener {
     return mComponentsConfiguration.shouldReuseOutputs();
   }
 
-  public boolean useStatelessComponent() {
-    return useStatelessComponent;
-  }
-
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
   }
@@ -1556,8 +1549,6 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
-
-    final Component root;
     final @Nullable TreeProps rootTreeProps;
 
     synchronized (this) {
@@ -1565,7 +1556,6 @@ public class ComponentTree implements LithoLifecycleListener {
         return;
       }
 
-      root = useStatelessComponent() ? mRoot : mRoot.makeShallowCopy();
       rootTreeProps = TreeProps.copy(mRootTreeProps);
 
       if (isCreateLayoutInProgress) {
@@ -1574,7 +1564,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     setRootAndSizeSpecInternal(
-        root,
+        mRoot,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         isAsync,
@@ -2296,7 +2286,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
       widthSpec = mWidthSpec;
       heightSpec = mHeightSpec;
-      root = useStatelessComponent() ? mRoot : mRoot.makeShallowCopy();
+      root = mRoot;
       localLayoutVersion = mNextLayoutVersion++;
     }
 
@@ -3527,8 +3517,7 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     @Deprecated
     public Builder reuseInternalNodes(boolean shouldReuseInternalNodes) {
-      overrideStatelessConfigs(
-          shouldReuseInternalNodes, shouldReuseInternalNodes, isLayoutCachingEnabled);
+      overrideStatelessConfigs(shouldReuseInternalNodes, isLayoutCachingEnabled);
       return this;
     }
 
@@ -3548,12 +3537,9 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     public void overrideStatelessConfigs(
-        boolean useStateLessComponent,
-        boolean internalNodeReuseEnabled,
-        boolean isLayoutCachingEnabled) {
+        boolean internalNodeReuseEnabled, boolean isLayoutCachingEnabled) {
       this.componentsConfiguration =
           ComponentsConfiguration.create(this.componentsConfiguration)
-              .useStatelessComponents(useStateLessComponent)
               .reuseInternalNodes(internalNodeReuseEnabled)
               .build();
       this.isLayoutCachingEnabled = isLayoutCachingEnabled;

@@ -191,10 +191,6 @@ public class LayoutStateContext {
     return Preconditions.checkNotNull(mStateHandler);
   }
 
-  boolean useStatelessComponent() {
-    return mComponentTree != null && mComponentTree.useStatelessComponent();
-  }
-
   @Nullable
   public PerfEvent getPerfEvent() {
     return mPerfEvent;

@@ -90,7 +90,7 @@ public class TestLayoutState {
     node.appendComponent(
         new TestComponent(component),
         scopedContext.getGlobalKey(),
-        scopedContext.useStatelessComponent() ? scopedContext.getScopedComponentInfo() : null);
+        scopedContext.getScopedComponentInfo());
 
     return node;
   }
@@ -198,8 +198,7 @@ public class TestLayoutState {
       } else {
         node = resolveImmediateSubTree(layoutStateContext, c, root);
         if (Component.isLayoutSpec(root) && root.canResolve()) {
-          node.appendComponent(
-              root, root.getKey(), c.useStatelessComponent() ? c.getScopedComponentInfo() : null);
+          node.appendComponent(root, root.getKey(), c.getScopedComponentInfo());
         }
       }
     }
@@ -220,10 +219,7 @@ public class TestLayoutState {
       }
     }
 
-    node.appendComponent(
-        component,
-        component.getKey(),
-        c.useStatelessComponent() ? c.getScopedComponentInfo() : null);
+    node.appendComponent(component, component.getKey(), c.getScopedComponentInfo());
     component.onPrepare(c);
 
     return node;
@@ -252,7 +248,7 @@ public class TestLayoutState {
     node.appendComponent(
         new TestComponent(component),
         component.getKey(),
-        c.useStatelessComponent() ? new ScopedComponentInfo(component, c, null) : null);
+        new ScopedComponentInfo(component, c, null));
 
     return node;
   }
@@ -301,7 +297,7 @@ public class TestLayoutState {
 
       component = c.getComponentScope();
 
-      scopedComponentInfo = c.useStatelessComponent() ? c.getScopedComponentInfo() : null;
+      scopedComponentInfo = c.getScopedComponentInfo();
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution = isNestedTree(layoutStateContext, component);

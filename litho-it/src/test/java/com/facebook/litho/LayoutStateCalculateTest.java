@@ -1064,11 +1064,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
-      assertThat(innerComponent.wasMeasureCalled()).isTrue();
-    } else {
-      assertThat(innerComponent.wasMeasureCalled()).isFalse();
-    }
+    assertThat(innerComponent.wasMeasureCalled()).isTrue();
   }
 
   @Test
@@ -1119,11 +1115,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
-      assertThat(innerComponent.wasMeasureCalled()).isTrue();
-    } else {
-      assertThat(innerComponent.wasMeasureCalled()).isFalse();
-    }
+    assertThat(innerComponent.wasMeasureCalled()).isTrue();
   }
 
   @Test
@@ -1172,11 +1164,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
-      assertThat(innerComponent.wasMeasureCalled()).isTrue();
-    } else {
-      assertThat(innerComponent.wasMeasureCalled()).isFalse();
-    }
+    assertThat(innerComponent.wasMeasureCalled()).isTrue();
   }
 
   @Test
@@ -1225,11 +1213,7 @@ public class LayoutStateCalculateTest {
     // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
     // Therefore different behaviour in useStatelessComponent
-    if (mLegacyLithoViewRule.getComponentTree().useStatelessComponent()) {
-      assertThat(innerComponent.wasMeasureCalled()).isTrue();
-    } else {
-      assertThat(innerComponent.wasMeasureCalled()).isFalse();
-    }
+    assertThat(innerComponent.wasMeasureCalled()).isTrue();
   }
 
   @Test
