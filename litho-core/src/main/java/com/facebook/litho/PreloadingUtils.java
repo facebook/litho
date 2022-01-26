@@ -70,7 +70,7 @@ public class PreloadingUtils {
                         Diff.class,
                         LayoutThreadPoolConfigurationImpl.class,
                         WorkingRange.class,
-                        InternalNode.class,
+                        LithoNode.class,
                         LithoLayoutResult.class,
                         ComponentLayout.class,
                         NodeConfig.class,

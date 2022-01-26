@@ -144,7 +144,7 @@ class HostComponent extends Component {
    * to the host, that's wrapping it
    *
    * @param commonDynamicProps common dynamic props to set.
-   * @see LayoutState#createHostLayoutOutput(LayoutState, InternalNode, boolean)
+   * @see LayoutState#createHostLayoutOutput(LayoutState, LithoNode, boolean)
    */
   void setCommonDynamicProps(SparseArray<DynamicValue<?>> commonDynamicProps) {
     mCommonDynamicProps = commonDynamicProps;

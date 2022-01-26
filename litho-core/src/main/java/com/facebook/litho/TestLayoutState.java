@@ -44,7 +44,7 @@ import java.util.List;
 @Deprecated
 public class TestLayoutState {
 
-  public static InternalNode createAndMeasureTreeForComponent(
+  public static LithoNode createAndMeasureTreeForComponent(
       LayoutStateContext layoutStateContext,
       ComponentContext c,
       Component component,
@@ -55,7 +55,7 @@ public class TestLayoutState {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final InternalNode root = createImmediateLayout(layoutStateContext, c, component);
+    final LithoNode root = createImmediateLayout(layoutStateContext, c, component);
 
     if (root == null || layoutStateContext.isLayoutInterrupted()) {
       return root;
@@ -66,7 +66,7 @@ public class TestLayoutState {
     return root;
   }
 
-  public static @Nullable InternalNode newImmediateLayoutBuilder(
+  public static @Nullable LithoNode newImmediateLayoutBuilder(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component) {
@@ -83,7 +83,7 @@ public class TestLayoutState {
       return create(layoutStateContext, c, component);
     }
 
-    final InternalNode node = createInternalNode(c);
+    final LithoNode node = createInternalNode(c);
     final ComponentContext scopedContext =
         component.updateInternalChildState(layoutStateContext, c, null);
 
@@ -99,7 +99,7 @@ public class TestLayoutState {
    * Mimicks implementation of Column.resolve or Row.resolve but uses a test InternalNode for
    * shallow child resolution.
    */
-  private static InternalNode resolve(
+  private static LithoNode resolve(
       LayoutStateContext layoutContext, ComponentContext c, Component component) {
 
     // this can be false for a mocked component
@@ -114,7 +114,7 @@ public class TestLayoutState {
     YogaWrap wrap = getInternalState(component, "wrap");
     List<Component> children = getInternalState(component, "children");
 
-    InternalNode node =
+    LithoNode node =
         createInternalNode(c)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
@@ -153,7 +153,7 @@ public class TestLayoutState {
     return node;
   }
 
-  private static InternalNode createImmediateLayout(
+  private static LithoNode createImmediateLayout(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component) {
@@ -163,8 +163,8 @@ public class TestLayoutState {
       return null;
     }
 
-    final InternalNode node;
-    final InternalNode layoutCreatedInWillRender =
+    final LithoNode node;
+    final LithoNode layoutCreatedInWillRender =
         component.consumeLayoutCreatedInWillRender(layoutStateContext, c);
 
     if (layoutCreatedInWillRender != null) {
@@ -184,9 +184,9 @@ public class TestLayoutState {
     } else if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
       if (component instanceof Column || component instanceof Row) {
-        node = (InternalNode) resolve(layoutStateContext, c, component);
+        node = (LithoNode) resolve(layoutStateContext, c, component);
       } else {
-        node = (InternalNode) component.resolve(layoutStateContext, c);
+        node = (LithoNode) component.resolve(layoutStateContext, c);
       }
     } else if (isMountSpec(component)) {
       node = createInternalNode(c);
@@ -229,7 +229,7 @@ public class TestLayoutState {
     return node;
   }
 
-  static @Nullable InternalNode resolveImmediateSubTree(
+  static @Nullable LithoNode resolveImmediateSubTree(
       LayoutStateContext layoutStateContext, final ComponentContext c, Component component) {
 
     // this can be false for a mocked component
@@ -248,7 +248,7 @@ public class TestLayoutState {
       return create(layoutStateContext, c, component);
     }
 
-    InternalNode node = createInternalNode(c);
+    LithoNode node = createInternalNode(c);
     node.appendComponent(
         new TestComponent(component),
         component.getKey(),
@@ -257,18 +257,18 @@ public class TestLayoutState {
     return node;
   }
 
-  private static InternalNode createInternalNode(ComponentContext c) {
-    return new InternalNode(c);
+  private static LithoNode createInternalNode(ComponentContext c) {
+    return new LithoNode(c);
   }
 
-  private static InternalNode createNestedTreeHolder(
+  private static LithoNode createNestedTreeHolder(
       ComponentContext c, @Nullable TreeProps treeProps) {
     return new NestedTreeHolder(c, treeProps);
   }
 
   // Mimicks implementation of Layout.create but uses a custom InternalNode for shallow child
   // resolution.
-  private static @Nullable InternalNode create(
+  private static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       Component component) {
@@ -278,7 +278,7 @@ public class TestLayoutState {
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
-    final InternalNode node;
+    final LithoNode node;
     final ComponentContext c;
     final String globalKey;
     final @Nullable ScopedComponentInfo scopedComponentInfo;
@@ -286,7 +286,7 @@ public class TestLayoutState {
     try {
 
       // 1. Consume the layout created in `willrender`.
-      final InternalNode cached =
+      final LithoNode cached =
           component.consumeLayoutCreatedInWillRender(layoutStateContext, parent);
 
       // 2. Return immediately if cached layout is available.

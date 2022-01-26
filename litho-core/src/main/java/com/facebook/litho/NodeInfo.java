@@ -26,7 +26,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * NodeInfo holds information that are set to the {@link InternalNode} and needs to be used while
+ * NodeInfo holds information that are set to the {@link LithoNode} and needs to be used while
  * mounting a {@link com.facebook.rendercore.MountItem} in {@link MountState}.
  */
 @ThreadConfined(ThreadConfined.ANY)

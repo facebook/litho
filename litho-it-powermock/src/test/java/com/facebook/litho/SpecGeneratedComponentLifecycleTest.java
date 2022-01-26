@@ -74,25 +74,25 @@ public class SpecGeneratedComponentLifecycleTest {
   private static final int NODE_LIST_SIZE = 100;
 
   private DefaultLayoutResult mResult;
-  private InternalNode mNode;
+  private LithoNode mNode;
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
   private ComponentTree mComponentTree;
   private boolean mPreviousOnErrorConfig;
   private LayoutStateContext mLayoutStateContext;
-  private final List<InternalNode> mInternalNodes = new ArrayList<>(NODE_LIST_SIZE);
+  private final List<LithoNode> mNodes = new ArrayList<>(NODE_LIST_SIZE);
   private final List<NestedTreeHolder> mInputOnlyNestedTreeHolders =
       new ArrayList<>(NODE_LIST_SIZE);
   private int mNextInternalNode;
   private int mNextInputOnlyNestedTreeHolder;
 
-  private InternalNode getNextInternalNode() {
+  private LithoNode getNextInternalNode() {
     if (mNextInternalNode >= NODE_LIST_SIZE) {
       throw new IllegalStateException("Increase NODE_LIST_SIZE");
     }
 
-    return mInternalNodes.get(mNextInternalNode++);
+    return mNodes.get(mNextInternalNode++);
   }
 
   private NestedTreeHolder getNextInputOnlyNestedTreeHolder() {
@@ -106,14 +106,14 @@ public class SpecGeneratedComponentLifecycleTest {
   private void createSpyNodes() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
     for (int i = 0, size = NODE_LIST_SIZE; i < size; i++) {
-      mInternalNodes.add(spy(new InternalNode(c)));
+      mNodes.add(spy(new LithoNode(c)));
       mInputOnlyNestedTreeHolders.add(spy(new NestedTreeHolder(c, null)));
     }
   }
 
   private void clearSpyNodes() {
     mInputOnlyNestedTreeHolders.clear();
-    mInternalNodes.clear();
+    mNodes.clear();
     mNextInternalNode = 0;
     mNextInputOnlyNestedTreeHolder = 0;
   }
@@ -124,14 +124,14 @@ public class SpecGeneratedComponentLifecycleTest {
     mockStatic(Layout.class);
 
     try {
-      whenNew(InternalNode.class)
+      whenNew(LithoNode.class)
           .withArguments((ComponentContext) any())
           .thenAnswer(
-              new Answer<InternalNode>() {
+              new Answer<LithoNode>() {
                 @Override
-                public InternalNode answer(InvocationOnMock invocation) throws Throwable {
+                public LithoNode answer(InvocationOnMock invocation) throws Throwable {
                   final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
-                  final InternalNode node = getNextInternalNode();
+                  final LithoNode node = getNextInternalNode();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
                   if (c.useStatelessComponent()) {
                     Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
@@ -189,7 +189,7 @@ public class SpecGeneratedComponentLifecycleTest {
         .thenCallRealMethod();
 
     mDiffNode = mock(DiffNode.class);
-    mNode = mock(InternalNode.class);
+    mNode = mock(LithoNode.class);
     mResult = mock(DefaultLayoutResult.class);
     mYogaNode = YogaNodeFactory.create();
     mYogaNode.setData(mNode);
@@ -257,7 +257,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
@@ -270,7 +270,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
@@ -283,7 +283,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
@@ -296,7 +296,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
@@ -309,7 +309,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCannotMeasure() {
     TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     verify(component).onCreateLayout(scopedContext);
@@ -321,7 +321,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCannotMeasure() {
     TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
@@ -336,7 +336,7 @@ public class SpecGeneratedComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
         node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     verify(component)
@@ -349,7 +349,7 @@ public class SpecGeneratedComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
     TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
+    LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     verify(component, never()).onCreateLayout((ComponentContext) any());
     verify(component, never())
@@ -395,11 +395,10 @@ public class SpecGeneratedComponentLifecycleTest {
 
     private final boolean mCanMeasure;
     private final MountType mMountType;
-    private final InternalNode mNode;
+    private final LithoNode mNode;
     private final boolean mHasState;
 
-    TestBaseComponent(
-        boolean canMeasure, MountType mountType, InternalNode node, boolean hasState) {
+    TestBaseComponent(boolean canMeasure, MountType mountType, LithoNode node, boolean hasState) {
       super("TestBaseComponent");
       mCanMeasure = canMeasure;
       mMountType = mountType;
@@ -443,7 +442,7 @@ public class SpecGeneratedComponentLifecycleTest {
   static class SpyComponentBuilder {
     private boolean mCanMeasure = false;
     private MountType mMountType = MountType.NONE;
-    private InternalNode mNode = null;
+    private LithoNode mNode = null;
     private boolean mHasState = false;
 
     SpyComponentBuilder canMeasure(boolean canMeasure) {
@@ -456,7 +455,7 @@ public class SpecGeneratedComponentLifecycleTest {
       return this;
     }
 
-    SpyComponentBuilder setNode(InternalNode node) {
+    SpyComponentBuilder setNode(LithoNode node) {
       this.mNode = node;
       return this;
     }
@@ -474,7 +473,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
   private static class TestMountSpecWithEmptyOnMeasure extends TestBaseComponent {
 
-    TestMountSpecWithEmptyOnMeasure(InternalNode node) {
+    TestMountSpecWithEmptyOnMeasure(LithoNode node) {
       super(true, MountType.DRAWABLE, node, false);
     }
 
@@ -491,7 +490,7 @@ public class SpecGeneratedComponentLifecycleTest {
   private static class TestMountSpecSettingSizesInOnMeasure
       extends TestMountSpecWithEmptyOnMeasure {
 
-    TestMountSpecSettingSizesInOnMeasure(InternalNode node) {
+    TestMountSpecSettingSizesInOnMeasure(LithoNode node) {
       super(node);
     }
 

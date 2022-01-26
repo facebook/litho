@@ -722,7 +722,7 @@ public abstract class Component
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected @Nullable InternalNode resolve(
+  protected @Nullable LithoNode resolve(
       final LayoutStateContext layoutContext, final ComponentContext c) {
     return Layout.create(layoutContext, c, this, false);
   }
@@ -1164,9 +1164,9 @@ public abstract class Component
   }
 
   @Nullable
-  final InternalNode consumeLayoutCreatedInWillRender(
+  final LithoNode consumeLayoutCreatedInWillRender(
       final @Nullable LayoutStateContext layoutStateContext, @Nullable ComponentContext context) {
-    InternalNode layout;
+    LithoNode layout;
 
     if (context == null || layoutStateContext == null) {
       return null;
@@ -1187,12 +1187,12 @@ public abstract class Component
 
   @VisibleForTesting
   @Nullable
-  final InternalNode getLayoutCreatedInWillRender(final LayoutStateContext layoutStateContext) {
+  final LithoNode getLayoutCreatedInWillRender(final LayoutStateContext layoutStateContext) {
     return layoutStateContext.getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
-      final LayoutStateContext layoutStateContext, final @Nullable InternalNode newValue) {
+      final LayoutStateContext layoutStateContext, final @Nullable LithoNode newValue) {
     layoutStateContext.setLayoutCreatedInWillRender(mId, newValue);
   }
 
@@ -1561,8 +1561,7 @@ public abstract class Component
     if (!parentContext.useStatelessComponent()) {
       setScopedContext(scopedContext);
 
-      final InternalNode layoutCreatedInWillRender =
-          getLayoutCreatedInWillRender(layoutStateContext);
+      final LithoNode layoutCreatedInWillRender = getLayoutCreatedInWillRender(layoutStateContext);
       if (layoutCreatedInWillRender != null) {
         assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
       }
@@ -1724,14 +1723,13 @@ public abstract class Component
     final LayoutStateContext layoutStateContext =
         Preconditions.checkNotNull(c.getLayoutStateContext());
 
-    final InternalNode componentLayoutCreatedInWillRender =
+    final LithoNode componentLayoutCreatedInWillRender =
         component.getLayoutCreatedInWillRender(layoutStateContext);
     if (componentLayoutCreatedInWillRender != null) {
       return willRender(layoutStateContext, c, component, componentLayoutCreatedInWillRender);
     }
 
-    final InternalNode newLayoutCreatedInWillRender =
-        Layout.create(layoutStateContext, c, component);
+    final LithoNode newLayoutCreatedInWillRender = Layout.create(layoutStateContext, c, component);
     boolean willRender = willRender(layoutStateContext, c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
       component.setLayoutCreatedInWillRender(layoutStateContext, newLayoutCreatedInWillRender);
@@ -1808,7 +1806,7 @@ public abstract class Component
   }
 
   static void addWorkingRangeToNode(
-      InternalNode node, ComponentContext scopedContext, Component component) {
+      LithoNode node, ComponentContext scopedContext, Component component) {
     if (scopedContext.useStatelessComponent()) {
       scopedContext.getScopedComponentInfo().addWorkingRangeToNode(node);
     } else {
@@ -1841,7 +1839,7 @@ public abstract class Component
       final LayoutStateContext layoutStateContext,
       ComponentContext context,
       Component component,
-      @Nullable InternalNode node) {
+      @Nullable LithoNode node) {
     if (node == null) {
       return false;
     }

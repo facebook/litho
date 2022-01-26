@@ -956,7 +956,7 @@ public class ComponentHostTest {
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
 
     LithoLayoutResult result = mock(LithoLayoutResult.class);
-    InternalNode node = mock(InternalNode.class);
+    LithoNode node = mock(LithoNode.class);
     when(result.getInternalNode()).thenReturn(node);
     when(node.hasTouchExpansion()).thenReturn(true);
     when(result.getTouchExpansionLeft()).thenReturn(1);

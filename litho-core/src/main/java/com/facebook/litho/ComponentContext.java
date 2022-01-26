@@ -642,7 +642,7 @@ public class ComponentContext implements Cloneable {
     mHeightSpec = heightSpec;
   }
 
-  void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+  void applyStyle(LithoNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
       node.applyAttributes(mContext, defStyleAttr, defStyleRes);

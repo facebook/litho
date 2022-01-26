@@ -2542,7 +2542,7 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, componentSpy);
 
-    final InternalNode cachedLayout = componentSpy.getLayoutCreatedInWillRender(layoutStateContext);
+    final LithoNode cachedLayout = componentSpy.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     c.setLayoutStateContext(null);
@@ -2572,10 +2572,10 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = Layout.create(layoutStateContext, c, component);
+    LithoNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
   }
@@ -2594,10 +2594,10 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = Layout.create(layoutStateContext, c, component);
+    LithoNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
   }
@@ -2616,10 +2616,10 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = Layout.create(layoutStateContext, c, component);
+    LithoNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
   }
@@ -2660,7 +2660,7 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     assertThat(Component.willRender(c, component)).isTrue();

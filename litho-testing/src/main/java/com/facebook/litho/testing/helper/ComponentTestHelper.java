@@ -33,10 +33,10 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
-import com.facebook.litho.InternalNode;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LayoutState;
 import com.facebook.litho.LayoutStateContext;
+import com.facebook.litho.LithoNode;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
@@ -401,14 +401,14 @@ public final class ComponentTestHelper {
   }
 
   @Deprecated
-  private static InternalNode resolveImmediateSubtree(
+  private static LithoNode resolveImmediateSubtree(
       LayoutStateContext layoutStateContext,
       ComponentContext c,
       Component component,
       int widthSpec,
       int heightSpec) {
 
-    InternalNode node =
+    LithoNode node =
         TestLayoutState.createAndMeasureTreeForComponent(
             layoutStateContext, c, component, widthSpec, heightSpec);
 
@@ -416,7 +416,7 @@ public final class ComponentTestHelper {
   }
 
   @Deprecated
-  private static List<Component> extractImmediateSubComponents(@Nullable InternalNode root) {
+  private static List<Component> extractImmediateSubComponents(@Nullable LithoNode root) {
     if (root == null) {
       return Collections.emptyList();
     }
@@ -433,7 +433,7 @@ public final class ComponentTestHelper {
     }
 
     for (int i = 0; i < root.getChildCount(); i++) {
-      InternalNode child = root.getChildAt(i);
+      LithoNode child = root.getChildAt(i);
       output.addAll(extractImmediateSubComponents(child));
     }
 
@@ -454,7 +454,7 @@ public final class ComponentTestHelper {
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
     c.setLayoutStateContext(layoutStateContext); // TODO: to be deleted
 
-    InternalNode root =
+    LithoNode root =
         resolveImmediateSubtree(layoutStateContext, c, component, widthSpec, heightSpec);
 
     return extractImmediateSubComponents(root);

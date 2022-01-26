@@ -63,18 +63,18 @@ public class NestedTreeResolutionPowermockTest {
 
   private static final int NODE_LIST_SIZE = 100;
 
-  private final List<InternalNode> mInternalNodes = new ArrayList<>(NODE_LIST_SIZE);
+  private final List<LithoNode> mNodes = new ArrayList<>(NODE_LIST_SIZE);
   private final List<NestedTreeHolder> mInputOnlyNestedTreeHolders =
       new ArrayList<>(NODE_LIST_SIZE);
   private int mNextInternalNode;
   private int mNextInputOnlyNestedTreeHolder;
 
-  private InternalNode getNextInternalNode() {
+  private LithoNode getNextInternalNode() {
     if (mNextInternalNode >= NODE_LIST_SIZE) {
       throw new IllegalStateException("Increase NODE_LIST_SIZE");
     }
 
-    return mInternalNodes.get(mNextInternalNode++);
+    return mNodes.get(mNextInternalNode++);
   }
 
   private NestedTreeHolder getNextInputOnlyNestedTreeHolder() {
@@ -88,14 +88,14 @@ public class NestedTreeResolutionPowermockTest {
   private void createSpyNodes() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
     for (int i = 0, size = NODE_LIST_SIZE; i < size; i++) {
-      mInternalNodes.add(spy(new InternalNode(c)));
+      mNodes.add(spy(new LithoNode(c)));
       mInputOnlyNestedTreeHolders.add(spy(new NestedTreeHolder(c, null)));
     }
   }
 
   private void clearSpyNodes() {
     mInputOnlyNestedTreeHolders.clear();
-    mInternalNodes.clear();
+    mNodes.clear();
     mNextInternalNode = 0;
     mNextInputOnlyNestedTreeHolder = 0;
   }
@@ -107,14 +107,14 @@ public class NestedTreeResolutionPowermockTest {
     ComponentsConfiguration.isEndToEndTestRun = true;
 
     try {
-      whenNew(InternalNode.class)
+      whenNew(LithoNode.class)
           .withArguments((ComponentContext) any())
           .thenAnswer(
-              new Answer<InternalNode>() {
+              new Answer<LithoNode>() {
                 @Override
-                public InternalNode answer(InvocationOnMock invocation) throws Throwable {
+                public LithoNode answer(InvocationOnMock invocation) throws Throwable {
                   final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
-                  final InternalNode node = getNextInternalNode();
+                  final LithoNode node = getNextInternalNode();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
                   if (c.useStatelessComponent()) {
                     Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
@@ -171,7 +171,7 @@ public class NestedTreeResolutionPowermockTest {
 
     LithoLayoutResult.NestedTreeHolderResult holder =
         (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
-    verify(holder.getInternalNode(), times(2)).copyInto(any(InternalNode.class));
+    verify(holder.getInternalNode(), times(2)).copyInto(any(LithoNode.class));
   }
 
   @Test

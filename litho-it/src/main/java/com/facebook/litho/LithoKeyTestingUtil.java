@@ -40,7 +40,7 @@ public class LithoKeyTestingUtil {
   }
 
   public static void addScopedComponentInfoForNode(
-      InternalNode<?> node, Map<String, List<ScopedComponentInfo>> scopedComponentInfos) {
+      LithoNode<?> node, Map<String, List<ScopedComponentInfo>> scopedComponentInfos) {
     for (int i = 0, size = node.getComponents().size(); i < size; i++) {
       final Component component = node.getComponents().get(i);
       final String componentType = component.getSimpleName();

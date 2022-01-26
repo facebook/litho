@@ -27,9 +27,9 @@ import com.facebook.yoga.YogaValue;
 
 public class DebugLayoutNodeEditor {
 
-  private final InternalNode mNode;
+  private final LithoNode mNode;
 
-  public DebugLayoutNodeEditor(InternalNode node) {
+  public DebugLayoutNodeEditor(LithoNode node) {
     mNode = node;
   }
 

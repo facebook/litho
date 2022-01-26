@@ -105,8 +105,8 @@ public final class Column extends Component {
   }
 
   @Override
-  protected @Nullable InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
-    InternalNode node =
+  protected @Nullable LithoNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
+    LithoNode node =
         InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 

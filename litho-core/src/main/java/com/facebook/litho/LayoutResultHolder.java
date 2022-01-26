@@ -21,14 +21,14 @@ import androidx.annotation.Nullable;
 public class LayoutResultHolder {
 
   final @Nullable LithoLayoutResult mResult;
-  final @Nullable InternalNode mPartiallyResolvedLayout;
+  final @Nullable LithoNode mPartiallyResolvedLayout;
 
   public LayoutResultHolder(final @Nullable LithoLayoutResult result) {
     mResult = result;
     mPartiallyResolvedLayout = null;
   }
 
-  private LayoutResultHolder(final InternalNode partiallyResolvedLayout) {
+  private LayoutResultHolder(final LithoNode partiallyResolvedLayout) {
     mResult = null;
     mPartiallyResolvedLayout = partiallyResolvedLayout;
   }
@@ -37,7 +37,7 @@ public class LayoutResultHolder {
     return mPartiallyResolvedLayout != null;
   }
 
-  public static LayoutResultHolder interrupted(final InternalNode partiallyResolvedLayout) {
+  public static LayoutResultHolder interrupted(final LithoNode partiallyResolvedLayout) {
     return new LayoutResultHolder(partiallyResolvedLayout);
   }
 }

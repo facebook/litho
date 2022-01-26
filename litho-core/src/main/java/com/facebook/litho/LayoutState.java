@@ -71,9 +71,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(ComponentContext, LithoLayoutResult, InternalNode, LayoutState, RenderTreeNode,
+ * #collectResults(ComponentContext, LithoLayoutResult, LithoNode, LayoutState, RenderTreeNode,
  * DiffNode, DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided
- * {@link InternalNode} for later use in {@link MountState}.
+ * {@link LithoNode} for later use in {@link MountState}.
  *
  * <p>This needs to be accessible to statically mock the class in tests.
  */
@@ -150,7 +150,7 @@ public class LayoutState
   private final @Nullable List<TestOutput> mTestOutputs;
 
   @Nullable LithoLayoutResult mLayoutRoot;
-  @Nullable InternalNode mPartiallyResolvedLayoutRoot;
+  @Nullable LithoNode mPartiallyResolvedLayoutRoot;
   @Nullable TransitionId mRootTransitionId;
   @Nullable String mRootComponentName;
 
@@ -279,7 +279,7 @@ public class LayoutState
   @Nullable
   private static RenderTreeNode createContentRenderTreeNode(
       LithoLayoutResult result,
-      InternalNode node,
+      LithoNode node,
       LayoutState layoutState,
       @Nullable RenderTreeNode parent) {
 
@@ -344,7 +344,7 @@ public class LayoutState
       final LithoRenderUnit unit,
       LayoutState layoutState,
       LithoLayoutResult result,
-      InternalNode node,
+      LithoNode node,
       @Nullable RenderTreeNode parent,
       @Nullable DebugHierarchy.Node hierarchy) {
 
@@ -427,11 +427,11 @@ public class LayoutState
 
   /**
    * Acquires a {@link VisibilityOutput} object and computes the bounds for it using the information
-   * stored in the {@link InternalNode}.
+   * stored in the {@link LithoNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
       final LithoLayoutResult result,
-      final InternalNode node,
+      final LithoNode node,
       final LayoutState layoutState,
       final @Nullable RenderTreeNode renderTreeNode) {
 
@@ -469,7 +469,7 @@ public class LayoutState
 
   private static TestOutput createTestOutput(
       final LithoLayoutResult result,
-      final InternalNode node,
+      final LithoNode node,
       final LayoutState layoutState,
       final @Nullable LithoRenderUnit renderUnit) {
     final int l = layoutState.mCurrentX + result.getX();
@@ -490,7 +490,7 @@ public class LayoutState
 
   @Nullable
   private static DebugHierarchy.Node getDebugHierarchy(
-      @Nullable DebugHierarchy.Node parentHierarchy, final InternalNode node) {
+      @Nullable DebugHierarchy.Node parentHierarchy, final LithoNode node) {
     return ComponentsConfiguration.isDebugHierarchyEnabled
         ? DebugHierarchy.newNode(parentHierarchy, node.getTailComponent(), node.getComponents())
         : null;
@@ -509,16 +509,16 @@ public class LayoutState
    * will be created at the right order when mounting. The host markers will be define which host
    * each mounted artifacts will be attached to.
    *
-   * <p>At this stage all the {@link InternalNode} for which we have LayoutOutputs that can be
-   * recycled will have a DiffNode associated. If the CachedMeasures are valid we'll try to recycle
-   * both the host and the contents (including background/foreground). In all other cases instead
-   * we'll only try to re-use the hosts. In some cases the host's structure might change between two
-   * updates even if the component is of the same type. This can happen for example when a click
-   * listener is added. To avoid trying to re-use the wrong host type we explicitly check that after
-   * all the children for a subtree have been added (this is when the actual host type is resolved).
-   * If the host type changed compared to the one in the DiffNode we need to refresh the ids for the
-   * whole subtree in order to ensure that the MountState will unmount the subtree and mount it
-   * again on the correct host.
+   * <p>At this stage all the {@link LithoNode} for which we have LayoutOutputs that can be recycled
+   * will have a DiffNode associated. If the CachedMeasures are valid we'll try to recycle both the
+   * host and the contents (including background/foreground). In all other cases instead we'll only
+   * try to re-use the hosts. In some cases the host's structure might change between two updates
+   * even if the component is of the same type. This can happen for example when a click listener is
+   * added. To avoid trying to re-use the wrong host type we explicitly check that after all the
+   * children for a subtree have been added (this is when the actual host type is resolved). If the
+   * host type changed compared to the one in the DiffNode we need to refresh the ids for the whole
+   * subtree in order to ensure that the MountState will unmount the subtree and mount it again on
+   * the correct host.
    *
    * <p>
    *
@@ -532,7 +532,7 @@ public class LayoutState
   private static void collectResults(
       final ComponentContext parentContext,
       final LithoLayoutResult result,
-      final InternalNode<?> node,
+      final LithoNode<?> node,
       final LayoutState layoutState,
       @Nullable RenderTreeNode parent,
       final @Nullable DiffNode parentDiffNode,
@@ -1072,7 +1072,7 @@ public class LayoutState
       final LithoRenderUnit hostRenderUnit,
       final @Nullable RenderTreeNode parent,
       LithoLayoutResult result,
-      InternalNode node,
+      LithoNode node,
       LayoutState layoutState,
       @Nullable DiffNode diffNode,
       @Nullable DebugHierarchy.Node hierarchy) {
@@ -1218,7 +1218,7 @@ public class LayoutState
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
 
-      final InternalNode layoutCreatedInWillRender =
+      final LithoNode layoutCreatedInWillRender =
           component.consumeLayoutCreatedInWillRender(currentLayoutStateContext, c);
 
       c.setLayoutStateContext(layoutStateContext);
@@ -1282,7 +1282,7 @@ public class LayoutState
                 diffTreeRoot);
       }
 
-      final @Nullable InternalNode node = root != null ? root.getInternalNode() : null;
+      final @Nullable LithoNode node = root != null ? root.getInternalNode() : null;
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
@@ -1423,7 +1423,7 @@ public class LayoutState
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
     final @Nullable LithoLayoutResult root = layoutState.mLayoutRoot;
-    final @Nullable InternalNode node = root != null ? root.getInternalNode() : null;
+    final @Nullable LithoNode node = root != null ? root.getInternalNode() : null;
 
     final int rootWidth = root != null ? root.getWidth() : 0;
     final int rootHeight = root != null ? root.getHeight() : 0;
@@ -1710,7 +1710,7 @@ public class LayoutState
   }
 
   static DiffNode createDiffNode(
-      final LithoLayoutResult result, final InternalNode node, final @Nullable DiffNode parent) {
+      final LithoLayoutResult result, final LithoNode node, final @Nullable DiffNode parent) {
     final DiffNode diffNode = new DefaultDiffNode();
     final Component tail = node.getTailComponent();
     final String key = node.getTailComponentKey();
@@ -2134,7 +2134,7 @@ public class LayoutState
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler);
   }
 
-  private static @Nullable TransitionId getTransitionIdForNode(@Nullable InternalNode result) {
+  private static @Nullable TransitionId getTransitionIdForNode(@Nullable LithoNode result) {
     if (result == null) {
       return null;
     }

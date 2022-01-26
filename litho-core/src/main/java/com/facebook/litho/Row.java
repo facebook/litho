@@ -105,8 +105,8 @@ public final class Row extends Component {
   }
 
   @Override
-  protected @Nullable InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
-    InternalNode node =
+  protected @Nullable LithoNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
+    LithoNode node =
         InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.ROW_REVERSE : YogaFlexDirection.ROW);
 

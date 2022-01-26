@@ -28,7 +28,7 @@ import com.facebook.yoga.YogaNode;
  * properties and held separately so that they can be copied into the actual nested tree layout
  * before measuring it.
  */
-public class NestedTreeHolder extends InternalNode<NestedTreeYogaLayoutProps> {
+public class NestedTreeHolder extends LithoNode<NestedTreeYogaLayoutProps> {
 
   final @Nullable TreeProps mPendingTreeProps;
 
@@ -76,13 +76,13 @@ public class NestedTreeHolder extends InternalNode<NestedTreeYogaLayoutProps> {
         context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
   }
 
-  public void copyInto(InternalNode target) {
+  public void copyInto(LithoNode target) {
     // Defer copying, and set this NestedTreeHolder on the target. The props will be
     // transferred to the nested result during layout calculation.
     target.setNestedTreeHolder(this);
   }
 
-  public void transferInto(InternalNode target) {
+  public void transferInto(LithoNode target) {
     if (mNodeInfo != null) {
       if (target.getNodeInfo() == null) {
         target.setNodeInfo(mNodeInfo);

@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class InternalNodeResolvedPaddingTest {
+public class LithoNodeResolvedPaddingTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
@@ -46,12 +46,12 @@ public class InternalNodeResolvedPaddingTest {
     builder = Column.create(context);
   }
 
-  private InternalNodeResolvedPaddingTest padding(YogaEdge edge, int padding) {
+  private LithoNodeResolvedPaddingTest padding(YogaEdge edge, int padding) {
     builder.paddingPx(edge, padding);
     return this;
   }
 
-  private InternalNodeResolvedPaddingTest direction(YogaDirection direction) {
+  private LithoNodeResolvedPaddingTest direction(YogaDirection direction) {
     builder.layoutDirection(direction);
     return this;
   }

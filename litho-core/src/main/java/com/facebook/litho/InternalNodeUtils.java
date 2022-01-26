@@ -48,8 +48,8 @@ import java.util.List;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class InternalNodeUtils {
 
-  static InternalNode create(ComponentContext context) {
-    return new InternalNode<>(context);
+  static LithoNode create(ComponentContext context) {
+    return new LithoNode<>(context);
   }
 
   static NestedTreeHolder createNestedTreeHolder(
@@ -69,7 +69,7 @@ public class InternalNodeUtils {
 
   /** Creates a {@link LithoRenderUnit} for the content output iff the result mounts content. */
   static @Nullable LithoRenderUnit createContentRenderUnit(LithoLayoutResult result) {
-    final InternalNode node = result.getInternalNode();
+    final LithoNode node = result.getInternalNode();
     final Component component = node.getTailComponent();
 
     if (component == null || component.getMountType() == NONE) {
@@ -120,7 +120,7 @@ public class InternalNodeUtils {
   static @Nullable LithoRenderUnit createHostRenderUnit(LithoLayoutResult result) {
     final LayoutState layoutState =
         Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
-    final InternalNode node = result.getInternalNode();
+    final LithoNode node = result.getInternalNode();
     final boolean isRoot =
         !layoutState.mShouldAddHostViewForRootComponent
             && (result.getParent() == null
@@ -175,7 +175,7 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the background output iff the result has a background.
    */
   static @Nullable LithoRenderUnit createBackgroundRenderUnit(LithoLayoutResult result) {
-    final InternalNode node = result.getInternalNode();
+    final LithoNode node = result.getInternalNode();
     final Component component = node.getTailComponent();
     final Drawable background = result.getBackground();
 
@@ -192,7 +192,7 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the foreground output iff the result has a foreground.
    */
   static @Nullable LithoRenderUnit createForegroundRenderUnit(LithoLayoutResult result) {
-    final InternalNode node = result.getInternalNode();
+    final LithoNode node = result.getInternalNode();
     final Component component = node.getTailComponent();
     final Drawable foreground = node.getForeground();
 
@@ -229,7 +229,7 @@ public class InternalNodeUtils {
     final Component component = DrawableComponent.create(drawable);
     final LayoutState layoutState =
         Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
-    final InternalNode node = result.getInternalNode();
+    final LithoNode node = result.getInternalNode();
     final String componentKey = node.getTailComponentKey();
     final @Nullable DiffNode diffNode = result.getDiffNode();
 
@@ -312,7 +312,7 @@ public class InternalNodeUtils {
       @Nullable ComponentContext context,
       LayoutState layoutState,
       LithoLayoutResult result,
-      InternalNode node,
+      LithoNode node,
       int importantForAccessibility,
       @LayoutOutput.UpdateState int updateState,
       boolean duplicateParentState,
@@ -420,7 +420,7 @@ public class InternalNodeUtils {
       throw new RuntimeException("This result does not support drawing border color");
     }
 
-    final InternalNode node = result.getInternalNode();
+    final LithoNode node = result.getInternalNode();
     final boolean isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL;
     final float[] borderRadius = node.getBorderRadius();
     final int[] borderColors = node.getBorderColors();
@@ -446,7 +446,7 @@ public class InternalNodeUtils {
    * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
    * been forced to be wrapped in a view.
    */
-  static boolean needsHostView(final InternalNode node, final LayoutState layoutState) {
+  static boolean needsHostView(final LithoNode node, final LayoutState layoutState) {
     final Component component = node.getTailComponent();
 
     if (isMountViewSpec(component)) {
@@ -481,12 +481,12 @@ public class InternalNodeUtils {
   }
 
   /**
-   * Determine if a given {@link InternalNode} within the context of a given {@link LayoutState}
+   * Determine if a given {@link LithoNode} within the context of a given {@link LayoutState}
    * requires to be wrapped inside a view.
    *
-   * @see #needsHostView(InternalNode, LayoutState)
+   * @see #needsHostView(LithoNode, LayoutState)
    */
-  private static boolean hasViewContent(final InternalNode node, final LayoutState layoutState) {
+  private static boolean hasViewContent(final LithoNode node, final LayoutState layoutState) {
     final Component component = node.getTailComponent();
     final NodeInfo nodeInfo = node.getNodeInfo();
 
@@ -558,14 +558,14 @@ public class InternalNodeUtils {
   }
 
   /**
-   * Similar to {@link InternalNodeUtils#needsHostView(InternalNode, LayoutState)} but without
+   * Similar to {@link InternalNodeUtils#needsHostView(LithoNode, LayoutState)} but without
    * dependency to {@link LayoutState} instance. This will be used for debugging tools to indicate
    * whether the mountable output is a wrapped View or View MountSpec. Unlike {@link
-   * InternalNodeUtils#needsHostView(InternalNode, LayoutState)} this does not consider
-   * accessibility also does not consider root component, but this approximation is good enough for
-   * debugging purposes.
+   * InternalNodeUtils#needsHostView(LithoNode, LayoutState)} this does not consider accessibility
+   * also does not consider root component, but this approximation is good enough for debugging
+   * purposes.
    */
-  static boolean hasViewOutput(InternalNode node) {
+  static boolean hasViewOutput(LithoNode node) {
     return node.isForceViewWrapping()
         || isMountViewSpec(node.getTailComponent())
         || InternalNodeUtils.hasViewAttributes(node.getNodeInfo())
@@ -574,14 +574,14 @@ public class InternalNodeUtils {
   }
 
   private static boolean hasSelectedStateWhenDisablingDrawableOutputs(
-      final LayoutState layoutState, final InternalNode node) {
+      final LayoutState layoutState, final LithoNode node) {
     return layoutState.mShouldAddHostViewForRootComponent
         && !isMountViewSpec(node.getTailComponent())
         && node.getNodeInfo() != null
         && node.getNodeInfo().getSelectedState() != NodeInfo.SELECTED_UNSET;
   }
 
-  static boolean needsHostViewForCommonDynamicProps(final InternalNode node) {
+  static boolean needsHostViewForCommonDynamicProps(final LithoNode node) {
     final List<Component> components = node.getComponents();
     for (Component comp : components) {
       if (comp != null && comp.hasCommonDynamicProps()) {
@@ -592,7 +592,7 @@ public class InternalNodeUtils {
     return false;
   }
 
-  static boolean needsHostViewForTransition(final InternalNode node) {
+  static boolean needsHostViewForTransition(final LithoNode node) {
     return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getTailComponent());
   }
 }

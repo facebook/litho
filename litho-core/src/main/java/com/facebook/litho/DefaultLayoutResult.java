@@ -33,14 +33,14 @@ import java.util.List;
 
 /**
  * This is the default implementation of a {@link LithoLayoutResult}. This holds a reference to the
- * {@link InternalNode} which created it, its {@link YogaNode}, and a list of its children.
+ * {@link LithoNode} which created it, its {@link YogaNode}, and a list of its children.
  */
 public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
 
   private final LayoutStateContext mLayoutContext;
   private final ComponentContext mContext;
 
-  private final InternalNode mInternalNode;
+  private final LithoNode mNode;
 
   private final List<LithoLayoutResult> mChildren = new ArrayList<>();
   private final YogaNode mYogaNode;
@@ -64,12 +64,12 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   public DefaultLayoutResult(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
-      final InternalNode internalNode,
+      final LithoNode node,
       final YogaNode yogaNode,
       final @Nullable LithoLayoutResult parent) {
     mLayoutContext = layoutStateContext;
     mContext = c;
-    mInternalNode = internalNode;
+    mNode = node;
     mYogaNode = yogaNode;
     mParent = parent;
   }
@@ -144,12 +144,12 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
 
   @Override
   public boolean isPaddingSet() {
-    return mInternalNode.isPaddingSet();
+    return mNode.isPaddingSet();
   }
 
   @Override
   public @Nullable Drawable getBackground() {
-    return mInternalNode.getBackground();
+    return mNode.getBackground();
   }
 
   @Override
@@ -158,13 +158,13 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   }
 
   @Override
-  public InternalNode getInternalNode() {
-    return mInternalNode;
+  public LithoNode getInternalNode() {
+    return mNode;
   }
 
   @Override
   public boolean shouldDrawBorders() {
-    return mInternalNode.hasBorderColor()
+    return mNode.hasBorderColor()
         && (mYogaNode.getLayoutBorder(LEFT) != 0
             || mYogaNode.getLayoutBorder(TOP) != 0
             || mYogaNode.getLayoutBorder(RIGHT) != 0
@@ -182,7 +182,7 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
       return 0;
     }
 
-    return FastMath.round(mInternalNode.getTouchExpansion().get(YogaEdge.BOTTOM));
+    return FastMath.round(mNode.getTouchExpansion().get(YogaEdge.BOTTOM));
   }
 
   @Override
@@ -191,7 +191,7 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
       return 0;
     }
 
-    return FastMath.round(resolveHorizontalEdges(mInternalNode.getTouchExpansion(), YogaEdge.LEFT));
+    return FastMath.round(resolveHorizontalEdges(mNode.getTouchExpansion(), YogaEdge.LEFT));
   }
 
   @Override
@@ -200,8 +200,7 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
       return 0;
     }
 
-    return FastMath.round(
-        resolveHorizontalEdges(mInternalNode.getTouchExpansion(), YogaEdge.RIGHT));
+    return FastMath.round(resolveHorizontalEdges(mNode.getTouchExpansion(), YogaEdge.RIGHT));
   }
 
   @Override
@@ -210,13 +209,13 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
       return 0;
     }
 
-    return FastMath.round(mInternalNode.getTouchExpansion().get(YogaEdge.TOP));
+    return FastMath.round(mNode.getTouchExpansion().get(YogaEdge.TOP));
   }
 
   private boolean shouldApplyTouchExpansion() {
-    return mInternalNode.getTouchExpansion() != null
-        && mInternalNode.getNodeInfo() != null
-        && mInternalNode.getNodeInfo().hasTouchEventHandlers();
+    return mNode.getTouchExpansion() != null
+        && mNode.getNodeInfo() != null
+        && mNode.getNodeInfo().hasTouchEventHandlers();
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {

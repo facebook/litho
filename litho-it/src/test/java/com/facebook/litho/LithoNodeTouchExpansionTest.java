@@ -36,9 +36,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class InternalNodeTouchExpansionTest {
+public class LithoNodeTouchExpansionTest {
 
-  private InternalNode mInternalNode;
+  private LithoNode mNode;
   ComponentContext mContext;
   private LayoutStateContext mLayoutStateContext;
 
@@ -47,17 +47,17 @@ public class InternalNodeTouchExpansionTest {
     mContext = new ComponentContext(getApplicationContext());
     mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
     mContext.setLayoutStateContext(mLayoutStateContext);
-    mInternalNode = Layout.create(mLayoutStateContext, mContext, Column.create(mContext).build());
-    mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
+    mNode = Layout.create(mLayoutStateContext, mContext, Column.create(mContext).build());
+    mNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
-  private InternalNodeTouchExpansionTest setDirection(YogaDirection direction) {
-    mInternalNode.layoutDirection(direction);
+  private LithoNodeTouchExpansionTest setDirection(YogaDirection direction) {
+    mNode.layoutDirection(direction);
     return this;
   }
 
-  private InternalNodeTouchExpansionTest touchExpansionPx(YogaEdge edge, int value) {
-    mInternalNode.touchExpansionPx(edge, value);
+  private LithoNodeTouchExpansionTest touchExpansionPx(YogaEdge edge, int value) {
+    mNode.touchExpansionPx(edge, value);
     return this;
   }
 
@@ -69,33 +69,33 @@ public class InternalNodeTouchExpansionTest {
             0,
             null,
             null);
-    return mInternalNode.calculateLayout(context, UNSPECIFIED, UNSPECIFIED);
+    return mNode.calculateLayout(context, UNSPECIFIED, UNSPECIFIED);
   }
 
   @Test
   public void testTouchExpansionLeftWithoutTouchHandling() {
-    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.getOrCreateNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(LEFT, 10).calculateLayout();
     assertThat(result.getTouchExpansionLeft()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionTopWithoutTouchHandling() {
-    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.getOrCreateNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(TOP, 10).calculateLayout();
     assertThat(result.getTouchExpansionTop()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionRightWithoutTouchHandling() {
-    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.getOrCreateNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(RIGHT, 10).calculateLayout();
     assertThat(result.getTouchExpansionRight()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionBottomWithoutTouchHandling() {
-    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.getOrCreateNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(BOTTOM, 10).calculateLayout();
     assertThat(result.getTouchExpansionBottom()).isEqualTo(0);
   }

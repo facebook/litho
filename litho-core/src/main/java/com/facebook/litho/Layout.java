@@ -80,7 +80,7 @@ class Layout {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final @Nullable InternalNode layout;
+    final @Nullable LithoNode layout;
     if (current == null) {
       layout = create(layoutStateContext, c, component, true);
 
@@ -134,14 +134,14 @@ class Layout {
     return new LayoutResultHolder(result);
   }
 
-  public @Nullable static InternalNode create(
+  public @Nullable static LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component) {
     return create(layoutStateContext, parent, component, false, false, null);
   }
 
-  static @Nullable InternalNode create(
+  static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component,
@@ -149,7 +149,7 @@ class Layout {
     return create(layoutStateContext, parent, component, resolveNestedTree, false, null);
   }
 
-  static @Nullable InternalNode create(
+  static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       Component component,
@@ -162,7 +162,7 @@ class Layout {
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
-    final InternalNode node;
+    final LithoNode node;
     final ComponentContext c;
     final String globalKey;
     final boolean isNestedTree = isNestedTree(layoutStateContext, component);
@@ -172,7 +172,7 @@ class Layout {
     try {
 
       // 1. Consume the layout created in `willrender`.
-      final InternalNode cached =
+      final LithoNode cached =
           component.consumeLayoutCreatedInWillRender(layoutStateContext, parent);
 
       // 2. Return immediately if cached layout is available.
@@ -329,7 +329,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
 
-    final InternalNode node = holder.getInternalNode();
+    final LithoNode node = holder.getInternalNode();
     final Component component = node.getTailComponent();
     if (component == null) {
       throw new IllegalArgumentException("A component is required to resolve a nested tree.");
@@ -376,7 +376,7 @@ class Layout {
           parentContext.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          final @Nullable InternalNode newNode =
+          final @Nullable LithoNode newNode =
               create(layoutStateContext, parentContext, component, true, true, globalKey);
 
           if (parentContext.useStatelessComponent()) {
@@ -427,7 +427,7 @@ class Layout {
     return layout;
   }
 
-  static void applyRenderResultToNode(RenderResult renderResult, InternalNode node) {
+  static void applyRenderResultToNode(RenderResult renderResult, LithoNode node) {
     if (renderResult.transitions != null) {
       for (Transition t : renderResult.transitions) {
         node.addTransition(t);
@@ -483,7 +483,7 @@ class Layout {
   static LithoLayoutResult measure(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
-      final InternalNode root,
+      final LithoNode root,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LithoLayoutResult current,
@@ -524,7 +524,7 @@ class Layout {
   static @Nullable LithoLayoutResult resumeCreateAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
-      final @Nullable InternalNode root,
+      final @Nullable LithoNode root,
       final int widthSpec,
       final int heightSpec,
       final @Nullable DiffNode diff,
@@ -567,7 +567,7 @@ class Layout {
     return result;
   }
 
-  static void resume(final LayoutStateContext c, final InternalNode root) {
+  static void resume(final LayoutStateContext c, final LithoNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
@@ -613,7 +613,7 @@ class Layout {
   static void applyDiffNodeToUnchangedNodes(
       final LithoLayoutResult result, final boolean isTreeRoot, final @Nullable DiffNode diffNode) {
 
-    final InternalNode layoutNode = result.getInternalNode();
+    final LithoNode layoutNode = result.getInternalNode();
 
     try {
       // Root of the main tree or of a nested tree.
@@ -661,7 +661,7 @@ class Layout {
    */
   private static void applyDiffNodeToLayoutNode(
       final LithoLayoutResult result, final DiffNode diffNode) {
-    final InternalNode layoutNode = result.getInternalNode();
+    final LithoNode layoutNode = result.getInternalNode();
     final Component component = layoutNode.getTailComponent();
     if (component != null) {
       final @Nullable ScopedComponentInfo scopedComponentInfo =
@@ -784,12 +784,12 @@ class Layout {
    * Returns true either if the two nodes have the same Component type or if both don't have a
    * Component.
    */
-  static boolean hostIsCompatible(final InternalNode node, final DiffNode diffNode) {
+  static boolean hostIsCompatible(final LithoNode node, final DiffNode diffNode) {
     return ComponentUtils.isSameComponentType(node.getTailComponent(), diffNode.getComponent());
   }
 
   static boolean shouldComponentUpdate(
-      final InternalNode layoutNode, final @Nullable DiffNode diffNode) {
+      final LithoNode layoutNode, final @Nullable DiffNode diffNode) {
     if (diffNode == null) {
       return true;
     }

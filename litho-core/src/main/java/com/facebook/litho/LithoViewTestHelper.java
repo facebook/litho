@@ -36,8 +36,7 @@ import java.util.Deque;
 public class LithoViewTestHelper {
 
   /**
-   * Holds an opaque reference to an {@link InternalNode} without giving the holder any access to
-   * it.
+   * Holds an opaque reference to an {@link LithoNode} without giving the holder any access to it.
    */
   public static final class InternalNodeRef {
     private final LithoLayoutResult mInternalNodeRef;

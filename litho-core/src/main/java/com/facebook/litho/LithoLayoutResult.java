@@ -44,7 +44,7 @@ public interface LithoLayoutResult extends ComponentLayout, LayoutResult {
 
   ComponentContext getContext();
 
-  InternalNode getInternalNode();
+  LithoNode getInternalNode();
 
   int getChildCount();
 

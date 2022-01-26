@@ -53,7 +53,7 @@ public final class DebugComponent {
 
   private String mGlobalKey;
   private LithoLayoutResult mResult;
-  private InternalNode<?> mNode;
+  private LithoNode<?> mNode;
   private int mComponentIndex;
 
   private DebugComponent() {}
@@ -61,7 +61,7 @@ public final class DebugComponent {
   static synchronized @Nullable DebugComponent getInstance(
       LithoLayoutResult result, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
-    final InternalNode<?> node = result.getInternalNode();
+    final LithoNode<?> node = result.getInternalNode();
     final ComponentContext context = result.getContext();
 
     if (componentIndex >= node.getComponents().size()) {
@@ -93,15 +93,15 @@ public final class DebugComponent {
     if (root == null) {
       return null;
     }
-    final InternalNode node = root.getInternalNode();
+    final LithoNode node = root.getInternalNode();
     final int outerWrapperComponentIndex = Math.max(0, node.getComponents().size() - 1);
     return DebugComponent.getInstance(root, outerWrapperComponentIndex);
   }
 
   @Nullable
   public static DebugComponent getRootInstance(LithoLayoutResult rootResult) {
-    final InternalNode rootInternalNode = rootResult.getInternalNode();
-    final int outerWrapperComponentIndex = Math.max(0, rootInternalNode.getComponents().size() - 1);
+    final LithoNode rootNode = rootResult.getInternalNode();
+    final int outerWrapperComponentIndex = Math.max(0, rootNode.getComponents().size() - 1);
     return DebugComponent.getInstance(rootResult, outerWrapperComponentIndex);
   }
 
@@ -119,7 +119,7 @@ public final class DebugComponent {
     }
   }
 
-  static void applyOverrides(ComponentContext context, InternalNode<?> node) {
+  static void applyOverrides(ComponentContext context, LithoNode<?> node) {
     if (node.getComponents() == null || node.getComponents().isEmpty()) {
       return;
     }

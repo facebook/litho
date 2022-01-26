@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 public final class DebugLayoutNode {
 
   private final LithoLayoutResult mResult;
-  private final InternalNode mNode;
+  private final LithoNode mNode;
 
   DebugLayoutNode(LithoLayoutResult result) {
     mResult = result;

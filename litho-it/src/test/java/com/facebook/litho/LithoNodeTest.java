@@ -39,11 +39,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class InternalNodeTest {
+public class LithoNodeTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
-  private InternalNode acquireInternalNode() {
+  private LithoNode acquireInternalNode() {
     final ComponentContext context = mLegacyLithoViewRule.getContext();
     mLegacyLithoViewRule
         .attachToWindow()
@@ -75,7 +75,7 @@ public class InternalNodeTest {
 
   @Test
   public void testLayoutDirectionFlag() {
-    final InternalNode node = acquireInternalNode();
+    final LithoNode node = acquireInternalNode();
     node.layoutDirection(INHERIT);
     assertThat(isFlagSet(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_LAYOUT_DIRECTION_IS_SET");
@@ -84,7 +84,7 @@ public class InternalNodeTest {
 
   @Test
   public void testImportantForAccessibilityFlag() {
-    final InternalNode node = (InternalNode) acquireInternalNode();
+    final LithoNode node = (LithoNode) acquireInternalNode();
     node.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     assertThat(isFlagSet(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
@@ -93,7 +93,7 @@ public class InternalNodeTest {
 
   @Test
   public void testDuplicateParentStateFlag() {
-    final InternalNode node = (InternalNode) acquireInternalNode();
+    final LithoNode node = (LithoNode) acquireInternalNode();
     node.duplicateParentState(false);
     assertThat(isFlagSet(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
@@ -102,7 +102,7 @@ public class InternalNodeTest {
 
   @Test
   public void testBackgroundFlag() {
-    final InternalNode node = (InternalNode) acquireInternalNode();
+    final LithoNode node = (LithoNode) acquireInternalNode();
     node.backgroundColor(0xFFFF0000);
     assertThat(isFlagSet(node, "PFLAG_BACKGROUND_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_BACKGROUND_IS_SET");
@@ -111,7 +111,7 @@ public class InternalNodeTest {
 
   @Test
   public void testForegroundFlag() {
-    final InternalNode node = (InternalNode) acquireInternalNode();
+    final LithoNode node = (LithoNode) acquireInternalNode();
     node.foregroundColor(0xFFFF0000);
     assertThat(isFlagSet(node, "PFLAG_FOREGROUND_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FOREGROUND_IS_SET");
@@ -120,7 +120,7 @@ public class InternalNodeTest {
 
   @Test
   public void testTransitionKeyFlag() {
-    final InternalNode node = (InternalNode) acquireInternalNode();
+    final LithoNode node = (LithoNode) acquireInternalNode();
     node.transitionKey("key", "");
     assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
@@ -130,7 +130,7 @@ public class InternalNodeTest {
   @Test
   public void testCopyIntoNodeSetFlags() {
     NestedTreeHolder orig = acquireNestedTreeHolder();
-    InternalNode dest = acquireInternalNode();
+    LithoNode dest = acquireInternalNode();
 
     orig.importantForAccessibility(0);
     orig.duplicateParentState(true);
@@ -159,7 +159,7 @@ public class InternalNodeTest {
 
   @Test
   public void testPaddingIsNotSetFromDrawable() {
-    InternalNode node = acquireInternalNode();
+    LithoNode node = acquireInternalNode();
 
     node.backgroundRes(background_without_padding);
 
@@ -260,21 +260,21 @@ public class InternalNodeTest {
     assertThat(textSize.height).isGreaterThan(0);
   }
 
-  private static boolean isFlagSet(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
-    long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
+  private static boolean isFlagSet(LithoNode node, String flagName) {
+    long flagPosition = Whitebox.getInternalState(LithoNode.class, flagName);
+    long flags = Whitebox.getInternalState(node, "mPrivateFlags");
 
     return ((flags & flagPosition) != 0);
   }
 
-  private static void clearFlag(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
-    long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
+  private static void clearFlag(LithoNode node, String flagName) {
+    long flagPosition = Whitebox.getInternalState(LithoNode.class, flagName);
+    long flags = Whitebox.getInternalState(node, "mPrivateFlags");
     flags &= ~flagPosition;
-    Whitebox.setInternalState(internalNode, "mPrivateFlags", flags);
+    Whitebox.setInternalState(node, "mPrivateFlags", flags);
   }
 
-  private static void assertEmptyFlags(InternalNode internalNode) {
-    assertThat(((long) getInternalState(internalNode, "mPrivateFlags")) == 0).isTrue();
+  private static void assertEmptyFlags(LithoNode node) {
+    assertThat(((long) getInternalState(node, "mPrivateFlags")) == 0).isTrue();
   }
 }

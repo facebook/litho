@@ -609,7 +609,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     return mDefStyleRes;
   }
 
-  void copyInto(ComponentContext c, InternalNode node) {
+  void copyInto(ComponentContext c, LithoNode node) {
     if (c != null) {
       c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
     }
@@ -816,7 +816,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       mLayerPaint = paint;
     }
 
-    void copyInto(InternalNode node) {
+    void copyInto(LithoNode node) {
       if ((mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) != 0L) {
         node.importantForAccessibility(mImportantForAccessibility);
       }

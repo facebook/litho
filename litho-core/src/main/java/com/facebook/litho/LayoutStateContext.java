@@ -39,7 +39,7 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable StateHandler mStateHandler;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private @Nullable Map<Integer, InternalNode> mComponentIdToWillRenderLayout;
+  private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
   private @Nullable DiffNode mCurrentDiffTree;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
@@ -87,7 +87,7 @@ public class LayoutStateContext {
   }
 
   @Nullable
-  InternalNode consumeLayoutCreatedInWillRender(int componentId) {
+  LithoNode consumeLayoutCreatedInWillRender(int componentId) {
     if (mComponentIdToWillRenderLayout != null) {
       return mComponentIdToWillRenderLayout.remove(componentId);
     } else {
@@ -96,7 +96,7 @@ public class LayoutStateContext {
   }
 
   @Nullable
-  InternalNode getLayoutCreatedInWillRender(int componentId) {
+  LithoNode getLayoutCreatedInWillRender(int componentId) {
     if (mComponentIdToWillRenderLayout != null) {
       return mComponentIdToWillRenderLayout.get(componentId);
     } else {
@@ -104,7 +104,7 @@ public class LayoutStateContext {
     }
   }
 
-  void setLayoutCreatedInWillRender(int componentId, final @Nullable InternalNode node) {
+  void setLayoutCreatedInWillRender(int componentId, final @Nullable LithoNode node) {
     if (mComponentIdToWillRenderLayout == null) {
       mComponentIdToWillRenderLayout = new HashMap<>();
     }

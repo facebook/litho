@@ -49,7 +49,7 @@ public interface DiffNode extends Cloneable {
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * width. This is used together with {@link InternalNode#getLastWidthSpec()} to implement measure
+   * width. This is used together with {@link LithoNode#getLastWidthSpec()} to implement measure
    * caching.
    */
   float getLastMeasuredWidth();
@@ -62,8 +62,8 @@ public interface DiffNode extends Cloneable {
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * height. This is used together with {@link InternalNode#getLastHeightSpec()} to implement
-   * measure caching.
+   * height. This is used together with {@link LithoNode#getLastHeightSpec()} to implement measure
+   * caching.
    */
   float getLastMeasuredHeight();
 
