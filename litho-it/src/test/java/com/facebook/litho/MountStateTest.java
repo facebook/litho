@@ -198,7 +198,6 @@ public class MountStateTest {
   @Test
   public void onSetRootWithNullComponentWithStatelessness_shouldMountWithoutCrashing() {
     TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-    TempComponentsConfigurations.setUseStatelessComponent(true);
 
     mLegacyLithoViewRule
         .attachToWindow()
@@ -217,7 +216,6 @@ public class MountStateTest {
     assertThat(tree.getRenderTreeNodeIndex(ROOT_HOST_ID)).isEqualTo(0);
 
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
-    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 
   @Test

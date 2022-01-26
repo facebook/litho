@@ -26,9 +26,6 @@ public class TempComponentsConfigurations {
   private static final boolean originalShouldAddHostViewForRootComponent =
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
-  private static final boolean originalUseStatelessComponent =
-      ComponentsConfiguration.useStatelessComponent;
-
   private static final boolean originalReuseInternalNodes =
       ComponentsConfiguration.reuseInternalNodes;
 
@@ -54,12 +51,6 @@ public class TempComponentsConfigurations {
         originalShouldAddHostViewForRootComponent;
   }
 
-  public static void setUseStatelessComponent(boolean value) {
-    ComponentsConfiguration.useStatelessComponent = value;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useStatelessComponents(value));
-  }
-
   public static void setReuseInternalNode(boolean value) {
     ComponentsConfiguration.reuseInternalNodes = value;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
@@ -67,20 +58,13 @@ public class TempComponentsConfigurations {
   }
 
   public static void setImmutabilityFlags(boolean value) {
-    ComponentsConfiguration.useStatelessComponent = value;
     ComponentsConfiguration.reuseInternalNodes = value;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useStatelessComponents(value).reuseInternalNodes(value));
+        ComponentsConfiguration.create().reuseInternalNodes(value));
   }
 
   public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = value;
-  }
-
-  public static void restoreUseStatelessComponent() {
-    ComponentsConfiguration.useStatelessComponent = originalUseStatelessComponent;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useStatelessComponents(originalUseStatelessComponent));
   }
 
   public static void restoreReuseInternalNode() {
@@ -90,12 +74,9 @@ public class TempComponentsConfigurations {
   }
 
   public static void restoreImmutabilityFlags() {
-    ComponentsConfiguration.useStatelessComponent = originalUseStatelessComponent;
     ComponentsConfiguration.reuseInternalNodes = originalReuseInternalNodes;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .useStatelessComponents(originalUseStatelessComponent)
-            .reuseInternalNodes(originalReuseInternalNodes));
+        ComponentsConfiguration.create().reuseInternalNodes(originalReuseInternalNodes));
   }
 
   public static void setDelegateToRenderCoreMount(boolean value) {

@@ -180,13 +180,6 @@ public class ComponentsConfiguration {
 
   public static boolean emitMessageForZeroSizedTexture = false;
 
-  /**
-   * When true, Layout-scoped info such as a Component's scoped Context are fetched from a
-   * LayoutState based on the Component's global key instead of reading fields from the Component
-   * instance.
-   */
-  public static boolean useStatelessComponent = true;
-
   public static boolean reuseInternalNodes = false;
 
   public static boolean enableLayoutCaching = false;
@@ -304,7 +297,6 @@ public class ComponentsConfiguration {
   private final boolean mUseCancelableLayoutFutures;
   private final @Deprecated boolean mIgnoreNullLayoutStateError;
   private final boolean mReuseInternalNodes;
-  private final boolean mUseStatelessComponents;
 
   private final boolean mShouldReuseOutputs;
 
@@ -325,17 +317,11 @@ public class ComponentsConfiguration {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
     mReuseInternalNodes = builder.mReuseInternalNodes;
-    mUseStatelessComponents = mReuseInternalNodes || builder.mUseStatelessComponents;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
   }
 
   public boolean shouldReuseOutputs() {
     return mShouldReuseOutputs;
-  }
-
-  /** When {@code true} Litho component will be stateless. */
-  public boolean useStatelessComponent() {
-    return mUseStatelessComponents;
   }
 
   /** When {@code true} Litho InternalNode will be reuse during reconciliation. */
@@ -352,15 +338,13 @@ public class ComponentsConfiguration {
     return new Builder()
         .useCancelableLayoutFutures(componentsConfiguration.getUseCancelableLayoutFutures())
         .ignoreNullLayoutStateError(componentsConfiguration.getIgnoreNullLayoutStateError())
-        .reuseInternalNodes(componentsConfiguration.reuseInternalNodes())
-        .useStatelessComponents(componentsConfiguration.useStatelessComponent());
+        .reuseInternalNodes(componentsConfiguration.reuseInternalNodes());
   }
 
   public static class Builder {
     boolean mUseCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
     boolean mReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
-    boolean mUseStatelessComponents = ComponentsConfiguration.useStatelessComponent;
     boolean mShouldReuseOutputs = false;
 
     protected Builder() {}
@@ -379,11 +363,6 @@ public class ComponentsConfiguration {
 
     public Builder reuseInternalNodes(boolean reuseInternalNodes) {
       mReuseInternalNodes = reuseInternalNodes;
-      return this;
-    }
-
-    public Builder useStatelessComponents(boolean useStatelessComponents) {
-      mUseStatelessComponents = useStatelessComponents;
       return this;
     }
 

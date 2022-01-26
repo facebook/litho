@@ -43,7 +43,6 @@ public class LegacyStatelessComponentGlobalKeyTest {
   @Before
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
-    TempComponentsConfigurations.setUseStatelessComponent(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -177,6 +176,5 @@ public class LegacyStatelessComponentGlobalKeyTest {
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
-    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 }

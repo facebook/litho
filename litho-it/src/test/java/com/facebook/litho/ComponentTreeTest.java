@@ -33,7 +33,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -1480,7 +1479,6 @@ public class ComponentTreeTest {
   @Test
   public void testUpdateStateWithMeasureThatStartsBeforeUpdateStateCompletes()
       throws InterruptedException {
-    TempComponentsConfigurations.setUseStatelessComponent(false);
     SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
     TestDrawableComponent blockingComponent =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
@@ -1543,8 +1541,6 @@ public class ComponentTreeTest {
         .describedAs(
             "We expect one layout during setup, one from measure and one from the state update that will be thrown away.")
         .isEqualTo(3);
-
-    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 
   @Test
