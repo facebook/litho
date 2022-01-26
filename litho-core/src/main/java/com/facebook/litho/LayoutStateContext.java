@@ -183,10 +183,6 @@ public class LayoutStateContext {
     return node;
   }
 
-  boolean isInternalNodeReuseEnabled() {
-    return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
-  }
-
   StateHandler getStateHandler() {
     return Preconditions.checkNotNull(mStateHandler);
   }

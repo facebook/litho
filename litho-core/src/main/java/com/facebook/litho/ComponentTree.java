@@ -113,7 +113,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
-  private final boolean mReuseInternalNodes;
   private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseRenderUnitIdMap;
   private final ComponentsConfiguration mComponentsConfiguration;
@@ -184,10 +183,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
     return mLifecycleProvider != null;
-  }
-
-  public boolean isInternalNodeReuseEnabled() {
-    return mReuseInternalNodes;
   }
 
   public boolean isLayoutCachingEnabled() {
@@ -444,7 +439,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
     mIsLayoutCachingEnabled =
         mComponentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
-    mReuseInternalNodes = mIsLayoutCachingEnabled || mComponentsConfiguration.reuseInternalNodes();
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -3509,18 +3503,6 @@ public class ComponentTree implements LithoLifecycleListener {
       return this;
     }
 
-    /**
-     * Sets the ComponentTree to reuse InternalNode from the previous layout. This also makes
-     * components stateless. This API should only be used to exclude some surface temporarily.
-     *
-     * @deprecated This API will be removed.
-     */
-    @Deprecated
-    public Builder reuseInternalNodes(boolean shouldReuseInternalNodes) {
-      overrideStatelessConfigs(shouldReuseInternalNodes, isLayoutCachingEnabled);
-      return this;
-    }
-
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
 
@@ -3536,12 +3518,9 @@ public class ComponentTree implements LithoLifecycleListener {
       return new ComponentTree(this);
     }
 
-    public void overrideStatelessConfigs(
-        boolean internalNodeReuseEnabled, boolean isLayoutCachingEnabled) {
+    public void overrideStatelessConfigs(boolean isLayoutCachingEnabled) {
       this.componentsConfiguration =
-          ComponentsConfiguration.create(this.componentsConfiguration)
-              .reuseInternalNodes(internalNodeReuseEnabled)
-              .build();
+          ComponentsConfiguration.create(this.componentsConfiguration).build();
       this.isLayoutCachingEnabled = isLayoutCachingEnabled;
     }
   }

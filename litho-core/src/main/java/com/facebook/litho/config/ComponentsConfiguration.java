@@ -180,8 +180,6 @@ public class ComponentsConfiguration {
 
   public static boolean emitMessageForZeroSizedTexture = false;
 
-  public static boolean reuseInternalNodes = false;
-
   public static boolean enableLayoutCaching = false;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
@@ -296,7 +294,6 @@ public class ComponentsConfiguration {
 
   private final boolean mUseCancelableLayoutFutures;
   private final @Deprecated boolean mIgnoreNullLayoutStateError;
-  private final boolean mReuseInternalNodes;
 
   private final boolean mShouldReuseOutputs;
 
@@ -316,17 +313,11 @@ public class ComponentsConfiguration {
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
-    mReuseInternalNodes = builder.mReuseInternalNodes;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
   }
 
   public boolean shouldReuseOutputs() {
     return mShouldReuseOutputs;
-  }
-
-  /** When {@code true} Litho InternalNode will be reuse during reconciliation. */
-  public boolean reuseInternalNodes() {
-    return mReuseInternalNodes;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -337,14 +328,12 @@ public class ComponentsConfiguration {
       ComponentsConfiguration componentsConfiguration) {
     return new Builder()
         .useCancelableLayoutFutures(componentsConfiguration.getUseCancelableLayoutFutures())
-        .ignoreNullLayoutStateError(componentsConfiguration.getIgnoreNullLayoutStateError())
-        .reuseInternalNodes(componentsConfiguration.reuseInternalNodes());
+        .ignoreNullLayoutStateError(componentsConfiguration.getIgnoreNullLayoutStateError());
   }
 
   public static class Builder {
     boolean mUseCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
-    boolean mReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     boolean mShouldReuseOutputs = false;
 
     protected Builder() {}
@@ -358,11 +347,6 @@ public class ComponentsConfiguration {
     public ComponentsConfiguration.Builder ignoreNullLayoutStateError(
         boolean ignoreNullLayoutStateError) {
       this.mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
-      return this;
-    }
-
-    public Builder reuseInternalNodes(boolean reuseInternalNodes) {
-      mReuseInternalNodes = reuseInternalNodes;
       return this;
     }
 

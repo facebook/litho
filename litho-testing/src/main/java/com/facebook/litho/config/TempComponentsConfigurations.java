@@ -26,9 +26,6 @@ public class TempComponentsConfigurations {
   private static final boolean originalShouldAddHostViewForRootComponent =
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
-  private static final boolean originalReuseInternalNodes =
-      ComponentsConfiguration.reuseInternalNodes;
-
   private static final boolean originalDelegateToRenderCoreMount =
       ComponentsConfiguration.delegateToRenderCoreMount;
 
@@ -51,32 +48,8 @@ public class TempComponentsConfigurations {
         originalShouldAddHostViewForRootComponent;
   }
 
-  public static void setReuseInternalNode(boolean value) {
-    ComponentsConfiguration.reuseInternalNodes = value;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().reuseInternalNodes(value));
-  }
-
-  public static void setImmutabilityFlags(boolean value) {
-    ComponentsConfiguration.reuseInternalNodes = value;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().reuseInternalNodes(value));
-  }
-
   public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = value;
-  }
-
-  public static void restoreReuseInternalNode() {
-    ComponentsConfiguration.reuseInternalNodes = originalReuseInternalNodes;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().reuseInternalNodes(originalReuseInternalNodes));
-  }
-
-  public static void restoreImmutabilityFlags() {
-    ComponentsConfiguration.reuseInternalNodes = originalReuseInternalNodes;
-    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().reuseInternalNodes(originalReuseInternalNodes));
   }
 
   public static void setDelegateToRenderCoreMount(boolean value) {

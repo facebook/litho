@@ -677,10 +677,6 @@ public class ComponentContext implements Cloneable {
     return mComponentTree.getRecyclingMode();
   }
 
-  boolean isInternalNodeReuseEnabled() {
-    return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
-  }
-
   @Override
   protected ComponentContext clone() {
     try {

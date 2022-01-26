@@ -496,13 +496,12 @@ public class ComponentTreeHolder {
           .build();
 
       if (mIsLayoutCachingEnabled != null) {
-        builder.overrideStatelessConfigs(mInternalNodeReuseEnabled, mIsLayoutCachingEnabled);
+        builder.overrideStatelessConfigs(mIsLayoutCachingEnabled);
       }
 
       mComponentTree = builder.build();
 
       if (mIsLayoutCachingEnabled == null) {
-        mInternalNodeReuseEnabled = mComponentTree.isInternalNodeReuseEnabled();
         mIsLayoutCachingEnabled = mComponentTree.isLayoutCachingEnabled();
       }
 

@@ -1424,7 +1424,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       final @Nullable ScopedComponentInfo nextScopedComponentInfo,
       @Nullable final String nextKey,
       final Set<String> keys) {
-    final boolean isInternalNodeReuseEnabled = parentContext.isInternalNodeReuseEnabled();
     final int mode =
         getReconciliationMode(
             Preconditions.checkNotNull(
@@ -1432,15 +1431,12 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
                     ? nextScopedComponentInfo.getContext()
                     : next.getScopedContext()),
             current,
-            keys,
-            isInternalNodeReuseEnabled);
+            keys);
     final LithoNode layout;
 
     switch (mode) {
       case ReconciliationMode.REUSE:
-        if (isInternalNodeReuseEnabled) {
-          commitToLayoutStateRecursively(layoutStateContext, current);
-        }
+        commitToLayoutStateRecursively(layoutStateContext, current);
         layout = current;
         break;
       case ReconciliationMode.COPY:
@@ -1489,14 +1485,10 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     // 2. Shallow copy this layout.
     final LithoNode<?> layout;
 
-    if (layoutStateContext.isInternalNodeReuseEnabled()) {
-      layout = current.clone();
-      layout.mChildren = new ArrayList<>(current.getChildCount());
-      layout.mDebugComponents = null;
-      commitToLayoutState(layoutStateContext, current);
-    } else {
-      layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey);
-    }
+    layout = current.clone();
+    layout.mChildren = new ArrayList<>(current.getChildCount());
+    layout.mDebugComponents = null;
+    commitToLayoutState(layoutStateContext, current);
 
     ComponentContext parentContext = layout.getTailComponentContext();
 
@@ -1516,23 +1508,20 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
               ? (ScopedComponentInfo) child.mScopedComponentInfos.get(index)
               : null;
 
-      // 3.2 Update the head component of the child layout.
-      final Component updated;
-
-      if (layoutStateContext.isInternalNodeReuseEnabled()) {
-        updated = component;
-      } else {
-        updated = component.makeUpdatedShallowCopy(layoutStateContext, parentContext, key);
-      }
-
-      // 3.3 Reconcile child layout.
+      // 3.2 Reconcile child layout.
       final LithoNode copy;
       if (mode == ReconciliationMode.COPY) {
-        copy = reconcile(layoutStateContext, child, updated, key, keys, ReconciliationMode.COPY);
+        copy = reconcile(layoutStateContext, child, component, key, keys, ReconciliationMode.COPY);
       } else {
         copy =
             reconcile(
-                layoutStateContext, parentContext, child, updated, scopedComponentInfo, key, keys);
+                layoutStateContext,
+                parentContext,
+                child,
+                component,
+                scopedComponentInfo,
+                key,
+                keys);
       }
 
       // 3.3 Add the child to the cloned yoga node
@@ -1617,10 +1606,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
    */
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
-      final ComponentContext c,
-      final LithoNode current,
-      final Set<String> keys,
-      final boolean isInternalNodeReuseEnabled) {
+      final ComponentContext c, final LithoNode current, final Set<String> keys) {
     final List<Component> components = current.getComponents();
     final List<String> componentKeys = current.getComponentKeys();
     final Component root = current.getHeadComponent();
@@ -1646,7 +1632,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       }
     }
 
-    return isInternalNodeReuseEnabled ? ReconciliationMode.REUSE : ReconciliationMode.COPY;
+    return ReconciliationMode.REUSE;
   }
 
   private static void applyOverridesRecursive(LayoutStateContext c, LithoNode node) {

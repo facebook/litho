@@ -22,21 +22,18 @@ import org.junit.runners.model.FrameworkMethod;
 /** Run configuration that enabled stateless components. */
 public class StatelessTestRunConfiguration implements LithoTestRunConfiguration {
 
-  private boolean defaultReuseInternalNodes;
   private ComponentsConfiguration.Builder defaultConfigBuilder;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
-    defaultReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     defaultConfigBuilder = ComponentsConfiguration.getDefaultComponentsConfigurationBuilder();
 
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().reuseInternalNodes(true));
+        ComponentsConfiguration.create());
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNodes;
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultConfigBuilder);
   }
 }
