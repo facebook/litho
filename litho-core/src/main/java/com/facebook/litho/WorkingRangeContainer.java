@@ -43,7 +43,7 @@ class WorkingRangeContainer {
       final WorkingRange workingRange,
       final Component component,
       final String globalKey,
-      final @Nullable ScopedComponentInfo scopedComponentInfo) {
+      final ScopedComponentInfo scopedComponentInfo) {
     if (mWorkingRanges == null) {
       mWorkingRanges = new LinkedHashMap<>();
     }
@@ -87,10 +87,7 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          ComponentContext scopedContext =
-              rangeTuple.mScopedComponentInfos != null
-                  ? rangeTuple.mScopedComponentInfos.get(i).getContext()
-                  : component.getScopedContext();
+          ComponentContext scopedContext = rangeTuple.mScopedComponentInfos.get(i).getContext();
           try {
             component.dispatchOnEnteredRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -107,9 +104,7 @@ class WorkingRangeContainer {
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
           final ComponentContext scopedContext =
-              rangeTuple.mScopedComponentInfos != null
-                  ? rangeTuple.mScopedComponentInfos.get(i).getContext()
-                  : Preconditions.checkNotNull(component.getScopedContext());
+              rangeTuple.mScopedComponentInfos.get(i).getContext();
           try {
             component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -137,10 +132,7 @@ class WorkingRangeContainer {
         Component component = rangeTuple.mComponents.get(i);
         String globalKey = rangeTuple.mComponentKeys.get(i);
         if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)) {
-          ComponentContext scopedContext =
-              rangeTuple.mScopedComponentInfos != null
-                  ? rangeTuple.mScopedComponentInfos.get(i).getContext()
-                  : Preconditions.checkNotNull(component.getScopedContext());
+          ComponentContext scopedContext = rangeTuple.mScopedComponentInfos.get(i).getContext();
           try {
             component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -198,39 +190,31 @@ class WorkingRangeContainer {
     final WorkingRange mWorkingRange;
     final List<Component> mComponents;
     final List<String> mComponentKeys;
-    final @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
+    final List<ScopedComponentInfo> mScopedComponentInfos;
 
     RangeTuple(
         final String name,
         final WorkingRange workingRange,
         final Component component,
         final String key,
-        final @Nullable ScopedComponentInfo scopedComponentInfo) {
+        final ScopedComponentInfo scopedComponentInfo) {
       mName = name;
       mWorkingRange = workingRange;
       mComponents = new ArrayList<>();
       mComponentKeys = new ArrayList<>();
       mComponents.add(component);
       mComponentKeys.add(key);
-
-      if (scopedComponentInfo != null) {
-        mScopedComponentInfos = new ArrayList<>();
-        mScopedComponentInfos.add(scopedComponentInfo);
-      } else {
-        mScopedComponentInfos = null;
-      }
+      mScopedComponentInfos = new ArrayList<>();
+      mScopedComponentInfos.add(scopedComponentInfo);
     }
 
     void addComponent(
         final Component component,
         final String key,
-        final @Nullable ScopedComponentInfo scopedComponentInfo) {
+        final ScopedComponentInfo scopedComponentInfo) {
       mComponents.add(component);
       mComponentKeys.add(key);
-
-      if (mScopedComponentInfos != null) {
-        mScopedComponentInfos.add(scopedComponentInfo);
-      }
+      mScopedComponentInfos.add(scopedComponentInfo);
     }
   }
 
@@ -240,14 +224,14 @@ class WorkingRangeContainer {
     final WorkingRange mWorkingRange;
     final Component mComponent;
     final String mKey;
-    final @Nullable ScopedComponentInfo mScopedComponentInfo;
+    final ScopedComponentInfo mScopedComponentInfo;
 
     Registration(
         final String name,
         final WorkingRange workingRange,
         final Component component,
         final String key,
-        final @Nullable ScopedComponentInfo scopedComponentInfo) {
+        final ScopedComponentInfo scopedComponentInfo) {
       mName = name;
       mWorkingRange = workingRange;
       mComponent = component;

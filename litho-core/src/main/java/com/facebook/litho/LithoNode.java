@@ -54,7 +54,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
 import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.OkToExtend;
@@ -1164,83 +1163,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     mFrozen = false;
   }
 
-  void updateWith(final List<Component> components, final List<String> componentKeys) {
-
-    // 1. Set new ComponentContext, YogaNode, and components.
-    mComponents = components;
-    mComponentGlobalKeys = componentKeys;
-
-    // 2. Update props.
-    mComponentsNeedingPreviousRenderData = null;
-    for (int i = 0, size = components.size(); i < size; i++) {
-      final Component component = components.get(i);
-      final String key = componentKeys.get(i);
-      if (component.needsPreviousRenderData()) {
-        // This method will not be called in stateless mode so it's safe to pass null
-        // scopedComponentInfo
-        addComponentNeedingPreviousRenderData(key, component, null);
-      }
-    }
-
-    ArrayList<WorkingRangeContainer.Registration> ranges = mWorkingRangeRegistrations;
-    mWorkingRangeRegistrations = null;
-    if (ranges != null && !ranges.isEmpty()) {
-      mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
-      for (WorkingRangeContainer.Registration old : ranges) {
-        final String key = old.mKey;
-        final int index = componentKeys.indexOf(key);
-        if (index >= 0) {
-          final Component component = components.get(index);
-          // This method will not be called in stateless mode so it's safe to pass null
-          // scopedComponentInfo
-          mWorkingRangeRegistrations.add(
-              new WorkingRangeContainer.Registration(
-                  old.mName, old.mWorkingRange, component, key, null));
-        }
-      }
-    }
-  }
-
-  /**
-   * Convenience method to get an updated shallow copy of all the components of this LithoNode.
-   * Optionally replace the head component with a new component. The head component is the root
-   * component in the Component hierarchy representing this LithoNode.
-   *
-   * @param head The root component of this LithoNode's Component hierarchy.
-   * @return List of updated shallow copied components of this LithoNode.
-   */
-  private Pair<List<Component>, List<String>> getUpdatedComponents(
-      final LayoutStateContext layoutStateContext, Component head, @Nullable String headKey) {
-    int size = mComponents.size();
-    List<Component> updated = new ArrayList<>(size);
-    List<String> updatedKeys = new ArrayList<String>(size);
-
-    // 1. Add the updated head component to the list.
-    updated.add(head);
-    if (updatedKeys != null) {
-      updatedKeys.add(headKey);
-    }
-
-    // 2. Set parent context for descendants.
-    ComponentContext parentContext = head.getScopedContext();
-
-    // 3. Shallow copy and update all components, except the head component.
-    for (int i = size - 2; i >= 0; i--) {
-      final String key = mComponentGlobalKeys.get(i);
-      final Component component = mComponents.get(i);
-      updated.add(component);
-      updatedKeys.add(key);
-
-      parentContext = component.getScopedContext(); // set parent context for descendant
-    }
-
-    // 4. Reverse the list so that the root component is at index 0.
-    Collections.reverse(updated);
-    Collections.reverse(updatedKeys);
-
-    return new Pair<>(updated, updatedKeys);
-  }
-
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(
       @Nullable EventHandler<T> currentHandler, @Nullable EventHandler<T> newHandler) {
     if (currentHandler == null) {
@@ -1546,52 +1468,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
         info.commitToLayoutState(c.getStateHandler());
       }
     }
-  }
-
-  /**
-   * Convenience method to create a shallow copy of the LithoNode, set a new YogaNode, update all
-   * components and ComponentContext, release all the unnecessary properties from the new LithoNode.
-   */
-  private static LithoNode getCleanUpdatedShallowCopy(
-      final LayoutStateContext layoutStateContext,
-      final LithoNode current,
-      final Component head,
-      final @Nullable String headKey) {
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-
-    if (isTracing) {
-      ComponentsSystrace.beginSection("clone:" + head.getSimpleName());
-    }
-
-    // 1. Shallow copy this layout.
-    final LithoNode layout = current.clone();
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-      ComponentsSystrace.beginSection("clean:" + head.getSimpleName());
-    }
-
-    // 2. Reset and release properties
-    layout.clean();
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-      ComponentsSystrace.beginSection("update:" + head.getSimpleName());
-    }
-
-    // 3. Get updated components
-    Pair<List<Component>, List<String>> updated =
-        current.getUpdatedComponents(layoutStateContext, head, headKey);
-
-    // 4. Update the layout with the updated context, components, and YogaNode.
-    layout.updateWith(updated.first, updated.second);
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    return layout;
   }
 
   /**
