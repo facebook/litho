@@ -2528,34 +2528,31 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testWillRenderLayoutsOnce() {
-    TempComponentsConfigurations.setImmutabilityFlags(false);
 
-    ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
     c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final Component component =
+        Column.create(c)
+            .child(
+                LayoutSpecLifecycleTester.create(c).widthPx(100).heightPx(100).steps(steps).build())
+            .build();
 
-    final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build());
-    componentSpy.setGlobalKey("global_key");
+    Component.willRender(c, component);
 
-    c = ComponentContext.withComponentScope(layoutStateContext, c, componentSpy, "global_key");
+    assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT);
 
-    Component.willRender(c, componentSpy);
+    steps.clear();
 
-    final LithoNode cachedLayout = componentSpy.getLayoutCreatedInWillRender(layoutStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    c.setLayoutStateContext(null);
+    LithoNode result = Layout.create(layoutStateContext, c, component);
+    assertThat(result).isEqualTo(cachedLayout);
+    assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
 
-    final LayoutState state =
-        calculateLayoutState(
-            c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
-
-    assertThat(componentSpy.getLayoutCreatedInWillRender(state.getLayoutStateContext())).isNull();
-
-    verify(componentSpy, times(1)).render((ComponentContext) any());
-
-    TempComponentsConfigurations.restoreImmutabilityFlags();
+    assertThat(LifecycleStep.getSteps(steps)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT);
   }
 
   @Test

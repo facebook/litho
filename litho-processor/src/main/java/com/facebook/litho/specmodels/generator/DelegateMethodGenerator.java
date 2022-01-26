@@ -281,7 +281,7 @@ public class DelegateMethodGenerator {
         (methodDescription.createsState && !specModel.getStateValues().isEmpty())
             || delegateMethod.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE);
 
-    if (requiresState) {
+    if (requiresState && contextParamName != null) {
       acquireStatements.addStatement(
           "$L $L = $L",
           StateContainerGenerator.getStateContainerClassName(specModel),
