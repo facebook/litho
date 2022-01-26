@@ -141,7 +141,8 @@ class Collection(
     }
     val section =
         CollectionGroupSection.create(sectionContext)
-            .childrenBuilder(containerScope.getChildren(sectionContext))
+            .childrenBuilder(
+                Children.create().child(containerScope.createDataDiffSection(sectionContext)))
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
@@ -243,7 +244,6 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       val isFullSpan: Boolean = false,
       val spanSize: Int? = null,
       val deps: Array<Any?>? = null,
-      val section: Section? = null,
   )
   internal val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
@@ -297,17 +297,9 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
             getResolvedId(id), null, componentFunction, isSticky, isFullSpan, spanSize, deps))
   }
 
-  /** This is a temporary api, that will soon be removed. Please do not use it */
-  fun section_DO_NOT_USE(section: Section) {
-    collectionChildrenModels.add(CollectionData(section = section))
-  }
-
-  private fun createDataDiffSection(
-      sectionContext: SectionContext,
-      forDataDiffSection: List<CollectionData>
-  ): Section {
+  internal fun createDataDiffSection(sectionContext: SectionContext): Section {
     return DataDiffSection.create<CollectionData>(sectionContext)
-        .data(forDataDiffSection.toList())
+        .data(collectionChildrenModels.toList())
         .renderEventHandler(
             eventHandlerWithReturn {
               val item = it.model
@@ -331,24 +323,6 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
         .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isComponentEquivalent))
         .build()
-  }
-
-  internal fun getChildren(sectionContext: SectionContext): Children.Builder {
-    val children = Children.create()
-    val forDataDiffSection = mutableListOf<CollectionData>()
-    collectionChildrenModels.forEach { item ->
-      if (item.section != null) {
-        children.child(createDataDiffSection(sectionContext, forDataDiffSection))
-        forDataDiffSection.clear()
-        children.child(item.section)
-      } else {
-        forDataDiffSection.add(item)
-      }
-    }
-    if (forDataDiffSection.isNotEmpty()) {
-      children.child(createDataDiffSection(sectionContext, forDataDiffSection))
-    }
-    return children
   }
 
   private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
