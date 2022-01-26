@@ -82,9 +82,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Default input only implementation of {@link LithoNode}. This does not contain a {@link YogaNode}.
- */
+/** {@link LithoNode} is the {@link Node} implementation of Litho. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
 public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRenderContext> {
@@ -407,7 +405,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Builds the YogaNode tree from this tree of InternalNodes. At the same time, builds the
+   * Builds the YogaNode tree from this tree of LithoNodes. At the same time, builds the
    * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
    */
   @SuppressLint("LongLogTag")
@@ -635,7 +633,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Return the list of components contributing to this InternalNode. We have no need for this in
+   * Return the list of components contributing to this LithoNode. We have no need for this in
    * production but it is useful information to have while debugging. Therefor this list will only
    * contain the root component if running in production mode.
    */
@@ -644,9 +642,9 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Return the list of keys of components contributing to this InternalNode. We have no need for
-   * this in production but it is useful information to have while debugging. Therefor this list
-   * will only contain the root component if running in production mode.
+   * Return the list of keys of components contributing to this LithoNode. We have no need for this
+   * in production but it is useful information to have while debugging. Therefor this list will
+   * only contain the root component if running in production mode.
    */
   public List<String> getComponentKeys() {
     return mComponentGlobalKeys;
@@ -1217,12 +1215,12 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Convenience method to get an updated shallow copy of all the components of this InternalNode.
+   * Convenience method to get an updated shallow copy of all the components of this LithoNode.
    * Optionally replace the head component with a new component. The head component is the root
-   * component in the Component hierarchy representing this InternalNode.
+   * component in the Component hierarchy representing this LithoNode.
    *
-   * @param head The root component of this InternalNode's Component hierarchy.
-   * @return List of updated shallow copied components of this InternalNode.
+   * @param head The root component of this LithoNode's Component hierarchy.
+   * @return List of updated shallow copied components of this LithoNode.
    */
   private Pair<List<Component>, List<String>> getUpdatedComponents(
       final LayoutStateContext layoutStateContext, Component head, @Nullable String headKey) {
@@ -1332,7 +1330,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
 
     // Apply the layout props from the components to the YogaNode
     for (Component component : mComponents) {
-      // If a NestedTreeHolder is set then transfer its resolved props into this InternalNode.
+      // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
       if (mNestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
         mNestedTreeHolder.transferInto(this);
         if (mBackground != null) {
@@ -1359,7 +1357,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
             setPaddingFromDrawable(target, background);
           }
 
-          // Copy the layout props into this InternalNode.
+          // Copy the layout props into this LithoNode.
           props.copyLayoutProps(target);
         }
       }
@@ -1417,15 +1415,15 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Internal method to <b>try</b> and reconcile the {@param current} InternalNode with a new {@link
+   * Internal method to <b>try</b> and reconcile the {@param current} LithoNode with a new {@link
    * ComponentContext} and an updated head {@link Component}.
    *
    * @param layoutStateContext
    * @param parentContext The ComponentContext.
-   * @param current The current InternalNode which should be updated.
-   * @param next The updated component to be used to reconcile this InternalNode.
+   * @param current The current LithoNode which should be updated.
+   * @param next The updated component to be used to reconcile this LithoNode.
    * @param keys The keys of mutated components.
-   * @return A new updated InternalNode.
+   * @return A new updated LithoNode.
    */
   private static @Nullable LithoNode reconcile(
       final LayoutStateContext layoutStateContext,
@@ -1474,14 +1472,14 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Internal method to reconcile the {@param current} InternalNode with a new {@link
-   * ComponentContext} and an updated head {@link Component} and a {@link ReconciliationMode}.
+   * Internal method to reconcile the {@param current} LithoNode with a new {@link ComponentContext}
+   * and an updated head {@link Component} and a {@link ReconciliationMode}.
    *
-   * @param current The current InternalNode which should be updated.
-   * @param next The updated component to be used to reconcile this InternalNode.
+   * @param current The current LithoNode which should be updated.
+   * @param next The updated component to be used to reconcile this LithoNode.
    * @param keys The keys of mutated components.
    * @param mode {@link ReconciliationMode#RECONCILE} or {@link ReconciliationMode#COPY}.
-   * @return A new updated InternalNode.
+   * @return A new updated LithoNode.
    */
   private static LithoNode reconcile(
       final LayoutStateContext layoutStateContext,
@@ -1577,9 +1575,8 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   }
 
   /**
-   * Convenience method to create a shallow copy of the InternalNode, set a new YogaNode, update all
-   * components and ComponentContext, release all the unnecessary properties from the new
-   * InternalNode.
+   * Convenience method to create a shallow copy of the LithoNode, set a new YogaNode, update all
+   * components and ComponentContext, release all the unnecessary properties from the new LithoNode.
    */
   private static LithoNode getCleanUpdatedShallowCopy(
       final LayoutStateContext layoutStateContext,
@@ -1700,7 +1697,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     ReconciliationMode.RECREATE
   })
   @interface ReconciliationMode {
-    /** Used only for InternalNode's without satatless components */
+    /** Used only for LithoNode's without satatless components */
     @Deprecated int COPY = 0;
 
     int RECONCILE = 1;
