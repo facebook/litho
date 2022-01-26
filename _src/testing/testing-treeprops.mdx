@@ -3,20 +3,15 @@ id: testing-treeprops
 title: Matching @TreeProp
 ---
 
-:::note
-Checkout the [getting started](unit-testing.mdx) section to setup the test environment correctly.
-:::
+:::tip Tips
+For help with setting up the test environment, see the [Getting Started](unit-testing.mdx) page.
 
-:::tip
-Checkout the [**sub-component testing**](subcomponent-testing.mdx) section before diving into `@TreeProp` testing.
+Before learning about `@TreeProp` matching, it's recommended you become familiar with [sub-component testing](subcomponent-testing.mdx).
 :::
 
 ## Testing components with @TreeProp
 
-While `@Prop` are received from the immediate parent, [`@TreeProp`](../mainconcepts/passing-data-to-components/treeprops.mdx)
-can be passed down to a component from any of its ancestors in the current component hierarchy.
-When testing hierarchies containing components which contain `@TreeProp`, tree props should be be
-passed down to the components as expected.
+While `@Prop`s are received from the immediate parent, [`@TreeProp`](../mainconcepts/passing-data-to-components/treeprops.mdx)s can be passed down to a component from any of its ancestors in the current component hierarchy. When testing hierarchies containing components that contain `@TreeProp`, the TreeProp should be passed down to the components as expected. Following is an example LayoutSpec:
 
 ```java
 @LayoutSpec
@@ -25,13 +20,13 @@ class ComponentWithTreePropSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop String normalProp,
-      @TreeProp UserContext userContext) { // <- Should be passed down by ancestors.
+      @TreeProp UserContext userContext) { // <- Passed down by an ancestor.
     // ...
   }
 }
 ```
 
-Use `LithoViewRule#setTreeProp(Class, Object)` to set a `@TreeProp`.
+To test a component that uses `@TreeProp`s, you can use `LithoViewRule#setTreeProp(Class, Object)`. This will set `@TreeProp`s on the hierachy, making them available to the components:
 
 ```java
 @RunWith(LithoTestRunner.class)

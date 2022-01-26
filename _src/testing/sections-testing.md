@@ -3,9 +3,9 @@ id: sections-testing
 title: Testing Sections
 ---
 
-[SectionsTestHelper](pathname:///javadoc/com/facebook/litho/testing/sections/SectionsTestHelper.html) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
+The [SectionsTestHelper](pathname:///javadoc/com/facebook/litho/testing/sections/SectionsTestHelper.html) provides easy-to-use helper functions to test the output of GroupSectionSpecs and state updates.
 
-To demonstrate the testing functionality, consider this simple group section with a a list of text and an optional image header.
+To demonstrate the testing functionality, consider the following simple group section with a list of text and an optional image header:
 
 ```java
 /**
@@ -67,8 +67,7 @@ public class VerySimpleGroupSectionSpec {
 
 ## Testing Children
 
-`SectionComponentTestHelper` helps you test a group section spec's `@OnCreateChildren` method by returning
-the children of a section as a list of [SubSection](pathname:///javadoc/com/facebook/litho/testing/sections/SubSection.html). SubSections can either be matched by exact props or by section class.  These are best used as existence checks.
+The `SectionComponentTestHelper` helps you test a group section spec's `@OnCreateChildren` method by returning the children of a section as a list of [SubSection](pathname:///javadoc/com/facebook/litho/testing/sections/SubSection.html):
 
 ```java
 
@@ -95,10 +94,13 @@ the children of a section as a list of [SubSection](pathname:///javadoc/com/face
 
 ```
 
+:::tip
+`SubSections` can either be matched by exact props or by section class and are best used as existence checks.
+:::
 
 ## Testing State
 
-Sometimes your section's behavior is based on both external props and internal state.  You can change state variables and test new behavior by performing state updates on the scoped context.
+Sometimes, a section's behaviour is based on both external props and internal state. You can change state variables and test new behaviour by performing state updates on the scoped context:
 
 ```java
 
@@ -117,10 +119,9 @@ Sometimes your section's behavior is based on both external props and internal s
 
 ```
 
+## Testing Events
 
-## Testing events
-
-Sections heavily uses the [event handling system](/docs/mainconcepts/coordinate-state-actions/events) and `SectionComponentTestHelper` has helper methods to make testing events easier. Simply create an event handler using the scoped context and dispatch your event to execute the event handler.
+Sections, which heavily uses the [event handling system](../mainconcepts/coordinate-state-actions/events.md), and the `SectionComponentTestHelper`, which has helper methods, both make testing events easier. Simply create an event handler using the scoped context and dispatch your event to execute the event handler:
 
 ```java
 
@@ -142,9 +143,9 @@ Sections heavily uses the [event handling system](/docs/mainconcepts/coordinate-
   }
 ```
 
-## Testing other lifecycle methods
+## Testing Other Lifecycle Methods
 
-Testing other lifecycle methods is as simple as calling the lifecycle method with the section under test and it's corresponding scoped context.
+Testing other lifecycle methods is as simple as calling the lifecycle method with the section under test and its corresponding scoped context:
 
 ```java
   @Test
@@ -161,4 +162,6 @@ Testing other lifecycle methods is as simple as calling the lifecycle method wit
   }
 ```
 
-See [VerySimpleGroupSectionSpecTest](https://github.com/facebook/litho/blob/master/litho-it/src/test/java/com/facebook/litho/sections/common/VerySimpleGroupSectionSpecTest.java) for the full source of this example!  Testing for sections is still very basic so if you run into any missing functionality please [reach out to us](https://github.com/facebook/litho/issues/new) and describe your use case.
+For the full GitHub source of this example, see the [VerySimpleGroupSectionSpecTest](https://github.com/facebook/litho/blob/master/litho-it/src/test/java/com/facebook/litho/sections/common/VerySimpleGroupSectionSpecTest.java).
+
+Testing for sections is still basic so, if you run into any missing functionality, [raise a GitHub Facebook issue](https://github.com/facebook/litho/issues/new) and describe your use case.
