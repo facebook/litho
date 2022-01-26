@@ -53,21 +53,18 @@ class TabsCollectionKComponent : KComponent() {
       child(tabBar(selectedTab))
 
       when (selectedTab.value) {
-        Tab.Tab1 ->
-            subCollection(id = Tab.Tab1) {
-              child(Text("Tab1.1"))
-              child(id = 1, component = Text("Tab1.2"))
-            }
-        Tab.Tab2 ->
-            subCollection(id = Tab.Tab2) {
-              child(Text("Tab2.1"))
-              child(id = 1, component = Text("Tab2.2"))
-            }
-        Tab.Tab3 ->
-            subCollection(id = Tab.Tab3) {
-              child(Text("Tab3.1"))
-              child(id = 1, component = Text("Tab3.2"))
-            }
+        Tab.Tab1 -> {
+          child(id = "tab1_tile", component = Text("Tab1 Title"))
+          child(id = "tab1_subtitle", component = Text("Tab1 Subtitle"))
+        }
+        Tab.Tab2 -> {
+          child(id = "tab2_tile", component = Text("Tab2 Title"))
+          child(id = "tab2_subtitle", component = Text("Tab2 Subtitle"))
+        }
+        Tab.Tab3 -> {
+          child(id = "tab3_tile", component = Text("Tab3 Title"))
+          child(id = "tab3_subtitle", component = Text("Tab3 Subtitle"))
+        }
       }
     }
   }
