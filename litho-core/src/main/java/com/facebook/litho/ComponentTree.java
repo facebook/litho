@@ -50,7 +50,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
@@ -2436,17 +2435,14 @@ public class ComponentTree implements LithoLifecycleListener {
   private void bindEventAndTriggerHandlers(
       final List<Component> components,
       final List<String> componentKeys,
-      final @Nullable List<ScopedComponentInfo> scopedComponentInfos) {
+      final List<ScopedComponentInfo> scopedComponentInfos) {
 
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
       for (int i = 0, size = components.size(); i < size; i++) {
         final Component component = components.get(i);
         final String globalKey = componentKeys.get(i);
-        final ComponentContext scopedContext =
-            scopedComponentInfos != null
-                ? scopedComponentInfos.get(i).getContext()
-                : Preconditions.checkNotNull(component.getScopedContext());
+        final ComponentContext scopedContext = scopedComponentInfos.get(i).getContext();
         mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
         bindTriggerHandler(scopedContext, component);
       }

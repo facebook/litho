@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import androidx.core.util.Preconditions;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +63,7 @@ public class RenderState {
   private void recordRenderData(
       final Component component,
       final String globalKey,
-      final @Nullable ScopedComponentInfo scopedComponentInfo) {
+      final ScopedComponentInfo scopedComponentInfo) {
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
@@ -81,10 +80,7 @@ public class RenderState {
     }
     mSeenGlobalKeys.add(globalKey);
 
-    final ComponentContext scopedContext =
-        scopedComponentInfo != null
-            ? scopedComponentInfo.getContext()
-            : Preconditions.checkNotNull(component.getScopedContext());
+    final ComponentContext scopedContext = scopedComponentInfo.getContext();
     final Component.RenderData existingInfo = mRenderData.get(globalKey);
     final Component.RenderData newInfo = component.recordRenderData(scopedContext, existingInfo);
 

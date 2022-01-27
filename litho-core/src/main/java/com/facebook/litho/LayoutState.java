@@ -2036,9 +2036,9 @@ public class LayoutState
       for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
         final Component component = mComponentsNeedingPreviousRenderData.get(i);
         final ComponentContext scopedContext =
-            mScopedComponentInfosNeedingPreviousRenderData != null
-                ? mScopedComponentInfosNeedingPreviousRenderData.get(i).getContext()
-                : Preconditions.checkNotNull(component.getScopedContext());
+            Preconditions.checkNotNull(mScopedComponentInfosNeedingPreviousRenderData)
+                .get(i)
+                .getContext();
         try {
           final Transition transition = component.createTransition(scopedContext);
           if (transition != null) {

@@ -703,16 +703,13 @@ class Layout {
 
   /** DiffNode state should be retrieved from the committed LayoutState. */
   private static @Nullable ComponentContext getDiffNodeScopedContext(DiffNode diffNode) {
-    final Component diffNodeComponent = diffNode.getComponent();
-    if (diffNodeComponent == null) {
+    final @Nullable ScopedComponentInfo scopedComponentInfo = diffNode.getScopedComponentInfo();
+
+    if (scopedComponentInfo == null) {
       return null;
     }
 
-    final @Nullable ScopedComponentInfo scopedComponentInfo = diffNode.getScopedComponentInfo();
-
-    return scopedComponentInfo != null
-        ? scopedComponentInfo.getContext()
-        : diffNodeComponent.getScopedContext();
+    return scopedComponentInfo.getContext();
   }
 
   static boolean isLayoutDirectionRTL(final Context context) {
