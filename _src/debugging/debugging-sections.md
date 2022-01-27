@@ -2,6 +2,7 @@
 id: debugging-sections
 title: Debugging Sections
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## Debugging Litho Sections Surfaces with the Flipper Sections Plugin
 
@@ -81,7 +82,7 @@ In a Sections list, when an item in the list loses its state that usually indica
 The following video shows that when the second `setRoot` is triggered, the resulting Changeset for the section contains an `INSERT_RANGE` operation. Therefore, all items were re-rendered as new items which have just been inserted into the adapter.
 
 <video width="100%" controls="controls">
-  <source src="/videos/debugging-sections-issue1.mov" />
+  <source src={useBaseUrl('videos/debugging-sections-issue1.mov')} />
 </video>
 
 The resulting updated list has 20 items, but the Changeset doesn’t have any DELETE operations. This raises the question of what happened to the items that were initially inserted, which indicates that something out of the ordinary is going on with the items the RecyclerBinder knows about. The RecyclerBinder has no knowledge about the items which were inserted on the first render, and that can only mean one thing: a new RecyclerBinder instance was created after the second `setRoot`. This can happen if the RecyclerCollectionComponent’s state is recreated. You can confirm by adding logging in its [`@OnCreateInitialState`](https://github.com/facebook/litho/blob/d23a9406659f27fa9df25d02ae1097a975973bb8/litho-sections-widget/src/main/java/com/facebook/litho/sections/widget/RecyclerCollectionComponentSpec.java#L272) implementation. This means its key is changing after the `setRoot` update.
@@ -99,7 +100,7 @@ The fix for this issue is to maintain the state after the `setRoot` update, you 
 Check the Flipper Sections Plugin to see what happens when navigating to this surface.
 
 <video width="100%" controls="controls">
-  <source src="/videos/debugging-sections-issue2.mov" />
+  <source src={useBaseUrl('videos/debugging-sections-issue2.mov')} />
 </video>
 
 In the video above, the initial `setRoot` call passes to the Section a list of items, starting with item 15. This matches what you see on screen. Later is a `setRoot` call, which inserts at the top of the Section a list of items from 0 to 14. The order in which this data is inserted explains why the list scrolled to item 15.
@@ -128,7 +129,7 @@ static void onDataBound(SectionContext c) {
 This issue has similar symptoms to [Issue #1](#issue-1-the-state-of-an-entire-section-surface-is-getting-reset), but you can use the Flipper Sections Plugin this time to see what’s different and how to find the cause.
 
 <video width="100%" controls="controls">
-  <source src="/videos/debugging-sections-issue3.mov" />
+  <source src={useBaseUrl('videos/debugging-sections-issue3.mov')} />
 </video>
 
 The list is reset after the second setRoot call is triggered, as can be seen from its generated changesets.
@@ -222,7 +223,7 @@ However, it looks like nothing is changing: the item at position 0 is still sele
 Again, you go to the Flipper Sections Plugin to understand what’s happening:
 
 <video width="100%" controls="controls">
-  <source src="/videos/debugging-sections-issue4.mov" />
+  <source src={useBaseUrl('videos/debugging-sections-issue4.mov')} />
 </video>
 
 Here you see that when you pass a new value for `selectedItem` and `setRoot` is called, the changeset generated for this shows us that all items in the list have been reused and nothing got updated. This is not what is expected: items 0 and 1 should be updated.
