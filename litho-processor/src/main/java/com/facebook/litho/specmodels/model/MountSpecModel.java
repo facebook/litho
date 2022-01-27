@@ -324,6 +324,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean isStateful() {
+    return false;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

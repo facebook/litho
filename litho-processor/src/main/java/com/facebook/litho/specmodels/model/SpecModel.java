@@ -171,6 +171,9 @@ public interface SpecModel {
   /** @return whether or not to generate a hasState method. */
   boolean shouldGenerateHasState();
 
+  /** @return whether or not this component is stateful. */
+  boolean isStateful();
+
   /**
    * @return null if this spec does not use dependency injection, otherwise return the generator
    *     that should be used to generate the correct methods for dependency injection to work for

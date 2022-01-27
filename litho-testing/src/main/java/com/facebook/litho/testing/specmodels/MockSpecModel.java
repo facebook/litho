@@ -417,6 +417,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     return true;
   }
 
+  @Override
+  public boolean isStateful() {
+    return mEnclosedSpecModel.isStateful();
+  }
+
   @Nullable
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {

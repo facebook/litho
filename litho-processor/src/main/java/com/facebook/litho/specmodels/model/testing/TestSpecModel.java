@@ -318,6 +318,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
+  public boolean isStateful() {
+    return mSpecModel.isStateful();
+  }
+
+  @Override
   @Nullable
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();

@@ -421,6 +421,11 @@ public final class SpecModelImpl implements SpecModel {
     throw new RuntimeException("Don't delegate to this method!");
   }
 
+  @Override
+  public boolean isStateful() {
+    return true;
+  }
+
   @Nullable
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {

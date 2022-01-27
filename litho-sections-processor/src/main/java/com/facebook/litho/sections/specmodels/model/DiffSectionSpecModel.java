@@ -331,6 +331,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public boolean isStateful() {
+    return mSpecModel.isStateful();
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }
