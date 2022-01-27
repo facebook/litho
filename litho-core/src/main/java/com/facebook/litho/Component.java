@@ -65,7 +65,6 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
@@ -105,7 +104,6 @@ public abstract class Component
   static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
-  private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
 
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
@@ -161,10 +159,6 @@ public abstract class Component
 
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable Context mBuilderContext;
-
-  private @Nullable StateContainer mStateContainer;
-  private @Nullable InterStagePropsContainer mInterStagePropsContainer;
-  private @Nullable PrepareInterStagePropsContainer mPrepareInterStagePropsContainer;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
@@ -1341,22 +1335,6 @@ public abstract class Component
   protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
       final ComponentContext scopedContext) {
     return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
-  }
-
-  @Nullable
-  final InterStagePropsContainer getInterStagePropsContainer() {
-    if (mInterStagePropsContainer == null) {
-      mInterStagePropsContainer = createInterStagePropsContainer();
-    }
-    return mInterStagePropsContainer;
-  }
-
-  @Nullable
-  final PrepareInterStagePropsContainer getPrepareInterStagePropsContainer() {
-    if (mPrepareInterStagePropsContainer == null) {
-      mPrepareInterStagePropsContainer = createPrepareInterStagePropsContainer();
-    }
-    return mPrepareInterStagePropsContainer;
   }
 
   protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {

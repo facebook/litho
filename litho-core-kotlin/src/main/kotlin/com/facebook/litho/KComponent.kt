@@ -143,7 +143,7 @@ abstract class KComponent : Component() {
       c: ComponentContext,
       x: Int,
       y: Int,
-      InterStagePropsContainer: InterStagePropsContainer?
+      interStagePropsContainer: InterStagePropsContainer?
   ) = super.getExtraAccessibilityNodeAt(c, x, y, interStagePropsContainer)
 
   final override fun getExtraAccessibilityNodesCount(

@@ -333,21 +333,13 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
             diff.getScopedComponentInfo();
 
         component.copyInterStageImpl(
-            scopedComponentInfo != null
-                ? scopedComponentInfo.getInterStagePropsContainer()
-                : component.getInterStagePropsContainer(),
-            diffNodeScopedComponentInfo != null
-                ? diffNodeScopedComponentInfo.getInterStagePropsContainer()
-                : Preconditions.checkNotNull(diff.getComponent()).getInterStagePropsContainer());
+            Preconditions.checkNotNull(scopedComponentInfo).getInterStagePropsContainer(),
+            Preconditions.checkNotNull(diffNodeScopedComponentInfo).getInterStagePropsContainer());
 
         component.copyPrepareInterStageImpl(
-            scopedComponentInfo != null
-                ? scopedComponentInfo.getPrepareInterStagePropsContainer()
-                : component.getPrepareInterStagePropsContainer(),
-            diffNodeScopedComponentInfo != null
-                ? diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer()
-                : Preconditions.checkNotNull(diff.getComponent())
-                    .getPrepareInterStagePropsContainer());
+            Preconditions.checkNotNull(scopedComponentInfo).getPrepareInterStagePropsContainer(),
+            Preconditions.checkNotNull(diffNodeScopedComponentInfo)
+                .getPrepareInterStagePropsContainer());
       }
 
       result.setCachedMeasuresValid(true);
