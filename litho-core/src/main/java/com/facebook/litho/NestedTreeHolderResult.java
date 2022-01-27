@@ -17,19 +17,17 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.yoga.YogaNode;
 
 /**
  * This is an output only {@link NestedTreeHolderResult}; this is created by a {@link
  * NestedTreeHolder}.
  */
-public class DefaultNestedTreeHolderResult extends DefaultLayoutResult
-    implements NestedTreeHolderResult {
+public class NestedTreeHolderResult extends LithoLayoutResult {
 
   @Nullable LithoLayoutResult mNestedTree;
 
-  public DefaultNestedTreeHolderResult(
+  public NestedTreeHolderResult(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final NestedTreeHolder internalNode,
@@ -43,12 +41,10 @@ public class DefaultNestedTreeHolderResult extends DefaultLayoutResult
     return (NestedTreeHolder) super.getNode();
   }
 
-  @Override
   public @Nullable LithoLayoutResult getNestedResult() {
     return mNestedTree;
   }
 
-  @Override
   public void setNestedResult(@Nullable LithoLayoutResult tree) {
     mNestedTree = tree;
     if (tree != null) {

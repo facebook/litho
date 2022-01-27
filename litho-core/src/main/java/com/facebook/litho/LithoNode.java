@@ -1279,11 +1279,11 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     mIsPaddingSet = target.isPaddingSet;
   }
 
-  DefaultLayoutResult createLayoutResult(
+  LithoLayoutResult createLayoutResult(
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new DefaultLayoutResult(
+    return new LithoLayoutResult(
         context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
   }
 

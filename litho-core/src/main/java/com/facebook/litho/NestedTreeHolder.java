@@ -68,11 +68,11 @@ public class NestedTreeHolder extends LithoNode<NestedTreeYogaLayoutProps> {
   }
 
   @Override
-  DefaultLayoutResult createLayoutResult(
+  NestedTreeHolderResult createLayoutResult(
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new DefaultNestedTreeHolderResult(
+    return new NestedTreeHolderResult(
         context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
   }
 

@@ -22,7 +22,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
-import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;

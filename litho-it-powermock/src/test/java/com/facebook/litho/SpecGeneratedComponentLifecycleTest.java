@@ -73,7 +73,7 @@ public class SpecGeneratedComponentLifecycleTest {
   private int mNestedTreeHeightSpec;
   private static final int NODE_LIST_SIZE = 100;
 
-  private DefaultLayoutResult mResult;
+  private LithoLayoutResult mResult;
   private LithoNode mNode;
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
@@ -186,7 +186,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
     mDiffNode = mock(DiffNode.class);
     mNode = mock(LithoNode.class);
-    mResult = mock(DefaultLayoutResult.class);
+    mResult = mock(LithoLayoutResult.class);
     mYogaNode = YogaNodeFactory.create();
     mYogaNode.setData(mNode);
 

@@ -163,10 +163,9 @@ public class NestedTreeResolutionPowermockTest {
     final LithoLayoutResult root = getLithoLayoutResult(lithoView);
 
     assertThat(root).isNotNull();
-    assertThat(root.getChildAt(1)).isInstanceOf(LithoLayoutResult.NestedTreeHolderResult.class);
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
 
-    LithoLayoutResult.NestedTreeHolderResult holder =
-        (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
     verify(holder.getNode(), times(2)).copyInto(any(LithoNode.class));
   }
 
@@ -180,9 +179,8 @@ public class NestedTreeResolutionPowermockTest {
     final LithoLayoutResult root = getLithoLayoutResult(lithoView);
 
     assertThat(root).isNotNull();
-    assertThat(root.getChildAt(1)).isInstanceOf(LithoLayoutResult.NestedTreeHolderResult.class);
-    LithoLayoutResult.NestedTreeHolderResult holder =
-        (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
 
     assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.LTR);
     verify(holder.getNestedResult().getNode(), times(1)).layoutDirection(YogaDirection.LTR);
@@ -202,9 +200,8 @@ public class NestedTreeResolutionPowermockTest {
     final LithoLayoutResult root = getLithoLayoutResult(lithoView);
 
     assertThat(root).isNotNull();
-    assertThat(root.getChildAt(1)).isInstanceOf(LithoLayoutResult.NestedTreeHolderResult.class);
-    LithoLayoutResult.NestedTreeHolderResult holder =
-        (LithoLayoutResult.NestedTreeHolderResult) root.getChildAt(1);
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
 
     assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.RTL);
     verify(holder.getNestedResult().getNode(), times(1)).layoutDirection(YogaDirection.RTL);

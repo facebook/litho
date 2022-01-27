@@ -22,7 +22,6 @@ import static com.facebook.litho.Component.isNestedTree;
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
-import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;

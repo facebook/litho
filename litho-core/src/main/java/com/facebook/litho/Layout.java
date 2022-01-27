@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.yoga.YogaConstants;
@@ -486,15 +485,6 @@ class Layout {
           "measureTree:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
     }
 
-    if (diff != null && root.implementsLayoutDiffing()) {
-      ComponentsSystrace.beginSection("applyDiffNode");
-      applyDiffNodeToUnchangedNodes(
-          (LithoLayoutResult) root, // Only for DefaultInternalNode
-          true,
-          diff);
-      ComponentsSystrace.endSection(/* applyDiffNode */ );
-    }
-
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
             c.getAndroidContext(),
@@ -588,97 +578,6 @@ class Layout {
         heightSpec,
         null,
         layout.getDiffNode());
-  }
-
-  /**
-   * Traverses the layoutTree and the diffTree recursively. If a layoutNode has a compatible host
-   * type {@link Layout#hostIsCompatible} it assigns the DiffNode to the layout node in order to try
-   * to re-use the LayoutOutputs that will be generated during result collection. If a layout node
-   * component returns false when shouldComponentUpdate is called with the DiffNode Component it
-   * also tries to re-use the old measurements and therefore marks as valid the cachedMeasures for
-   * the whole component subtree.
-   *
-   * @param result the root of the LayoutTree
-   * @param diffNode the root of the diffTree
-   */
-  static void applyDiffNodeToUnchangedNodes(
-      final LithoLayoutResult result, final boolean isTreeRoot, final @Nullable DiffNode diffNode) {
-
-    final LithoNode layoutNode = result.getNode();
-
-    try {
-      // Root of the main tree or of a nested tree.
-      if (isLayoutSpecWithSizeSpec(layoutNode.getTailComponent()) && !isTreeRoot) {
-        result.setDiffNode(diffNode);
-        return;
-      }
-
-      if (diffNode == null || !hostIsCompatible(layoutNode, diffNode)) {
-        return;
-      }
-
-      result.setDiffNode(diffNode);
-
-      final int layoutCount = layoutNode.getChildCount();
-      final int diffCount = diffNode.getChildCount();
-
-      if (layoutCount != 0 && diffCount != 0) {
-        for (int i = 0; i < layoutCount && i < diffCount; i++) {
-          applyDiffNodeToUnchangedNodes(result.getChildAt(i), false, diffNode.getChildAt(i));
-        }
-
-        // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
-      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
-        applyDiffNodeToLayoutNode(result, diffNode);
-      }
-    } catch (Throwable t) {
-      final Component c = layoutNode.getTailComponent();
-      if (c != null) {
-        final ComponentContext ct =
-            Preconditions.checkNotNull(layoutNode.getTailComponentContext());
-        final LithoMetadataExceptionWrapper e = new LithoMetadataExceptionWrapper(ct, t);
-        e.addComponentNameForLayoutStack(c.getSimpleName());
-        throw e;
-      } else {
-        throw t;
-      }
-    }
-  }
-
-  /**
-   * Copies the inter stage state (if any) from the DiffNode's component to the layout node's
-   * component, and declares that the cached measures on the diff node are valid for the layout
-   * node.
-   */
-  private static void applyDiffNodeToLayoutNode(
-      final LithoLayoutResult result, final DiffNode diffNode) {
-    final LithoNode layoutNode = result.getNode();
-    final Component component = layoutNode.getTailComponent();
-    if (component != null) {
-      final @Nullable ScopedComponentInfo scopedComponentInfo =
-          layoutNode.getTailScopedComponentInfo();
-      final @Nullable ScopedComponentInfo diffNodeScopedComponentInfo =
-          diffNode.getScopedComponentInfo();
-
-      component.copyInterStageImpl(
-          scopedComponentInfo != null
-              ? scopedComponentInfo.getInterStagePropsContainer()
-              : component.getInterStagePropsContainer(),
-          diffNodeScopedComponentInfo != null
-              ? diffNodeScopedComponentInfo.getInterStagePropsContainer()
-              : Preconditions.checkNotNull(diffNode.getComponent()).getInterStagePropsContainer());
-
-      component.copyPrepareInterStageImpl(
-          scopedComponentInfo != null
-              ? scopedComponentInfo.getPrepareInterStagePropsContainer()
-              : component.getPrepareInterStagePropsContainer(),
-          diffNodeScopedComponentInfo != null
-              ? diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer()
-              : Preconditions.checkNotNull(diffNode.getComponent())
-                  .getPrepareInterStagePropsContainer());
-    }
-
-    result.setCachedMeasuresValid(true);
   }
 
   @Nullable

@@ -39,7 +39,6 @@ import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;

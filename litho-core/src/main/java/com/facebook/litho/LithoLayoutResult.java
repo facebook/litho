@@ -16,117 +16,399 @@
 
 package com.facebook.litho;
 
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.TOP;
+
+import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaNode;
+import java.util.ArrayList;
+import java.util.List;
 
-/** The {@link LayoutResult} class for Litho */
-public interface LithoLayoutResult extends ComponentLayout, LayoutResult {
+/**
+ * This is the default implementation of a {@link LayoutResult} for Litho. This holds a reference to
+ * the {@link LithoNode} which created it, its {@link YogaNode}, and a list of its children.
+ */
+public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
-  @Nullable
-  LithoRenderUnit getRenderUnit();
+  private final LayoutStateContext mLayoutContext;
+  private final ComponentContext mContext;
 
-  @Nullable
-  LithoRenderUnit getHostRenderUnit();
+  private final LithoNode mNode;
 
-  @Nullable
-  LithoRenderUnit getBackgroundRenderUnit();
+  private final List<LithoLayoutResult> mChildren = new ArrayList<>();
+  private final YogaNode mYogaNode;
 
-  @Nullable
-  LithoRenderUnit getForegroundRenderUnit();
+  private @Nullable LithoLayoutResult mParent;
 
-  @Nullable
-  LithoRenderUnit getBorderRenderUnit();
+  private boolean mCachedMeasuresValid;
+  private @Nullable DiffNode mDiffNode;
 
-  LayoutStateContext getLayoutStateContext();
+  private int mLastWidthSpec = DiffNode.UNSPECIFIED;
+  private int mLastHeightSpec = DiffNode.UNSPECIFIED;
+  private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
+  private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
 
-  ComponentContext getContext();
+  private @Nullable LithoRenderUnit mContentRenderUnit;
+  private @Nullable LithoRenderUnit mHostRenderUnit;
+  private @Nullable LithoRenderUnit mBackgroundRenderUnit;
+  private @Nullable LithoRenderUnit mForegroundRenderUnit;
+  private @Nullable LithoRenderUnit mBorderRenderUnit;
 
-  LithoNode getNode();
+  public LithoLayoutResult(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final LithoNode node,
+      final YogaNode yogaNode,
+      final @Nullable LithoLayoutResult parent) {
+    mLayoutContext = layoutStateContext;
+    mContext = c;
+    mNode = node;
+    mYogaNode = yogaNode;
+    mParent = parent;
+  }
 
-  int getChildCount();
+  public LayoutStateContext getLayoutStateContext() {
+    return mLayoutContext;
+  }
 
-  LithoLayoutResult getChildAt(int i);
+  public ComponentContext getContext() {
+    return mContext;
+  }
 
-  void addChild(LithoLayoutResult child);
+  @Px
+  @Override
+  public int getX() {
+    return (int) mYogaNode.getLayoutX();
+  }
 
-  @Nullable
-  LithoLayoutResult getParent();
+  @Px
+  @Override
+  public int getY() {
+    return (int) mYogaNode.getLayoutY();
+  }
 
-  void setParent(@Nullable LithoLayoutResult parent);
+  @Px
+  @Override
+  public int getWidth() {
+    return (int) mYogaNode.getLayoutWidth();
+  }
 
-  YogaNode getYogaNode();
+  @Px
+  @Override
+  public int getHeight() {
+    return (int) mYogaNode.getLayoutHeight();
+  }
 
-  boolean shouldDrawBorders();
+  @Px
+  @Override
+  public int getPaddingTop() {
+    return FastMath.round(mYogaNode.getLayoutPadding(TOP));
+  }
 
-  int getLayoutBorder(YogaEdge edge);
+  @Px
+  @Override
+  public int getPaddingRight() {
+    return FastMath.round(mYogaNode.getLayoutPadding(RIGHT));
+  }
 
-  int getTouchExpansionBottom();
+  @Px
+  @Override
+  public int getPaddingBottom() {
+    return FastMath.round(mYogaNode.getLayoutPadding(BOTTOM));
+  }
 
-  int getTouchExpansionLeft();
+  @Px
+  @Override
+  public int getPaddingLeft() {
+    return FastMath.round(mYogaNode.getLayoutPadding(LEFT));
+  }
 
-  int getTouchExpansionRight();
+  @Override
+  public int getWidthSpec() {
+    return mLastWidthSpec;
+  }
 
-  int getTouchExpansionTop();
+  @Override
+  public int getHeightSpec() {
+    return mLastHeightSpec;
+  }
 
-  /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
-  YogaDirection recursivelyResolveLayoutDirection();
+  @Override
+  public boolean isPaddingSet() {
+    return mNode.isPaddingSet();
+  }
+
+  @Override
+  public @Nullable Drawable getBackground() {
+    return mNode.getBackground();
+  }
+
+  @Override
+  public YogaDirection getResolvedLayoutDirection() {
+    return mYogaNode.getLayoutDirection();
+  }
+
+  public LithoNode getNode() {
+    return mNode;
+  }
+
+  public boolean shouldDrawBorders() {
+    return mNode.hasBorderColor()
+        && (mYogaNode.getLayoutBorder(LEFT) != 0
+            || mYogaNode.getLayoutBorder(TOP) != 0
+            || mYogaNode.getLayoutBorder(RIGHT) != 0
+            || mYogaNode.getLayoutBorder(BOTTOM) != 0);
+  }
+
+  public int getLayoutBorder(YogaEdge edge) {
+    return FastMath.round(mYogaNode.getLayoutBorder(edge));
+  }
+
+  public int getTouchExpansionBottom() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+
+    return FastMath.round(mNode.getTouchExpansion().get(YogaEdge.BOTTOM));
+  }
+
+  public int getTouchExpansionLeft() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+
+    return FastMath.round(resolveHorizontalEdges(mNode.getTouchExpansion(), YogaEdge.LEFT));
+  }
+
+  public int getTouchExpansionRight() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+
+    return FastMath.round(resolveHorizontalEdges(mNode.getTouchExpansion(), YogaEdge.RIGHT));
+  }
+
+  public int getTouchExpansionTop() {
+    if (!shouldApplyTouchExpansion()) {
+      return 0;
+    }
+
+    return FastMath.round(mNode.getTouchExpansion().get(YogaEdge.TOP));
+  }
+
+  private boolean shouldApplyTouchExpansion() {
+    return mNode.getTouchExpansion() != null
+        && mNode.getNodeInfo() != null
+        && mNode.getNodeInfo().hasTouchEventHandlers();
+  }
+
+  private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
+    final boolean isRtl = (mYogaNode.getLayoutDirection() == YogaDirection.RTL);
+
+    final YogaEdge resolvedEdge;
+    switch (edge) {
+      case LEFT:
+        resolvedEdge = (isRtl ? YogaEdge.END : YogaEdge.START);
+        break;
+
+      case RIGHT:
+        resolvedEdge = (isRtl ? YogaEdge.START : YogaEdge.END);
+        break;
+
+      default:
+        throw new IllegalArgumentException("Not an horizontal padding edge: " + edge);
+    }
+
+    float result = spacing.getRaw(resolvedEdge);
+    if (YogaConstants.isUndefined(result)) {
+      result = spacing.get(edge);
+    }
+
+    return result;
+  }
+
+  public int getLastHeightSpec() {
+    return mLastHeightSpec;
+  }
+
+  public void setLastHeightSpec(int heightSpec) {
+    mLastHeightSpec = heightSpec;
+  }
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
    * height. This is used together with {@link LithoLayoutResult#getLastHeightSpec()} to implement
    * measure caching.
    */
-  float getLastMeasuredHeight();
+  public float getLastMeasuredHeight() {
+    return mLastMeasuredHeight;
+  }
+
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the height.
+   */
+  public void setLastMeasuredHeight(float lastMeasuredHeight) {
+    mLastMeasuredHeight = lastMeasuredHeight;
+  }
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
    * width. This is used together with {@link LithoLayoutResult#getLastWidthSpec()} to implement
    * measure caching.
    */
-  float getLastMeasuredWidth();
-
-  int getLastHeightSpec();
-
-  int getLastWidthSpec();
-
-  boolean areCachedMeasuresValid();
-
-  @Nullable
-  DiffNode getDiffNode();
-
-  /* Measurement related APIs for mutating the result */
-
-  void setLastWidthSpec(int widthSpec);
-
-  void setLastHeightSpec(int heightSpec);
-
-  /**
-   * Sets the last value the measure funcion associated with this node {@link Component} returned
-   * for the height.
-   */
-  void setLastMeasuredHeight(float lastMeasuredHeight);
+  public float getLastMeasuredWidth() {
+    return mLastMeasuredWidth;
+  }
 
   /**
    * Sets the last value the measure funcion associated with this node {@link Component} returned
    * for the width.
    */
-  void setLastMeasuredWidth(float lastMeasuredWidth);
+  public void setLastMeasuredWidth(float lastMeasuredWidth) {
+    mLastMeasuredWidth = lastMeasuredWidth;
+  }
 
-  void setCachedMeasuresValid(boolean valid);
+  public void setDiffNode(@Nullable DiffNode diffNode) {
+    mDiffNode = diffNode;
+  }
 
-  void setDiffNode(@Nullable DiffNode diffNode);
+  public void setCachedMeasuresValid(boolean isValid) {
+    mCachedMeasuresValid = isValid;
+  }
 
-  /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
-  interface NestedTreeHolderResult extends LithoLayoutResult {
+  public int getLastWidthSpec() {
+    return mLastWidthSpec;
+  }
 
-    NestedTreeHolder getNode();
+  public boolean areCachedMeasuresValid() {
+    return mCachedMeasuresValid;
+  }
 
-    @Nullable
-    LithoLayoutResult getNestedResult();
+  public @Nullable DiffNode getDiffNode() {
+    return mDiffNode;
+  }
 
-    void setNestedResult(@Nullable LithoLayoutResult tree);
+  public void setLastWidthSpec(int widthSpec) {
+    mLastWidthSpec = widthSpec;
+  }
+
+  public YogaDirection recursivelyResolveLayoutDirection() {
+    final YogaDirection direction = mYogaNode.getLayoutDirection();
+    if (direction == YogaDirection.INHERIT) {
+      throw new IllegalStateException("Direction cannot be resolved before layout calculation");
+    }
+    return direction;
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getRenderUnit() {
+    if (mContext.shouldReuseOutputs()) {
+      if (mContentRenderUnit == null) {
+        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this);
+      }
+      return mContentRenderUnit;
+    } else {
+      return InternalNodeUtils.createContentRenderUnit(this);
+    }
+  }
+
+  public @Nullable LithoRenderUnit getHostRenderUnit() {
+    if (mContext.shouldReuseOutputs()) {
+      if (mHostRenderUnit == null) {
+        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this);
+      }
+      return mHostRenderUnit;
+    } else {
+      return InternalNodeUtils.createHostRenderUnit(this);
+    }
+  }
+
+  public @Nullable LithoRenderUnit getBackgroundRenderUnit() {
+    if (mContext.shouldReuseOutputs()) {
+      if (mBackgroundRenderUnit == null) {
+        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this);
+      }
+      return mBackgroundRenderUnit;
+    } else {
+      return InternalNodeUtils.createBackgroundRenderUnit(this);
+    }
+  }
+
+  public @Nullable LithoRenderUnit getForegroundRenderUnit() {
+    if (mContext.shouldReuseOutputs()) {
+      if (mForegroundRenderUnit == null) {
+        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this);
+      }
+      return mForegroundRenderUnit;
+    } else {
+      return InternalNodeUtils.createForegroundRenderUnit(this);
+    }
+  }
+
+  public @Nullable LithoRenderUnit getBorderRenderUnit() {
+    if (mContext.shouldReuseOutputs()) {
+      if (mBorderRenderUnit == null) {
+        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this);
+      }
+      return mBorderRenderUnit;
+    } else {
+      return InternalNodeUtils.createBorderRenderUnit(this);
+    }
+  }
+
+  @Nullable
+  @Override
+  public Object getLayoutData() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public int getChildrenCount() {
+    return mChildren.size();
+  }
+
+  @Override
+  public LithoLayoutResult getChildAt(int i) {
+    return mChildren.get(i);
+  }
+
+  @Override
+  public int getXForChildAtIndex(int index) {
+    return mChildren.get(index).getX();
+  }
+
+  @Override
+  public int getYForChildAtIndex(int index) {
+    return mChildren.get(index).getY();
+  }
+
+  public void addChild(LithoLayoutResult child) {
+    child.setParent(this);
+    mChildren.add(child);
+  }
+
+  public int getChildCount() {
+    return mChildren.size();
+  }
+
+  public @Nullable LithoLayoutResult getParent() {
+    return mParent;
+  }
+
+  public void setParent(@Nullable LithoLayoutResult parent) {
+    mParent = parent;
+  }
+
+  public YogaNode getYogaNode() {
+    return mYogaNode;
   }
 }

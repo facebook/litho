@@ -18,8 +18,8 @@ package com.facebook.litho.componentsfinder
 
 import com.facebook.litho.Component
 import com.facebook.litho.LithoLayoutResult
-import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult
 import com.facebook.litho.LithoView
+import com.facebook.litho.NestedTreeHolderResult
 import kotlin.reflect.KClass
 
 /**
