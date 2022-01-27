@@ -21,6 +21,7 @@
     "prettier": "^2.0.2"
   },
   "resolutions": {
-    "is-svg": "4.2.2"
+    "is-svg": "4.2.2",
+    "shelljs": "^0.8.5"
   }
 }
