@@ -3,53 +3,23 @@ id: builtin-widgets
 title: Built-in widgets
 ---
 
-Litho provides a number of build-in components.
-You can find the full list of components and APIs within our [javadocs for the com.facebook.litho.widget package](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html).
-
-We'll show and explain here a list of the most basic widgets.
-
-
-Font Size:
-bold italic
-Size
-Vertical Size:
-Horizontal Size:
-Border
-Border Radius:
-Border Size:
-Box Shadow
-Text Shadow
-Vertical Position:
-Horizontal Position:
-Blur Radius:
-
-export const Button = ({label, url}) => (
-<a class="button button--primary widget-button" href={url}>
-  {label}
-</a>
-);
-
-<Button label="Text" url="#text"/>
-<Button label="TextInput" url="#textinput"/>
-<Button label="Image" url="#image"/>
-<Button label="Card" url="#card"/>
-<Button label="SolidColor" url="#solidcolor"/>
-<Button label="Progress" url="#progress"/>
-<Button label="Spinner" url="#spinner"/>
-<Button label="VerticalScroll" url="#verticalscroll"/>
-<Button label="HorizontalScroll" url="#horizontalscroll"/>
-<Button label="Recycler" url="#recycler"/>
+Litho provides a number of built-in components. You can find the full list of components and APIs within the [javadocs for the com.facebook.litho.widget package](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html).  This page covers the most basic built-in widgets.
 
 ## Text
 
-This is the most basic Litho component to show simple text. It's the equivalent of an Android `TextView` within Litho.
+This is the most basic Litho component to show simple text: it's the equivalent of an Android `TextView` within Litho.
 
-##### Required Props
-- `CharSequence text`: Text to display.
+### Required Props
 
-#### Usage
-`Text` has numerous optional props you can use to style your text, same as `TextView` since both use `android.text.Layout` under the hood. A full list of them is available in the [javadocs](pathname:///javadoc/com/facebook/litho/widget/Text.html).
-Most props directly accept resources ids too.
+* `CharSequence text` - text to display.
+
+### Usage
+
+`Text` has numerous optional props you can use to style your text, just as with `TextView` since both use `android.text.Layout` under the hood.
+
+A full list of the optional props is available in the [javadocs](pathname:///javadoc/com/facebook/litho/widget/Text.html).
+
+Most props directly accept resources ids too:
 
 ```java
 final Component component =
@@ -61,19 +31,21 @@ final Component component =
         .build()
  ```
 
-
 ## TextInput
 
- Component that renders an editable text input using an Android `EditText`.
+Component that renders an editable text input using an Android `EditText`.
 
-##### Required Props
-- None.
+### Required Props
 
-#### Usage
-Because this component is backed by Android's `EditText`, many native capabilities are applicable!
-- Use an `android.text.InputFilter ` to set a text length limit or modify text input.
-- Change the input representation by passing an `android.text.InputType` constants.
-- For performance reasons, avoid re-creating the Component with different props to change its configuration. You can instead use Event triggers `OnTrigger` to update text, request view focus or set selection. e.g. `TextInput.setText(c, "myTextInputKey", "myText")`.
+* None.
+
+### Usage
+
+As this component is backed by Android's `EditText`, many native capabilities are applicable:
+
+* Use an `android.text.InputFilter ` to set a text length limit or modify text input.
+* Change the input representation by passing an `android.text.InputType` constant.
+* For performance reasons, avoid re-creating the Component with different props to change its configuration. Instead, you can use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
 
 ```java
 private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
@@ -91,12 +63,14 @@ Component component =
 
 ## Image
 
-A component that is able to display drawable resources.
+A component that displays a drawable.
 
-##### Required Props
-- `Drawable drawable`: Drawable to display.
+### Required Props
 
-#### Usage
+* `Drawable drawable` - drawable to display.
+
+### Usage
+
 ```java
 Component component =
     Image.create(c)
@@ -104,17 +78,17 @@ Component component =
         .scaleType(ImageView.ScaleType.CENTER_CROP)
         .build()
 ```
-
-
 ## Card
 
 The Litho equivalent of an Android `CardView`. `Card` applies borders with shadows/elevation to a given component.
-If your card is rendered on top of a dynamically colored background which cannot be "faked" using the `Card` component, use the less performant prop `transparencyEnabled(true)`.
+If your card is rendered on top of a dynamically coloured background that cannot be 'faked' using the `Card` component, use the less performant prop `transparencyEnabled(true)`.
 
-##### Required Props
-- `Component content`: The component to decorate.
+### Required Props
 
-#### Usage
+* `Component content` - the component to decorate.
+
+### Usage
+
 ```java
 Component component =
 	Card.create(c)
@@ -124,15 +98,16 @@ Component component =
         .build()
 ```
 
-
 ## SolidColor
 
-A simple Component to render solid color.
+A simple Component to render solid colour.
 
-##### Required Props
-- `int color`: Color to display.
+### Required Props
 
-#### Usage
+* `int color` - colour to display.
+
+### Usage
+
 ```java
 Component component =
     SolidColor.create(c)
@@ -141,13 +116,13 @@ Component component =
         .build()
 ```
 
-
 ## Progress
 
 Renders an infinitely spinning progress bar backed by the Android's `ProgressBar`.
 
-##### Required Props
-- None.
+### Required Props
+
+* None.
 
 #### Usage
 ```java
@@ -166,7 +141,8 @@ A simple spinner (dropdown) component. Derived from the standard Android `Spinne
 - `List<String> options`: List of possible options to select from.
 - `String selectedOption`: Currently selected option.
 
-#### Usage
+### Usage
+
 ```java
 List<String> myOptions = ...
 Component component =
@@ -176,15 +152,16 @@ Component component =
         .build()
 ```
 
-
 ## VerticalScroll
 
-Component that wraps another component, allowing it to be vertically scrollable. It's analogous to Android's `ScrollView`.
+A Component that wraps another component, allowing it to be vertically scrollable. It's analogous to Android's `ScrollView`.
 
-##### Required Props
-- `Component childComponent`: Component to vertically scroll.
+### Required Props
 
-#### Usage
+* `Component childComponent` - a component to vertically scroll.
+
+### Usage
+
 ```java
 Component component =
 	  VerticalScroll.create(c)
@@ -194,16 +171,16 @@ Component component =
         .build()
 ```
 
-
 ## HorizontalScroll
 
-Component that wraps another component, allowing it to be horizontally scrollable. It's
-analogous to Android's `HorizontalScrollView`.
+Component that wraps another component, allowing it to be horizontally scrollable. It's analogous to Android's `HorizontalScrollView`.
 
-##### Required Props
-- `Component contentProps`: Component to horizontally scroll.
+### Required Props
 
-#### Usage
+* `Component contentProps` - a Component to horizontally scroll.
+
+### Usage
+
 ```java
 Component component =
 	  HorizontalScroll.create(c)
@@ -211,8 +188,8 @@ Component component =
         .build()
 ```
 
-
 ## Recycler
 
-`Recycler` is the equivalent of Android's `RecyclerView`. We suggest you to use [Sections](/docs/sections/start) for efficient lists rendering, which is using `Recycler` under the hood.
-However, if you really want to use `Recycler` directly, we have an [advanced guide dedicated to it](/docs/sections/recycler-collection-component).
+`Recycler` is the equivalent of Android's `RecyclerView`. It's recommended that you use [Sections](../sections/start.mdx) for efficient list rendering, which uses `Recycler` under the hood.
+
+If you  want to use `Recycler` directly, see the [Adding and adapting the RecyclerCollection to your app](../sections/recycler-collection-component.md) page of the litho documentation.
