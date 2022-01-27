@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.WorkingRangeContainer.RangeTuple;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.Map;
 import org.junit.Before;
@@ -54,9 +53,7 @@ public class WorkingRangeContainerTest {
 
     mWorkingRange = new TestWorkingRange();
     mComponent = mock(Component.class);
-    Whitebox.setInternalState(mComponent, "mGlobalKey", "component");
     mComponent2 = mock(Component.class);
-    Whitebox.setInternalState(mComponent2, "mGlobalKey", "component2");
 
     mScopedComponentInfo = mock(ScopedComponentInfo.class);
     mScopedComponentInfo2 = mock(ScopedComponentInfo.class);

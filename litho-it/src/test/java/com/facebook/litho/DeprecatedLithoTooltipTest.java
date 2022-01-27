@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -74,8 +73,6 @@ public class DeprecatedLithoTooltipTest {
         };
 
     mComponentTree = ComponentTree.create(mContext, mComponent).build();
-
-    Whitebox.setInternalState(mComponent, "mGlobalKey", mComponent.getKey());
 
     mContext = ComponentContext.withComponentTree(mContext, mComponentTree);
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(mContext);

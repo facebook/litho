@@ -2547,7 +2547,6 @@ public class LayoutStateCalculateTest {
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
-    component.setGlobalKey("global_key");
 
     c = ComponentContext.withComponentScope(layoutStateContext, c, component, "global_key");
 
@@ -2569,7 +2568,6 @@ public class LayoutStateCalculateTest {
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
-    component.setGlobalKey("global_key");
 
     c = ComponentContext.withComponentScope(layoutStateContext, c, component, "global_key");
 
@@ -2591,7 +2589,6 @@ public class LayoutStateCalculateTest {
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
-    component.setGlobalKey("global_key");
 
     c = ComponentContext.withComponentScope(layoutStateContext, c, component, "global_key");
 

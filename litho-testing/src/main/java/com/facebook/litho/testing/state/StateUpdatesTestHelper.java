@@ -178,7 +178,6 @@ public final class StateUpdatesTestHelper {
     final LithoView lithoView = new LithoView(context);
     ComponentTestHelper.mountComponent(lithoView, componentTree);
 
-    Whitebox.setInternalState(component, "mGlobalKey", "$bogusKeyForTest");
     Whitebox.setInternalState(component, "mId", 457282882);
 
     Whitebox.setInternalState(context, "mGlobalKey", "$bogusKeyForTest");

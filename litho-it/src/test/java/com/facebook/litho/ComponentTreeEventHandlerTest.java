@@ -20,7 +20,6 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +45,6 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(
             mLayoutStateContext, mContext, component, componentGlobalKey);
-
-    Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
@@ -86,7 +83,6 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(
             mLayoutStateContext, mContext, component, componentGlobalKey1);
-    Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey1);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
@@ -99,7 +95,6 @@ public class ComponentTreeEventHandlerTest {
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
 
-    Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey2);
     ComponentContext scopedContext2 =
         ComponentContext.withComponentScope(
             mLayoutStateContext, mContext, component, componentGlobalKey2);

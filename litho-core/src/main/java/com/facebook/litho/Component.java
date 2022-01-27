@@ -136,7 +136,6 @@ public abstract class Component
 
   private int mId = sIdGenerator.getAndIncrement();
   private @Nullable String mOwnerGlobalKey;
-  private @Nullable String mGlobalKey;
   private @Nullable String mKey;
   private boolean mHasManualKey;
   private @Nullable Handle mHandle;
@@ -949,9 +948,7 @@ public abstract class Component
   public Component makeShallowCopy() {
     try {
       final Component component = (Component) super.clone();
-
       component.mLayoutVersionGenerator = new AtomicBoolean();
-      component.mGlobalKey = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -1159,13 +1156,6 @@ public abstract class Component
     return scopedContext.getGlobalKey();
   }
 
-  /** Set a key for this component that is unique within its tree. */
-  // thread-safe because the one write is before all the reads
-  @ThreadSafe(enableChecks = false)
-  final void setGlobalKey(String key) {
-    mGlobalKey = key;
-  }
-
   /** @return a handle that is unique to this component. */
   @Nullable
   public final Handle getHandle() {
@@ -1333,7 +1323,6 @@ public abstract class Component
       globalKey =
           ComponentKeyUtils.generateGlobalKey(
               parentContext, parentContext.getComponentScope(), this);
-      setGlobalKey(globalKey);
     }
 
     final ComponentContext scopedContext =
