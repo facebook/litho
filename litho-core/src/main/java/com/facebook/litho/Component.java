@@ -144,9 +144,6 @@ public abstract class Component
   @GuardedBy("this")
   private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
 
-  @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable ComponentContext mScopedContext;
-
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   private @Nullable CommonProps mCommonProps;
   private @Nullable SparseArray<DynamicValue<?>> mCommonDynamicProps;
@@ -914,16 +911,6 @@ public abstract class Component
     return this;
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  @Nullable
-  protected ComponentContext getScopedContext() {
-    return mScopedContext;
-  }
-
-  public final void setScopedContext(ComponentContext scopedContext) {
-    mScopedContext = scopedContext;
-  }
-
   public String getSimpleName() {
     return getClass().getSimpleName();
   }
@@ -932,17 +919,6 @@ public abstract class Component
     return mCommonProps != null
         && mCommonProps.getNullableNodeInfo() != null
         && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
-  }
-
-  @Nullable
-  public <T> T getMetaData(Class<T> key) {
-    if (mScopedContext == null) {
-      return null;
-    }
-    if (mScopedContext.getTreeProps() == null) {
-      return null;
-    }
-    return mScopedContext.getTreeProps().get(key);
   }
 
   /**
@@ -976,7 +952,6 @@ public abstract class Component
 
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mGlobalKey = null;
-      component.mScopedContext = null;
 
       return component;
     } catch (CloneNotSupportedException e) {

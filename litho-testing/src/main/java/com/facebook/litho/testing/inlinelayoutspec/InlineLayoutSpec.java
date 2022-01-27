@@ -46,7 +46,6 @@ public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
 
   protected InlineLayoutSpec(ComponentContext c) {
     super("InlineLayout");
-    setScopedContext(c);
   }
 
   @Override

@@ -57,8 +57,6 @@ public class WorkingRangeContainerTest {
     Whitebox.setInternalState(mComponent, "mGlobalKey", "component");
     mComponent2 = mock(Component.class);
     Whitebox.setInternalState(mComponent2, "mGlobalKey", "component2");
-    when(mComponent.getScopedContext()).thenReturn(mComponentContext);
-    when(mComponent2.getScopedContext()).thenReturn(mComponentContext);
 
     mScopedComponentInfo = mock(ScopedComponentInfo.class);
     mScopedComponentInfo2 = mock(ScopedComponentInfo.class);

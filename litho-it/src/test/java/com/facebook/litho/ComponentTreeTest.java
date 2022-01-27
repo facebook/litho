@@ -210,7 +210,7 @@ public class ComponentTreeTest {
     ComponentContext c = componentTree.getContext();
     assertThat(c).isNotEqualTo(scopedContext);
     Assert.assertNull(c.getComponentScope());
-    assertThat(layoutState.getRootComponent().getScopedContext()).isNotEqualTo(scopedContext);
+    assertThat(layoutState.getLayoutRoot().getContext()).isNotEqualTo(scopedContext);
   }
 
   private static class MeasureListener implements ComponentTree.MeasureListener {

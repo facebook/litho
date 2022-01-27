@@ -153,8 +153,6 @@ abstract class KComponent : Component() {
 
   final override fun getMountType() = super.getMountType()
 
-  final override fun getScopedContext(): ComponentContext? = super.getScopedContext()
-
   final override fun getSimpleName(): String = super.getSimpleName()
 
   final override fun getTreePropsForChildren(c: ComponentContext, treeProps: TreeProps?) =

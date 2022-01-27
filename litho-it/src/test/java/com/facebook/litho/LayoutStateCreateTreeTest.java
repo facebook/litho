@@ -456,8 +456,6 @@ public class LayoutStateCreateTreeTest {
             .stateListAnimator(stateListAnimator)
             .build();
 
-    component.setScopedContext(mComponentContext);
-
     final LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     final NodeInfo nodeInfo = node.getOrCreateNodeInfo();
     final LayoutProps output = spy(LayoutProps.class);
