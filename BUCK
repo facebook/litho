@@ -63,6 +63,19 @@ litho_android_library(
 
 fb_core_android_library(
     name = "sections",
+    labels = ["supermodule:android/default/litho.core"],
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":sections_no_codegen",
+    ],
+)
+
+# Same as "sections", but without triggering the codegen
+fb_core_android_library(
+    name = "sections_no_codegen",
+    labels = ["supermodule:android/default/litho.core"],
     visibility = [
         "PUBLIC",
     ],
