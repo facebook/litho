@@ -11,22 +11,22 @@ Reconciliation is enabled by default.
 
 <FbInternalOnly>
 
-:::tip
-It has been explicitly disabled throughout fbsource because reconciliation skips some lifecycle calls which some components may have (incorrectly) come to rely on. So, please remove the usages of the following deprecated APIs in your surface before proceeding.
+:::caution
+Reconciliation has been explicitly disabled throughout fbsource because reconciliation skips some lifecycle calls that some components may have (incorrectly) come to rely on. Before proceeding, please remove the use of the following deprecated APIs in your surface.
 :::
 
 </FbInternalOnly>
 
 <OssOnly>
 
-:::tip
-Please remove the usages of the following deprecated APIs in your surface before proceeding.
+:::caution
+Before proceeding, please remove the use of the following deprecated APIs in your surface.
 :::
 
 </OssOnly>
 
 ```java
-// Remove usages of
+// Remove use of
 LithoView#create(Context, Component, boolean): LithoView
 LithoView#create(ComponentContext, Component, boolean): LithoView
 LithoView#setComponentWithoutReconciliation(Component): void
@@ -42,15 +42,14 @@ LithoView#setComponentAsync(Component): void
 <FbInternalOnly>
 
 :::info
-Please remove the usages of the prop `isReconciliationEnabled` from the following components in your surface before proceeding:
-* `FBInfiniteHScroll`
+Please remove the use of the prop `isReconciliationEnabled` from `FBInfiniteHScroll` in your surface.
 :::info
 
 </FbInternalOnly>
 
-### ComponentTree
+## ComponentTree
 
-The `ComponentTree` builder exposes an API to enable or disable reconciliation.
+The `ComponentTree` builder exposes an API to enable or disable reconciliation:
 
 ```java
 ComponentTree.create(context)
@@ -61,28 +60,26 @@ ComponentTree.create(context)
 <FbInternalOnly>
 
 Example integrations:
+
 * [Feed](https://fburl.com/diffusion/azpz7q8u)
 * [Story Viewer](https://fburl.com/diffusion/xv0puz80)
 
 </FbInternalOnly>
 
 :::note
-In this integration the config is not passed into any Sections within the component
-hierarchy. It needs to be explicitly set in the Sections (see below). There are plans to enable
-propagation over the Section boundary in future milestones.**
+In this integration, the config is not passed into any Sections within the component hierarchy. It needs to be explicitly set in the Sections (see below). There are plans to enable
+propagation over the Section boundary in future milestones.
 :::
 
-### RecyclerCollectionComponent
+## RecyclerCollectionComponent
 
-The `RecyclerBinderConfiguration` and the `RecyclerBinder` builders both expose an API to enable or
-disable reconciliation.
+The `RecyclerBinderConfiguration` and the `RecyclerBinder` builders both expose an API to enable or disable reconciliation:
 
 ```java
 RecyclerBinderConfiguration.create()
   .isReconciliationEnabled(false)
   .build();
 ```
-
 
 ```java
 new RecyclerBinder.Builder()
@@ -92,16 +89,16 @@ new RecyclerBinder.Builder()
 <FbInternalOnly>
 
 Example integrations:
+
 * [Notifications Tab](https://fburl.com/diffusion/l10jx2ys)
 * [Watch Tab](https://fburl.com/diffusion/ld30lvlm)
 * [Profile Tab](https://fburl.com/diffusion/tp4j1arg)
 
 </FbInternalOnly>
 
-### Sections
+## Sections
 
-The `ComponentRenderInfo` builder exposes an API to enable or disable reconciliation for individual
-Sections in a `GroupSectionSpec`.
+The `ComponentRenderInfo` builder exposes an API to enable or disable reconciliation for individual Sections in a `GroupSectionSpec`:
 
 ```java
 ComponentRenderInfo.create()
@@ -113,6 +110,7 @@ ComponentRenderInfo.create()
 <FbInternalOnly>
 
 Example integrations:
+
 * [PaginatedStoriesHScrollSectionSpec](https://fburl.com/diffusion/2h1npnoj)
 * [StoriesHScrollSectionSpec](https://fburl.com/diffusion/jhsnym17)
 
