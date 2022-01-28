@@ -27,7 +27,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.dp
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sections.widget.Collection.Companion.tailPagination
-import com.facebook.litho.useRef
+import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Progress
 import com.facebook.litho.widget.Text
@@ -37,18 +37,18 @@ import com.facebook.yoga.YogaAlign
 class PaginationCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    val paginatedData = useRef { PaginatedDataSource() }
-    val list = useState { paginatedData.value.next() }
+    val paginatedData = useCached { PaginatedDataSource(pageSize = 40) }
+    val list = useState { paginatedData.next() }
 
     return Collection(
         pagination =
             tailPagination(offsetBeforeTailFetch = 10) {
-              paginatedData.value.fetchDelayed { newData -> list.update { it + newData } }
+              paginatedData.fetchDelayed { newData -> list.update { it + newData } }
             },
     ) {
       list.value.forEach { child(id = it, component = Text("$it")) }
 
-      if (paginatedData.value.hasNext) {
+      if (paginatedData.hasNext) {
         child(
             Column(alignItems = YogaAlign.CENTER) {
               child(component = Progress(style = Style.height(50.dp).height(50.dp)))
@@ -60,9 +60,9 @@ class PaginationCollectionKComponent : KComponent() {
 // end_example
 
 // A paginated datasource with a simulated network delay
-class PaginatedDataSource {
-  val data = (0..150).chunked(40).iterator()
-  var isFetching = false
+class PaginatedDataSource(pageSize: Int) {
+  private val data = (0..150).chunked(pageSize).iterator()
+  private var isFetching = false
   val hasNext
     get() = data.hasNext()
 
@@ -77,6 +77,10 @@ class PaginatedDataSource {
               callback.invoke(next())
               isFetching = false
             },
-            1000)
+            simulatedNetworkDelayMs)
+  }
+
+  companion object {
+    const val simulatedNetworkDelayMs = 1000L
   }
 }
