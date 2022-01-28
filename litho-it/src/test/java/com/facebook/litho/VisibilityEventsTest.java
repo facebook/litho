@@ -21,7 +21,6 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.measureAndLayout;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
-import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -37,6 +36,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentWrapperTester;
 import com.facebook.litho.widget.HorizontalScroll;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
@@ -1616,86 +1616,89 @@ public class VisibilityEventsTest {
 
   @Test
   public void testMultipleVisibilityEventsOnSameNode() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content, 1);
-    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content, 2);
-    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content, 3);
-    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content, 4);
-    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content, 5);
-    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content, 6);
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler1 = new EventHandler<>(content, 7);
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler2 = new EventHandler<>(content, 8);
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler3 = new EventHandler<>(content, 9);
-    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler1 =
-        new EventHandler<>(content, 10);
-    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler2 =
-        new EventHandler<>(content, 11);
-    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler3 =
-        new EventHandler<>(content, 12);
-    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEventHandler1 =
-        new EventHandler<>(content, 13);
-    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEventHandler2 =
-        new EventHandler<>(content, 14);
-    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEventHandler3 =
-        new EventHandler<>(content, 15);
+    final ComponentContext context = mLegacyLithoViewRule.getContext();
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker3 = new LifecycleTracker();
 
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(
-                        Wrapper.create(mContext)
-                            .delegate(
-                                Wrapper.create(mContext)
-                                    .delegate(content)
-                                    .visibleHandler(visibleEventHandler1)
-                                    .invisibleHandler(invisibleEventHandler1)
-                                    .focusedHandler(focusedEventHandler1)
-                                    .unfocusedHandler(unfocusedEventHandler1)
-                                    .fullImpressionHandler(fullImpressionVisibleEventHandler1)
-                                    .widthPx(10)
-                                    .heightPx(5)
-                                    .build())
-                            .visibleHandler(visibleEventHandler2)
-                            .invisibleHandler(invisibleEventHandler2)
-                            .focusedHandler(focusedEventHandler2)
-                            .unfocusedHandler(unfocusedEventHandler2)
-                            .fullImpressionHandler(fullImpressionVisibleEventHandler2)
-                            .build())
-                    .visibleHandler(visibleEventHandler3)
-                    .invisibleHandler(invisibleEventHandler3)
-                    .focusedHandler(focusedEventHandler3)
-                    .unfocusedHandler(unfocusedEventHandler3)
-                    .fullImpressionHandler(fullImpressionVisibleEventHandler3))
+    final ComponentWrapperTester content1 =
+        ComponentWrapperTester.create(context)
+            .content(Column.create(context).build())
+            .lifecycleTracker(lifecycleTracker1)
+            .build();
+    final ComponentWrapperTester content2 =
+        ComponentWrapperTester.create(context)
+            .content(content1)
+            .lifecycleTracker(lifecycleTracker2)
+            .build();
+    final ComponentWrapperTester content3 =
+        ComponentWrapperTester.create(context)
+            .content(content2)
+            .lifecycleTracker(lifecycleTracker3)
             .build();
 
     mLegacyLithoViewRule
         .useComponentTree(ComponentTree.create(mContext).build())
-        .setRoot(root)
+        .setRoot(content3)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler1);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler2);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler3);
-    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEventHandler1);
-    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEventHandler2);
-    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEventHandler3);
+    assertThat(lifecycleTracker1.getSteps())
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(lifecycleTracker2.getSteps())
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(lifecycleTracker3.getSteps())
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
+    assertThat(lifecycleTracker1.getSteps())
+        .describedAs("Focus event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(lifecycleTracker2.getSteps())
+        .describedAs("Focus event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(lifecycleTracker3.getSteps())
+        .describedAs("Focus event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
 
-    unbindComponent(mLithoView);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
-    assertThat(content.getDispatchedEventHandlers()).contains(unfocusedEventHandler1);
-    assertThat(content.getDispatchedEventHandlers()).contains(unfocusedEventHandler2);
-    assertThat(content.getDispatchedEventHandlers()).contains(unfocusedEventHandler3);
+    assertThat(lifecycleTracker1.getSteps())
+        .describedAs("FullImpressionVisible event should be dispatched")
+        .contains(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT);
+    assertThat(lifecycleTracker2.getSteps())
+        .describedAs("FullImpressionVisible event should be dispatched")
+        .contains(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT);
+    assertThat(lifecycleTracker3.getSteps())
+        .describedAs("FullImpressionVisible event should be dispatched")
+        .contains(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT);
+
+    lifecycleTracker1.reset();
+    lifecycleTracker2.reset();
+    lifecycleTracker3.reset();
+    mLegacyLithoViewRule.getLithoView().unbind();
+
+    assertThat(lifecycleTracker1.getSteps())
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(lifecycleTracker2.getSteps())
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(lifecycleTracker3.getSteps())
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+
+    assertThat(lifecycleTracker1.getSteps())
+        .describedAs("Unfocus event should be dispatched")
+        .contains(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(lifecycleTracker2.getSteps())
+        .describedAs("Unfocus event should be dispatched")
+        .contains(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(lifecycleTracker3.getSteps())
+        .describedAs("Unfocus event should be dispatched")
+        .contains(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
   }
 
   @Test

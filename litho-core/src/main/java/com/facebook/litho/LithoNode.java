@@ -1142,7 +1142,12 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     if (newHandler == null) {
       return currentHandler;
     }
-    return new DelegatingEventHandler<>(currentHandler, newHandler);
+    if (currentHandler instanceof DelegatingEventHandler) {
+      DelegatingEventHandler<T> delegatingEventHandler = (DelegatingEventHandler<T>) currentHandler;
+      return delegatingEventHandler.addEventHandler(newHandler);
+    } else {
+      return new DelegatingEventHandler<>(currentHandler, newHandler);
+    }
   }
 
   /**
