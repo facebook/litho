@@ -20,7 +20,7 @@ import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateLayoutOu
 import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
 import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
 import static java.lang.Long.toBinaryString;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Rect;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;

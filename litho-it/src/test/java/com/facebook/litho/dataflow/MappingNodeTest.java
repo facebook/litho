@@ -19,7 +19,7 @@ package com.facebook.litho.dataflow;
 import static com.facebook.litho.dataflow.GraphBinding.create;
 import static com.facebook.litho.dataflow.MappingNode.END_INPUT;
 import static com.facebook.litho.dataflow.MappingNode.INITIAL_INPUT;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;

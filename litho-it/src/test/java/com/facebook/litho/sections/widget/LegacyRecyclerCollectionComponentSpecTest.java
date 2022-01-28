@@ -34,7 +34,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,7 +82,7 @@ public class LegacyRecyclerCollectionComponentSpecTest {
 
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
     assertThat(childView).isNotNull();
-    Java6Assertions.assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
+    Assertions.assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
   }
 
   @Test
@@ -105,7 +105,7 @@ public class LegacyRecyclerCollectionComponentSpecTest {
 
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
     assertThat(childView).isNotNull();
-    Java6Assertions.assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
+    Assertions.assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
   }
 
   @Nullable

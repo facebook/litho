@@ -16,7 +16,7 @@
 
 package com.facebook.litho.sections;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 import static org.mockito.ArgumentMatchers.anyList;

@@ -19,7 +19,7 @@ package com.facebook.litho;
 import static android.os.Looper.getMainLooper;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;

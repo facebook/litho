@@ -25,7 +25,7 @@ import static com.facebook.litho.testing.sections.TestTarget.MOVE;
 import static com.facebook.litho.testing.sections.TestTarget.UPDATE;
 import static com.facebook.litho.testing.sections.TestTarget.UPDATE_RANGE;
 import static junit.framework.Assert.assertEquals;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;

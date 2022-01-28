@@ -25,7 +25,7 @@ import static com.facebook.litho.LayoutOutput.isDuplicateParentState;
 import static com.facebook.litho.LayoutState.calculate;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LegacyLithoViewRule;

@@ -19,7 +19,7 @@ package com.facebook.litho.sections.widget;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import androidx.recyclerview.widget.RecyclerView;

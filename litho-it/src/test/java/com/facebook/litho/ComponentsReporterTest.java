@@ -19,7 +19,7 @@ package com.facebook.litho;
 import static com.facebook.rendercore.LogLevel.ERROR;
 import static com.facebook.rendercore.LogLevel.FATAL;
 import static com.facebook.rendercore.LogLevel.WARNING;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 import android.util.Pair;

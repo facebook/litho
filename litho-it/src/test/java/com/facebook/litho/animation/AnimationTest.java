@@ -18,7 +18,7 @@ package com.facebook.litho.animation;
 
 import static com.facebook.litho.testing.TestLithoViewKt.DEFAULT_HEIGHT_SPEC;
 import static com.facebook.litho.testing.TestLithoViewKt.DEFAULT_WIDTH_SPEC;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

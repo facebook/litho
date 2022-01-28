@@ -18,7 +18,7 @@ package com.facebook.litho.dataflow;
 
 import static com.facebook.litho.dataflow.GraphBinding.create;
 import static com.facebook.litho.dataflow.MockTimingSource.FRAME_TIME_MS;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;

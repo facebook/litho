@@ -21,7 +21,7 @@ import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
 import static android.view.MotionEvent.obtain;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.SystemClock;
 import android.view.MotionEvent;

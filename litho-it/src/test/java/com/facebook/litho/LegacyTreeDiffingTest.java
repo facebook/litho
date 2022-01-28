@@ -25,7 +25,7 @@ import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
 import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;

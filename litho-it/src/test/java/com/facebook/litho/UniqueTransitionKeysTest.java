@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.View;
 import com.facebook.litho.testing.LegacyLithoViewRule;

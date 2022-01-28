@@ -20,7 +20,7 @@ import static com.facebook.litho.LifecycleStep.ON_BIND;
 import static com.facebook.litho.LifecycleStep.ON_MOUNT;
 import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;

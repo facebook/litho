@@ -25,7 +25,7 @@ import static com.facebook.rendercore.incrementalmount.IncrementalMountRenderCor
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Rect;
 import com.facebook.litho.testing.LegacyLithoViewRule;

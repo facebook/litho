@@ -30,8 +30,8 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRenderSpec
 import com.facebook.litho.widget.TestWrapperComponent
 import com.facebook.litho.widget.Text
 import java.util.ArrayList
-import org.assertj.core.api.Java6Assertions
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -368,8 +368,7 @@ class StateUpdatesWithReconciliationTest() {
     lithoViewRule.setRoot(updated)
 
     // If the new component resolves then the root component (column) was not reconciled.
-    Java6Assertions.assertThat(LifecycleStep.getSteps(info))
-        .contains(LifecycleStep.ON_CREATE_LAYOUT)
+    Assertions.assertThat(LifecycleStep.getSteps(info)).contains(LifecycleStep.ON_CREATE_LAYOUT)
   }
 
   @Test

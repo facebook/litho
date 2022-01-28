@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import org.junit.Test;

@@ -18,7 +18,7 @@ package com.facebook.litho.widget;
 
 import static androidx.core.text.TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;

@@ -17,7 +17,7 @@
 package com.facebook.litho.dataflow;
 
 import static com.facebook.litho.dataflow.GraphBinding.create;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.animation.Interpolator;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;

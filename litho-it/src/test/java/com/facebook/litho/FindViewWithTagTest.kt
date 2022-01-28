@@ -26,7 +26,7 @@ import com.facebook.litho.view.wrapInView
 import com.facebook.litho.visibility.onVisible
 import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicReference
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException

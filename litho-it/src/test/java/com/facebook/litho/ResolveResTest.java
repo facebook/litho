@@ -21,7 +21,7 @@ import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.yoga.YogaEdge.LEFT;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.testing.LegacyLithoViewRule;

@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;

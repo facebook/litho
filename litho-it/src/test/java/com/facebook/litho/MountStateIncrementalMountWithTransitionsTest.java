@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.SizeSpec.EXACTLY;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
 import com.facebook.litho.animation.AnimatedProperties;

@@ -17,7 +17,7 @@
 package com.facebook.litho.sections.common;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.sections.Section;

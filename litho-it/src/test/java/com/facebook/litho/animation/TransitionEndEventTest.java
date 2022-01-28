@@ -16,7 +16,7 @@
 
 package com.facebook.litho.animation;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;

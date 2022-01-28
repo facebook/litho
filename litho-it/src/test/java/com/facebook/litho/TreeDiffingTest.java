@@ -30,7 +30,7 @@ import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

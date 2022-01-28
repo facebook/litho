@@ -24,7 +24,7 @@ import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_TREE_PROP;
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.View;
 import com.facebook.litho.testing.LegacyLithoViewRule;

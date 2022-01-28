@@ -19,7 +19,7 @@ package com.facebook.litho.widget;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static com.facebook.litho.widget.RecyclerBinderTest.*;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import android.view.ViewGroup;

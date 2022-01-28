@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.assertj;
 
 import static com.facebook.litho.testing.assertj.CharSequenceContains.containsCharSequence;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;

@@ -20,7 +20,7 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaEdge.ALL;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestLayoutComponent;

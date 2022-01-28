@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.viewtree;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.app.Activity;
 import android.view.View;

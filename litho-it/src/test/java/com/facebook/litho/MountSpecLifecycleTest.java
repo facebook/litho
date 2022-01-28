@@ -21,7 +21,7 @@ import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;

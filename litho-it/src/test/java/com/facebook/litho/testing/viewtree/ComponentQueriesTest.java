@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.viewtree;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;

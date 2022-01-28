@@ -27,7 +27,7 @@ import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.litho.it.R.drawable.test_bg;
 import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.yoga.YogaEdge.LEFT;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.drawable.Drawable;

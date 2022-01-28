@@ -29,7 +29,7 @@ import static com.facebook.litho.NodeInfo.SELECTED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.SELECTED_SET_TRUE;
 import static com.facebook.litho.NodeInfo.SELECTED_UNSET;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.util.SparseArray;
 import com.facebook.litho.testing.Whitebox;

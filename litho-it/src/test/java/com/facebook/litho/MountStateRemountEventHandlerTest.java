@@ -23,7 +23,7 @@ import static com.facebook.litho.MountState.getComponentFocusChangeListener;
 import static com.facebook.litho.MountState.getComponentLongClickListener;
 import static com.facebook.litho.MountState.getComponentTouchListener;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;

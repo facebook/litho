@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.LifecycleStep.getSteps;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;

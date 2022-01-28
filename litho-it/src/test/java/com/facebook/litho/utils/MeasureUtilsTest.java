@@ -25,7 +25,7 @@ import static com.facebook.litho.utils.MeasureUtils.getViewMeasureSpec;
 import static com.facebook.litho.utils.MeasureUtils.measureWithAspectRatio;
 import static com.facebook.litho.utils.MeasureUtils.measureWithDesiredPx;
 import static com.facebook.litho.utils.MeasureUtils.measureWithEqualDimens;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.View.MeasureSpec;
 import com.facebook.litho.Size;

@@ -18,7 +18,7 @@ package com.facebook.litho.sections;
 
 import static com.facebook.litho.sections.Change.MOVE;
 import static com.facebook.litho.sections.ChangeSet.acquireChangeSet;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;

@@ -20,7 +20,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.ComponentsPools.acquireMountContent;
 import static com.facebook.litho.ComponentsPools.maybePreallocateContent;
 import static com.facebook.litho.ComponentsPools.release;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.app.Activity;
 import android.content.Context;
