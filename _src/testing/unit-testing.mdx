@@ -5,22 +5,22 @@ title: Getting Started
 
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-In order to use any of the testing utilities please include the `litho-testing` package in the
-build. Add the following lines to the `dependencies` block in the `build.gradle` file:
+:::note
+To use any of the testing utilities, include the `litho-testing` package in your build.
+:::
+
+Add the following lines to the `dependencies` block in the `build.gradle` file:
 
 <VersionedCodeBlock language="groovy" code={`
 testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
 `} />
 
-Litho's testing APIs are exposed through fluid AssertJ methods. They are available as:
+Litho's testing APIs are exposed through fluid AssertJ methods and are available as:
 
-*  [ComponentAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentAssert.html)
-for assertions that are run against either Component builders or Components.
-* [LithoViewAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewAssert.html)
-for assertions against mounted UI hierarchies.
+*  [ComponentAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentAssert.html) for assertions that are run against either Component builders or Components.
+* [LithoViewAssert](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewAssert.html) for assertions against mounted UI hierarchies.
 
-For convenience, [LithoAssertions.assertThat](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoAssertions.html)
-can be statically imported. It hosts all the APIs of `ComponentAssert`,`LithoViewAssert`and `ListAssert<Component>`.
+For convenience, [LithoAssertions.assertThat](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoAssertions.html) can be statically imported (it hosts all the APIs of `ComponentAssert`,`LithoViewAssert`, and `ListAssert<Component>`):
 
 ```java
 import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
@@ -28,14 +28,13 @@ import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertTha
 
 ## Example
 
-To demonstrate the usage of these APIs consider the following component that displays a like icon and
-a short description.
+To demonstrate how the APIs are used, consider the following component that displays a 'like' icon and a short description:
 
 ```java
 /**
  * Displays who liked the post.
  *
- * 1 - 3 likers => Comma separated names (e.g. Jane, Mike, Doug)
+ * 1 - 3 likers => Comma separated names (example: Jane, Mike, Doug)
  * > 3 likers => Comma separated number denoting the like count
  */
 @LayoutSpec
@@ -65,14 +64,13 @@ class LikersComponentSpec {
 }
 ```
 
-## Setup
+### Setup
 
 To verify the rendering of the text and the icon.
 
 * Create a new test class; `LikersComponentTest`.
 * Add `@RunWith(RobolectricTestRunner.class)` to the top of the test class.
-* Add a `LithoViewRule` JUnit [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) which
-sets up overrides for [Styleables](https://developer.android.com/reference/android/R.styleable.html)
+* Add a `LithoViewRule` JUnit [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) that sets up overrides for [Styleables](https://developer.android.com/reference/android/R.styleable.html)
 and exposes some useful APIs.
 
 The test class should look like the following:
@@ -86,10 +84,9 @@ public class LikersComponentTest {
 }
 ```
 
-## Testing component rendering
+### Testing Component Rendering
 
-`LegacyLithoAssertions` exposes AssertJ-style APIs to assert what get rendered by a component. These APIs
-will generally layout, mount and render the component before testing the assertions.
+`LegacyLithoAssertions` exposes AssertJ-style APIs to assert what gets rendered by a component. These APIs will generally layout, mount, and render the component before testing the assertions:#
 
 ```java
 @RunWith(RobolectricTestRunner.class)
@@ -125,13 +122,13 @@ public class LikersComponentTest {
 }
 ```
 
-## Additional assertions
+## Additional Assertions
 
-There are several more assertions that can be tested using LegacyLithoAssertions. To see the entire
-APIs please checkout its [JavaDoc here](pathname:///javadoc/com/facebook/litho/testing/assertj/LegacyLithoAssertions.html).
-These APIs test assertions on the view heirarchy created by the mounted Component. So asserting
-the presence of a Drawable in a Component will traverse the entire view hierarchy rendered by
-the Component. Following are some of the assertions provided by LegacyLithoAssertions:
+There are several additional assertions that can be tested using LegacyLithoAssertions. To see the entire scope of APIs, refer to the JavaDoc [LithoAssertions](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoAssertions.html).
+
+Those APIs test assertions on the view hierarchy that's created by the mounted Component. So, asserting the presence of a Drawable in a Component will traverse the entire view hierarchy rendered by the Component.
+
+Following are some of the assertions provided by LegacyLithoAssertions:
 
 * `LegacyLithoAssertions#hasVisibleTextMatching()`
 * `LegacyLithoAssertions#doesNotHaveVisibleText()`
@@ -141,27 +138,20 @@ the Component. Following are some of the assertions provided by LegacyLithoAsser
 * `LegacyLithoAssertions#willNotRender()`
 
 :::info
-When running Litho unit tests, be aware that the native library for Yoga must be loaded
-which can pose some challenges depending on your build system of choice. With Gradle and
-Robolectric, for instance, you may run into issues as Robolectric spins up new
-[ClassLoaders](https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html)
-for every test suite with a different configuration. The same goes for PowerMock, which
-prepares the ClassLoaders on a per-suite basis and leaves them in a non-reusable state.
+When running Litho unit tests, be aware that the native library for Yoga must be loaded, which can pose some challenges depending on your build system of choice. With Gradle and
+Robolectric, for instance, you may run into issues as Robolectric spins up new [ClassLoaders](https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html)
+for every test suite with a different configuration. The same applies to PowerMock, which prepares the ClassLoaders on a per-suite basis and leaves them in a non-reusable state.
 
-The JVM has two important limitations that are relevant to this:
+The JVM has two important and relevant limitations:
 
 1. A shared library can only ever be loaded once per process.
 2. `ClassLoader`s do not share information about the libraries loaded.
 
-Because of that, using multiple ClassLoaders for test runs is highly problematic
-as every instance will attempt to load Yoga and every but the first will fail with
-`libyoga.so already loaded in another classloader` exception.
+Due to these limitations, using multiple ClassLoaders for test runs is highly problematic as every instance will attempt to load Yoga.  All, except the first, calls will fail with the `libyoga.so already loaded in another classloader` exception.
 
-The only way to avoid this is by either preventing the use of multiple ClassLoaders
-or forking the process whenever a new ClassLoader is necessary.
+The only way to avoid the limitations is by preventing the use of multiple ClassLoaders or forking the process whenever a new ClassLoader is necessary.
 
-Gradle allows you to limit the number of test classes a process can execute before
-it is discarded. If you set the number to one, we avoid the ClassLoader reuse:
+Gradle allows you to limit the number of test classes a process can execute before it is discarded. If you set the number to one, you avoid the ClassLoader reuse:
 
 ```groovy
 android {
@@ -176,13 +166,9 @@ android {
 }
 ```
 
-With Buck, this behavior can be achieved by assigning test targets separate names
-as those will result in a parallel process being spun up. Alternatively, you can
-set the `fork_mode` to `per_test` as described
-[here](https://buckbuild.com/rule/java_test.html#fork_mode).
+With Buck, this behaviour can be achieved by assigning test targets separate names, which results in a parallel process being spun up. Alternatively, you can
+set the `fork_mode` to `per_test`, as described in the [java_test](https://buckbuild.com/rule/java_test.html#fork_mode) page of the Buck website.
 
-Ultimately, depending on your build system and the existing constraints of your
-project, you may need to adjust the way in which your test runner utilizes
-ClassLoaders. This is, however, not a problem unique to Litho but an unfortunate
-consequence of mixing native and Java code in Android projects.
+Ultimately, depending on your build system and the existing constraints of your project, you may need to adjust the way in which your test runner utilises
+ClassLoaders. This is not a problem unique to Litho, it's an unfortunate consequence of mixing native and Java code in Android projects.
 :::
