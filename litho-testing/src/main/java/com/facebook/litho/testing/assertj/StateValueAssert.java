@@ -18,7 +18,7 @@ package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.StateValue;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.Assertions;
 
 /**
  * Assertion methods for {@link StateValue<T>}.
@@ -43,7 +43,7 @@ public class StateValueAssert<T> extends AbstractAssert<StateValueAssert<T>, Sta
 
   /** Equivalent to calling <code>assertThat(value.get()).isEqualTo(value)</code>. */
   public StateValueAssert<T> valueEqualTo(T value) {
-    Java6Assertions.assertThat(actual.get())
+    Assertions.assertThat(actual.get())
         .overridingErrorMessage(
             "Expected state value to equal to <%s>, but was <%s>.", value, actual.get())
         .isEqualTo(value);

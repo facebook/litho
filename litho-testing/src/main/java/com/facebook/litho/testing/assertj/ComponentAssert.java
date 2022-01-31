@@ -30,7 +30,7 @@ import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.List;
 import kotlin.reflect.KProperty1;
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.CheckReturnValue;
@@ -118,7 +118,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   public ComponentAssert hasNoSubComponents() {
     final List<SubComponent> subComponents =
         ComponentTestHelper.getSubComponents(mComponentContext, actual);
-    Java6Assertions.assertThat(subComponents)
+    Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Expected Component not to have any sub " + "components, but found %d.",
             subComponents.size())
@@ -136,7 +136,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   public ComponentAssert containsSubComponent(SubComponent subComponent) {
     final List<SubComponent> subComponents =
         ComponentTestHelper.getSubComponents(mComponentContext, actual);
-    Java6Assertions.assertThat(subComponents)
+    Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Expected to find <%s> as sub component of <%s>, " + "but couldn't find it in %s.",
             subComponent, actual, subComponents)
@@ -154,7 +154,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   public ComponentAssert doesNotContainSubComponent(SubComponent subComponent) {
     final List<SubComponent> subComponents =
         ComponentTestHelper.getSubComponents(mComponentContext, actual);
-    Java6Assertions.assertThat(subComponents)
+    Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Did not expect to find <%s> as sub component of <%s>, " + "but it was present.",
             subComponent, actual)
@@ -344,7 +344,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     final List<SubComponent> mountedSubComponents =
         ComponentTestHelper.getSubComponents(mComponentContext, actual);
 
-    Java6Assertions.assertThat(mountedSubComponents).containsExactly(subComponents);
+    Assertions.assertThat(mountedSubComponents).containsExactly(subComponents);
 
     return this;
   }
@@ -359,7 +359,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     final List<SubComponent> mountedSubComponents =
         ComponentTestHelper.getSubComponents(mComponentContext, actual);
 
-    Java6Assertions.assertThat(mountedSubComponents).containsOnly(subComponents);
+    Assertions.assertThat(mountedSubComponents).containsOnly(subComponents);
 
     return this;
   }
@@ -415,7 +415,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert wontRender() {
-    Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
+    Assertions.assertThat(Component.willRender(mComponentContext, actual))
         .overridingErrorMessage("Expected Component to render to null, but it did not.")
         .isFalse();
 
@@ -430,7 +430,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert willRender() {
-    Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
+    Assertions.assertThat(Component.willRender(mComponentContext, actual))
         .overridingErrorMessage("Expected Component to not render to null, but it did.")
         .isTrue();
 

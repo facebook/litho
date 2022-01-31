@@ -30,8 +30,8 @@ import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
-import org.assertj.core.api.Java6Assertions;
 import org.assertj.core.description.TextDescription;
 
 /**
@@ -220,7 +220,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
               return true;
             }
           };
-      return Java6Assertions.allOf(mainBuilder, BaseMatcherBuilder.buildCommonMatcher(this));
+      return Assertions.allOf(mainBuilder, BaseMatcherBuilder.buildCommonMatcher(this));
     }
 
     @Override

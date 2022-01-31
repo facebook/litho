@@ -133,7 +133,7 @@ public interface ClassNames {
   ClassName ASSERTJ_CONDITION = ClassName.bestGuess("org.assertj.core.api.Condition");
   ClassName ASSERTJ_TEXT_DESCRIPTION =
       ClassName.bestGuess("org.assertj.core.description.TextDescription");
-  ClassName ASSERTJ_JAVA6ASSERTIONS = ClassName.bestGuess("org.assertj.core.api.Java6Assertions");
+  ClassName ASSERTJ_ASSERTIONS = ClassName.bestGuess("org.assertj.core.api.Assertions");
 
   ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
 

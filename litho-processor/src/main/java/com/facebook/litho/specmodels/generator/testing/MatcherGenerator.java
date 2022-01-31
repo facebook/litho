@@ -784,7 +784,7 @@ public final class MatcherGenerator {
         .addStatement("final $T mainBuilder = $L", getMatcherConditionTypeName(), matcherInnerClass)
         .addStatement(
             "return $T.allOf(mainBuilder, $T.buildCommonMatcher(this))",
-            ClassNames.ASSERTJ_JAVA6ASSERTIONS,
+            ClassNames.ASSERTJ_ASSERTIONS,
             ClassNames.BASE_MATCHER_BUILDER)
         .build();
   }
