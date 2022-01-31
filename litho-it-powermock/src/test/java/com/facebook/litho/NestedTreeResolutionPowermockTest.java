@@ -221,6 +221,6 @@ public class NestedTreeResolutionPowermockTest {
   }
 
   private LithoLayoutResult getLithoLayoutResult(LithoView lithoView) {
-    return lithoView.getComponentTree().getCommittedLayoutState().getLayoutRoot();
+    return lithoView.getComponentTree().getCommittedLayoutState().getRootLayoutResult();
   }
 }

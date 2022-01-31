@@ -88,7 +88,7 @@ public final class DebugComponent {
   public static DebugComponent getRootInstance(@Nullable ComponentTree componentTree) {
     final LayoutState layoutState =
         componentTree == null ? null : componentTree.getMainThreadLayoutState();
-    final LithoLayoutResult root = layoutState == null ? null : layoutState.getLayoutRoot();
+    final LithoLayoutResult root = layoutState == null ? null : layoutState.getRootLayoutResult();
     if (root == null) {
       return null;
     }

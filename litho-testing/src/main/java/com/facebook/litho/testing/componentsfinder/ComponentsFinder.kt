@@ -98,7 +98,7 @@ private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
       lithoView.componentTree?.committedLayoutState
           ?: throw IllegalStateException(
               "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
-  return commitedLayoutState.layoutRoot
+  return commitedLayoutState.rootLayoutResult
 }
 
 /**

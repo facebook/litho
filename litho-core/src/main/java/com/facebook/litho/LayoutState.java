@@ -148,8 +148,9 @@ public class LayoutState
 
   private final @Nullable List<TestOutput> mTestOutputs;
 
-  @Nullable LithoLayoutResult mLayoutRoot;
+  @Nullable LithoNode mLayoutRoot;
   @Nullable LithoNode mPartiallyResolvedLayoutRoot;
+  @Nullable LithoLayoutResult mRootLayoutResult;
   @Nullable TransitionId mRootTransitionId;
   @Nullable String mRootComponentName;
 
@@ -1159,7 +1160,8 @@ public class LayoutState
     }
 
     final @Nullable DiffNode diffTreeRoot;
-    final @Nullable LithoLayoutResult currentLayoutRoot;
+    final @Nullable LithoNode currentLayoutRoot;
+    final @Nullable LithoLayoutResult currentRootLayoutResult;
     final @Nullable LayoutStateContext currentLayoutStateContext;
 
     final boolean isReconcilable;
@@ -1168,17 +1170,20 @@ public class LayoutState
       synchronized (currentLayoutState) {
         diffTreeRoot = currentLayoutState.mDiffTreeRoot;
         currentLayoutRoot = currentLayoutState.mLayoutRoot;
+        currentRootLayoutResult = currentLayoutState.mRootLayoutResult;
         currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
         isReconcilable =
             isReconcilable(
                 c, component, Preconditions.checkNotNull(stateHandler), currentLayoutRoot);
         if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
           currentLayoutState.mLayoutRoot = null;
+          currentLayoutState.mRootLayoutResult = null;
         }
       }
     } else {
       diffTreeRoot = null;
       currentLayoutRoot = null;
+      currentRootLayoutResult = null;
       currentLayoutStateContext = null;
       isReconcilable = false;
     }
@@ -1239,11 +1244,11 @@ public class LayoutState
                 c,
                 component,
                 isReconcilable
-                    ? Preconditions.checkNotNull(currentLayoutRoot).getNode().getHeadComponentKey()
+                    ? Preconditions.checkNotNull(currentLayoutRoot).getHeadComponentKey()
                     : null,
                 widthSpec,
                 heightSpec,
-                isReconcilable ? currentLayoutRoot : null,
+                isReconcilable ? currentRootLayoutResult : null,
                 diffTreeRoot,
                 logLayoutState);
 
@@ -1271,13 +1276,14 @@ public class LayoutState
                 layoutCreatedInWillRender,
                 widthSpec,
                 heightSpec,
-                currentLayoutRoot,
+                currentRootLayoutResult,
                 diffTreeRoot);
       }
 
       final @Nullable LithoNode node = root != null ? root.getNode() : null;
 
-      layoutState.mLayoutRoot = root;
+      layoutState.mRootLayoutResult = root;
+      layoutState.mLayoutRoot = node;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
       layoutState.mIsCreateLayoutInProgress = false;
 
@@ -1358,7 +1364,7 @@ public class LayoutState
       // If we already have a LayoutState but the InternalNode is only partially resolved,
       // resume resolving the InternalNode and measure it.
 
-      layoutState.mLayoutRoot =
+      final LithoLayoutResult result =
           Layout.resumeCreateAndMeasureComponent(
               layoutState.getLayoutStateContext(),
               c,
@@ -1367,6 +1373,11 @@ public class LayoutState
               heightSpec,
               layoutState.mDiffTreeRoot,
               logLayoutState);
+
+      if (result != null) {
+        layoutState.mRootLayoutResult = result;
+        layoutState.mLayoutRoot = result.getNode();
+      }
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
@@ -1415,7 +1426,7 @@ public class LayoutState
     final boolean isTracing = ComponentsSystrace.isTracing();
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
-    final @Nullable LithoLayoutResult root = layoutState.mLayoutRoot;
+    final @Nullable LithoLayoutResult root = layoutState.mRootLayoutResult;
     final @Nullable LithoNode node = root != null ? root.getNode() : null;
 
     final int rootWidth = root != null ? root.getWidth() : 0;
@@ -1488,6 +1499,7 @@ public class LayoutState
         && !ComponentsConfiguration.isEndToEndTestRun
         && !ComponentsConfiguration.keepInternalNodes) {
       layoutState.mLayoutRoot = null;
+      layoutState.mRootLayoutResult = null;
     }
   }
 
@@ -1541,7 +1553,7 @@ public class LayoutState
       final ComponentContext c,
       final Component nextRootComponent,
       final StateHandler stateHandler,
-      final @Nullable LithoLayoutResult currentLayoutResult) {
+      final @Nullable LithoNode currentLayoutResult) {
 
     if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
       return false;
@@ -1552,7 +1564,7 @@ public class LayoutState
     }
 
     final Component currentRootComponent =
-        Preconditions.checkNotNull(currentLayoutResult.getNode().getHeadComponent());
+        Preconditions.checkNotNull(currentLayoutResult.getHeadComponent());
 
     if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
       return false;
@@ -1886,17 +1898,21 @@ public class LayoutState
 
   @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public LithoLayoutResult getLayoutRoot() {
+  public LithoNode getLayoutRoot() {
     return mLayoutRoot;
+  }
+
+  public @Nullable LithoLayoutResult getRootLayoutResult() {
+    return mRootLayoutResult;
   }
 
   // If the layout root is a nested tree holder node, it gets skipped immediately while
   // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
   // root in this case.
   private boolean isLayoutRoot(LithoLayoutResult result) {
-    return mLayoutRoot instanceof NestedTreeHolderResult
-        ? result == ((NestedTreeHolderResult) mLayoutRoot).getNestedResult()
-        : result == mLayoutRoot;
+    return mRootLayoutResult instanceof NestedTreeHolderResult
+        ? result == ((NestedTreeHolderResult) mRootLayoutResult).getNestedResult()
+        : result == mRootLayoutResult;
   }
 
   /**

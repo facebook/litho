@@ -33,7 +33,7 @@ public class LithoKeyTestingUtil {
       LithoView lithoView) {
     final Map<String, List<ScopedComponentInfo>> scopedComponentInfos = new HashMap<>();
     addScopedComponentInfoForNode(
-        lithoView.getComponentTree().getCommittedLayoutState().getLayoutRoot().getNode(),
+        lithoView.getComponentTree().getCommittedLayoutState().getRootLayoutResult().getNode(),
         scopedComponentInfos);
 
     return scopedComponentInfos;

@@ -101,7 +101,8 @@ constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     get() = componentTree.committedLayoutState
   val currentRootNode: LithoLayoutResult?
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE) get() = committedLayoutState?.layoutRoot
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    get() = committedLayoutState?.rootLayoutResult
   var widthSpec = DEFAULT_WIDTH_SPEC
   var heightSpec = DEFAULT_HEIGHT_SPEC
   lateinit var context: ComponentContext

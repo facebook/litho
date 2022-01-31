@@ -233,7 +233,7 @@ public class LithoViewTestHelper {
     final LayoutState mainThreadLayoutState =
         componentTree != null ? componentTree.getMainThreadLayoutState() : null;
     return mainThreadLayoutState != null
-        ? new InternalNodeRef(mainThreadLayoutState.getLayoutRoot())
+        ? new InternalNodeRef(mainThreadLayoutState.getRootLayoutResult())
         : null;
   }
 
@@ -248,7 +248,7 @@ public class LithoViewTestHelper {
     final LayoutState mainThreadLayoutState =
         componentTree != null ? componentTree.getMainThreadLayoutState() : null;
     if (mainThreadLayoutState != null) {
-      mainThreadLayoutState.mLayoutRoot = rootLayoutNode.mInternalNodeRef;
+      mainThreadLayoutState.mRootLayoutResult = rootLayoutNode.mInternalNodeRef;
     }
   }
 }

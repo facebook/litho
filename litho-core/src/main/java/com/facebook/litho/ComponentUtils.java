@@ -391,34 +391,32 @@ public class ComponentUtils {
    *     PlaygroundComponent |-Text[trans.key="text_transition_key";] |-Row | +-Text
    *     +-Text[manual.key="text2";]
    */
-  static String treeToString(@Nullable LithoLayoutResult root) {
+  static String treeToString(@Nullable LithoNode root) {
     if (root == null) {
       return "null";
     }
 
     final StringBuilder builder = new StringBuilder();
-    final Deque<LithoLayoutResult> stack = new LinkedList<>();
+    final Deque<LithoNode> stack = new LinkedList<>();
     stack.addLast(null);
     stack.addLast(root);
     int level = 0;
     while (!stack.isEmpty()) {
-      final LithoLayoutResult result = stack.removeLast();
-      if (result == null) {
+      final LithoNode node = stack.removeLast();
+      if (node == null) {
         level--;
         continue;
       }
-
-      final LithoNode node = result.getNode();
 
       final Component component = node.getTailComponent();
       if (component == null) {
         continue;
       }
 
-      if (result != root) {
+      if (node != root) {
         builder.append('\n');
         boolean isLast;
-        final Iterator<LithoLayoutResult> iterator = stack.iterator();
+        final Iterator<LithoNode> iterator = stack.iterator();
         iterator.next();
         iterator.next();
         for (int index = 0; index < level - 1; index++) {
@@ -447,13 +445,13 @@ public class ComponentUtils {
         builder.append(']');
       }
 
-      if (result.getChildCount() == 0) {
+      if (node.getChildCount() == 0) {
         continue;
       }
 
       stack.addLast(null);
-      for (int index = result.getChildCount() - 1; index >= 0; index--) {
-        stack.addLast(result.getChildAt(index));
+      for (int index = node.getChildCount() - 1; index >= 0; index--) {
+        stack.addLast(node.getChildAt(index));
       }
       level++;
     }
