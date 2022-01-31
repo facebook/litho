@@ -61,6 +61,7 @@
     <activity android:name=".java.communicating.CommunicatingFromParentToChild" />
     <activity android:name=".java.communicating.CommunicatingFromChildToParent" />
     <activity android:name=".java.communicating.CommunicatingBetweenSiblings" />
+    <activity android:name=".java.identity.ComponentIdentityActivity" />
     <activity android:name=".java.incrementalmount.IncrementalMountWithCustomViewContainerActivity" />
     <activity android:name=".java.stateupdates.StateUpdateFromOutsideTreeActivity" />
     <activity android:name=".java.triggers.CustomEventTriggerExampleActivity" />

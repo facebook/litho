@@ -47,6 +47,7 @@ module.exports = {
           'mainconcepts/coordinate-state-actions/trigger-events',
           'mainconcepts/coordinate-state-actions/componenttree',
           'mainconcepts/coordinate-state-actions/visibility-handling',
+          'mainconcepts/coordinate-state-actions/keys-and-identity',
         ],
         'Handling User Interactions': [],
       },

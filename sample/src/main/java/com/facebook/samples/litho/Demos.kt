@@ -58,6 +58,7 @@ import com.facebook.samples.litho.java.fastscroll.FastScrollHandleComponent
 import com.facebook.samples.litho.java.horizontalscroll.HorizontalScrollRootComponent
 import com.facebook.samples.litho.java.hscroll.HorizontalScrollWithDynamicItemHeight
 import com.facebook.samples.litho.java.hscroll.HorizontalScrollWithSnapActivity
+import com.facebook.samples.litho.java.identity.ComponentIdentityActivity
 import com.facebook.samples.litho.java.incrementalmount.IncrementalMountWithCustomViewContainerActivity
 import com.facebook.samples.litho.java.lifecycle.LifecycleDelegateActivity
 import com.facebook.samples.litho.java.lifecycle.LifecycleFragmentActivity
@@ -111,6 +112,7 @@ import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
+import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
@@ -223,7 +225,9 @@ class Demos {
                         listOf(
                             SingleDemo(
                                 name = "Updating State<T> from child component",
-                                component = StateParentChildComponent()))),
+                                component = StateParentChildComponent()),
+                            SingleDemo(
+                                name = "Component Identity", component = IdentityRootComponent()))),
                     DemoGrouping(
                         name = "Common Props",
                         listOf(
@@ -383,7 +387,11 @@ class Demos {
                                               SectionContext(context))
                                           .build())
                                   .build()
-                            })),
+                            },
+                            SingleDemo(
+                                name = "State and identity",
+                                klass = ComponentIdentityActivity::class.java),
+                        )),
                     DemoGrouping(
                         name = "Communicating between Components",
                         listOf(
