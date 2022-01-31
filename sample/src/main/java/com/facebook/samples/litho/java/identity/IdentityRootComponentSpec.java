@@ -22,6 +22,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -93,4 +94,14 @@ class IdentityRootComponentSpec {
   static void onRemoveSecondChild(StateValue<Boolean> isSecondCounterEnabled) {
     isSecondCounterEnabled.set(false);
   }
+
+  // start_lazy_state
+  @OnEvent(VisibleEvent.class)
+  static void onClickEvent(ComponentContext c, @State(canUpdateLazily = true) boolean logOnce) {
+    if (!logOnce) {
+      // do some logging
+      IdentityRootComponent.lazyUpdateLogOnce(c, true);
+    }
+  }
+  // end_lazy_state
 }

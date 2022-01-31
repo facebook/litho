@@ -22,32 +22,28 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaEdge;
 
+// start_counter
 @LayoutSpec
 class CounterComponentSpec {
+
+  @OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c, StateValue<Integer> count) {
+    count.set(1);
+  }
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State int count) {
     return Row.create(c)
-        .child(
-            Text.create(c)
-                .text("+")
-                .textSizeDip(30)
-                .marginDip(YogaEdge.ALL, 10)
-                .clickHandler(CounterComponent.onClickIncrease(c)))
-        .child(Text.create(c).text("" + count).textSizeDip(30).marginDip(YogaEdge.ALL, 10))
-        .child(
-            Text.create(c)
-                .text("-")
-                .textSizeDip(30)
-                .marginDip(YogaEdge.ALL, 10)
-                .clickHandler(CounterComponent.onClickDecrease(c)))
+        .child(Text.create(c).text("+").clickHandler(CounterComponent.onClickIncrease(c)))
+        .child(Text.create(c).text("" + count))
+        .child(Text.create(c).text("-").clickHandler(CounterComponent.onClickDecrease(c)))
         .build();
   }
 
@@ -71,3 +67,4 @@ class CounterComponentSpec {
     count.set(count.get() - 1);
   }
 }
+// end_counter

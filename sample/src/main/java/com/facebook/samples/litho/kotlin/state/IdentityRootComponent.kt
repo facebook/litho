@@ -27,16 +27,27 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.dp
 import com.facebook.litho.key
+import com.facebook.litho.useRef
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
+import com.facebook.litho.visibility.onVisible
 import com.facebook.litho.widget.Text
 
 class IdentityRootComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val isFirstCounterEnabled = useState { true }
     val isSecondCounterEnabled = useState { true }
+    // start_use_ref
+    val logOnce = useRef { false }
     // start_manual_key
-    return Column {
+    return Column(
+        style =
+            Style.onVisible {
+              if (!logOnce.value) {
+                // do some logging
+                logOnce.value = true
+              }
+            }) { // end_use_ref
       if (isFirstCounterEnabled.value) {
         child(
             key("first_row") {

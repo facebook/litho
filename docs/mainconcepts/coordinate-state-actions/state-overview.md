@@ -3,223 +3,357 @@ id: state-overview
 title: State Overview
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-:::
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+This page introduces the concept of state in a Litho component.
 
 A Litho component can contain two types of data:
 
-*  **props**: passed down from parent and cannot change during a component's lifecycle.
-*  **state**: encapsulated and managed within the component, and is transparent to the parent.
+1.  ** Props**: Props are passed down from the parent and cannot change during a component's lifecycle.
+2.  ** State**: State data is encapsulated and managed within the component, and is transparent to the parent.
 
-States for a given Component are the union of all arguments annotated with
-[State](pathname:///javadoc/com/facebook/litho/annotations/State.html) in the spec. While both Prop and
-State hold information that influences the output of the component, they are different in one
-important way: props get passed to the component from its parent whereas states are managed
-within the component.
+Within this page, you'll consider the example of a `Counter` component, in which you can click a button to increase or decrease a value.  This example will help you to learn how to use State to make the `Counter` component reusable and encapsulated; it provides an overview of adding state to a component. You may also benefit from going through the JAVA or Kotlin State API references.
 
-The initial values of states can be set using the
-[OnCreateInitialState](pathname:///javadoc/com/facebook/litho/annotations/OnCreateInitialState.html) method
-and states can be updated in [OnUpdateState](pathname:///javadoc/com/facebook/litho/annotations/OnUpdateState.html)
-methods. Updating states in the [OnUpdateState](pathname:///javadoc/com/facebook/litho/annotations/OnUpdateState.html)
-methods will cause the component to invoke its
-[OnCreateLayout](pathname:///javadoc/com/facebook/litho/annotations/OnCreateLayout.html) method.
-States should be immutable since the layout can be calculated on multiple threads. Immutability of
-the states ensures that no thread safety issues can occur in the component hierarchy.
+You can start by encapsulating how the Counter looks:
 
-A common example of State usage is rendering a checkbox. The component renders different
-drawables for the checked and unchecked states, but this is an internal detail of the checkbox
-component that the parent doesn't need to be aware of.
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
 
-## Declaring a Component State
-You can define a State on a Component by using the @State annotation in the spec lifecycle methods, similarly to how you would define a Prop.
+```kotlin
+class CounterComponent(val counter: Int) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    return Row {
+      child(Text(text = "+"))
+      child(Text(text = "" + counter))
+      child(Text(text = "-"))
+    }
+  }
+}
+```
 
-Defining state elements is enabled on the lifecycle methods of Layout Specs and Mount Specs.
+  </TabItem>
+  <TabItem value="java">
 
 ```java
 @LayoutSpec
-public class CheckboxSpec {
+class CounterComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c,
-      @State boolean isChecked) {
-
-    return Column.create(c)
-        .child(Image.create(c)
-            .drawableRes(isChecked
-                ? R.drawable.is_checked
-                : R.drawable.is_unchecked))
-        .child(Text.create(c)
-            .text("Submit")
-            .clickHandler(Checkbox.onClickedText(c)))
+  static Component onCreateLayout(ComponentContext c, @Prop int count) {
+    return Row.create(c)
+        .child(Text.create(c).text("+"))
+        .child(Text.create(c).text("" + count))
+        .child(Text.create(c).text("-"))
         .build();
   }
+}
+```
 
-  @OnEvent(ClickEvent.class)
-  static void onClickedText(
-      ComponentContext c,
-      @State boolean isChecked) {
-    ...
+  </TabItem>
+</Tabs>
+
+The `Counter` component is missing a crucial feature, which is interacting with the buttons to update the count value.
+
+Ideally, you'd want this component to encapsulate all this behaviour in its internal implementation, which would mean you'd write it once then reuse it anywhere you need a counter, as follows:
+
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin
+val counter = CounterComponent()
+```
+
+  </TabItem>
+  <TabItem value="java">
+
+```java
+final CounterComponent counter = CounterComponent.create().build();
+```
+
+  </TabItem>
+</Tabs>
+
+To implement this, you need to add "state" to the `Counter` component.
+
+## Adding Local State to a Component
+You can change the `counter` from prop to state in three steps:
+
+**1. Replace the `counter` prop declaration with a state declaration:**
+
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin
+class CounterComponent() : KComponent() {
+
+  override fun ComponentScope.render(): Component {
+   val counter = useState()
+    return Row {
+      //...
+    }
   }
 }
 ```
 
-## Initializing a State value
-To set an initial value for a state, you have to write a method annotated with `@OnCreateInitialState` in your spec.
-
-This is what you need to know when writing an `@OnCreateInitialState` method:
-
-* The first parameter must be of type `ComponentContext`.
-* `@Prop` parameters are allowed.
-* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](pathname:///javadoc/com/facebook/litho/StateValue.html) that is parameterized with the type of the matching `@State` element.
-* `@OnCreateInitialState` methods are not mandatory. If you do not define one or if you only initialize some states, the uninitialized ones will take Java defaults.
-* `@OnCreateInitialState` is called only once for each component, when it first gets added to the `ComponentTree`. Following layout recalculations of the same `ComponentTree` will not call this again if the key of the component doesn't change.
-* You should never need to call the `@OnCreateInitialState` method yourself.
-
-Here's how you would initialize the checkbox state with a value passed down from the parent:
+  </TabItem>
+  <TabItem value="java">
 
 ```java
 @LayoutSpec
-public class CheckboxSpec {
-
-  @OnCreateInitialState
-  static void onCreateInitialState(
-      ComponentContext c,
-      StateValue<Boolean> isChecked,
-      @Prop boolean initChecked) {
-
-    isChecked.set(initChecked);
-  }
-}
-```
-
-## Defining State Updates
-You can define how a component's state or states should be updated by declaring methods annotated with `@OnUpdateState` in the specs.
-
-You can have as many `@OnUpdateState` methods as you need, according to what states you want to update or what parameters your states depend on.
-
-Each call to an `@OnUpdateState` method will trigger a new layout calculation for its ComponentTree. For better performance, if there are situations that can trigger an update for multiple states, you should define an `@OnUpdateState` method that updates the value for all those states. Bundling them in the same update call reduces the number of new layout calculations and improves performance.
-
-This is what you need to know when writing an `@OnUpdateState`  method:
-
-* Parameters representing the states must match the name of a parameter annotated with `@State` and their type must be a `StateValue` parameterized with the type of the matching `@State`.
-* `@Param` parameters are allowed. If the value of your state depends on props, you can declare them like this and pass the value of the prop when the update call is triggered.
-* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a `StateValue` parameterized with the type of the matching `@State` element.
-
-Here's how you would define a state update method for the checkbox:
-
-```java
-@LayoutSpec
-public class CheckboxSpec {
-
-  @OnUpdateState
-  static void updateCheckboxState(StateValue<Boolean> isChecked) {
-    isChecked.set(!isChecked.get());
-  }
-}
-```
-
-If you want to bundle multiple state updates in a single method, you would just add all those states as parameters to the same `@OnUpdateState` method:
-
-```java
-@OnUpdateState
-static void updateMultipleStates(
-    StateValue<Boolean> stateOne,
-    StateValue<String> stateTwo,
-    @Param int someParam) {
-
-  final boolean thresholdReached = someParam > 100;
-  stateOne.set(thresholdReached);
-  stateTwo.set(thresholdReached ? "reached" : "not reached");
-}
-
-```
-
-## Calling state updates
-
-For each `@OnUpdateState` method in your spec, the generated component will have two methods that will delegate to the `@OnUpdateState` method under the hood:
-* a static method with the same name, which will asynchronously apply the state updates.
-* a static method with the same name and a *Sync* suffix, which will synchronously trigger the state updates.
-Both methods take a `ComponentContext` as first parameter, followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
-
-Here's how you would call the state update method to update your checkbox when a user clicks it:
-
-```java
-@LayoutSpec
-public class CheckboxSpec {
+class CounterComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c,
-      @State boolean isChecked) {
-
-    return Column.create(c)
-        .child(Image.create(c)
-            .drawableRes(isChecked
-                ? R.drawable.is_checked
-                : R.drawable.is_unchecked))
-        .clickHandler(Checkbox.onCheckboxClicked(c))
+  static Component onCreateLayout(ComponentContext c, @State int count) {
+    return Row.create(c)
+        //...
         .build();
-  }
-
-  @OnUpdateState
-  static void updateCheckbox(StateValue<Boolean> isChecked) {
-    isChecked.set(!isChecked.get());
-  }
-
-  @OnEvent(ClickEvent.class)
-  static void onCheckboxClicked(ComponentContext c) {
-    Checkbox.updateCheckbox(c);
-    // Checkbox.updateCheckboxSync(c); for a sync update
   }
 }
 ```
 
-This is what you need to keep in mind when calling state update methods:
+  </TabItem>
+</Tabs>
 
-* When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transferring these values from the old components to the new ones during new layout calculations.
-* In `LayoutSpec`s, you should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
-Every call to a state update method will trigger a new layout calculation on the ComponentTree, which in turn will call `onCreateLayout` on all its components, so it's rather easy to go into an infinite loop. You should consider whether a lazy state update (described below) wouldn't be more appropriate for your use case.
-* In `MountSpec`s, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
-* State is a concept local to components. You cannot call a state update method from outside a component. [Props](/docs/mainconcepts/passing-data-to-components/props) are the mechanism to update a component based on outside changes. You can read more about that [here](/docs/best-practices/props-vs-state).
+**2. Set an initial value for the `count` state:**
 
-## Lazy State Updates
-For situations where you want to update the value of a `State`, but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update, the new state value will be visible in event handlers, but a new layout will not be triggered. Currently, the value is **not** visible to other lifecycle callbacks (e.g. `onMount`).
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
 
-This is useful for updating state that doesn't need to be reflected in the UI. For example, say you want to log an analytics event only the first time a Component becomes visible. If you use lazy state, you can record whether a log was sent in a lazy `@State` variable without causing the UI to reflow.
+```kotlin
+override fun ComponentScope.render(): Component {
+   val counter = useState {1} // useState takes a lambda param to initialize the state value.
+    return Row {
+      //...
+    }
+}
+```
 
-To use lazy state updates, you need to set the `canUpdateLazily` parameter on the `@State` annotation to `true`.
+  </TabItem>
+  <TabItem value="java">
 
-For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes a new value as parameter that will be set as the new value for `foo`.
+```java
+@OnCreateInitialState
+static void onCreateInitialState(ComponentContext c, StateValue<Integer> count) {
+  count.set(1);
+}
+```
 
-States marked as `canUpdateLazily` can still be used for regular state updates.
+  </TabItem>
+</Tabs>
 
-Let's look at an example:
+**3. Use the state value**
+
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin
+override fun ComponentScope.render(): Component {
+    val counter = useState { 1 } // useState takes a lambda param to initialize the state value.
+    return Row {
+      child(Text(text = "+"))
+      child(Text(text = "" + counter.value))
+      child(Text(text = "-"))
+    }
+}
+```
+
+  </TabItem>
+  <TabItem value="java">
 
 ```java
 @OnCreateLayout
-static Component onCreateLayout(
-    final ComponentContext c,
-    @State(canUpdateLazily = true) String foo) {
+  static Component onCreateLayout(ComponentContext c, @State int count) {
+    return Row.create(c)
+        .child(Text.create(c).text("+"))
+        .child(Text.create(c).text("" + count))
+        .child(Text.create(c).text("-"))
+        .build();
+  }
+```
 
-  FooComponent.lazyUpdateFoo(c, "updated foo");
-  return Column.create(c)
-      .child(
-          Text.create(c)
-              .text(foo))
-      .build();
-}
+  </TabItem>
+</Tabs>
 
-@OnCreateInitialState
-static void onCreateInitialState(
-    ComponentContext c,
-    StateValue<String> foo) {
-  foo.set("first foo");
+## Updating State
+Next, you'll make the Counter component update the count value when the increase or decrease buttons are clicked, in two steps:
+
+**1. Set click handlers on the buttons:**
+
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin
+override fun ComponentScope.render(): Component {
+ val counter = useState { 1 } // useState takes a lambda param to initialize the state value.
+  return Row {
+    child(Text(text = "+", style = Style.onClick {}))
+    child(Text(text = "" + counter.value))
+    child(Text(text = "-", style = Style.onClick {}))
+  }
 }
 ```
 
-The first time FooComponent is rendered, its child `Text` component will display *"first foo"*, even if `foo` is lazily updated with another value. When a regular state update or receiving new props will trigger a new layout calculation, the lazy state update will be applied and the `Text` will render *"updated foo"*.
+  </TabItem>
+  <TabItem value="java">
 
-## Immutability
-Because of [background layout](/docs/asynchronous-layout), `State` can be accessed at anytime by multiple threads. To ensure thread safety, `State` objects should be immutable (and if for some rare reason this is not possible, then at least thread safe). The simplest solution is to express your state in terms of primitives since primitives are by definition immutable.
+```java
+@OnCreateLayout
+  static Component onCreateLayout(ComponentContext c, @State int count) {
+    return Row.create(c)
+        .child(Text.create(c).text("+").clickHandler(CounterComponent.onClickIncrease(c)))
+        .child(Text.create(c).text("" + count))
+        .child(Text.create(c).text("-").clickHandler(CounterComponent.onClickDecrease(c)))
+        .build();
+  }
+
+@OnEvent(ClickEvent.class)
+static void onClickIncrease(ComponentContext c) {}
+
+@OnEvent(ClickEvent.class)
+static void onClickDecrease(ComponentContext c) {}
+```
+
+  </TabItem>
+</Tabs>
+
+**2. Update the state value in the click handlers:**
+
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/state/CounterComponent.kt start=start_counter end=end_counter
+```
+
+  </TabItem>
+  <TabItem value="java">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/identity/CounterComponentSpec.java start=start_counter end=end_counter
+```
+
+  </TabItem>
+</Tabs>
+
+## State API Reference and Considerations
+
+### Data immutability
+
+Due to background layout, state can be accessed anytime by multiple threads. To ensure thread safety, state objects should be immutable (if for some rare reason this is not possible, then at least thread safe). The simplest solution is to express your state in terms of primitives since primitives are, by definition, immutable.
+
+### Component identity
+
+Litho uses keys to keep track of component identity between layout changes and correctly identify a component as the target of a state update.
+[This guide](keys-and-identity.md) explains in more detail how component identity works.
+
+### Initialising state values
+
+State initialisation is guaranteed to happen once and only once for a component based on its [identity](keys-and-identity.md), even if there are multiple threads attempting to calculate the layout for the same component in parallel.
+
+In the Java API, the method annotated with `@OnCreateInitialState` is guaranteed to be called just once during a component's lifecycle.
+
+This is an important consideration that you should keep in mind when you use prop values to initialize state. Passing new props to a component will not call the initializer again; a state value can only be updated after it was initialized by using the [state update APIs](state-overview.md#updating-state).
+
+In the Java API, to set an initial value for a state, you have to write a method annotated with `@OnCreateInitialState` in your spec.
+The following are points to keep in mind when writing an `@OnCreateInitialState` method:
+
+* The first parameter must be of type `ComponentContext`.
+* `@Prop` parameters are allowed, but `@OnCreateInitialState` methods will not be called again if the props change.
+* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](pathname:///javadoc/com/facebook/litho/StateValue.html) that is parameterized with the type of the matching `@State` element.
+* Initializing a state value is not mandatory, and implementing an `@OnCreateInitialState` method can be entirely skipped. If a state value is not explicitly initialised, the initial state will be assigned the default value of its inferred type, for example `0` for integer state, `false` for boolean state or `null` for Objects.
+* You should never need to call the `@OnCreateInitialState` method yourself.
+
+### Updating state values
+
+Every state update  will trigger a new layout calculation for its `ComponentTree`. Passing new props to a Litho component and updating the state are implemented in the same way in Litho, so there is no performance difference. Take a look at [this guide](/docs/best-practices/props-vs-state) to understand when you should update a Component using new props or updating state.
+
+However, Litho implements a feature called reconciliation, which attempts to detect what part of the `ComponentTree` is affected by that state update and reuse the layout for the nodes that don't need to change.
+State updates can be performed synchronously on the same thread that they were triggered from, or asynchronously from Litho's background thread.
+
+The following points should be kept in mind when updating a state value:
+* Avoid calling state update methods in the render method of a component (`@OnCreateLayout` methods in the Java API or the `render` function in the Kotlin API).
+Every state update method will trigger a new layout calculation, which re-invokes the render method of the component that triggered the state update. This can easily lead to an infinte loop. You should consider whether a [lazy state update](state-overview.md#lazy-state-updates) wouldn't be more appropriate for your use case, and only use state updates in a render method if you're absolutely certain that the state update is conditionally called and can only be triggered a limited number of times.
+* In [MountSpecs](mainconcepts/uicomposition/mount-specs.md), state updates are not allowed in `bind` and `mount` methods and will cause a runtime exception if used. If you need to update a state value in those methods, you should instead use a [lazy state update](state-overview.md#lazy-state-updates).
+
+:::note
+In the Java API, you can define how a component's state or states should be updated by declaring methods annotated with `@OnUpdateState` in the specs.
+You can have as many `@OnUpdateState` methods as you need, according to what states you want to update or what parameters your states depend on.
+The following points should be considered when writing an `@OnUpdateState` method:
+
+* Parameters representing the state values must match the name of a parameter annotated with `@State` and used in other lifecycle methods, and their type must be a `StateValue` parameterized with the type of the matching `@State`.
+* `@Prop` are not allowed, but `@Param` parameters are. If the value of your state depends on props, you can pass them as `@Param` params from the lifecycle methods that call the state update methods.
+For each `@OnUpdateState` method in your spec, the generated component will have two methods that will delegate to the `@OnUpdateStUpdate the state value in the click handlerate` method under the hood:
+* A static method with the same name, which will asynchronously apply the state updates.
+* A static method with the same name and a *Sync* suffix, which will synchronously trigger the state updates.
+Both methods take a `ComponentContext` as first parameter, followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
+
+## Lazy state
+
+For situations where you want to update the value of a state but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update, the new state value will be visible in event handlers, but a new layout will not be triggered.
+Currently, the value is immediately visible to the event handler but **not** visible to other lifecycle callbacks (such as `onMount`).
+
+Lazy state is useful for updating state values that don't need to be reflected in the UI. For example, say you want to log an analytics event only the first time a component becomes visible. If you use lazy state, you can record whether a log was sent in a lazy state variable without causing the UI to reflow.
+
+Lazy state can still be used for regular state updates.
+
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/state/IdentityRootComponent.kt start=start_use_ref end=end_use_ref
+```
+
+  </TabItem>
+  <TabItem value="java">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/identity/IdentityRootComponentSpec.java start=start_lazy_state end=end_lazy_state
+```
+
+  </TabItem>
+</Tabs>

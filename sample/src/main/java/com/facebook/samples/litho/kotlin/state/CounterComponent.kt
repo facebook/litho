@@ -1,3 +1,5 @@
+// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -27,6 +29,7 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 
+// start_counter
 class CounterComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
@@ -46,3 +49,4 @@ class CounterComponent : KComponent() {
     }
   }
 }
+// end_counter
