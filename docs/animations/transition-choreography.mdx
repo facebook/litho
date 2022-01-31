@@ -4,46 +4,69 @@ title: Customizing Transitions
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-After the [Animation basics](/docs/animations/transition-basics) the next natural step would be to create more complex transition animations. Litho provides several APIs to customize many aspects of the transitions and how different components can be animated together.
+Litho provides several APIs to customise many aspects of transitions and animate different components together.
 
-### Staggers, Sequences, and Parallel Sets
+## Sequence, Stagger, and Parallel Sets
 
-Synchronising transitions objects can be done by wrapping them in one of the following animations sets: `parallel`, `sequence` and `stagger`. This transition sets can be nested within each other, e.g. you can have a stagger of parallel animation sets.
+Transitions can be composed using the following:
 
-Example using a `stagger` set to animate 3 different rectangles.
+* `Sequence` - all transitions are run in order. Each transition must end before the following one starts.
+* `Stagger` - all transitions are a run in order. There is a fixed delay between starting each transition, and they may overlap.
+* `Parallel` - all transitions start at the same time but may end at different times.
+
+The following code uses a `stagger` set to animate three different rectangles.
+
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/StaggerTransitionComponentSpec.java start=start end=end
 ```
+
+The following animation shows the above LayoutSpec in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-Sequences and staggers also support interrupting behavior, trying to preserve the guarantee that a component will never jump and will always end up in the correct final position.
+Transition sets can be nested within each other, for example, you could have a 'stagger' of 'parallel' animation sets.
 
-We can also use this sets to animate different properties of the same component, like in the following example.
+Sequences and Staggers support interrupting behaviour, which ensure a component will never jump and will always end up in the correct end position.
+
+The sets can also be used to animate different properties of the same component, as shown in the following example:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/StaggerTransitionSameComponentSpec.java start=start end=end
 ```
+
+The following animation shows the above LayoutSpec in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger3.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
+## Animators
 
-### Animators
+Animators affect the rate in which new values are pushed to the animated components. An `Animator` can be added to any transition with the `.animator()` builder setting.
 
-Animators affect the rate in which we push new values to the animating components. An `Animator` can be added to any transition by using `.animator()` builder setting.
-We provide two animators (spring based [`SpringTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.SpringTransitionAnimator.html) and a general timing-based [`TimingTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html)) that can be configured to cover most use cases. It is also possible to add a custom by implementing [`Transition.TransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.TransitionAnimator.html).
-By default, all transitions in Litho run by [`SpringTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.SpringTransitionAnimator.html) which is physics based and naturally interruptible. You can tune the parameters of this spring by creating another `Animator` using `Transition.springWith()` and pass custom tension and friction. . On the other hand, [`TimingTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) provides more customisation as we can set a total time and an `Interpolator`. To do this we provide an easy builder `Transition.timing()` that received the total time and an optional `Interpolator`.
+Litho provides two Animators:
+
+* **Spring-based** - see the [SpringTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.SpringTransitionAnimator.html)
+* **Timing-based** - see the [TimingTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html)
+
+These Animators can be configured to cover most use cases.
+
+It's possible to configure a custom transition by implementing [Transition.TransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TransitionAnimator.html).
+
+By default, all transitions in Litho run by the [SpringTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.SpringTransitionAnimator.html), which is physics based and naturally interruptible. You can tune the parameters of this spring by creating another `Animator` using `Transition.springWith()` and pass custom tension and friction.
+
+In addition, the [TimingTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) enables you to set a total time and an `Interpolator`. To do this, use the builder `Transition.timing()` that receives the total time and an optional `Interpolator`.
 
 :::info
-The [`TimingTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) default interpolator is an `AccelerateDecelerateInterpolator` so keep in mind that adding this animator to only a few transitions in a set (like the example below) could create unwanted behavior.
+The default interpolator for the [TimingTransitionAnimator](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) is an `AccelerateDecelerateInterpolator`.
 :::
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/ParallelTransitionWithAnimatorsComponentSpec.java start=start end=end
 ```
+
+The following animation shows the above ComponentSpec in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/stagger4.webm")}></source>
@@ -51,16 +74,20 @@ The [`TimingTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transiti
 </video>
 
 
-### Transition end callback
+### Transition End Callback
 
-A listener can be added to receive a callback when an individual transition has ended. This is done through the Litho event dispatcher. See [Events overview](/docs/mainconcepts/coordinate-state-actions/events).
-The `TransitionEndEvent` will be called with the transition key and the specific `AnimatedProperty` that has been animated for that key. If multiple `AnimatedProperty`s are added to the same transition, and all of them run at the same time, a callback will be excecuted for each one of those.
-In many cases this callback may be useful to loop animations by updating the tree. Many examples can be found in the Litho Sample app: `API Demos`->`Animation Callbacks`.
+A Listener can be added to receive a callback when an individual transition has ended. This is done through Litho event dispatcher methods (see [Events Overview](../mainconcepts/coordinate-state-actions/events.md).
+
+The `TransitionEndEvent` will be called with the transition key and the specific `AnimatedProperty` that has been animated for that key. If multiple instances of AnimatedProperty` are added to the same transition, and all of them run at the same time, a callback will be executed for each. This callback may be useful to loop animations by updating the tree.
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/SequenceTransitionLoopComponentSpec.java start=start end=end
 ```
 
-You can also add the transition end handler to the `Transition.allLayout()` and the same logic applies.
+:::note
+Many examples can be found in the Litho Sample app: `API Demos`->`Animation Callbacks`.
+:::
+
+You can also add the transition end handler to `Transition.allLayout()` where the same logic applies:
 
 ```java
 @OnCreateTransition
