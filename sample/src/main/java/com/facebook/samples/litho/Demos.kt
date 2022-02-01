@@ -106,6 +106,7 @@ import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComp
 import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SelectionCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.StaggeredGridCollectionExample
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.TabsCollectionKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
@@ -211,6 +212,9 @@ class Demos {
                                 name = "Horizontal Scroll",
                                 component = HorizontalScrollKComponent()),
                             SingleDemo(name = "Tabs", component = TabsCollectionKComponent()),
+                            SingleDemo(
+                                name = "Staggered Grid",
+                                component = StaggeredGridCollectionExample()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),

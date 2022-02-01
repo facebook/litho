@@ -29,7 +29,6 @@ import com.facebook.litho.widget.SnapUtil
  */
 abstract class CollectionLayout(
     @RecyclerView.Orientation orientation: Int,
-    @SnapUtil.SnapMode snapMode: Int,
     reverse: Boolean,
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
@@ -40,7 +39,6 @@ abstract class CollectionLayout(
   val recyclerConfiguration: RecyclerConfiguration =
       createRecyclerConfigurationBuilder()
           .orientation(orientation)
-          .snapMode(snapMode)
           .reverseLayout(reverse)
           .recyclerBinderConfiguration(
               RecyclerBinderConfiguration.create()
@@ -94,14 +92,13 @@ interface CollectionLayouts {
       object :
           CollectionLayout(
               orientation,
-              snapMode,
               reverse,
               crossAxisWrapMode.hasDynamicItemHeight,
               crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent,
           ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            ListRecyclerConfiguration.Builder()
+            ListRecyclerConfiguration.Builder().snapMode(snapMode)
       }
 
   /**
@@ -117,9 +114,9 @@ interface CollectionLayouts {
       reverse: Boolean = false,
       columns: Int = 2,
   ): CollectionLayout =
-      object : CollectionLayout(orientation, snapMode, reverse) {
+      object : CollectionLayout(orientation, reverse) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            GridRecyclerConfiguration.Builder().numColumns(columns)
+            GridRecyclerConfiguration.Builder().snapMode(snapMode).numColumns(columns)
       }
 
   /**
@@ -132,12 +129,11 @@ interface CollectionLayouts {
    */
   fun StaggeredGrid(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
-      @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
       reverse: Boolean = false,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE
   ): CollectionLayout =
-      object : CollectionLayout(orientation, snapMode, reverse) {
+      object : CollectionLayout(orientation, reverse) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.Builder().numSpans(spans).gapStrategy(gapStrategy)
       }
