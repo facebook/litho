@@ -17,6 +17,7 @@ load(
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_KOTLIN_TARGET",
+    "LITHO_PROCESSOR_TARGET",
     "LITHO_SECTIONS_COMMON_TARGET",
     "LITHO_SECTIONS_TARGET",
     "LITHO_SECTIONS_WIDGET_TARGET",
@@ -29,6 +30,9 @@ litho_android_library(
     name = "widget",
     is_androidx = True,
     language = "KOTLIN",
+    plugins = [
+        LITHO_PROCESSOR_TARGET,
+    ],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
     ],
