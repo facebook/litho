@@ -59,7 +59,6 @@ class Layout {
         layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null);
   }
 
-  /* TODO: (T81557408) Fix @Nullable issue */
   static LayoutResultHolder createAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -426,10 +425,7 @@ class Layout {
     }
   }
 
-  /**
-   * TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}.
-   * TODO: (T81557408) Fix @Nullable issue
-   */
+  /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
   static ComponentContext update(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,

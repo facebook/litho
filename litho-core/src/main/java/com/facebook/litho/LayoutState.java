@@ -236,7 +236,7 @@ public class LayoutState
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
     mComponentKeys = new ArrayList<>();
-    mScopedComponentInfos = new ArrayList<ScopedComponentInfo>();
+    mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
@@ -1618,7 +1618,7 @@ public class LayoutState
       ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
     }
 
-    if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
+    if (!mMountableOutputs.isEmpty()) {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final RenderTreeNode treeNode = mMountableOutputs.get(i);
         final LayoutOutput output = LayoutOutput.getLayoutOutput(treeNode);

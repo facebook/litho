@@ -857,11 +857,6 @@ public class LithoNode implements Node<LithoRenderContext> {
     mDebugComponents.add(debugComponent);
   }
 
-  @Deprecated
-  public boolean implementsLayoutDiffing() {
-    return false;
-  }
-
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mYogaMeasureFunction = measureFunction;
   }
