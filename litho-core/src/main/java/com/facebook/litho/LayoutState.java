@@ -120,8 +120,6 @@ public class LayoutState
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
-  private @Nullable List<Component> mComponents;
-  private @Nullable List<String> mComponentKeys;
   private @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
 
   private final ComponentContext mContext;
@@ -232,8 +230,6 @@ public class LayoutState
     mStateHandler = stateHandler;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mLastMeasuredLayouts = new HashMap<>();
-    mComponents = new ArrayList<>();
-    mComponentKeys = new ArrayList<>();
     mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
@@ -879,12 +875,8 @@ public class LayoutState
       // calculation.
       final ComponentContext delegateScopedContext = node.getComponentContextAt(i);
       if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
-        if (layoutState.mComponents != null) {
-          layoutState.mComponents.add(delegate);
-          Preconditions.checkNotNull(layoutState.mComponentKeys).add(delegateKey);
-          if (layoutState.mScopedComponentInfos != null) {
-            layoutState.mScopedComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
-          }
+        if (layoutState.mScopedComponentInfos != null) {
+          layoutState.mScopedComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
         }
       }
       if (delegateKey != null || delegate.hasHandle()) {
@@ -918,22 +910,6 @@ public class LayoutState
 
   Map<Handle, Rect> getComponentHandleToBounds() {
     return mComponentHandleToBounds;
-  }
-
-  @Nullable
-  List<Component> consumeComponents() {
-    final List<Component> components = mComponents;
-    mComponents = null;
-
-    return components;
-  }
-
-  @Nullable
-  List<String> consumeComponentKeys() {
-    final List<String> componentKeys = mComponentKeys;
-    mComponentKeys = null;
-
-    return componentKeys;
   }
 
   @Nullable

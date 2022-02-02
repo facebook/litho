@@ -2314,9 +2314,7 @@ public class ComponentTree implements LithoLifecycleListener {
       output.height = localLayoutState.getHeight();
     }
 
-    List<Component> components = null;
-    List<String> componentKeys = null;
-    @Nullable List<ScopedComponentInfo> scopedComponentInfos = null;
+    List<ScopedComponentInfo> scopedComponentInfos = null;
 
     int rootWidth = 0;
     int rootHeight = 0;
@@ -2343,20 +2341,23 @@ public class ComponentTree implements LithoLifecycleListener {
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
       if (committedNewLayout) {
 
-        components = localLayoutState.consumeComponents();
-        componentKeys = localLayoutState.consumeComponentKeys();
         scopedComponentInfos = localLayoutState.consumeScopedComponentInfos();
 
         if (layoutStateStateHandler != null) {
           final StateHandler stateHandler = mStateHandler;
           if (stateHandler != null) { // we could have been released
             if (ComponentsConfiguration.isTimelineEnabled) {
-              final int indexOfRoot = components.indexOf(root);
-              final String availableGlobalKey =
-                  (indexOfRoot >= 0 && componentKeys != null)
-                      ? componentKeys.get(indexOfRoot)
+              ScopedComponentInfo rootScopedComponentInfo = null;
+              for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
+                if (scopedComponentInfo.getContext().getComponentScope().equals(root)) {
+                  rootScopedComponentInfo = scopedComponentInfo;
+                  break;
+                }
+              }
+              final String globalKey =
+                  (rootScopedComponentInfo != null)
+                      ? rootScopedComponentInfo.getContext().getGlobalKey()
                       : null;
-              final String globalKey = availableGlobalKey;
               DebugComponentTimeMachine.saveTimelineSnapshot(
                   this, root, globalKey, stateHandler, treeProps, source, extraAttribution);
             }
@@ -2399,8 +2400,8 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    if (components != null) {
-      bindEventAndTriggerHandlers(components, componentKeys, scopedComponentInfos);
+    if (scopedComponentInfos != null) {
+      bindEventAndTriggerHandlers(scopedComponentInfos);
     }
 
     if (committedNewLayout) {
@@ -2421,18 +2422,15 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  private void bindEventAndTriggerHandlers(
-      final List<Component> components,
-      final List<String> componentKeys,
-      final List<ScopedComponentInfo> scopedComponentInfos) {
+  private void bindEventAndTriggerHandlers(final List<ScopedComponentInfo> scopedComponentInfos) {
 
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
-      for (int i = 0, size = components.size(); i < size; i++) {
-        final Component component = components.get(i);
-        final String globalKey = componentKeys.get(i);
+      for (int i = 0, size = scopedComponentInfos.size(); i < size; i++) {
         final ComponentContext scopedContext = scopedComponentInfos.get(i).getContext();
-        mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
+        final Component component = scopedContext.getComponentScope();
+        mEventHandlersController.bindEventHandlers(
+            scopedContext, component, scopedContext.getGlobalKey());
         bindTriggerHandler(scopedContext, component);
       }
     }
