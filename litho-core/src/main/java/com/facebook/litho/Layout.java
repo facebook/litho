@@ -433,11 +433,9 @@ class Layout {
   static ComponentContext update(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
-      final Component original,
+      final Component component,
       final boolean reuseGlobalKey,
       @Nullable final String globalKeyToReuse) {
-
-    final Component component = original;
 
     if (reuseGlobalKey) {
       if (globalKeyToReuse == null) {

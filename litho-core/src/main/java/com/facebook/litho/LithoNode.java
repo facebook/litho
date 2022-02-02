@@ -865,10 +865,6 @@ public class LithoNode implements Node<LithoRenderContext> {
     return false;
   }
 
-  public LithoNode removeChildAt(int index) {
-    return mChildren.remove(index);
-  }
-
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mYogaMeasureFunction = measureFunction;
   }
@@ -1283,7 +1279,7 @@ public class LithoNode implements Node<LithoRenderContext> {
    * Internal method to <b>try</b> and reconcile the {@param current} LithoNode with a new {@link
    * ComponentContext} and an updated head {@link Component}.
    *
-   * @param layoutStateContext
+   * @param layoutStateContext The LayoutStateContext.
    * @param parentContext The ComponentContext.
    * @param current The current LithoNode which should be updated.
    * @param next The updated component to be used to reconcile this LithoNode.
@@ -1308,14 +1304,8 @@ public class LithoNode implements Node<LithoRenderContext> {
         commitToLayoutStateRecursively(layoutStateContext, current);
         layout = current;
         break;
-      case ReconciliationMode.COPY:
-        layout =
-            reconcile(layoutStateContext, current, next, nextKey, keys, ReconciliationMode.COPY);
-        break;
       case ReconciliationMode.RECONCILE:
-        layout =
-            reconcile(
-                layoutStateContext, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
+        layout = reconcile(layoutStateContext, current, next, keys);
         break;
       case ReconciliationMode.RECREATE:
         layout = Layout.create(layoutStateContext, parentContext, next, false, true, nextKey);
@@ -1334,21 +1324,17 @@ public class LithoNode implements Node<LithoRenderContext> {
    * @param current The current LithoNode which should be updated.
    * @param next The updated component to be used to reconcile this LithoNode.
    * @param keys The keys of mutated components.
-   * @param mode {@link ReconciliationMode#RECONCILE} or {@link ReconciliationMode#COPY}.
    * @return A new updated LithoNode.
    */
   private static LithoNode reconcile(
       final LayoutStateContext layoutStateContext,
       final LithoNode current,
       final Component next,
-      final @Nullable String nextKey,
-      final Set<String> keys,
-      final @ReconciliationMode int mode) {
+      final Set<String> keys) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection(
-          (mode == ReconciliationMode.COPY ? "copy:" : "reconcile:") + next.getSimpleName());
+      ComponentsSystrace.beginSection("reconcile:" + next.getSimpleName());
     }
 
     // 2. Shallow copy this layout.
@@ -1376,20 +1362,9 @@ public class LithoNode implements Node<LithoRenderContext> {
           (ScopedComponentInfo) child.mScopedComponentInfos.get(index);
 
       // 3.2 Reconcile child layout.
-      final LithoNode copy;
-      if (mode == ReconciliationMode.COPY) {
-        copy = reconcile(layoutStateContext, child, component, key, keys, ReconciliationMode.COPY);
-      } else {
-        copy =
-            reconcile(
-                layoutStateContext,
-                parentContext,
-                child,
-                component,
-                scopedComponentInfo,
-                key,
-                keys);
-      }
+      final LithoNode copy =
+          reconcile(
+              layoutStateContext, parentContext, child, component, scopedComponentInfo, key, keys);
 
       // 3.3 Add the child to the cloned yoga node
       layout.child(copy);
@@ -1468,16 +1443,8 @@ public class LithoNode implements Node<LithoRenderContext> {
     return null;
   }
 
-  @IntDef({
-    ReconciliationMode.REUSE,
-    ReconciliationMode.COPY,
-    ReconciliationMode.RECONCILE,
-    ReconciliationMode.RECREATE
-  })
+  @IntDef({ReconciliationMode.REUSE, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
   @interface ReconciliationMode {
-    /** Used only for LithoNode's without satatless components */
-    @Deprecated int COPY = 0;
-
     int RECONCILE = 1;
     int RECREATE = 2;
     int REUSE = 3;
