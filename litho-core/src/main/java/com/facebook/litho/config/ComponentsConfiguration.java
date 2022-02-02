@@ -172,6 +172,9 @@ public class ComponentsConfiguration {
   /** Keeps the internal nodes used for layout. This will increase memory use. */
   public static boolean keepInternalNodes = false;
 
+  /** Keeps the layout result tree in the LayoutState. This will increase memory use. */
+  public static boolean keepLayoutResults = true;
+
   public static boolean emitMessageForZeroSizedTexture = false;
 
   public static boolean enableLayoutCaching = false;

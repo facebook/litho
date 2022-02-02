@@ -1496,6 +1496,8 @@ public class LayoutState
         && !ComponentsConfiguration.keepInternalNodes) {
       layoutState.mLayoutRoot = null;
       layoutState.mRootLayoutResult = null;
+    } else if (!ComponentsConfiguration.keepLayoutResults) {
+      layoutState.mRootLayoutResult = null;
     }
   }
 
