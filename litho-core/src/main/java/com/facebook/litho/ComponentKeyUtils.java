@@ -91,7 +91,7 @@ public class ComponentKeyUtils {
     if (parentComponent == null) {
       globalKey = key;
     } else {
-      final String parentGlobalKey = Component.getGlobalKey(parentContext, parentComponent);
+      final String parentGlobalKey = parentContext.getGlobalKey();
       if (parentGlobalKey == null) {
         logParentHasNullGlobalKey(parentComponent, childComponent);
         globalKey = "null" + key;

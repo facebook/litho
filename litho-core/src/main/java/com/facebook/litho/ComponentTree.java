@@ -1582,8 +1582,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   void recordEventHandler(ComponentContext scopedContext, EventHandler eventHandler) {
-    mEventHandlersController.recordEventHandler(
-        Component.getGlobalKey(scopedContext, scopedContext.getComponentScope()), eventHandler);
+    mEventHandlersController.recordEventHandler(scopedContext.getGlobalKey(), eventHandler);
   }
 
   @GuardedBy("mEventTriggersContainer")

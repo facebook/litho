@@ -59,18 +59,14 @@ public class LegacyComponentGlobalKeyTest {
     // Text
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "$[Text2]"),
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(0)), getComponentAt(lithoView, 0)));
+        getComponentContext(lithoView.getMountItemAt(0)).getGlobalKey());
     // TestViewComponent in child layout
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[TestViewComponent1]"),
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(1)), getComponentAt(lithoView, 1)));
+        getComponentContext(lithoView.getMountItemAt(1)).getGlobalKey());
     // background in child
-    Assert.assertNull(
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(2)), getComponentAt(lithoView, 2)));
+    Assert.assertNull(getComponentContext(lithoView.getMountItemAt(2)));
     // CardClip in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
@@ -80,30 +76,24 @@ public class LegacyComponentGlobalKeyTest {
             columnSpecId,
             columnSpecId,
             "$[CardClip1]"),
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(3)), getComponentAt(lithoView, 3)));
+        getComponentContext(lithoView.getMountItemAt(3)).getGlobalKey());
     // Text in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[Text1]"),
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(4)), getComponentAt(lithoView, 4)));
+        getComponentContext(lithoView.getMountItemAt(4)).getGlobalKey());
     // background
-    Assert.assertNull(
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(5)), getComponentAt(lithoView, 5)));
+    Assert.assertNull(getComponentContext(lithoView.getMountItemAt(5)));
     // CardClip
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, columnSpecId, "$[CardClip2]"),
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(6)), getComponentAt(lithoView, 6)));
+        getComponentContext(lithoView.getMountItemAt(6)).getGlobalKey());
     // TestViewComponent
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, "$[TestViewComponent2]"),
-        Component.getGlobalKey(
-            getComponentContext(lithoView.getMountItemAt(7)), getComponentAt(lithoView, 7)));
+        getComponentContext(lithoView.getMountItemAt(7)).getGlobalKey());
   }
 
   @Test

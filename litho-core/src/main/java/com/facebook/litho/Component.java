@@ -276,7 +276,7 @@ public abstract class Component
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
-      TransitionUtils.setOwnerKey(transition, Component.getGlobalKey(c, this));
+      TransitionUtils.setOwnerKey(transition, c.getGlobalKey());
     }
     return transition;
   }
@@ -1112,15 +1112,6 @@ public abstract class Component
     mErrorEventHandler = errorHandler;
   }
 
-  /** Get a key that is unique to this component within its tree. */
-  static @Nullable String getGlobalKey(
-      @Nullable ComponentContext scopedContext, Component component) {
-    if (scopedContext == null) {
-      return null;
-    }
-    return scopedContext.getGlobalKey();
-  }
-
   /** @return a handle that is unique to this component. */
   @Nullable
   public final Handle getHandle() {
@@ -1520,7 +1511,7 @@ public abstract class Component
 
       final Component owner = getOwner();
       if (owner != null) {
-        mComponent.mOwnerGlobalKey = Component.getGlobalKey(mContext, owner);
+        mComponent.mOwnerGlobalKey = mContext.getGlobalKey();
       }
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
