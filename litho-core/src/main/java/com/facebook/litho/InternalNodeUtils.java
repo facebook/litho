@@ -48,7 +48,7 @@ import java.util.List;
 public class InternalNodeUtils {
 
   static LithoNode create(ComponentContext context) {
-    return new LithoNode<>(context);
+    return new LithoNode(context);
   }
 
   static NestedTreeHolder createNestedTreeHolder(

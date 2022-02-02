@@ -528,7 +528,7 @@ public class LayoutState
   private static void collectResults(
       final ComponentContext parentContext,
       final LithoLayoutResult result,
-      final LithoNode<?> node,
+      final LithoNode node,
       final LayoutState layoutState,
       @Nullable RenderTreeNode parent,
       final @Nullable DiffNode parentDiffNode,

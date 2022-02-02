@@ -28,7 +28,7 @@ import com.facebook.yoga.YogaNode;
  * properties and held separately so that they can be copied into the actual nested tree layout
  * before measuring it.
  */
-public class NestedTreeHolder extends LithoNode<NestedTreeYogaLayoutProps> {
+public class NestedTreeHolder extends LithoNode {
 
   final @Nullable TreeProps mPendingTreeProps;
 
@@ -60,11 +60,13 @@ public class NestedTreeHolder extends LithoNode<NestedTreeYogaLayoutProps> {
   }
 
   @Override
-  void writeToYogaNode(NestedTreeYogaLayoutProps target, YogaNode node) {
-    super.writeToYogaNode(target, node);
-    mNestedBorderEdges = target.getBorderWidth();
-    mNestedTreePadding = target.getPadding();
-    mNestedIsPaddingPercentage = target.getIsPaddingPercentage();
+  NestedTreeYogaLayoutProps writeToYogaNode(YogaNode node) {
+    NestedTreeYogaLayoutProps writer = (NestedTreeYogaLayoutProps) super.writeToYogaNode(node);
+    mNestedBorderEdges = writer.getBorderWidth();
+    mNestedTreePadding = writer.getPadding();
+    mNestedIsPaddingPercentage = writer.getIsPaddingPercentage();
+
+    return writer;
   }
 
   @Override

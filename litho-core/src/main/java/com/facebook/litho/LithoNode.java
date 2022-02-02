@@ -84,7 +84,7 @@ import java.util.Set;
 /** {@link LithoNode} is the {@link Node} implementation of Litho. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRenderContext> {
+public class LithoNode implements Node<LithoRenderContext> {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
@@ -390,20 +390,15 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
    * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
    */
   @SuppressLint("LongLogTag")
-  private static <Writer extends YogaLayoutProps> YogaNode buildYogaTree(
-      LithoRenderContext renderContext,
-      LithoNode<Writer> currentNode,
-      @Nullable YogaNode parentNode) {
+  private static YogaNode buildYogaTree(
+      LithoRenderContext renderContext, LithoNode currentNode, @Nullable YogaNode parentNode) {
 
     final YogaNode node;
 
     node = NodeConfig.createYogaNode();
 
-    // Create a LayoutProps object to write to.
-    final Writer writer = (Writer) currentNode.createYogaNodeWriter(node);
-
     // Transfer the layout props to YogaNode
-    currentNode.writeToYogaNode(writer, node);
+    currentNode.writeToYogaNode(node);
 
     final @Nullable LithoLayoutResult parentLayoutResult =
         parentNode != null ? (LithoLayoutResult) parentNode.getData() : null;
@@ -1169,7 +1164,8 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     return new YogaLayoutProps(node);
   }
 
-  void writeToYogaNode(final Writer target, final YogaNode node) {
+  YogaLayoutProps writeToYogaNode(final YogaNode node) {
+    final YogaLayoutProps writer = createYogaNodeWriter(node);
 
     // Apply the extra layout props
     if (mLayoutDirection != null) {
@@ -1201,7 +1197,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       if (mNestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
         mNestedTreeHolder.transferInto(this);
         if (mBackground != null) {
-          setPaddingFromDrawable(target, mBackground);
+          setPaddingFromDrawable(writer, mBackground);
         }
       } else {
         final CommonProps props = component.getCommonProps();
@@ -1214,18 +1210,18 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
             final TypedArray a =
                 context.obtainStyledAttributes(
                     null, com.facebook.litho.R.styleable.ComponentLayout, styleAttr, styleRes);
-            applyLayoutStyleAttributes(target, a);
+            applyLayoutStyleAttributes(writer, a);
             a.recycle();
           }
 
           // Set the padding from the background
           final Drawable background = props.getBackground();
           if (background != null) {
-            setPaddingFromDrawable(target, background);
+            setPaddingFromDrawable(writer, background);
           }
 
           // Copy the layout props into this LithoNode.
-          props.copyLayoutProps(target);
+          props.copyLayoutProps(writer);
         }
       }
     }
@@ -1233,7 +1229,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     // Apply the border widths
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       for (int i = 0, length = mBorderEdgeWidths.length; i < length; ++i) {
-        target.setBorderWidth(Border.edgeFromIndex(i), mBorderEdgeWidths[i]);
+        writer.setBorderWidth(Border.edgeFromIndex(i), mBorderEdgeWidths[i]);
       }
     }
 
@@ -1244,19 +1240,21 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
         if (!YogaConstants.isUndefined(value)) {
           final YogaEdge edge = YogaEdge.fromInt(i);
           if (mNestedIsPaddingPercent != null && mNestedIsPaddingPercent[edge.intValue()]) {
-            target.paddingPercent(edge, value);
+            writer.paddingPercent(edge, value);
           } else {
-            target.paddingPx(edge, (int) value);
+            writer.paddingPx(edge, (int) value);
           }
         }
       }
     }
 
     if (mDebugLayoutProps != null) {
-      mDebugLayoutProps.copyInto(target);
+      mDebugLayoutProps.copyInto(writer);
     }
 
-    mIsPaddingSet = target.isPaddingSet;
+    mIsPaddingSet = writer.isPaddingSet;
+
+    return writer;
   }
 
   LithoLayoutResult createLayoutResult(
@@ -1354,7 +1352,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     }
 
     // 2. Shallow copy this layout.
-    final LithoNode<?> layout;
+    final LithoNode layout;
 
     layout = current.clone();
     layout.mChildren = new ArrayList<>(current.getChildCount());

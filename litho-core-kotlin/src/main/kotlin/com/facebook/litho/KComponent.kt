@@ -278,10 +278,8 @@ abstract class KComponent : Component() {
   final override fun recordRenderData(c: ComponentContext, toRecycle: RenderData) =
       super.recordRenderData(c, toRecycle)
 
-  final override fun resolve(
-      layoutContext: LayoutStateContext,
-      c: ComponentContext
-  ): LithoNode<*>? = super.resolve(layoutContext, c)
+  final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
+      super.resolve(layoutContext, c)
 
   final override fun shouldAlwaysRemeasure() = false
 
