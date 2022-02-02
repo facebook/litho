@@ -35,6 +35,9 @@ import com.facebook.litho.widget.SnapUtil
 abstract class CollectionLayout(
     @RecyclerView.Orientation orientation: Int,
     reverse: Boolean,
+    rangeRatio: Float? = null,
+    useBackgroundChangeSets: Boolean = false,
+    isReconciliationEnabled: Boolean = false,
     hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
     mainAxisWrapContent: Boolean = false,
@@ -47,13 +50,15 @@ abstract class CollectionLayout(
           .reverseLayout(reverse)
           .recyclerBinderConfiguration(
               RecyclerBinderConfiguration.create()
-                  .useBackgroundChangeSets(true)
                   .apply {
                     if (hasDynamicItemHeight) {
                       hasDynamicItemHeight(hasDynamicItemHeight)
                     }
+                    rangeRatio?.let { rangeRatio(it) }
                   }
                   .wrapContent(mainAxisWrapContent)
+                  .useBackgroundChangeSets(useBackgroundChangeSets)
+                  .isReconciliationEnabled(isReconciliationEnabled)
                   .build())
           .build()
 }
@@ -91,6 +96,9 @@ interface CollectionLayouts {
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
       reverse: Boolean = false,
+      rangeRatio: Float? = null,
+      useBackgroundChangeSets: Boolean = false,
+      isReconciliationEnabled: Boolean = false,
       crossAxisWrapMode: CrossAxisWrapMode = CrossAxisWrapMode.NoWrap,
       mainAxisWrapContent: Boolean = false,
   ): CollectionLayout =
@@ -98,6 +106,9 @@ interface CollectionLayouts {
           CollectionLayout(
               orientation,
               reverse,
+              rangeRatio,
+              useBackgroundChangeSets,
+              isReconciliationEnabled,
               crossAxisWrapMode.hasDynamicItemHeight,
               crossAxisWrapMode.canMeasureRecycler,
               mainAxisWrapContent,
@@ -117,9 +128,14 @@ interface CollectionLayouts {
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
       reverse: Boolean = false,
+      rangeRatio: Float? = null,
+      useBackgroundChangeSets: Boolean = false,
+      isReconciliationEnabled: Boolean = false,
       columns: Int = 2,
   ): CollectionLayout =
-      object : CollectionLayout(orientation, reverse) {
+      object :
+          CollectionLayout(
+              orientation, reverse, rangeRatio, useBackgroundChangeSets, isReconciliationEnabled) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.create().snapMode(snapMode).numColumns(columns)
       }
@@ -135,10 +151,15 @@ interface CollectionLayouts {
   fun StaggeredGrid(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       reverse: Boolean = false,
+      rangeRatio: Float? = null,
+      useBackgroundChangeSets: Boolean = false,
+      isReconciliationEnabled: Boolean = false,
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE
   ): CollectionLayout =
-      object : CollectionLayout(orientation, reverse) {
+      object :
+          CollectionLayout(
+              orientation, reverse, rangeRatio, useBackgroundChangeSets, isReconciliationEnabled) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
       }

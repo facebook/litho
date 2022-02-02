@@ -62,10 +62,21 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     recyclerEventsController: RecyclerEventsController? = null,
     noinline onDataRendered: OnDataRendered? = null,
+    rangeRatio: Float? = null,
+    useBackgroundChangeSets: Boolean = false,
+    isReconciliationEnabled: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
 ): Collection =
     Collection(
-        layout = Collection.StaggeredGrid(orientation, reverse, spans, gapStrategy),
+        layout =
+            Collection.StaggeredGrid(
+                orientation,
+                reverse,
+                rangeRatio,
+                useBackgroundChangeSets,
+                isReconciliationEnabled,
+                spans,
+                gapStrategy),
         itemAnimator,
         itemDecoration,
         clipToPadding,

@@ -60,10 +60,21 @@ inline fun ResourcesScope.LazyGrid(
     onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     recyclerEventsController: RecyclerEventsController? = null,
     noinline onDataRendered: OnDataRendered? = null,
+    rangeRatio: Float? = null,
+    useBackgroundChangeSets: Boolean = false,
+    isReconciliationEnabled: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
 ): Collection =
     Collection(
-        layout = Collection.Grid(orientation, snapMode, reverse, columns),
+        layout =
+            Collection.Grid(
+                orientation,
+                snapMode,
+                reverse,
+                rangeRatio,
+                useBackgroundChangeSets,
+                isReconciliationEnabled,
+                columns),
         itemAnimator,
         itemDecoration,
         clipToPadding,
