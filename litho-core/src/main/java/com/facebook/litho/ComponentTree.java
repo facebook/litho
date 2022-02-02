@@ -2348,7 +2348,7 @@ public class ComponentTree implements LithoLifecycleListener {
             if (ComponentsConfiguration.isTimelineEnabled) {
               ScopedComponentInfo rootScopedComponentInfo = null;
               for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
-                if (scopedComponentInfo.getContext().getComponentScope().equals(root)) {
+                if (scopedComponentInfo.getComponent().equals(root)) {
                   rootScopedComponentInfo = scopedComponentInfo;
                   break;
                 }
@@ -2425,9 +2425,9 @@ public class ComponentTree implements LithoLifecycleListener {
 
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
-      for (int i = 0, size = scopedComponentInfos.size(); i < size; i++) {
-        final ComponentContext scopedContext = scopedComponentInfos.get(i).getContext();
-        final Component component = scopedContext.getComponentScope();
+      for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
+        final ComponentContext scopedContext = scopedComponentInfo.getContext();
+        final Component component = scopedComponentInfo.getComponent();
         mEventHandlersController.bindEventHandlers(
             scopedContext, component, scopedContext.getGlobalKey());
         bindTriggerHandler(scopedContext, component);

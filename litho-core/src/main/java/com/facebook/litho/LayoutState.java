@@ -1992,7 +1992,7 @@ public class LayoutState
         final ScopedComponentInfo scopedComponentInfo =
             mScopedComponentInfosNeedingPreviousRenderData.get(i);
         final ComponentContext scopedContext = scopedComponentInfo.getContext();
-        final Component component = scopedContext.getComponentScope();
+        final Component component = scopedComponentInfo.getComponent();
         try {
           final Transition transition = component.createTransition(scopedContext);
           if (transition != null) {

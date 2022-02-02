@@ -54,7 +54,7 @@ public class RenderState {
   }
 
   private void recordRenderData(final ScopedComponentInfo scopedComponentInfo) {
-    final Component component = scopedComponentInfo.getContext().getComponentScope();
+    final Component component = scopedComponentInfo.getComponent();
     final String globalKey = scopedComponentInfo.getContext().getGlobalKey();
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
@@ -80,7 +80,7 @@ public class RenderState {
   }
 
   private void applyPreviousRenderData(ScopedComponentInfo scopedComponentInfo) {
-    final Component component = scopedComponentInfo.getContext().getComponentScope();
+    final Component component = scopedComponentInfo.getComponent();
     final String globalKey = scopedComponentInfo.getContext().getGlobalKey();
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(

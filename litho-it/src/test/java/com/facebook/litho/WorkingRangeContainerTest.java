@@ -62,8 +62,8 @@ public class WorkingRangeContainerTest {
     when(mScopedComponentInfo.getContext()).thenReturn(mComponentContext);
     when(mScopedComponentInfo2.getContext()).thenReturn(mComponentContext2);
 
-    when(mComponentContext.getComponentScope()).thenReturn(mComponent);
-    when(mComponentContext2.getComponentScope()).thenReturn(mComponent2);
+    when(mScopedComponentInfo.getComponent()).thenReturn(mComponent);
+    when(mScopedComponentInfo2.getComponent()).thenReturn(mComponent2);
 
     when(mComponentContext.getGlobalKey()).thenReturn("component");
     when(mComponentContext2.getGlobalKey()).thenReturn("component2");

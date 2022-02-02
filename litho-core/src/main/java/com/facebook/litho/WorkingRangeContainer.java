@@ -76,7 +76,7 @@ class WorkingRangeContainer {
       for (int i = 0, size = rangeTuple.mScopedComponentInfos.size(); i < size; i++) {
         final ScopedComponentInfo scopedComponentInfo = rangeTuple.mScopedComponentInfos.get(i);
         final ComponentContext scopedContext = scopedComponentInfo.getContext();
-        Component component = scopedContext.getComponentScope();
+        Component component = scopedComponentInfo.getComponent();
         String globalKey = scopedContext.getGlobalKey();
         if (!statusHandler.isInRange(rangeTuple.mName, component, globalKey)
             && isEnteringRange(
@@ -127,7 +127,7 @@ class WorkingRangeContainer {
       for (int i = 0, size = rangeTuple.mScopedComponentInfos.size(); i < size; i++) {
         final ScopedComponentInfo scopedComponentInfo = rangeTuple.mScopedComponentInfos.get(i);
         final ComponentContext scopedContext = scopedComponentInfo.getContext();
-        Component component = scopedContext.getComponentScope();
+        Component component = scopedComponentInfo.getComponent();
         String globalKey = scopedContext.getGlobalKey();
         if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)) {
           try {
