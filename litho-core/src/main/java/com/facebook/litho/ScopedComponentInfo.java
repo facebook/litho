@@ -135,7 +135,7 @@ public class ScopedComponentInfo implements Cloneable {
       mWorkingRangeRegistrations = new ArrayList<>();
     }
     mWorkingRangeRegistrations.add(
-        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey, this));
+        new WorkingRangeContainer.Registration(name, workingRange, this));
   }
 
   void addWorkingRangeToNode(LithoNode node) {

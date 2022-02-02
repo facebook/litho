@@ -865,11 +865,7 @@ public class LayoutState
 
       for (WorkingRangeContainer.Registration registration : registrations) {
         layoutState.mWorkingRangeContainer.registerWorkingRange(
-            registration.mName,
-            registration.mWorkingRange,
-            registration.mComponent,
-            registration.mKey,
-            registration.mScopedComponentInfo);
+            registration.mName, registration.mWorkingRange, registration.mScopedComponentInfo);
       }
     }
 

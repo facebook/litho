@@ -41,8 +41,6 @@ class WorkingRangeContainer {
   void registerWorkingRange(
       final String name,
       final WorkingRange workingRange,
-      final Component component,
-      final String globalKey,
       final ScopedComponentInfo scopedComponentInfo) {
     if (mWorkingRanges == null) {
       mWorkingRanges = new LinkedHashMap<>();
@@ -51,10 +49,9 @@ class WorkingRangeContainer {
     final String key = name + "_" + workingRange.hashCode();
     final RangeTuple rangeTuple = mWorkingRanges.get(key);
     if (rangeTuple == null) {
-      mWorkingRanges.put(
-          key, new RangeTuple(name, workingRange, component, globalKey, scopedComponentInfo));
+      mWorkingRanges.put(key, new RangeTuple(name, workingRange, scopedComponentInfo));
     } else {
-      rangeTuple.addComponent(component, globalKey, scopedComponentInfo);
+      rangeTuple.addComponent(scopedComponentInfo);
     }
   }
 
@@ -76,9 +73,11 @@ class WorkingRangeContainer {
     for (String key : mWorkingRanges.keySet()) {
       final RangeTuple rangeTuple = Preconditions.checkNotNull(mWorkingRanges.get(key));
 
-      for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
-        Component component = rangeTuple.mComponents.get(i);
-        String globalKey = rangeTuple.mComponentKeys.get(i);
+      for (int i = 0, size = rangeTuple.mScopedComponentInfos.size(); i < size; i++) {
+        final ScopedComponentInfo scopedComponentInfo = rangeTuple.mScopedComponentInfos.get(i);
+        final ComponentContext scopedContext = scopedComponentInfo.getContext();
+        Component component = scopedContext.getComponentScope();
+        String globalKey = scopedContext.getGlobalKey();
         if (!statusHandler.isInRange(rangeTuple.mName, component, globalKey)
             && isEnteringRange(
                 rangeTuple.mWorkingRange,
@@ -87,7 +86,6 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          ComponentContext scopedContext = rangeTuple.mScopedComponentInfos.get(i).getContext();
           try {
             component.dispatchOnEnteredRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -103,8 +101,6 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          final ComponentContext scopedContext =
-              rangeTuple.mScopedComponentInfos.get(i).getContext();
           try {
             component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -128,11 +124,12 @@ class WorkingRangeContainer {
     for (String key : mWorkingRanges.keySet()) {
       final RangeTuple rangeTuple = Preconditions.checkNotNull(mWorkingRanges.get(key));
 
-      for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
-        Component component = rangeTuple.mComponents.get(i);
-        String globalKey = rangeTuple.mComponentKeys.get(i);
+      for (int i = 0, size = rangeTuple.mScopedComponentInfos.size(); i < size; i++) {
+        final ScopedComponentInfo scopedComponentInfo = rangeTuple.mScopedComponentInfos.get(i);
+        final ComponentContext scopedContext = scopedComponentInfo.getContext();
+        Component component = scopedContext.getComponentScope();
+        String globalKey = scopedContext.getGlobalKey();
         if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)) {
-          ComponentContext scopedContext = rangeTuple.mScopedComponentInfos.get(i).getContext();
           try {
             component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -188,32 +185,19 @@ class WorkingRangeContainer {
   static class RangeTuple {
     final String mName;
     final WorkingRange mWorkingRange;
-    final List<Component> mComponents;
-    final List<String> mComponentKeys;
     final List<ScopedComponentInfo> mScopedComponentInfos;
 
     RangeTuple(
         final String name,
         final WorkingRange workingRange,
-        final Component component,
-        final String key,
         final ScopedComponentInfo scopedComponentInfo) {
       mName = name;
       mWorkingRange = workingRange;
-      mComponents = new ArrayList<>();
-      mComponentKeys = new ArrayList<>();
-      mComponents.add(component);
-      mComponentKeys.add(key);
       mScopedComponentInfos = new ArrayList<>();
       mScopedComponentInfos.add(scopedComponentInfo);
     }
 
-    void addComponent(
-        final Component component,
-        final String key,
-        final ScopedComponentInfo scopedComponentInfo) {
-      mComponents.add(component);
-      mComponentKeys.add(key);
+    void addComponent(final ScopedComponentInfo scopedComponentInfo) {
       mScopedComponentInfos.add(scopedComponentInfo);
     }
   }
@@ -222,20 +206,14 @@ class WorkingRangeContainer {
   static class Registration {
     final String mName;
     final WorkingRange mWorkingRange;
-    final Component mComponent;
-    final String mKey;
     final ScopedComponentInfo mScopedComponentInfo;
 
     Registration(
         final String name,
         final WorkingRange workingRange,
-        final Component component,
-        final String key,
         final ScopedComponentInfo scopedComponentInfo) {
       mName = name;
       mWorkingRange = workingRange;
-      mComponent = component;
-      mKey = key;
       mScopedComponentInfo = scopedComponentInfo;
     }
   }
