@@ -55,7 +55,6 @@ public class ComponentTreeHolder {
   private final boolean mIsLayoutDiffingEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
-  private final int mRecyclingMode;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
@@ -244,7 +243,6 @@ public class ComponentTreeHolder {
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mParentLifecycle = builder.parentLifecycle;
-    mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
@@ -487,7 +485,6 @@ public class ComponentTreeHolder {
           .visibilityProcessing(mVisibilityProcessingEnabled)
           .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
           .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
-          .recyclingMode(mRecyclingMode)
           .componentsConfiguration(mComponentsConfiguration)
           .useRenderUnitIdMap(mUseRenderUnitIdMap)
           .build();

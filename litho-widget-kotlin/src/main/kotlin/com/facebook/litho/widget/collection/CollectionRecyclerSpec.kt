@@ -185,7 +185,6 @@ object CollectionRecyclerSpec {
             .canInterruptAndMoveLayoutsBetweenThreads(
                 binderConfiguration.moveLayoutsBetweenThreads())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
-            .recyclingMode(binderConfiguration.recyclingMode)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .componentWarmer(binderConfiguration.componentWarmer)
             .lithoViewFactory(binderConfiguration.lithoViewFactory)

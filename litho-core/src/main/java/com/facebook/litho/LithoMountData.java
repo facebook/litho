@@ -87,11 +87,7 @@ public class LithoMountData {
     }
   }
 
-  void releaseMountContent(
-      final Context context,
-      final MountItem item,
-      final String releaseCause,
-      final int recyclingMode) {
+  void releaseMountContent(final Context context, final MountItem item, final String releaseCause) {
     final RenderTreeNode node = item.getRenderTreeNode();
     final LayoutOutput output = getLayoutOutput(node);
     final Component mComponent = output.getComponent();
@@ -103,7 +99,7 @@ public class LithoMountData {
               + ", previousReleaseCause: "
               + mReleaseCause);
     }
-    ComponentsPools.release(context, mComponent, item.getContent(), recyclingMode);
+    ComponentsPools.release(context, mComponent, item.getContent());
     mIsReleased = true;
     mReleaseCause = releaseCause;
   }

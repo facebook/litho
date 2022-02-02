@@ -67,25 +67,17 @@ public class ComponentsPools {
    */
   static boolean sIsManualCallbacks;
 
-  public static Object acquireMountContent(
-      Context context, Component component, @ComponentTree.RecyclingMode int recyclingMode) {
-    final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
+  public static Object acquireMountContent(Context context, Component component) {
+    final MountContentPool pool = getMountContentPool(context, component);
     if (pool == null) {
       return component.createMountContent(context);
     }
 
-    Object content = pool.acquire(context, component);
-    if (recyclingMode == ComponentTree.RecyclingMode.NO_VIEW_REUSE) {
-      // Throw acquired content if N0_VIEW_REUSE recycling mode!
-      return component.createMountContent(context);
-    }
-
-    return content;
+    return pool.acquire(context, component);
   }
 
-  public static void release(
-      Context context, Component component, Object mountContent, int recyclingMode) {
-    final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
+  public static void release(Context context, Component component, Object mountContent) {
+    final MountContentPool pool = getMountContentPool(context, component);
     if (pool != null) {
       if (mountContent instanceof LoggingMountContent) {
         ((LoggingMountContent) mountContent).onMountContentRecycled();
@@ -98,8 +90,7 @@ public class ComponentsPools {
    * Pre-allocates mount content for this component type within the pool for this context unless the
    * pre-allocation limit has been hit in which case we do nothing.
    */
-  public static void maybePreallocateContent(
-      Context context, Component component, int recyclingMode) {
+  public static void maybePreallocateContent(Context context, Component component) {
     // When Rendercore MountState is enabled, delegate these calls to MountItemsPool.
     // Needed since this API is called from product layer.
     if (ComponentsConfiguration.delegateToRenderCoreMount) {
@@ -107,7 +98,7 @@ public class ComponentsPools {
       return;
     }
 
-    final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
+    final MountContentPool pool = getMountContentPool(context, component);
     if (pool != null) {
       pool.maybePreallocateContent(context, component);
     }
@@ -141,8 +132,8 @@ public class ComponentsPools {
   }
 
   private static @Nullable MountContentPool getMountContentPool(
-      Context context, Component component, int recyclingMode) {
-    if (component.poolSize() == 0 || !shouldCreateMountContentPool(recyclingMode)) {
+      Context context, Component component) {
+    if (component.poolSize() == 0) {
       return null;
     }
 
@@ -193,11 +184,6 @@ public class ComponentsPools {
 
       return pool;
     }
-  }
-
-  private static boolean shouldCreateMountContentPool(int recyclingMode) {
-    return recyclingMode == ComponentTree.RecyclingMode.DEFAULT
-        || recyclingMode == ComponentTree.RecyclingMode.NO_VIEW_REUSE;
   }
 
   @GuardedBy("sMountContentLock")

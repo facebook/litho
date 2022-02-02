@@ -693,10 +693,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       mComponentTree.clearLithoView();
     }
 
-    if (componentTree != null && !mDelegateToRenderCore) {
-      mMountState.setRecyclingMode(componentTree.getRecyclingMode());
-    }
-
     mComponentTree = componentTree;
 
     if (mHasNewComponentTree && mDelegateToRenderCore) {

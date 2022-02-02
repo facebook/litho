@@ -57,8 +57,7 @@ public class BenchmarkTestHelper {
   }
 
   public static Object getMountContent(ComponentContext c, Component component) {
-    return ComponentsPools.acquireMountContent(
-        c.getAndroidContext(), component, ComponentTree.RecyclingMode.DEFAULT);
+    return ComponentsPools.acquireMountContent(c.getAndroidContext(), component);
   }
 
   public static void setMountStateDirty(LithoView lithoView) {

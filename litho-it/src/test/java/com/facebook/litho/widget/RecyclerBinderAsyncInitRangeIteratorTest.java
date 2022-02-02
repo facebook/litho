@@ -86,7 +86,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               boolean visibilityProcessing,
               boolean canInterruptAndMoveLayoutsBetweenThreads,
               boolean isReconciliationEnabled,
-              int recyclingMode,
               boolean isLayoutDiffingEnabled,
               RunnableHandler preallocateHandler,
               boolean preallocatePerMountSpec,

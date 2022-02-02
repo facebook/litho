@@ -135,7 +135,6 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
   private final @Nullable RunnableHandler mAsyncInsertHandler;
-  private final int mRecyclingMode;
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
@@ -379,7 +378,6 @@ public class RecyclerBinder
         boolean visibilityProcessingEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean isReconciliationEnabled,
-        int recyclingMode,
         boolean isLayoutDiffingEnabled,
         RunnableHandler preallocateHandler,
         boolean preallocatePerMountSpec,
@@ -399,7 +397,6 @@ public class RecyclerBinder
             boolean visibilityProcessingEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean isReconciliationEnabled,
-            int recyclingMode,
             boolean isLayoutDiffingEnabled,
             @Nullable RunnableHandler preallocateHandler,
             boolean preallocatePerMountSpec,
@@ -414,7 +411,6 @@ public class RecyclerBinder
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .isReconciliationEnabled(isReconciliationEnabled)
-              .recyclingMode(recyclingMode)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
@@ -461,7 +457,6 @@ public class RecyclerBinder
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
     private RunnableHandler mAsyncInsertLayoutHandler;
-    private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
@@ -743,11 +738,6 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder recyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
-      this.recyclingMode = recyclingMode;
-      return this;
-    }
-
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       isLayoutDiffingEnabled = isEnabled;
       return this;
@@ -799,11 +789,6 @@ public class RecyclerBinder
       }
       visibilityProcessing =
           visibilityProcessing && ComponentContext.isVisibilityProcessingEnabled(c);
-
-      if (recyclingMode == ComponentTree.RecyclingMode.DEFAULT) {
-        // Only override from parent if recycling mode is not explicitly set.
-        recyclingMode = c.getRecyclingMode();
-      }
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
@@ -1002,7 +987,6 @@ public class RecyclerBinder
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentWarmer = builder.mComponentWarmer;
     mStartupLogger = builder.startupLogger;
-    mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
     mFixViewportUpdatesForAsyncInsert =
         builder.fixViewportUpdatesForAsyncInsert
@@ -3942,7 +3926,6 @@ public class RecyclerBinder
         mVisibilityProcessingEnabled,
         mMoveLayoutsBetweenThreads,
         mIsReconciliationEnabled,
-        mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
         mPreallocatePerMountSpec,

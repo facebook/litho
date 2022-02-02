@@ -77,8 +77,7 @@ public class ViewCompatComponent<V extends View> extends Component {
       int heightSpec,
       Size size,
       @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final V toMeasure =
-        (V) ComponentsPools.acquireMountContent(c.getAndroidContext(), this, c.getRecyclingMode());
+    final V toMeasure = (V) ComponentsPools.acquireMountContent(c.getAndroidContext(), this);
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
 
     toMeasure.setLayoutParams(layoutParams);
@@ -96,7 +95,7 @@ public class ViewCompatComponent<V extends View> extends Component {
 
     mViewBinder.unbind(toMeasure);
 
-    ComponentsPools.release(c.getAndroidContext(), this, toMeasure, c.getRecyclingMode());
+    ComponentsPools.release(c.getAndroidContext(), this, toMeasure);
   }
 
   @Override

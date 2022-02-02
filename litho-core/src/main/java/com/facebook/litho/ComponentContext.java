@@ -667,13 +667,6 @@ public class ComponentContext implements Cloneable {
     return Preconditions.checkNotNull(mScopedComponentInfo);
   }
 
-  public @ComponentTree.RecyclingMode int getRecyclingMode() {
-    if (mComponentTree == null) {
-      return ComponentTree.RecyclingMode.DEFAULT;
-    }
-    return mComponentTree.getRecyclingMode();
-  }
-
   @Override
   protected ComponentContext clone() {
     try {

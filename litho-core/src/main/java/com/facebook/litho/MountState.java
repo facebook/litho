@@ -162,8 +162,6 @@ class MountState implements MountDelegateTarget {
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable ExtensionState mTransitionsExtensionState;
 
-  private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
-
   public final boolean mShouldUsePositionInParent =
       ComponentsConfiguration.shouldUsePositionInParentForMounting;
 
@@ -247,10 +245,6 @@ class MountState implements MountDelegateTarget {
     assertMainThread();
 
     return mNeedsRemount;
-  }
-
-  void setRecyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
-    this.mRecyclingMode = recyclingMode;
   }
 
   /**
@@ -1284,8 +1278,7 @@ class MountState implements MountDelegateTarget {
       throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
     }
     final Object content =
-        ComponentsPools.acquireMountContent(
-            mContext.getAndroidContext(), component, mRecyclingMode);
+        ComponentsPools.acquireMountContent(mContext.getAndroidContext(), component);
 
     final ComponentContext context = getContextForComponent(node);
     final LithoLayoutData layoutData = (LithoLayoutData) node.getLayoutData();
@@ -2390,8 +2383,7 @@ class MountState implements MountDelegateTarget {
 
     try {
       getMountData(mountItem)
-          .releaseMountContent(
-              mContext.getAndroidContext(), mountItem, "unmountItem", mRecyclingMode);
+          .releaseMountContent(mContext.getAndroidContext(), mountItem, "unmountItem");
     } catch (LithoMountData.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(mountItem));
     }
@@ -2408,10 +2400,8 @@ class MountState implements MountDelegateTarget {
       unbindComponentFromContent(item, component, content);
     }
     maybeUnsetViewAttributes(item);
-    if (mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
-      final LithoLayoutData layoutData = (LithoLayoutData) item.getRenderTreeNode().getLayoutData();
-      component.unmount(context, content, layoutData.interStagePropsContainer);
-    }
+    final LithoLayoutData layoutData = (LithoLayoutData) item.getRenderTreeNode().getLayoutData();
+    component.unmount(context, content, layoutData.interStagePropsContainer);
   }
 
   @Override
