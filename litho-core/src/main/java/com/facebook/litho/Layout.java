@@ -201,7 +201,8 @@ class Layout {
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = InternalNodeUtils.create(c).flexDirection(YogaFlexDirection.COLUMN);
+        node = InternalNodeUtils.create(c);
+        node.flexDirection(YogaFlexDirection.COLUMN);
       }
 
       // If the component is a LayoutSpec.

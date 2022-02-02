@@ -223,14 +223,12 @@ public class LithoNode implements Node<LithoRenderContext> {
     mAttachables.add(attachable);
   }
 
-  public LithoNode alignContent(YogaAlign alignContent) {
+  public void alignContent(YogaAlign alignContent) {
     mAlignContent = alignContent;
-    return this;
   }
 
-  public LithoNode alignItems(YogaAlign alignItems) {
+  public void alignItems(YogaAlign alignItems) {
     mAlignItems = alignItems;
-    return this;
   }
 
   public void appendComponent(ScopedComponentInfo scopedComponentInfo) {
@@ -245,27 +243,25 @@ public class LithoNode implements Node<LithoRenderContext> {
     mUnresolvedComponents.add(component);
   }
 
-  public LithoNode background(@Nullable Drawable background) {
+  public void background(@Nullable Drawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
-    return this;
   }
 
-  public LithoNode backgroundColor(@ColorInt int backgroundColor) {
-    return background(ComparableColorDrawable.create(backgroundColor));
+  public void backgroundColor(@ColorInt int backgroundColor) {
+    background(ComparableColorDrawable.create(backgroundColor));
   }
 
-  public LithoNode backgroundRes(@DrawableRes int resId) {
+  public void backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return background(null);
+      background(null);
+    } else {
+      background(ContextCompat.getDrawable(mContext, resId));
     }
-
-    return background(ContextCompat.getDrawable(mContext, resId));
   }
 
-  public LithoNode border(Border border) {
+  public void border(Border border) {
     border(border.mEdgeWidths, border.mEdgeColors, border.mRadius, border.mPathEffect);
-    return this;
   }
 
   public void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect) {
@@ -472,70 +468,60 @@ public class LithoNode implements Node<LithoRenderContext> {
     return (LithoLayoutResult) root.getData();
   }
 
-  public LithoNode child(
+  public void child(
       LayoutStateContext layoutContext, ComponentContext c, @Nullable Component child) {
     if (child != null) {
-      return child(Layout.create(layoutContext, c, child));
+      child(Layout.create(layoutContext, c, child));
     }
-
-    return this;
   }
 
-  public LithoNode child(@Nullable LithoNode child) {
+  public void child(@Nullable LithoNode child) {
     if (child != null) {
       addChildAt(child, mChildren.size());
     }
-
-    return this;
   }
 
-  public LithoNode duplicateParentState(boolean duplicateParentState) {
+  public void duplicateParentState(boolean duplicateParentState) {
     mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
-    return this;
   }
 
-  public LithoNode duplicateChildrenStates(boolean duplicateChildrenStates) {
+  public void duplicateChildrenStates(boolean duplicateChildrenStates) {
     mPrivateFlags |= PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET;
     mDuplicateChildrenStates = duplicateChildrenStates;
-    return this;
   }
 
-  public LithoNode flexDirection(YogaFlexDirection direction) {
+  public void flexDirection(YogaFlexDirection direction) {
     mFlexDirection = direction;
-    return this;
   }
 
-  public LithoNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
+  public void focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
     mFocusedHandler = addVisibilityHandler(mFocusedHandler, focusedHandler);
-    return this;
   }
 
-  public LithoNode foreground(@Nullable Drawable foreground) {
+  public void foreground(@Nullable Drawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
-    return this;
   }
 
-  public LithoNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(ComparableColorDrawable.create(foregroundColor));
+  public void foregroundColor(@ColorInt int foregroundColor) {
+    foreground(ComparableColorDrawable.create(foregroundColor));
   }
 
-  public LithoNode foregroundRes(@DrawableRes int resId) {
+  public void foregroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return foreground(null);
+      foreground(null);
+    } else {
+      foreground(ContextCompat.getDrawable(mContext, resId));
     }
-
-    return foreground(ContextCompat.getDrawable(mContext, resId));
   }
 
-  public LithoNode layerType(final @LayerType int type, @Nullable final Paint paint) {
+  public void layerType(final @LayerType int type, @Nullable final Paint paint) {
     if (type != LayerType.LAYER_TYPE_NOT_SET) {
       mLayerType = type;
       mLayerPaint = paint;
     }
-    return this;
   }
 
   public int getLayerType() {
@@ -546,11 +532,10 @@ public class LithoNode implements Node<LithoRenderContext> {
     return mLayerPaint;
   }
 
-  public LithoNode fullImpressionHandler(
+  public void fullImpressionHandler(
       @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = addVisibilityHandler(mFullImpressionHandler, fullImpressionHandler);
-    return this;
   }
 
   public int[] getBorderColors() {
@@ -840,9 +825,8 @@ public class LithoNode implements Node<LithoRenderContext> {
     return mLayoutDirection == null || mLayoutDirection == YogaDirection.INHERIT;
   }
 
-  public LithoNode justifyContent(YogaJustify justifyContent) {
+  public void justifyContent(YogaJustify justifyContent) {
     mJustifyContent = justifyContent;
-    return this;
   }
 
   public void layoutDirection(YogaDirection direction) {
@@ -861,91 +845,75 @@ public class LithoNode implements Node<LithoRenderContext> {
     mYogaMeasureFunction = measureFunction;
   }
 
-  public LithoNode stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
+  public void stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
     mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_SET;
     mStateListAnimator = stateListAnimator;
     wrapInView();
-    return this;
   }
 
-  public LithoNode stateListAnimatorRes(@DrawableRes int resId) {
+  public void stateListAnimatorRes(@DrawableRes int resId) {
     mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_RES_SET;
     mStateListAnimatorRes = resId;
     wrapInView();
-    return this;
   }
 
-  public LithoNode testKey(@Nullable String testKey) {
+  public void testKey(@Nullable String testKey) {
     mTestKey = testKey;
-    return this;
   }
 
-  public LithoNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+  public void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     if (mTouchExpansion == null) {
       mTouchExpansion = new Edges();
     }
 
     mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
     mTouchExpansion.set(edge, touchExpansion);
-
-    return this;
   }
 
-  public LithoNode transitionKey(@Nullable String key, @Nullable String ownerKey) {
+  public void transitionKey(@Nullable String key, @Nullable String ownerKey) {
     if (SDK_INT >= ICE_CREAM_SANDWICH && !TextUtils.isEmpty(key)) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
       mTransitionOwnerKey = ownerKey;
     }
-
-    return this;
   }
 
-  public LithoNode transitionKeyType(@Nullable Transition.TransitionKeyType type) {
+  public void transitionKeyType(@Nullable Transition.TransitionKeyType type) {
     mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
     mTransitionKeyType = type;
-    return this;
   }
 
-  public LithoNode unfocusedHandler(
-      @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+  public void unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
     mUnfocusedHandler = addVisibilityHandler(mUnfocusedHandler, unfocusedHandler);
-    return this;
   }
 
-  public LithoNode visibilityChangedHandler(
+  public void visibilityChangedHandler(
       @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET;
     mVisibilityChangedHandler =
         addVisibilityHandler(mVisibilityChangedHandler, visibilityChangedHandler);
-    return this;
   }
 
-  public LithoNode visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
+  public void visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = addVisibilityHandler(mVisibleHandler, visibleHandler);
-    return this;
   }
 
-  public LithoNode visibleHeightRatio(float visibleHeightRatio) {
+  public void visibleHeightRatio(float visibleHeightRatio) {
     mVisibleHeightRatio = visibleHeightRatio;
-    return this;
   }
 
-  public LithoNode visibleWidthRatio(float visibleWidthRatio) {
+  public void visibleWidthRatio(float visibleWidthRatio) {
     mVisibleWidthRatio = visibleWidthRatio;
-    return this;
   }
 
-  public LithoNode wrap(YogaWrap wrap) {
+  public void wrap(YogaWrap wrap) {
     mYogaWrap = wrap;
-    return this;
   }
 
-  public LithoNode wrapInView() {
+  public void wrapInView() {
     mForceViewWrapping = true;
-    return this;
   }
 
   public @Nullable Drawable getBackground() {

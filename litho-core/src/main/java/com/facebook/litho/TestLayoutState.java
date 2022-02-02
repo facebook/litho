@@ -112,9 +112,8 @@ public class TestLayoutState {
     YogaWrap wrap = getInternalState(component, "wrap");
     List<Component> children = getInternalState(component, "children");
 
-    LithoNode node =
-        createInternalNode(c)
-            .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
+    LithoNode node = createInternalNode(c);
+    node.flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
     if (alignItems != null) {
       node.alignItems(alignItems);
@@ -318,7 +317,8 @@ public class TestLayoutState {
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = createInternalNode(c).flexDirection(YogaFlexDirection.COLUMN);
+        node = createInternalNode(c);
+        node.flexDirection(YogaFlexDirection.COLUMN);
       }
 
       // If the component is a LayoutSpec.
