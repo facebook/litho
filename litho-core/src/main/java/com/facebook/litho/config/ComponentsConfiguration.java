@@ -166,12 +166,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldAddHostViewForRootComponent = false;
 
-  /**
-   * If {@code false} we won't force Component to update when Device Orientation change, and rely on
-   * its size change.
-   */
-  public static boolean shouldForceComponentUpdateOnOrientationChange = true;
-
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
 
@@ -194,8 +188,6 @@ public class ComponentsConfiguration {
   public static boolean isTimelineEnabled = isDebugModeEnabled;
 
   public static @Nullable String timelineDocsLink = null;
-
-  public static boolean swallowUnhandledExceptions = false;
 
   /** Initialize sticky header during layout when its component tree is null */
   public static boolean initStickyHeaderInLayoutWhenComponentTreeIsNull = false;
@@ -246,21 +238,6 @@ public class ComponentsConfiguration {
    * whether render unit id map should be used for the external components in the backtest.
    */
   public static boolean useRenderUnitIdMapExternalComponents = true;
-
-  /**
-   * For mount content pools disabled due to native RenderThread crashes, instead enables them to
-   * re-use content unmounted in the same frame.
-   */
-  public static boolean enableAutoClearingMountContentPoolExternalComponents = false;
-
-  /** This allows us to also capture the baseline of allowing recycling as normal. */
-  public static boolean autoClearingMountContentPoolShouldClearExternalComponents = true;
-
-  /** Same as enableAutoClearingMountContentPoolExternalComponents but for HostComponent. */
-  public static boolean enableAutoClearingMountContentPoolHostComponent = false;
-
-  /** Same as autoClearingMountContentPoolShouldClearExternalComponents but for HostComponent. */
-  public static boolean autoClearingMountContentPoolShouldClearHostComponent = true;
 
   /** This toggles whether fury should instrument the Litho event callback event */
   public static boolean furyEventCallbackInstrumentation = false;
