@@ -177,8 +177,6 @@ public class ComponentsConfiguration {
 
   public static boolean emitMessageForZeroSizedTexture = false;
 
-  public static boolean enableLayoutCaching = false;
-
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
 
   public static int overlappingRenderingViewSizeLimit = Integer.MAX_VALUE;

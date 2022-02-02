@@ -112,7 +112,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
-  private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseRenderUnitIdMap;
   private final ComponentsConfiguration mComponentsConfiguration;
 
@@ -182,10 +181,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
     return mLifecycleProvider != null;
-  }
-
-  public boolean isLayoutCachingEnabled() {
-    return mIsLayoutCachingEnabled;
   }
 
   boolean useRenderUnitIdMap() {
@@ -435,9 +430,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
-
-    mIsLayoutCachingEnabled =
-        mComponentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -3281,7 +3273,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
-    private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
     private boolean useRenderUnitIdMap = true;
 
     private @Nullable RenderUnitIdMap mRenderUnitIdMap;
@@ -3512,12 +3503,6 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       return new ComponentTree(this);
-    }
-
-    public void overrideStatelessConfigs(boolean isLayoutCachingEnabled) {
-      this.componentsConfiguration =
-          ComponentsConfiguration.create(this.componentsConfiguration).build();
-      this.isLayoutCachingEnabled = isLayoutCachingEnabled;
     }
   }
 }

@@ -32,8 +32,6 @@ public class TempComponentsConfigurations {
   private static final boolean originalEnsureParentMountedInRenderCore =
       ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
 
-  private static final boolean originalLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
-
   private static final boolean originalCanRemeasureCachedLayouts =
       ComponentsConfiguration.canRemeasureCachedLayouts;
 
@@ -63,14 +61,6 @@ public class TempComponentsConfigurations {
   public static void restoreEnsureParentMountedInRenderCoreMountState() {
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState =
         originalEnsureParentMountedInRenderCore;
-  }
-
-  public static void setLayoutCaching(boolean value) {
-    ComponentsConfiguration.enableLayoutCaching = value;
-  }
-
-  public static void restoreLayoutCaching() {
-    ComponentsConfiguration.enableLayoutCaching = originalLayoutCaching;
   }
 
   public static void setCanRemeasureCachedLayouts(boolean value) {
