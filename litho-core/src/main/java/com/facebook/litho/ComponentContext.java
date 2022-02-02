@@ -57,9 +57,6 @@ public class ComponentContext implements Cloneable {
   private @Nullable String mGlobalKey;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private final ResourceCache mResourceCache;
-
-  @ThreadConfined(ThreadConfined.ANY)
   private final ResourceResolver mResourceResolver;
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -121,8 +118,9 @@ public class ComponentContext implements Cloneable {
     }
 
     mContext = context;
-    mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
-    mResourceResolver = new ResourceResolver(this);
+    mResourceResolver =
+        new ResourceResolver(
+            context, ResourceCache.getLatest(context.getResources().getConfiguration()));
     mTreeProps = treeProps;
     mLogger = logger;
     mLogTag = logTag;
@@ -138,7 +136,6 @@ public class ComponentContext implements Cloneable {
       @Nullable LayoutStateContext layoutStateContext) {
 
     mContext = context.mContext;
-    mResourceCache = context.mResourceCache;
     mResourceResolver = context.mResourceResolver;
     mWidthSpec = context.mWidthSpec;
     mHeightSpec = context.mHeightSpec;
@@ -562,7 +559,7 @@ public class ComponentContext implements Cloneable {
   }
 
   public ResourceCache getResourceCache() {
-    return mResourceCache;
+    return mResourceResolver.getResourceCache();
   }
 
   EventHandler newEventHandler(int id) {

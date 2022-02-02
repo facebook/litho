@@ -198,7 +198,12 @@ class DimenTest {
   }
 
   private class MockResourceResolver(val density: Float, val scaledDensity: Float) :
-      ResourceResolver(ComponentContext(ApplicationProvider.getApplicationContext<Context>())) {
+      ResourceResolver(
+          ApplicationProvider.getApplicationContext<Context>(),
+          ResourceCache.getLatest(
+              ApplicationProvider.getApplicationContext<Context>()
+                  .getResources()
+                  .getConfiguration())) {
     override fun dipsToPixels(dips: Float): Int = FastMath.round(dips * density)
     override fun sipsToPixels(sips: Float): Int = FastMath.round(sips * scaledDensity)
   }

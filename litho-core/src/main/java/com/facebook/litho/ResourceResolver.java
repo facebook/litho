@@ -38,11 +38,15 @@ public class ResourceResolver {
   private final ResourceCache mResourceCache;
   private final Context mAndroidContext;
 
-  ResourceResolver(ComponentContext context) {
-    mAndroidContext = context.getAndroidContext();
+  ResourceResolver(Context context, ResourceCache resourceCache) {
+    mAndroidContext = context;
     mResources = mAndroidContext.getResources();
     mTheme = mAndroidContext.getTheme();
-    mResourceCache = context.getResourceCache();
+    mResourceCache = resourceCache;
+  }
+
+  ResourceCache getResourceCache() {
+    return mResourceCache;
   }
 
   public int dipsToPixels(float dips) {
