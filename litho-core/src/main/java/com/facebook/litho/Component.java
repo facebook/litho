@@ -78,7 +78,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -140,9 +139,6 @@ public abstract class Component
   private boolean mHasManualKey;
   private @Nullable Handle mHandle;
 
-  @GuardedBy("this")
-  private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
-
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   private @Nullable CommonProps mCommonProps;
   private @Nullable SparseArray<DynamicValue<?>> mCommonDynamicProps;
@@ -155,12 +151,6 @@ public abstract class Component
 
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable Context mBuilderContext;
-
-  /**
-   * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
-   * LayoutState#mWorkingRangeContainer} when calculate method is finished.
-   */
-  @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
   protected Component() {
     mTypeId = getOrCreateId(getClass());
@@ -737,28 +727,6 @@ public abstract class Component
     return shouldUpdate;
   }
 
-  final boolean shouldUpdate(
-      final @Nullable ComponentContext previousScopedContext,
-      final @Nullable Component previous,
-      final @Nullable ComponentContext nextScopedContext,
-      final @Nullable Component next) {
-
-    final StateContainer prevStateContainer =
-        previous == null
-            ? null
-            : (previousScopedContext == null
-                ? null
-                : Component.getStateContainer(previousScopedContext, previous));
-    final StateContainer nextStateContainer =
-        next == null
-            ? null
-            : (nextScopedContext == null
-                ? null
-                : Component.getStateContainer(nextScopedContext, next));
-
-    return shouldUpdate(previous, prevStateContainer, next, nextStateContainer);
-  }
-
   /**
    * Whether the component needs updating.
    *
@@ -947,10 +915,7 @@ public abstract class Component
 
   public Component makeShallowCopy() {
     try {
-      final Component component = (Component) super.clone();
-      component.mLayoutVersionGenerator = new AtomicBoolean();
-
-      return component;
+      return (Component) super.clone();
     } catch (CloneNotSupportedException e) {
       // This class implements Cloneable, so this is impossible
       throw new RuntimeException(e);
@@ -1331,11 +1296,6 @@ public abstract class Component
     applyStateUpdates(
         layoutStateContext.getStateHandler(), parentContext, scopedContext, globalKey);
 
-    // Needed for tests, mocks can run into this.
-    if (mLayoutVersionGenerator != null) {
-      mLayoutVersionGenerator.set(true);
-    }
-
     return scopedContext;
   }
 
@@ -1359,30 +1319,6 @@ public abstract class Component
       // the get method adds the state container to the needed state container map
       stateHandler.getStateContainer(globalKey);
     }
-  }
-
-  /**
-   * Returns the number of children of a given type {@param childComponent} component has and then
-   * increments it by 1.
-   *
-   * @return the number of children of {@param childComponent} type
-   */
-  static int getChildCountAndIncrement(
-      final ComponentContext parentContext,
-      final Component parentComponent,
-      final Component childComponent) {
-    return parentContext.getScopedComponentInfo().getChildCountAndIncrement(childComponent);
-  }
-
-  /**
-   * Returns the number of children with same {@param manualKey} component has and then increments
-   * it by 1.
-   */
-  static int getManualKeyUsagesCountAndIncrement(
-      final ComponentContext parentContext,
-      final Component parentComponent,
-      final String manualKey) {
-    return parentContext.getScopedComponentInfo().getManualKeyUsagesCountAndIncrement(manualKey);
   }
 
   /**
@@ -1496,11 +1432,6 @@ public abstract class Component
     scopedContext
         .getScopedComponentInfo()
         .registerWorkingRange(name, workingRange, component, globalKey);
-  }
-
-  static void addWorkingRangeToNode(
-      LithoNode node, ComponentContext scopedContext, Component component) {
-    scopedContext.getScopedComponentInfo().addWorkingRangeToNode(node);
   }
 
   protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {

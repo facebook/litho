@@ -100,16 +100,14 @@ public class ComponentKeyUtils {
         final int index;
 
         if (hasManualKey) {
-          index =
-              Component.getManualKeyUsagesCountAndIncrement(parentContext, parentComponent, key);
+          index = parentContext.getScopedComponentInfo().getManualKeyUsagesCountAndIncrement(key);
 
           if (index != 0) {
             logDuplicateManualKeyWarning(childComponent, key.substring(1));
           }
 
         } else {
-          index =
-              Component.getChildCountAndIncrement(parentContext, parentComponent, childComponent);
+          index = parentContext.getScopedComponentInfo().getChildCountAndIncrement(childComponent);
         }
 
         globalKey = getKeyForChildPosition(childKey, index);

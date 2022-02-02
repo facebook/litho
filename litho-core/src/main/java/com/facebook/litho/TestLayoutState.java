@@ -419,7 +419,7 @@ public class TestLayoutState {
     }
 
     // 14. Add working ranges to the InternalNode.
-    Component.addWorkingRangeToNode(node, c, component);
+    scopedComponentInfo.addWorkingRangeToNode(node);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
