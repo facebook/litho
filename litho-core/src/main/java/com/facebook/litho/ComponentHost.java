@@ -126,29 +126,25 @@ public class ComponentHost extends Host implements DisappearingHost {
     this(context, null);
   }
 
-  public ComponentHost(Context context, @Nullable AttributeSet attrs) {
-    this(new ComponentContext(context), attrs);
-  }
-
-  @Override
-  public void mount(int index, MountItem mountItem) {
-    mount(index, mountItem, mountItem.getRenderTreeNode().getBounds());
-  }
-
   public ComponentHost(ComponentContext context) {
-    this(context, null);
+    this(context.getAndroidContext(), null);
   }
 
-  public ComponentHost(ComponentContext context, @Nullable AttributeSet attrs) {
-    super(context.getAndroidContext(), attrs);
+  public ComponentHost(Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
-    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context.getAndroidContext()));
+    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
 
     mMountItems = new SparseArrayCompat<>();
     mViewMountItems = new SparseArrayCompat<>();
     mDrawableMountItems = new SparseArrayCompat<>();
     mDisappearingItems = new ArrayList<>();
+  }
+
+  @Override
+  public void mount(int index, MountItem mountItem) {
+    mount(index, mountItem, mountItem.getRenderTreeNode().getBounds());
   }
 
   /**
