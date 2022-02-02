@@ -67,7 +67,7 @@ class Layout {
       final @Nullable String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable LithoLayoutResult current,
+      final @Nullable LithoNode current,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
@@ -100,14 +100,12 @@ class Layout {
       final Component updated = updatedScopedContext.getComponentScope();
 
       layout =
-          current
-              .getNode()
-              .reconcile(
-                  layoutStateContext,
-                  c,
-                  updated,
-                  updatedScopedContext.getScopedComponentInfo(),
-                  globalKeyToReuse);
+          current.reconcile(
+              layoutStateContext,
+              c,
+              updated,
+              updatedScopedContext.getScopedComponentInfo(),
+              globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {
@@ -120,9 +118,7 @@ class Layout {
     }
 
     LithoLayoutResult result =
-        layout != null
-            ? measure(layoutStateContext, c, layout, widthSpec, heightSpec, current, diff)
-            : null;
+        layout != null ? measure(layoutStateContext, c, layout, widthSpec, heightSpec, diff) : null;
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -393,7 +389,6 @@ class Layout {
                     newNode,
                     widthSpec,
                     heightSpec,
-                    null,
                     holder.getDiffNode());
           } else {
             layout = null;
@@ -475,7 +470,6 @@ class Layout {
       final LithoNode root,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable LithoLayoutResult current,
       final @Nullable DiffNode diff) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -486,11 +480,7 @@ class Layout {
 
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
-            c.getAndroidContext(),
-            new LithoRenderContext(layoutStateContext, current, diff),
-            0,
-            null,
-            null);
+            c.getAndroidContext(), new LithoRenderContext(layoutStateContext, diff), 0, null, null);
 
     LithoLayoutResult result = root.calculateLayout(context, widthSpec, heightSpec);
 
@@ -527,14 +517,7 @@ class Layout {
     }
 
     final LithoLayoutResult result =
-        measure(
-            layoutStateContext,
-            c,
-            root,
-            widthSpec,
-            heightSpec,
-            null, // TODO(T94662963): Pass the current LayoutResult from LayoutState.
-            diff);
+        measure(layoutStateContext, c, root, widthSpec, heightSpec, diff);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
@@ -575,7 +558,6 @@ class Layout {
         layout.getNode(),
         widthSpec,
         heightSpec,
-        null,
         layout.getDiffNode());
   }
 

@@ -20,15 +20,10 @@ import androidx.annotation.Nullable;
 
 public class LithoRenderContext {
   final LayoutStateContext mLayoutStateContext;
-  final @Nullable LithoLayoutResult mCurrentLayoutRoot;
   final @Nullable DiffNode mDiffRoot;
 
-  public LithoRenderContext(
-      final LayoutStateContext layoutStateContext,
-      final @Nullable LithoLayoutResult currentLayoutRoot,
-      final @Nullable DiffNode diffRoot) {
-    this.mLayoutStateContext = layoutStateContext;
-    this.mCurrentLayoutRoot = currentLayoutRoot;
+  public LithoRenderContext(final LayoutStateContext context, final @Nullable DiffNode diffRoot) {
+    mLayoutStateContext = context;
     mDiffRoot = diffRoot;
   }
 }

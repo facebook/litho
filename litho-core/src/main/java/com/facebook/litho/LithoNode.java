@@ -393,28 +393,17 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
   private static <Writer extends YogaLayoutProps> YogaNode buildYogaTree(
       LithoRenderContext renderContext,
       LithoNode<Writer> currentNode,
-      @Nullable LithoLayoutResult previousLayoutResult,
       @Nullable YogaNode parentNode) {
-    final boolean isCloned =
-        isCloned(renderContext.mLayoutStateContext, currentNode, previousLayoutResult);
+
     final YogaNode node;
-    if (isCloned) {
-      node = previousLayoutResult.getYogaNode().cloneWithoutChildren();
 
-      // TODO (T100055526): Investigate how the measure function can be set at this point.
-      if (currentNode.getChildCount() != 0 && node.isMeasureDefined()) {
-        node.setMeasureFunction(null);
-      }
+    node = NodeConfig.createYogaNode();
 
-    } else {
-      node = NodeConfig.createYogaNode();
+    // Create a LayoutProps object to write to.
+    final Writer writer = (Writer) currentNode.createYogaNodeWriter(node);
 
-      // Create a LayoutProps object to write to.
-      final Writer writer = (Writer) currentNode.createYogaNodeWriter(node);
-
-      // Transfer the layout props to YogaNode
-      currentNode.writeToYogaNode(writer, node);
-    }
+    // Transfer the layout props to YogaNode
+    currentNode.writeToYogaNode(writer, node);
 
     final @Nullable LithoLayoutResult parentLayoutResult =
         parentNode != null ? (LithoLayoutResult) parentNode.getData() : null;
@@ -424,12 +413,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
     node.setData(layoutResult);
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
-      final LithoLayoutResult previousChildLayoutResult =
-          isCloned && i < previousLayoutResult.getChildCount()
-              ? previousLayoutResult.getChildAt(i)
-              : null;
-      final YogaNode childNode =
-          buildYogaTree(renderContext, currentNode.getChildAt(i), previousChildLayoutResult, node);
+      final YogaNode childNode = buildYogaTree(renderContext, currentNode.getChildAt(i), node);
       node.addChildAt(childNode, i);
       layoutResult.addChild((LithoLayoutResult) childNode.getData());
     }
@@ -464,8 +448,7 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
       ComponentsSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
     }
 
-    final YogaNode root =
-        buildYogaTree(c.getRenderContext(), this, c.getRenderContext().mCurrentLayoutRoot, null);
+    final YogaNode root = buildYogaTree(c.getRenderContext(), this, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -1485,18 +1468,6 @@ public class LithoNode<Writer extends YogaLayoutProps> implements Node<LithoRend
 
   public Copyable makeCopy() {
     return null;
-  }
-
-  private static boolean isCloned(
-      final LayoutStateContext context,
-      final LithoNode node,
-      final @Nullable LithoLayoutResult current) {
-    final ComponentTree tree = context.getComponentTree();
-    if (current != null && tree != null && tree.isLayoutCachingEnabled()) {
-      return current.getNode() == node || node.isClone();
-    } else {
-      return false;
-    }
   }
 
   @IntDef({

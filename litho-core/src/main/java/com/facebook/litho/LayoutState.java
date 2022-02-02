@@ -1161,7 +1161,6 @@ public class LayoutState
 
     final @Nullable DiffNode diffTreeRoot;
     final @Nullable LithoNode currentLayoutRoot;
-    final @Nullable LithoLayoutResult currentRootLayoutResult;
     final @Nullable LayoutStateContext currentLayoutStateContext;
 
     final boolean isReconcilable;
@@ -1170,7 +1169,6 @@ public class LayoutState
       synchronized (currentLayoutState) {
         diffTreeRoot = currentLayoutState.mDiffTreeRoot;
         currentLayoutRoot = currentLayoutState.mLayoutRoot;
-        currentRootLayoutResult = currentLayoutState.mRootLayoutResult;
         currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
         isReconcilable =
             isReconcilable(
@@ -1183,7 +1181,6 @@ public class LayoutState
     } else {
       diffTreeRoot = null;
       currentLayoutRoot = null;
-      currentRootLayoutResult = null;
       currentLayoutStateContext = null;
       isReconcilable = false;
     }
@@ -1248,7 +1245,7 @@ public class LayoutState
                     : null,
                 widthSpec,
                 heightSpec,
-                isReconcilable ? currentRootLayoutResult : null,
+                isReconcilable ? currentLayoutRoot : null,
                 diffTreeRoot,
                 logLayoutState);
 
@@ -1276,7 +1273,6 @@ public class LayoutState
                 layoutCreatedInWillRender,
                 widthSpec,
                 heightSpec,
-                currentRootLayoutResult,
                 diffTreeRoot);
       }
 
