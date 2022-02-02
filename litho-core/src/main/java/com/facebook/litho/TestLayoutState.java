@@ -88,9 +88,7 @@ public class TestLayoutState {
         component.updateInternalChildState(layoutStateContext, c, null);
 
     node.appendComponent(
-        new TestComponent(component),
-        scopedContext.getGlobalKey(),
-        scopedContext.getScopedComponentInfo());
+        new ScopedComponentInfo(new TestComponent(component), scopedContext, null));
 
     return node;
   }
@@ -197,9 +195,6 @@ public class TestLayoutState {
         node = null;
       } else {
         node = resolveImmediateSubTree(layoutStateContext, c, root);
-        if (Component.isLayoutSpec(root) && root.canResolve()) {
-          node.appendComponent(root, root.getKey(), c.getScopedComponentInfo());
-        }
       }
     }
 
@@ -219,7 +214,7 @@ public class TestLayoutState {
       }
     }
 
-    node.appendComponent(component, component.getKey(), c.getScopedComponentInfo());
+    node.appendComponent(c.getScopedComponentInfo());
     component.onPrepare(c);
 
     return node;
@@ -228,27 +223,28 @@ public class TestLayoutState {
   static @Nullable LithoNode resolveImmediateSubTree(
       LayoutStateContext layoutStateContext, final ComponentContext c, Component component) {
 
+    final @Nullable LithoNode node;
+
     // this can be false for a mocked component
     if (component.getMountType().toString() == null) {
-      return null;
-    }
-
-    if (component instanceof Wrapper) {
+      node = null;
+    } else if (component instanceof Wrapper) {
       Component delegate = ((Wrapper) component).delegate;
       if (delegate == null) {
-        return null;
+        node = null;
       } else {
-        return newImmediateLayoutBuilder(layoutStateContext, c, delegate);
+        node = newImmediateLayoutBuilder(layoutStateContext, c, delegate);
       }
     } else if (component.canResolve()) {
-      return create(layoutStateContext, c, component);
+      node = create(layoutStateContext, c, component);
+    } else {
+
+      node = createInternalNode(c);
     }
 
-    LithoNode node = createInternalNode(c);
-    node.appendComponent(
-        new TestComponent(component),
-        component.getKey(),
-        new ScopedComponentInfo(component, c, null));
+    if (node != null) {
+      node.appendComponent(new ScopedComponentInfo(new TestComponent(component), c, null));
+    }
 
     return node;
   }
@@ -388,7 +384,7 @@ public class TestLayoutState {
     final CommonProps commonProps = component.getCommonProps();
 
     // 10. Add the component to the InternalNode.
-    node.appendComponent(component, globalKey, scopedComponentInfo);
+    node.appendComponent(scopedComponentInfo);
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {

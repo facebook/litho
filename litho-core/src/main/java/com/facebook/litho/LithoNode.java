@@ -115,13 +115,7 @@ public class LithoNode implements Node<LithoRenderContext> {
   protected Context mContext;
 
   @ThreadConfined(ThreadConfined.ANY)
-  protected List<Component> mComponents = new ArrayList<>(2);
-
-  @ThreadConfined(ThreadConfined.ANY)
   private final List<ScopedComponentInfo> mScopedComponentInfos = new ArrayList<>(2);
-
-  @ThreadConfined(ThreadConfined.ANY)
-  private List<String> mComponentGlobalKeys = new ArrayList<>(2);
 
   protected final int[] mBorderEdgeWidths = new int[Border.EDGE_COUNT];
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
@@ -239,10 +233,7 @@ public class LithoNode implements Node<LithoRenderContext> {
     return this;
   }
 
-  public void appendComponent(
-      Component component, String key, ScopedComponentInfo scopedComponentInfo) {
-    mComponents.add(component);
-    mComponentGlobalKeys.add(key);
+  public void appendComponent(ScopedComponentInfo scopedComponentInfo) {
     mScopedComponentInfos.add(scopedComponentInfo);
   }
 
@@ -591,24 +582,6 @@ public class LithoNode implements Node<LithoRenderContext> {
     return -1;
   }
 
-  /**
-   * Return the list of components contributing to this LithoNode. We have no need for this in
-   * production but it is useful information to have while debugging. Therefor this list will only
-   * contain the root component if running in production mode.
-   */
-  public List<Component> getComponents() {
-    return mComponents;
-  }
-
-  /**
-   * Return the list of keys of components contributing to this LithoNode. We have no need for this
-   * in production but it is useful information to have while debugging. Therefor this list will
-   * only contain the root component if running in production mode.
-   */
-  public List<String> getComponentKeys() {
-    return mComponentGlobalKeys;
-  }
-
   public List<ScopedComponentInfo> getScopedComponentInfos() {
     return mScopedComponentInfos;
   }
@@ -643,15 +616,21 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public @Nullable Component getHeadComponent() {
-    return mComponents.isEmpty() ? null : mComponents.get(mComponents.size() - 1);
+    return mScopedComponentInfos.isEmpty()
+        ? null
+        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getComponent();
   }
 
   public @Nullable String getHeadComponentKey() {
-    return mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1);
+    return mScopedComponentInfos.isEmpty()
+        ? null
+        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext().getGlobalKey();
   }
 
   public @Nullable ComponentContext getHeadComponentContext() {
-    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
+    return mScopedComponentInfos.isEmpty()
+        ? null
+        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
   }
 
   public int getImportantForAccessibility() {
@@ -679,23 +658,41 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public @Nullable Component getTailComponent() {
-    return mComponents.isEmpty() ? null : mComponents.get(0);
+    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0).getComponent();
   }
 
   public @Nullable String getTailComponentKey() {
-    return mComponentGlobalKeys.get(0);
+    return mScopedComponentInfos.isEmpty()
+        ? null
+        : mScopedComponentInfos.get(0).getContext().getGlobalKey();
   }
 
   public @Nullable ComponentContext getTailComponentContext() {
-    return mScopedComponentInfos.get(0).getContext();
+    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0).getContext();
   }
 
   public @Nullable ScopedComponentInfo getTailScopedComponentInfo() {
     return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0);
   }
 
-  public @Nullable ComponentContext getComponentContextAt(int index) {
-    return mScopedComponentInfos.get(index).getContext();
+  public ScopedComponentInfo getComponentInfoAt(int index) {
+    return mScopedComponentInfos.get(index);
+  }
+
+  public ComponentContext getComponentContextAt(int index) {
+    return getComponentInfoAt(index).getContext();
+  }
+
+  public Component getComponentAt(int index) {
+    return getComponentInfoAt(index).getComponent();
+  }
+
+  public String getGlobalKeyAt(int index) {
+    return getComponentContextAt(index).getGlobalKey();
+  }
+
+  public int getComponentCount() {
+    return mScopedComponentInfos.size();
   }
 
   @Nullable
@@ -1084,7 +1081,7 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public String getSimpleName() {
-    return mComponents.isEmpty() ? "<null>" : mComponents.get(0).getSimpleName();
+    return getComponentCount() == 0 ? "<null>" : getComponentAt(0).getSimpleName();
   }
 
   public boolean isClone() {
@@ -1188,7 +1185,8 @@ public class LithoNode implements Node<LithoRenderContext> {
     }
 
     // Apply the layout props from the components to the YogaNode
-    for (Component component : mComponents) {
+    for (ScopedComponentInfo info : mScopedComponentInfos) {
+      final Component component = info.getComponent();
       // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
       if (mNestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
         mNestedTreeHolder.transferInto(this);
@@ -1353,13 +1351,10 @@ public class LithoNode implements Node<LithoRenderContext> {
       final LithoNode child = current.getChildAt(i);
 
       // 3.1 Get the head component of the child layout.
-      final List<Component> components = child.getComponents();
-      final List<String> componentKeys = child.getComponentKeys();
-      int index = Math.max(0, components.size() - 1);
-      final Component component = components.get(index);
-      final String key = componentKeys == null ? null : componentKeys.get(index);
-      final ScopedComponentInfo scopedComponentInfo =
-          (ScopedComponentInfo) child.mScopedComponentInfos.get(index);
+      int index = Math.max(0, child.getComponentCount() - 1);
+      final Component component = child.getComponentAt(index);
+      final String key = child.getGlobalKeyAt(index);
+      final ScopedComponentInfo scopedComponentInfo = child.mScopedComponentInfos.get(index);
 
       // 3.2 Reconcile child layout.
       final LithoNode copy =
@@ -1401,8 +1396,7 @@ public class LithoNode implements Node<LithoRenderContext> {
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
       final ComponentContext c, final LithoNode current, final Set<String> keys) {
-    final List<Component> components = current.getComponents();
-    final List<String> componentKeys = current.getComponentKeys();
+    final List<ScopedComponentInfo> components = current.getScopedComponentInfos();
     final Component root = current.getHeadComponent();
 
     // 1.0 check early exit conditions
@@ -1412,7 +1406,7 @@ public class LithoNode implements Node<LithoRenderContext> {
 
     // 1.1 Check if any component has mutations
     for (int i = 0, size = components.size(); i < size; i++) {
-      final String key = componentKeys.get(i);
+      final String key = components.get(i).getContext().getGlobalKey();
       if (keys.contains(key)) {
         return ReconciliationMode.RECREATE;
       }

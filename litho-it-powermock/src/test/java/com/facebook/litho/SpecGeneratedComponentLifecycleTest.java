@@ -256,7 +256,7 @@ public class SpecGeneratedComponentLifecycleTest {
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -269,7 +269,7 @@ public class SpecGeneratedComponentLifecycleTest {
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -282,7 +282,7 @@ public class SpecGeneratedComponentLifecycleTest {
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -295,7 +295,7 @@ public class SpecGeneratedComponentLifecycleTest {
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -307,7 +307,7 @@ public class SpecGeneratedComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     verify(component).onCreateLayout(scopedContext);
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
@@ -320,7 +320,7 @@ public class SpecGeneratedComponentLifecycleTest {
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     verify(component).onCreateLayout(scopedContext);
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
@@ -334,7 +334,7 @@ public class SpecGeneratedComponentLifecycleTest {
     mContext.setHeightSpec(mNestedTreeHeightSpec);
     LithoNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
+        node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));
     verify(component)
         .onCreateLayoutWithSizeSpec(scopedContext, mNestedTreeWidthSpec, mNestedTreeHeightSpec);
     // verify(node).appendComponent(component, "$" + KEY, null);
@@ -353,6 +353,17 @@ public class SpecGeneratedComponentLifecycleTest {
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component, never()).onPrepare((ComponentContext) any());
+  }
+
+  static List<String> getComponentKeys(LithoNode node) {
+    List<ScopedComponentInfo> infos = node.getScopedComponentInfos();
+    List<String> keys = new ArrayList<>(infos.size());
+
+    for (ScopedComponentInfo info : infos) {
+      keys.add(info.getContext().getGlobalKey());
+    }
+
+    return keys;
   }
 
   private TestBaseComponent setUpSpyComponentForCreateLayout(

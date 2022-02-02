@@ -487,8 +487,13 @@ public class LayoutState
   @Nullable
   private static DebugHierarchy.Node getDebugHierarchy(
       @Nullable DebugHierarchy.Node parentHierarchy, final LithoNode node) {
+    List<ScopedComponentInfo> infos = node.getScopedComponentInfos();
+    List<Component> components = new ArrayList<>(infos.size());
+    for (ScopedComponentInfo info : infos) {
+      components.add(info.getComponent());
+    }
     return ComponentsConfiguration.isDebugHierarchyEnabled
-        ? DebugHierarchy.newNode(parentHierarchy, node.getTailComponent(), node.getComponents())
+        ? DebugHierarchy.newNode(parentHierarchy, node.getTailComponent(), components)
         : null;
   }
 
@@ -556,7 +561,7 @@ public class LayoutState
             .flush();
       }
 
-      final int size = node.getComponents().size();
+      final int size = node.getComponentCount();
       final ComponentContext immediateParentContext;
       if (size == 1) {
         immediateParentContext = parentContext;
@@ -887,10 +892,9 @@ public class LayoutState
       rect.bottom = rect.top + result.getHeight();
     }
 
-    final List<String> componentKeys = node.getComponentKeys();
-    for (int i = 0, size = node.getComponents().size(); i < size; i++) {
-      final Component delegate = node.getComponents().get(i);
-      final String delegateKey = componentKeys.get(i);
+    for (int i = 0, size = node.getComponentCount(); i < size; i++) {
+      final Component delegate = node.getComponentAt(i);
+      final String delegateKey = node.getGlobalKeyAt(i);
       // Keep a list of the components we created during this layout calculation. If the layout is
       // valid, the ComponentTree will update the event handlers that have been created in the
       // previous ComponentTree with the new component dispatched, otherwise Section children

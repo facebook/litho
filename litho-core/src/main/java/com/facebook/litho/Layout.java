@@ -271,7 +271,7 @@ class Layout {
     }
 
     // 10. Add the component to the InternalNode.
-    node.appendComponent(component, globalKey, scopedComponentInfo);
+    node.appendComponent(scopedComponentInfo);
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {

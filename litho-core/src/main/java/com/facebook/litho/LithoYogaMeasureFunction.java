@@ -89,7 +89,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
                   + " Component#measureMightNotCacheInternalNode.");
         }
 
-        final int size = node.getComponents().size();
+        final int size = node.getComponentCount();
         final ComponentContext parentContext;
         if (size == 1) {
           if (result.getParent() != null) {

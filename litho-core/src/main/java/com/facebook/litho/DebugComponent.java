@@ -63,12 +63,11 @@ public final class DebugComponent {
     final LithoNode node = result.getNode();
     final ComponentContext context = result.getContext();
 
-    if (componentIndex >= node.getComponents().size()) {
+    if (componentIndex >= node.getComponentCount()) {
       return null;
     }
 
-    final Component component = node.getComponents().get(componentIndex);
-    final String componentKey = node.getComponentKeys().get(componentIndex);
+    final String componentKey = node.getGlobalKeyAt(componentIndex);
 
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mResult = result;
@@ -93,14 +92,14 @@ public final class DebugComponent {
       return null;
     }
     final LithoNode node = root.getNode();
-    final int outerWrapperComponentIndex = Math.max(0, node.getComponents().size() - 1);
+    final int outerWrapperComponentIndex = Math.max(0, node.getComponentCount() - 1);
     return DebugComponent.getInstance(root, outerWrapperComponentIndex);
   }
 
   @Nullable
   public static DebugComponent getRootInstance(LithoLayoutResult rootResult) {
     final LithoNode rootNode = rootResult.getNode();
-    final int outerWrapperComponentIndex = Math.max(0, rootNode.getComponents().size() - 1);
+    final int outerWrapperComponentIndex = Math.max(0, rootNode.getComponentCount() - 1);
     return DebugComponent.getInstance(rootResult, outerWrapperComponentIndex);
   }
 
@@ -119,11 +118,11 @@ public final class DebugComponent {
   }
 
   static void applyOverrides(ComponentContext context, LithoNode node) {
-    if (node.getComponents() == null || node.getComponents().isEmpty()) {
+    if (node.getComponentCount() == 0) {
       return;
     }
 
-    final String componentkey = node.getComponentKeys().get(0);
+    final String componentkey = node.getGlobalKeyAt(0);
 
     final String key = generateGlobalKey(context, componentkey);
     final Overrider overrider = sOverriders.get(key);
@@ -158,7 +157,7 @@ public final class DebugComponent {
 
     for (int i = 0, count = mResult.getChildCount(); i < count; i++) {
       final LithoLayoutResult childNode = mResult.getChildAt(i);
-      final int index = Math.max(0, childNode.getNode().getComponents().size() - 1);
+      final int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
       DebugComponent component = getInstance(childNode, index);
       if (component != null) {
         children.add(component);
@@ -172,7 +171,7 @@ public final class DebugComponent {
     if (nestedTree != null) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final LithoLayoutResult childNode = nestedTree.getChildAt(i);
-        int index = Math.max(0, childNode.getNode().getComponents().size() - 1);
+        int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
         DebugComponent component = getInstance(childNode, index);
         if (component != null) {
           children.add(component);
@@ -263,7 +262,7 @@ public final class DebugComponent {
    */
   @Nullable
   public String getComponentTestKey() {
-    Component component = mNode.getComponents().get(mComponentIndex);
+    Component component = mNode.getComponentAt(mComponentIndex);
     CommonProps props = component.getCommonProps();
     return props == null ? null : props.getTestKey();
   }
@@ -274,7 +273,7 @@ public final class DebugComponent {
    */
   @Nullable
   public Object getComponentTag() {
-    Component component = mNode.getComponents().get(mComponentIndex);
+    Component component = mNode.getComponentAt(mComponentIndex);
     CommonProps props = component.getCommonProps();
     return props != null ? props.getComponentTag() : null;
   }
@@ -374,16 +373,12 @@ public final class DebugComponent {
   /** @return This component's key or null if none is set. */
   @Nullable
   public String getKey() {
-    return mNode.getComponents().get(mComponentIndex).getKey();
+    return mNode.getComponentAt(mComponentIndex).getKey();
   }
 
   /** @return The Component instance this debug component wraps. */
   public Component getComponent() {
-    return mNode.getComponents().get(mComponentIndex);
-  }
-
-  private String getGlobalKeyFromNode() {
-    return mNode.getComponentKeys().get(mComponentIndex);
+    return mNode.getComponentAt(mComponentIndex);
   }
 
   /** @return If this debug component represents a layout node, return it. */

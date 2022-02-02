@@ -136,7 +136,7 @@ public class InternalNodeUtils {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getComponents()));
+    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
 
     final long id;
     final @LayoutOutput.UpdateState int updateState;
@@ -395,10 +395,12 @@ public class InternalNodeUtils {
         updateState);
   }
 
-  private static SparseArray<DynamicValue<?>> mergeCommonDynamicProps(List<Component> components) {
+  private static SparseArray<DynamicValue<?>> mergeCommonDynamicProps(
+      List<ScopedComponentInfo> infos) {
     final SparseArray<DynamicValue<?>> mergedDynamicProps = new SparseArray<>();
-    for (Component component : components) {
-      final SparseArray<DynamicValue<?>> commonDynamicProps = component.getCommonDynamicProps();
+    for (ScopedComponentInfo info : infos) {
+      final SparseArray<DynamicValue<?>> commonDynamicProps =
+          info.getComponent().getCommonDynamicProps();
       if (commonDynamicProps == null) {
         continue;
       }
@@ -581,9 +583,9 @@ public class InternalNodeUtils {
   }
 
   static boolean needsHostViewForCommonDynamicProps(final LithoNode node) {
-    final List<Component> components = node.getComponents();
-    for (Component comp : components) {
-      if (comp != null && comp.hasCommonDynamicProps()) {
+    final List<ScopedComponentInfo> infos = node.getScopedComponentInfos();
+    for (ScopedComponentInfo info : infos) {
+      if (info != null && info.getComponent().hasCommonDynamicProps()) {
         // Need a host View to apply the dynamic props to
         return true;
       }

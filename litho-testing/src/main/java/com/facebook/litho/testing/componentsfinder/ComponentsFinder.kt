@@ -41,7 +41,9 @@ import kotlin.reflect.KClass
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
   val internalNode = getLayoutRoot(lithoView)?.node ?: return null
-  return internalNode.components.firstOrNull { it.javaClass == clazz }
+  return internalNode.scopedComponentInfos.map { it.component }.firstOrNull {
+    it.javaClass == clazz
+  }
 }
 
 /**
@@ -112,7 +114,8 @@ private fun findComponentRecursively(
   layoutResult ?: return null
 
   val internalNode = layoutResult.node
-  val component = internalNode.components.firstOrNull { it.javaClass == clazz }
+  val component =
+      internalNode.scopedComponentInfos.map { it.component }.firstOrNull { it.javaClass == clazz }
   if (component != null) {
     return component
   }
@@ -141,7 +144,10 @@ private fun findComponentsRecursively(
   layoutResult ?: return
 
   val internalNode = layoutResult.node
-  val components = internalNode.components.filter { clazzArray.contains(it.javaClass) }
+  val components =
+      internalNode.scopedComponentInfos.map { it.component }.filter {
+        clazzArray.contains(it.javaClass)
+      }
   if (components != null) {
     componentsList.addAll(components)
   }

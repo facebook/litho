@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class ScopedComponentInfo implements Cloneable {
+public class ScopedComponentInfo implements Cloneable {
 
   private final Component mComponent;
   private ComponentContext mContext;
@@ -65,6 +65,10 @@ class ScopedComponentInfo implements Cloneable {
     mInterStagePropsContainer = component.createInterStagePropsContainer();
     mPrepareInterStagePropsContainer = component.createPrepareInterStagePropsContainer();
     mErrorEventHandler = errorEventHandler;
+  }
+
+  public Component getComponent() {
+    return mComponent;
   }
 
   public ComponentContext getContext() {

@@ -41,8 +41,8 @@ public class LithoKeyTestingUtil {
 
   public static void addScopedComponentInfoForNode(
       LithoNode node, Map<String, List<ScopedComponentInfo>> scopedComponentInfos) {
-    for (int i = 0, size = node.getComponents().size(); i < size; i++) {
-      final Component component = node.getComponents().get(i);
+    for (int i = 0, size = node.getComponentCount(); i < size; i++) {
+      final Component component = node.getComponentAt(i);
       final String componentType = component.getSimpleName();
 
       List<ScopedComponentInfo> sameTypeKeys = scopedComponentInfos.get(componentType);
@@ -50,7 +50,7 @@ public class LithoKeyTestingUtil {
         sameTypeKeys = new ArrayList<>();
         scopedComponentInfos.put(componentType, sameTypeKeys);
       }
-      sameTypeKeys.add(node.getScopedComponentInfos().get(i));
+      sameTypeKeys.add(node.getComponentInfoAt(i));
     }
 
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
