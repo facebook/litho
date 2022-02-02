@@ -161,7 +161,7 @@ public class ComponentsPools {
 
       MountContentPool pool = poolsArray.get(component.getTypeId());
       if (pool == null) {
-        pool = PoolBisectUtil.getPoolForComponent((Component) component);
+        pool = component.onCreateMountContentPool();
         poolsArray.put(component.getTypeId(), pool);
       }
 

@@ -135,12 +135,6 @@ public class ComponentsConfiguration {
    */
   public static boolean disableGetAnnotationUsage;
 
-  /** Bisect mount pool to find the buggy implementation causing native crashes. */
-  public static boolean isPoolBisectEnabled = false;
-
-  public static String disablePoolsStart = "aaaaa";
-  public static String disablePoolsEnd = "zzzzz";
-
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }
