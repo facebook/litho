@@ -248,7 +248,7 @@ public class LithoViewTestHelper {
     final LayoutState mainThreadLayoutState =
         componentTree != null ? componentTree.getMainThreadLayoutState() : null;
     if (mainThreadLayoutState != null) {
-      mainThreadLayoutState.mRootLayoutResult = rootLayoutNode.mInternalNodeRef;
+      mainThreadLayoutState.mLayoutResult = rootLayoutNode.mInternalNodeRef;
     }
   }
 }

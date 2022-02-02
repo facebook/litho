@@ -1511,7 +1511,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private void maybeLogInvalidZeroHeight() {
     if (mComponentTree != null
         && mComponentTree.getMainThreadLayoutState() != null
-        && mComponentTree.getMainThreadLayoutState().mLayoutRoot == null) {
+        && mComponentTree.getMainThreadLayoutState().mRoot == null) {
       // Valid case for 0-height, onCreateLayout of root component returned null.
       return;
     }
