@@ -137,7 +137,6 @@ public class LithoNode implements Node<LithoRenderContext> {
   protected @Nullable String mTransitionOwnerKey;
   protected @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
-  private @Nullable Map<String, Component> mComponentsNeedingPreviousRenderData;
   private @Nullable Map<String, ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable ArrayList<Attachable> mAttachables;
@@ -188,14 +187,7 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public void addComponentNeedingPreviousRenderData(
-      final String globalKey,
-      final Component component,
-      final ScopedComponentInfo scopedComponentInfo) {
-    if (mComponentsNeedingPreviousRenderData == null) {
-      mComponentsNeedingPreviousRenderData = new HashMap<>(1);
-    }
-    mComponentsNeedingPreviousRenderData.put(globalKey, component);
-
+      final String globalKey, final ScopedComponentInfo scopedComponentInfo) {
     if (mScopedComponentInfosNeedingPreviousRenderData == null) {
       mScopedComponentInfosNeedingPreviousRenderData = new HashMap<>(1);
     }
@@ -573,10 +565,6 @@ public class LithoNode implements Node<LithoRenderContext> {
 
   public @Nullable List<Component> getUnresolvedComponents() {
     return mUnresolvedComponents;
-  }
-
-  public @Nullable Map<String, Component> getComponentsNeedingPreviousRenderData() {
-    return mComponentsNeedingPreviousRenderData;
   }
 
   public @Nullable Map<String, ScopedComponentInfo>

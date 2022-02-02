@@ -182,8 +182,6 @@ public class LayoutState
   private boolean mAccessibilityEnabled = false;
 
   private @Nullable StateHandler mStateHandler;
-  private @Nullable List<Component> mComponentsNeedingPreviousRenderData;
-  private @Nullable List<String> mComponentKeysNeedingPreviousRenderData;
   private @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable TransitionId mCurrentTransitionId;
   private @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
@@ -735,24 +733,6 @@ public class LayoutState
           }
           TransitionUtils.addTransitions(
               transition, layoutState.mTransitions, layoutState.mRootComponentName);
-        }
-      }
-
-      final Map<String, Component> componentsNeedingPreviousRenderData =
-          node.getComponentsNeedingPreviousRenderData();
-      if (componentsNeedingPreviousRenderData != null) {
-        if (layoutState.mComponentsNeedingPreviousRenderData == null) {
-          layoutState.mComponentsNeedingPreviousRenderData = new ArrayList<>();
-        }
-
-        if (layoutState.mComponentKeysNeedingPreviousRenderData == null) {
-          layoutState.mComponentKeysNeedingPreviousRenderData = new ArrayList<>();
-        }
-        // We'll check for animations in mount
-
-        for (Map.Entry<String, Component> entry : componentsNeedingPreviousRenderData.entrySet()) {
-          layoutState.mComponentKeysNeedingPreviousRenderData.add(entry.getKey());
-          layoutState.mComponentsNeedingPreviousRenderData.add(entry.getValue());
         }
       }
 
@@ -2003,20 +1983,6 @@ public class LayoutState
         layoutState.mCurrentLayoutOutputAffinityGroup, type, animatableItem);
   }
 
-  /**
-   * @return the list of Components in this LayoutState that care about the previously mounted
-   *     versions of their @Prop/@State params.
-   */
-  @Nullable
-  public List<Component> getComponentsNeedingPreviousRenderData() {
-    return mComponentsNeedingPreviousRenderData;
-  }
-
-  @Nullable
-  public List<String> getComponentKeysNeedingPreviousRenderData() {
-    return mComponentKeysNeedingPreviousRenderData;
-  }
-
   @Nullable
   public List<ScopedComponentInfo> getScopedComponentInfosNeedingPreviousRenderData() {
     return mScopedComponentInfosNeedingPreviousRenderData;
@@ -2044,14 +2010,13 @@ public class LayoutState
 
     List<Transition> mountTimeTransitions = null;
 
-    if (mComponentsNeedingPreviousRenderData != null) {
+    if (mScopedComponentInfosNeedingPreviousRenderData != null) {
       mountTimeTransitions = new ArrayList<>();
-      for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
-        final Component component = mComponentsNeedingPreviousRenderData.get(i);
-        final ComponentContext scopedContext =
-            Preconditions.checkNotNull(mScopedComponentInfosNeedingPreviousRenderData)
-                .get(i)
-                .getContext();
+      for (int i = 0, size = mScopedComponentInfosNeedingPreviousRenderData.size(); i < size; i++) {
+        final ScopedComponentInfo scopedComponentInfo =
+            mScopedComponentInfosNeedingPreviousRenderData.get(i);
+        final ComponentContext scopedContext = scopedComponentInfo.getContext();
+        final Component component = scopedContext.getComponentScope();
         try {
           final Transition transition = component.createTransition(scopedContext);
           if (transition != null) {

@@ -959,14 +959,13 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   void applyPreviousRenderData(LayoutState layoutState) {
-    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
-    final List<String> keys = layoutState.getComponentKeysNeedingPreviousRenderData();
-    applyPreviousRenderData(components, keys);
+    final List<ScopedComponentInfo> scopedComponentInfos =
+        layoutState.getScopedComponentInfosNeedingPreviousRenderData();
+    applyPreviousRenderData(scopedComponentInfos);
   }
 
-  void applyPreviousRenderData(
-      @Nullable List<Component> components, @Nullable List<String> componentKeys) {
-    if (components == null || components.isEmpty()) {
+  void applyPreviousRenderData(@Nullable List<ScopedComponentInfo> scopedComponentInfos) {
+    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
       return;
     }
 
@@ -974,15 +973,13 @@ public class ComponentTree implements LithoLifecycleListener {
       return;
     }
 
-    mPreviousRenderState.applyPreviousRenderData(components, componentKeys);
+    mPreviousRenderState.applyPreviousRenderData(scopedComponentInfos);
   }
 
   private void recordRenderData(LayoutState layoutState) {
-    final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
-    final @Nullable List<ScopedComponentInfo> scopedComponentInfos =
+    final List<ScopedComponentInfo> scopedComponentInfos =
         layoutState.getScopedComponentInfosNeedingPreviousRenderData();
-    final List<String> keys = layoutState.getComponentKeysNeedingPreviousRenderData();
-    if (components == null || components.isEmpty()) {
+    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
       return;
     }
 
@@ -990,7 +987,7 @@ public class ComponentTree implements LithoLifecycleListener {
       mPreviousRenderState = new RenderState();
     }
 
-    mPreviousRenderState.recordRenderData(components, keys, scopedComponentInfos);
+    mPreviousRenderState.recordRenderData(scopedComponentInfos);
   }
 
   void detach() {

@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,37 +32,30 @@ public class RenderState {
   private final Map<String, Component.RenderData> mRenderData = new HashMap<>();
   private final Set<String> mSeenGlobalKeys = new HashSet<>();
 
-  void recordRenderData(
-      final List<Component> components,
-      final List<String> componentGlobalKeys,
-      final @Nullable List<ScopedComponentInfo> scopedComponentInfos) {
-    if (components == null) {
+  void recordRenderData(final List<ScopedComponentInfo> scopedComponentInfos) {
+    if (scopedComponentInfos == null) {
       return;
     }
 
-    for (int i = 0, size = components.size(); i < size; i++) {
-      recordRenderData(
-          components.get(i),
-          componentGlobalKeys.get(i),
-          scopedComponentInfos != null ? scopedComponentInfos.get(i) : null);
+    for (int i = 0, size = scopedComponentInfos.size(); i < size; i++) {
+      recordRenderData(scopedComponentInfos.get(i));
     }
     mSeenGlobalKeys.clear();
   }
 
-  void applyPreviousRenderData(List<Component> components, List<String> componentGlobalKeys) {
-    if (components == null) {
+  void applyPreviousRenderData(List<ScopedComponentInfo> scopedComponentInfos) {
+    if (scopedComponentInfos == null) {
       return;
     }
 
-    for (int i = 0, size = components.size(); i < size; i++) {
-      applyPreviousRenderData(components.get(i), componentGlobalKeys.get(i));
+    for (int i = 0, size = scopedComponentInfos.size(); i < size; i++) {
+      applyPreviousRenderData(scopedComponentInfos.get(i));
     }
   }
 
-  private void recordRenderData(
-      final Component component,
-      final String globalKey,
-      final ScopedComponentInfo scopedComponentInfo) {
+  private void recordRenderData(final ScopedComponentInfo scopedComponentInfo) {
+    final Component component = scopedComponentInfo.getContext().getComponentScope();
+    final String globalKey = scopedComponentInfo.getContext().getGlobalKey();
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
@@ -87,7 +79,9 @@ public class RenderState {
     mRenderData.put(globalKey, newInfo);
   }
 
-  private void applyPreviousRenderData(Component component, String globalKey) {
+  private void applyPreviousRenderData(ScopedComponentInfo scopedComponentInfo) {
+    final Component component = scopedComponentInfo.getContext().getComponentScope();
+    final String globalKey = scopedComponentInfo.getContext().getGlobalKey();
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to apply previous render data to component that doesn't support it");
