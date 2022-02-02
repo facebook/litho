@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget
+package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.facebook.litho.sections.widget.GridRecyclerConfiguration
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
+import com.facebook.litho.sections.widget.RecyclerConfiguration
+import com.facebook.litho.sections.widget.StaggeredGridRecyclerConfiguration
 import com.facebook.litho.widget.SnapUtil
 
 /**
@@ -98,7 +103,7 @@ interface CollectionLayouts {
               mainAxisWrapContent,
           ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            ListRecyclerConfiguration.Builder().snapMode(snapMode)
+            ListRecyclerConfiguration.create().snapMode(snapMode)
       }
 
   /**
@@ -116,7 +121,7 @@ interface CollectionLayouts {
   ): CollectionLayout =
       object : CollectionLayout(orientation, reverse) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            GridRecyclerConfiguration.Builder().snapMode(snapMode).numColumns(columns)
+            GridRecyclerConfiguration.create().snapMode(snapMode).numColumns(columns)
       }
 
   /**
@@ -135,6 +140,6 @@ interface CollectionLayouts {
   ): CollectionLayout =
       object : CollectionLayout(orientation, reverse) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
-            StaggeredGridRecyclerConfiguration.Builder().numSpans(spans).gapStrategy(gapStrategy)
+            StaggeredGridRecyclerConfiguration.create().numSpans(spans).gapStrategy(gapStrategy)
       }
 }

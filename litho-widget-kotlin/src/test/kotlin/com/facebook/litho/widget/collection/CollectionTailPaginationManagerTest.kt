@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget
+package com.facebook.litho.widget.collection
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.assertj.core.api.Assertions.assertThat

@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget
+package com.facebook.litho.widget.collection
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
-import com.facebook.litho.LithoView
 import com.facebook.litho.Style
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
-import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
@@ -39,40 +36,24 @@ import org.robolectric.annotation.LooperMode
 /** Tests for [Collection]'s pagination prop */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(AndroidJUnit4::class)
-class CollectionOnViewPortChangedTest {
+class CollectionPaginationTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   @Test
   fun `test Collection pagination callback receives correct updates`() {
-    val firstVisibleIndexValue = AtomicInteger()
     val lastVisibleIndexValue = AtomicInteger()
     val totalCountValue = AtomicInteger()
-    val firstFullyVisibleIndexValue = AtomicInteger()
-    val lastFullyVisibleIndexValue = AtomicInteger()
 
     class Test : KComponent() {
       override fun ComponentScope.render(): Component? {
-
-        val onViewportChanged =
-            {
-            c: ComponentContext,
-            firstVisibleIndex: Int,
-            lastVisibleIndex: Int,
-            totalCount: Int,
-            firstFullyVisibleIndex: Int,
-            lastFullyVisibleIndex: Int ->
-          firstVisibleIndexValue.set(firstVisibleIndex)
-          lastVisibleIndexValue.set(lastVisibleIndex)
-          totalCountValue.set(totalCount)
-          firstFullyVisibleIndexValue.set(firstFullyVisibleIndex)
-          lastFullyVisibleIndexValue.set(lastFullyVisibleIndex)
-        }
-
         val handle = Handle()
         return Collection(
             handle = handle,
-            onViewportChanged = onViewportChanged,
+            pagination = { lastVisibleIndex: Int, totalCount: Int ->
+              lastVisibleIndexValue.set(lastVisibleIndex)
+              totalCountValue.set(totalCount)
+            },
             style =
                 Style.viewTag("collection_tag").onClick {
                   Collection.scrollTo(context, handle, 4)
@@ -82,26 +63,13 @@ class CollectionOnViewPortChangedTest {
     lithoViewRule.setSizePx(100, 100)
     lithoViewRule.render { Test() }
 
-    assertThat(firstVisibleIndexValue.get()).isEqualTo(0)
     assertThat(lastVisibleIndexValue.get()).isEqualTo(2)
     assertThat(totalCountValue.get()).isEqualTo(5)
-    assertThat(firstFullyVisibleIndexValue.get()).isEqualTo(0)
-    assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(1)
 
-    val recyclerView =
-        ((lithoViewRule.findViewWithTag("collection_tag") as LithoView).getChildAt(0) as
-                SectionsRecyclerView)
-            .recyclerView
+    lithoViewRule.act { clickOnTag("collection_tag") }
+    lithoViewRule.render { Test() }
 
-    // Scroll by a distance less than the item height so the first and last items overlap the
-    // edges
-    recyclerView?.scrollBy(0, 50)
-    lithoViewRule.idle()
-
-    assertThat(firstVisibleIndexValue.get()).isEqualTo(1)
-    assertThat(lastVisibleIndexValue.get()).isEqualTo(3)
+    assertThat(lastVisibleIndexValue.get()).isEqualTo(4)
     assertThat(totalCountValue.get()).isEqualTo(5)
-    assertThat(firstFullyVisibleIndexValue.get()).isEqualTo(2)
-    assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(2)
   }
 }

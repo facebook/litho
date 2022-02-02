@@ -137,7 +137,7 @@ public class RecyclerBinderConfiguration {
     return mIsWrapContent;
   }
 
-  boolean hasDynamicItemHeight() {
+  public boolean hasDynamicItemHeight() {
     return mHasDynamicItemHeight;
   }
 
@@ -218,7 +218,7 @@ public class RecyclerBinderConfiguration {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
     static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
-    static final int UNSET = -1;
+    public static final int UNSET = -1;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;

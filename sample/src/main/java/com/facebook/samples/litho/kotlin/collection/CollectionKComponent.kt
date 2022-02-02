@@ -26,8 +26,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.collection.Collection
 
 class CollectionKComponent : KComponent() {
 

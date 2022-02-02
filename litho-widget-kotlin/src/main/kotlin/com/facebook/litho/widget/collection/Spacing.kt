@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget
+package com.facebook.litho.widget.collection
 
 import android.graphics.Rect
 import android.view.View
@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
-import kotlin.collections.Collection
 
 /**
  * An `ItemDecoration` to add spacing around list items in a [Collection]. It is intended for use

@@ -21,11 +21,11 @@ import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
+import com.facebook.litho.widget.collection.Collection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

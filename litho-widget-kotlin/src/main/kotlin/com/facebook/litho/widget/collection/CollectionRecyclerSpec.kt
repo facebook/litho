@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget
+package com.facebook.litho.widget.collection
 
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.OrientationHelper
@@ -44,6 +44,15 @@ import com.facebook.litho.annotations.State
 import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
+import com.facebook.litho.sections.widget.ClearRefreshingEvent
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
+import com.facebook.litho.sections.widget.RecyclerConfiguration
+import com.facebook.litho.sections.widget.ScrollEvent
+import com.facebook.litho.sections.widget.ScrollToHandle
+import com.facebook.litho.sections.widget.SectionBinderTarget
+import com.facebook.litho.sections.widget.SmoothScrollEvent
+import com.facebook.litho.sections.widget.SmoothScrollToHandleEvent
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.litho.widget.PTRRefreshEvent

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget
+package com.facebook.litho.widget.collection
 
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.Prop

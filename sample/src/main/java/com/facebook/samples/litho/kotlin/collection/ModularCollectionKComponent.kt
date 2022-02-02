@@ -21,11 +21,11 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.State
 import com.facebook.litho.Style
-import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.CollectionContainerScope
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.CollectionContainerScope
 
 class ModularCollectionKComponent : KComponent() {
 

@@ -26,12 +26,12 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.useCallback
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Image
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.collection.Collection
 import com.facebook.yoga.YogaJustify
 
 class SelectionCollectionKComponent : KComponent() {

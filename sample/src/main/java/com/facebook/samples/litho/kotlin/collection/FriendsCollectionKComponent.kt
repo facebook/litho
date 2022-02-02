@@ -23,9 +23,9 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.collection.Collection
 
 // start_original_data_example
 data class Person(val name: String, val id: Int)

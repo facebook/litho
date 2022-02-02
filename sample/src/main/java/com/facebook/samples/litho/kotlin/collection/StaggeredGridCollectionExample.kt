@@ -28,8 +28,8 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.px
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.view.background
+import com.facebook.litho.widget.collection.Collection
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 class StaggeredGridCollectionExample : KComponent() {

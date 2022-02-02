@@ -24,7 +24,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.core.height
 import com.facebook.litho.dp
-import com.facebook.litho.sections.widget.Collection
+import com.facebook.litho.widget.collection.Collection
 
 // start_example
 class RootKComponent : KComponent() {

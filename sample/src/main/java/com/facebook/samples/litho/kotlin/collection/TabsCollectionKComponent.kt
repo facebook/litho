@@ -29,13 +29,13 @@ import com.facebook.litho.colorRes
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextAlignment
+import com.facebook.litho.widget.collection.Collection
 import com.facebook.samples.litho.R
 
 class TabsCollectionKComponent : KComponent() {

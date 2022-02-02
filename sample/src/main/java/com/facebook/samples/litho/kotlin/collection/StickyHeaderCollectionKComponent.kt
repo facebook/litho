@@ -22,8 +22,8 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.collection.Collection
 
 class StickyHeaderCollectionKComponent : KComponent() {
 

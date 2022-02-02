@@ -25,12 +25,12 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.dp
-import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.Collection.Companion.tailPagination
 import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Progress
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.Collection.Companion.tailPagination
 import com.facebook.yoga.YogaAlign
 
 // start_example
