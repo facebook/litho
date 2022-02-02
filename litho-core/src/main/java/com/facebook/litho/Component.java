@@ -1398,8 +1398,7 @@ public abstract class Component
     return (component != null && component.getMountType() == MountType.VIEW);
   }
 
-  static boolean isNestedTree(
-      final LayoutStateContext layoutStateContext, @Nullable Component component) {
+  static boolean isNestedTree(@Nullable Component component) {
     return isLayoutSpecWithSizeSpec(component);
   }
 

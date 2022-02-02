@@ -157,7 +157,7 @@ class Layout {
     final LithoNode node;
     final ComponentContext c;
     final String globalKey;
-    final boolean isNestedTree = isNestedTree(layoutStateContext, component);
+    final boolean isNestedTree = isNestedTree(component);
     final boolean hasCachedLayout = hasCachedLayout(layoutStateContext, component);
     final ScopedComponentInfo scopedComponentInfo;
 

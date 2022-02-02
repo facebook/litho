@@ -77,7 +77,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       int outputWidth;
       int outputHeight;
 
-      if (isNestedTree(layoutStateContext, component)
+      if (isNestedTree(component)
           || hasCachedLayout(layoutStateContext, component)
           || result instanceof NestedTreeHolderResult) {
 

@@ -295,7 +295,7 @@ public class TestLayoutState {
       scopedComponentInfo = c.getScopedComponentInfo();
       // 6. Resolve the component into an InternalNode tree.
 
-      final boolean shouldDeferNestedTreeResolution = isNestedTree(layoutStateContext, component);
+      final boolean shouldDeferNestedTreeResolution = isNestedTree(component);
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
@@ -373,7 +373,7 @@ public class TestLayoutState {
     // another component.
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
-      if (isMountSpecWithMeasure || (isNestedTree(layoutStateContext, component))) {
+      if (isMountSpecWithMeasure || (isNestedTree(component))) {
         node.setMeasureFunction(sMeasureFunction);
       }
     }
