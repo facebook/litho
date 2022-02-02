@@ -143,7 +143,6 @@ public class RecyclerBinder
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
-  private final boolean mEnableDetach;
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
@@ -451,7 +450,6 @@ public class RecyclerBinder
     private boolean hscrollAsyncMode = false;
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
-    private boolean enableDetach = false;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isSubAdapter;
@@ -706,12 +704,6 @@ public class RecyclerBinder
     public Builder stickyHeaderControllerFactory(
         @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory) {
       this.stickyHeaderControllerFactory = stickyHeaderControllerFactory;
-      return this;
-    }
-
-    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
-    public Builder enableDetach(boolean enableDetach) {
-      this.enableDetach = enableDetach;
       return this;
     }
 
@@ -1002,7 +994,6 @@ public class RecyclerBinder
     mIncrementalMountEnabled = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
-    mEnableDetach = builder.enableDetach;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;

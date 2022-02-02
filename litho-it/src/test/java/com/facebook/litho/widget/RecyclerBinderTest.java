@@ -5293,11 +5293,7 @@ public class RecyclerBinderTest {
     final int widthPx = 200;
     final int heightPx = 200;
 
-    mRecyclerBinder =
-        new RecyclerBinder.Builder()
-            .enableDetach(true)
-            .rangeRatio(RANGE_RATIO)
-            .build(mComponentContext);
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final RecyclerView rv = mock(RecyclerView.class);
     mRecyclerBinder.mount(rv);
 

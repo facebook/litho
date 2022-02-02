@@ -56,7 +56,6 @@ public class RecyclerBinderConfiguration {
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   @Nullable private RunnableHandler mChangeSetThreadHandler;
-  private final boolean mEnableDetach;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
@@ -84,7 +83,6 @@ public class RecyclerBinderConfiguration {
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
       boolean enableStableIds,
-      boolean enableDetach,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
       boolean isReconciliationEnabled,
@@ -107,7 +105,6 @@ public class RecyclerBinderConfiguration {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
-    mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mIsReconciliationEnabled = isReconciliationEnabled;
@@ -170,10 +167,6 @@ public class RecyclerBinderConfiguration {
     return mMoveLayoutsBetweenThreads;
   }
 
-  public boolean getEnableDetach() {
-    return mEnableDetach;
-  }
-
   public boolean isReconciliationEnabled() {
     return mIsReconciliationEnabled;
   }
@@ -234,7 +227,6 @@ public class RecyclerBinderConfiguration {
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
-    private boolean mEnableDetach = false;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
@@ -263,7 +255,6 @@ public class RecyclerBinderConfiguration {
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
       this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
-      this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
       this.mRecyclingMode = configuration.mRecyclingMode;
@@ -383,12 +374,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
-    public Builder enableDetach(boolean enableDetach) {
-      mEnableDetach = enableDetach;
-      return this;
-    }
-
     public Builder isReconciliationEnabled(boolean isEnabled) {
       mIsReconciliationEnabled = isEnabled;
       return this;
@@ -457,7 +442,6 @@ public class RecyclerBinderConfiguration {
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,
           mEnableStableIds,
-          mEnableDetach,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
           mIsReconciliationEnabled,

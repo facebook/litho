@@ -318,7 +318,6 @@ public class RecyclerCollectionComponentSpec {
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount)
-            .enableDetach(binderConfiguration.getEnableDetach())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
             .canInterruptAndMoveLayoutsBetweenThreads(

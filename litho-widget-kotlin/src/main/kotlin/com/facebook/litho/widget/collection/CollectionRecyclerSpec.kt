@@ -181,7 +181,6 @@ object CollectionRecyclerSpec {
             .hscrollAsyncMode(binderConfiguration.hScrollAsyncMode)
             .isCircular(binderConfiguration.isCircular)
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .enableDetach(binderConfiguration.enableDetach)
             .componentsConfiguration(binderConfiguration.componentsConfiguration)
             .canInterruptAndMoveLayoutsBetweenThreads(
                 binderConfiguration.moveLayoutsBetweenThreads())
