@@ -169,8 +169,8 @@ public class ComponentsConfiguration {
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
 
-  /** Keeps the internal nodes used for layout. This will increase memory use. */
-  public static boolean keepInternalNodes = false;
+  /** Keeps the litho node tree in the LayoutState. This will increase memory use. */
+  public static boolean keepLithoNodes = false;
 
   /** Keeps the layout result tree in the LayoutState. This will increase memory use. */
   public static boolean keepLayoutResults = true;

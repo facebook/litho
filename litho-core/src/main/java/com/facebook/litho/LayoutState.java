@@ -1492,7 +1492,7 @@ public class LayoutState
     if (!c.isReconciliationEnabled()
         && !ComponentsConfiguration.isDebugModeEnabled
         && !ComponentsConfiguration.isEndToEndTestRun
-        && !ComponentsConfiguration.keepInternalNodes) {
+        && !ComponentsConfiguration.keepLithoNodes) {
       layoutState.mRoot = null;
       layoutState.mLayoutResult = null;
     } else if (!ComponentsConfiguration.keepLayoutResults) {
