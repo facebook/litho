@@ -65,6 +65,7 @@ public interface EventLogger {
   String EVENT_SETTINGS = "settings.update";
   String EVENT_TOOLWINDOW = "toolwindow";
   String EVENT_GENERATE_COMPONENT = "generate_component";
+  String EVENT_ERROR = "error";
 
   /**
    * Logs given event.
