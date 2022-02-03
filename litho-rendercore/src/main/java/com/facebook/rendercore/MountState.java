@@ -114,7 +114,7 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.beginSection("MountState.mount");
 
     mIsMounting = true;
-
+    
     RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
     RenderCoreExtension.beforeMount(this, mRootHost, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
