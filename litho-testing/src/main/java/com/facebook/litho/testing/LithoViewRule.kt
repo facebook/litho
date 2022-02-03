@@ -24,7 +24,6 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
-import com.facebook.litho.ComponentsPools
 import com.facebook.litho.LithoView
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
@@ -79,7 +78,6 @@ constructor(
           base.evaluate()
         } finally {
           threadLooperController.clean()
-          ComponentsPools.clearMountContentPools()
           MountItemsPool.clear()
         }
       }

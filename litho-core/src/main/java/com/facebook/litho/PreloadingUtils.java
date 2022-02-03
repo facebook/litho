@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.os.Handler;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -155,7 +156,7 @@ public class PreloadingUtils {
                         TransitionsExtension.class,
                         ContextUtils.class,
                         ComponentUtils.class,
-                        ComponentsPools.class,
+                        MountItemsPool.class,
                         LogTreePopulator.class,
                         DoubleMeasureFixUtil.class,
                         TouchExpansionDelegate.class,

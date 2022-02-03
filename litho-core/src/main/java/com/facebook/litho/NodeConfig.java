@@ -21,7 +21,7 @@ import com.facebook.litho.yoga.LithoYogaFactory;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaNode;
 
-/** A helper class that defines a configurable sizes for ComponentsPools. */
+/** A helper class that defines a configurable sizes for Pooling. */
 public class NodeConfig {
 
   public interface InternalYogaNodeFactory {

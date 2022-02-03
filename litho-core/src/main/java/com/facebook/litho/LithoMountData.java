@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 
@@ -99,7 +100,7 @@ public class LithoMountData {
               + ", previousReleaseCause: "
               + mReleaseCause);
     }
-    ComponentsPools.release(context, mComponent, item.getContent());
+    MountItemsPool.release(context, mComponent, item.getContent());
     mIsReleased = true;
     mReleaseCause = releaseCause;
   }

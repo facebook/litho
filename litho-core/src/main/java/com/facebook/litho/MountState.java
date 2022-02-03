@@ -74,6 +74,7 @@ import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -1278,7 +1279,7 @@ class MountState implements MountDelegateTarget {
       throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
     }
     final Object content =
-        ComponentsPools.acquireMountContent(mContext.getAndroidContext(), component);
+        MountItemsPool.acquireMountContent(mContext.getAndroidContext(), component);
 
     final ComponentContext context = getContextForComponent(node);
     final LithoLayoutData layoutData = (LithoLayoutData) node.getLayoutData();

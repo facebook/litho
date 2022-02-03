@@ -93,16 +93,6 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
-
-    // Rendercore Mount doesn't use ComponentPools.
-    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
-      assertThat(ComponentsPools.getMountContentPools().size())
-          .describedAs("Should contain only 1 content pool")
-          .isEqualTo(1);
-      assertThat(ComponentsPools.getMountContentPools().get(0).getName())
-          .describedAs("Should contain content pool from MountSpecLifecycleTester")
-          .isEqualTo("MountSpecLifecycleTester");
-    }
   }
 
   @Test
@@ -381,16 +371,6 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
-
-    // Rendercore Mount doesn't use ComponentPools.
-    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
-      assertThat(ComponentsPools.getMountContentPools().size())
-          .describedAs("Should still contain only 1 content pool")
-          .isEqualTo(1);
-      assertThat(ComponentsPools.getMountContentPools().get(0).getName())
-          .describedAs("Should still contain content pool from MountSpecLifecycleTester")
-          .isEqualTo("MountSpecLifecycleTester");
-    }
   }
 
   @Test
@@ -425,16 +405,6 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_ATTACHED);
-
-    // Rendercore Mount doesn't use ComponentPools.
-    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
-      assertThat(ComponentsPools.getMountContentPools().size())
-          .describedAs("Should contain only 1 content pool")
-          .isEqualTo(1);
-      assertThat(ComponentsPools.getMountContentPools().get(0).getName())
-          .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
-          .isEqualTo("PreallocatedMountSpecLifecycleTester");
-    }
   }
 
   @Test

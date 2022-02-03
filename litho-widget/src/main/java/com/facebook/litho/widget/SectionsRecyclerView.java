@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import java.util.List;
@@ -34,8 +33,7 @@ import javax.annotation.Nullable;
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
  * and pull-to-refresh
  */
-public class SectionsRecyclerView extends SwipeRefreshLayout
-    implements HasLithoViewChildren, ComponentsPools.LoggingMountContent {
+public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLithoViewChildren {
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
@@ -221,11 +219,6 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
         lithoViews.add((LithoView) child);
       }
     }
-  }
-
-  @Override
-  public void onMountContentRecycled() {
-    mIsFirstLayout = true;
   }
 
   /** Pass to a SectionsRecyclerView to do custom logging. */

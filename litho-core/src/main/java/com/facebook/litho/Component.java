@@ -63,6 +63,8 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.PoolableContentProvider;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -88,6 +90,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Component
     implements Cloneable,
+        PoolableContentProvider,
         HasEventDispatcher,
         HasEventTrigger,
         EventDispatcher,
@@ -162,6 +165,27 @@ public abstract class Component
    */
   protected Component(int identityHashCode) {
     mTypeId = getOrCreateId(identityHashCode);
+  }
+
+  @Override
+  public Object createPoolableContent(Context context) {
+    return createMountContent(context);
+  }
+
+  @Override
+  public Object getPoolableContentType() {
+    return getClass();
+  }
+
+  @Override
+  public boolean isRecyclingDisabled() {
+    return poolSize() == 0;
+  }
+
+  @Nullable
+  @Override
+  public MountItemsPool.ItemPool<?> createRecyclingPool() {
+    return onCreateMountContentPool();
   }
 
   @Override

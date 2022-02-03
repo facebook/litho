@@ -1591,12 +1591,8 @@ public class LayoutState
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          if (mDelegateToRenderCoreMount) {
-            MountItemsPool.maybePreallocateContent(
-                mContext.getAndroidContext(), treeNode.getRenderUnit());
-          } else {
-            ComponentsPools.maybePreallocateContent(mContext.getAndroidContext(), component);
-          }
+          MountItemsPool.maybePreallocateContent(
+              mContext.getAndroidContext(), treeNode.getRenderUnit());
 
           if (isTracing) {
             ComponentsSystrace.endSection();

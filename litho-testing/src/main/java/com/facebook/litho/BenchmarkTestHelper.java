@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import com.facebook.rendercore.MountItemsPool;
+
 /** Helper class to access Litho internals for benchmark testing. */
 public class BenchmarkTestHelper {
   private static final int[] LAYOUT_SIZE_OUT = new int[2];
@@ -57,7 +59,7 @@ public class BenchmarkTestHelper {
   }
 
   public static Object getMountContent(ComponentContext c, Component component) {
-    return ComponentsPools.acquireMountContent(c.getAndroidContext(), component);
+    return MountItemsPool.acquireMountContent(c.getAndroidContext(), component);
   }
 
   public static void setMountStateDirty(LithoView lithoView) {

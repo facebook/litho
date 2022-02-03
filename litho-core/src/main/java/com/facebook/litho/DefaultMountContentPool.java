@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import com.facebook.rendercore.PoolableContentProvider;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -34,14 +35,14 @@ public class DefaultMountContentPool extends RecyclePool implements MountContent
   }
 
   @Override
-  public Object acquire(Context c, Component component) {
+  public Object acquire(Context c, PoolableContentProvider component) {
     final Object fromPool = super.acquire();
     if (fromPool != null) {
       return fromPool;
     }
 
     mAllocationCount.incrementAndGet();
-    return component.createMountContent(c);
+    return component.createPoolableContent(c);
   }
 
   @Override
@@ -54,11 +55,11 @@ public class DefaultMountContentPool extends RecyclePool implements MountContent
    * size, otherwise does nothing.
    */
   @Override
-  public void maybePreallocateContent(Context c, Component component) {
+  public void maybePreallocateContent(Context c, PoolableContentProvider component) {
     // There's a slight race between checking isFull and the actual release() but this shouldn't
     // happen much and when it does it isn't that bad.
     if (!isFull() && mAllocationCount.getAndIncrement() < mPoolSize) {
-      release(component.createMountContent(c));
+      release(component.createPoolableContent(c));
     }
   }
 }

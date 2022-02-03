@@ -36,7 +36,7 @@ import java.util.Map;
  * <p>Immutability: RenderUnits should be immutable! Continuing to change them after they are built
  * and given to RenderCore (e.g. via RenderState) is not safe.
  */
-public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
+public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableContentProvider {
 
   public enum RenderType {
     DRAWABLE,
@@ -87,6 +87,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
   public abstract MOUNT_CONTENT createContent(Context c);
 
+  @Override
+  public Object createPoolableContent(Context context) {
+    return createContent(context);
+  }
+
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
   public abstract long getId();
 
@@ -94,6 +99,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     return getClass();
   }
 
+  @Override
+  public Object getPoolableContentType() {
+    return getRenderContentType();
+  }
+
+  @Override
   public boolean isRecyclingDisabled() {
     return false;
   }
@@ -103,7 +114,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   protected void onEndUpdateRenderUnit() {}
 
   @Nullable
-  public MountItemsPool.ItemPool getRecyclingPool() {
+  @Override
+  public MountItemsPool.ItemPool createRecyclingPool() {
     return null;
   }
 

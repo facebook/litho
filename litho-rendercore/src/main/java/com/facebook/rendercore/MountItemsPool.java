@@ -66,33 +66,36 @@ public class MountItemsPool {
    */
   public static boolean sIsManualCallbacks;
 
-  static Object acquireMountContent(Context context, RenderUnit renderUnit) {
-    final ItemPool pool = getMountContentPool(context, renderUnit);
+  public static Object acquireMountContent(
+      Context context, PoolableContentProvider poolableMountContent) {
+    final ItemPool pool = getMountContentPool(context, poolableMountContent);
     Object content = null;
     if (pool == null) {
-      return renderUnit.createContent(context);
+      return poolableMountContent.createPoolableContent(context);
     } else {
-      content = pool.acquire(context, renderUnit);
+      content = pool.acquire(context, poolableMountContent);
     }
 
     if (content == null) {
-      content = renderUnit.createContent(context);
+      content = poolableMountContent.createPoolableContent(context);
     }
 
     return content;
   }
 
-  public static void release(Context context, RenderUnit renderUnit, Object mountContent) {
-    final ItemPool pool = getMountContentPool(context, renderUnit);
+  public static void release(
+      Context context, PoolableContentProvider poolableMountContent, Object mountContent) {
+    final ItemPool pool = getMountContentPool(context, poolableMountContent);
     if (pool != null) {
       pool.release(mountContent);
     }
   }
 
-  public static void maybePreallocateContent(Context context, RenderUnit renderUnit) {
-    final ItemPool pool = getMountContentPool(context, renderUnit);
+  public static void maybePreallocateContent(
+      Context context, PoolableContentProvider poolableMountContent) {
+    final ItemPool pool = getMountContentPool(context, poolableMountContent);
     if (pool != null) {
-      pool.maybePreallocateContent(context, renderUnit);
+      pool.maybePreallocateContent(context, poolableMountContent);
     }
   }
 
@@ -102,26 +105,28 @@ public class MountItemsPool {
    * PoolSize will only be respected if the RenderUnit does not provide a custom Pool
    * implementation.
    */
-  public static void prefillMountContentPool(Context context, int poolSize, RenderUnit renderUnit) {
+  public static void prefillMountContentPool(
+      Context context, int poolSize, PoolableContentProvider poolableMountContent) {
     if (poolSize == 0) {
       return;
     }
 
-    final ItemPool pool = getMountContentPool(context, renderUnit, poolSize);
+    final ItemPool pool = getMountContentPool(context, poolableMountContent, poolSize);
     if (pool != null) {
       for (int i = 0; i < poolSize; i++) {
-        pool.release(renderUnit.createContent(context));
+        pool.release(poolableMountContent.createPoolableContent(context));
       }
     }
   }
 
-  private static @Nullable ItemPool getMountContentPool(Context context, RenderUnit renderUnit) {
-    return getMountContentPool(context, renderUnit, DEFAULT_POOL_SIZE);
+  private static @Nullable ItemPool getMountContentPool(
+      Context context, PoolableContentProvider poolableMountContent) {
+    return getMountContentPool(context, poolableMountContent, DEFAULT_POOL_SIZE);
   }
 
   private static @Nullable ItemPool getMountContentPool(
-      Context context, RenderUnit renderUnit, int size) {
-    if (renderUnit.isRecyclingDisabled()) {
+      Context context, PoolableContentProvider poolableMountContent, int size) {
+    if (poolableMountContent.isRecyclingDisabled()) {
       return null;
     }
 
@@ -137,13 +142,13 @@ public class MountItemsPool {
         poolsMap = new HashMap<Object, ItemPool>();
         sMountContentPoolsByContext.put(context, poolsMap);
       }
-      final Object lifecycle = renderUnit.getRenderContentType();
+      final Object lifecycle = poolableMountContent.getPoolableContentType();
 
       ItemPool pool = poolsMap.get(lifecycle);
       if (pool == null) {
-        pool = renderUnit.getRecyclingPool();
+        pool = poolableMountContent.createRecyclingPool();
 
-        // RenderUnit might produce a null pool. In this case, just create a default one.
+        // PoolableMountContent might produce a null pool. In this case, just create a default one.
         if (pool == null) {
           pool = new DefaultItemPool(lifecycle, size);
         }
@@ -302,7 +307,7 @@ public class MountItemsPool {
      * @param renderUnit the RenderUnit for the item
      * @return a pooled content item
      */
-    T acquire(Context c, RenderUnit renderUnit);
+    T acquire(Context c, PoolableContentProvider poolableMountContent);
 
     /**
      * Called when an item is released and can return to the pool
@@ -318,7 +323,7 @@ public class MountItemsPool {
      * @param c the android context
      * @param renderUnit the RenderUnit for the item
      */
-    void maybePreallocateContent(Context c, RenderUnit renderUnit);
+    void maybePreallocateContent(Context c, PoolableContentProvider poolableMountContent);
   }
 
   static class DefaultItemPool implements ItemPool {
@@ -332,7 +337,7 @@ public class MountItemsPool {
     }
 
     @Override
-    public Object acquire(Context c, RenderUnit renderUnit) {
+    public Object acquire(Context c, PoolableContentProvider poolableMountContent) {
       return mPool.acquire();
     }
 
@@ -351,7 +356,7 @@ public class MountItemsPool {
     }
 
     @Override
-    public void maybePreallocateContent(Context c, RenderUnit component) {
+    public void maybePreallocateContent(Context c, PoolableContentProvider poolableMountContent) {
       // Do Nothing.
     }
   }

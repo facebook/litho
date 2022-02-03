@@ -36,7 +36,6 @@ import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
@@ -425,14 +424,6 @@ public class MountStateRemountTest {
       }
     }
     return false;
-  }
-
-  private static void clearPool(String name) {
-    final RecyclePool<?> pool = Whitebox.getInternalState(ComponentsPools.class, name);
-
-    while (pool.acquire() != null) {
-      // Run.
-    }
   }
 
   @After

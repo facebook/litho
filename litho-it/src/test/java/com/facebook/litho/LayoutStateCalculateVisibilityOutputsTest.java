@@ -28,6 +28,7 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.TestNullLayoutComponent;
+import com.facebook.rendercore.MountItemsPool;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
   @Before
   public void setup() throws Exception {
     mContext = mLegacyLithoViewRule.getComponentTree().getContext();
-    ComponentsPools.clearMountContentPools();
+    MountItemsPool.clear();
   }
 
   @Test
