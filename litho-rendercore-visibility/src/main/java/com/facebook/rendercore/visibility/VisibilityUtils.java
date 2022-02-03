@@ -47,7 +47,9 @@ public class VisibilityUtils {
 
     sVisibleEvent.content = content;
 
-    log("Dispatch:VisibleEvent to: " + visibleHandler.toString());
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "Dispatch:VisibleEvent to: " + visibleHandler.toString());
+    }
     visibleHandler.call(sVisibleEvent);
 
     sVisibleEvent.content = null;
@@ -60,7 +62,9 @@ public class VisibilityUtils {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
 
-    log("Dispatch:FocusedVisibleEvent to: " + focusedHandler.toString());
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "Dispatch:FocusedVisibleEvent to: " + focusedHandler.toString());
+    }
     focusedHandler.call(sFocusedVisibleEvent);
   }
 
@@ -69,7 +73,9 @@ public class VisibilityUtils {
       sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
     }
 
-    log("Dispatch:UnfocusedVisibleEvent to: " + unfocusedHandler.toString());
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "Dispatch:UnfocusedVisibleEvent to: " + unfocusedHandler.toString());
+    }
     unfocusedHandler.call(sUnfocusedVisibleEvent);
   }
 
@@ -78,7 +84,10 @@ public class VisibilityUtils {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
 
-    log("Dispatch:FullImpressionVisibleEvent to: " + fullImpressionHandler.toString());
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(
+          DEBUG_TAG, "Dispatch:FullImpressionVisibleEvent to: " + fullImpressionHandler.toString());
+    }
     fullImpressionHandler.call(sFullImpressionVisibleEvent);
   }
 
@@ -87,7 +96,9 @@ public class VisibilityUtils {
       sInvisibleEvent = new InvisibleEvent();
     }
 
-    log("Dispatch:InvisibleEvent to: " + invisibleHandler.toString());
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "Dispatch:InvisibleEvent to: " + invisibleHandler.toString());
+    }
     invisibleHandler.call(sInvisibleEvent);
   }
 
@@ -115,14 +126,11 @@ public class VisibilityUtils {
     sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;
     sVisibleRectChangedEvent.percentVisibleWidth = percentVisibleWidth;
 
-    log("Dispatch:VisibilityChangedEvent to: " + visibilityChangedHandler.toString());
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(
+          DEBUG_TAG, "Dispatch:VisibilityChangedEvent to: " + visibilityChangedHandler.toString());
+    }
 
     visibilityChangedHandler.call(sVisibleRectChangedEvent);
-  }
-
-  public static void log(final String log) {
-    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
-      Log.d(DEBUG_TAG, log);
-    }
   }
 }

@@ -16,10 +16,11 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import static com.facebook.rendercore.incrementalmount.IncrementalMountUtils.log;
+import static com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.DEBUG_TAG;
 import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Host;
@@ -57,7 +58,9 @@ public class IncrementalMountExtension
       final IncrementalMountExtensionInput input,
       final Rect localVisibleRect) {
 
-    log("beforeMount");
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "beforeMount");
+    }
     RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMount");
 
     final IncrementalMountExtensionState state = extensionState.getState();
@@ -73,7 +76,9 @@ public class IncrementalMountExtension
 
   @Override
   public void afterMount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
-    log("afterMount");
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "afterMount");
+    }
     RenderCoreSystrace.beginSection("IncrementalMountExtension.afterMount");
 
     final IncrementalMountExtensionState state = extensionState.getState();
@@ -88,7 +93,9 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final RenderTreeNode renderTreeNode,
       final int index) {
-    log("beforeMountItem [id=" + renderTreeNode.getRenderUnit().getId() + "]");
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "beforeMountItem [id=" + renderTreeNode.getRenderUnit().getId() + "]");
+    }
     RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMountItem");
 
     final long id = renderTreeNode.getRenderUnit().getId();
@@ -127,20 +134,26 @@ public class IncrementalMountExtension
       final Rect localVisibleRect) {
     assertMainThread();
 
-    log("onVisibleBoundsChanged [visibleBounds=" + localVisibleRect + "]");
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "onVisibleBoundsChanged [visibleBounds=" + localVisibleRect + "]");
+    }
     RenderCoreSystrace.beginSection("IncrementalMountExtension.onVisibleBoundsChanged");
 
     final IncrementalMountExtensionState state = extensionState.getState();
     if (state.mInput == null) {
       // Something notified the host that the visible bounds changed, but nothing was mounted yet.
       // Nothing to do.
-      log("Skipping: Input is empty.");
+      if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+        Log.d(DEBUG_TAG, "Skipping: Input is empty.");
+      }
       RenderCoreSystrace.endSection();
       return;
     }
 
     if (localVisibleRect.isEmpty() && state.mPreviousLocalVisibleRect.isEmpty()) {
-      log("Skipping: Visible area is 0");
+      if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+        Log.d(DEBUG_TAG, "Skipping: Visible area is 0");
+      }
       notifyVisibleBoundsChangedOnNestedContent(extensionState);
       RenderCoreSystrace.endSection();
       return;
@@ -149,7 +162,9 @@ public class IncrementalMountExtension
     if (IncrementalMountExtensionConfigs.shouldSkipBoundsInNegativeCoordinateSpace
         && ((localVisibleRect.top < 0 && localVisibleRect.bottom <= 0)
             || (localVisibleRect.left < 0 && localVisibleRect.right < 0))) {
-      log("Skipping: Visible area is in negative coordinate space");
+      if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+        Log.d(DEBUG_TAG, "Skipping: Visible area is in negative coordinate space");
+      }
       notifyVisibleBoundsChangedOnNestedContent(extensionState);
       RenderCoreSystrace.endSection();
       return;
@@ -257,7 +272,9 @@ public class IncrementalMountExtension
     assertMainThread();
     final IncrementalMountExtensionInput input = extensionState.getState().mInput;
     if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
-      log("RecursivelyNotify [RenderUnit=" + id + "]");
+      if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+        Log.d(DEBUG_TAG, "RecursivelyNotify [RenderUnit=" + id + "]");
+      }
       RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
       extensionState.getMountDelegate().notifyVisibleBoundsChangedForItem(content);
       RenderCoreSystrace.endSection();
@@ -427,7 +444,11 @@ public class IncrementalMountExtension
       }
     }
 
-    log("Updates: [Items Mounted=" + itemsMounted + ", Items Unmounted=" + itemsUnmounted + "]");
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(
+          DEBUG_TAG,
+          "Updates: [Items Mounted=" + itemsMounted + ", Items Unmounted=" + itemsUnmounted + "]");
+    }
 
     for (long id : state.mMountedOutputIdsWithNestedContent.keySet()) {
       if (state.mComponentIdsMountedInThisFrame.contains(id)) {
