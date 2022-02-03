@@ -18,6 +18,7 @@ package com.facebook.litho.widget.collection
 
 import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
@@ -233,19 +234,20 @@ class Collection(
   }
 }
 
+@Suppress("KtDataClass")
+data class CollectionData(
+    val id: Any? = null,
+    val component: Component? = null,
+    val componentFunction: (() -> Component?)? = null,
+    val isSticky: Boolean = false,
+    val isFullSpan: Boolean = false,
+    val spanSize: Int? = null,
+    val deps: Array<Any?>? = null,
+)
+
 @ContainerDsl
 class CollectionContainerScope(override val context: ComponentContext) : ResourcesScope {
 
-  @Suppress("KtDataClass")
-  internal data class CollectionData(
-      val id: Any? = null,
-      val component: Component? = null,
-      val componentFunction: (() -> Component?)? = null,
-      val isSticky: Boolean = false,
-      val isFullSpan: Boolean = false,
-      val spanSize: Int? = null,
-      val deps: Array<Any?>? = null,
-  )
   internal val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
   private var typeToFreq: MutableMap<Int, Int>? = null
@@ -322,31 +324,39 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
                   .build()
             })
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
-        .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isComponentEquivalent))
+        .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isChildEquivalent))
         .build()
-  }
-
-  private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
-    return event.previousItem.id == event.nextItem.id
-  }
-
-  private fun isComponentEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean {
-    val previousItemDeps = event.previousItem.deps
-    val nextItemDeps = event.nextItem.deps
-
-    if (previousItemDeps == null || nextItemDeps == null) {
-      if (event.previousItem.component?.isEquivalentTo(event.nextItem.component) == false) {
-        return false
-      }
-      return event.previousItem.component?.commonProps?.isEquivalentTo(
-          event.nextItem.component?.commonProps)
-          ?: false
-    }
-
-    return event.previousItem.deps?.contentDeepEquals(event.nextItem.deps) ?: false
   }
 
   private inline fun generateStaticId(): Any {
     return "staticId:${nextStaticId++}"
+  }
+
+  companion object {
+    private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
+      return event.previousItem.id == event.nextItem.id
+    }
+
+    private fun componentsEquivalent(first: Component?, second: Component?): Boolean {
+      if (first == null && second == null) return true
+      return first?.isEquivalentTo(second) == true
+    }
+
+    private fun commonPropsEquivalent(first: CommonProps?, second: CommonProps?): Boolean {
+      if (first == null && second == null) return true
+      return first?.isEquivalentTo(second) == true
+    }
+
+    private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean =
+        isChildEquivalent(event.previousItem, event.nextItem)
+
+    fun isChildEquivalent(previous: CollectionData, next: CollectionData): Boolean {
+      if (previous.deps != null || next.deps != null) {
+        return previous.deps?.contentDeepEquals(next.deps) == true
+      }
+
+      return componentsEquivalent(previous.component, next.component) &&
+          commonPropsEquivalent(previous.component?.commonProps, next.component?.commonProps)
+    }
   }
 }
