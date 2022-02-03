@@ -22,12 +22,10 @@ import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.ContainerDsl
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
-import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
@@ -143,7 +141,9 @@ class Collection(
     val section =
         CollectionGroupSection.create(sectionContext)
             .childrenBuilder(
-                Children.create().child(containerScope.createDataDiffSection(sectionContext)))
+                Children.create()
+                    .child(
+                        createDataDiffSection(sectionContext, containerScope.collectionChildren)))
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
@@ -231,109 +231,39 @@ class Collection(
         }
       }
     }
-  }
-}
 
-@Suppress("KtDataClass")
-data class CollectionData(
-    val id: Any? = null,
-    val component: Component? = null,
-    val componentFunction: (() -> Component?)? = null,
-    val isSticky: Boolean = false,
-    val isFullSpan: Boolean = false,
-    val spanSize: Int? = null,
-    val deps: Array<Any?>? = null,
-)
-
-@ContainerDsl
-class CollectionContainerScope(override val context: ComponentContext) : ResourcesScope {
-
-  internal val collectionChildrenModels = mutableListOf<CollectionData>()
-  private var nextStaticId = 0
-  private var typeToFreq: MutableMap<Int, Int>? = null
-
-  /** Prepare the final id that will be assigned to the child. */
-  private fun getResolvedId(id: Any?, component: Component? = null): Any {
-    // Generate an id that is unique to the [CollectionContainerScope] in which it was defined
-    // If an id has been explicitly defined on the child, use that
-    // If the child has a component generate an id including the type and frequency
-    // Otherwise the child has a null component or a lambda generator, so generate an id.
-    return id ?: generateIdForComponent(component) ?: generateStaticId()
-  }
-
-  /** Generate an id for a non-null Component. */
-  private fun generateIdForComponent(component: Component?): Any? {
-    val typeId = component?.typeId ?: return null
-    if (typeToFreq == null) {
-      typeToFreq = mutableMapOf()
+    private fun createDataDiffSection(
+        sectionContext: SectionContext,
+        children: List<CollectionChild>
+    ): Section {
+      return DataDiffSection.create<CollectionChild>(sectionContext)
+          .data(children)
+          .renderEventHandler(
+              eventHandlerWithReturn { renderEvent ->
+                val item = renderEvent.model
+                val component =
+                    item.component
+                        ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
+                ComponentRenderInfo.create()
+                    .apply {
+                      if (item.isSticky) {
+                        isSticky(item.isSticky)
+                      }
+                      if (item.isFullSpan) {
+                        isFullSpan(item.isFullSpan)
+                      }
+                      item.spanSize?.let { spanSize(it) }
+                      item.component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
+                    }
+                    .component(component)
+                    .build()
+              })
+          .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
+          .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isChildEquivalent))
+          .build()
     }
 
-    return typeToFreq?.let {
-      it[typeId] = (it[typeId] ?: 0) + 1
-      "${typeId}:${it[typeId]}"
-    }
-  }
-
-  fun child(
-      component: Component?,
-      id: Any? = null,
-      isSticky: Boolean = false,
-      isFullSpan: Boolean = false,
-      spanSize: Int? = null,
-  ) {
-    val resolvedId = getResolvedId(id, component)
-    component ?: return
-    collectionChildrenModels.add(
-        CollectionData(resolvedId, component, null, isSticky, isFullSpan, spanSize, null))
-  }
-
-  fun child(
-      id: Any? = null,
-      isSticky: Boolean = false,
-      isFullSpan: Boolean = false,
-      spanSize: Int? = null,
-      deps: Array<Any?>,
-      componentFunction: () -> Component?,
-  ) {
-    collectionChildrenModels.add(
-        CollectionData(
-            getResolvedId(id), null, componentFunction, isSticky, isFullSpan, spanSize, deps))
-  }
-
-  internal fun createDataDiffSection(sectionContext: SectionContext): Section {
-    return DataDiffSection.create<CollectionData>(sectionContext)
-        .data(collectionChildrenModels.toList())
-        .renderEventHandler(
-            eventHandlerWithReturn {
-              val item = it.model
-              val component =
-                  item.component
-                      ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
-              ComponentRenderInfo.create()
-                  .apply {
-                    if (item.isSticky) {
-                      isSticky(item.isSticky)
-                    }
-                    if (item.isFullSpan) {
-                      isFullSpan(item.isFullSpan)
-                    }
-                    item.spanSize?.let { spanSize(it) }
-                    item.component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
-                  }
-                  .component(component)
-                  .build()
-            })
-        .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
-        .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isChildEquivalent))
-        .build()
-  }
-
-  private inline fun generateStaticId(): Any {
-    return "staticId:${nextStaticId++}"
-  }
-
-  companion object {
-    private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
+    private fun isSameID(event: OnCheckIsSameItemEvent<CollectionChild>): Boolean {
       return event.previousItem.id == event.nextItem.id
     }
 
@@ -347,10 +277,10 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       return first?.isEquivalentTo(second) == true
     }
 
-    private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean =
+    private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionChild>): Boolean =
         isChildEquivalent(event.previousItem, event.nextItem)
 
-    fun isChildEquivalent(previous: CollectionData, next: CollectionData): Boolean {
+    fun isChildEquivalent(previous: CollectionChild, next: CollectionChild): Boolean {
       if (previous.deps != null || next.deps != null) {
         return previous.deps?.contentDeepEquals(next.deps) == true
       }

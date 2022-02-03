@@ -40,7 +40,7 @@ class CollectionIdTest {
 
   private fun textComponent(): Component = Text.create(lithoViewRule.context).text("Hello").build()
 
-  private fun CollectionContainerScope.getIds(): List<Any?> = collectionChildrenModels.map { it.id }
+  private fun CollectionContainerScope.getIds(): List<Any?> = collectionChildren.map { it.id }
 
   @Test
   fun `test generated ids are unique`() {

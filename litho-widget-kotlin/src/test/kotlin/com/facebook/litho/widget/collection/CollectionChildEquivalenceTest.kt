@@ -38,69 +38,69 @@ class CollectionChildEquivalenceTest {
 
   @Test
   fun `test children with null fields are equivalent`() {
-    val next = CollectionData("", null)
-    val previous = CollectionData("", null)
+    val next = CollectionChild("", null)
+    val previous = CollectionChild("", null)
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isTrue
+    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
   fun `test children with equal deps are equivalent`() {
-    val next = CollectionData("", null, deps = arrayOf("A"))
-    val previous = CollectionData("", null, deps = arrayOf("A"))
+    val next = CollectionChild("", null, deps = arrayOf("A"))
+    val previous = CollectionChild("", null, deps = arrayOf("A"))
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isTrue
+    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
   fun `test children with unequal deps are not equivalent`() {
-    val next = CollectionData("", null, deps = arrayOf("A"))
-    val previous = CollectionData("", null, deps = arrayOf("B"))
+    val next = CollectionChild("", null, deps = arrayOf("A"))
+    val previous = CollectionChild("", null, deps = arrayOf("B"))
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isFalse
+    assertThat(Collection.isChildEquivalent(previous, next)).isFalse
   }
 
   @Test
   fun `test children with equivalent components are equivalent`() {
     val nextComponent: Component = mock {}
-    val next = CollectionData("", nextComponent)
+    val next = CollectionChild("", nextComponent)
 
     val previousComponent: Component = mock { on { isEquivalentTo(any()) } doReturn true }
-    val previous = CollectionData("", previousComponent)
+    val previous = CollectionChild("", previousComponent)
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isTrue
+    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
   fun `test children with nonequivalent components are not equivalent`() {
     val nextComponent: Component = mock {}
-    val next = CollectionData("", nextComponent)
+    val next = CollectionChild("", nextComponent)
 
     val previousComponent: Component = mock { on { isEquivalentTo(any()) } doReturn false }
-    val previous = CollectionData("", previousComponent)
+    val previous = CollectionChild("", previousComponent)
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isFalse
+    assertThat(Collection.isChildEquivalent(previous, next)).isFalse
   }
 
   @Test
   fun `test children with equivalent commonProps are equivalent`() {
     val previousComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
-    val previous = CollectionData("", previousComponent)
+    val previous = CollectionChild("", previousComponent)
 
     val nextComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
-    val next = CollectionData("", nextComponent)
+    val next = CollectionChild("", nextComponent)
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isTrue
+    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
   fun `test children with nonequivalent commonProps are not equivalent`() {
     val previousComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
-    val previous = CollectionData("", previousComponent)
+    val previous = CollectionChild("", previousComponent)
 
     val nextComponent = EmptyComponent.create(lithoViewRule.context).alpha(1f).build()
-    val next = CollectionData("", nextComponent)
+    val next = CollectionChild("", nextComponent)
 
-    assertThat(CollectionContainerScope.isChildEquivalent(previous, next)).isFalse
+    assertThat(Collection.isChildEquivalent(previous, next)).isFalse
   }
 }
