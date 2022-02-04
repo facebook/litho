@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 # of patent rights can be found in the PATENTS file in the same directory.
 
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_JAVA_TARGET",
@@ -13,6 +14,7 @@ load(
 
 litho_android_library(
     name = "logger",
+    feature = FBApp_UIFrameworks_Litho_Litho,
     labels = ["supermodule:android/default/litho.core"],
     visibility = [
         "PUBLIC",

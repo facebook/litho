@@ -1,3 +1,5 @@
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -6,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "fb_android_resource")
 
 fb_android_resource(
     name = "res",
+    feature = FBApp_UIFrameworks_Litho_Litho,
     labels = ["supermodule:android/default/litho.core"],
     package = "com.facebook.litho",
     res = "src/main/res",

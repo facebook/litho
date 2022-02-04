@@ -3,6 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
@@ -12,6 +13,7 @@ load(
 
 litho_android_library(
     name = "stats",
+    feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [LITHO_ANDROIDSUPPORT_TARGET],

@@ -1,9 +1,11 @@
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JSR_TARGET", "fb_android_library")
 
 fb_android_library(
     name = "editor",
     srcs = glob(["**/*.java"]),
     autoglob = False,
+    feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     visibility = [

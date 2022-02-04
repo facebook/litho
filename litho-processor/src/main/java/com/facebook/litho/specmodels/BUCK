@@ -1,3 +1,5 @@
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -15,6 +17,7 @@ load(
 
 fb_java_library(
     name = "specmodels",
+    feature = FBApp_UIFrameworks_Litho_Litho,
     labels = ["supermodule:android/default/litho.core"],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
@@ -39,6 +42,7 @@ fb_java_library(
             "*/testing/*.java",
         ]),
     ),
+    feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [

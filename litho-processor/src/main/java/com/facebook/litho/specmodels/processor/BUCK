@@ -1,3 +1,5 @@
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -37,6 +39,7 @@ fb_native.java_annotation_processor(
 
 fb_java_library(
     name = "processor-lib",
+    feature = FBApp_UIFrameworks_Litho_Litho,
     labels = ["supermodule:android/default/litho.core"],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
@@ -62,6 +65,7 @@ fb_java_library(
         "--add-exports",
         "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
     ],
+    feature = FBApp_UIFrameworks_Litho_Litho,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
