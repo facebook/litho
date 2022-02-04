@@ -36,7 +36,7 @@ import com.facebook.yoga.YogaAlign
 // start_example
 class PaginationCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val paginatedData = useCached { PaginatedDataSource(pageSize = 40) }
     val list = useState { paginatedData.next() }
 

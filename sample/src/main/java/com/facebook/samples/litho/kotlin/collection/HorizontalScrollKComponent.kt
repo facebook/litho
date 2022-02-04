@@ -49,68 +49,49 @@ class HorizontalScrollKComponent : KComponent() {
 // start_example
 class FixedHeightHScroll : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    return LazyList(
-        orientation = RecyclerView.HORIZONTAL,
-        itemDecoration = LinearSpacing(all = 10.dp),
-        style = Style.height(100.dp),
-    ) {
-      (0..10).forEach {
-        child(
-            id = it,
-            component =
-                Text(
-                    text = "$it",
-                    textSize = 24.sp,
-                    style =
-                        Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp))))
-      }
-    }
-  }
+  override fun ComponentScope.render(): Component =
+      LazyList(
+          orientation = RecyclerView.HORIZONTAL,
+          itemDecoration = LinearSpacing(all = 10.dp),
+          style = Style.height(100.dp),
+      ) { (0..10).forEach { child(id = it, component = ListItem("$it")) } }
 }
 // end_example
 
 class WrapFirstItemHeightHScroll : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    return LazyList(
-        orientation = RecyclerView.HORIZONTAL,
-        crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
-        itemDecoration = LinearSpacing(all = 10.dp),
-    ) {
-      (0..10).forEach {
-        child(
-            id = it,
-            component =
-                Text(
-                    text = "$it",
-                    textSize = 24.sp,
-                    style =
-                        Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp))))
-      }
-    }
-  }
+  override fun ComponentScope.render(): Component =
+      LazyList(
+          orientation = RecyclerView.HORIZONTAL,
+          crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
+          itemDecoration = LinearSpacing(all = 10.dp),
+      ) { (0..10).forEach { child(id = it, component = ListItem("$it")) } }
 }
 
 class WrapDynamicHScroll : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    return LazyList(
-        orientation = RecyclerView.HORIZONTAL,
-        crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
-        itemDecoration = LinearSpacing(all = 10.dp),
-    ) {
-      (0..10).forEach {
-        child(
-            id = it,
-            component =
-                Text(
-                    text = "$it",
-                    textSize = 24.sp,
-                    style =
-                        Style.padding(horizontal = 30.dp, vertical = (it * 5).dp)
-                            .background(RoundedRect(Color.LTGRAY, 10.dp))))
+  override fun ComponentScope.render(): Component =
+      LazyList(
+          orientation = RecyclerView.HORIZONTAL,
+          crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
+          itemDecoration = LinearSpacing(all = 10.dp),
+      ) {
+        (0..10).forEach {
+          child(
+              id = it,
+              component =
+                  ListItem(
+                      text = "$it",
+                      style = Style.padding(horizontal = 30.dp, vertical = (it * 5).dp),
+                  ))
+        }
       }
-    }
-  }
+}
+
+class ListItem(private val text: String, private val style: Style? = null) : KComponent() {
+  override fun ComponentScope.render(): Component =
+      Text(
+          text = text,
+          textSize = 24.sp,
+          style = Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp)) + style)
 }

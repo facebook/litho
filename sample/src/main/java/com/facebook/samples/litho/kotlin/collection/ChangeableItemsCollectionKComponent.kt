@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.collection
 
-import android.util.Log
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -25,29 +24,27 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 
 class ChangeableItemsCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  data class Person(val id: Int, val name: String, val score: Int)
+
+  private val comparator = compareBy<Person> { it.score }.thenBy { it.name }
+
+  override fun ComponentScope.render(): Component {
     val counter = useState { 0 }
     val inOrder = useState { true }
-    val uniqueIds = generateSequence(0) { it + 1 }.iterator()
 
-    data class Person(val name: String, val score: Int) {
-      val id: Int = uniqueIds.next()
-    }
     val people =
         listOf(
-            Person("Jeff Winger", counter.value),
-            Person("Annie Edison", 3),
-            Person("Britta Perry", 1),
-            Person("Abed Nadir", 4))
+            Person(1, "Jeff Winger", counter.value),
+            Person(2, "Annie Edison", 3),
+            Person(3, "Britta Perry", 1),
+            Person(4, "Abed Nadir", 4))
 
-    val comparator = compareBy<Person> { it.score }.thenBy { it.name }
     val orderedPeople =
         people.sortedWith(if (inOrder.value) comparator else comparator.reversed<Person>())
 
@@ -58,12 +55,7 @@ class ChangeableItemsCollectionKComponent : KComponent() {
             child(Button("Jeff +1") { counter.update { (it + 1) % 5 } })
           })
       child(
-          LazyList(
-              style = Style.flex(grow = 1f),
-              onViewportChanged = { _, _, _, _, _, _ ->
-                Log.d("litho-kotlin", "onViewportChangedFunction")
-              },
-              onDataBound = { Log.d("litho-kotlin", "onDataBound") }) {
+          LazyList {
             orderedPeople.forEach {
               child(
                   id = it.id, component = Text("${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}"))

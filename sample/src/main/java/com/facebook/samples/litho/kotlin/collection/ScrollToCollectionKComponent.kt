@@ -33,7 +33,7 @@ import com.facebook.litho.widget.collection.LazyList
 
 class ScrollToCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val lazyListHandle = Handle()
     val endItemHandle = Handle()
     return Column(style = Style.padding(16.dp)) {

@@ -87,11 +87,9 @@ class FriendsCollectionKComponent : KComponent() {
 // start_example
 class FriendList(val friends: List<Person>) : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    return LazyList {
-      child(Text(text = "Friends", textStyle = Typeface.BOLD))
-      friends.forEach { (name, id) -> child(id = id, component = Text(name)) }
-    }
+  override fun ComponentScope.render(): Component = LazyList {
+    child(Text(text = "Friends", textStyle = Typeface.BOLD))
+    friends.forEach { (name, id) -> child(id = id, component = Text(name)) }
   }
 }
 // end_example

@@ -25,7 +25,6 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.alpha
@@ -50,9 +49,7 @@ class DepsCollectionKComponent : KComponent() {
             child(Button("Toggle Alpha") { alpha.update(if (alpha.value == 0.5f) 1f else 0.5f) })
           })
       child(
-          LazyList(
-              style = Style.flex(grow = 1f),
-          ) {
+          LazyList {
             child(
                 Text(
                     "deps = null (all props)",

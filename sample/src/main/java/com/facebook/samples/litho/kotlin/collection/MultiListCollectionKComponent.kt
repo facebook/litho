@@ -21,8 +21,6 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Style
-import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
@@ -34,20 +32,18 @@ class MultiListCollectionKComponent : KComponent() {
     private const val TOP_FRIENDS_TAG = "top_friends_"
   }
 
-  private val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
+  private val friends = listOf("Ross", "Rachel", "Joey", "Phoebe", "Monica", "Chandler")
+  private val topFriends = (0..1)
+  private val allFriends = (0..5)
 
-  override fun ComponentScope.render(): Component? {
-
+  override fun ComponentScope.render(): Component {
     val shouldShowTopFriends = useState { false }
-
-    val topFriends = listOf(0, 1)
-    val allFriends = listOf(0, 1, 2, 3, 4, 5)
 
     return Column {
       child(
           Button("Toggle Top Friends") { shouldShowTopFriends.update(!shouldShowTopFriends.value) })
       child(
-          LazyList(style = Style.flex(grow = 1f)) {
+          LazyList {
             if (shouldShowTopFriends.value) {
               child(
                   id = TOP_FRIENDS_TAG + "title",

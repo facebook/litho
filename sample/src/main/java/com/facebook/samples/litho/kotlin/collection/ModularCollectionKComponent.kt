@@ -29,7 +29,7 @@ import com.facebook.litho.widget.collection.LazyList
 
 class ModularCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val nestedContentVisible = useState { true }
 
     return LazyList {

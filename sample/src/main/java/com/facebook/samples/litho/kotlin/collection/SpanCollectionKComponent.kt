@@ -20,18 +20,15 @@ import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Style
-import com.facebook.litho.flexbox.flex
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyGrid
 
 class SpanCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
 
     return LazyGrid(
         columns = 4,
-        style = Style.flex(grow = 1f),
     ) {
       child(isFullSpan = true, component = Text("Full Span", backgroundColor = Color.WHITE))
       (0..20).forEach { child(id = it, component = Text("$it")) }

@@ -36,7 +36,7 @@ import com.facebook.yoga.YogaJustify
 
 class SelectionCollectionKComponent : KComponent() {
 
-  val items = listOf("O-Ren Ishii", "Vernita Green", "Budd", "Elle Driver", "Bill")
+  private val items = listOf("O-Ren Ishii", "Vernita Green", "Budd", "Elle Driver", "Bill")
 
   override fun ComponentScope.render(): Component? {
     val selected = useState { setOf<Int>() }
@@ -89,16 +89,15 @@ class SelectionCollectionKComponent : KComponent() {
 class Selectable(val text: String, val selected: Boolean, val onClick: (ClickEvent) -> Unit) :
     KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    return Row(
-        justifyContent = YogaJustify.SPACE_BETWEEN,
-        style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(onClick)) {
-      child(Text(text))
-      child(
-          Image(
-              drawableRes(
-                  if (selected) android.R.drawable.checkbox_on_background
-                  else android.R.drawable.checkbox_off_background)))
-    }
-  }
+  override fun ComponentScope.render(): Component =
+      Row(
+          justifyContent = YogaJustify.SPACE_BETWEEN,
+          style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(onClick)) {
+        child(Text(text))
+        child(
+            Image(
+                drawableRes(
+                    if (selected) android.R.drawable.checkbox_on_background
+                    else android.R.drawable.checkbox_off_background)))
+      }
 }

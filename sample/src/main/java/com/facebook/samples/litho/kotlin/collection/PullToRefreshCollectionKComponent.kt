@@ -35,7 +35,7 @@ import com.facebook.litho.widget.collection.LazyList
 // start_example
 class PullToRefreshCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val deck = useState { (0..51).map { Card(it) }.shuffled() }
     val lazyListHandle = Handle()
     return LazyList(

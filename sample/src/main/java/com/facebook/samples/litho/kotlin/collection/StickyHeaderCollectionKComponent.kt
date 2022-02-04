@@ -20,26 +20,19 @@ import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Style
-import com.facebook.litho.flexbox.flex
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 
 class StickyHeaderCollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-
-    return LazyList(
-        style = Style.flex(grow = 1f),
-    ) {
-      child(isSticky = true, component = Text("Sticky Title 1", backgroundColor = Color.WHITE))
-      (0..20).forEach { child(id = it, component = Text("$it")) }
-      child(isSticky = true, component = Text("Sticky Title 2", backgroundColor = Color.WHITE))
-      (21..40).forEach { child(id = it, component = Text("$it")) }
-      child(isSticky = false, component = Text("Not sticky Title 3", backgroundColor = Color.WHITE))
-      (41..60).forEach { child(id = it, component = Text("$it")) }
-      child(isSticky = true, component = Text("Sticky Title 4", backgroundColor = Color.WHITE))
-      (61..80).forEach { child(id = it, component = Text("$it")) }
-    }
+  override fun ComponentScope.render(): Component = LazyList {
+    child(isSticky = true, component = Text("Sticky Title 1", backgroundColor = Color.WHITE))
+    (0..20).forEach { child(id = it, component = Text("$it")) }
+    child(isSticky = true, component = Text("Sticky Title 2", backgroundColor = Color.WHITE))
+    (21..40).forEach { child(id = it, component = Text("$it")) }
+    child(isSticky = false, component = Text("Not sticky Title 3", backgroundColor = Color.WHITE))
+    (41..60).forEach { child(id = it, component = Text("$it")) }
+    child(isSticky = true, component = Text("Sticky Title 4", backgroundColor = Color.WHITE))
+    (61..80).forEach { child(id = it, component = Text("$it")) }
   }
 }

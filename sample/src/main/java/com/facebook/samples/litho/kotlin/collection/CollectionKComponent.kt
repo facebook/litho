@@ -18,28 +18,22 @@ package com.facebook.samples.litho.kotlin.collection
  * limitations under the License.
  */
 
-import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 
 class CollectionKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
-    val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
-    return Column(style = Style.padding(16.dp)) {
-      child(
-          LazyList(style = Style.flex(grow = 1f)) {
-            child(Text(text = "Header"))
-            friends.forEach { child(id = it, component = Text(it)) }
-            child(Text(text = "Footer"))
-          })
-    }
-  }
+  private val friends = listOf("Ross", "Rachel", "Joey", "Phoebe", "Monica", "Chandler")
+
+  override fun ComponentScope.render(): Component =
+      LazyList(style = Style.flex(grow = 1f)) {
+        child(Text(text = "Header"))
+        friends.forEach { child(id = it, component = Text(it)) }
+        child(Text(text = "Footer"))
+      }
 }
