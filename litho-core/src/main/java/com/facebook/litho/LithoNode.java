@@ -668,8 +668,7 @@ public class LithoNode implements Node<LithoRenderContext> {
     return mScopedComponentInfos.size();
   }
 
-  @Nullable
-  public List<Attachable> getAttachables() {
+  public @Nullable List<Attachable> getAttachables() {
     return mAttachables;
   }
 
@@ -1032,7 +1031,7 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public String getSimpleName() {
-    return getComponentCount() == 0 ? "<null>" : getComponentAt(0).getSimpleName();
+    return mScopedComponentInfos.isEmpty() ? "<null>" : getComponentAt(0).getSimpleName();
   }
 
   public boolean isClone() {
@@ -1083,7 +1082,7 @@ public class LithoNode implements Node<LithoRenderContext> {
     return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
   }
 
-  public LithoNode reconcile(
+  public @Nullable LithoNode reconcile(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component next,
@@ -1241,7 +1240,7 @@ public class LithoNode implements Node<LithoRenderContext> {
       final LithoNode current,
       final Component next,
       final ScopedComponentInfo nextScopedComponentInfo,
-      @Nullable final String nextKey,
+      final @Nullable String nextKey,
       final Set<String> keys) {
     final int mode =
         getReconciliationMode(
@@ -1385,7 +1384,7 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public Copyable makeCopy() {
-    return null;
+    return clone();
   }
 
   @IntDef({ReconciliationMode.REUSE, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
