@@ -28,7 +28,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 class ChangeableItemsCollectionKComponent : KComponent() {
 
@@ -58,7 +58,7 @@ class ChangeableItemsCollectionKComponent : KComponent() {
             child(Button("Jeff +1") { counter.update { (it + 1) % 5 } })
           })
       child(
-          Collection(
+          LazyList(
               style = Style.flex(grow = 1f),
               onViewportChanged = { _, _, _, _, _, _ ->
                 Log.d("litho-kotlin", "onViewportChangedFunction")

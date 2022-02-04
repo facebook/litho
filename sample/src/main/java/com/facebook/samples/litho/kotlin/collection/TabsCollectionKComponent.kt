@@ -35,7 +35,7 @@ import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextAlignment
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 import com.facebook.samples.litho.R
 
 class TabsCollectionKComponent : KComponent() {
@@ -49,7 +49,7 @@ class TabsCollectionKComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val selectedTab = useState { Tab.Tab1 }
 
-    return Collection {
+    return LazyList {
       child(tabBar(selectedTab))
 
       when (selectedTab.value) {

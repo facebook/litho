@@ -28,15 +28,15 @@ import com.facebook.litho.dp
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
 import com.facebook.litho.widget.collection.CrossAxisWrapMode
+import com.facebook.litho.widget.collection.LazyList
 import com.facebook.litho.widget.collection.LinearSpacing
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 class HorizontalScrollKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return Collection(
+    return LazyList(
         itemDecoration = LinearSpacing(all = 20.dp),
     ) {
       child(FixedHeightHScroll())
@@ -50,8 +50,8 @@ class HorizontalScrollKComponent : KComponent() {
 class FixedHeightHScroll : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return Collection(
-        layout = Collection.Linear(orientation = RecyclerView.HORIZONTAL),
+    return LazyList(
+        orientation = RecyclerView.HORIZONTAL,
         itemDecoration = LinearSpacing(all = 10.dp),
         style = Style.height(100.dp),
     ) {
@@ -73,11 +73,9 @@ class FixedHeightHScroll : KComponent() {
 class WrapFirstItemHeightHScroll : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return Collection(
-        layout =
-            Collection.Linear(
-                orientation = RecyclerView.HORIZONTAL,
-                crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild),
+    return LazyList(
+        orientation = RecyclerView.HORIZONTAL,
+        crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
         itemDecoration = LinearSpacing(all = 10.dp),
     ) {
       (0..10).forEach {
@@ -97,11 +95,9 @@ class WrapFirstItemHeightHScroll : KComponent() {
 class WrapDynamicHScroll : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return Collection(
-        layout =
-            Collection.Linear(
-                orientation = RecyclerView.HORIZONTAL,
-                crossAxisWrapMode = CrossAxisWrapMode.Dynamic),
+    return LazyList(
+        orientation = RecyclerView.HORIZONTAL,
+        crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
         itemDecoration = LinearSpacing(all = 10.dp),
     ) {
       (0..10).forEach {

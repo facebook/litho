@@ -23,14 +23,14 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyGrid
 
 class SpanCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
 
-    return Collection(
-        layout = Collection.Grid(columns = 4),
+    return LazyGrid(
+        columns = 4,
         style = Style.flex(grow = 1f),
     ) {
       child(isFullSpan = true, component = Text("Full Span", backgroundColor = Color.WHITE))

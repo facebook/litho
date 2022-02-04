@@ -25,7 +25,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 class MultiListCollectionKComponent : KComponent() {
 
@@ -47,7 +47,7 @@ class MultiListCollectionKComponent : KComponent() {
       child(
           Button("Toggle Top Friends") { shouldShowTopFriends.update(!shouldShowTopFriends.value) })
       child(
-          Collection(style = Style.flex(grow = 1f)) {
+          LazyList(style = Style.flex(grow = 1f)) {
             if (shouldShowTopFriends.value) {
               child(
                   id = TOP_FRIENDS_TAG + "title",

@@ -29,7 +29,7 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.px
 import com.facebook.litho.view.background
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyStaggeredGrid
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 class StaggeredGridCollectionExample : KComponent() {
@@ -39,9 +39,7 @@ class StaggeredGridCollectionExample : KComponent() {
 
   override fun ComponentScope.render(): Component {
 
-    return Collection(
-        layout = Collection.StaggeredGrid(spans = 3),
-    ) { (0..30).forEach { child(id = it, component = item(it)) } }
+    return LazyStaggeredGrid(spans = 3) { (0..30).forEach { child(id = it, component = item(it)) } }
   }
 
   private fun colorForIndex(index: Int): Int = colors[index % 4]

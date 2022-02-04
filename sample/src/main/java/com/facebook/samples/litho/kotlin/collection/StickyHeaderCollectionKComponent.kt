@@ -23,13 +23,13 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 class StickyHeaderCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
 
-    return Collection(
+    return LazyList(
         style = Style.flex(grow = 1f),
     ) {
       child(isSticky = true, component = Text("Sticky Title 1", backgroundColor = Color.WHITE))

@@ -29,22 +29,23 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 class ScrollToCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    val collectionHandle = Handle()
+    val lazyListHandle = Handle()
     val endItemHandle = Handle()
     return Column(style = Style.padding(16.dp)) {
       child(
           Row {
-            child(Button("First") { Collection.scrollTo(context, collectionHandle, 0) })
-            child(Button("Position 10") { Collection.scrollTo(context, collectionHandle, 10) })
+            child(Button("First") { Collection.scrollTo(context, lazyListHandle, 0) })
+            child(Button("Position 10") { Collection.scrollTo(context, lazyListHandle, 10) })
             child(
                 Button("50 to center") {
                   Collection.smoothScrollTo(
                       context,
-                      collectionHandle,
+                      lazyListHandle,
                       50,
                       smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_CENTER)
                 })
@@ -52,14 +53,14 @@ class ScrollToCollectionKComponent : KComponent() {
                 Button("End") {
                   Collection.smoothScrollToHandle(
                       context,
-                      collectionHandle,
+                      lazyListHandle,
                       endItemHandle,
                       smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_END)
                 })
           })
       child(
-          Collection(
-              handle = collectionHandle,
+          LazyList(
+              handle = lazyListHandle,
               style = Style.flex(grow = 1f),
           ) {
             (0..99).forEach { child(id = it, component = Text("$it ")) }

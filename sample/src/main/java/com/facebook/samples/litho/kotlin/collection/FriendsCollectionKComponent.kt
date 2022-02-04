@@ -25,7 +25,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 // start_original_data_example
 data class Person(val name: String, val id: Int)
@@ -88,7 +88,7 @@ class FriendsCollectionKComponent : KComponent() {
 class FriendList(val friends: List<Person>) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return Collection {
+    return LazyList {
       child(Text(text = "Friends", textStyle = Typeface.BOLD))
       friends.forEach { (name, id) -> child(id = id, component = Text(name)) }
     }

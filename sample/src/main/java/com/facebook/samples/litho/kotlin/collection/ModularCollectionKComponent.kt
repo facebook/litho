@@ -24,15 +24,15 @@ import com.facebook.litho.Style
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
 import com.facebook.litho.widget.collection.CollectionContainerScope
+import com.facebook.litho.widget.collection.LazyList
 
 class ModularCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     val nestedContentVisible = useState { true }
 
-    return Collection {
+    return LazyList {
       addHeader()
       addBody(nestedContentVisible)
       addFooter()

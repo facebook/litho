@@ -30,19 +30,20 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 // start_example
 class PullToRefreshCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     val deck = useState { (0..51).map { Card(it) }.shuffled() }
-    val collectionHandle = Handle()
-    return Collection(
-        handle = collectionHandle,
+    val lazyListHandle = Handle()
+    return LazyList(
+        handle = lazyListHandle,
         style = Style.flex(grow = 1f),
         onPullToRefresh = {
           deck.update { it.shuffled() }
-          Collection.clearRefreshing(context, collectionHandle)
+          Collection.clearRefreshing(context, lazyListHandle)
         },
     ) { deck.value.forEach { card -> child(id = card.index, component = Text(card.styledText)) } }
   }

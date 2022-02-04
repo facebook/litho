@@ -31,7 +31,7 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Image
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 import com.facebook.yoga.YogaJustify
 
 class SelectionCollectionKComponent : KComponent() {
@@ -58,7 +58,7 @@ class SelectionCollectionKComponent : KComponent() {
       selected.update(if (isAllSelected()) emptySet() else (0..items.lastIndex).toSet())
     }
 
-    return Collection {
+    return LazyList {
       val isAllSelected = isAllSelected()
       child(deps = arrayOf(isAllSelected)) {
         Selectable(

@@ -30,7 +30,7 @@ import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.alpha
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 class DepsCollectionKComponent : KComponent() {
 
@@ -50,7 +50,7 @@ class DepsCollectionKComponent : KComponent() {
             child(Button("Toggle Alpha") { alpha.update(if (alpha.value == 0.5f) 1f else 0.5f) })
           })
       child(
-          Collection(
+          LazyList(
               style = Style.flex(grow = 1f),
           ) {
             child(
