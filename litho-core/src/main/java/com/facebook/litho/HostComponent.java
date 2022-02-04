@@ -42,7 +42,8 @@ class HostComponent extends Component {
     return new HostMountContentPool(
         "HostComponent",
         ComponentsConfiguration.hostComponentPoolSize,
-        ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled);
+        ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled
+            || ComponentsConfiguration.hostComponentRecyclingByMountStateIsEnabled);
   }
 
   @Override

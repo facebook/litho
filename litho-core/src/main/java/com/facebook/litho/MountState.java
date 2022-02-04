@@ -163,6 +163,7 @@ class MountState implements MountDelegateTarget {
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable ExtensionState mTransitionsExtensionState;
+  private @Nullable HostMountContentPool mHostMountContentPool;
 
   public final boolean mShouldUsePositionInParent =
       ComponentsConfiguration.shouldUsePositionInParentForMounting;
@@ -2855,6 +2856,12 @@ class MountState implements MountDelegateTarget {
     if (ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled) {
       return MountItemsPool.acquireHostMountContent(
           context, mLithoView.getWindowToken(), component);
+    } else if (ComponentsConfiguration.hostComponentRecyclingByMountStateIsEnabled) {
+      if (mHostMountContentPool != null) {
+        return mHostMountContentPool.acquire(context, component);
+      } else {
+        return component.createMountContent(context);
+      }
     } else {
       // Otherwise, recycling is disabled for hosts
       return component.createMountContent(context);
@@ -2865,6 +2872,13 @@ class MountState implements MountDelegateTarget {
     if (ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled) {
       MountItemsPool.releaseHostMountContent(
           context, mLithoView.getWindowToken(), component, content);
+    } else if (ComponentsConfiguration.hostComponentRecyclingByMountStateIsEnabled) {
+      if (mHostMountContentPool == null) {
+        mHostMountContentPool = (HostMountContentPool) component.createRecyclingPool();
+      }
+      mHostMountContentPool.release(content);
+    } else {
+      // Otherwise, recycling is disabled for hosts
     }
   }
 }

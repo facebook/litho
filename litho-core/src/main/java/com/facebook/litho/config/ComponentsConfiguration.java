@@ -240,6 +240,8 @@ public class ComponentsConfiguration {
    */
   public static boolean hostComponentRecyclingByWindowIsEnabled = false;
 
+  public static boolean hostComponentRecyclingByMountStateIsEnabled = false;
+
   public static int hostComponentPoolSize = 30;
 
   /** This toggles whether fury should instrument the Litho event callback event */
