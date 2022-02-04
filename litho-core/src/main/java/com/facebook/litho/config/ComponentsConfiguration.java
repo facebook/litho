@@ -234,6 +234,14 @@ public class ComponentsConfiguration {
    */
   public static boolean useRenderUnitIdMapExternalComponents = true;
 
+  /**
+   * These params are part of an experiment to try to re-enable host recycling while avoiding native
+   * RenderThread crashes we've seen when trying to reuse ComponentHosts.
+   */
+  public static boolean hostComponentRecyclingByWindowIsEnabled = false;
+
+  public static int hostComponentPoolSize = 30;
+
   /** This toggles whether fury should instrument the Litho event callback event */
   public static boolean furyEventCallbackInstrumentation = false;
 

@@ -88,19 +88,27 @@ public class LithoMountData {
     }
   }
 
-  void releaseMountContent(final Context context, final MountItem item, final String releaseCause) {
+  void releaseMountContent(
+      final Context context,
+      final MountItem item,
+      final String releaseCause,
+      final MountState mountState) {
     final RenderTreeNode node = item.getRenderTreeNode();
     final LayoutOutput output = getLayoutOutput(node);
-    final Component mComponent = output.getComponent();
+    final Component component = output.getComponent();
     if (mIsReleased) {
-      final String componentName = mComponent.getSimpleName();
+      final String componentName = component.getSimpleName();
       throw new ReleasingReleasedMountContentException(
           "Releasing released mount content! component: "
               + componentName
               + ", previousReleaseCause: "
               + mReleaseCause);
     }
-    MountItemsPool.release(context, mComponent, item.getContent());
+    if (component instanceof HostComponent) {
+      mountState.releaseHostComponentContent(context, (HostComponent) component, item.getContent());
+    } else {
+      MountItemsPool.release(context, component, item.getContent());
+    }
     mIsReleased = true;
     mReleaseCause = releaseCause;
   }

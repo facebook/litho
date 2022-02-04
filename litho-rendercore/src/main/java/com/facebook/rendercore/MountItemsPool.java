@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pools;
 import java.util.ArrayList;
@@ -53,6 +54,10 @@ public class MountItemsPool {
   private static final Map<Context, Map<Object, ItemPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
+  @GuardedBy("sMountContentLock")
+  private static final Map<Context, WeakHashMap<IBinder, ItemPool>> sHostPoolsByWindowAndContext =
+      new HashMap<>(4);
+
   // This Map is used as a set and the values are ignored.
   @GuardedBy("sMountContentLock")
   private static final WeakHashMap<Context, Boolean> sDestroyedRootContexts = new WeakHashMap<>();
@@ -69,18 +74,16 @@ public class MountItemsPool {
   public static Object acquireMountContent(
       Context context, PoolableContentProvider poolableMountContent) {
     final ItemPool pool = getMountContentPool(context, poolableMountContent);
-    Object content = null;
     if (pool == null) {
       return poolableMountContent.createPoolableContent(context);
-    } else {
-      content = pool.acquire(context, poolableMountContent);
     }
 
-    if (content == null) {
-      content = poolableMountContent.createPoolableContent(context);
+    final Object content = pool.acquire(context, poolableMountContent);
+    if (content != null) {
+      return content;
     }
 
-    return content;
+    return poolableMountContent.createPoolableContent(context);
   }
 
   public static void release(
@@ -139,7 +142,7 @@ public class MountItemsPool {
         }
 
         ensureActivityCallbacks(context);
-        poolsMap = new HashMap<Object, ItemPool>();
+        poolsMap = new HashMap<>();
         sMountContentPoolsByContext.put(context, poolsMap);
       }
       final Object lifecycle = poolableMountContent.getPoolableContentType();
@@ -164,7 +167,62 @@ public class MountItemsPool {
   public static void clear() {
     synchronized (sMountContentLock) {
       sMountContentPoolsByContext.clear();
+      sHostPoolsByWindowAndContext.clear();
       sDestroyedRootContexts.clear();
+    }
+  }
+
+  public static Object acquireHostMountContent(
+      Context context, @Nullable IBinder windowToken, PoolableContentProvider hostContentProvider) {
+    final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
+    if (pool == null) {
+      return hostContentProvider.createPoolableContent(context);
+    }
+
+    return pool.acquire(context, hostContentProvider);
+  }
+
+  public static void releaseHostMountContent(
+      Context context,
+      @Nullable IBinder windowToken,
+      PoolableContentProvider hostContentProvider,
+      Object content) {
+    final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
+    if (pool == null) {
+      return;
+    }
+
+    pool.release(content);
+  }
+
+  private static @Nullable ItemPool getHostMountContentPool(
+      Context context, @Nullable IBinder windowToken, PoolableContentProvider hostContentProvider) {
+    // Currently, this seems most likely to occur when we call unmountAllItems from onViewRecycled
+    // in an RV as the RootHost will have already been detached.
+    if (windowToken == null) {
+      return null;
+    }
+
+    synchronized (sMountContentLock) {
+      WeakHashMap<IBinder, ItemPool> poolsByWindowToken = sHostPoolsByWindowAndContext.get(context);
+      if (poolsByWindowToken == null) {
+        final Context rootContext = getRootContext(context);
+        if (sDestroyedRootContexts.containsKey(rootContext)) {
+          return null;
+        }
+
+        ensureActivityCallbacks(context);
+        poolsByWindowToken = new WeakHashMap<>();
+        sHostPoolsByWindowAndContext.put(context, poolsByWindowToken);
+      }
+
+      ItemPool pool = poolsByWindowToken.get(windowToken);
+      if (pool == null) {
+        pool = hostContentProvider.createRecyclingPool();
+        poolsByWindowToken.put(windowToken, pool);
+      }
+
+      return pool;
     }
   }
 
@@ -250,20 +308,25 @@ public class MountItemsPool {
 
   public static void onContextDestroyed(Context context) {
     synchronized (sMountContentLock) {
-      sMountContentPoolsByContext.remove(context);
-
-      // Clear any context wrappers holding a reference to this activity.
-      final Iterator<Map.Entry<Context, Map<Object, ItemPool>>> it =
-          sMountContentPoolsByContext.entrySet().iterator();
-
-      while (it.hasNext()) {
-        final Context contextKey = it.next().getKey();
-        if (isContextWrapper(contextKey, context)) {
-          it.remove();
-        }
-      }
+      clearMatchingContexts(context, sMountContentPoolsByContext);
+      clearMatchingContexts(context, sHostPoolsByWindowAndContext);
 
       sDestroyedRootContexts.put(getRootContext(context), true);
+    }
+  }
+
+  @GuardedBy("sMountContentLock")
+  private static <T> void clearMatchingContexts(Context context, Map<Context, T> poolsMap) {
+    poolsMap.remove(context);
+
+    // Clear any context wrappers holding a reference to this activity.
+    final Iterator<Map.Entry<Context, T>> it = poolsMap.entrySet().iterator();
+
+    while (it.hasNext()) {
+      final Context contextKey = it.next().getKey();
+      if (isContextWrapper(contextKey, context)) {
+        it.remove();
+      }
     }
   }
 

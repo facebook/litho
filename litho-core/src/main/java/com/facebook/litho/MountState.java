@@ -52,6 +52,7 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -1278,8 +1279,14 @@ class MountState implements MountDelegateTarget {
     if (component == null) {
       throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
     }
-    final Object content =
-        MountItemsPool.acquireMountContent(mContext.getAndroidContext(), component);
+
+    final Object content;
+    if (component instanceof HostComponent) {
+      content =
+          acquireHostComponentContent(mContext.getAndroidContext(), (HostComponent) component);
+    } else {
+      content = MountItemsPool.acquireMountContent(mContext.getAndroidContext(), component);
+    }
 
     final ComponentContext context = getContextForComponent(node);
     final LithoLayoutData layoutData = (LithoLayoutData) node.getLayoutData();
@@ -2384,7 +2391,7 @@ class MountState implements MountDelegateTarget {
 
     try {
       getMountData(mountItem)
-          .releaseMountContent(mContext.getAndroidContext(), mountItem, "unmountItem");
+          .releaseMountContent(mContext.getAndroidContext(), mountItem, "unmountItem", this);
     } catch (LithoMountData.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(mountItem));
     }
@@ -2842,5 +2849,22 @@ class MountState implements MountDelegateTarget {
   @VisibleForTesting
   DynamicPropsManager getDynamicPropsManager() {
     return mDynamicPropsManager;
+  }
+
+  private Object acquireHostComponentContent(Context context, HostComponent component) {
+    if (ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled) {
+      return MountItemsPool.acquireHostMountContent(
+          context, mLithoView.getWindowToken(), component);
+    } else {
+      // Otherwise, recycling is disabled for hosts
+      return component.createMountContent(context);
+    }
+  }
+
+  void releaseHostComponentContent(Context context, HostComponent component, Object content) {
+    if (ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled) {
+      MountItemsPool.releaseHostMountContent(
+          context, mLithoView.getWindowToken(), component, content);
+    }
   }
 }
