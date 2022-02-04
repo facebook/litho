@@ -1248,6 +1248,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     final boolean loggedLastMount =
         MountStartupLoggingInfo.maybeLogLastMountStart(mMountStartupLoggingInfo, this);
 
+    layoutState.setShouldProcessVisibilityOutputs(processVisibilityOutputs);
+
     if (mDelegateToRenderCore) {
       mountWithMountDelegateTarget(layoutState, currentVisibleArea);
     } else {
@@ -1393,6 +1395,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       Log.w(TAG, "Main Thread Layout state is not found");
       return;
     }
+
+    layoutState.setShouldProcessVisibilityOutputs(true);
 
     if (mLithoHostListenerCoordinator != null) {
       mLithoHostListenerCoordinator.processVisibilityOutputs(

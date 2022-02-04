@@ -73,6 +73,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
     state.mPreviousLocalVisibleRect.setEmpty();
     state.mCurrentLocalVisibleRect = localVisibleRect;
+    state.mInput = input;
 
     RenderCoreSystrace.endSection();
   }
@@ -85,7 +86,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
     RenderCoreSystrace.beginSection("VisibilityExtension.afterMount");
 
-    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
+    final boolean processVisibilityOutputs = shouldProcessVisibilityOutputs(extensionState);
 
     if (processVisibilityOutputs) {
       final VisibilityMountExtensionState state = extensionState.getState();
@@ -99,12 +100,12 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   public void onVisibleBoundsChanged(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect) {
-    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
+    final boolean processVisibilityOutputs = shouldProcessVisibilityOutputs(extensionState);
 
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
           DEBUG_TAG,
-          "onVisibleBoundsChanged [hasTransientState=" + hasTransientState(extensionState) + "]");
+          "onVisibleBoundsChanged [processVisibilityOutputs=" + processVisibilityOutputs + "]");
     }
     RenderCoreSystrace.beginSection("VisibilityExtension.onVisibleBoundsChanged");
 
@@ -124,6 +125,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   public void onUnmount(ExtensionState<VisibilityMountExtensionState> extensionState) {
     final VisibilityMountExtensionState state = extensionState.getState();
     state.mPreviousLocalVisibleRect.setEmpty();
+    state.mInput = null;
   }
 
   @VisibleForTesting
@@ -456,9 +458,16 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     RenderCoreSystrace.endSection();
   }
 
-  private static boolean hasTransientState(ExtensionState<VisibilityMountExtensionState> state) {
-    final Host host = getRootHost(state);
-    return IS_JELLYBEAN_OR_HIGHER && (host != null && host.hasTransientState());
+  private static boolean shouldProcessVisibilityOutputs(
+      ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final VisibilityMountExtensionState state = extensionState.getState();
+
+    if (state.mInput != null && !state.mInput.isProcessingVisibilityOutputsEnabled()) {
+      return false;
+    }
+
+    final Host host = getRootHost(extensionState);
+    return !(IS_JELLYBEAN_OR_HIGHER && host != null && host.hasTransientState());
   }
 
   private static @Nullable Host getRootHost(
@@ -492,6 +501,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
     private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
     private @Nullable Rect mCurrentLocalVisibleRect;
+    private @Nullable VisibilityExtensionInput mInput;
 
     /** @deprecated Only used for Litho's integration. Marked for removal. */
     @Deprecated private @Nullable Host mRootHost;

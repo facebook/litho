@@ -210,6 +210,8 @@ public class LayoutState
   // Futures.
   private boolean mIsCommitted;
 
+  private boolean mShouldProcessVisibilityOutputs;
+
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
@@ -2103,6 +2105,15 @@ public class LayoutState
 
   void markCommitted() {
     mIsCommitted = true;
+  }
+
+  @Override
+  public boolean isProcessingVisibilityOutputsEnabled() {
+    return mShouldProcessVisibilityOutputs;
+  }
+
+  public void setShouldProcessVisibilityOutputs(boolean value) {
+    mShouldProcessVisibilityOutputs = value;
   }
 
   @Override

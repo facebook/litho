@@ -71,6 +71,11 @@ public class VisibilityExtension
       return renderUnitIdsWhichHostRenderTrees;
     }
 
+    @Override
+    public boolean isProcessingVisibilityOutputsEnabled() {
+      return true;
+    }
+
     void addOutput(@Nullable VisibilityOutput output) {
       if (output != null) {
         outputs.add(output);

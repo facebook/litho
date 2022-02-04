@@ -29,4 +29,6 @@ public interface VisibilityExtensionInput {
 
   /** Returns the set of ids of {@link RenderUnit}s which host {@link RenderTreeHost} */
   Set<Long> getRenderUnitIdsWhichHostRenderTrees();
+
+  boolean isProcessingVisibilityOutputsEnabled();
 }

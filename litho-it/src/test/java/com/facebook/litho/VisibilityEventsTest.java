@@ -111,6 +111,37 @@ public class VisibilityEventsTest {
   }
 
   @Test
+  public void testNoVisibleEventWhenNotProcessingVisibleOutputs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
+            .build();
+
+    mLegacyLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
+        .measure()
+        .layout();
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    // invoke notifyVisibleBoundsChanged, but pass 'false' to process visibility outputs.
+    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 20, 20), false);
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should still not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+  }
+
+  @Test
   public void testVisibleEventWithHeightRatio() {
     final ComponentContext c = mLegacyLithoViewRule.getContext();
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
