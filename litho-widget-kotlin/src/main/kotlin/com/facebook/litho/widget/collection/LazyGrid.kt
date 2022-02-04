@@ -17,7 +17,6 @@
 package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
@@ -65,10 +64,10 @@ inline fun ResourcesScope.LazyGrid(
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
-): Component =
-    LazyCollection(
+): Collection =
+    Collection(
         layout =
-            CollectionLayouts.Grid(
+            Collection.Grid(
                 orientation,
                 snapMode,
                 reverse,

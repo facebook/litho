@@ -29,7 +29,7 @@ import com.facebook.litho.useCached
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Progress
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection.tailPagination
+import com.facebook.litho.widget.collection.Collection.Companion.tailPagination
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.yoga.YogaAlign
 

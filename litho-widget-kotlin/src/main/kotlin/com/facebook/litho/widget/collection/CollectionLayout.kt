@@ -80,7 +80,7 @@ enum class CrossAxisWrapMode(val canMeasureRecycler: Boolean, val hasDynamicItem
 }
 
 /** Provide [CollectionLayout]s that can be applied to [Collection]'s `layout` parameter. */
-object CollectionLayouts {
+interface CollectionLayouts {
 
   /**
    * Provide layout configuration options for a linear [Collection].

@@ -18,7 +18,6 @@ package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
@@ -67,10 +66,10 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
-): Component =
-    LazyCollection(
+): Collection =
+    Collection(
         layout =
-            CollectionLayouts.StaggeredGrid(
+            Collection.StaggeredGrid(
                 orientation,
                 reverse,
                 rangeRatio,
