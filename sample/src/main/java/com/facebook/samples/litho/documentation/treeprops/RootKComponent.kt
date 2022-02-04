@@ -24,7 +24,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.core.height
 import com.facebook.litho.dp
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyList
 
 // start_example
 class RootKComponent : KComponent() {
@@ -33,7 +33,7 @@ class RootKComponent : KComponent() {
     return TreePropProvider(LogContext::class.java to LogContext("root")) {
       Column() {
         child(LeafKComponent())
-        child(Collection(style = Style.height(500.dp)) { child(TopGroupKComponent()) })
+        child(LazyList(style = Style.height(500.dp)) { child(TopGroupKComponent()) })
       }
     }
   }

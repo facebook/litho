@@ -25,7 +25,6 @@ import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
-import com.facebook.litho.widget.collection.Collection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -57,7 +56,7 @@ class UseCallbackTest {
           selected.updateSync(selected.value + listOf(selectedItem))
         }
 
-        return Collection {
+        return LazyList {
           data.forEach { item ->
             child(
                 id = item,
@@ -100,7 +99,7 @@ class UseCallbackTest {
     ) : KComponent() {
       override fun ComponentScope.render(): Component? {
         val clickCallback = useCallback { clickEvent: ClickEvent -> onRowClick(rowClickedTag) }
-        return Collection {
+        return LazyList {
           data.forEach { item ->
             child(
                 id = item,
@@ -169,7 +168,7 @@ class UseCallbackTest {
           null
         }
 
-        return Collection {
+        return LazyList {
           data.forEach { item ->
             child(
                 id = item,
@@ -225,7 +224,7 @@ class UseCallbackTest {
           null
         }
 
-        return Collection {
+        return LazyList {
           data.forEach { item ->
             child(
                 id = item,
@@ -277,7 +276,7 @@ class UseCallbackTest {
         private val onRowClick: (String) -> Unit
     ) : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Collection {
+        return LazyList {
           data.forEach { item ->
             child(
                 id = item,
