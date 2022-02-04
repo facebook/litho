@@ -629,11 +629,6 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
       node.wrapInView();
     }
 
-    // InternalNode which implement LayoutProps should greedily transfer layout props
-    if (mLayoutProps != null && node instanceof LayoutProps) {
-      mLayoutProps.copyInto((LayoutProps) node);
-    }
-
     if (mOtherProps != null) {
       mOtherProps.copyInto(node);
     }
