@@ -75,7 +75,7 @@ public class MountState implements MountDelegateTarget {
 
     final int position = mRenderTree.getRenderTreeNodeIndex(id);
     final RenderTreeNode node = mRenderTree.getRenderTreeNodeAtIndex(position);
-    mountRenderUnit(position, node, null);
+    mountRenderUnit(node, null);
   }
 
   @Override
@@ -222,7 +222,7 @@ public class MountState implements MountDelegateTarget {
       } else if (!isMounted) {
         RenderCoreSystrace.beginSection(
             "MountItem: ", renderTreeNode.getRenderUnit().getDescription());
-        mountRenderUnit(i, renderTreeNode, mountLoopLogBuilder);
+        mountRenderUnit(renderTreeNode, mountLoopLogBuilder);
         RenderCoreSystrace.endSection();
       } else {
         updateMountItemIfNeeded(mMountDelegate, mContext, renderTreeNode, currentMountItem);
@@ -648,7 +648,7 @@ public class MountState implements MountDelegateTarget {
   }
 
   private void mountRenderUnit(
-      int index, RenderTreeNode renderTreeNode, @Nullable StringBuilder processLogBuilder) {
+      RenderTreeNode renderTreeNode, @Nullable StringBuilder processLogBuilder) {
 
     if (renderTreeNode.getRenderUnit().getId() == ROOT_HOST_ID) {
       mountRootItem(renderTreeNode);
@@ -1014,8 +1014,7 @@ public class MountState implements MountDelegateTarget {
       final @Nullable StringBuilder processLogBuilder) {
     if (!isMounted(parentRenderUnit.getId())) {
       if (mEnsureParentMounted) {
-        final int parentIndex = mRenderTree.getRenderTreeNodeIndex(parentRenderUnit.getId());
-        mountRenderUnit(parentIndex, hostTreeNode, processLogBuilder);
+        mountRenderUnit(hostTreeNode, processLogBuilder);
       } else {
         final String additionalProcessLog =
             processLogBuilder != null ? processLogBuilder.toString() : "NA";
