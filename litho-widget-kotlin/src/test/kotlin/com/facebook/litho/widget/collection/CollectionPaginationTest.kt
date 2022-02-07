@@ -48,7 +48,7 @@ class CollectionPaginationTest {
     class Test : KComponent() {
       override fun ComponentScope.render(): Component? {
         val handle = Handle()
-        return Collection(
+        return LazyList(
             handle = handle,
             pagination = { lastVisibleIndex: Int, totalCount: Int ->
               lastVisibleIndexValue.set(lastVisibleIndex)

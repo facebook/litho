@@ -76,7 +76,7 @@ class CollectionDepsTest {
     class CollectionWithSelectedRows(val alpha: Float, val rotation: Float, val scale: Float) :
         KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Collection {
+        return LazyList {
           child(
               Text(
                   "deps_null",

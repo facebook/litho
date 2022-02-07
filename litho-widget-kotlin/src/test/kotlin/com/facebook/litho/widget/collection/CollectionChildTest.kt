@@ -37,7 +37,7 @@ class CollectionChildTest {
   fun `test empty component renders`() {
     class Test : KComponent() {
       override fun ComponentScope.render(): Component {
-        return Collection {}
+        return LazyList {}
       }
     }
 
@@ -48,7 +48,7 @@ class CollectionChildTest {
   fun `test add null component renders`() {
     class Test : KComponent() {
       override fun ComponentScope.render(): Component {
-        return Collection { child(null) }
+        return LazyList { child(null) }
       }
     }
 
@@ -59,7 +59,7 @@ class CollectionChildTest {
   fun `test add null component lambda renders`() {
     class Test : KComponent() {
       override fun ComponentScope.render(): Component {
-        return Collection { child(deps = arrayOf()) { null } }
+        return LazyList { child(deps = arrayOf()) { null } }
       }
     }
 

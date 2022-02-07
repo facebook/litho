@@ -70,7 +70,7 @@ class CollectionOnViewPortChangedTest {
         }
 
         val handle = Handle()
-        return Collection(
+        return LazyList(
             handle = handle,
             onViewportChanged = onViewportChanged,
             style =

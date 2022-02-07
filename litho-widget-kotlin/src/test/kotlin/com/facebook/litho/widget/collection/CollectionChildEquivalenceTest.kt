@@ -20,6 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.widget.EmptyComponent
+import com.facebook.litho.widget.collection.Collection.Companion.isChildEquivalent
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -41,7 +42,7 @@ class CollectionChildEquivalenceTest {
     val next = CollectionChild("", null)
     val previous = CollectionChild("", null)
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
+    assertThat(isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
@@ -49,7 +50,7 @@ class CollectionChildEquivalenceTest {
     val next = CollectionChild("", null, deps = arrayOf("A"))
     val previous = CollectionChild("", null, deps = arrayOf("A"))
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
+    assertThat(isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
@@ -57,7 +58,7 @@ class CollectionChildEquivalenceTest {
     val next = CollectionChild("", null, deps = arrayOf("A"))
     val previous = CollectionChild("", null, deps = arrayOf("B"))
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isFalse
+    assertThat(isChildEquivalent(previous, next)).isFalse
   }
 
   @Test
@@ -68,7 +69,7 @@ class CollectionChildEquivalenceTest {
     val previousComponent: Component = mock { on { isEquivalentTo(any()) } doReturn true }
     val previous = CollectionChild("", previousComponent)
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
+    assertThat(isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
@@ -79,7 +80,7 @@ class CollectionChildEquivalenceTest {
     val previousComponent: Component = mock { on { isEquivalentTo(any()) } doReturn false }
     val previous = CollectionChild("", previousComponent)
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isFalse
+    assertThat(isChildEquivalent(previous, next)).isFalse
   }
 
   @Test
@@ -90,7 +91,7 @@ class CollectionChildEquivalenceTest {
     val nextComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
     val next = CollectionChild("", nextComponent)
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isTrue
+    assertThat(isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
@@ -101,6 +102,6 @@ class CollectionChildEquivalenceTest {
     val nextComponent = EmptyComponent.create(lithoViewRule.context).alpha(1f).build()
     val next = CollectionChild("", nextComponent)
 
-    assertThat(Collection.isChildEquivalent(previous, next)).isFalse
+    assertThat(isChildEquivalent(previous, next)).isFalse
   }
 }
