@@ -46,6 +46,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.FormBuilder;
+import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UI;
 import com.intellij.util.ui.UIUtil;
 import java.util.HashMap;
@@ -69,7 +70,7 @@ class ComponentStructureView implements Disposable {
     text.setBackground(null);
     text.setWrapStyleWord(true);
     text.setFont(UIUtil.getLabelFont());
-    text.setMargin(UI.insets(10));
+    text.setMargin(JBUI.insets(10));
 
     STUB = UI.PanelFactory.panel(text).createPanel();
   }
