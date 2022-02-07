@@ -2862,6 +2862,8 @@ class MountState implements MountDelegateTarget {
       } else {
         return component.createMountContent(context);
       }
+    } else if (ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled) {
+      return MountItemsPool.acquireMountContent(context, component);
     } else {
       // Otherwise, recycling is disabled for hosts
       return component.createMountContent(context);
@@ -2877,6 +2879,8 @@ class MountState implements MountDelegateTarget {
         mHostMountContentPool = (HostMountContentPool) component.createRecyclingPool();
       }
       mHostMountContentPool.release(content);
+    } else if (ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled) {
+      MountItemsPool.release(context, component, content);
     } else {
       // Otherwise, recycling is disabled for hosts
     }

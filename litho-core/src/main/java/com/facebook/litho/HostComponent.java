@@ -43,12 +43,13 @@ class HostComponent extends Component {
         "HostComponent",
         ComponentsConfiguration.hostComponentPoolSize,
         ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled
-            || ComponentsConfiguration.hostComponentRecyclingByMountStateIsEnabled);
+            || ComponentsConfiguration.hostComponentRecyclingByMountStateIsEnabled
+            || ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);
   }
 
   @Override
   public boolean isRecyclingDisabled() {
-    return true;
+    return !ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled;
   }
 
   @Override
