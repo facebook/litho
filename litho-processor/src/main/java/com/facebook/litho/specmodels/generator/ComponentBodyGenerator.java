@@ -973,6 +973,13 @@ public class ComponentBodyGenerator {
   }
 
   static @Comparable.Type int getComparableType(MethodParamModel field, EnumSet<RunMode> runMode) {
+
+    if (field instanceof PropModel) {
+      if (((PropModel) field).isDynamic()) {
+        return Comparable.OTHER;
+      }
+    }
+
     return getComparableType(field.getTypeName(), field.getTypeSpec(), runMode);
   }
 
