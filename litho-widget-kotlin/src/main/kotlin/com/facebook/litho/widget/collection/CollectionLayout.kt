@@ -32,7 +32,8 @@ import com.facebook.litho.widget.SnapUtil
  * @param reverse Reverse item traversal and layout order @see
  * [LinearLayoutManager#setReverseLayout]
  */
-abstract class CollectionLayout(
+@PublishedApi
+internal abstract class CollectionLayout(
     @RecyclerView.Orientation orientation: Int,
     reverse: Boolean,
     rangeRatio: Float? = null,
@@ -80,7 +81,8 @@ enum class CrossAxisWrapMode(val canMeasureRecycler: Boolean, val hasDynamicItem
 }
 
 /** Provide [CollectionLayout]s that can be applied to [Collection]'s `layout` parameter. */
-object CollectionLayouts {
+@PublishedApi
+internal object CollectionLayouts {
 
   /**
    * Provide layout configuration options for a linear [Collection].

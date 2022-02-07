@@ -20,11 +20,8 @@ import androidx.annotation.Px
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Handle
 import com.facebook.litho.widget.SmoothScrollAlignmentType
-import com.facebook.litho.widget.collection.CollectionLayouts.Linear
 
 object Collection {
-
-  val defaultLayout = Linear()
 
   fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
       CollectionRecycler.onScroll(c, handle, position)

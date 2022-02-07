@@ -59,8 +59,9 @@ typealias OnDataRendered =
         changesInfo: ChangesInfo,
         globalOffset: Int) -> Unit
 
-fun ResourcesScope.LazyCollection(
-    layout: CollectionLayout = Collection.defaultLayout,
+@PublishedApi
+internal fun ResourcesScope.LazyCollection(
+    layout: CollectionLayout,
     itemAnimator: RecyclerView.ItemAnimator? = null,
     itemDecoration: RecyclerView.ItemDecoration? = null,
     clipToPadding: Boolean? = null,
