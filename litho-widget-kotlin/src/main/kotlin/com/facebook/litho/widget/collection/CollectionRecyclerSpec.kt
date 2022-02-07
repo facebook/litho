@@ -106,52 +106,37 @@ object CollectionRecyclerSpec {
     sectionTree.setRoot(section)
     val internalPullToRefreshEnabled =
         (recyclerConfiguration.orientation != OrientationHelper.HORIZONTAL && pullToRefreshEnabled)
-    val recycler =
-        Recycler.create(c)
-            .leftPadding(startPadding)
-            .rightPadding(endPadding)
-            .topPadding(topPadding)
-            .bottomPadding(bottomPadding)
-            .recyclerEventsController(internalRecyclerEventsController)
-            .refreshHandler(if (!pullToRefreshEnabled) null else CollectionRecycler.onRefresh(c))
-            .pullToRefresh(internalPullToRefreshEnabled)
-            .itemDecoration(itemDecoration)
-            .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
-            .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
-            .fadingEdgeLengthDip(fadingEdgeLength.toFloat())
-            .onScrollListeners(onScrollListeners)
-            .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
-            .snapHelper(recyclerConfiguration.snapHelper)
-            .touchInterceptor(touchInterceptor)
-            .onItemTouchListener(itemTouchListener)
-            .binder(binder)
-            .touchHandler(recyclerTouchEventHandler)
-            .sectionsViewLogger(sectionsViewLogger)
-    if (clipToPadding != null) {
-      recycler.clipToPadding(clipToPadding)
-    }
-    if (clipChildren != null) {
-      recycler.clipChildren(clipChildren)
-    }
-    if (nestedScrollingEnabled != null) {
-      recycler.nestedScrollingEnabled(nestedScrollingEnabled)
-    }
-    if (scrollBarStyle != null) {
-      recycler.scrollBarStyle(scrollBarStyle)
-    }
-    if (recyclerViewId != null) {
-      recycler.recyclerViewId(recyclerViewId)
-    }
-    if (overScrollMode != null) {
-      recycler.overScrollMode(overScrollMode)
-    }
-    if (refreshProgressBarColor != null) {
-      recycler.refreshProgressBarColor(refreshProgressBarColor)
-    }
-    if (itemAnimator != null) {
-      recycler.itemAnimator(itemAnimator)
-    }
-    return recycler.build()
+    return Recycler.create(c)
+        .leftPadding(startPadding)
+        .rightPadding(endPadding)
+        .topPadding(topPadding)
+        .bottomPadding(bottomPadding)
+        .recyclerEventsController(internalRecyclerEventsController)
+        .refreshHandler(if (!pullToRefreshEnabled) null else CollectionRecycler.onRefresh(c))
+        .pullToRefresh(internalPullToRefreshEnabled)
+        .itemDecoration(itemDecoration)
+        .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
+        .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
+        .fadingEdgeLengthDip(fadingEdgeLength.toFloat())
+        .onScrollListeners(onScrollListeners)
+        .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
+        .snapHelper(recyclerConfiguration.snapHelper)
+        .touchInterceptor(touchInterceptor)
+        .onItemTouchListener(itemTouchListener)
+        .binder(binder)
+        .touchHandler(recyclerTouchEventHandler)
+        .sectionsViewLogger(sectionsViewLogger)
+        .apply {
+          clipToPadding?.let { clipToPadding(it) }
+          clipChildren?.let { clipChildren(it) }
+          nestedScrollingEnabled?.let { nestedScrollingEnabled(it) }
+          scrollBarStyle?.let { scrollBarStyle(it) }
+          recyclerViewId?.let { recyclerViewId(it) }
+          overScrollMode?.let { overScrollMode(it) }
+          refreshProgressBarColor?.let { refreshProgressBarColor(it) }
+          itemAnimator?.let { itemAnimator(it) }
+        }
+        .build()
   }
 
   @JvmStatic
@@ -169,39 +154,41 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) recyclerEventsController: RecyclerEventsController?
   ) {
     val binderConfiguration = recyclerConfiguration.recyclerBinderConfiguration
-    val recyclerBinderBuilder =
+    val recyclerBinder =
         RecyclerBinder.Builder()
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
-            .rangeRatio(binderConfiguration.rangeRatio)
-            .layoutHandlerFactory(binderConfiguration.layoutHandlerFactory)
-            .wrapContent(binderConfiguration.isWrapContent)
-            .enableStableIds(binderConfiguration.enableStableIds)
-            .invalidStateLogParamsList(binderConfiguration.invalidStateLogParamsList)
-            .threadPoolConfig(binderConfiguration.threadPoolConfiguration)
-            .hscrollAsyncMode(binderConfiguration.hScrollAsyncMode)
-            .isCircular(binderConfiguration.isCircular)
-            .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .componentsConfiguration(binderConfiguration.componentsConfiguration)
-            .canInterruptAndMoveLayoutsBetweenThreads(
-                binderConfiguration.moveLayoutsBetweenThreads())
-            .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
-            .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
-            .componentWarmer(binderConfiguration.componentWarmer)
-            .lithoViewFactory(binderConfiguration.lithoViewFactory)
-            .errorEventHandler(binderConfiguration.errorEventHandler)
             .startupLogger(startupLogger)
-    if (binderConfiguration.estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
-      recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.estimatedViewportCount)
-    }
-    val recyclerBinder = recyclerBinderBuilder.build(c)
+            .apply {
+              with(binderConfiguration) {
+                rangeRatio(rangeRatio)
+                layoutHandlerFactory(layoutHandlerFactory)
+                wrapContent(isWrapContent)
+                enableStableIds(enableStableIds)
+                invalidStateLogParamsList(invalidStateLogParamsList)
+                threadPoolConfig(threadPoolConfiguration)
+                hscrollAsyncMode(hScrollAsyncMode)
+                isCircular(isCircular)
+                hasDynamicItemHeight(hasDynamicItemHeight())
+                componentsConfiguration(componentsConfiguration)
+                canInterruptAndMoveLayoutsBetweenThreads(moveLayoutsBetweenThreads())
+                isReconciliationEnabled(isReconciliationEnabled)
+                isLayoutDiffingEnabled(isLayoutDiffingEnabled)
+                componentWarmer(componentWarmer)
+                lithoViewFactory(lithoViewFactory)
+                errorEventHandler(errorEventHandler)
+                if (estimatedViewportCount != RecyclerBinderConfiguration.Builder.UNSET) {
+                  estimatedViewportCount(estimatedViewportCount)
+                }
+              }
+            }
+            .build(c)
+
     val targetBinder =
         SectionBinderTarget(recyclerBinder, binderConfiguration.useBackgroundChangeSets)
     binder.set(targetBinder)
     val sectionTreeInstance =
         SectionTree.create(SectionContext(c), targetBinder)
-            .tag(
-                if (sectionTreeTag == null || sectionTreeTag == "") section.simpleName
-                else sectionTreeTag)
+            .tag(if (sectionTreeTag.isNullOrEmpty()) section.simpleName else sectionTreeTag)
             .changeSetThreadHandler(binderConfiguration.changeSetThreadHandler)
             .postToFrontOfQueueForFirstChangeset(
                 binderConfiguration.isPostToFrontOfQueueForFirstChangeset)
@@ -230,7 +217,7 @@ object CollectionRecyclerSpec {
       sectionTree.refresh()
       return true
     }
-    val isHandled: Boolean = CollectionRecycler.dispatchPTRRefreshEvent(ptrEventHandler)
+    val isHandled = CollectionRecycler.dispatchPTRRefreshEvent(ptrEventHandler)
     if (!isHandled) {
       sectionTree.refresh()
     }
@@ -239,9 +226,11 @@ object CollectionRecyclerSpec {
 
   @JvmStatic
   @OnTrigger(ScrollEvent::class)
-  fun onScroll(c: ComponentContext, @FromTrigger position: Int, @State sectionTree: SectionTree) {
-    sectionTree.requestFocusOnRoot(position)
-  }
+  fun onScroll(
+      c: ComponentContext,
+      @FromTrigger position: Int,
+      @State sectionTree: SectionTree
+  ): Unit = sectionTree.requestFocusOnRoot(position)
 
   @JvmStatic
   @OnTrigger(ScrollToHandle::class)
@@ -250,9 +239,7 @@ object CollectionRecyclerSpec {
       @FromTrigger target: Handle?,
       @FromTrigger offset: Int,
       @State sectionTree: SectionTree
-  ) {
-    sectionTree.requestFocusOnRoot(target, offset)
-  }
+  ): Unit = sectionTree.requestFocusOnRoot(target, offset)
 
   @JvmStatic
   @OnTrigger(SmoothScrollEvent::class)
@@ -262,9 +249,7 @@ object CollectionRecyclerSpec {
       @FromTrigger offset: Int,
       @FromTrigger type: SmoothScrollAlignmentType?,
       @State sectionTree: SectionTree
-  ) {
-    sectionTree.requestSmoothFocusOnRoot(index, offset, type)
-  }
+  ): Unit = sectionTree.requestSmoothFocusOnRoot(index, offset, type)
 
   @JvmStatic
   @OnTrigger(SmoothScrollToHandleEvent::class)
@@ -274,22 +259,16 @@ object CollectionRecyclerSpec {
       @FromTrigger offset: Int,
       @FromTrigger type: SmoothScrollAlignmentType?,
       @State sectionTree: SectionTree
-  ) {
-    sectionTree.requestSmoothFocusOnRoot(target, offset, type)
-  }
+  ): Unit = sectionTree.requestSmoothFocusOnRoot(target, offset, type)
 
   @JvmStatic
   @OnTrigger(ClearRefreshingEvent::class)
   fun onClearRefreshing(
       c: ComponentContext,
       @State internalRecyclerEventsController: RecyclerEventsController
-  ) {
-    internalRecyclerEventsController.clearRefreshing()
-  }
+  ): Unit = internalRecyclerEventsController.clearRefreshing()
 
   @JvmStatic
   @OnDetached
-  fun onDetached(c: ComponentContext, @State binder: Binder<RecyclerView>) {
-    binder.detach()
-  }
+  fun onDetached(c: ComponentContext, @State binder: Binder<RecyclerView>): Unit = binder.detach()
 }
