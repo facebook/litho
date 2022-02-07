@@ -93,10 +93,6 @@ public class MountDelegate {
       return;
     }
 
-    if (mNotifyVisibleBoundsChangedItems.contains(item)) {
-      return;
-    }
-
     mNotifyVisibleBoundsChangedItems.add(item);
   }
 
