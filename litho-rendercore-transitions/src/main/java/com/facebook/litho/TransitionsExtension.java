@@ -886,7 +886,7 @@ public class TransitionsExtension
     originalHost.unmount(mountItem);
 
     // Apply new bounds to the content as it will be mounted in the root now
-    BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
+    BoundsUtils.applyBoundsToMountContent(left, top, right, bottom, null, content, false);
 
     // Mount to the root
     rootHost.mount(index, mountItem);

@@ -31,22 +31,8 @@ public class BoundsUtils {
   public static void applyBoundsToMountContent(
       RenderTreeNode renderTreeNode, Object content, boolean force) {
     final Rect bounds = renderTreeNode.getBounds();
+    final Rect padding = renderTreeNode.getResolvedPadding();
     BoundsUtils.applyBoundsToMountContent(
-        bounds, renderTreeNode.getResolvedPadding(), content, force);
-  }
-
-  /**
-   * Sets the bounds on the given content if the content doesn't already have those bounds (or if
-   * 'force' * is supplied).
-   *
-   * @param bounds
-   * @param padding
-   * @param content
-   * @param force
-   */
-  public static void applyBoundsToMountContent(
-      final Rect bounds, @Nullable final Rect padding, Object content, boolean force) {
-    applyBoundsToMountContent(
         bounds.left, bounds.top, bounds.right, bounds.bottom, padding, content, force);
   }
 
