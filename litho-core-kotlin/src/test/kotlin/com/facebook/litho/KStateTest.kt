@@ -16,18 +16,12 @@
 
 package com.facebook.litho
 
-import android.os.Looper.getMainLooper
-import android.view.View.MeasureSpec.EXACTLY
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.assertMatches
-import com.facebook.litho.testing.child
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
-import com.facebook.litho.testing.match
-import com.facebook.litho.testing.setRoot
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
@@ -39,7 +33,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useState]. */
@@ -47,8 +40,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class KStateTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
-  @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   private fun <T> ComponentScope.useCustomState(value: T): State<T> {
     val state = useState { value }
@@ -64,21 +56,19 @@ class KStateTest {
         val state = useState { "hello" }
         stateRef = AtomicReference(state.value)
 
-        return Row(style = Style.viewTag("test_view").onClick { state.update("world") })
+        return Row(
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  state.update("world")
+                })
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { TestComponent() }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(stateRef.get()).isEqualTo("hello")
 
-    lithoViewRule.findViewWithTag("test_view").performClick()
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
 
     assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
   }
@@ -98,7 +88,7 @@ class KStateTest {
 
         return Row(
             style =
-                Style.viewTag("test_view").onClick {
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
                   // The correct way to do this (at least until we have automatic batching)
                   // would be to store these states in the same obj to trigger only one state
                   // update
@@ -108,18 +98,11 @@ class KStateTest {
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { TestComponent() }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView = lithoViewRule.render { TestComponent() }
 
     assertThat(state1Ref.get().value).isEqualTo("hello")
     assertThat(state2Ref.get().value).isEqualTo(20)
-
-    lithoViewRule.findViewWithTag("test_view").performClick()
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
 
     assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
     assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
@@ -132,8 +115,10 @@ class KStateTest {
     val firstCountDownLatch = CountDownLatch(1)
     val secondCountDownLatch = CountDownLatch(1)
 
+    val view = lithoViewRule.createTestLithoView()
+
     val thread1 = Thread {
-      lithoViewRule.setRootAndSizeSpecSync(
+      view.setRootAndSizeSpecSync(
           CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
           SizeSpec.makeSizeSpec(100, EXACTLY),
           SizeSpec.makeSizeSpec(100, EXACTLY))
@@ -141,19 +126,21 @@ class KStateTest {
     }
     val thread2 = Thread {
       firstCountDownLatch.await()
-
-      lithoViewRule.setRootAndSizeSpecSync(
+      view.setRootAndSizeSpecSync(
           CountDownLatchComponent(secondCountDownLatch, null, initCounter),
           SizeSpec.makeSizeSpec(200, EXACTLY),
           SizeSpec.makeSizeSpec(200, EXACTLY))
       countDownLatch.countDown()
     }
+
     thread1.start()
     thread2.start()
+
     countDownLatch.await()
+    lithoViewRule.idle()
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
-    val componentTree = lithoViewRule.componentTree
+    val componentTree = view.componentTree
     assertThat(componentTree.initialStateContainer?.mInitialStates)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
@@ -178,21 +165,15 @@ class KStateTest {
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { TestComponent() }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
-    lithoViewRule.findViewWithTag("test_view").performClick()
-    lithoViewRule.findViewWithTag("test_view").performClick()
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
-    shadowOf(getMainLooper()).idle()
+    lithoViewRule.act(view) {
+      clickOnTag("test_view")
+      clickOnTag("test_view")
+    }
 
-    // Using viewTag because Text is currently a drawable and harder to access directly
-    lithoViewRule.assertMatches(
-        match<LithoView> { child<ComponentHost> { prop("tag", "Counter: 2") } })
+    assertThat(view.findViewWithTagOrNull("Counter: 2")).isNotNull()
   }
 
   @Test
@@ -204,20 +185,20 @@ class KStateTest {
         val state = useState { "hello" }
         stateRef = AtomicReference(state.value)
 
-        return Row(style = Style.viewTag("test_view").onClick { state.updateSync("world") })
+        return Row(
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  state.updateSync("world")
+                })
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { TestComponent() }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
 
     assertThat(stateRef.get()).isEqualTo("hello")
+    lithoViewRule.act(view) { clickOnTag("test_view") }
 
-    lithoViewRule.findViewWithTag("test_view").performClick()
     assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
   }
 
@@ -234,22 +215,15 @@ class KStateTest {
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { RootComponent() }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
 
     assertThat(siblingRenderCount.get()).isEqualTo(1)
 
-    lithoViewRule.findViewWithTag("test_view").performClick()
+    lithoViewRule.act(view) { clickOnTag("test_view") }
 
     // Using viewTag because Text is currently a drawable and harder to access directly
-    lithoViewRule.assertMatches(
-        match<LithoView> {
-          child<ComponentHost> { child<ComponentHost> { prop("tag", "Counter: 1") } }
-        })
+    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
 
     // Assert that the state update didn't cause the sibling to re-render
     assertThat(siblingRenderCount.get()).isEqualTo(1)
@@ -280,25 +254,16 @@ class KStateTest {
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { RootComponent() }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
 
     assertThat(parentRenderCount.get()).isEqualTo(1)
     assertThat(siblingRenderCount.get()).isEqualTo(1)
 
-    lithoViewRule.findViewWithTag("test_view").performClick()
-
-    // Using viewTag because Text is currently a drawable and harder to access directly
-    lithoViewRule.assertMatches(
-        match<LithoView> {
-          child<ComponentHost> { child<ComponentHost> { prop("tag", "Counter: 1") } }
-        })
+    lithoViewRule.act(view) { clickOnTag("test_view") }
 
     // Assert that the state update still causes parent to re-render but not sibling
+    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
     assertThat(parentRenderCount.get()).isEqualTo(2)
     assertThat(siblingRenderCount.get()).isEqualTo(1)
   }
