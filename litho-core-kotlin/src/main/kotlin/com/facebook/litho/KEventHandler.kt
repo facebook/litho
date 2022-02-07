@@ -50,7 +50,7 @@ class KEventHandler<E : Any, R>(private val onEvent: (event: E) -> R) :
 
   override fun isEquivalentTo(other: EventHandler<*>?): Boolean {
     if (this === other) return true
-    if (javaClass != other?.javaClass) return false
+    if (other == null || javaClass != other.javaClass) return false
 
     other as KEventHandler<*, *>
 

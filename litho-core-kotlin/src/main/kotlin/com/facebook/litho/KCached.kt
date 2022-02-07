@@ -41,7 +41,7 @@ internal class CachedInputs(val hookKey: String, val inputs: Array<out Any?>) {
     if (this === other) {
       return true
     }
-    if (javaClass != other?.javaClass) {
+    if (other == null || javaClass != other.javaClass) {
       return false
     }
 

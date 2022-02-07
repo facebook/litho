@@ -87,7 +87,7 @@ open class Style(
     if (this === other) {
       return true
     }
-    if (javaClass != other?.javaClass) {
+    if (other == null || javaClass != other.javaClass) {
       return false
     }
     other as Style
