@@ -14,21 +14,26 @@ load(
     "LITHO_JUNIT_TARGET",
     "LITHO_MOCKITO_TARGET",
     "LITHO_PROCESSOR_LIB_TARGET",
+    "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_SECTIONS_TARGET",
-    "fb_java_test",
+    "litho_robolectric4_test",
     "make_dep_path",
 )
 
-fb_java_test(
+litho_robolectric4_test(
     name = "specmodels",
     srcs = glob(
-        ["**/*Test.java"],
+        [
+            "**/*Test.java",
+            "**/*Test.kt",
+        ],
         exclude = glob(["processor/**/*.java"]),
     ),
     contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "11",
     target = "11",
     deps = [
+        LITHO_ROBOLECTRIC_V4_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_ASSERTJ_TARGET,
