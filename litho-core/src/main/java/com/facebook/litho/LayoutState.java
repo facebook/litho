@@ -192,6 +192,8 @@ public class LayoutState
   private volatile boolean mIsPartialLayoutState;
   private volatile boolean mIsInterruptible = true;
 
+  private @Nullable RenderTree mCachedRenderTree = null;
+
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
   private @Nullable List<Attachable> mAttachables;
@@ -1352,6 +1354,10 @@ public class LayoutState
   }
 
   RenderTree toRenderTree() {
+    if (mCachedRenderTree != null) {
+      return mCachedRenderTree;
+    }
+
     final RenderTreeNode root;
 
     if (mMountableOutputs.isEmpty()) {
@@ -1367,6 +1373,8 @@ public class LayoutState
 
     final RenderTree renderTree = new RenderTree(root, flatList, mWidthSpec, mHeightSpec, null);
     renderTree.setRenderTreeData(this);
+    mCachedRenderTree = renderTree;
+
     return renderTree;
   }
 
