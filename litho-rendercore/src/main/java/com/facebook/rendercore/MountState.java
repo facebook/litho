@@ -456,7 +456,11 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("MountState.unbind");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("MountState.unbind");
+      RenderCoreSystrace.beginSection("MountState.unbindAllContent");
+    }
 
     for (int i = 0, size = mRenderTree.getMountableOutputCount(); i < size; i++) {
       final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
@@ -469,11 +473,19 @@ public class MountState implements MountDelegateTarget {
       unbindRenderUnitFromContent(mMountDelegate, mContext, mountItem);
     }
 
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountState.unbindExtensions");
+    }
+
     if (mMountDelegate != null) {
       mMountDelegate.unBind();
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Nullable
@@ -531,8 +543,6 @@ public class MountState implements MountDelegateTarget {
    * @param previousRenderTree
    */
   private void prepareMount(@Nullable RenderTree previousRenderTree) {
-    RenderCoreSystrace.beginSection("prepareMount");
-
     unmountOrMoveOldItems(previousRenderTree);
 
     final MountItem rootItem = mIdToMountedItemMap.get(ROOT_HOST_ID);
@@ -545,8 +555,6 @@ public class MountState implements MountDelegateTarget {
       // If root mount item is present then update it.
       updateMountItemIfNeeded(mMountDelegate, mContext, rootNode, rootItem);
     }
-
-    RenderCoreSystrace.endSection();
   }
 
   /**
@@ -647,7 +655,11 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("mountRenderTreeNode");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("mountRenderTreeNode");
+      RenderCoreSystrace.beginSection("MountState.beforeInitialMount");
+    }
 
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
@@ -673,23 +685,44 @@ public class MountState implements MountDelegateTarget {
       mMountDelegate.startNotifyVisibleBoundsChangedSection();
     }
 
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountState.mountContent");
+    }
     mountRenderUnitToContent(mMountDelegate, mContext, renderTreeNode, renderUnit, content);
 
     // 4. Mount the content into the selected host.
     final MountItem item = mountContentInHost(content, host, renderTreeNode);
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountState.initialBind");
+    }
 
     // 5. Call attach binding functions
     bindRenderUnitToContent(mMountDelegate, mContext, item);
 
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountState.applyInitialBounds");
+    }
+
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     BoundsUtils.applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountState.afterInitialMount");
+    }
     if (mMountDelegate != null) {
       mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
       mMountDelegate.endNotifyVisibleBoundsChangedSection();
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private void unmountItemRecursively(RenderTreeNode node) {

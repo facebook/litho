@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 
 public class BoundsUtils {
@@ -61,18 +62,28 @@ public class BoundsUtils {
       @Nullable final Rect padding,
       Object content,
       boolean force) {
-    if (content instanceof View) {
-      applyBoundsToView((View) content, left, top, right, bottom, padding, force);
-    } else if (content instanceof Drawable) {
-      if (padding != null) {
-        left += padding.left;
-        top += padding.top;
-        right -= padding.right;
-        bottom -= padding.bottom;
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("applyBoundsToMountContent");
+    }
+    try {
+      if (content instanceof View) {
+        applyBoundsToView((View) content, left, top, right, bottom, padding, force);
+      } else if (content instanceof Drawable) {
+        if (padding != null) {
+          left += padding.left;
+          top += padding.top;
+          right -= padding.right;
+          bottom -= padding.bottom;
+        }
+        ((Drawable) content).setBounds(left, top, right, bottom);
+      } else {
+        throw new IllegalStateException("Unsupported mounted content " + content);
       }
-      ((Drawable) content).setBounds(left, top, right, bottom);
-    } else {
-      throw new IllegalStateException("Unsupported mounted content " + content);
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
   }
 

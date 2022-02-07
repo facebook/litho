@@ -1389,28 +1389,38 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
-
-    if (layoutState == null) {
-      Log.w(TAG, "Main Thread Layout state is not found");
-      return;
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("LithoView.processVisibilityOutputs");
     }
+    try {
+      final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
 
-    layoutState.setShouldProcessVisibilityOutputs(true);
+      if (layoutState == null) {
+        Log.w(TAG, "Main Thread Layout state is not found");
+        return;
+      }
 
-    if (mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.processVisibilityOutputs(
-          currentVisibleArea, isMountStateDirty());
-    } else {
-      mMountState.processVisibilityOutputs(
-          layoutState,
-          currentVisibleArea,
-          mPreviousMountVisibleRectBounds,
-          isMountStateDirty(),
-          null);
+      layoutState.setShouldProcessVisibilityOutputs(true);
+
+      if (mLithoHostListenerCoordinator != null) {
+        mLithoHostListenerCoordinator.processVisibilityOutputs(
+            currentVisibleArea, isMountStateDirty());
+      } else {
+        mMountState.processVisibilityOutputs(
+            layoutState,
+            currentVisibleArea,
+            mPreviousMountVisibleRectBounds,
+            isMountStateDirty(),
+            null);
+      }
+
+      mPreviousMountVisibleRectBounds.set(currentVisibleArea);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
-
-    mPreviousMountVisibleRectBounds.set(currentVisibleArea);
   }
 
   /** Deprecated: Consider subscribing the LithoView to a LithoLifecycleOwner instead. */

@@ -23,6 +23,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
@@ -122,32 +123,43 @@ public class LithoHostListenerCoordinator {
   }
 
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
-    startNotifyVisibleBoundsChangedSection();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      // This should be about equivalent to doing an incremental mount through litho.MountState
+      RenderCoreSystrace.beginSection("LHLC.onVisibleBoundsChanged");
+    }
+    try {
+      startNotifyVisibleBoundsChangedSection();
 
-    // We first mount and then we process visibility outputs.
-    if (mIncrementalMountExtension != null) {
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mIncrementalMountExtension);
-      if (state != null) {
-        mIncrementalMountExtension.onVisibleBoundsChanged(state, localVisibleRect);
-        LithoStats.incrementComponentMountCount();
+      // We first mount and then we process visibility outputs.
+      if (mIncrementalMountExtension != null) {
+        ExtensionState state = mMountDelegateTarget.getExtensionState(mIncrementalMountExtension);
+        if (state != null) {
+          mIncrementalMountExtension.onVisibleBoundsChanged(state, localVisibleRect);
+          LithoStats.incrementComponentMountCount();
+        }
+      }
+
+      if (mTransitionsExtension != null) {
+        ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
+        if (state != null) {
+          mTransitionsExtension.onVisibleBoundsChanged(state, localVisibleRect);
+        }
+      }
+
+      if (mVisibilityExtension != null) {
+        ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
+        if (state != null) {
+          mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
+        }
+      }
+
+      endNotifyVisibleBoundsChangedSection();
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
       }
     }
-
-    if (mTransitionsExtension != null) {
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
-      if (state != null) {
-        mTransitionsExtension.onVisibleBoundsChanged(state, localVisibleRect);
-      }
-    }
-
-    if (mVisibilityExtension != null) {
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
-      if (state != null) {
-        mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
-      }
-    }
-
-    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onUnmount() {

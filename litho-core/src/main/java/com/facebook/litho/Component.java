@@ -227,11 +227,26 @@ public abstract class Component
 
   @Override
   public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    boolean isTracing = ComponentsSystrace.isTracing();
+
     // We don't want to wrap and throw error events
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      return dispatchOnEventImpl(eventHandler, eventState);
+      if (isTracing) {
+        ComponentsSystrace.beginSection("dispatchErrorEvent");
+      }
+      try {
+        return dispatchOnEventImpl(eventHandler, eventState);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+      }
     }
+
     final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
+    if (isTracing) {
+      ComponentsSystrace.beginSection("dispatchOnEvent");
+    }
     try {
       return dispatchOnEventImpl(eventHandler, eventState);
     } catch (Exception e) {
@@ -243,6 +258,9 @@ public abstract class Component
       }
     } finally {
       EventDispatcherInstrumenter.onEndWork(token);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 

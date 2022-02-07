@@ -77,6 +77,7 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderCoreExtensionHost;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -350,7 +351,7 @@ class MountState implements MountDelegateTarget {
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final Component component = layoutOutput.getComponent();
         if (isTracing) {
-          ComponentsSystrace.beginSection(component.getSimpleName());
+          ComponentsSystrace.beginSection("MountItem: " + component.getSimpleName());
         }
 
         final MountItem currentMountItem = getItemAt(i);
@@ -406,11 +407,18 @@ class MountState implements MountDelegateTarget {
       }
     }
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.endSection();
+
+      RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
+    }
+
     afterMountMaybeUpdateAnimations();
 
     if (isVisibilityProcessingEnabled) {
       if (isTracing) {
-        ComponentsSystrace.beginSection("processVisibilityOutputs");
+        ComponentsSystrace.beginSection("LMS.processVisibilityOutputs");
       }
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
@@ -444,13 +452,13 @@ class MountState implements MountDelegateTarget {
       logMountPerfEvent(logger, mountPerfEvent, wasDirty, hadPreviousComponentTree);
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-      ComponentsSystrace.endSection();
-    }
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   private void clearLastMountedLayoutState() {
@@ -1256,6 +1264,7 @@ class MountState implements MountDelegateTarget {
 
     if (isTracing) {
       ComponentsSystrace.beginSection("mountRenderTreeNode");
+      ComponentsSystrace.beginSection("MountState.beforeInitialMount");
     }
 
     final long startTime = System.nanoTime();
@@ -1299,17 +1308,35 @@ class MountState implements MountDelegateTarget {
       registerHost(node.getRenderUnit().getId(), componentHost);
     }
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("MountState.mountContent");
+    }
     // 4. Mount the content into the selected host.
     final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("MountState.initialBind");
+    }
 
     // 5. Notify the component that mounting has completed
     bindComponentToContent(item, component, context, layoutData, content);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("MountState.applyInitialBounds");
+    }
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     final Rect bounds = node.getBounds();
     applyBoundsToMountContent(
         item.getContent(), bounds.left, bounds.top, bounds.right, bounds.bottom, true /* force */);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("MountState.afterInitialMount");
+    }
 
     // 6. Update the mount stats
     if (mMountStats.isLoggingEnabled) {
@@ -1324,6 +1351,7 @@ class MountState implements MountDelegateTarget {
     }
 
     if (isTracing) {
+      ComponentsSystrace.endSection();
       ComponentsSystrace.endSection();
     }
   }
@@ -2574,6 +2602,7 @@ class MountState implements MountDelegateTarget {
     boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("MountState.unbind");
+      ComponentsSystrace.beginSection("MountState.unbindAllContent");
     }
 
     for (int i = 0, size = mLayoutOutputsIds.length; i < size; i++) {
@@ -2587,6 +2616,11 @@ class MountState implements MountDelegateTarget {
           mountItem, getLayoutOutput(mountItem).getComponent(), mountItem.getContent());
     }
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("MountState.unbindExtensions");
+    }
+
     clearVisibilityItems();
 
     if (mVisibilityExtension != null) {
@@ -2598,6 +2632,7 @@ class MountState implements MountDelegateTarget {
     }
 
     if (isTracing) {
+      ComponentsSystrace.endSection();
       ComponentsSystrace.endSection();
     }
   }
