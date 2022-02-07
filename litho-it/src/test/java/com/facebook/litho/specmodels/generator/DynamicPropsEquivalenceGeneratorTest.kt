@@ -105,10 +105,9 @@ class DynamicPropsEquivalenceGeneratorTest {
               if (objectArg != null ? !objectArg.equals(mountTestRef.objectArg) : mountTestRef.objectArg != null) {
                 return false;
               }
-              if (!useTreePropsFromContext()) {
-              }
               return true;
             }
+            
             """.trimIndent())
   }
 }

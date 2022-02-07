@@ -585,14 +585,16 @@ public class ComponentBodyGenerator {
           getCompareStatement("isEquivalentTo", specModel, instanceRefName, prop, runMode));
     }
 
-    isEquivalentBuilder.beginControlFlow("if (!useTreePropsFromContext())");
+    ImmutableList<TreePropModel> treeProps = specModel.getTreeProps();
+    if (treeProps != null && !treeProps.isEmpty()) {
+      isEquivalentBuilder.beginControlFlow("if (!useTreePropsFromContext())");
+      for (TreePropModel treeProp : specModel.getTreeProps()) {
+        isEquivalentBuilder.addCode(
+            getCompareStatement("isEquivalentTo", specModel, instanceRefName, treeProp, runMode));
+      }
 
-    for (TreePropModel treeProp : specModel.getTreeProps()) {
-      isEquivalentBuilder.addCode(
-          getCompareStatement("isEquivalentTo", specModel, instanceRefName, treeProp, runMode));
+      isEquivalentBuilder.endControlFlow();
     }
-
-    isEquivalentBuilder.endControlFlow();
 
     isEquivalentBuilder.addStatement("return true");
 
