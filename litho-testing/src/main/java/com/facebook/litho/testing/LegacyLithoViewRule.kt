@@ -260,7 +260,7 @@ constructor(
   }
 
   /** Sets the new root to render. */
-  fun render(componentFunction: ComponentScope.() -> Component) {
+  fun render(componentFunction: ComponentScope.() -> Component?) {
     attachToWindow()
         .setRoot(with(ComponentScope(context)) { componentFunction() })
         .measure()
