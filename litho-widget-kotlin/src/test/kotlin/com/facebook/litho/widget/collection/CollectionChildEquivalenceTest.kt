@@ -20,7 +20,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.widget.EmptyComponent
-import com.facebook.litho.widget.collection.Collection.Companion.isChildEquivalent
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
