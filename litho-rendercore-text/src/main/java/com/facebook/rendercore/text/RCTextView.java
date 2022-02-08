@@ -185,6 +185,9 @@ public class RCTextView extends View {
       mImageSpans = null;
     }
     mClickableSpans = null;
+    if (mRCTextAccessibilityDelegate != null) {
+      mRCTextAccessibilityDelegate.invalidateRoot();
+    }
   }
 
   // Note: if renaming this method, we have use reflection to access this in
@@ -387,7 +390,8 @@ public class RCTextView extends View {
 
   @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
-    return mRCTextAccessibilityDelegate.dispatchHoverEvent(event)
+    return (mRCTextAccessibilityDelegate != null
+            && mRCTextAccessibilityDelegate.dispatchHoverEvent(event))
         || super.dispatchHoverEvent(event);
   }
 
@@ -439,13 +443,20 @@ public class RCTextView extends View {
     protected void onPopulateNodeForVirtualView(
         int virtualViewId, AccessibilityNodeInfoCompat node) {
       final Spanned spanned = (Spanned) mText;
+      final Rect sTempRect = new Rect();
+      // it can happen as part of an unmount/mount cycle that the accessibility framework will
+      // request the bounds of a virtual view even if it no longer exists.
+      if (mClickableSpans == null || virtualViewId >= mClickableSpans.length) {
+        node.setText("");
+        node.setBoundsInParent(sTempRect);
+        return;
+      }
       final ClickableSpan span = mClickableSpans[virtualViewId];
       final int start = spanned.getSpanStart(span);
       final int end = spanned.getSpanEnd(span);
       final int startLine = mLayout.getLineForOffset(start);
       final int endLine = mLayout.getLineForOffset(end);
       final Path sTempPath = new Path();
-      final Rect sTempRect = new Rect();
       final RectF sTempRectF = new RectF();
 
       // The bounds for multi-line strings should *only* include the first line.  This is because
