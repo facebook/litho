@@ -57,6 +57,15 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
     }
   }
 
+  /**
+   * Add a child [Component] to the collection.
+   *
+   * @param component The component to add
+   * @param id A unique identifier for the child
+   * @param isSticky Fix the child to the top of the collection if it is scrolled out of view
+   * @param isFullSpan Span the child across all columns
+   * @Param spanSize Span the specified number of columns
+   */
   fun child(
       component: Component?,
       id: Any? = null,
@@ -70,6 +79,23 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
         CollectionChild(resolvedId, component, null, isSticky, isFullSpan, spanSize, null))
   }
 
+  /**
+   * Add a child [Component] created by the provided [componentFunction] function.
+   *
+   * The [Component] will be created by invoking [componentFunction] when the child is first
+   * rendered. The [Component] will be reused in subsequent renders unless there is a change to
+   * [deps]. [deps] is an array of dependencies that should contain any props or state that are used
+   * inside [componentFunction].
+   *
+   * @param id A unique identifier for the child
+   * @param isSticky Fix the child to the top of the collection if it is scrolled out of view
+   * @param isFullSpan Span the child across all columns
+   * @param spanSize Span the specified number of columns
+   * @param deps An array of prop and state values used by [componentFunction] to create the
+   * [Component]. A change to one of these values will cause [componentFunction] to recreate the
+   * [Component].
+   * @param componentFunction A function that returns a [Component]
+   */
   fun child(
       id: Any? = null,
       isSticky: Boolean = false,
