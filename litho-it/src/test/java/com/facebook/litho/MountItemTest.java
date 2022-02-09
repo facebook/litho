@@ -281,7 +281,7 @@ public class MountItemTest {
     LithoRenderUnit unit =
         LithoRenderUnit.create(
             0, mComponent, mContext, mNodeInfo, null, 0, 0, LayoutOutput.STATE_UNKNOWN);
-    RenderTreeNode node = LithoRenderUnit.create(unit, new Rect(0, 0, 0, 0), null, null);
+    RenderTreeNode node = RenderTreeNodeUtils.create(unit, new Rect(0, 0, 0, 0), null, null);
 
     View view = new View(getApplicationContext());
 

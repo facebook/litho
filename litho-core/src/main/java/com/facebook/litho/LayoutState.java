@@ -318,7 +318,7 @@ public class LayoutState
             LayoutOutput.STATE_DIRTY);
 
     final RenderTreeNode node =
-        LithoRenderUnit.create(
+        RenderTreeNodeUtils.create(
             unit,
             new Rect(0, 0, width, height),
             new LithoLayoutData(
@@ -398,7 +398,7 @@ public class LayoutState
 
     final Rect bounds = new Rect(l, t, r, b);
 
-    return LithoRenderUnit.create(
+    return RenderTreeNodeUtils.create(
         unit,
         bounds,
         new LithoLayoutData(

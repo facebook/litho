@@ -132,7 +132,7 @@ public class LithoMountData {
 
     MountItem item =
         new MountItem(
-            LithoRenderUnit.create(
+            RenderTreeNodeUtils.create(
                 unit,
                 bounds,
                 new LithoLayoutData(bounds.width(), bounds.height(), 0, 0, null),

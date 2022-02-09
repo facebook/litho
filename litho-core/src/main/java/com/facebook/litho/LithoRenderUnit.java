@@ -20,7 +20,6 @@ import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -60,24 +59,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
 
   static @Nullable ComponentContext getComponentContext(LithoRenderUnit unit) {
     return unit.mContext;
-  }
-
-  static RenderTreeNode create(
-      final LithoRenderUnit unit,
-      final Rect bounds,
-      final @Nullable LithoLayoutData layoutData,
-      final @Nullable RenderTreeNode parent) {
-
-    return new RenderTreeNode(
-        parent, unit, layoutData, bounds, null, parent != null ? parent.getChildrenCount() : 0);
-  }
-
-  static Rect getMountBounds(Rect outRect, Rect bounds, int x, int y) {
-    outRect.left = bounds.left - x;
-    outRect.top = bounds.top - y;
-    outRect.right = bounds.right - x;
-    outRect.bottom = bounds.bottom - y;
-    return outRect;
   }
 
   @Override

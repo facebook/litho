@@ -172,14 +172,22 @@ public class LayoutOutputTest {
   @Test
   public void testGetMountBoundsNoHostTranslation() {
     Rect mountBounds = new Rect();
-    LithoRenderUnit.getMountBounds(mountBounds, new Rect(10, 10, 10, 10), 0, 0);
+    getMountBounds(mountBounds, new Rect(10, 10, 10, 10), 0, 0);
     assertThat(mountBounds).isEqualTo(new Rect(10, 10, 10, 10));
   }
 
   @Test
   public void testGetMountBoundsWithHostTranslation() {
     Rect mountBounds = new Rect();
-    LithoRenderUnit.getMountBounds(mountBounds, new Rect(10, 10, 10, 10), 5, 2);
+    getMountBounds(mountBounds, new Rect(10, 10, 10, 10), 5, 2);
     assertThat(mountBounds).isEqualTo(new Rect(5, 8, 5, 8));
+  }
+
+  private static Rect getMountBounds(Rect outRect, Rect bounds, int x, int y) {
+    outRect.left = bounds.left - x;
+    outRect.top = bounds.top - y;
+    outRect.right = bounds.right - x;
+    outRect.bottom = bounds.bottom - y;
+    return outRect;
   }
 }
