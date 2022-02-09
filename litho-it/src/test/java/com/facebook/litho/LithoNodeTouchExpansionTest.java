@@ -48,7 +48,7 @@ public class LithoNodeTouchExpansionTest {
     mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
     mContext.setLayoutStateContext(mLayoutStateContext);
     mNode = Layout.create(mLayoutStateContext, mContext, Column.create(mContext).build());
-    mNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
+    mNode.mutableNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
   private LithoNodeTouchExpansionTest setDirection(YogaDirection direction) {
@@ -74,28 +74,28 @@ public class LithoNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionLeftWithoutTouchHandling() {
-    mNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.mutableNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(LEFT, 10).calculateLayout();
     assertThat(result.getTouchExpansionLeft()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionTopWithoutTouchHandling() {
-    mNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.mutableNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(TOP, 10).calculateLayout();
     assertThat(result.getTouchExpansionTop()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionRightWithoutTouchHandling() {
-    mNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.mutableNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(RIGHT, 10).calculateLayout();
     assertThat(result.getTouchExpansionRight()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionBottomWithoutTouchHandling() {
-    mNode.getOrCreateNodeInfo().setTouchHandler(null);
+    mNode.mutableNodeInfo().setTouchHandler(null);
     LithoLayoutResult result = touchExpansionPx(BOTTOM, 10).calculateLayout();
     assertThat(result.getTouchExpansionBottom()).isEqualTo(0);
   }

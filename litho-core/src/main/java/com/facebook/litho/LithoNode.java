@@ -347,7 +347,7 @@ public class LithoNode implements Node<LithoRenderContext> {
 
     // If the parent of this node is disabled, this node has to be disabled too.
     if (parentEnabledState == ENABLED_SET_FALSE) {
-      getOrCreateNodeInfo().setEnabled(false);
+      mutableNodeInfo().setEnabled(false);
     }
 
     // Sets mFrozen as true to avoid anymore mutation.
@@ -616,18 +616,6 @@ public class LithoNode implements Node<LithoRenderContext> {
   }
 
   public @Nullable NodeInfo getNodeInfo() {
-    return mNodeInfo;
-  }
-
-  public void setNodeInfo(NodeInfo nodeInfo) {
-    mNodeInfo = nodeInfo;
-  }
-
-  public NodeInfo getOrCreateNodeInfo() {
-    if (mNodeInfo == null) {
-      mNodeInfo = new NodeInfo();
-    }
-
     return mNodeInfo;
   }
 
@@ -965,7 +953,7 @@ public class LithoNode implements Node<LithoRenderContext> {
         }
       } else if (attr
           == com.facebook.litho.R.styleable.ComponentLayout_android_contentDescription) {
-        getOrCreateNodeInfo().setContentDescription(a.getString(attr));
+        mutableNodeInfo().setContentDescription(a.getString(attr));
       }
     }
 

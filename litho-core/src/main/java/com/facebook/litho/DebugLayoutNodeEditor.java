@@ -67,11 +67,11 @@ public class DebugLayoutNodeEditor {
   }
 
   public void setFocusable(boolean focusable) {
-    mNode.getOrCreateNodeInfo().setFocusable(focusable);
+    mNode.mutableNodeInfo().setFocusable(focusable);
   }
 
   public void setContentDescription(CharSequence contentDescription) {
-    mNode.getOrCreateNodeInfo().setContentDescription(contentDescription);
+    mNode.mutableNodeInfo().setContentDescription(contentDescription);
   }
 
   public void setLayoutDirection(YogaDirection yogaDirection) {

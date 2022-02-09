@@ -21,14 +21,12 @@ import static com.facebook.litho.it.R.drawable.background_with_padding;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
@@ -57,15 +55,12 @@ public class CommonPropsTest {
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   private LithoNode mNode;
-  private NodeInfo mNodeInfo;
   private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
     mNode = mock(LithoNode.class);
-    mNodeInfo = mock(NodeInfo.class);
-    when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
     mCommonProps = new CommonProps();
     mComponentContext = new ComponentContext(getApplicationContext());
   }
@@ -284,19 +279,9 @@ public class CommonPropsTest {
 
     verify(mNode).wrapInView();
 
-    verify(mNodeInfo).setClickHandler(clickHandler);
-    verify(mNodeInfo).setFocusChangeHandler(focusChangedHandler);
-    verify(mNodeInfo).setLongClickHandler(longClickHandler);
-    verify(mNodeInfo).setTouchHandler(touchHandler);
-    verify(mNodeInfo).setInterceptTouchHandler(interceptTouchHandler);
-
-    verify(mNodeInfo).setFocusable(true);
-    verify(mNodeInfo).setClickable(true);
-    verify(mNodeInfo).setSelected(false);
-    verify(mNodeInfo).setEnabled(false);
+    verify(mNode).applyNodeInfo(any());
     verify(mNode).visibleHeightRatio(55);
     verify(mNode).visibleWidthRatio(56);
-    verify(mNodeInfo).setAccessibilityHeading(false);
 
     verify(mNode).visibleHandler(visibleHandler);
     verify(mNode).focusedHandler(focusedHandler);
@@ -305,32 +290,8 @@ public class CommonPropsTest {
     verify(mNode).invisibleHandler(invisibleHandler);
     verify(mNode).visibilityChangedHandler(visibleRectChangedHandler);
 
-    verify(mNodeInfo).setContentDescription("test");
-
-    verify(mNodeInfo).setViewTag(viewTag);
-    verify(mNodeInfo).setViewTags(viewTags);
-
-    verify(mNodeInfo).setShadowElevation(60);
-
-    verify(mNodeInfo).setClipToOutline(false);
     verify(mNode).transitionKey(eq("transitionKey"), anyString());
     verify(mNode).testKey("testKey");
-
-    verify(mNodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
-    verify(mNodeInfo).setAccessibilityRoleDescription("Test Role Description");
-    verify(mNodeInfo)
-        .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
-    verify(mNodeInfo)
-        .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
-    verify(mNodeInfo)
-        .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
-    verify(mNodeInfo).setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
-    verify(mNodeInfo)
-        .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
-    verify(mNodeInfo).setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
-    verify(mNodeInfo).setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    verify(mNodeInfo)
-        .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
     verify(mNode).stateListAnimator(stateListAnimator);
   }
@@ -340,7 +301,7 @@ public class CommonPropsTest {
     mCommonProps.scale(5);
     mCommonProps.copyInto(mComponentContext, mNode);
 
-    verify(mNodeInfo).setScale(5);
+    verify(mNode).applyNodeInfo(any());
     verify(mNode).wrapInView();
   }
 
@@ -350,7 +311,7 @@ public class CommonPropsTest {
     mCommonProps.scale(1f);
     mCommonProps.copyInto(mComponentContext, mNode);
 
-    verify(mNodeInfo, never()).setScale(1f);
+    verify(mNode).applyNodeInfo(any());
     verify(mNode, never()).wrapInView();
   }
 
@@ -359,7 +320,7 @@ public class CommonPropsTest {
     mCommonProps.alpha(5);
     mCommonProps.copyInto(mComponentContext, mNode);
 
-    verify(mNodeInfo).setAlpha(5);
+    verify(mNode).applyNodeInfo(any());
     verify(mNode).wrapInView();
   }
 
@@ -369,7 +330,7 @@ public class CommonPropsTest {
     mCommonProps.alpha(1f);
     mCommonProps.copyInto(mComponentContext, mNode);
 
-    verify(mNodeInfo, never()).setAlpha(anyFloat());
+    verify(mNode).applyNodeInfo(any());
     verify(mNode, never()).wrapInView();
   }
 
@@ -378,7 +339,7 @@ public class CommonPropsTest {
     mCommonProps.rotation(5);
     mCommonProps.copyInto(mComponentContext, mNode);
 
-    verify(mNodeInfo).setRotation(5);
+    verify(mNode).applyNodeInfo(any());
     verify(mNode).wrapInView();
   }
 
@@ -388,7 +349,7 @@ public class CommonPropsTest {
     mCommonProps.rotation(0f);
     mCommonProps.copyInto(mComponentContext, mNode);
 
-    verify(mNodeInfo, never()).setRotation(anyFloat());
+    verify(mNode).applyNodeInfo(any());
     verify(mNode, never()).wrapInView();
   }
 

@@ -615,7 +615,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     }
 
     if (mNodeInfo != null) {
-      mNodeInfo.copyInto(node.getOrCreateNodeInfo());
+      node.applyNodeInfo(mNodeInfo);
     }
 
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {

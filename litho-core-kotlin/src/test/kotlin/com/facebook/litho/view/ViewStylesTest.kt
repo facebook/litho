@@ -319,7 +319,7 @@ class ViewStylesTest {
     }
 
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
 
@@ -334,7 +334,7 @@ class ViewStylesTest {
     }
 
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
   }
 
@@ -348,10 +348,10 @@ class ViewStylesTest {
     }
 
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.node
-    assertThat(node?.getOrCreateNodeInfo()?.clipToOutline).isTrue
+    assertThat(node?.nodeInfo?.clipToOutline).isTrue
 
-    node?.getOrCreateNodeInfo()?.setClipToOutline(false)
-    assertThat(node?.getOrCreateNodeInfo()?.clipToOutline).isFalse
+    node?.mutableNodeInfo()?.setClipToOutline(false)
+    assertThat(node?.nodeInfo?.clipToOutline).isFalse
   }
 
   /** See comment on [elevation_whenSet_isRespected] above. */
@@ -364,7 +364,7 @@ class ViewStylesTest {
     }
 
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.transitionName).isEqualTo("test")
   }
 

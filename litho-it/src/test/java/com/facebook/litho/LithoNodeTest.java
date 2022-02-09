@@ -24,8 +24,13 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.drawable.ColorDrawable;
+import android.util.SparseArray;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -79,6 +84,99 @@ public class LithoNodeTest {
     assertThat(isFlagSet(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_LAYOUT_DIRECTION_IS_SET");
     assertEmptyFlags(node);
+  }
+
+  @Test
+  public void testAddingAllAttributes() {
+    final LithoNode node = spy(acquireInternalNode());
+    NodeInfo nodeInfo = mock(NodeInfo.class);
+    when(node.mutableNodeInfo()).thenReturn(nodeInfo);
+
+    final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
+    final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
+    final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler = mock(EventHandler.class);
+    final EventHandler<FocusChangedEvent> focusChangedHandler = mock(EventHandler.class);
+    final Object viewTag = new Object();
+    final SparseArray<Object> viewTags = new SparseArray<>();
+    final EventHandler<DispatchPopulateAccessibilityEventEvent>
+        dispatchPopulateAccessibilityEventHandler = mock(EventHandler.class);
+    final EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler =
+        mock(EventHandler.class);
+    final EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+        onInitializeAccessibilityNodeInfoHandler = mock(EventHandler.class);
+    final EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler =
+        mock(EventHandler.class);
+    final EventHandler<OnRequestSendAccessibilityEventEvent>
+        onRequestSendAccessibilityEventHandler = mock(EventHandler.class);
+    final EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler =
+        mock(EventHandler.class);
+    final EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler =
+        mock(EventHandler.class);
+    final EventHandler<SendAccessibilityEventUncheckedEvent>
+        sendAccessibilityEventUncheckedHandler = mock(EventHandler.class);
+
+    NodeInfo toBeAppliedInfo = new NodeInfo();
+    toBeAppliedInfo.setClickHandler(clickHandler);
+    toBeAppliedInfo.setFocusChangeHandler(focusChangedHandler);
+    toBeAppliedInfo.setLongClickHandler(longClickHandler);
+    toBeAppliedInfo.setTouchHandler(touchHandler);
+    toBeAppliedInfo.setInterceptTouchHandler(interceptTouchHandler);
+    toBeAppliedInfo.setFocusable(true);
+    toBeAppliedInfo.setSelected(false);
+    toBeAppliedInfo.setEnabled(false);
+    toBeAppliedInfo.setAccessibilityHeading(false);
+    toBeAppliedInfo.setContentDescription("test");
+    toBeAppliedInfo.setViewTag(viewTag);
+    toBeAppliedInfo.setViewTags(viewTags);
+    toBeAppliedInfo.setShadowElevation(60);
+    toBeAppliedInfo.setClipToOutline(false);
+    toBeAppliedInfo.setAccessibilityRole(AccessibilityRole.BUTTON);
+    toBeAppliedInfo.setAccessibilityRoleDescription("Test Role Description");
+    toBeAppliedInfo.setDispatchPopulateAccessibilityEventHandler(
+        dispatchPopulateAccessibilityEventHandler);
+    toBeAppliedInfo.setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    toBeAppliedInfo.setOnInitializeAccessibilityNodeInfoHandler(
+        onInitializeAccessibilityNodeInfoHandler);
+    toBeAppliedInfo.setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    toBeAppliedInfo.setOnRequestSendAccessibilityEventHandler(
+        onRequestSendAccessibilityEventHandler);
+    toBeAppliedInfo.setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
+    toBeAppliedInfo.setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    toBeAppliedInfo.setSendAccessibilityEventUncheckedHandler(
+        sendAccessibilityEventUncheckedHandler);
+
+    node.applyNodeInfo(toBeAppliedInfo);
+
+    verify(nodeInfo).setClickHandler(clickHandler);
+    verify(nodeInfo).setFocusChangeHandler(focusChangedHandler);
+    verify(nodeInfo).setLongClickHandler(longClickHandler);
+    verify(nodeInfo).setTouchHandler(touchHandler);
+    verify(nodeInfo).setInterceptTouchHandler(interceptTouchHandler);
+    verify(nodeInfo).setFocusable(true);
+    verify(nodeInfo).setSelected(false);
+    verify(nodeInfo).setEnabled(false);
+    verify(nodeInfo).setAccessibilityHeading(false);
+    verify(nodeInfo).setContentDescription("test");
+    verify(nodeInfo).setViewTag(viewTag);
+    verify(nodeInfo).setViewTags(viewTags);
+    verify(nodeInfo).setShadowElevation(60);
+    verify(nodeInfo).setClipToOutline(false);
+    verify(nodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
+    verify(nodeInfo).setAccessibilityRoleDescription("Test Role Description");
+    verify(nodeInfo)
+        .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    verify(nodeInfo).setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    verify(nodeInfo).setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
+    verify(nodeInfo).setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
   }
 
   @Test

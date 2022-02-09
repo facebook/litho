@@ -86,11 +86,7 @@ public class NestedTreeHolder extends LithoNode {
 
   public void transferInto(LithoNode target) {
     if (mNodeInfo != null) {
-      if (target.getNodeInfo() == null) {
-        target.setNodeInfo(mNodeInfo);
-      } else {
-        mNodeInfo.copyInto(target.getOrCreateNodeInfo());
-      }
+      target.applyNodeInfo(mNodeInfo);
     }
     if (target.isImportantForAccessibilityIsSet()) {
       target.importantForAccessibility(mImportantForAccessibility);

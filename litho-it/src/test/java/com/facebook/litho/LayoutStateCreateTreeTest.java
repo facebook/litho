@@ -457,9 +457,7 @@ public class LayoutStateCreateTreeTest {
             .build();
 
     final LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
-    final NodeInfo nodeInfo = node.getOrCreateNodeInfo();
     final LayoutProps output = spy(LayoutProps.class);
-
     component.getCommonProps().copyLayoutProps(output);
 
     verify(output).layoutDirection(YogaDirection.INHERIT);
@@ -524,19 +522,10 @@ public class LayoutStateCreateTreeTest {
     verify(node).foreground(foreground);
 
     verify(node).wrapInView();
+    verify(node).applyNodeInfo(any());
 
-    verify(nodeInfo).setClickHandler(clickHandler);
-    verify(nodeInfo).setFocusChangeHandler(focusChangedHandler);
-    verify(nodeInfo).setLongClickHandler(longClickHandler);
-    verify(nodeInfo).setTouchHandler(touchHandler);
-    verify(nodeInfo).setInterceptTouchHandler(interceptTouchHandler);
-
-    verify(nodeInfo).setFocusable(true);
-    verify(nodeInfo).setSelected(false);
-    verify(nodeInfo).setEnabled(false);
     verify(node).visibleHeightRatio(55);
     verify(node).visibleWidthRatio(56);
-    verify(nodeInfo).setAccessibilityHeading(false);
 
     verify(node).visibleHandler(visibleHandler);
     verify(node).focusedHandler(focusedHandler);
@@ -545,33 +534,9 @@ public class LayoutStateCreateTreeTest {
     verify(node).invisibleHandler(invisibleHandler);
     verify(node).visibilityChangedHandler(visibleRectChangedHandler);
 
-    verify(nodeInfo).setContentDescription("test");
-
-    verify(nodeInfo).setViewTag(viewTag);
-    verify(nodeInfo).setViewTags(viewTags);
-
-    verify(nodeInfo).setShadowElevation(60);
-
-    verify(nodeInfo).setClipToOutline(false);
     verify(node).transitionKey(eq("transitionKey"), nullable(String.class));
     verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
-
-    verify(nodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
-    verify(nodeInfo).setAccessibilityRoleDescription("Test Role Description");
-    verify(nodeInfo)
-        .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
-    verify(nodeInfo)
-        .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
-    verify(nodeInfo)
-        .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
-    verify(nodeInfo).setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
-    verify(nodeInfo)
-        .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
-    verify(nodeInfo).setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
-    verify(nodeInfo).setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    verify(nodeInfo)
-        .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
     verify(node).stateListAnimator(stateListAnimator);
   }
@@ -587,7 +552,7 @@ public class LayoutStateCreateTreeTest {
       LithoLayoutResult result = mock(LithoLayoutResult.class);
       LithoNode node = mock(LithoNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
-      when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
+      when(node.mutableNodeInfo()).thenReturn(nodeInfo);
       when(node.calculateLayout(any(RenderState.LayoutContext.class), anyInt(), anyInt()))
           .thenReturn(result);
       when(result.getNode()).thenReturn(node);

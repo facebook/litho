@@ -100,7 +100,7 @@ class AccessibilityStylesTest {
       }
     }
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNull()
   }
 
@@ -115,7 +115,7 @@ class AccessibilityStylesTest {
       }
     }
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
 
@@ -127,7 +127,7 @@ class AccessibilityStylesTest {
       }
     }
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.accessibilityRole).isNull()
   }
 
@@ -139,7 +139,7 @@ class AccessibilityStylesTest {
       }
     }
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
-    val nodeInfo = node?.orCreateNodeInfo
+    val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.accessibilityRoleDescription).isNull()
   }
 }
