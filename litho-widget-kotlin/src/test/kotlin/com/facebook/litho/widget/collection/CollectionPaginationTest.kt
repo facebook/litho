@@ -22,7 +22,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.Text
@@ -38,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionPaginationTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun `test Collection pagination callback receives correct updates`() {
@@ -46,7 +46,7 @@ class CollectionPaginationTest {
     val totalCountValue = AtomicInteger()
 
     class Test : KComponent() {
-      override fun ComponentScope.render(): Component? {
+      override fun ComponentScope.render(): Component {
         val handle = Handle()
         return LazyList(
             handle = handle,
@@ -60,14 +60,18 @@ class CollectionPaginationTest {
                 }) { (0..4).forEach { child(Text("Child $it")) } }
       }
     }
-    lithoViewRule.setSizePx(100, 100)
-    lithoViewRule.render { Test() }
+
+    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
+    lithoViewRule.idle()
 
     assertThat(lastVisibleIndexValue.get()).isEqualTo(2)
     assertThat(totalCountValue.get()).isEqualTo(5)
 
-    lithoViewRule.act { clickOnTag("collection_tag") }
-    lithoViewRule.render { Test() }
+    lithoViewRule.act(testLithoView) { clickOnTag("collection_tag") }
+
+    lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 100, heightPx = 100) {
+      Test()
+    }
 
     assertThat(lastVisibleIndexValue.get()).isEqualTo(4)
     assertThat(totalCountValue.get()).isEqualTo(5)

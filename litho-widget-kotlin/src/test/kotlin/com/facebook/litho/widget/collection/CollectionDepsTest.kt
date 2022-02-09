@@ -16,27 +16,21 @@
 
 package com.facebook.litho.widget.collection
 
-import android.os.Looper
-import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.testing.BackgroundLayoutLooperRule
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.rotation
 import com.facebook.litho.view.scale
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.Text
-import org.assertj.core.api.Assertions.anyOf
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Condition
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Shadows
 import org.robolectric.annotation.LooperMode
 
 /** Tests for [Collection]'s deps prop */
@@ -44,96 +38,83 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionDepsTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
-  @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
-
-  private val updatedAlpha =
-      object : Condition<View>() {
-        override fun matches(value: View?): Boolean {
-          return value?.alpha == 1f
-        }
-      } as
-          Condition<in Any>
-
-  private val updatedRotation =
-      object : Condition<View>() {
-        override fun matches(value: View?): Boolean {
-          return value?.rotation == 0f
-        }
-      } as
-          Condition<in Any>
-
-  private val updatedScale =
-      object : Condition<View>() {
-        override fun matches(value: View?): Boolean {
-          return value?.scaleX != 0.75f
-        }
-      } as
-          Condition<in Any>
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun collection_propUpdate_appliedToDependantChildren() {
     class CollectionWithSelectedRows(val alpha: Float, val rotation: Float, val scale: Float) :
         KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return LazyList {
-          child(
-              Text(
-                  "deps_null",
-                  style = Style.viewTag("deps_null").alpha(alpha).rotation(rotation).scale(scale)))
-          child(deps = arrayOf(alpha)) {
+      override fun ComponentScope.render(): Component = LazyList {
+        child(
             Text(
-                "deps_alpha",
-                style = Style.viewTag("deps_alpha").alpha(alpha).rotation(rotation).scale(scale))
-          }
-          child(deps = arrayOf(scale)) {
-            Text(
-                "deps_scale",
-                style = Style.viewTag("deps_scale").alpha(alpha).rotation(rotation).scale(scale))
-          }
-          child(deps = arrayOf()) {
-            Text(
-                "deps_empty",
-                style = Style.viewTag("deps_empty").alpha(alpha).rotation(rotation).scale(scale))
-          }
+                "deps_null",
+                style = Style.viewTag("deps_null").alpha(alpha).rotation(rotation).scale(scale)))
+        child(deps = arrayOf(alpha)) {
+          Text(
+              "deps_alpha",
+              style = Style.viewTag("deps_alpha").alpha(alpha).rotation(rotation).scale(scale))
+        }
+        child(deps = arrayOf(scale)) {
+          Text(
+              "deps_scale",
+              style = Style.viewTag("deps_scale").alpha(alpha).rotation(rotation).scale(scale))
+        }
+        child(deps = arrayOf()) {
+          Text(
+              "deps_empty",
+              style = Style.viewTag("deps_empty").alpha(alpha).rotation(rotation).scale(scale))
         }
       }
     }
 
-    lithoViewRule
-        .setRoot(CollectionWithSelectedRows(.5f, 180f, 0.75f))
-        .setSizePx(1000, 1000)
-        .measure()
-        .layout()
-        .attachToWindow()
+    // Perform an initial layout
+    var testLithoView =
+        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
+          CollectionWithSelectedRows(.5f, 180f, 0.75f)
+        }
+    lithoViewRule.idle()
 
-    // Update alpha and rotation. Do not update scale.
-    layoutCollectionWithNewStatesOrProps { CollectionWithSelectedRows(1f, 0f, 0.75f) }
+    // Perform a second layout that updates some props. Update alpha and rotation. Do not update
+    // scale.
+    testLithoView =
+        lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 1000, heightPx = 1000) {
+          CollectionWithSelectedRows(1f, 0f, 0.75f)
+        }
+    lithoViewRule.idle()
 
-    // Verify an update is triggered for default/null deps
-    val childWithNullDeps = lithoViewRule.findViewWithTag("deps_null")
-    assertThat(childWithNullDeps).has(updatedAlpha).has(updatedRotation).doesNotHave(updatedScale)
+    // Do the layout again. This is a workaround to force layout to happen in a test.
+    testLithoView =
+        lithoViewRule.render(lithoView = testLithoView.lithoView, widthPx = 1000, heightPx = 1000) {
+          CollectionWithSelectedRows(1f, 0f, 0.75f)
+        }
+    lithoViewRule.idle()
 
-    // Verify an update is triggered due to dependency on alpha. Note that rotation will also be
-    // updated.
-    val childWithAlphaDeps = lithoViewRule.findViewWithTag("deps_alpha")
-    assertThat(childWithAlphaDeps).has(updatedAlpha).has(updatedRotation).doesNotHave(updatedScale)
+    // childWithNullDeps should re-render all changes
+    // Verify childWithNullDeps has been updated
+    val childWithNullDeps = testLithoView.findViewWithTag("deps_null")
+    assertThat(childWithNullDeps.alpha).isEqualTo(1f)
+    assertThat(childWithNullDeps.rotation).isEqualTo(0f)
+    assertThat(childWithNullDeps.scaleX).isEqualTo(0.75f)
 
-    // Verify no update triggered when deps does not include any updated props
-    val childWithScaleDeps = lithoViewRule.findViewWithTag("deps_scale")
-    assertThat(childWithScaleDeps).doesNotHave(anyOf(updatedAlpha, updatedRotation, updatedScale))
+    // childWithAlphaDeps should re-render when alpha changes
+    // Verify childWithAlphaDeps has been updated
+    val childWithAlphaDeps = testLithoView.findViewWithTag("deps_alpha")
+    assertThat(childWithAlphaDeps.alpha).isEqualTo(1f)
+    assertThat(childWithAlphaDeps.rotation).isEqualTo(0f)
+    assertThat(childWithAlphaDeps.scaleX).isEqualTo(0.75f)
 
-    // Verify no update triggered when deps does not include any updated props
-    val childWithEmptyDeps = lithoViewRule.findViewWithTag("deps_empty")
-    assertThat(childWithEmptyDeps).doesNotHave(anyOf(updatedAlpha, updatedRotation, updatedScale))
-  }
+    // childWithScaleDeps should re-render when scale changes
+    // Scale has not changed so verify childWithAlphaDeps was not updated
+    val childWithScaleDeps = testLithoView.findViewWithTag("deps_scale")
+    assertThat(childWithScaleDeps.alpha).isEqualTo(.5f)
+    assertThat(childWithScaleDeps.rotation).isEqualTo(180f)
+    assertThat(childWithScaleDeps.scaleX).isEqualTo(0.75f)
 
-  private fun layoutCollectionWithNewStatesOrProps(component: () -> Component) {
-    // We need to do slightly more work to simulate a Collection re-render as various background
-    // tasks need to run to completion.
-    lithoViewRule.setRoot(component()).measure().layout().attachToWindow()
-    backgroundLayoutLooperRule.runToEndOfTasksSync()
-    Shadows.shadowOf(Looper.getMainLooper()).idle()
-    lithoViewRule.setRoot(component()).measure().layout().attachToWindow()
+    // childWithEmptyDeps has an empty dpes array, so should never update
+    // Verify childWithEmptyDeps was not updated
+    val childWithEmptyDeps = testLithoView.findViewWithTag("deps_empty")
+    assertThat(childWithEmptyDeps.alpha).isEqualTo(.5f)
+    assertThat(childWithEmptyDeps.rotation).isEqualTo(180f)
+    assertThat(childWithEmptyDeps.scaleX).isEqualTo(0.75f)
   }
 }

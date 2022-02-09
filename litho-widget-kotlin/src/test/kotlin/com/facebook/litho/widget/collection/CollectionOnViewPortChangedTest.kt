@@ -16,16 +16,16 @@
 
 package com.facebook.litho.widget.collection
 
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.view.onClick
+import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.Text
@@ -41,7 +41,15 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionOnViewPortChangedTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
+
+  private fun getLazyCollectionRecyclerView(
+      testLithoView: TestLithoView,
+      lazyCollectionTag: String
+  ): RecyclerView? =
+      ((testLithoView.findViewWithTagOrNull(lazyCollectionTag) as LithoView?)?.getChildAt(0) as
+              SectionsRecyclerView?)
+          ?.recyclerView
 
   @Test
   fun `test Collection pagination callback receives correct updates`() {
@@ -52,11 +60,10 @@ class CollectionOnViewPortChangedTest {
     val lastFullyVisibleIndexValue = AtomicInteger()
 
     class Test : KComponent() {
-      override fun ComponentScope.render(): Component? {
-
+      override fun ComponentScope.render(): Component {
         val onViewportChanged =
             {
-            c: ComponentContext,
+            _: ComponentContext,
             firstVisibleIndex: Int,
             lastVisibleIndex: Int,
             totalCount: Int,
@@ -68,19 +75,15 @@ class CollectionOnViewPortChangedTest {
           firstFullyVisibleIndexValue.set(firstFullyVisibleIndex)
           lastFullyVisibleIndexValue.set(lastFullyVisibleIndex)
         }
-
-        val handle = Handle()
         return LazyList(
             handle = handle,
             onViewportChanged = onViewportChanged,
-            style =
-                Style.viewTag("collection_tag").onClick {
-                  Collection.scrollTo(context, handle, 4)
-                }) { (0..4).forEach { child(Text("Child $it")) } }
+            style = Style.viewTag("collection_tag")) { (0..4).forEach { child(Text("Child $it")) } }
       }
     }
-    lithoViewRule.setSizePx(100, 100)
-    lithoViewRule.render { Test() }
+
+    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
+    lithoViewRule.idle()
 
     assertThat(firstVisibleIndexValue.get()).isEqualTo(0)
     assertThat(lastVisibleIndexValue.get()).isEqualTo(2)
@@ -88,15 +91,12 @@ class CollectionOnViewPortChangedTest {
     assertThat(firstFullyVisibleIndexValue.get()).isEqualTo(0)
     assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(1)
 
-    val recyclerView =
-        ((lithoViewRule.findViewWithTag("collection_tag") as LithoView).getChildAt(0) as
-                SectionsRecyclerView)
-            .recyclerView
-
-    // Scroll by a distance less than the item height so the first and last items overlap the
-    // edges
-    recyclerView?.scrollBy(0, 50)
-    lithoViewRule.idle()
+    val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
+    lithoViewRule.act(testLithoView) {
+      // Scroll by a distance less than the item height so the first and last items overlap the
+      // edges
+      recyclerView?.scrollBy(0, 50)
+    }
 
     assertThat(firstVisibleIndexValue.get()).isEqualTo(1)
     assertThat(lastVisibleIndexValue.get()).isEqualTo(3)

@@ -18,7 +18,7 @@ package com.facebook.litho.widget.collection
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.EmptyComponent
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -34,7 +34,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionChildEquivalenceTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun `test children with null fields are equivalent`() {

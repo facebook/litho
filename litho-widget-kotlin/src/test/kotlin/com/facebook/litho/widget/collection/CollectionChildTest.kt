@@ -20,7 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,7 +31,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class CollectionChildTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun `test empty component renders`() {
@@ -41,7 +41,7 @@ class CollectionChildTest {
       }
     }
 
-    lithoViewRule.setSizePx(100, 100).render { Test() }
+    lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
   }
 
   @Test
@@ -52,7 +52,7 @@ class CollectionChildTest {
       }
     }
 
-    lithoViewRule.setSizePx(100, 100).render { Test() }
+    lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
   }
 
   @Test
@@ -63,6 +63,6 @@ class CollectionChildTest {
       }
     }
 
-    lithoViewRule.setSizePx(100, 100).render { Test() }
+    lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
   }
 }
