@@ -82,6 +82,99 @@ public class LithoNodeTest {
   }
 
   @Test
+  public void testApplyNodeInfo() {
+    final LithoNode node = acquireInternalNode();
+    assertThat(node.getNodeInfo() == null).describedAs("Should be NULL at the beginning").isTrue();
+
+    NodeInfo toBeAppliedInfo = new NodeInfo();
+    toBeAppliedInfo.setAlpha(0.5f);
+    toBeAppliedInfo.setEnabled(true);
+    toBeAppliedInfo.setClickable(true);
+    node.applyNodeInfo(toBeAppliedInfo);
+    assertThat(node.getNodeInfo() == toBeAppliedInfo)
+        .describedAs("Should be the same instance as passing")
+        .isTrue();
+    assertThat(Float.compare(node.getNodeInfo().getAlpha(), 0.5f) == 0)
+        .describedAs("Properties should be copied into the NodeInfo of the LithoNode")
+        .isTrue();
+    assertThat(node.getNodeInfo().getEnabledState() == NodeInfo.ENABLED_SET_TRUE)
+        .describedAs("Properties should be copied into the NodeInfo of the LithoNode")
+        .isTrue();
+    assertThat(node.getNodeInfo().getClickableState() == NodeInfo.CLICKABLE_SET_TRUE)
+        .describedAs("Properties should be copied into the NodeInfo of the LithoNode")
+        .isTrue();
+
+    NodeInfo toBeAppliedInfo2 = new NodeInfo();
+    toBeAppliedInfo2.setScale(1.0f);
+    toBeAppliedInfo2.setSelected(true);
+    toBeAppliedInfo2.setClickable(false);
+    node.applyNodeInfo(toBeAppliedInfo2);
+    assertThat(Float.compare(node.getNodeInfo().getAlpha(), 0.5f) == 0)
+        .describedAs("Properties should not be overridden")
+        .isTrue();
+    assertThat(node.getNodeInfo().getEnabledState() == NodeInfo.ENABLED_SET_TRUE)
+        .describedAs("Properties should not be overridden")
+        .isTrue();
+    assertThat(node.getNodeInfo().getClickableState() == NodeInfo.CLICKABLE_SET_FALSE)
+        .describedAs("Properties should be overridden")
+        .isTrue();
+    assertThat(Float.compare(node.getNodeInfo().getScale(), 1.0f) == 0)
+        .describedAs("Properties should be merged")
+        .isTrue();
+    assertThat(node.getNodeInfo().getSelectedState() == NodeInfo.SELECTED_SET_TRUE)
+        .describedAs("Properties should be merged")
+        .isTrue();
+
+    node.applyNodeInfo(null);
+    assertThat(node.getNodeInfo() != null)
+        .describedAs("Should be the same after merging a NULL object")
+        .isTrue();
+  }
+
+  @Test
+  public void testMutableNodeInfo() {
+    final LithoNode node = acquireInternalNode();
+
+    NodeInfo nodeInfo1 = node.mutableNodeInfo();
+    assertThat(nodeInfo1 != null).describedAs("Should never return NULL").isTrue();
+    assertThat(node.getNodeInfo() == nodeInfo1)
+        .describedAs("Should be the same instance as getNodeInfo returned")
+        .isTrue();
+
+    NodeInfo nodeInfo2 = node.mutableNodeInfo();
+    assertThat(nodeInfo2 == nodeInfo1)
+        .describedAs("Should return the same instance no matter how many times it is called")
+        .isTrue();
+
+    NodeInfo initNodeIfo = new NodeInfo();
+    initNodeIfo.setAlpha(0.5f);
+    initNodeIfo.setEnabled(true);
+    initNodeIfo.setClickable(true);
+    node.applyNodeInfo(initNodeIfo);
+    NodeInfo mutableNodeInfo = node.mutableNodeInfo();
+    assertThat(initNodeIfo != mutableNodeInfo)
+        .describedAs("Should return a copy of the initNodeInfo")
+        .isTrue();
+    assertThat(Float.compare(mutableNodeInfo.getAlpha(), 0.5f) == 0)
+        .describedAs("Properties should be transferred into a copy of the initNodeInfo")
+        .isTrue();
+    assertThat(mutableNodeInfo.getEnabledState() == NodeInfo.ENABLED_SET_TRUE)
+        .describedAs("Properties should be transferred into a copy of the initNodeInfo")
+        .isTrue();
+    assertThat(mutableNodeInfo.getClickableState() == NodeInfo.CLICKABLE_SET_TRUE)
+        .describedAs("Properties should be transferred into a copy of the initNodeInfo")
+        .isTrue();
+
+    mutableNodeInfo.setScale(1.0f);
+    assertThat(node.getNodeInfo() != null)
+        .describedAs("Should be the same state as mutableNodeInfo")
+        .isTrue();
+    assertThat(Float.compare(node.getNodeInfo().getScale(), 1.0f) == 0)
+        .describedAs("Property of the nodeInfo should also be updated")
+        .isTrue();
+  }
+
+  @Test
   public void testImportantForAccessibilityFlag() {
     final LithoNode node = (LithoNode) acquireInternalNode();
     node.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);

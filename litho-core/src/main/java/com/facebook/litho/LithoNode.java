@@ -174,6 +174,7 @@ public class LithoNode implements Node<LithoRenderContext> {
 
   private boolean mIsClone = false;
   private boolean mFrozen;
+  private boolean mNodeInfoWasWritten;
 
   protected long mPrivateFlags;
 
@@ -628,6 +629,33 @@ public class LithoNode implements Node<LithoRenderContext> {
     }
 
     return mNodeInfo;
+  }
+
+  public NodeInfo mutableNodeInfo() {
+    if (!mNodeInfoWasWritten) {
+      mNodeInfoWasWritten = true;
+      NodeInfo nodeInfo = new NodeInfo();
+      if (mNodeInfo != null) {
+        mNodeInfo.copyInto(nodeInfo);
+      }
+      mNodeInfo = nodeInfo;
+    } else {
+      if (mNodeInfo == null) {
+        // In theory this will not happen, just to avoid any lint warnings from static analysis
+        mNodeInfo = new NodeInfo();
+      }
+    }
+    return mNodeInfo;
+  }
+
+  public void applyNodeInfo(@Nullable NodeInfo nodeInfo) {
+    if (nodeInfo != null) {
+      if (mNodeInfoWasWritten || mNodeInfo != null) {
+        nodeInfo.copyInto(mutableNodeInfo());
+      } else {
+        mNodeInfo = nodeInfo;
+      }
+    }
   }
 
   public @Nullable Component getTailComponent() {
