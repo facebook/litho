@@ -37,6 +37,7 @@ public class DefaultDiffNode implements DiffNode {
   private final List<DiffNode> mChildren = new ArrayList<>(4);
   private String mGlobalKey;
   private @Nullable ScopedComponentInfo mScopedComponentInfo;
+  private @Nullable Object mLayoutData;
 
   /** package private constructor */
   DefaultDiffNode() {}
@@ -64,6 +65,16 @@ public class DefaultDiffNode implements DiffNode {
   @Override
   public @Nullable ScopedComponentInfo getScopedComponentInfo() {
     return mScopedComponentInfo;
+  }
+
+  @Override
+  public @Nullable Object getLayoutData() {
+    return mLayoutData;
+  }
+
+  @Override
+  public void setLayoutData(@Nullable Object layoutData) {
+    mLayoutData = layoutData;
   }
 
   @Override

@@ -62,6 +62,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private @Nullable LithoRenderUnit mForegroundRenderUnit;
   private @Nullable LithoRenderUnit mBorderRenderUnit;
 
+  private @Nullable Object mLayoutData;
+
   public LithoLayoutResult(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -365,10 +367,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     }
   }
 
-  @Nullable
   @Override
-  public Object getLayoutData() {
-    throw new UnsupportedOperationException("This API is not yet implemented");
+  public @Nullable Object getLayoutData() {
+    return mLayoutData;
   }
 
   @Override

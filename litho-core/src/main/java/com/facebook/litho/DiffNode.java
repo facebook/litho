@@ -42,6 +42,11 @@ public interface DiffNode extends Cloneable {
   @Nullable
   ScopedComponentInfo getScopedComponentInfo();
 
+  @Nullable
+  Object getLayoutData();
+
+  void setLayoutData(@Nullable Object layoutData);
+
   void setComponent(
       @Nullable Component component,
       @Nullable String globalKey,
