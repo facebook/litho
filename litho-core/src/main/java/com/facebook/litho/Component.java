@@ -1290,9 +1290,7 @@ public abstract class Component
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       final ComponentContext scopedContext,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    return interStagePropsContainer != null
-        ? interStagePropsContainer
-        : scopedContext.getScopedComponentInfo().getInterStagePropsContainer();
+    return interStagePropsContainer;
   }
 
   protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(

@@ -27,10 +27,8 @@ public class LithoYogaBaselineFunction implements YogaBaselineFunction {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
-
-    // TODO: Get the inter stage props from the LayoutResult
     final @Nullable InterStagePropsContainer interStageProps =
-        result.getContext().getScopedComponentInfo().getInterStagePropsContainer();
+        (InterStagePropsContainer) result.getLayoutData();
 
     return component.onMeasureBaseline(
         result.getContext(), (int) width, (int) height, interStageProps);

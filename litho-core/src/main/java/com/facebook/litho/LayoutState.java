@@ -285,9 +285,7 @@ public class LayoutState
       return null;
     }
 
-    // TODO: Get the inter stage props from the LayoutResult
-    final @Nullable InterStagePropsContainer interStageProps =
-        result.getContext().getScopedComponentInfo().getInterStagePropsContainer();
+    final @Nullable Object layoutData = result.getLayoutData();
 
     return createRenderTreeNode(
         unit,
@@ -295,7 +293,7 @@ public class LayoutState
         layoutState,
         result,
         true,
-        interStageProps,
+        layoutData,
         parent);
   }
 
@@ -371,7 +369,7 @@ public class LayoutState
       final LayoutState layoutState,
       final LithoLayoutResult result,
       final boolean useNodePadding,
-      final @Nullable InterStagePropsContainer interStageProps,
+      final @Nullable Object layoutData,
       final @Nullable RenderTreeNode parent) {
 
     final int hostTranslationX;
@@ -406,7 +404,7 @@ public class LayoutState
             bounds.height(),
             layoutState.mId,
             layoutState.mPreviousLayoutStateId,
-            interStageProps),
+            (InterStagePropsContainer) layoutData),
         parent);
   }
 
@@ -1682,6 +1680,7 @@ public class LayoutState
     diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
     diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
     diffNode.setComponent(tail, key, node.getTailScopedComponentInfo());
+    diffNode.setLayoutData(result.getLayoutData());
     if (parent != null) {
       parent.addChild(diffNode);
     }

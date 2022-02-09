@@ -313,8 +313,8 @@ public class LithoNode implements Node<LithoRenderContext> {
             diff.getScopedComponentInfo();
 
         component.copyInterStageImpl(
-            Preconditions.checkNotNull(scopedComponentInfo).getInterStagePropsContainer(),
-            Preconditions.checkNotNull(diffNodeScopedComponentInfo).getInterStagePropsContainer());
+            (InterStagePropsContainer) result.getLayoutData(),
+            (InterStagePropsContainer) diff.getLayoutData());
 
         component.copyPrepareInterStageImpl(
             Preconditions.checkNotNull(scopedComponentInfo).getPrepareInterStagePropsContainer(),

@@ -134,7 +134,13 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
         }
         try {
-          component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size, null);
+          component.onMeasure(
+              componentScopedContext,
+              result,
+              widthSpec,
+              heightSpec,
+              size,
+              (InterStagePropsContainer) result.getLayoutData());
         } catch (Exception e) {
           ComponentUtils.handle(componentScopedContext, e);
           return YogaMeasureOutput.make(0, 0);

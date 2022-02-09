@@ -29,7 +29,6 @@ public class ScopedComponentInfo implements Cloneable {
   private final Component mComponent;
   private ComponentContext mContext;
   private @Nullable StateContainer mStateContainer;
-  private @Nullable InterStagePropsContainer mInterStagePropsContainer;
   private @Nullable PrepareInterStagePropsContainer mPrepareInterStagePropsContainer;
 
   /**
@@ -62,7 +61,6 @@ public class ScopedComponentInfo implements Cloneable {
     mComponent = component;
     mContext = context;
     mStateContainer = component.createStateContainer();
-    mInterStagePropsContainer = component.createInterStagePropsContainer();
     mPrepareInterStagePropsContainer = component.createPrepareInterStagePropsContainer();
     mErrorEventHandler = errorEventHandler;
   }
@@ -116,11 +114,6 @@ public class ScopedComponentInfo implements Cloneable {
     mManualKeysCounter.put(manualKey, count + 1);
 
     return count;
-  }
-
-  @Nullable
-  InterStagePropsContainer getInterStagePropsContainer() {
-    return mInterStagePropsContainer;
   }
 
   @Nullable

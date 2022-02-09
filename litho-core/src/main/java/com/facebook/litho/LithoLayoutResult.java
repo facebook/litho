@@ -75,6 +75,19 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     mNode = node;
     mYogaNode = yogaNode;
     mParent = parent;
+
+    /*
+
+     Ideally the layout data should be created when measure is called on the mount spec or
+     mountable component, but because of the current implementation of mount specs, and the way
+     Yoga works it a possibility that measure may not be called, and a MountSpec [may] require
+     inter stage props, then it is necessary to have a non-null InterStagePropsContainer even if
+     the values are uninitialised. Otherwise it will lead to NPEs.
+
+     This should get cleaned up once the implementation is general enough for MountableComponents.
+
+    */
+    mLayoutData = node.getTailComponent().createInterStagePropsContainer();
   }
 
   public LayoutStateContext getLayoutStateContext() {
