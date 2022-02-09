@@ -1,3 +1,5 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -32,7 +34,7 @@ fb_java_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-prebuilt",
     binary_jar = ":robolectric4.jar",
 )
@@ -43,7 +45,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:robolectric:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-annotations-prebuilt",
     binary_jar = ":robolectric4-annotations.jar",
 )
@@ -54,7 +56,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:annotations:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-junit-prebuilt",
     binary_jar = ":robolectric4-junit.jar",
 )
@@ -65,7 +67,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:junit:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-pluginapi-prebuilt",
     binary_jar = ":robolectric4-pluginapi.jar",
 )
@@ -76,7 +78,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:pluginapi:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-plugins-maven-dependency-resolver-prebuilt",
     binary_jar = ":robolectric4-plugins-maven-dependency-resolver.jar",
 )
@@ -87,7 +89,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:plugins-maven-dependency-resolver:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-resources-prebuilt",
     binary_jar = ":robolectric4-resources.jar",
 )
@@ -98,7 +100,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:resources:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-sandbox-prebuilt",
     binary_jar = ":robolectric4-sandbox.jar",
 )
@@ -109,7 +111,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:sandbox:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-shadowapi-prebuilt",
     binary_jar = ":robolectric4-shadowapi.jar",
 )
@@ -120,7 +122,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:shadowapi:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-shadows-framework-prebuilt",
     binary_jar = ":robolectric4-shadows-framework.jar",
 )
@@ -131,7 +133,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:shadows-framework:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-utils-prebuilt",
     binary_jar = ":robolectric4-utils.jar",
 )
@@ -142,7 +144,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:utils:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "robolectric4-utils-reflector-prebuilt",
     binary_jar = ":robolectric4-utils-reflector.jar",
 )
@@ -153,7 +155,7 @@ fb_native.remote_file(
     url = "mvn:org.robolectric:utils-reflector:jar:4.3",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "javax-annotation-api",
     binary_jar = ":javax-annotation-api.jar",
 )
@@ -164,7 +166,7 @@ fb_native.remote_file(
     url = "mvn:javax.annotation:javax.annotation-api:jar:1.3.2",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "javax-inject",
     binary_jar = ":javax-inject.jar",
 )

@@ -1,3 +1,5 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -14,7 +16,7 @@ fb_java_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "mockito-core-prebuilt",
     binary_jar = ":mockito-core.jar",
 )

@@ -1,3 +1,4 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -26,7 +27,7 @@ fb_native.remote_file(
     url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.5.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "textlayoutbuilder-prebuilt-staticlayout-proxy-jar",
     binary_jar = ":textlayoutbuilder-staticlayout-proxy.jar",
 )

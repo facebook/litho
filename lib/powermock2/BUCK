@@ -1,3 +1,5 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -15,7 +17,7 @@ fb_java_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-reflect-prebuilt",
     binary_jar = ":powermock-reflect.jar",
 )
@@ -43,7 +45,7 @@ fb_java_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-api-mockito2",
     binary_jar = ":powermock-api-mockito2.jar",
 )
@@ -54,7 +56,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-api-mockito2:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-api-support",
     binary_jar = ":powermock-api-support.jar",
 )
@@ -65,7 +67,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-api-support:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-classloading-base",
     binary_jar = ":powermock-classloading-base.jar",
 )
@@ -76,7 +78,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-classloading-base:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-classloading-xstream-prebuilt",
     binary_jar = ":powermock-classloading-xstream.jar",
 )
@@ -87,7 +89,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-classloading-xstream:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-core",
     binary_jar = ":powermock-core.jar",
 )
@@ -98,7 +100,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-core:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-module-junit-common-prebuilt",
     binary_jar = ":powermock-module-junit-common.jar",
 )
@@ -109,7 +111,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-module-junit4-common:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "powermock-module-junit-rule-prebuilt",
     binary_jar = ":powermock-module-junit-rule.jar",
 )
@@ -120,7 +122,7 @@ fb_native.remote_file(
     url = "mvn:org.powermock:powermock-module-junit4-rule:jar:2.0.7",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "javassist-prebuilt",
     binary_jar = ":javassist.jar",
 )
@@ -131,7 +133,7 @@ fb_native.remote_file(
     url = "mvn:org.javassist:javassist:jar:3.27.0-GA",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "xstream-prebuilt",
     binary_jar = ":xstream.jar",
 )

@@ -1,3 +1,5 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -126,7 +128,7 @@ fb_native.remote_file(
     url = "mvn:androidx.vectordrawable:vectordrawable:aar:1.1.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "androidx-annotations-jar",
     binary_jar = ":androidx-annotations.jar",
 )
@@ -137,7 +139,7 @@ fb_native.remote_file(
     url = "mvn:androidx.annotation:annotation:jar:1.1.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "androidx-collection-jar",
     binary_jar = ":androidx-collection.jar",
 )
@@ -170,7 +172,7 @@ fb_native.remote_file(
     url = "mvn:androidx.drawerlayout:drawerlayout:aar:1.0.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "androidx-lifecycle-common-jar",
     binary_jar = ":androidx-lifecycle-common.jar",
 )

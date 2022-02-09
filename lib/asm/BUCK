@@ -1,3 +1,5 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -17,7 +19,7 @@ fb_java_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "asm-prebuilt",
     binary_jar = ":asm.jar",
 )
@@ -28,7 +30,7 @@ fb_native.remote_file(
     url = "mvn:org.ow2.asm:asm:jar:7.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "asm-commons-prebuilt",
     binary_jar = ":asm-commons.jar",
 )
@@ -39,7 +41,7 @@ fb_native.remote_file(
     url = "mvn:org.ow2.asm:asm-commons:jar:7.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "asm-util-prebuilt",
     binary_jar = ":asm-util.jar",
 )
@@ -50,7 +52,7 @@ fb_native.remote_file(
     url = "mvn:org.ow2.asm:asm-util:jar:7.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "asm-tree-prebuilt",
     binary_jar = ":asm-tree.jar",
 )
@@ -61,7 +63,7 @@ fb_native.remote_file(
     url = "mvn:org.ow2.asm:asm-tree:jar:7.0",
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "asm-analysis-prebuilt",
     binary_jar = ":asm-analysis.jar",
 )

@@ -1,6 +1,7 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "diff-utils",
     binary_jar = ":diff-utils.jar",
     visibility = ["PUBLIC"],

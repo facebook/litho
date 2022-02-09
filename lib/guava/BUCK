@@ -1,3 +1,4 @@
+load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
@@ -9,7 +10,7 @@ fb_java_library(
     ],
 )
 
-fb_native.prebuilt_jar(
+fb_prebuilt_jar(
     name = "guava-prebuilt",
     binary_jar = ":guava.jar",
 )
