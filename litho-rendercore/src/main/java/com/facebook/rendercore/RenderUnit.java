@@ -245,23 +245,49 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableCon
 
   /** Bind all mountUnmount extension functions. */
   void mountExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
-    bind((List) mMountUnmountExtensions, context, content, layoutData);
+    if (mMountUnmountExtensions == null) {
+      return;
+    }
+
+    for (Extension extension : mMountUnmountExtensions) {
+      extension.bind(context, content, layoutData);
+    }
   }
 
   /** Unbind all mountUnmount extension functions. Public because used from Litho's MountState. */
   public void unmountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
-    unbind((List) mMountUnmountExtensions, context, content, layoutData);
+    if (mMountUnmountExtensions == null) {
+      return;
+    }
+
+    for (int i = mMountUnmountExtensions.size() - 1; i >= 0; i--) {
+      final Extension extension = mMountUnmountExtensions.get(i);
+      extension.unbind(context, content, layoutData);
+    }
   }
 
   /** Bind all attachDetach extension functions. */
   void attachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
-    bind((List) mAttachDetachExtensions, context, content, layoutData);
+    if (mAttachDetachExtensions == null) {
+      return;
+    }
+
+    for (Extension extension : mAttachDetachExtensions) {
+      extension.bind(context, content, layoutData);
+    }
   }
 
   /** Unbind all attachDetach extension functions. */
   void detachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
-    unbind((List) mAttachDetachExtensions, context, content, layoutData);
+    if (mAttachDetachExtensions == null) {
+      return;
+    }
+
+    for (int i = mAttachDetachExtensions.size() - 1; i >= 0; i--) {
+      final Extension extension = mAttachDetachExtensions.get(i);
+      extension.unbind(context, content, layoutData);
+    }
   }
 
   /**
@@ -305,17 +331,27 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableCon
 
     // 2. unbind all attach binders which should update (only if currently attached).
     if (isAttached) {
-      unbind(attachDetachExtensionsForUnbind, context, content, currentLayoutData);
+      for (int i = attachDetachExtensionsForUnbind.size() - 1; i >= 0; i--) {
+        final Extension extension = attachDetachExtensionsForUnbind.get(i);
+        extension.unbind(context, content, currentLayoutData);
+      }
     }
 
     // 3. unbind all mount binders which should update.
-    unbind(mountUnmountExtensionsForUnbind, context, content, currentLayoutData);
+    for (int i = mountUnmountExtensionsForUnbind.size() - 1; i >= 0; i--) {
+      final Extension extension = mountUnmountExtensionsForUnbind.get(i);
+      extension.unbind(context, content, currentLayoutData);
+    }
 
     // 4. rebind all mount binder which did update.
-    bind(mountUnmountExtensionsForBind, context, content, newLayoutData);
+    for (Extension extension : mountUnmountExtensionsForBind) {
+      extension.bind(context, content, newLayoutData);
+    }
 
     // 5. rebind all attach binder which did update.
-    bind(attachDetachExtensionsForBind, context, content, newLayoutData);
+    for (Extension extension : attachDetachExtensionsForBind) {
+      extension.bind(context, content, newLayoutData);
+    }
   }
 
   /**
@@ -377,35 +413,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableCon
         // true, therefore we need to unbind it.
         extensionsToUnbind.add(currentExtension);
       }
-    }
-  }
-
-  private static <MOUNT_CONTENT> void bind(
-      @Nullable List<Extension> extensions,
-      Context context,
-      MOUNT_CONTENT content,
-      @Nullable Object layoutData) {
-    if (extensions == null) {
-      return;
-    }
-
-    for (Extension extension : extensions) {
-      extension.bind(context, content, layoutData);
-    }
-  }
-
-  private static <MOUNT_CONTENT> void unbind(
-      @Nullable List<Extension> extensions,
-      Context context,
-      MOUNT_CONTENT content,
-      @Nullable Object layoutData) {
-    if (extensions == null) {
-      return;
-    }
-
-    for (int i = extensions.size() - 1; i >= 0; i--) {
-      final Extension extension = extensions.get(i);
-      extension.unbind(context, content, layoutData);
     }
   }
 
