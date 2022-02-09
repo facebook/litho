@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Component.hasCachedLayout;
+import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -24,10 +26,13 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.core.util.Preconditions;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.List;
@@ -424,5 +429,150 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
   public YogaNode getYogaNode() {
     return mYogaNode;
+  }
+
+  long measure(float width, YogaMeasureMode widthMode, float height, YogaMeasureMode heightMode) {
+
+    if (mLayoutContext.isLayoutReleased()) {
+      return 0;
+    }
+
+    final LithoNode node = mNode;
+    final Component component = Preconditions.checkNotNull(node.getTailComponent());
+    final ComponentContext componentScopedContext = node.getTailComponentContext();
+    final DiffNode diffNode = areCachedMeasuresValid() ? getDiffNode() : null;
+    final int widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
+    final int heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
+          .arg("widthSpec", SizeSpec.toString(widthSpec))
+          .arg("heightSpec", SizeSpec.toString(heightSpec))
+          .arg("componentId", component.getId())
+          .flush();
+    }
+
+    try {
+
+      setLastWidthSpec(widthSpec);
+      setLastHeightSpec(heightSpec);
+
+      int outputWidth;
+      int outputHeight;
+
+      if (isNestedTree(component)
+          || hasCachedLayout(mLayoutContext, component)
+          || this instanceof NestedTreeHolderResult) {
+
+        final LayoutState layoutState = mLayoutContext.getLayoutState();
+        if (layoutState == null) {
+          throw new IllegalStateException(
+              component.getSimpleName()
+                  + ": To measure a component outside of a layout calculation use"
+                  + " Component#measureMightNotCacheInternalNode.");
+        }
+
+        final int size = node.getComponentCount();
+        final ComponentContext parentContext;
+        if (size == 1) {
+          if (getParent() != null) {
+            final LithoNode internalNode = getParent().getNode();
+            parentContext = internalNode.getTailComponentContext();
+          } else {
+            parentContext = layoutState.getComponentContext();
+          }
+        } else {
+          parentContext = node.getComponentContextAt(1);
+        }
+
+        if (isTracing) {
+          ComponentsSystrace.beginSection("resolveNestedTree:" + component.getSimpleName());
+        }
+        try {
+          final @Nullable LithoLayoutResult nestedTree =
+              Layout.create(
+                  mLayoutContext,
+                  parentContext,
+                  (NestedTreeHolderResult) this,
+                  widthSpec,
+                  heightSpec);
+
+          outputWidth = nestedTree != null ? nestedTree.getWidth() : 0;
+          outputHeight = nestedTree != null ? nestedTree.getHeight() : 0;
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+        }
+      } else if (diffNode != null
+          && diffNode.getLastWidthSpec() == widthSpec
+          && diffNode.getLastHeightSpec() == heightSpec
+          && !component.shouldAlwaysRemeasure()) {
+        outputWidth = (int) diffNode.getLastMeasuredWidth();
+        outputHeight = (int) diffNode.getLastMeasuredHeight();
+      } else {
+        final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
+
+        if (isTracing) {
+          ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
+        }
+        try {
+          component.onMeasure(
+              componentScopedContext,
+              this,
+              widthSpec,
+              heightSpec,
+              size,
+              (InterStagePropsContainer) getLayoutData());
+        } catch (Exception e) {
+          ComponentUtils.handle(componentScopedContext, e);
+          return YogaMeasureOutput.make(0, 0);
+        } finally {
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+        }
+
+        if (size.width < 0 || size.height < 0) {
+          throw new IllegalStateException(
+              "MeasureOutput not set, Component is: "
+                  + component
+                  + " Width: "
+                  + width
+                  + " Height: "
+                  + height
+                  + " WidthMode: "
+                  + widthMode.name()
+                  + " HeightMode: "
+                  + heightMode.name()
+                  + " Measured width : "
+                  + size.width
+                  + " Measured Height: "
+                  + size.height);
+        }
+
+        outputWidth = size.width;
+        outputHeight = size.height;
+
+        if (getDiffNode() != null) {
+          getDiffNode().setLastWidthSpec(widthSpec);
+          getDiffNode().setLastHeightSpec(heightSpec);
+          getDiffNode().setLastMeasuredWidth(outputWidth);
+          getDiffNode().setLastMeasuredHeight(outputHeight);
+        }
+      }
+
+      setLastMeasuredWidth(outputWidth);
+      setLastMeasuredHeight(outputHeight);
+      setLastWidthSpec(widthSpec);
+      setLastHeightSpec(heightSpec);
+
+      return YogaMeasureOutput.make(outputWidth, outputHeight);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
   }
 }
