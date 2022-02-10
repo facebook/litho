@@ -729,21 +729,21 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .visibleHandler(visibleEventHandler1)
                         .invisibleHandler(invisibleEventHandler1)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .child(
                     Wrapper.create(mContext)
                         .delegate(content2)
                         .visibleHandler(visibleEventHandler2)
                         .invisibleHandler(invisibleEventHandler2)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .child(
                     Wrapper.create(mContext)
                         .delegate(content3)
                         .visibleHandler(visibleEventHandler3)
                         .invisibleHandler(invisibleEventHandler3)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .build(),
             false,
             true,
@@ -761,7 +761,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 9), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
@@ -795,7 +795,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 1), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
@@ -806,7 +806,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 1, RIGHT, 8), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
@@ -817,7 +817,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 5, RIGHT, 11), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 8), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
@@ -851,7 +851,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .visibleHandler(visibleEventHandler1)
                         .invisibleHandler(invisibleEventHandler1)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .child(
                     Wrapper.create(mContext)
                         .key("child2")
@@ -859,7 +859,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .visibleHandler(visibleEventHandler2)
                         .invisibleHandler(invisibleEventHandler2)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .child(
                     Wrapper.create(mContext)
                         .key("child3")
@@ -867,12 +867,12 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .visibleHandler(visibleEventHandler3)
                         .invisibleHandler(invisibleEventHandler3)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .build(),
             false,
             true,
             15,
-            15);
+            9);
 
     Map<String, VisibilityItem> visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     for (String key : visibilityItemMap.keySet()) {
@@ -891,7 +891,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 10), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
@@ -910,7 +910,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 1, RIGHT, 8), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
@@ -968,7 +968,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 1, RIGHT, 8), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
@@ -998,7 +998,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 9), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
@@ -1055,7 +1055,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .focusedHandler(focusedEventHandler1)
                         .unfocusedHandler(unfocusedEventHandler1)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .child(
                     Wrapper.create(mContext)
                         .key("child2")
@@ -1063,7 +1063,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .focusedHandler(focusedEventHandler2)
                         .unfocusedHandler(unfocusedEventHandler2)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .child(
                     Wrapper.create(mContext)
                         .key("child3")
@@ -1071,12 +1071,12 @@ public class VisibilityEventsIncrementalMountDisabledTest {
                         .focusedHandler(focusedEventHandler3)
                         .unfocusedHandler(unfocusedEventHandler3)
                         .widthPx(10)
-                        .heightPx(5))
+                        .heightPx(3))
                 .build(),
             false,
             true,
             10,
-            15);
+            9);
 
     Map<String, VisibilityItem> visibilityItemLongSparseArray = getVisibilityIdToItemMap(lithoView);
     for (String key : visibilityItemLongSparseArray.keySet()) {
@@ -1095,7 +1095,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 15), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 2, RIGHT, 9), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler3);
@@ -1107,7 +1107,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 9), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler3);
@@ -1642,15 +1642,18 @@ public class VisibilityEventsIncrementalMountDisabledTest {
       throw new RuntimeException(e);
     }
 
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+    // When self managing, LithoViews ignore translation when calculating the visible rect.
+    if (!ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
 
-    lithoView.setTranslationY(-5);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+      lithoView.setTranslationY(-5);
+      assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
 
-    // Note: there seems to be some bug where the local visible rect is off by 1px when using
-    // translation, thus this check will not work with -1
-    lithoView.setTranslationY(-2);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+      // Note: there seems to be some bug where the local visible rect is off by 1px when using
+      // translation, thus this check will not work with -1
+      lithoView.setTranslationY(-2);
+      assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+    }
 
     lithoView.setTranslationY(0);
     assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionHandler);
