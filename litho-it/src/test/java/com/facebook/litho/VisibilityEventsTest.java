@@ -59,7 +59,7 @@ import org.robolectric.util.ReflectionHelpers;
 @RunWith(LithoTestRunner.class)
 public class VisibilityEventsTest {
   private static final int LEFT = 0;
-  private static final int RIGHT = 10;
+  private static final int RIGHT = 15;
 
   private ComponentContext mContext;
   private LithoView mLithoView;
@@ -75,8 +75,8 @@ public class VisibilityEventsTest {
     mParent = new FrameLayout(mContext.getAndroidContext());
     mParent.setLeft(0);
     mParent.setTop(0);
-    mParent.setRight(10);
-    mParent.setBottom(10);
+    mParent.setRight(15);
+    mParent.setBottom(15);
     mParent.addView(mLithoView);
   }
 
@@ -328,9 +328,9 @@ public class VisibilityEventsTest {
                     .delegate(content)
                     .focusedHandler(focusedHandler)
                     .unfocusedHandler(unfocusedHandler)
-                    .widthPx(10)
-                    .heightPx(7)
-                    .marginPx(YogaEdge.TOP, 3))
+                    .widthPx(15)
+                    .heightPx(5)
+                    .marginPx(YogaEdge.TOP, 8))
             .build();
     mLegacyLithoViewRule
         .setRoot(root)
@@ -343,17 +343,17 @@ public class VisibilityEventsTest {
 
     // Mount test view in the middle of the view port (focused)
     content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 10), true);
+    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 8, RIGHT, 13), true);
     assertThat(content.getDispatchedEventHandlers()).containsOnly(focusedHandler);
 
     // Mount test view on the edge of the viewport (not focused)
     content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 9, RIGHT, 14), true);
+    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 14, RIGHT, 19), true);
     assertThat(content.getDispatchedEventHandlers()).containsOnly(unfocusedHandler);
 
     // Mount test view in the middle of the view port (focused)
     content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
+    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 8, RIGHT, 14), true);
     assertThat(content.getDispatchedEventHandlers()).containsOnly(focusedHandler);
 
     // Mount test view on the edge of the viewport (not focused)
@@ -562,7 +562,6 @@ public class VisibilityEventsTest {
             .child(
                 Wrapper.create(mContext)
                     .delegate(content)
-                    .marginPx(YogaEdge.TOP, 10)
                     .visibilityChangedHandler(visibilityChangedHandler)
                     .widthPx(10)
                     .heightPx(10))
@@ -2134,6 +2133,7 @@ public class VisibilityEventsTest {
     ReflectionHelpers.setField(lScrollView, "mScrollX", 10);
     ReflectionHelpers.setField(lScrollView, "mScrollY", 0);
     lScrollView.scrollBy(10, 0);
+    mLegacyLithoViewRule.dispatchGlobalLayout();
 
     assertThat(LifecycleStep.getSteps(stepsList.get(1)))
         .describedAs("Visible event should be dispatched")

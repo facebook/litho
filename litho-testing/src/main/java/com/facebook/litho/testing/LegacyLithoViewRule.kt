@@ -238,6 +238,29 @@ constructor(
   fun layout(): LegacyLithoViewRule {
     val lithoView: LithoView = lithoView
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
+    val childLithoViews = lithoView.childLithoViewsFromCurrentlyMountedItems
+
+    for (lv in childLithoViews) {
+      lv.onAttachedToWindowForTest()
+    }
+
+    return this
+  }
+
+  fun dispatchGlobalLayout(): LegacyLithoViewRule {
+    val lithoView: LithoView = lithoView
+
+    if (lithoView.skipNotifyVisibleBoundsChangedCalls()) {
+      lithoView.viewTreeObserver.dispatchOnGlobalLayout()
+      val childLithoViews = lithoView.childLithoViewsFromCurrentlyMountedItems
+
+      for (lv in childLithoViews) {
+        lv.viewTreeObserver.dispatchOnGlobalLayout()
+      }
+    } else {
+      lithoView.notifyVisibleBoundsChanged()
+    }
+
     return this
   }
 

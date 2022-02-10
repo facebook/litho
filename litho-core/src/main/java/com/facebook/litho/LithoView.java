@@ -1330,6 +1330,22 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         && mComponentTree.isIncrementalMountEnabled();
   }
 
+  /**
+   * Call this method when the LithoView's global position on screen has changed via manual offset.
+   * For example, if one of this LithoView's parent's Left / Top / Bottom / Right fields has been
+   * manually changed, or via offsetTopAndBottom.
+   *
+   * <p>Calls to this method are not needed if the LithoView's global position has changed due to
+   * layout, scroll or translation.
+   */
+  public void notifyLithoViewGlobalPositionChanged() {
+    if (mAreViewTreeObserverListenersRegistered) {
+      maybeRefreshAfterViewPortChange();
+    } else {
+      notifyVisibleBoundsChangedInternal();
+    }
+  }
+
   private void maybeRefreshAfterViewPortChange() {
     if (!shouldViewTreeObserverListenersBeRegistered()) {
       return;
@@ -1555,7 +1571,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
   }
 
-  private List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
+  @VisibleForTesting
+  public List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
     if (mDelegateToRenderCore) {
       return getChildLithoViewsFromCurrentlyMountedItems(mMountDelegateTarget);
     }

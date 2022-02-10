@@ -68,7 +68,9 @@ public class LithoTestRunner extends RobolectricTestRunner {
    *     configurations.
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getExtraRunConfigurations() {
-    return Arrays.asList(RenderCoreMountStateTestRunConfiguration.class);
+    return Arrays.asList(
+        RenderCoreMountStateTestRunConfiguration.class,
+        LithoViewSelfManageTestRunConfiguration.class);
   }
 
   @Override
