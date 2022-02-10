@@ -50,13 +50,6 @@ public interface MountDelegateTarget {
 
   Object getContentById(long id);
 
-  /**
-   * @param mountExtension
-   * @deprecated Only used for Litho's integration. Marked for removal.
-   */
-  @Deprecated
-  ExtensionState registerMountExtension(MountExtension mountExtension);
-
   void unregisterAllExtensions();
 
   ArrayList<Host> getHosts();
@@ -72,9 +65,15 @@ public interface MountDelegateTarget {
 
   void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension);
 
-  @Nullable
   void removeUnmountDelegateExtension();
 
   @Nullable
   MountDelegate getMountDelegate();
+
+  /**
+   * @param mountExtension
+   * @deprecated Only used for Litho's integration. Marked for removal.
+   */
+  @Deprecated
+  ExtensionState registerMountExtension(MountExtension mountExtension);
 }
