@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
@@ -498,6 +499,13 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
+    // When self managing, LithoViews will not adhere to translation. Therefore components with
+    // negative margins + translations will not be mounted, hence this test is not relevant
+    // in this case.
+    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      return;
+    }
+
     final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
@@ -545,6 +553,12 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin_multipleUnmountedHosts() {
+    // When self managing, LithoViews do not adhere to translation, and so items set with negative
+    // margins won't be mounted.
+    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      return;
+    }
+
     final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
@@ -742,6 +756,12 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void testChildViewGroupIncrementallyMounted() {
+    // Incremental mounting works differently with self-managing LithoViews, so checking calls
+    // to notifyVisibleBoundsChanged is not needed.
+    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      return;
+    }
+
     final ViewGroup mountedView = mock(ViewGroup.class);
     when(mountedView.getChildCount()).thenReturn(3);
 
@@ -780,6 +800,7 @@ public class MountStateIncrementalMountTest {
     // Called twice when mount is delegated; for both incremental mount and visibility extension
     final int expectedVisibleBoundsChangedCalls =
         ComponentsConfiguration.delegateToRenderCoreMount ? 1 : 2;
+
     verify(childView1, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
     verify(childView2, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
     verify(childView3, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
@@ -787,6 +808,12 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void testChildViewGroupAllIncrementallyMountedNotProcessVisibilityOutputs() {
+    // Incremental mounting works differently with self-managing LithoViews, so checking calls
+    // to notifyVisibleBoundsChanged is not needed.
+    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      return;
+    }
+
     final ViewGroup mountedView = mock(ViewGroup.class);
     when(mountedView.getLeft()).thenReturn(0);
     when(mountedView.getTop()).thenReturn(0);
@@ -1028,6 +1055,12 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountAfterLithoViewIsMounted() {
+    // Incremental mounting works differently with self-managing LithoViews, so checking calls
+    // to notifyVisibleBoundsChanged is not needed.
+    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      return;
+    }
+
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
@@ -1068,7 +1101,67 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
-  public void incrementalMount_dirtyMount_unmountItemsOffScreen() {
+  public void incrementalMount_dirtyMount_unmountItemsOffScreen_withScroll() {
+    final LifecycleTracker info_child1 = new LifecycleTracker();
+    final LifecycleTracker info_child2 = new LifecycleTracker();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root =
+        Column.create(mLegacyLithoViewRule.getContext())
+            .child(
+                MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
+                    .intrinsicSize(new Size(10, 10))
+                    .lifecycleTracker(info_child1)
+                    .key("some_key"))
+            .child(
+                MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
+                    .intrinsicSize(new Size(10, 10))
+                    .lifecycleTracker(info_child2)
+                    .key("other_key"))
+            .child(
+                SimpleStateUpdateEmulator.create(mLegacyLithoViewRule.getContext())
+                    .caller(stateUpdater))
+            .build();
+
+    mLegacyLithoViewRule.setRoot(root).setSizePx(10, 40).attachToWindow().measure().layout();
+
+    final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 40);
+
+    parent.addView(mLegacyLithoViewRule.getLithoView(), 0, 40);
+
+    final ScrollView scrollView = new ScrollView(mContext.getAndroidContext());
+    scrollView.measure(
+        View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(20, View.MeasureSpec.EXACTLY));
+    scrollView.layout(0, 0, 10, 20);
+    scrollView.addView(parent, 10, 40);
+
+    assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_MOUNT);
+    assertThat(info_child2.getSteps()).describedAs("Mounted.").contains(ON_MOUNT);
+
+    stateUpdater.increment();
+
+    info_child1.reset();
+    info_child2.reset();
+
+    scrollView.scrollBy(0, 12);
+    mLegacyLithoViewRule.dispatchGlobalLayout();
+    assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
+  }
+
+  @Test
+  public void incrementalMount_dirtyMount_unmountItemsOffScreen_withTranslation() {
+    // When self-managing LithoViews, translation is ignored. Therefore, this test is redundant
+    // when the config is enabled.
+    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
+      return;
+    }
+
     final LifecycleTracker info_child1 = new LifecycleTracker();
     final LifecycleTracker info_child2 = new LifecycleTracker();
     final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
@@ -1110,6 +1203,7 @@ public class MountStateIncrementalMountTest {
     info_child2.reset();
 
     mLegacyLithoViewRule.getLithoView().setTranslationY(-12);
+
     assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
   }
 
@@ -1310,7 +1404,7 @@ public class MountStateIncrementalMountTest {
     mLegacyLithoViewRule.setRoot(rcc2);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    mLegacyLithoViewRule.getLithoView().notifyVisibleBoundsChanged();
+    mLegacyLithoViewRule.dispatchGlobalLayout();
 
     assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);
   }
