@@ -688,7 +688,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
     mInAttach = true;
     try {
-      if (mIncrementalMountHelper != null) {
+      if (mIncrementalMountHelper != null && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
         mIncrementalMountHelper.onAttach(mLithoView);
       }
 
@@ -747,7 +747,7 @@ public class ComponentTree implements LithoLifecycleListener {
         incrementalMountComponent();
       } else {
         final Rect visibleRect = new Rect();
-        mLithoView.getLocalVisibleRect(visibleRect);
+        mLithoView.getCorrectedLocalVisibleRect(visibleRect);
         mountComponent(visibleRect, true);
       }
 
@@ -774,7 +774,7 @@ public class ComponentTree implements LithoLifecycleListener {
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = new Rect();
 
-    if (mLithoView.getLocalVisibleRect(currentVisibleArea)
+    if (mLithoView.getCorrectedLocalVisibleRect(currentVisibleArea)
         // It might not be yet visible but animating from 0 height/width in which case we still
         // need
         // to mount them to trigger animation.
@@ -989,7 +989,7 @@ public class ComponentTree implements LithoLifecycleListener {
   void detach() {
     assertMainThread();
 
-    if (mIncrementalMountHelper != null) {
+    if (mIncrementalMountHelper != null && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
       mIncrementalMountHelper.onDetach(mLithoView);
     }
 

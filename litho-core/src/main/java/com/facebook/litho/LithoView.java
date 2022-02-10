@@ -23,10 +23,13 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
@@ -58,6 +61,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
   private static final String TAG = LithoView.class.getSimpleName();
+
   private boolean mIsMountStateDirty;
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
@@ -66,6 +70,43 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private boolean mVisibilityHintIsVisible;
   private boolean mSkipMountingIfNotVisible;
   private @Nullable LithoLifecycleProvider mLifecycleProvider;
+
+  private final boolean mIsLithoViewSelfManagingViewPortChanges;
+  private final Rect mCachedCorrectedVisibleRect = new Rect();
+  private final Rect mProcessingVisibleAreaRect = new Rect();
+  private final Rect mScrollPositionChangedRect = new Rect();
+  private final Rect mLastScrollPositionChangedRect = new Rect();
+  private boolean mCanUseCachedCorrectedVisibleRect = false;
+  private boolean mRectRequestedWhileCached = false;
+  private boolean mAreViewTreeObserverListenersRegistered = false;
+  private final Runnable mInvalidateCachedCorrectedRectRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          mCanUseCachedCorrectedVisibleRect = false;
+
+          if (mRectRequestedWhileCached) {
+            mRectRequestedWhileCached = false;
+            maybeRefreshAfterViewPortChange();
+          }
+        }
+      };
+
+  private final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener =
+      new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+          maybeRefreshAfterViewPortChange();
+        }
+      };
+
+  private final ViewTreeObserver.OnScrollChangedListener mOnGlobalScrollChangedListener =
+      new ViewTreeObserver.OnScrollChangedListener() {
+        @Override
+        public void onScrollChanged() {
+          maybeRefreshAfterViewPortChange();
+        }
+      };
 
   public interface OnDirtyMountListener {
     /**
@@ -223,6 +264,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     super(context.getAndroidContext(), attrs);
     mComponentContext = context;
 
+    mIsLithoViewSelfManagingViewPortChanges =
+        ComponentsConfiguration.lithoViewSelfManageViewPortChanges;
     mDelegateToRenderCore = delegateToRenderCore;
 
     if (mDelegateToRenderCore) {
@@ -331,6 +374,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         mComponentTree.attach();
       }
 
+      setupViewTreeObserverListenersIfNeeded();
+
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
 
       AccessibilityManagerCompat.addAccessibilityStateChangeListener(
@@ -351,6 +396,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (mComponentTree != null) {
         mComponentTree.detach();
       }
+
+      setupViewTreeObserverListenersIfNeeded();
 
       AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
           mAccessibilityManager, mAccessibilityStateChangeListener);
@@ -562,8 +609,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
-      if (!wasMountTriggered) {
-        notifyVisibleBoundsChanged();
+      if (!mAreViewTreeObserverListenersRegistered && !wasMountTriggered) {
+        notifyVisibleBoundsChangedInternal();
       }
 
       if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
@@ -715,10 +762,16 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
     }
     mNullComponentCause = mComponentTree == null ? "set_CT" : null;
+
+    setupViewTreeObserverListenersIfNeeded();
   }
 
   boolean delegateToRenderCore() {
     return mDelegateToRenderCore;
+  }
+
+  public boolean skipNotifyVisibleBoundsChangedCalls() {
+    return mAreViewTreeObserverListenersRegistered;
   }
 
   private void setupMountExtensions(ComponentTree componentTree) {
@@ -755,6 +808,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
 
     mLithoHostListenerCoordinator.setCollectNotifyVisibleBoundsChangedCalls(true);
+    mLithoHostListenerCoordinator.setSkipNotifyVisibleBoundsChanged(
+        mAreViewTreeObserverListenersRegistered);
   }
 
   /** Change the root component synchronously. */
@@ -880,8 +935,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     if (isVisible) {
       if (forceMount) {
-        notifyVisibleBoundsChanged();
-      } else if (getLocalVisibleRect(mRect)) {
+        notifyVisibleBoundsChangedInternal();
+      } else if (getCorrectedLocalVisibleRect(mRect)) {
         processVisibilityOutputs(mRect);
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
@@ -984,8 +1039,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     if (isVisible) {
       if (forceMount) {
-        notifyVisibleBoundsChanged();
-      } else if (getLocalVisibleRect(mRect)) {
+        notifyVisibleBoundsChangedInternal();
+      } else if (getCorrectedLocalVisibleRect(mRect)) {
         processVisibilityOutputs(mRect);
       }
       recursivelySetVisibleHint(true, skipMountingIfNotVisible);
@@ -1041,7 +1096,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
-        notifyVisibleBoundsChanged();
+        notifyVisibleBoundsChangedInternal();
       }
       if (mTransientStateCount < 0) {
         mTransientStateCount = 0;
@@ -1142,12 +1197,185 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
 
     final Rect rect = new Rect();
-    if (!getLocalVisibleRect(rect)) {
+    if (!getCorrectedLocalVisibleRect(rect)) {
       // View is not visible at all, nothing to do.
       return;
     }
 
     notifyVisibleBoundsChanged(rect, true);
+  }
+
+  private void setupViewTreeObserverListenersIfNeeded() {
+    final boolean shouldRegisterViewTreeObserverListeners =
+        shouldViewTreeObserverListenersBeRegistered();
+
+    boolean valueChanged = false;
+    if (shouldRegisterViewTreeObserverListeners && !mAreViewTreeObserverListenersRegistered) {
+      getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+      getViewTreeObserver().addOnScrollChangedListener(mOnGlobalScrollChangedListener);
+      mAreViewTreeObserverListenersRegistered = true;
+      valueChanged = true;
+    } else if (!shouldRegisterViewTreeObserverListeners
+        && mAreViewTreeObserverListenersRegistered) {
+      getViewTreeObserver().removeOnGlobalLayoutListener(mOnGlobalLayoutListener);
+      getViewTreeObserver().removeOnScrollChangedListener(mOnGlobalScrollChangedListener);
+      mAreViewTreeObserverListenersRegistered = false;
+      valueChanged = true;
+    }
+
+    if (valueChanged && mLithoHostListenerCoordinator != null) {
+      mLithoHostListenerCoordinator.setSkipNotifyVisibleBoundsChanged(
+          mAreViewTreeObserverListenersRegistered);
+    }
+  }
+
+  /**
+   * Populates the provided rect with the visible bounds of this LithoView, ignoring translation,
+   * scale and rotation.
+   *
+   * @return true when any portion of the visible rect is visible. False (and empty rect) otherwise.
+   */
+  boolean getCorrectedLocalVisibleRect(final Rect outRect) {
+    if (!mIsLithoViewSelfManagingViewPortChanges) {
+      return getLocalVisibleRect(outRect);
+    }
+
+    // Avoid recalculating the visible rect if its already been calculated in this same frame
+    if (mCanUseCachedCorrectedVisibleRect) {
+      outRect.set(mCachedCorrectedVisibleRect);
+      return !mCachedCorrectedVisibleRect.isEmpty();
+    }
+
+    int offsetX = 0;
+    int offsetY = 0;
+    outRect.set(0, 0, getWidth(), getHeight());
+
+    if (outRect.width() == 0 || outRect.height() == 0) {
+      outRect.setEmpty();
+      prepareCachedCorrectedRect(outRect);
+      return false;
+    }
+
+    ViewGroup currentView = this;
+    ViewParent parent = getParent();
+
+    while (parent instanceof ViewGroup) {
+      final ViewGroup parentView = (ViewGroup) parent;
+
+      final int dx = currentView.getLeft() - parentView.getScrollX();
+      final int dy = currentView.getTop() - parentView.getScrollY();
+
+      outRect.offset(dx, dy);
+
+      offsetX += dx;
+      offsetY += dy;
+
+      final boolean isClippingChildren = Build.VERSION.SDK_INT < 18 || parentView.getClipChildren();
+
+      if (isClippingChildren) {
+        mProcessingVisibleAreaRect.set(0, 0, parentView.getWidth(), parentView.getHeight());
+
+        if (!outRect.intersect(mProcessingVisibleAreaRect)
+            || outRect.width() == 0
+            || outRect.height() == 0) {
+          outRect.setEmpty();
+          prepareCachedCorrectedRect(outRect);
+          return false;
+        }
+      }
+
+      final boolean isClippingToPadding =
+          Build.VERSION.SDK_INT < 21 || parentView.getClipToPadding();
+
+      if (isClippingToPadding) {
+        mProcessingVisibleAreaRect.set(
+            parentView.getPaddingLeft(),
+            parentView.getPaddingTop(),
+            parentView.getWidth() - parentView.getPaddingRight(),
+            parentView.getHeight() - parentView.getPaddingBottom());
+
+        if (!outRect.intersect(mProcessingVisibleAreaRect)
+            || outRect.width() == 0
+            || outRect.height() == 0) {
+          outRect.setEmpty();
+          prepareCachedCorrectedRect(outRect);
+          return false;
+        }
+      }
+
+      parent = parentView.getParent();
+      currentView = parentView;
+    }
+
+    outRect.offset(-offsetX, -offsetY);
+    prepareCachedCorrectedRect(outRect);
+
+    return true;
+  }
+
+  /**
+   * Caches the given rect to be reused in the same frame, and schedules to invalidate this rect on
+   * the next frame.
+   */
+  private void prepareCachedCorrectedRect(final Rect rect) {
+    mCachedCorrectedVisibleRect.set(rect);
+    mCanUseCachedCorrectedVisibleRect = true;
+    post(mInvalidateCachedCorrectedRectRunnable);
+  }
+
+  private boolean shouldViewTreeObserverListenersBeRegistered() {
+    return mIsLithoViewSelfManagingViewPortChanges
+        && mIsAttached
+        && mComponentTree != null
+        && mComponentTree.isIncrementalMountEnabled();
+  }
+
+  private void maybeRefreshAfterViewPortChange() {
+    if (!shouldViewTreeObserverListenersBeRegistered()) {
+      return;
+    }
+
+    // About to use a cached corrected rect after view-port change.
+    // Indicate that once the cached rect is invalidated, we should check one more time.
+    if (mCanUseCachedCorrectedVisibleRect && !mRectRequestedWhileCached) {
+      mRectRequestedWhileCached = true;
+    }
+
+    if (isScrollPositionChanged()) {
+      notifyVisibleBoundsChangedInternal();
+    }
+  }
+
+  private boolean isScrollPositionChanged() {
+    getCorrectedLocalVisibleRect(mScrollPositionChangedRect);
+
+    // Check if visible size changed, meaning the LV is moving thru an edge.
+    final boolean sizeChanged =
+        mScrollPositionChangedRect.width() != mLastScrollPositionChangedRect.width()
+            || mScrollPositionChangedRect.height() != mLastScrollPositionChangedRect.height();
+
+    // If no size changed, check for horizontally scrolling LV.
+    // In this case, the LV's width will be greater than the visible width, so check
+    // if the left coordinate has changed.
+    final boolean xScrollChanged =
+        !sizeChanged
+            && getWidth() >= mScrollPositionChangedRect.width()
+            && mScrollPositionChangedRect.left != mLastScrollPositionChangedRect.left;
+
+    // If no size changed, check for vertically scrolling LV.
+    // In this case, the LV's height will be greater than the visible height, so check
+    // if the top coordinate has changed.
+    final boolean yScrollChanged =
+        !sizeChanged
+            && getHeight() >= mScrollPositionChangedRect.height()
+            && mScrollPositionChangedRect.top != mLastScrollPositionChangedRect.top;
+
+    if (sizeChanged || xScrollChanged || yScrollChanged) {
+      mLastScrollPositionChangedRect.set(mScrollPositionChangedRect);
+      return true;
+    }
+
+    return false;
   }
 
   public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
@@ -1164,6 +1392,14 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   public void notifyVisibleBoundsChanged() {
+    if (mAreViewTreeObserverListenersRegistered) {
+      return;
+    }
+
+    notifyVisibleBoundsChangedInternal();
+  }
+
+  private void notifyVisibleBoundsChangedInternal() {
     if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
     }
@@ -1375,7 +1611,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   // This only gets called if extensions are disabled.
   private void processVisibilityOutputs() {
     final Rect currentVisibleArea = new Rect();
-    final boolean visible = getLocalVisibleRect(currentVisibleArea);
+    final boolean visible = getCorrectedLocalVisibleRect(currentVisibleArea);
     if (!visible) {
       currentVisibleArea.setEmpty();
     }

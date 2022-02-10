@@ -87,7 +87,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
               }
             })
         .when(mLithoView)
-        .getLocalVisibleRect((Rect) any());
+        .getCorrectedLocalVisibleRect((Rect) any());
 
     mComponentTree.incrementalMountComponent();
     assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
@@ -103,7 +103,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
               }
             })
         .when(mLithoView)
-        .getLocalVisibleRect((Rect) any());
+        .getCorrectedLocalVisibleRect((Rect) any());
 
     ViewPager viewPager = mock(ViewPager.class);
     when(mLithoView.getParent()).thenReturn(viewPager);
@@ -127,7 +127,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
               }
             })
         .when(mLithoView)
-        .getLocalVisibleRect((Rect) any());
+        .getCorrectedLocalVisibleRect((Rect) any());
 
     listenerArgumentCaptor.getValue().onPageScrolled(10, 10, 10);
     assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));

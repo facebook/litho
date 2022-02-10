@@ -392,7 +392,9 @@ class MountState implements MountDelegateTarget {
             }
           }
 
-          if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
+          if (isIncrementalMountEnabled
+              && component.hasChildLithoViews()
+              && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
             mountItemIncrementally(currentMountItem, processVisibilityOutputs);
           }
         }
@@ -2801,13 +2803,15 @@ class MountState implements MountDelegateTarget {
       }
     }
 
-    for (int i = 0, size = mCanMountIncrementallyMountItems.size(); i < size; i++) {
-      final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
-      final long layoutOutputId = mCanMountIncrementallyMountItems.keyAt(i);
-      if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
-        final int layoutOutputPosition = layoutState.getPositionForId(layoutOutputId);
-        if (layoutOutputPosition != -1) {
-          mountItemIncrementally(mountItem, processVisibilityOutputs);
+    if (!mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
+      for (int i = 0, size = mCanMountIncrementallyMountItems.size(); i < size; i++) {
+        final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
+        final long layoutOutputId = mCanMountIncrementallyMountItems.keyAt(i);
+        if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
+          final int layoutOutputPosition = layoutState.getPositionForId(layoutOutputId);
+          if (layoutOutputPosition != -1) {
+            mountItemIncrementally(mountItem, processVisibilityOutputs);
+          }
         }
       }
     }

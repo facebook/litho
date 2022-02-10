@@ -107,7 +107,10 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   public void showStickyHeader() {
     mStickyHeader.setVisibility(View.VISIBLE);
-    mStickyHeader.notifyVisibleBoundsChanged();
+
+    if (!mStickyHeader.skipNotifyVisibleBoundsChangedCalls()) {
+      mStickyHeader.notifyVisibleBoundsChanged();
+    }
   }
 
   public void hideStickyHeader() {

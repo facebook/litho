@@ -169,6 +169,12 @@ public class ComponentsConfiguration {
   /** Keeps the layout result tree in the LayoutState. This will increase memory use. */
   public static boolean keepLayoutResults = true;
 
+  /**
+   * Used by LithoViews to determine whether or not to self-manage the view-port changes, rather
+   * than rely on calls to notifyVisibleBoundsChanged.
+   */
+  public static boolean lithoViewSelfManageViewPortChanges = false;
+
   public static boolean emitMessageForZeroSizedTexture = false;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
