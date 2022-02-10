@@ -19,6 +19,8 @@ package com.facebook.litho;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestViewComponent.create;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -105,14 +107,11 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     useVisibilityOutputsExtension(mLegacyLithoViewRule.getLithoView(), visibilityExtension);
 
-    final ExtensionState state =
-        mLithoView.getMountDelegateTarget().getExtensionState(visibilityExtension);
-
     final Rect rect = new Rect(0, 0, RIGHT, 10);
 
     mLegacyLithoViewRule.getLithoView().mount(layoutState, new Rect(0, 0, RIGHT, 10), false);
 
-    verify(visibilityExtension).beforeMount(state, layoutState, rect);
+    verify(visibilityExtension).beforeMount(any(ExtensionState.class), eq(layoutState), eq(rect));
   }
 
   @Test
@@ -141,13 +140,10 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     useVisibilityOutputsExtension(mLegacyLithoViewRule.getLithoView(), visibilityExtension);
 
-    final ExtensionState state =
-        mLithoView.getMountDelegateTarget().getExtensionState(visibilityExtension);
-
     mLegacyLithoViewRule.getLithoView().unmountAllItems();
 
-    verify(visibilityExtension).onUnbind(state);
-    verify(visibilityExtension).onUnmount(state);
+    verify(visibilityExtension).onUnbind(any(ExtensionState.class));
+    verify(visibilityExtension).onUnmount(any(ExtensionState.class));
   }
 
   private void useVisibilityOutputsExtension(

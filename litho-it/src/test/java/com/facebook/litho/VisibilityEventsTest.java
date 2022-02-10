@@ -41,9 +41,7 @@ import com.facebook.litho.widget.HorizontalScroll;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
 import com.facebook.litho.widget.TextDrawable;
-import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
-import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
@@ -2066,16 +2064,11 @@ public class VisibilityEventsTest {
 
     LithoHostListenerCoordinator lithoHostListenerCoordinator =
         Whitebox.getInternalState(mLithoView, "mLithoHostListenerCoordinator");
-    List<MountExtension> extensions =
-        Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
-    MountDelegateTarget mountDelegateTarget = mLithoView.getMountDelegateTarget();
-    for (int i = 0, size = extensions.size(); i < size; i++) {
-      if (extensions.get(i) instanceof VisibilityMountExtension) {
-        VisibilityMountExtension visibilityOutputsExtension =
-            (VisibilityMountExtension) extensions.get(i);
-        ExtensionState state = mountDelegateTarget.getExtensionState(visibilityOutputsExtension);
-        return visibilityOutputsExtension.getVisibilityIdToItemMap(state);
-      }
+    ExtensionState<VisibilityMountExtension.VisibilityMountExtensionState> extensionState =
+        Whitebox.getInternalState(lithoHostListenerCoordinator, "mVisibilityExtensionState");
+
+    if (extensionState != null) {
+      return VisibilityMountExtension.getVisibilityIdToItemMap(extensionState);
     }
 
     return null;

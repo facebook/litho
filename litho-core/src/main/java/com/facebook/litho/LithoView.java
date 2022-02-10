@@ -35,13 +35,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.stats.LithoStats;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
-import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.lang.ref.WeakReference;
@@ -1053,12 +1053,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void clearVisibilityItems() {
     if (mDelegateToRenderCore && mLithoHostListenerCoordinator != null) {
-      final VisibilityMountExtension visibilityOutputsExtension =
-          mLithoHostListenerCoordinator.getVisibilityExtension();
-      if (visibilityOutputsExtension != null) {
-        VisibilityMountExtension.clearVisibilityItems(
-            mMountDelegateTarget.getExtensionState(visibilityOutputsExtension));
-      }
+      mLithoHostListenerCoordinator.clearVisibilityItems();
     } else {
       mMountState.clearVisibilityItems();
     }
@@ -1529,7 +1524,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       final RenderTree renderTree = layoutState.toRenderTree();
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountDelegateTarget.mount(renderTree);
-      mLithoHostListenerCoordinator.afterMount();
+      LithoStats.incrementComponentMountCount();
     } else {
       ((MountState) mMountDelegateTarget).mount(layoutState);
     }

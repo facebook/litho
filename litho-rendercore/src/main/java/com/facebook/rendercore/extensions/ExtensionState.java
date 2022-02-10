@@ -25,11 +25,16 @@ import java.util.Set;
 
 public class ExtensionState<State> {
 
+  private final MountExtension<?, State> mExtension;
   private final MountDelegate mMountDelegate;
   private final State mState;
   private final Set<Long> mLayoutOutputMountRefs = new HashSet<>();
 
-  ExtensionState(final MountDelegate mountDelegate, final State state) {
+  ExtensionState(
+      final MountExtension<?, State> extension,
+      final MountDelegate mountDelegate,
+      final State state) {
+    mExtension = extension;
     mMountDelegate = mountDelegate;
     mState = state;
   }
@@ -41,6 +46,10 @@ public class ExtensionState<State> {
     } else {
       return null;
     }
+  }
+
+  public MountExtension<?, State> getExtension() {
+    return mExtension;
   }
 
   public MountDelegate getMountDelegate() {

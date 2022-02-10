@@ -133,8 +133,7 @@ public class LazyMeasureHostView extends HostView implements RenderCoreExtension
   @Override
   public void notifyVisibleBoundsChanged() {
     final RenderTree tree = mMountState.getRenderTree();
-    RenderCoreExtension.notifyVisibleBoundsChanged(
-        mMountState, this, tree != null ? tree.getExtensionResults() : null);
+    RenderCoreExtension.notifyVisibleBoundsChanged(mMountState, this);
   }
 
   @Override

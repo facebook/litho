@@ -183,10 +183,12 @@ class MountState implements MountDelegateTarget {
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
 
+    mMountDelegate = new MountDelegate(this);
+
     if (ComponentsConfiguration.enableVisibilityExtension) {
       mVisibilityExtension = VisibilityMountExtension.getInstance();
-      mVisibilityExtensionState =
-          mVisibilityExtension.createExtensionState(new MountDelegate(this));
+      mVisibilityExtensionState = mMountDelegate.registerMountExtension(mVisibilityExtension);
+
       VisibilityMountExtension.setRootHost(mVisibilityExtensionState, mLithoView);
     } else {
       mVisibilityExtension = null;
@@ -197,29 +199,24 @@ class MountState implements MountDelegateTarget {
     if (ComponentsConfiguration.enableTransitionsExtension) {
       mTransitionsExtension =
           TransitionsExtension.getInstance((AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
-      registerMountDelegateExtension(mTransitionsExtension);
-      mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
+      mTransitionsExtensionState = mMountDelegate.registerMountExtension(mTransitionsExtension);
     } else {
       mTransitionsExtension = null;
       mTransitionsExtensionState = null;
     }
   }
 
+  @Deprecated
   @Override
-  public void registerMountDelegateExtension(MountExtension mountExtension) {
-    if (mMountDelegate == null) {
-      mMountDelegate = new MountDelegate(this);
-    }
-    mMountDelegate.addExtension(mountExtension);
+  public ExtensionState registerMountExtension(MountExtension mountExtensions) {
+    throw new UnsupportedOperationException("Must not be invoked when use this Litho's MountState");
   }
 
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
   @Override
-  public void unregisterMountDelegateExtension(MountExtension mountExtension) {
-    if (mMountDelegate == null) {
-      return;
-    }
-
-    mMountDelegate.removeExtension(mountExtension);
+  public void unregisterAllExtensions() {
+    throw new UnsupportedOperationException("Must not be invoked when use this Litho's MountState");
   }
 
   /**
@@ -795,15 +792,6 @@ class MountState implements MountDelegateTarget {
   @Override
   public void removeUnmountDelegateExtension() {
     mUnmountDelegateExtension = null;
-  }
-
-  @Override
-  public @Nullable ExtensionState getExtensionState(MountExtension mountExtension) {
-    if (mountExtension == mVisibilityExtension) {
-      return mVisibilityExtensionState;
-    }
-
-    return mMountDelegate.getExtensionState(mountExtension);
   }
 
   @Nullable

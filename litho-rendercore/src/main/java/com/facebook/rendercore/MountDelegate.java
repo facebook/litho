@@ -16,17 +16,18 @@
 
 package com.facebook.rendercore;
 
+import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Pair;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,16 +37,15 @@ import java.util.Set;
 public class MountDelegate {
 
   private final LongSparseArray<Integer> mReferenceCountMap = new LongSparseArray<>();
-  private final List<MountExtension> mMountExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
-  private final Map<MountExtension, ExtensionState> mExtensionStates = new HashMap<>();
+  private final List<ExtensionState> mExtensionStates = new ArrayList<>();
   private @Nullable ExtensionState mUnmountDelegateExtensionState;
   private boolean mReferenceCountingEnabled = false;
   private boolean mCollectVisibleBoundsChangedCalls = false;
   private boolean mSkipNotifyVisibleBoundsChanged = false;
   private int mNotifyVisibleBoundsChangedNestCount = 0;
   private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
-  private final List<MountExtension> mExtensionsToUpdate = new ArrayList<>();
+
   private final List<ExtensionState> mExtensionStatesToUpdate = new ArrayList<>();
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
@@ -60,36 +60,127 @@ public class MountDelegate {
     mSkipNotifyVisibleBoundsChanged = value;
   }
 
-  public void addExtension(MountExtension mountExtension) {
-    final ExtensionState extensionState = mountExtension.createExtensionState(this);
+  public void registerExtensions(
+      @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {
+    mExtensionStates.clear();
+    if (extensions != null) {
+      for (Pair<RenderCoreExtension<?, ?>, Object> e : extensions) {
+        final MountExtension<?, ?> extension = e.first.getMountExtension();
+        if (extension != null) {
+          final ExtensionState<?> extensionState = extension.createExtensionState(this);
 
-    if (mountExtension instanceof UnmountDelegateExtension) {
-      mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) mountExtension);
+          if (extension instanceof UnmountDelegateExtension) {
+            mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) extension);
+            mUnmountDelegateExtensionState = extensionState;
+          }
+
+          mReferenceCountingEnabled = mReferenceCountingEnabled || extension.canPreventMount();
+
+          mExtensionStates.add(extensionState);
+        }
+      }
+    }
+  }
+
+  /**
+   * @param extension
+   * @deprecated Only used for Litho's integration. Marked for removal.
+   */
+  @Deprecated
+  public ExtensionState registerMountExtension(MountExtension extension) {
+    final ExtensionState extensionState = extension.createExtensionState(this);
+    if (extension instanceof UnmountDelegateExtension) {
+      mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) extension);
       mUnmountDelegateExtensionState = extensionState;
     }
 
-    mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
+    mReferenceCountingEnabled = mReferenceCountingEnabled || extension.canPreventMount();
 
-    mExtensionStates.put(mountExtension, extensionState);
-    mMountExtensions.add(mountExtension);
+    mExtensionStates.add(extensionState);
+
+    return extensionState;
   }
 
-  public void removeExtension(MountExtension mountExtension) {
-    mMountExtensions.remove(mountExtension);
-    mExtensionStates.remove(mountExtension);
+  /**
+   * @param toRemove {@link MountExtension} to remove.
+   * @deprecated Only used for Litho's integration. Marked for removal.
+   */
+  @Deprecated
+  public void unregisterMountExtension(MountExtension toRemove) {
+    MountExtension mountExtension = null;
+    Iterator<ExtensionState> iter = mExtensionStates.iterator();
+    while (iter.hasNext()) {
+      final MountExtension extension = iter.next().getExtension();
+      if (extension == toRemove) {
+        mountExtension = extension;
+        iter.remove();
+        break;
+      }
+    }
 
     if (mountExtension instanceof UnmountDelegateExtension) {
       mMountDelegateTarget.removeUnmountDelegateExtension();
       mUnmountDelegateExtensionState = null;
     }
 
-    updateRefCountEnabled();
+    if (mountExtension == null) {
+      throw new IllegalStateException("Could not find the extension " + toRemove);
+    }
+
+    if (mountExtension.canPreventMount()) {
+      updateRefCountEnabled();
+    }
   }
 
-  void unregisterAllExtensions() {
-    mMountExtensions.clear();
+  public void unregisterAllExtensions() {
+    mMountDelegateTarget.removeUnmountDelegateExtension();
+    mUnmountDelegateExtensionState = null;
     mExtensionStates.clear();
     mReferenceCountingEnabled = false;
+  }
+
+  /**
+   * Calls {@link MountExtension#beforeMount(ExtensionState, Object, Rect)} for each {@link
+   * RenderCoreExtension} that has a mount phase.
+   *
+   * @param results A map of {@link RenderCoreExtension} to their results from the layout phase.
+   */
+  public void beforeMount(
+      final List<Pair<RenderCoreExtension<?, ?>, Object>> results, final Rect rect) {
+    int i = 0; // Use an int to get the index of the extensions state.
+    for (Pair<RenderCoreExtension<?, ?>, Object> entry : results) {
+      final Object input = entry.second;
+      final MountExtension extension = entry.first.getMountExtension();
+      if (extension != null) {
+        final ExtensionState current = mExtensionStates.get(i);
+        if (current.getExtension() != extension) {
+          throw new IllegalStateException(
+              String.format(
+                  "state for %s was not found at expected index %d. Found %s at index instead.",
+                  entry.first, i, current.getExtension()));
+        }
+        extension.beforeMount(current, input, rect);
+        i++;
+      }
+    }
+  }
+
+  public void afterMount() {
+    startNotifyVisibleBoundsChangedSection();
+
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extensionState = mExtensionStates.get(i);
+      extensionState.getExtension().afterMount(extensionState);
+    }
+
+    endNotifyVisibleBoundsChangedSection();
+  }
+
+  public void notifyVisibleBoundsChanged(Rect rect) {
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onVisibleBoundsChanged(extension, rect);
+    }
   }
 
   public void notifyVisibleBoundsChangedForItem(Object item) {
@@ -131,18 +222,20 @@ public class MountDelegate {
 
   private void updateRefCountEnabled() {
     mReferenceCountingEnabled = false;
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mReferenceCountingEnabled =
-          mReferenceCountingEnabled || mMountExtensions.get(i).canPreventMount();
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      mReferenceCountingEnabled = mExtensionStates.get(i).getExtension().canPreventMount();
+      if (mReferenceCountingEnabled) {
+        return;
+      }
     }
   }
 
   void unBind() {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension mountExtension = mMountExtensions.get(i);
-      mountExtension.onUnbind(getExtensionState(mountExtension));
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onUnbind(extension);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -151,9 +244,9 @@ public class MountDelegate {
   void unMount() {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension mountExtension = mMountExtensions.get(i);
-      mountExtension.onUnmount(getExtensionState(mountExtension));
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onUnmount(extension);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -162,9 +255,9 @@ public class MountDelegate {
   void onBindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension extension = mMountExtensions.get(i);
-      extension.onBindItem(getExtensionState(extension), renderUnit, content, layoutData);
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onBindItem(extension, renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -173,9 +266,9 @@ public class MountDelegate {
   void onUnbindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension extension = mMountExtensions.get(i);
-      extension.onUnbindItem(getExtensionState(extension), renderUnit, content, layoutData);
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onUnbindItem(extension, renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -189,50 +282,49 @@ public class MountDelegate {
       final Object content) {
     startNotifyVisibleBoundsChangedSection();
 
-    mExtensionsToUpdate.clear();
     mExtensionStatesToUpdate.clear();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension extension = mMountExtensions.get(i);
-      if (extension.shouldUpdateItem(
-          previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
-        mExtensionsToUpdate.add(extension);
-        mExtensionStatesToUpdate.add(getExtensionState(extension));
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      if (extension
+          .getExtension()
+          .shouldUpdateItem(
+              previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
+        mExtensionStatesToUpdate.add(extension);
       }
     }
 
-    if (!mExtensionsToUpdate.isEmpty()) {
-      final int size = mExtensionsToUpdate.size();
+    if (!mExtensionStatesToUpdate.isEmpty()) {
+      final int size = mExtensionStatesToUpdate.size();
 
       // Unbind
       for (int i = 0; i < size; i++) {
-        final MountExtension extension = mExtensionsToUpdate.get(i);
-        final ExtensionState state = mExtensionStatesToUpdate.get(i);
-        extension.onUnbindItem(state, previousRenderUnit, content, previousLayoutData);
+        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
+        extension
+            .getExtension()
+            .onUnbindItem(extension, previousRenderUnit, content, previousLayoutData);
       }
 
       // Unmount
       for (int i = 0; i < size; i++) {
-        final MountExtension extension = mExtensionsToUpdate.get(i);
-        final ExtensionState state = mExtensionStatesToUpdate.get(i);
-        extension.onUnmountItem(state, previousRenderUnit, content, previousLayoutData);
+        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
+        extension
+            .getExtension()
+            .onUnmountItem(extension, previousRenderUnit, content, previousLayoutData);
       }
 
       // Mount
       for (int i = 0; i < size; i++) {
-        final MountExtension extension = mExtensionsToUpdate.get(i);
-        final ExtensionState state = mExtensionStatesToUpdate.get(i);
-        extension.onMountItem(state, nextRenderUnit, content, nextLayoutData);
+        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
+        extension.getExtension().onMountItem(extension, nextRenderUnit, content, nextLayoutData);
       }
 
       // Bind
       for (int i = 0; i < size; i++) {
-        final MountExtension extension = mExtensionsToUpdate.get(i);
-        final ExtensionState state = mExtensionStatesToUpdate.get(i);
-        extension.onBindItem(state, nextRenderUnit, content, nextLayoutData);
+        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
+        extension.getExtension().onBindItem(extension, nextRenderUnit, content, nextLayoutData);
       }
 
-      mExtensionsToUpdate.clear();
       mExtensionStatesToUpdate.clear();
     }
 
@@ -243,9 +335,9 @@ public class MountDelegate {
       final RenderUnit renderUnit, final Object content, final Object layoutData) {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension extension = mMountExtensions.get(i);
-      extension.onMountItem(getExtensionState(extension), renderUnit, content, layoutData);
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onMountItem(extension, renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -255,9 +347,9 @@ public class MountDelegate {
       final RenderUnit renderUnit, final Object content, final @Nullable Object layoutData) {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension extension = mMountExtensions.get(i);
-      extension.onUnmountItem(getExtensionState(extension), renderUnit, content, layoutData);
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().onUnmountItem(extension, renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -266,17 +358,14 @@ public class MountDelegate {
   public void onBoundsAppliedToItem(RenderTreeNode node, Object content) {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension extension = mMountExtensions.get(i);
-      extension.onBoundsAppliedToItem(
-          getExtensionState(extension), node.getRenderUnit(), content, node.getLayoutData());
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension
+          .getExtension()
+          .onBoundsAppliedToItem(extension, node.getRenderUnit(), content, node.getLayoutData());
     }
 
     endNotifyVisibleBoundsChangedSection();
-  }
-
-  public ExtensionState getExtensionState(MountExtension mountExtension) {
-    return mExtensionStates.get(mountExtension);
   }
 
   @Nullable
@@ -304,9 +393,9 @@ public class MountDelegate {
 
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension mountExtension = mMountExtensions.get(i);
-      mountExtension.beforeMountItem(getExtensionState(mountExtension), renderTreeNode, index);
+    for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
+      final ExtensionState extension = mExtensionStates.get(i);
+      extension.getExtension().beforeMountItem(extension, renderTreeNode, index);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -380,9 +469,8 @@ public class MountDelegate {
       return;
     }
 
-    for (MountExtension<?, ?> extension : mMountExtensions) {
-      final ExtensionState state = getExtensionState(extension);
-      state.releaseAllAcquiredReferences();
+    for (ExtensionState extension : mExtensionStates) {
+      extension.releaseAllAcquiredReferences();
     }
 
     mReferenceCountMap.clear();
@@ -424,5 +512,10 @@ public class MountDelegate {
   @VisibleForTesting
   public int getRefCount(long id) {
     return mReferenceCountMap.get(id);
+  }
+
+  @VisibleForTesting
+  List<ExtensionState> getExtensionStates() {
+    return mExtensionStates;
   }
 }

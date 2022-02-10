@@ -20,22 +20,22 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.DynamicPropsExtension.DynamicPropsExtensionState;
+import com.facebook.litho.TransitionsExtension.TransitionsExtensionState;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.extensions.ExtensionState;
-import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
-import java.util.ArrayList;
-import java.util.List;
+import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState;
 
 /** Helper for dispatching events to multiple MountListenerExtensions in Litho. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoHostListenerCoordinator {
 
-  private final List<MountExtension> mMountExtensions;
   private final MountDelegateTarget mMountDelegateTarget;
   @Nullable private IncrementalMountExtension mIncrementalMountExtension;
   @Nullable private VisibilityMountExtension mVisibilityExtension;
@@ -45,8 +45,13 @@ public class LithoHostListenerCoordinator {
   @Nullable private LithoViewAttributesExtension mViewAttributesExtension;
   @Nullable private NestedLithoViewsExtension mNestedLithoViewsExtension;
 
+  private @Nullable ExtensionState<DynamicPropsExtensionState> mDynamicPropsExtensionState;
+  private @Nullable ExtensionState<VisibilityMountExtensionState> mVisibilityExtensionState;
+  private @Nullable ExtensionState<TransitionsExtensionState> mTransitionsExtensionState;
+  private @Nullable ExtensionState<IncrementalMountExtensionState> mIncrementalMountExtensionState;
+  private @Nullable ExtensionState<Void> mEndToEndTestingExtensionState;
+
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
-    mMountExtensions = new ArrayList<>();
     mMountDelegateTarget = mountDelegateTarget;
   }
 
@@ -82,48 +87,38 @@ public class LithoHostListenerCoordinator {
     }
   }
 
-  // TODO figure out how to better enforce the input type here.
-  public void beforeMount(Object input, Rect localVisibleRect) {
+  public void beforeMount(LayoutState input, Rect localVisibleRect) {
     startNotifyVisibleBoundsChangedSection();
 
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      MountExtension hostListenerExtension = mMountExtensions.get(i);
-      ExtensionState state = mMountDelegateTarget.getExtensionState(hostListenerExtension);
-      if (state != null) {
-        hostListenerExtension.beforeMount(state, input, localVisibleRect);
-      }
+    if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
+      mTransitionsExtension.beforeMount(mTransitionsExtensionState, input, localVisibleRect);
+    }
+
+    if (mEndToEndTestingExtension != null && mEndToEndTestingExtensionState != null) {
+      mEndToEndTestingExtension.beforeMount(
+          mEndToEndTestingExtensionState, input, localVisibleRect);
+    }
+
+    if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
+      mVisibilityExtension.beforeMount(mVisibilityExtensionState, input, localVisibleRect);
+    }
+
+    if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
+      mIncrementalMountExtension.beforeMount(
+          mIncrementalMountExtensionState, input, localVisibleRect);
     }
 
     endNotifyVisibleBoundsChangedSection();
-  }
-
-  public void afterMount() {
-    startNotifyVisibleBoundsChangedSection();
-
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension mountExtension = mMountExtensions.get(i);
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
-      if (state != null) {
-        mountExtension.afterMount(state);
-      }
-    }
-
-    endNotifyVisibleBoundsChangedSection();
-
-    LithoStats.incrementComponentMountCount();
   }
 
   public void processVisibilityOutputs(Rect localVisibleRect, boolean isDirty) {
     startNotifyVisibleBoundsChangedSection();
 
-    if (mVisibilityExtension != null) {
-      final ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
-      if (state != null) {
-        if (isDirty) {
-          mVisibilityExtension.afterMount(state);
-        } else {
-          mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
-        }
+    if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
+      if (isDirty) {
+        mVisibilityExtension.afterMount(mVisibilityExtensionState);
+      } else {
+        mVisibilityExtension.onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);
       }
     }
 
@@ -140,26 +135,18 @@ public class LithoHostListenerCoordinator {
       startNotifyVisibleBoundsChangedSection();
 
       // We first mount and then we process visibility outputs.
-      if (mIncrementalMountExtension != null) {
-        ExtensionState state = mMountDelegateTarget.getExtensionState(mIncrementalMountExtension);
-        if (state != null) {
-          mIncrementalMountExtension.onVisibleBoundsChanged(state, localVisibleRect);
-          LithoStats.incrementComponentMountCount();
-        }
+      if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
+        mIncrementalMountExtension.onVisibleBoundsChanged(
+            mIncrementalMountExtensionState, localVisibleRect);
+        LithoStats.incrementComponentMountCount();
       }
 
-      if (mTransitionsExtension != null) {
-        ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
-        if (state != null) {
-          mTransitionsExtension.onVisibleBoundsChanged(state, localVisibleRect);
-        }
+      if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
+        mTransitionsExtension.onVisibleBoundsChanged(mTransitionsExtensionState, localVisibleRect);
       }
 
-      if (mVisibilityExtension != null) {
-        ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
-        if (state != null) {
-          mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
-        }
+      if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
+        mVisibilityExtension.onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);
       }
 
       endNotifyVisibleBoundsChangedSection();
@@ -170,34 +157,6 @@ public class LithoHostListenerCoordinator {
     }
   }
 
-  public void onUnmount() {
-    startNotifyVisibleBoundsChangedSection();
-
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension mountExtension = mMountExtensions.get(i);
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
-      if (state != null) {
-        mountExtension.onUnmount(state);
-      }
-    }
-
-    endNotifyVisibleBoundsChangedSection();
-  }
-
-  public void onUnbind() {
-    startNotifyVisibleBoundsChangedSection();
-
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      final MountExtension mountExtension = mMountExtensions.get(i);
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
-      if (state != null) {
-        mountExtension.onUnbind(state);
-      }
-    }
-
-    endNotifyVisibleBoundsChangedSection();
-  }
-
   void enableIncrementalMount() {
     if (mIncrementalMountExtension != null) {
       return;
@@ -205,17 +164,22 @@ public class LithoHostListenerCoordinator {
 
     mIncrementalMountExtension = IncrementalMountExtension.getInstance();
 
-    mMountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
-    registerListener(mIncrementalMountExtension);
+    mIncrementalMountExtensionState =
+        mMountDelegateTarget.registerMountExtension(mIncrementalMountExtension);
   }
 
   void disableIncrementalMount() {
     if (mIncrementalMountExtension == null) {
       return;
     }
-    mMountDelegateTarget.unregisterMountDelegateExtension(mIncrementalMountExtension);
-    removeListener(mIncrementalMountExtension);
+
+    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
+    if (mountDelegate != null) {
+      mountDelegate.unregisterMountExtension(mIncrementalMountExtension);
+    }
+
     mIncrementalMountExtension = null;
+    mIncrementalMountExtensionState = null;
   }
 
   void enableVisibilityProcessing(LithoView lithoView) {
@@ -224,12 +188,10 @@ public class LithoHostListenerCoordinator {
     }
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
-    mMountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
-    ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
-    if (state != null) {
-      VisibilityMountExtension.setRootHost(state, lithoView);
+    mVisibilityExtensionState = mMountDelegateTarget.registerMountExtension(mVisibilityExtension);
+    if (mVisibilityExtensionState != null) {
+      VisibilityMountExtension.setRootHost(mVisibilityExtensionState, lithoView);
     }
-    registerListener(mVisibilityExtension);
   }
 
   void disableVisibilityProcessing() {
@@ -237,9 +199,13 @@ public class LithoHostListenerCoordinator {
       return;
     }
 
-    mMountDelegateTarget.unregisterMountDelegateExtension(mVisibilityExtension);
-    removeListener(mVisibilityExtension);
+    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
+    if (mountDelegate != null) {
+      mountDelegate.unregisterMountExtension(mVisibilityExtension);
+    }
+
     mVisibilityExtension = null;
+    mVisibilityExtensionState = null;
   }
 
   void enableEndToEndTestProcessing() {
@@ -249,8 +215,8 @@ public class LithoHostListenerCoordinator {
     }
 
     mEndToEndTestingExtension = new EndToEndTestingExtension(mMountDelegateTarget);
-    mMountDelegateTarget.registerMountDelegateExtension(mEndToEndTestingExtension);
-    registerListener(mEndToEndTestingExtension);
+    mEndToEndTestingExtensionState =
+        mMountDelegateTarget.registerMountExtension(mEndToEndTestingExtension);
   }
 
   void enableViewAttributes() {
@@ -260,8 +226,7 @@ public class LithoHostListenerCoordinator {
     }
 
     mViewAttributesExtension = LithoViewAttributesExtension.getInstance();
-    mMountDelegateTarget.registerMountDelegateExtension(mViewAttributesExtension);
-    registerListener(mViewAttributesExtension);
+    mMountDelegateTarget.registerMountExtension(mViewAttributesExtension);
   }
 
   void enableNestedLithoViewsExtension() {
@@ -271,8 +236,7 @@ public class LithoHostListenerCoordinator {
     }
 
     mNestedLithoViewsExtension = new NestedLithoViewsExtension();
-    mMountDelegateTarget.registerMountDelegateExtension(mNestedLithoViewsExtension);
-    registerListener(mNestedLithoViewsExtension);
+    mMountDelegateTarget.registerMountExtension(mNestedLithoViewsExtension);
   }
 
   @Nullable
@@ -281,11 +245,8 @@ public class LithoHostListenerCoordinator {
   }
 
   void clearLastMountedTreeId() {
-    if (mTransitionsExtension != null) {
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
-      if (state != null) {
-        mTransitionsExtension.clearLastMountedTreeId(state);
-      }
+    if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
+      mTransitionsExtension.clearLastMountedTreeId(mTransitionsExtensionState);
     }
   }
 
@@ -302,9 +263,7 @@ public class LithoHostListenerCoordinator {
     mTransitionsExtension =
         TransitionsExtension.getInstance(
             true, (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
-    mMountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
-
-    registerListener(mTransitionsExtension);
+    mTransitionsExtensionState = mMountDelegateTarget.registerMountExtension(mTransitionsExtension);
   }
 
   void collectAllTransitions(LayoutState layoutState) {
@@ -314,27 +273,17 @@ public class LithoHostListenerCoordinator {
 
     startNotifyVisibleBoundsChangedSection();
 
-    ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
-    if (state != null) {
-      mTransitionsExtension.collectAllTransitions(state, layoutState);
+    if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
+      mTransitionsExtension.collectAllTransitions(mTransitionsExtensionState, layoutState);
     }
 
     endNotifyVisibleBoundsChangedSection();
   }
 
-  private void registerListener(MountExtension mountListenerExtension) {
-    mMountExtensions.add(mountListenerExtension);
-  }
-
-  private void removeListener(MountExtension mountExtension) {
-    mMountExtensions.remove(mountExtension);
-  }
-
   @VisibleForTesting
   void useVisibilityExtension(VisibilityMountExtension extension) {
     mVisibilityExtension = extension;
-    mMountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
-    registerListener(mVisibilityExtension);
+    mVisibilityExtensionState = mMountDelegateTarget.registerMountExtension(mVisibilityExtension);
   }
 
   public void enableDynamicProps() {
@@ -343,20 +292,23 @@ public class LithoHostListenerCoordinator {
     }
 
     mDynamicPropsExtension = DynamicPropsExtension.getInstance();
-    mMountDelegateTarget.registerMountDelegateExtension(mDynamicPropsExtension);
-    registerListener(mDynamicPropsExtension);
+    mDynamicPropsExtensionState =
+        mMountDelegateTarget.registerMountExtension(mDynamicPropsExtension);
   }
 
   @Nullable
   @VisibleForTesting
   public DynamicPropsManager getDynamicPropsManager() {
-    if (mDynamicPropsExtension == null) {
+    if (mDynamicPropsExtension == null || mDynamicPropsExtensionState == null) {
       return null;
     }
 
-    final ExtensionState<DynamicPropsExtension.DynamicPropsExtensionState> state =
-        mMountDelegateTarget.getExtensionState(mDynamicPropsExtension);
+    return mDynamicPropsExtensionState.getState().getDynamicPropsManager();
+  }
 
-    return state.getState().getDynamicPropsManager();
+  public void clearVisibilityItems() {
+    if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
+      VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
+    }
   }
 }

@@ -36,7 +36,7 @@ import com.facebook.rendercore.RenderUnit;
 public abstract class MountExtension<Input, State> {
 
   public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
-    return new ExtensionState<>(mountDelegate, createState());
+    return new ExtensionState<>(this, mountDelegate, createState());
   }
 
   protected abstract State createState();

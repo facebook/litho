@@ -35,13 +35,10 @@ import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
-import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
-import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -1666,17 +1663,11 @@ public class VisibilityEventsIncrementalMountDisabledTest {
 
     LithoHostListenerCoordinator lithoHostListenerCoordinator =
         Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
-    List<MountExtension> extensions =
-        Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
-    MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
-    for (int i = 0, size = extensions.size(); i < size; i++) {
-      if (extensions.get(i) instanceof VisibilityMountExtension) {
-        VisibilityMountExtension visibilityOutputsExtension =
-            (VisibilityMountExtension) extensions.get(i);
-        ExtensionState state = mountDelegateTarget.getExtensionState(visibilityOutputsExtension);
+    ExtensionState<VisibilityMountExtension.VisibilityMountExtensionState> extensionState =
+        Whitebox.getInternalState(lithoHostListenerCoordinator, "mVisibilityExtensionState");
 
-        return visibilityOutputsExtension.getVisibilityIdToItemMap(state);
-      }
+    if (extensionState != null) {
+      return VisibilityMountExtension.getVisibilityIdToItemMap(extensionState);
     }
 
     return null;

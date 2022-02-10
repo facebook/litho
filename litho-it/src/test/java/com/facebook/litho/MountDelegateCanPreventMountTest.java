@@ -53,14 +53,14 @@ public class MountDelegateCanPreventMountTest {
 
     // When no extensions prevent mounting, calls to isLockedForMount default to true
     MountExtension mountExtension = mock(MountExtension.class);
-    mountDelegate.addExtension(mountExtension);
+    mountDelegate.registerMountExtension(mountExtension);
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isTrue();
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isTrue();
 
     // When an extension can prevent mounting, calls to isLockedForMount default to false.
     MountExtension mountDelegateExtensionPreventMount = mock(MountExtension.class);
     when(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true);
-    mountDelegate.addExtension(mountDelegateExtensionPreventMount);
+    mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount);
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isFalse();
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isFalse();
 
@@ -86,7 +86,7 @@ public class MountDelegateCanPreventMountTest {
     MountDelegate mountDelegate = new MountDelegate(mountDelegateTarget);
     MountExtension mountDelegateExtensionPreventMount = mock(MountExtension.class);
     when(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true);
-    mountDelegate.addExtension(mountDelegateExtensionPreventMount);
+    mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount);
 
     mountDelegate.acquireMountRef(layoutOutput1);
     mountDelegate.releaseMountRef(layoutOutput1);

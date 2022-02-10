@@ -449,10 +449,8 @@ public class IncrementalMountExtensionTest {
     final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
-    mountState.registerMountDelegateExtension(extension);
-
     final ExtensionState<IncrementalMountExtensionState> extensionState =
-        mountState.getExtensionState(extension);
+        mountState.registerMountExtension(extension);
 
     final IncrementalMountOutput rootHost =
         new IncrementalMountOutput(0, 0, new Rect(0, 100, 100, 200), null);
@@ -511,10 +509,8 @@ public class IncrementalMountExtensionTest {
     final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
-    mountState.registerMountDelegateExtension(extension);
-
     final ExtensionState<IncrementalMountExtensionState> extensionState =
-        mountState.getExtensionState(extension);
+        mountState.registerMountExtension(extension);
 
     final IncrementalMountOutput rootHost =
         new IncrementalMountOutput(0, 0, new Rect(0, 100, 100, 200), null);

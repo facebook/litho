@@ -117,7 +117,7 @@ public class MountState implements MountDelegateTarget {
     mIsMounting = true;
 
     RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
-    RenderCoreExtension.beforeMount(this, mRootHost, mRenderTree.getExtensionResults());
+    RenderCoreExtension.beforeMount(mRootHost, mMountDelegate, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("MountState.prepareMount");
@@ -235,7 +235,7 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
-    RenderCoreExtension.afterMount(this, mRenderTree.getExtensionResults());
+    RenderCoreExtension.afterMount(mMountDelegate);
     RenderCoreSystrace.endSection();
   }
 
@@ -343,25 +343,17 @@ public class MountState implements MountDelegateTarget {
     return mountItem.getContent();
   }
 
-  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  /**
+   * @param mountExtension
+   * @deprecated Only used for Litho's integration. Marked for removal.
+   */
   @Deprecated
   @Override
-  public void registerMountDelegateExtension(MountExtension mountExtension) {
+  public ExtensionState registerMountExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this);
     }
-    mMountDelegate.addExtension(mountExtension);
-  }
-
-  /** @deprecated Only used for Litho's integration. Marked for removal. */
-  @Deprecated
-  @Override
-  public void unregisterMountDelegateExtension(MountExtension mountExtension) {
-    if (mMountDelegate == null) {
-      return;
-    }
-
-    mMountDelegate.removeExtension(mountExtension);
+    return mMountDelegate.registerMountExtension(mountExtension);
   }
 
   @Override
@@ -402,11 +394,6 @@ public class MountState implements MountDelegateTarget {
   @Override
   public void removeUnmountDelegateExtension() {
     mUnmountDelegateExtension = null;
-  }
-
-  @Override
-  public @Nullable ExtensionState getExtensionState(MountExtension mountExtension) {
-    return mMountDelegate != null ? mMountDelegate.getExtensionState(mountExtension) : null;
   }
 
   @Nullable
@@ -855,16 +842,12 @@ public class MountState implements MountDelegateTarget {
       if (mMountDelegate == null) {
         mMountDelegate = new MountDelegate(this);
       }
-      for (Pair<RenderCoreExtension<?, ?>, Object> e : extensions) {
-        final MountExtension<?, ?> extension = e.first.getMountExtension();
-        if (extension != null) {
-          mMountDelegate.addExtension(extension);
-        }
-      }
+      mMountDelegate.registerExtensions(extensions);
     }
   }
 
-  private void unregisterAllExtensions() {
+  @Override
+  public void unregisterAllExtensions() {
     if (mMountDelegate != null) {
       mMountDelegate.unBind();
       mMountDelegate.unMount();
