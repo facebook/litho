@@ -39,11 +39,13 @@ litho_android_library(
         "equivalence/*.java",
     ]),
     autoglob = False,
+    exported_provided_deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
+    ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
     ],
@@ -64,7 +66,6 @@ litho_android_library(
         LITHO_YOGA_FACTORY_TARGET,
     ],
     exported_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_CONFIG_TARGET,
         LITHO_PERFBOOST_TARGET,

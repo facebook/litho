@@ -31,6 +31,9 @@ load(
 
 litho_android_library(
     name = "collection",
+    exported_provided_deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
+    ],
     feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
@@ -38,9 +41,6 @@ litho_android_library(
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
-    ],
-    provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
     ],
     required_for_source_only_abi = True,
     tests = [make_dep_path("litho-widget-kotlin/src/test/kotlin/com/facebook/litho/widget/collection:collection")],
@@ -55,6 +55,5 @@ litho_android_library(
     exported_deps = [
         LITHO_SECTIONS_WIDGET_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
     ],
 )
