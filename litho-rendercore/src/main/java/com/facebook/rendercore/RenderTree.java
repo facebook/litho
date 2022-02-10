@@ -18,10 +18,11 @@ package com.facebook.rendercore;
 
 import android.util.LongSparseArray;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /** TODO add javadoc */
 public class RenderTree {
@@ -30,7 +31,7 @@ public class RenderTree {
   private final RenderTreeNode[] mFlatList;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final @Nullable Map<RenderCoreExtension<?, ?>, Object> mResults;
+  private final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> mResults;
   private final LongSparseArray<Integer> mIdToIndexMap = new LongSparseArray<>();
   private @Nullable Object mRenderTreeData;
 
@@ -39,7 +40,7 @@ public class RenderTree {
       final RenderTreeNode[] flatList,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
     mRoot = root;
     mFlatList = flatList;
     mWidthSpec = widthSpec;
@@ -79,7 +80,7 @@ public class RenderTree {
     return mFlatList.length;
   }
 
-  public @Nullable Map<RenderCoreExtension<?, ?>, Object> getExtensionResults() {
+  public @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> getExtensionResults() {
     return mResults;
   }
 

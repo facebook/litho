@@ -22,13 +22,14 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Pair;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class MountState implements MountDelegateTarget {
 
@@ -849,13 +850,13 @@ public class MountState implements MountDelegateTarget {
     mountItem.releaseMountContent(mContext);
   }
 
-  private void addExtensions(@Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
+  private void addExtensions(@Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {
     if (extensions != null) {
       if (mMountDelegate == null) {
         mMountDelegate = new MountDelegate(this);
       }
-      for (Map.Entry<RenderCoreExtension<?, ?>, Object> e : extensions.entrySet()) {
-        final MountExtension<?, ?> extension = e.getKey().getMountExtension();
+      for (Pair<RenderCoreExtension<?, ?>, Object> e : extensions) {
+        final MountExtension<?, ?> extension = e.first.getMountExtension();
         if (extension != null) {
           mMountDelegate.addExtension(extension);
         }

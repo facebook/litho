@@ -19,12 +19,12 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
+import androidx.core.util.Pair;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Reduces a tree of Node into a flattened tree of RenderTreeNode. As part of the reduction process
@@ -52,7 +52,7 @@ public class Reducer {
       final int x,
       final int y,
       final ArrayList<RenderTreeNode> flattenedTree,
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {
 
     // If width & height are 0 then do not return the tree.
     // TODO: T102760805 follow up on null check.
@@ -168,7 +168,7 @@ public class Reducer {
 
     RenderCoreSystrace.beginSection("Reducer.reduceTree");
 
-    final Map<RenderCoreExtension<?, ?>, Object> results = populate(extensions);
+    final List<Pair<RenderCoreExtension<?, ?>, Object>> results = populate(extensions);
     final ArrayList<RenderTreeNode> nodes = new ArrayList<>();
     final Rect bounds = new Rect(0, 0, layoutResult.getWidth(), layoutResult.getHeight());
 
@@ -187,16 +187,17 @@ public class Reducer {
     return new RenderTree(root, nodesArray, widthSpec, heightSpec, results);
   }
 
-  private static @Nullable Map<RenderCoreExtension<?, ?>, Object> populate(
+  private static @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> populate(
       final @Nullable RenderCoreExtension<?, ?>[] extensions) {
     if (extensions == null || extensions.length == 0) {
       return null;
     }
 
-    final Map<RenderCoreExtension<?, ?>, Object> results = new ArrayMap<>(extensions.length);
+    final List<Pair<RenderCoreExtension<?, ?>, Object>> results =
+        new ArrayList<>(extensions.length);
     for (int i = 0; i < extensions.length; i++) {
       final Object input = extensions[i].createInput();
-      results.put(extensions[i], input);
+      results.add(new Pair<RenderCoreExtension<?, ?>, Object>(extensions[i], input));
     }
 
     return results;
@@ -209,15 +210,15 @@ public class Reducer {
       final int absoluteX,
       final int absoluteY,
       final int size,
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {
 
     if (extensions != null) {
-      for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : extensions.entrySet()) {
-        final RenderCoreExtension<?, ?> e = entry.getKey();
+      for (Pair<RenderCoreExtension<?, ?>, Object> entry : extensions) {
+        final RenderCoreExtension<?, ?> e = entry.first;
         final LayoutResultVisitor visitor = e.getLayoutVisitor();
         if (visitor != null) {
-          final Object state = entry.getValue();
-          visitor.visit(parent, result, bounds, absoluteX, absoluteY, size, state);
+          final Object input = entry.second;
+          visitor.visit(parent, result, bounds, absoluteX, absoluteY, size, input);
         }
       }
     }

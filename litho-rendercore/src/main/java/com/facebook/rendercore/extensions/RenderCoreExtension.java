@@ -19,13 +19,13 @@ package com.facebook.rendercore.extensions;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderCoreSystrace;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -75,15 +75,15 @@ public class RenderCoreExtension<Input, State> {
   public static void beforeMount(
       final MountDelegateTarget mountDelegateTarget,
       final Host host,
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
     if (results != null) {
       final Rect rect = new Rect();
       host.getLocalVisibleRect(rect);
-      for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : results.entrySet()) {
-        final Object state = entry.getValue();
-        final MountExtension extension = entry.getKey().getMountExtension();
+      for (Pair<RenderCoreExtension<?, ?>, Object> entry : results) {
+        final Object input = entry.second;
+        final MountExtension extension = entry.first.getMountExtension();
         if (extension != null) {
-          extension.beforeMount(mountDelegateTarget.getExtensionState(extension), state, rect);
+          extension.beforeMount(mountDelegateTarget.getExtensionState(extension), input, rect);
         }
       }
     }
@@ -97,10 +97,10 @@ public class RenderCoreExtension<Input, State> {
    */
   public static void afterMount(
       final MountDelegateTarget mountDelegateTarget,
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
     if (results != null) {
-      for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : results.entrySet()) {
-        final MountExtension<?, ?> extension = entry.getKey().getMountExtension();
+      for (Pair<RenderCoreExtension<?, ?>, Object> entry : results) {
+        final MountExtension<?, ?> extension = entry.first.getMountExtension();
         if (extension != null) {
           extension.afterMount(mountDelegateTarget.getExtensionState(extension));
         }
@@ -118,12 +118,12 @@ public class RenderCoreExtension<Input, State> {
   public static void notifyVisibleBoundsChanged(
       final MountDelegateTarget mountDelegateTarget,
       final Host host,
-      @Nullable final Map<RenderCoreExtension<?, ?>, Object> results) {
+      @Nullable final List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
     if (results != null) {
       final Rect rect = new Rect();
       host.getLocalVisibleRect(rect);
-      for (Map.Entry<RenderCoreExtension<?, ?>, Object> e : results.entrySet()) {
-        final MountExtension<?, ?> extension = e.getKey().getMountExtension();
+      for (Pair<RenderCoreExtension<?, ?>, Object> e : results) {
+        final MountExtension<?, ?> extension = e.first.getMountExtension();
         if (extension != null) {
           final ExtensionState state = mountDelegateTarget.getExtensionState(extension);
           if (state != null) {
@@ -136,12 +136,8 @@ public class RenderCoreExtension<Input, State> {
 
   /** returns {@code false} iff the results have the same {@link RenderCoreExtension}s. */
   public static boolean shouldUpdate(
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> currentResults,
-      final @Nullable Map<RenderCoreExtension<?, ?>, Object> nextResults) {
-
-    Set<RenderCoreExtension<?, ?>> current =
-        currentResults != null ? currentResults.keySet() : null;
-    Set<RenderCoreExtension<?, ?>> next = nextResults != null ? nextResults.keySet() : null;
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> current,
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> next) {
 
     if (current == next) {
       return false;
@@ -151,7 +147,17 @@ public class RenderCoreExtension<Input, State> {
       return true;
     }
 
-    return !current.equals(next);
+    if (current.size() != next.size()) {
+      return true;
+    }
+
+    for (int i = 0, size = current.size(); i < size; i++) {
+      if (!current.get(i).first.equals(next.get(i).first)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static void recursivelyNotifyVisibleBoundsChanged(final @Nullable Object content) {
