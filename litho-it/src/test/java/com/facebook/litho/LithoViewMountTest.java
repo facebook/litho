@@ -259,6 +259,8 @@ public class LithoViewMountTest {
     assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.performLayout(false, 0, 0, 200, 200);
+    lithoView.getViewTreeObserver().dispatchOnGlobalLayout();
+
     assertThat(child1.isMounted()).isTrue();
     assertThat(lifecycleTracker2.isMounted()).isTrue();
   }
