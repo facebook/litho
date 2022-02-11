@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
@@ -28,6 +27,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.LithoLayoutResult.willMountView;
 import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
@@ -1035,7 +1035,7 @@ public class LayoutState
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
-    if (isMountViewSpec(component) && !layoutState.isLayoutRoot(result)) {
+    if (willMountView(result) && !layoutState.isLayoutRoot(result)) {
       throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
     }
 

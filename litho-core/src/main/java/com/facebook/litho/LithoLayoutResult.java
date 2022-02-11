@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.Component.hasCachedLayout;
+import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -24,10 +25,12 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.util.Preconditions;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -67,6 +70,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private @Nullable LithoRenderUnit mForegroundRenderUnit;
   private @Nullable LithoRenderUnit mBorderRenderUnit;
 
+  private @Nullable Mountable mMountable;
   private @Nullable Object mLayoutData;
 
   public LithoLayoutResult(
@@ -573,6 +577,22 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
+    }
+  }
+
+  /**
+   * This utility method checks if the {@param result} will mount a {@link View}. It returns true if
+   * and only if the {@param result} will mount a {@link View}. If it returns {@code false} then the
+   * result will either mount a {@link Drawable} or it is {@link NestedTreeHolderResult}, which will
+   * not mount anything.
+   *
+   * @return {@code true} iff the result will mount a view.
+   */
+  public static boolean willMountView(LithoLayoutResult result) {
+    if (result.mMountable != null) {
+      return result.mMountable.getRenderType() == RenderUnit.RenderType.VIEW;
+    } else {
+      return isMountViewSpec(result.getNode().getTailComponent());
     }
   }
 }
