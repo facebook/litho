@@ -888,6 +888,7 @@ public abstract class Component
     NONE,
     DRAWABLE,
     VIEW,
+    MOUNTABLE /* For internal use only. Used only by Kotlin MountableComponent */
   }
 
   /**
