@@ -28,6 +28,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
@@ -387,7 +388,7 @@ public class LayoutState
     int r = l + result.getWidth();
     int b = t + result.getHeight();
 
-    if (!isMountViewSpec(component) && useNodePadding) {
+    if (!isMountableView(unit) && useNodePadding) {
       l += result.getPaddingLeft();
       t += result.getPaddingTop();
       r -= result.getPaddingRight();
@@ -1594,7 +1595,7 @@ public class LayoutState
           continue;
         }
 
-        if (Component.isMountViewSpec(component)) {
+        if (isMountableView(treeNode.getRenderUnit())) {
           if (isTracing) {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }

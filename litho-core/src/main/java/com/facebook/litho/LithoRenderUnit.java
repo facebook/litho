@@ -275,4 +275,8 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   private static @Nullable InterStagePropsContainer getInterStageProps(@Nullable Object data) {
     return verifyAndGetLithoLayoutData(data).interStagePropsContainer;
   }
+
+  public static boolean isMountableView(RenderUnit unit) {
+    return unit.getRenderType() == RenderType.VIEW;
+  }
 }

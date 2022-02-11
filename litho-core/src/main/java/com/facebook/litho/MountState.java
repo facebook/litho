@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isHostSpec;
-import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_HAD_PREVIOUS_CT;
@@ -47,6 +46,7 @@ import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.LithoMountData.isViewSelected;
 import static com.facebook.litho.LithoRenderUnit.getComponentContext;
+import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
@@ -1083,8 +1083,7 @@ class MountState implements MountDelegateTarget {
 
     final Rect bounds = node.getBounds();
     final boolean forceTraversal =
-        Component.isMountViewSpec(layoutOutput.getComponent())
-            && ((View) item.getContent()).isLayoutRequested();
+        isMountableView(node.getRenderUnit()) && ((View) item.getContent()).isLayoutRequested();
 
     applyBoundsToMountContent(
         item.getContent(),
@@ -1406,7 +1405,7 @@ class MountState implements MountDelegateTarget {
 
   static void setViewAttributes(Object content, LayoutOutput output) {
     final Component component = output.getComponent();
-    if (!isMountViewSpec(component)) {
+    if (!(content instanceof View)) {
       return;
     }
 
@@ -1502,7 +1501,7 @@ class MountState implements MountDelegateTarget {
     final Component component = output.getComponent();
     final boolean isHostView = isHostSpec(component);
 
-    if (!isMountViewSpec(component)) {
+    if (!(content instanceof View)) {
       return;
     }
 
@@ -2163,7 +2162,7 @@ class MountState implements MountDelegateTarget {
   private static void mountItemIncrementally(MountItem item, boolean processVisibilityOutputs) {
     final Component component = getLayoutOutput(item).getComponent();
 
-    if (!isMountViewSpec(component)) {
+    if (!isMountableView(item.getRenderTreeNode().getRenderUnit())) {
       return;
     }
 
