@@ -185,9 +185,9 @@ public final class DebugComponent {
   /** @return A mounted view or null if this component does not mount a view. */
   @Nullable
   public View getMountedView() {
-    final Component component = mNode.getTailComponent();
-    if (Component.isMountViewSpec(component)) {
-      return (View) getMountedContent();
+    final @Nullable Object content = getMountedContent();
+    if (content instanceof View) {
+      return (View) content;
     }
 
     return null;
@@ -196,9 +196,9 @@ public final class DebugComponent {
   /** @return A mounted drawable or null if this component does not mount a drawable. */
   @Nullable
   public Drawable getMountedDrawable() {
-    final Component component = mNode.getTailComponent();
-    if (Component.isMountDrawableSpec(component)) {
-      return (Drawable) getMountedContent();
+    final @Nullable Object content = getMountedContent();
+    if (content instanceof Drawable) {
+      return (Drawable) content;
     }
 
     return null;

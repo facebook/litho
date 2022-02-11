@@ -60,7 +60,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       final Component component,
       final @Nullable ComponentContext scopedContext,
       final Object content) {
-    final boolean hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(component);
+    final boolean hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(component, content);
     final boolean hasCustomDynamicProps = component.getDynamicProps().length > 0;
 
     if (!hasCommonDynamicPropsToBind && !hasCustomDynamicProps) {
@@ -108,7 +108,8 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   }
 
   void onUnbindComponent(Component component, Object content) {
-    if (!hasCommonDynamicPropsToBind(component) && component.getDynamicProps().length == 0) {
+    if (!hasCommonDynamicPropsToBind(component, content)
+        && component.getDynamicProps().length == 0) {
       return;
     }
 
@@ -271,7 +272,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         continue;
       }
 
-      if (hasCommonDynamicPropsToBind(component)) {
+      if (hasCommonDynamicPropsToBind(component, content)) {
         final SparseArray<DynamicValue<?>> commonDynamicProps = component.getCommonDynamicProps();
 
         for (int i = 0; i < commonDynamicProps.size(); i++) {
@@ -299,8 +300,8 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
    * @return true if Component has common dynamic props, that DynamicPropsManager should take an
    *     action on
    */
-  private static boolean hasCommonDynamicPropsToBind(Component component) {
-    return component.hasCommonDynamicProps() && Component.isMountViewSpec(component);
+  private static boolean hasCommonDynamicPropsToBind(Component component, Object content) {
+    return component.hasCommonDynamicProps() && content instanceof View;
   }
 
   @VisibleForTesting

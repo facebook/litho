@@ -1426,10 +1426,6 @@ public abstract class Component
         && component.canMeasure();
   }
 
-  static boolean isMountDrawableSpec(@Nullable Component component) {
-    return (component != null && component.getMountType() == MountType.DRAWABLE);
-  }
-
   static boolean isMountSpec(@Nullable Component component) {
     return (component != null && component.getMountType() != MountType.NONE);
   }
