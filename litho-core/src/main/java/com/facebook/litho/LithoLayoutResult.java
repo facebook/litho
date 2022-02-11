@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.Component.hasCachedLayout;
-import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -592,7 +591,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (result.mMountable != null) {
       return result.mMountable.getRenderType() == RenderUnit.RenderType.VIEW;
     } else {
-      return isMountViewSpec(result.getNode().getTailComponent());
+      final Component component = result.getNode().getTailComponent();
+      return (component != null && component.getMountType() == Component.MountType.VIEW);
     }
   }
 }
