@@ -132,7 +132,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
   private static class EmptyComponent extends Component {
 
     @Override
-    protected RenderResult render(ComponentContext c) {
+    protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
       return new RenderResult(Column.create(c).build());
     }
 

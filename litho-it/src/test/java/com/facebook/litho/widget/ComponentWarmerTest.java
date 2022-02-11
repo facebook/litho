@@ -554,7 +554,7 @@ public class ComponentWarmerTest {
     }
 
     @Override
-    protected RenderResult render(ComponentContext c) {
+    protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
       ranLayout.set(true);
       return new RenderResult(Column.create(c).build());
     }

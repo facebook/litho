@@ -60,12 +60,6 @@ public class ComponentContext implements Cloneable {
   private final ResourceResolver mResourceResolver;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private int mWidthSpec;
-
-  @ThreadConfined(ThreadConfined.ANY)
-  private int mHeightSpec;
-
-  @ThreadConfined(ThreadConfined.ANY)
   private @Nullable TreeProps mTreeProps;
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -137,8 +131,6 @@ public class ComponentContext implements Cloneable {
 
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
-    mWidthSpec = context.mWidthSpec;
-    mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
     mLayoutStateContext = new WeakReference<>(layoutStateContext);
@@ -607,22 +599,6 @@ public class ComponentContext implements Cloneable {
   <E> EventTrigger<E> newEventTrigger(int id, String childKey, @Nullable Handle handle) {
     String parentKey = mComponentScope == null ? "" : getGlobalKey();
     return new EventTrigger<>(parentKey, id, childKey, handle);
-  }
-
-  int getWidthSpec() {
-    return mWidthSpec;
-  }
-
-  void setWidthSpec(int widthSpec) {
-    mWidthSpec = widthSpec;
-  }
-
-  int getHeightSpec() {
-    return mHeightSpec;
-  }
-
-  void setHeightSpec(int heightSpec) {
-    mHeightSpec = heightSpec;
   }
 
   void applyStyle(LithoNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {

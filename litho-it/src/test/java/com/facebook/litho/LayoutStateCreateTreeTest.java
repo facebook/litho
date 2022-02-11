@@ -548,6 +548,7 @@ public class LayoutStateCreateTreeTest {
       return true;
     }
 
+    @Override
     protected LithoNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
       LithoLayoutResult result = mock(LithoLayoutResult.class);
       LithoNode node = mock(LithoNode.class);

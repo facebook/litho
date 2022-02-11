@@ -1272,7 +1272,7 @@ public class LithoNode implements Node<LithoRenderContext> {
         layout = reconcile(layoutStateContext, current, next, keys);
         break;
       case ReconciliationMode.RECREATE:
-        layout = Layout.create(layoutStateContext, parentContext, next, false, true, nextKey);
+        layout = Layout.create(layoutStateContext, parentContext, next, true, nextKey);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");

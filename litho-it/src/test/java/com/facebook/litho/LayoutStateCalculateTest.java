@@ -45,6 +45,7 @@ import static com.facebook.yoga.YogaJustify.SPACE_AROUND;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
@@ -2625,7 +2626,7 @@ public class LayoutStateCalculateTest {
         -1,
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY));
-    verify(componentSpy, times(1)).render((ComponentContext) any());
+    verify(componentSpy, times(1)).render((ComponentContext) any(), eq(0), eq(0));
   }
 
   @Test

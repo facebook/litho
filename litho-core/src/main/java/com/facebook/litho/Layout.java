@@ -75,12 +75,9 @@ class Layout {
       layoutStatePerfEvent.markerPoint(event);
     }
 
-    c.setWidthSpec(widthSpec);
-    c.setHeightSpec(heightSpec);
-
     final @Nullable LithoNode layout;
     if (current == null) {
-      layout = create(layoutStateContext, c, component, true);
+      layout = create(layoutStateContext, c, widthSpec, heightSpec, component, true, false, null);
 
       // This needs to finish layout on the UI thread.
       if (layout != null && layoutStateContext.isLayoutInterrupted()) {
@@ -130,20 +127,31 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component) {
-    return create(layoutStateContext, parent, component, false, false, null);
+    return create(layoutStateContext, parent, component, false, null);
   }
 
   static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
-      final Component component,
-      final boolean resolveNestedTree) {
-    return create(layoutStateContext, parent, component, resolveNestedTree, false, null);
+      Component component,
+      final boolean reuseGlobalKey,
+      final @Nullable String globalKeyToReuse) {
+    return create(
+        layoutStateContext,
+        parent,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        component,
+        false,
+        reuseGlobalKey,
+        globalKeyToReuse);
   }
 
   static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
+      final int parentWidthSpec,
+      final int parentHeightSpec,
       Component component,
       final boolean resolveNestedTree,
       final boolean reuseGlobalKey,
@@ -208,7 +216,7 @@ class Layout {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        final RenderResult renderResult = component.render(c);
+        final RenderResult renderResult = component.render(c, parentWidthSpec, parentHeightSpec);
         final Component root = renderResult.component;
 
         if (root != null) {
@@ -216,7 +224,7 @@ class Layout {
           if (root == component) {
             node = root.resolve(layoutStateContext, c);
           } else {
-            node = create(layoutStateContext, c, root, false);
+            node = create(layoutStateContext, c, root);
           }
         } else {
           node = null;
@@ -357,19 +365,17 @@ class Layout {
           // Use the cached layout.
           layout = cachedLayout;
         } else {
-          final int prevWidthSpec = parentContext.getWidthSpec();
-          final int prevHeightSpec = parentContext.getHeightSpec();
-
-          // Set the size specs in ComponentContext for the nested tree
-          parentContext.setWidthSpec(widthSpec);
-          parentContext.setHeightSpec(heightSpec);
-
           // Create a new layout.
           final @Nullable LithoNode newNode =
-              create(layoutStateContext, parentContext, component, true, true, globalKey);
-
-          parentContext.setWidthSpec(prevWidthSpec);
-          parentContext.setHeightSpec(prevHeightSpec);
+              create(
+                  layoutStateContext,
+                  parentContext,
+                  widthSpec,
+                  heightSpec,
+                  component,
+                  true,
+                  true,
+                  globalKey);
 
           if (newNode != null) {
             holder.getNode().copyInto(newNode);

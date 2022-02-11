@@ -44,7 +44,7 @@ import java.util.List;
 @Deprecated
 public class TestLayoutState {
 
-  public static LithoNode createAndMeasureTreeForComponent(
+  public static @Nullable LithoNode createAndMeasureTreeForComponent(
       LayoutStateContext layoutStateContext,
       ComponentContext c,
       Component component,
@@ -52,10 +52,9 @@ public class TestLayoutState {
       int heightSpec) {
 
     c = component.updateInternalChildState(layoutStateContext, c, null);
-    c.setWidthSpec(widthSpec);
-    c.setHeightSpec(heightSpec);
 
-    final LithoNode root = createImmediateLayout(layoutStateContext, c, component);
+    final LithoNode root =
+        createImmediateLayout(layoutStateContext, c, widthSpec, heightSpec, component);
 
     if (root == null || layoutStateContext.isLayoutInterrupted()) {
       return root;
@@ -69,6 +68,8 @@ public class TestLayoutState {
   public static @Nullable LithoNode newImmediateLayoutBuilder(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
+      final int widthSpec,
+      final int heightSpec,
       final Component component) {
 
     // this can be false for a mocked component
@@ -78,9 +79,9 @@ public class TestLayoutState {
 
     if (component.canResolve()) {
       if (component instanceof Wrapper) {
-        return createImmediateLayout(layoutStateContext, c, component);
+        return createImmediateLayout(layoutStateContext, c, widthSpec, heightSpec, component);
       }
-      return create(layoutStateContext, c, component);
+      return create(layoutStateContext, c, widthSpec, heightSpec, component);
     }
 
     final LithoNode node = createInternalNode(c);
@@ -97,8 +98,12 @@ public class TestLayoutState {
    * Mimicks implementation of Column.resolve or Row.resolve but uses a test InternalNode for
    * shallow child resolution.
    */
-  private static LithoNode resolve(
-      LayoutStateContext layoutContext, ComponentContext c, Component component) {
+  private static @Nullable LithoNode resolve(
+      LayoutStateContext layoutContext,
+      ComponentContext c,
+      int widthSpec,
+      int heightSpec,
+      Component component) {
 
     // this can be false for a mocked component
     if (component.getMountType().toString() == null) {
@@ -141,7 +146,9 @@ public class TestLayoutState {
           node.appendUnresolvedComponent(child);
         } else {
           if (child != null) {
-            node.child(TestLayoutState.newImmediateLayoutBuilder(layoutContext, c, child));
+            node.child(
+                TestLayoutState.newImmediateLayoutBuilder(
+                    layoutContext, c, widthSpec, heightSpec, child));
           }
         }
       }
@@ -150,9 +157,11 @@ public class TestLayoutState {
     return node;
   }
 
-  private static LithoNode createImmediateLayout(
+  private static @Nullable LithoNode createImmediateLayout(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
+      final int widthSpec,
+      final int heightSpec,
       final Component component) {
 
     // this can be false for a mocked component
@@ -176,24 +185,24 @@ public class TestLayoutState {
       if (delegate == null) {
         return null;
       } else {
-        return newImmediateLayoutBuilder(layoutStateContext, c, delegate);
+        return newImmediateLayoutBuilder(layoutStateContext, c, widthSpec, heightSpec, delegate);
       }
     } else if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
       if (component instanceof Column || component instanceof Row) {
-        node = (LithoNode) resolve(layoutStateContext, c, component);
+        node = resolve(layoutStateContext, c, widthSpec, heightSpec, component);
       } else {
-        node = (LithoNode) component.resolve(layoutStateContext, c);
+        node = component.resolve(layoutStateContext, c);
       }
     } else if (isMountSpec(component)) {
       node = createInternalNode(c);
     } else {
-      final RenderResult renderResult = component.render(c);
+      final RenderResult renderResult = component.render(c, widthSpec, heightSpec);
       final Component root = renderResult.component;
       if (root == null || root.getId() <= 0) {
         node = null;
       } else {
-        node = resolveImmediateSubTree(layoutStateContext, c, root);
+        node = resolveImmediateSubTree(layoutStateContext, c, widthSpec, heightSpec, root);
       }
     }
 
@@ -220,7 +229,11 @@ public class TestLayoutState {
   }
 
   static @Nullable LithoNode resolveImmediateSubTree(
-      LayoutStateContext layoutStateContext, final ComponentContext c, Component component) {
+      LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final int widthSpec,
+      final int heightSpec,
+      Component component) {
 
     final @Nullable LithoNode node;
 
@@ -232,10 +245,10 @@ public class TestLayoutState {
       if (delegate == null) {
         node = null;
       } else {
-        node = newImmediateLayoutBuilder(layoutStateContext, c, delegate);
+        node = newImmediateLayoutBuilder(layoutStateContext, c, widthSpec, heightSpec, delegate);
       }
     } else if (component.canResolve()) {
-      node = create(layoutStateContext, c, component);
+      node = create(layoutStateContext, c, widthSpec, heightSpec, component);
     } else {
 
       node = createInternalNode(c);
@@ -262,6 +275,8 @@ public class TestLayoutState {
   private static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
+      final int widthSpec,
+      final int heightSpec,
       Component component) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -307,7 +322,7 @@ public class TestLayoutState {
 
         // Resolve the component into an InternalNode.
         if (component instanceof Column || component instanceof Row) {
-          node = resolve(layoutStateContext, c, component);
+          node = resolve(layoutStateContext, c, widthSpec, heightSpec, component);
         } else {
           node = component.resolve(layoutStateContext, c);
         }
@@ -324,7 +339,7 @@ public class TestLayoutState {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        final RenderResult renderResult = component.render(c);
+        final RenderResult renderResult = component.render(c, widthSpec, heightSpec);
         final Component root = renderResult.component;
 
         if (root != null) {
@@ -332,7 +347,7 @@ public class TestLayoutState {
           if (root == component) {
             node = root.resolve(layoutStateContext, c);
           } else {
-            node = create(layoutStateContext, c, root);
+            node = create(layoutStateContext, c, widthSpec, heightSpec, root);
           }
         } else {
           node = null;
