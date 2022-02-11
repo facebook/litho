@@ -49,6 +49,79 @@ class Layout {
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
+  static @Nullable LithoNode render(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component,
+      final @Nullable String globalKeyToReuse,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable LithoNode current,
+      final @Nullable PerfEvent layoutStatePerfEvent) {
+    if (layoutStatePerfEvent != null) {
+      final String event = current == null ? EVENT_START_CREATE_LAYOUT : EVENT_START_RECONCILE;
+      layoutStatePerfEvent.markerPoint(event);
+    }
+
+    final @Nullable LithoNode node;
+    if (current == null) {
+      node = create(layoutStateContext, c, widthSpec, heightSpec, component, true, false, null);
+
+      // This needs to finish layout on the UI thread.
+      if (node != null && layoutStateContext.isLayoutInterrupted()) {
+        if (layoutStatePerfEvent != null) {
+          layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
+        }
+
+        return node;
+      } else {
+        // Layout is complete, disable interruption from this point on.
+        layoutStateContext.markLayoutUninterruptible();
+      }
+    } else {
+      final ComponentContext updatedScopedContext =
+          update(layoutStateContext, c, component, true, globalKeyToReuse);
+      final Component updated = updatedScopedContext.getComponentScope();
+
+      node =
+          current.reconcile(
+              layoutStateContext,
+              c,
+              updated,
+              updatedScopedContext.getScopedComponentInfo(),
+              globalKeyToReuse);
+    }
+
+    if (layoutStatePerfEvent != null) {
+      final String event = current == null ? EVENT_END_CREATE_LAYOUT : EVENT_END_RECONCILE;
+      layoutStatePerfEvent.markerPoint(event);
+    }
+
+    return node;
+  }
+
+  static @Nullable LithoLayoutResult layout(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final @Nullable LithoNode node,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable DiffNode diff,
+      final @Nullable PerfEvent layoutStatePerfEvent) {
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("start_measure");
+    }
+
+    final @Nullable LithoLayoutResult result =
+        node != null ? measure(layoutStateContext, c, node, widthSpec, heightSpec, diff) : null;
+
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("end_measure");
+    }
+
+    return result;
+  }
+
   static LayoutResultHolder createAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -70,55 +143,23 @@ class Layout {
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
-    if (layoutStatePerfEvent != null) {
-      final String event = current == null ? EVENT_START_CREATE_LAYOUT : EVENT_START_RECONCILE;
-      layoutStatePerfEvent.markerPoint(event);
+    final @Nullable LithoNode node =
+        render(
+            layoutStateContext,
+            c,
+            component,
+            globalKeyToReuse,
+            widthSpec,
+            heightSpec,
+            current,
+            layoutStatePerfEvent);
+
+    if (node != null && layoutStateContext.isLayoutInterrupted()) {
+      return LayoutResultHolder.interrupted(node);
     }
 
-    final @Nullable LithoNode layout;
-    if (current == null) {
-      layout = create(layoutStateContext, c, widthSpec, heightSpec, component, true, false, null);
-
-      // This needs to finish layout on the UI thread.
-      if (layout != null && layoutStateContext.isLayoutInterrupted()) {
-        if (layoutStatePerfEvent != null) {
-          layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
-        }
-
-        return LayoutResultHolder.interrupted(layout);
-      } else {
-        // Layout is complete, disable interruption from this point on.
-        layoutStateContext.markLayoutUninterruptible();
-      }
-    } else {
-      final ComponentContext updatedScopedContext =
-          update(layoutStateContext, c, component, true, globalKeyToReuse);
-      final Component updated = updatedScopedContext.getComponentScope();
-
-      layout =
-          current.reconcile(
-              layoutStateContext,
-              c,
-              updated,
-              updatedScopedContext.getScopedComponentInfo(),
-              globalKeyToReuse);
-    }
-
-    if (layoutStatePerfEvent != null) {
-      final String event = current == null ? EVENT_END_CREATE_LAYOUT : EVENT_END_RECONCILE;
-      layoutStatePerfEvent.markerPoint(event);
-    }
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("start_measure");
-    }
-
-    LithoLayoutResult result =
-        layout != null ? measure(layoutStateContext, c, layout, widthSpec, heightSpec, diff) : null;
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("end_measure");
-    }
+    final @Nullable LithoLayoutResult result =
+        layout(layoutStateContext, c, node, widthSpec, heightSpec, diff, layoutStatePerfEvent);
 
     return new LayoutResultHolder(result);
   }
