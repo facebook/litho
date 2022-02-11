@@ -288,14 +288,7 @@ public class LayoutState
 
     final @Nullable Object layoutData = result.getLayoutData();
 
-    return createRenderTreeNode(
-        unit,
-        Preconditions.checkNotNull(node.getTailComponent()),
-        layoutState,
-        result,
-        true,
-        layoutData,
-        parent);
+    return createRenderTreeNode(unit, layoutState, result, true, layoutData, parent);
   }
 
   private static void addRootHostRenderTreeNode(
@@ -344,7 +337,7 @@ public class LayoutState
     final Component hostComponent = unit.output.getComponent();
 
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, hostComponent, layoutState, result, false, null, parent);
+        createRenderTreeNode(unit, layoutState, result, false, null, parent);
 
     final LayoutOutput hostOutput = unit.output;
 
@@ -366,7 +359,6 @@ public class LayoutState
 
   private static RenderTreeNode createRenderTreeNode(
       final LithoRenderUnit unit,
-      final Component component,
       final LayoutState layoutState,
       final LithoLayoutResult result,
       final boolean useNodePadding,
@@ -938,8 +930,7 @@ public class LayoutState
       boolean matchHostBoundsTransitions) {
 
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(
-            unit, unit.output.getComponent(), layoutState, result, false, null, parent);
+        createRenderTreeNode(unit, layoutState, result, false, null, parent);
 
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
     final LayoutOutput output = drawableRenderUnit.output;
@@ -1031,7 +1022,6 @@ public class LayoutState
       LayoutState layoutState,
       @Nullable DiffNode diffNode,
       @Nullable DebugHierarchy.Node hierarchy) {
-    final Component component = node.getTailComponent();
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.

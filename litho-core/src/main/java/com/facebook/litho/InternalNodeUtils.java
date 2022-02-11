@@ -177,7 +177,6 @@ public class InternalNodeUtils {
    */
   static @Nullable LithoRenderUnit createBackgroundRenderUnit(LithoLayoutResult result) {
     final LithoNode node = result.getNode();
-    final Component component = node.getTailComponent();
     final Drawable background = result.getBackground();
 
     // Only create a background output when the component does not mount a View because
@@ -194,7 +193,6 @@ public class InternalNodeUtils {
    */
   static @Nullable LithoRenderUnit createForegroundRenderUnit(LithoLayoutResult result) {
     final LithoNode node = result.getNode();
-    final Component component = node.getTailComponent();
     final Drawable foreground = node.getForeground();
 
     /// Only create a foreground output when the component does not mount a View because
@@ -451,7 +449,6 @@ public class InternalNodeUtils {
    */
   static boolean needsHostView(final LithoLayoutResult result, final LayoutState layoutState) {
     final LithoNode node = result.getNode();
-    final Component component = node.getTailComponent();
 
     if (willMountView(result)) {
       // Component already represents a View.
@@ -562,12 +559,12 @@ public class InternalNodeUtils {
   }
 
   /**
-   * Similar to {@link InternalNodeUtils#needsHostView(LithoNode, LayoutState)} but without
+   * Similar to {@link InternalNodeUtils#needsHostView(LithoLayoutResult, LayoutState)} but without
    * dependency to {@link LayoutState} instance. This will be used for debugging tools to indicate
    * whether the mountable output is a wrapped View or View MountSpec. Unlike {@link
-   * InternalNodeUtils#needsHostView(LithoNode, LayoutState)} this does not consider accessibility
-   * also does not consider root component, but this approximation is good enough for debugging
-   * purposes.
+   * InternalNodeUtils#needsHostView(LithoLayoutResult, LayoutState)} this does not consider
+   * accessibility also does not consider root component, but this approximation is good enough for
+   * debugging purposes.
    */
   static boolean hasViewOutput(LithoLayoutResult result) {
     final LithoNode node = result.getNode();

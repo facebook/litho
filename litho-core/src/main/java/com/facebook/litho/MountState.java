@@ -2160,7 +2160,6 @@ class MountState implements MountDelegateTarget {
   }
 
   private static void mountItemIncrementally(MountItem item, boolean processVisibilityOutputs) {
-    final Component component = getLayoutOutput(item).getComponent();
 
     if (!isMountableView(item.getRenderTreeNode().getRenderUnit())) {
       return;
