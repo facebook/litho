@@ -23,7 +23,7 @@ public interface StickyHeaderController {
   /** Called by the SectionsRecyclerView onScrolled event */
   void onScrolled(RecyclerView recyclerView, int dx, int dy);
 
-  /** Bind the onScroll listener to the SectionsRecylerView param */
+  /** Bind the onScroll listener to the SectionsRecyclerView param */
   void init(SectionsRecyclerView SectionsRecyclerView);
 
   /** Reset the controller */

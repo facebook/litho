@@ -200,7 +200,7 @@ class RecyclerSpec {
       @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler,
-      @Prop(optional = true) SectionsRecyclerView.SectionsRecylerViewLogger sectionsViewLogger) {
+      @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger) {
 
     sectionsRecycler.setSectionsRecyclerViewLogger(sectionsViewLogger);
 

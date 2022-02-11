@@ -28,7 +28,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.Section
 import com.facebook.litho.widget.LithoRecyclerView
-import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecylerViewLogger
+import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.litho.widget.StickyHeaderControllerFactory
 
 /**
@@ -68,7 +68,7 @@ inline fun ResourcesScope.RecyclerCollectionComponent(
     sectionTreeTag: String? = null,
     startupLogger: LithoStartupLogger? = null,
     stickyHeaderControllerFactory: StickyHeaderControllerFactory? = null,
-    sectionsViewLogger: SectionsRecylerViewLogger? = null,
+    sectionsViewLogger: SectionsRecyclerViewLogger? = null,
     handle: Handle? = null,
     style: Style? = null,
 ): RecyclerCollectionComponent =

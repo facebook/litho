@@ -37,7 +37,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
-  private @Nullable SectionsRecylerViewLogger mSectionsRecylerViewLogger;
+  private @Nullable SectionsRecyclerViewLogger mSectionsRecyclerViewLogger;
   private boolean mIsFirstLayout = true;
 
   /**
@@ -81,8 +81,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     addView(mStickyHeader);
   }
 
-  void setSectionsRecyclerViewLogger(SectionsRecylerViewLogger lithoViewLogger) {
-    mSectionsRecylerViewLogger = lithoViewLogger;
+  void setSectionsRecyclerViewLogger(SectionsRecyclerViewLogger lithoViewLogger) {
+    mSectionsRecyclerViewLogger = lithoViewLogger;
   }
 
   public RecyclerView getRecyclerView() {
@@ -147,8 +147,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mSectionsRecylerViewLogger != null) {
-      mSectionsRecylerViewLogger.onLayoutStarted(mIsFirstLayout);
+    if (mSectionsRecyclerViewLogger != null) {
+      mSectionsRecyclerViewLogger.onLayoutStarted(mIsFirstLayout);
     }
 
     try {
@@ -166,8 +166,8 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
           stickyHeaderLeft + mStickyHeader.getMeasuredWidth(),
           stickyHeaderTop + mStickyHeader.getMeasuredHeight());
     } finally {
-      if (mSectionsRecylerViewLogger != null) {
-        mSectionsRecylerViewLogger.onLayoutEnded(mIsFirstLayout);
+      if (mSectionsRecyclerViewLogger != null) {
+        mSectionsRecyclerViewLogger.onLayoutEnded(mIsFirstLayout);
       }
       mIsFirstLayout = false;
     }
@@ -225,7 +225,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   }
 
   /** Pass to a SectionsRecyclerView to do custom logging. */
-  public interface SectionsRecylerViewLogger {
+  public interface SectionsRecyclerViewLogger {
     void onLayoutStarted(boolean isFirstLayoutAfterRecycle);
 
     void onLayoutEnded(boolean isFirstLayoutAfterRecycle);

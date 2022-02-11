@@ -165,7 +165,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean setRootAsync,
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
-      @Prop(optional = true) SectionsRecyclerView.SectionsRecylerViewLogger sectionsViewLogger,
+      @Prop(optional = true) SectionsRecyclerView.SectionsRecyclerViewLogger sectionsViewLogger,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LayoutInfo layoutInfo,

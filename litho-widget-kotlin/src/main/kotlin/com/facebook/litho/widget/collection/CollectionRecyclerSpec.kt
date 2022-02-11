@@ -59,7 +59,7 @@ import com.facebook.litho.widget.PTRRefreshEvent
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
-import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecylerViewLogger
+import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
 
@@ -98,7 +98,7 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) itemTouchListener: RecyclerView.OnItemTouchListener?,
       @Prop(optional = true) pullToRefreshEnabled: Boolean,
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
-      @Prop(optional = true) sectionsViewLogger: SectionsRecylerViewLogger?,
+      @Prop(optional = true) sectionsViewLogger: SectionsRecyclerViewLogger?,
       @State internalRecyclerEventsController: RecyclerEventsController?,
       @State binder: Binder<RecyclerView>,
       @State sectionTree: SectionTree
