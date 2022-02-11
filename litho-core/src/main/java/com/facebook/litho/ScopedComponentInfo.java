@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.util.SparseIntArray;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,6 +157,23 @@ public class ScopedComponentInfo implements Cloneable {
     if (mComponent.usesLocalStateContainer()) {
       if (mComponent.hasState()) {
         stateHandler.addStateContainer(mContext.getGlobalKey(), mStateContainer);
+      }
+    } else {
+      // the get method adds the state container to the needed state container map
+      stateHandler.getStateContainer(mContext.getGlobalKey());
+    }
+  }
+
+  /**
+   * Prepares a component for calling any pending state updates on it by setting the TreeProps which
+   * the component requires from its parent, setting a scoped component context and applies the
+   * pending state updates.
+   */
+  void applyStateUpdates(final StateHandler stateHandler) {
+    if (mComponent.usesLocalStateContainer()) {
+      if (mComponent.hasState()) {
+        Preconditions.checkNotNull(stateHandler)
+            .applyStateUpdatesForComponent(mContext, mComponent, mContext.getGlobalKey());
       }
     } else {
       // the get method adds the state container to the needed state container map

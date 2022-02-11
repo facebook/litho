@@ -494,6 +494,8 @@ class Layout {
     final ComponentContext c =
         component.updateInternalChildState(layoutStateContext, parent, globalKeyToReuse);
 
+    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
+
     // 3. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
     c.setParentTreeProps(ancestor);

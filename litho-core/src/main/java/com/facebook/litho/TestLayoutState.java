@@ -52,6 +52,7 @@ public class TestLayoutState {
       int heightSpec) {
 
     c = component.updateInternalChildState(layoutStateContext, c, null);
+    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     final LithoNode root =
         createImmediateLayout(layoutStateContext, c, widthSpec, heightSpec, component);
@@ -87,6 +88,7 @@ public class TestLayoutState {
     final LithoNode node = createInternalNode(c);
     final ComponentContext scopedContext =
         component.updateInternalChildState(layoutStateContext, c, null);
+    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     node.appendComponent(
         new ScopedComponentInfo(new TestComponent(component), scopedContext, null));

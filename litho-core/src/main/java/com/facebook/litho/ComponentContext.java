@@ -184,6 +184,7 @@ public class ComponentContext implements Cloneable {
     componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
     componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
+    componentContext.mParentTreeProps = parentContext.mTreeProps;
 
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);

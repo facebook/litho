@@ -1322,35 +1322,7 @@ public abstract class Component
               parentContext, parentContext.getComponentScope(), this);
     }
 
-    final ComponentContext scopedContext =
-        ComponentContext.withComponentScope(layoutStateContext, parentContext, this, globalKey);
-
-    applyStateUpdates(
-        layoutStateContext.getStateHandler(), parentContext, scopedContext, globalKey);
-
-    return scopedContext;
-  }
-
-  /**
-   * Prepares a component for calling any pending state updates on it by setting the TreeProps which
-   * the component requires from its parent, setting a scoped component context and applies the
-   * pending state updates.
-   */
-  private final void applyStateUpdates(
-      final StateHandler stateHandler,
-      final ComponentContext parentContext,
-      final ComponentContext scopedContext,
-      final String globalKey) {
-    scopedContext.setParentTreeProps(parentContext.getTreeProps());
-    if (usesLocalStateContainer()) {
-      if (hasState()) {
-        Preconditions.checkNotNull(stateHandler)
-            .applyStateUpdatesForComponent(scopedContext, this, globalKey);
-      }
-    } else {
-      // the get method adds the state container to the needed state container map
-      stateHandler.getStateContainer(globalKey);
-    }
+    return ComponentContext.withComponentScope(layoutStateContext, parentContext, this, globalKey);
   }
 
   /**
