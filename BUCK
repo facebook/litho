@@ -10,6 +10,7 @@ load(
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
     "LITHO_COMPONENTS_TARGET_VISIBILITY",
+    "LITHO_COROUTINES_KOTLIN_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_TARGET",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
@@ -59,6 +60,17 @@ litho_android_library(
     exported_deps = [
         ":components",
         LITHO_KOTLIN_TARGET,
+    ],
+)
+
+litho_android_library(
+    name = "litho_coroutines_kotlin",
+    autoglob = False,
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        LITHO_COROUTINES_KOTLIN_TARGET,
     ],
 )
 

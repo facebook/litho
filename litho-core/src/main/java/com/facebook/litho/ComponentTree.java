@@ -73,6 +73,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -117,6 +118,15 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private boolean mReleased;
 
+  interface OnReleaseListener {
+
+    /** Called when this ComponentTree is released. */
+    void onReleased();
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  private @Nullable List<OnReleaseListener> mOnReleaseListeners;
+
   private String mReleasedComponent;
   private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
@@ -129,6 +139,9 @@ public class ComponentTree implements LithoLifecycleListener {
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
   private final RenderUnitIdMap mRenderUnitIdMap;
   private boolean mInAttach = false;
+
+  // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
+  final AtomicReference<Object> mInternalScopeRef = new AtomicReference<>();
 
   @Override
   public void onMovedToState(LithoLifecycle state) {
@@ -2535,6 +2548,12 @@ public class ComponentTree implements LithoLifecycleListener {
       mAttachDetachHandler.onDetached();
     }
 
+    if (mOnReleaseListeners != null) {
+      for (OnReleaseListener listener : mOnReleaseListeners) {
+        listener.onReleased();
+      }
+    }
+
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
     }
@@ -2760,6 +2779,21 @@ public class ComponentTree implements LithoLifecycleListener {
       mAttachDetachHandler = new AttachDetachHandler();
     }
     return mAttachDetachHandler;
+  }
+
+  void addOnReleaseListener(OnReleaseListener onReleaseListener) {
+    assertMainThread();
+    if (mOnReleaseListeners == null) {
+      mOnReleaseListeners = new ArrayList<>();
+    }
+    mOnReleaseListeners.add(onReleaseListener);
+  }
+
+  void removeOnReleaseListener(OnReleaseListener onReleaseListener) {
+    assertMainThread();
+    if (mOnReleaseListeners != null) {
+      mOnReleaseListeners.remove(onReleaseListener);
+    }
   }
 
   private void debugLog(String eventName, String info) {
