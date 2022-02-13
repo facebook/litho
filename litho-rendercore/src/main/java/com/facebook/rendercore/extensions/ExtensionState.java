@@ -16,24 +16,25 @@
 
 package com.facebook.rendercore.extensions;
 
+import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ExtensionState<State> {
 
-  private final MountExtension<?, State> mExtension;
+  private final MountExtension mExtension;
   private final MountDelegate mMountDelegate;
   private final State mState;
   private final Set<Long> mLayoutOutputMountRefs = new HashSet<>();
 
   ExtensionState(
-      final MountExtension<?, State> extension,
-      final MountDelegate mountDelegate,
-      final State state) {
+      final MountExtension extension, final MountDelegate mountDelegate, final State state) {
     mExtension = extension;
     mMountDelegate = mountDelegate;
     mState = state;
@@ -95,5 +96,58 @@ public class ExtensionState<State> {
 
   public boolean ownsReference(final long id) {
     return mLayoutOutputMountRefs.contains(id);
+  }
+
+  public void beforeMount(Rect localVisibleRect, @Nullable Object input) {
+    mExtension.beforeMount(this, input, localVisibleRect);
+  }
+
+  public void afterMount() {
+    mExtension.afterMount(this);
+  }
+
+  public void beforeMountItem(RenderTreeNode renderTreeNode, int index) {
+    mExtension.beforeMountItem(this, renderTreeNode, index);
+  }
+
+  public void onVisibleBoundsChanged(Rect rect) {
+    mExtension.onVisibleBoundsChanged(this, rect);
+  }
+
+  public void onUnbind() {
+    mExtension.onUnbind(this);
+  }
+
+  public void onUnmount() {
+    mExtension.onUnmount(this);
+  }
+
+  public void onBindItem(RenderUnit renderUnit, Object content, Object layoutData) {
+    mExtension.onBindItem(this, renderUnit, content, layoutData);
+  }
+
+  public void onUnbindItem(RenderUnit renderUnit, Object content, Object layoutData) {
+    mExtension.onUnbindItem(this, renderUnit, content, layoutData);
+  }
+
+  public void onUnmountItem(RenderUnit<?> renderUnit, Object content, Object layoutData) {
+    mExtension.onUnmountItem(this, renderUnit, content, layoutData);
+  }
+
+  public void onMountItem(RenderUnit<?> renderUnit, Object content, Object layoutData) {
+    mExtension.onMountItem(this, renderUnit, content, layoutData);
+  }
+
+  public void onBoundsAppliedToItem(RenderUnit renderUnit, Object content, Object layoutData) {
+    mExtension.onBoundsAppliedToItem(this, renderUnit, content, layoutData);
+  }
+
+  public boolean shouldUpdateItem(
+      RenderUnit<?> previousRenderUnit,
+      Object previousLayoutData,
+      RenderUnit<?> nextRenderUnit,
+      Object nextLayoutData) {
+    return mExtension.shouldUpdateItem(
+        previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData);
   }
 }

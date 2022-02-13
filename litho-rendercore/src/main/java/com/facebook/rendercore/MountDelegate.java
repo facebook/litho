@@ -169,8 +169,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extensionState = mExtensionStates.get(i);
-      extensionState.getExtension().afterMount(extensionState);
+      mExtensionStates.get(i).afterMount();
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -180,8 +179,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onVisibleBoundsChanged(extension, rect);
+      mExtensionStates.get(i).onVisibleBoundsChanged(rect);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -238,8 +236,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onUnbind(extension);
+      mExtensionStates.get(i).onUnbind();
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -249,8 +246,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onUnmount(extension);
+      mExtensionStates.get(i).onUnmount();
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -260,8 +256,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onBindItem(extension, renderUnit, content, layoutData);
+      mExtensionStates.get(i).onBindItem(renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -271,8 +266,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onUnbindItem(extension, renderUnit, content, layoutData);
+      mExtensionStates.get(i).onUnbindItem(renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -289,12 +283,10 @@ public class MountDelegate {
     mExtensionStatesToUpdate.clear();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      if (extension
-          .getExtension()
-          .shouldUpdateItem(
-              previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
-        mExtensionStatesToUpdate.add(extension);
+      final ExtensionState state = mExtensionStates.get(i);
+      if (state.shouldUpdateItem(
+          previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
+        mExtensionStatesToUpdate.add(state);
       }
     }
 
@@ -303,30 +295,26 @@ public class MountDelegate {
 
       // Unbind
       for (int i = 0; i < size; i++) {
-        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
-        extension
-            .getExtension()
-            .onUnbindItem(extension, previousRenderUnit, content, previousLayoutData);
+        mExtensionStatesToUpdate
+            .get(i)
+            .onUnbindItem(previousRenderUnit, content, previousLayoutData);
       }
 
       // Unmount
       for (int i = 0; i < size; i++) {
-        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
-        extension
-            .getExtension()
-            .onUnmountItem(extension, previousRenderUnit, content, previousLayoutData);
+        mExtensionStatesToUpdate
+            .get(i)
+            .onUnmountItem(previousRenderUnit, content, previousLayoutData);
       }
 
       // Mount
       for (int i = 0; i < size; i++) {
-        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
-        extension.getExtension().onMountItem(extension, nextRenderUnit, content, nextLayoutData);
+        mExtensionStatesToUpdate.get(i).onMountItem(nextRenderUnit, content, nextLayoutData);
       }
 
       // Bind
       for (int i = 0; i < size; i++) {
-        final ExtensionState extension = mExtensionStatesToUpdate.get(i);
-        extension.getExtension().onBindItem(extension, nextRenderUnit, content, nextLayoutData);
+        mExtensionStatesToUpdate.get(i).onBindItem(nextRenderUnit, content, nextLayoutData);
       }
 
       mExtensionStatesToUpdate.clear();
@@ -340,8 +328,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onMountItem(extension, renderUnit, content, layoutData);
+      mExtensionStates.get(i).onMountItem(renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -352,8 +339,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().onUnmountItem(extension, renderUnit, content, layoutData);
+      mExtensionStates.get(i).onUnmountItem(renderUnit, content, layoutData);
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -363,10 +349,9 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension
-          .getExtension()
-          .onBoundsAppliedToItem(extension, node.getRenderUnit(), content, node.getLayoutData());
+      mExtensionStates
+          .get(i)
+          .onBoundsAppliedToItem(node.getRenderUnit(), content, node.getLayoutData());
     }
 
     endNotifyVisibleBoundsChangedSection();
@@ -398,8 +383,7 @@ public class MountDelegate {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
-      final ExtensionState extension = mExtensionStates.get(i);
-      extension.getExtension().beforeMountItem(extension, renderTreeNode, index);
+      mExtensionStates.get(i).beforeMountItem(renderTreeNode, index);
     }
 
     endNotifyVisibleBoundsChangedSection();
