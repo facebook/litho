@@ -36,13 +36,6 @@ import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMou
 public class LithoHostListenerCoordinator {
 
   private final MountDelegateTarget mMountDelegateTarget;
-  @Nullable private IncrementalMountExtension mIncrementalMountExtension;
-  @Nullable private VisibilityMountExtension mVisibilityExtension;
-  @Nullable private TransitionsExtension mTransitionsExtension;
-  @Nullable private EndToEndTestingExtension mEndToEndTestingExtension;
-  @Nullable private DynamicPropsExtension mDynamicPropsExtension;
-  @Nullable private LithoViewAttributesExtension mViewAttributesExtension;
-  @Nullable private NestedLithoViewsExtension mNestedLithoViewsExtension;
 
   private @Nullable ExtensionState<LithoViewAttributesState> mViewAttributesExtensionState;
   private @Nullable ExtensionState<Void> mNestedLithoViewsExtensionState;
@@ -90,46 +83,43 @@ public class LithoHostListenerCoordinator {
 
   public void beforeMount(LayoutState input, Rect localVisibleRect) {
 
-    if (mNestedLithoViewsExtensionState != null && mNestedLithoViewsExtension != null) {
-      mNestedLithoViewsExtension.beforeMount(
-          mNestedLithoViewsExtensionState, null, localVisibleRect);
+    if (mNestedLithoViewsExtensionState != null) {
+      mNestedLithoViewsExtensionState.beforeMount(localVisibleRect, input);
     }
 
-    if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
-      mTransitionsExtension.beforeMount(mTransitionsExtensionState, input, localVisibleRect);
+    if (mTransitionsExtensionState != null) {
+      mTransitionsExtensionState.beforeMount(localVisibleRect, input);
     }
 
-    if (mEndToEndTestingExtension != null && mEndToEndTestingExtensionState != null) {
-      mEndToEndTestingExtension.beforeMount(
-          mEndToEndTestingExtensionState, input, localVisibleRect);
+    if (mEndToEndTestingExtensionState != null) {
+      mEndToEndTestingExtensionState.beforeMount(localVisibleRect, input);
     }
 
-    if (mViewAttributesExtensionState != null && mViewAttributesExtension != null) {
-      mViewAttributesExtension.beforeMount(mViewAttributesExtensionState, null, localVisibleRect);
+    if (mViewAttributesExtensionState != null) {
+      mViewAttributesExtensionState.beforeMount(localVisibleRect, input);
     }
 
-    if (mDynamicPropsExtensionState != null && mDynamicPropsExtension != null) {
-      mDynamicPropsExtension.beforeMount(mDynamicPropsExtensionState, null, localVisibleRect);
+    if (mDynamicPropsExtensionState != null) {
+      mDynamicPropsExtensionState.beforeMount(localVisibleRect, input);
     }
 
-    if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
-      mVisibilityExtension.beforeMount(mVisibilityExtensionState, input, localVisibleRect);
+    if (mVisibilityExtensionState != null) {
+      mVisibilityExtensionState.beforeMount(localVisibleRect, input);
     }
 
-    if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
-      mIncrementalMountExtension.beforeMount(
-          mIncrementalMountExtensionState, input, localVisibleRect);
+    if (mIncrementalMountExtensionState != null) {
+      mIncrementalMountExtensionState.beforeMount(localVisibleRect, input);
     }
   }
 
   public void processVisibilityOutputs(Rect localVisibleRect, boolean isDirty) {
     startNotifyVisibleBoundsChangedSection();
 
-    if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
+    if (mVisibilityExtensionState != null) {
       if (isDirty) {
-        mVisibilityExtension.afterMount(mVisibilityExtensionState);
+        mVisibilityExtensionState.afterMount();
       } else {
-        mVisibilityExtension.onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);
+        mVisibilityExtensionState.onVisibleBoundsChanged(localVisibleRect);
       }
     }
 
@@ -137,85 +127,81 @@ public class LithoHostListenerCoordinator {
   }
 
   void enableIncrementalMount() {
-    if (mIncrementalMountExtension != null) {
+    if (mIncrementalMountExtensionState != null) {
       return;
     }
 
-    mIncrementalMountExtension = IncrementalMountExtension.getInstance();
-
     mIncrementalMountExtensionState =
-        mMountDelegateTarget.registerMountExtension(mIncrementalMountExtension);
+        mMountDelegateTarget.registerMountExtension(IncrementalMountExtension.getInstance());
   }
 
   void disableIncrementalMount() {
-    if (mIncrementalMountExtension == null) {
+    if (mIncrementalMountExtensionState == null) {
       return;
     }
 
     final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
     if (mountDelegate != null) {
-      mountDelegate.unregisterMountExtension(mIncrementalMountExtension);
+      mountDelegate.unregisterMountExtension(mIncrementalMountExtensionState.getExtension());
     }
 
-    mIncrementalMountExtension = null;
     mIncrementalMountExtensionState = null;
   }
 
   void enableVisibilityProcessing(LithoView lithoView) {
-    if (mVisibilityExtension != null) {
+    if (mVisibilityExtensionState != null) {
       return;
     }
 
-    mVisibilityExtension = VisibilityMountExtension.getInstance();
-    mVisibilityExtensionState = mMountDelegateTarget.registerMountExtension(mVisibilityExtension);
+    mVisibilityExtensionState =
+        mMountDelegateTarget.registerMountExtension(VisibilityMountExtension.getInstance());
     if (mVisibilityExtensionState != null) {
       VisibilityMountExtension.setRootHost(mVisibilityExtensionState, lithoView);
     }
   }
 
   void disableVisibilityProcessing() {
-    if (mVisibilityExtension == null) {
+    if (mVisibilityExtensionState == null) {
       return;
     }
 
     final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
     if (mountDelegate != null) {
-      mountDelegate.unregisterMountExtension(mVisibilityExtension);
+      mountDelegate.unregisterMountExtension(mVisibilityExtensionState.getExtension());
     }
 
-    mVisibilityExtension = null;
     mVisibilityExtensionState = null;
   }
 
   void enableEndToEndTestProcessing() {
-    if (mEndToEndTestingExtension != null) {
+    if (mEndToEndTestingExtensionState != null) {
       throw new IllegalStateException(
           "End to end test processing has already been enabled on this coordinator");
     }
 
-    mEndToEndTestingExtension = new EndToEndTestingExtension(mMountDelegateTarget);
     mEndToEndTestingExtensionState =
-        mMountDelegateTarget.registerMountExtension(mEndToEndTestingExtension);
+        mMountDelegateTarget.registerMountExtension(
+            new EndToEndTestingExtension(mMountDelegateTarget));
   }
 
   void enableViewAttributes() {
-    if (mViewAttributesExtension != null) {
+    if (mViewAttributesExtensionState != null) {
       throw new IllegalStateException(
           "View attributes extension has already been enabled on this coordinator");
     }
 
-    mViewAttributesExtension = LithoViewAttributesExtension.getInstance();
-    mMountDelegateTarget.registerMountExtension(mViewAttributesExtension);
+    mViewAttributesExtensionState =
+        mMountDelegateTarget.registerMountExtension(LithoViewAttributesExtension.getInstance());
   }
 
   void enableNestedLithoViewsExtension() {
-    if (mNestedLithoViewsExtension != null) {
+    if (mNestedLithoViewsExtensionState != null) {
       throw new IllegalStateException(
           "Nested LithoView extension has already been enabled on this coordinator");
     }
 
-    mNestedLithoViewsExtension = new NestedLithoViewsExtension();
-    mMountDelegateTarget.registerMountExtension(mNestedLithoViewsExtension);
+    mNestedLithoViewsExtensionState =
+        mMountDelegateTarget.registerMountExtension(new NestedLithoViewsExtension());
   }
 
   @VisibleForTesting
@@ -229,57 +215,56 @@ public class LithoHostListenerCoordinator {
   }
 
   void clearLastMountedTreeId() {
-    if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
-      mTransitionsExtension.clearLastMountedTreeId(mTransitionsExtensionState);
+    if (mTransitionsExtensionState != null) {
+      TransitionsExtension.clearLastMountedTreeId(mTransitionsExtensionState);
     }
   }
 
   @Nullable
   EndToEndTestingExtension getEndToEndTestingExtension() {
-    return mEndToEndTestingExtension;
+    return mEndToEndTestingExtensionState != null
+        ? (EndToEndTestingExtension) mEndToEndTestingExtensionState.getExtension()
+        : null;
   }
 
   void enableTransitions() {
-    if (mTransitionsExtension != null) {
+    if (mTransitionsExtensionState != null) {
       throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
     }
 
-    mTransitionsExtension =
-        TransitionsExtension.getInstance(
-            true, (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
-    mTransitionsExtensionState = mMountDelegateTarget.registerMountExtension(mTransitionsExtension);
+    mTransitionsExtensionState =
+        mMountDelegateTarget.registerMountExtension(
+            TransitionsExtension.getInstance(
+                true, (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null)));
   }
 
   void collectAllTransitions(LayoutState layoutState) {
-    if (mTransitionsExtension == null) {
+    if (mTransitionsExtensionState == null) {
       return;
     }
 
-    if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
-      mTransitionsExtension.collectAllTransitions(mTransitionsExtensionState, layoutState);
+    if (mTransitionsExtensionState != null) {
+      TransitionsExtension.collectAllTransitions(mTransitionsExtensionState, layoutState);
     }
   }
 
   @VisibleForTesting
   void useVisibilityExtension(VisibilityMountExtension extension) {
-    mVisibilityExtension = extension;
-    mVisibilityExtensionState = mMountDelegateTarget.registerMountExtension(mVisibilityExtension);
+    mVisibilityExtensionState = mMountDelegateTarget.registerMountExtension(extension);
   }
 
   public void enableDynamicProps() {
-    if (mDynamicPropsExtension != null) {
+    if (mDynamicPropsExtensionState != null) {
       return;
     }
 
-    mDynamicPropsExtension = DynamicPropsExtension.getInstance();
     mDynamicPropsExtensionState =
-        mMountDelegateTarget.registerMountExtension(mDynamicPropsExtension);
+        mMountDelegateTarget.registerMountExtension(DynamicPropsExtension.getInstance());
   }
 
-  @Nullable
   @VisibleForTesting
-  public DynamicPropsManager getDynamicPropsManager() {
-    if (mDynamicPropsExtension == null || mDynamicPropsExtensionState == null) {
+  public @Nullable DynamicPropsManager getDynamicPropsManager() {
+    if (mDynamicPropsExtensionState == null) {
       return null;
     }
 
@@ -287,7 +272,7 @@ public class LithoHostListenerCoordinator {
   }
 
   public void clearVisibilityItems() {
-    if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
+    if (mVisibilityExtensionState != null) {
       VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
     }
   }

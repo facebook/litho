@@ -255,7 +255,8 @@ public class TransitionsExtension
     extensionState.releaseAllAcquiredReferences();
   }
 
-  public void clearLastMountedTreeId(ExtensionState<TransitionsExtensionState> extensionState) {
+  public static void clearLastMountedTreeId(
+      ExtensionState<TransitionsExtensionState> extensionState) {
     final TransitionsExtensionState state = extensionState.getState();
     state.mLastMountedTreeId = TransitionsExtensionState.UNSET;
   }
