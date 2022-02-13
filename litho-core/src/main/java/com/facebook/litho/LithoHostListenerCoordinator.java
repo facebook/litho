@@ -21,11 +21,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.DynamicPropsExtension.DynamicPropsExtensionState;
+import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState;
 import com.facebook.litho.TransitionsExtension.TransitionsExtensionState;
-import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
@@ -45,6 +44,8 @@ public class LithoHostListenerCoordinator {
   @Nullable private LithoViewAttributesExtension mViewAttributesExtension;
   @Nullable private NestedLithoViewsExtension mNestedLithoViewsExtension;
 
+  private @Nullable ExtensionState<LithoViewAttributesState> mViewAttributesExtensionState;
+  private @Nullable ExtensionState<Void> mNestedLithoViewsExtensionState;
   private @Nullable ExtensionState<DynamicPropsExtensionState> mDynamicPropsExtensionState;
   private @Nullable ExtensionState<VisibilityMountExtensionState> mVisibilityExtensionState;
   private @Nullable ExtensionState<TransitionsExtensionState> mTransitionsExtensionState;
@@ -88,7 +89,11 @@ public class LithoHostListenerCoordinator {
   }
 
   public void beforeMount(LayoutState input, Rect localVisibleRect) {
-    startNotifyVisibleBoundsChangedSection();
+
+    if (mNestedLithoViewsExtensionState != null && mNestedLithoViewsExtension != null) {
+      mNestedLithoViewsExtension.beforeMount(
+          mNestedLithoViewsExtensionState, null, localVisibleRect);
+    }
 
     if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
       mTransitionsExtension.beforeMount(mTransitionsExtensionState, input, localVisibleRect);
@@ -99,6 +104,14 @@ public class LithoHostListenerCoordinator {
           mEndToEndTestingExtensionState, input, localVisibleRect);
     }
 
+    if (mViewAttributesExtensionState != null && mViewAttributesExtension != null) {
+      mViewAttributesExtension.beforeMount(mViewAttributesExtensionState, null, localVisibleRect);
+    }
+
+    if (mDynamicPropsExtensionState != null && mDynamicPropsExtension != null) {
+      mDynamicPropsExtension.beforeMount(mDynamicPropsExtensionState, null, localVisibleRect);
+    }
+
     if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
       mVisibilityExtension.beforeMount(mVisibilityExtensionState, input, localVisibleRect);
     }
@@ -107,8 +120,6 @@ public class LithoHostListenerCoordinator {
       mIncrementalMountExtension.beforeMount(
           mIncrementalMountExtensionState, input, localVisibleRect);
     }
-
-    endNotifyVisibleBoundsChangedSection();
   }
 
   public void processVisibilityOutputs(Rect localVisibleRect, boolean isDirty) {
@@ -123,38 +134,6 @@ public class LithoHostListenerCoordinator {
     }
 
     endNotifyVisibleBoundsChangedSection();
-  }
-
-  public void onVisibleBoundsChanged(Rect localVisibleRect) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-    if (isTracing) {
-      // This should be about equivalent to doing an incremental mount through litho.MountState
-      RenderCoreSystrace.beginSection("LHLC.onVisibleBoundsChanged");
-    }
-    try {
-      startNotifyVisibleBoundsChangedSection();
-
-      // We first mount and then we process visibility outputs.
-      if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
-        mIncrementalMountExtension.onVisibleBoundsChanged(
-            mIncrementalMountExtensionState, localVisibleRect);
-        LithoStats.incrementComponentMountCount();
-      }
-
-      if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
-        mTransitionsExtension.onVisibleBoundsChanged(mTransitionsExtensionState, localVisibleRect);
-      }
-
-      if (mVisibilityExtension != null && mVisibilityExtensionState != null) {
-        mVisibilityExtension.onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);
-      }
-
-      endNotifyVisibleBoundsChangedSection();
-    } finally {
-      if (isTracing) {
-        RenderCoreSystrace.endSection();
-      }
-    }
   }
 
   void enableIncrementalMount() {
@@ -239,9 +218,14 @@ public class LithoHostListenerCoordinator {
     mMountDelegateTarget.registerMountExtension(mNestedLithoViewsExtension);
   }
 
-  @Nullable
-  VisibilityMountExtension getVisibilityExtension() {
-    return mVisibilityExtension;
+  @VisibleForTesting
+  public @Nullable ExtensionState getVisibilityExtensionState() {
+    return mVisibilityExtensionState;
+  }
+
+  @VisibleForTesting
+  public @Nullable ExtensionState getIncrementalMountExtensionState() {
+    return mIncrementalMountExtensionState;
   }
 
   void clearLastMountedTreeId() {
@@ -271,13 +255,9 @@ public class LithoHostListenerCoordinator {
       return;
     }
 
-    startNotifyVisibleBoundsChangedSection();
-
     if (mTransitionsExtension != null && mTransitionsExtensionState != null) {
       mTransitionsExtension.collectAllTransitions(mTransitionsExtensionState, layoutState);
     }
-
-    endNotifyVisibleBoundsChangedSection();
   }
 
   @VisibleForTesting

@@ -245,6 +245,7 @@ public class TransitionsExtension
 
   @Override
   public void onUnmount(ExtensionState<TransitionsExtensionState> extensionState) {
+    resetAnimationState(extensionState);
     extensionState.releaseAllAcquiredReferences();
     clearLastMountedTreeId(extensionState);
   }

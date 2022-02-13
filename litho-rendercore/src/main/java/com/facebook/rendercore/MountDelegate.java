@@ -177,10 +177,14 @@ public class MountDelegate {
   }
 
   public void notifyVisibleBoundsChanged(Rect rect) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       final ExtensionState extension = mExtensionStates.get(i);
       extension.getExtension().onVisibleBoundsChanged(extension, rect);
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void notifyVisibleBoundsChangedForItem(Object item) {
@@ -515,7 +519,7 @@ public class MountDelegate {
   }
 
   @VisibleForTesting
-  List<ExtensionState> getExtensionStates() {
+  public List<ExtensionState> getExtensionStates() {
     return mExtensionStates;
   }
 }

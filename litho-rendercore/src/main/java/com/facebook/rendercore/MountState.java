@@ -275,6 +275,7 @@ public class MountState implements MountDelegateTarget {
   @Override
   public void unmountAllItems() {
     if (mRenderTree == null) {
+      unregisterAllExtensions();
       return;
     }
     // Let's unmount all the content from the Root host. Everything else will be recursively
@@ -851,11 +852,7 @@ public class MountState implements MountDelegateTarget {
     if (mMountDelegate != null) {
       mMountDelegate.unBind();
       mMountDelegate.unMount();
-
-      if (mRenderTree != null && mRenderTree.getExtensionResults() != null) {
-        mMountDelegate.unregisterAllExtensions();
-      }
-
+      mMountDelegate.unregisterAllExtensions();
       mMountDelegate.releaseAllAcquiredReferences();
     }
   }
