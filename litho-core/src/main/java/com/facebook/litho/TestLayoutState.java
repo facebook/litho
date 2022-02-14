@@ -46,12 +46,18 @@ public class TestLayoutState {
 
   public static @Nullable LithoNode createAndMeasureTreeForComponent(
       LayoutStateContext layoutStateContext,
-      ComponentContext c,
+      ComponentContext context,
       Component component,
       int widthSpec,
       int heightSpec) {
 
-    c = component.updateInternalChildState(layoutStateContext, c, null);
+    final ComponentContext c =
+        ComponentContext.withComponentScope(
+            layoutStateContext,
+            context,
+            component,
+            ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
+
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     final LithoNode root =
@@ -87,7 +93,11 @@ public class TestLayoutState {
 
     final LithoNode node = createInternalNode(c);
     final ComponentContext scopedContext =
-        component.updateInternalChildState(layoutStateContext, c, null);
+        ComponentContext.withComponentScope(
+            layoutStateContext,
+            c,
+            component,
+            ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     node.appendComponent(

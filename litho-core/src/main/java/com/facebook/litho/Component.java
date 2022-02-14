@@ -1307,24 +1307,6 @@ public abstract class Component
     return null;
   }
 
-  /** Called to install internal state based on a component's parent context. */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected final ComponentContext updateInternalChildState(
-      final LayoutStateContext layoutStateContext,
-      ComponentContext parentContext,
-      @Nullable String existingGlobalKey) {
-
-    String globalKey = existingGlobalKey;
-
-    if (globalKey == null) {
-      globalKey =
-          ComponentKeyUtils.generateGlobalKey(
-              parentContext, parentContext.getComponentScope(), this);
-    }
-
-    return ComponentContext.withComponentScope(layoutStateContext, parentContext, this, globalKey);
-  }
-
   /**
    * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
    *     needed

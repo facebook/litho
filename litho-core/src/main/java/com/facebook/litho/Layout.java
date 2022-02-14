@@ -473,7 +473,6 @@ class Layout {
     }
   }
 
-  /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
   static ComponentContext update(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
@@ -492,8 +491,13 @@ class Layout {
     // 1. Update the internal state of the component wrt the parent.
     // 2. Get the scoped context from the updated component.
     final ComponentContext c =
-        component.updateInternalChildState(layoutStateContext, parent, globalKeyToReuse);
-
+        ComponentContext.withComponentScope(
+            layoutStateContext,
+            parent,
+            component,
+            globalKeyToReuse == null
+                ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
+                : globalKeyToReuse);
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
