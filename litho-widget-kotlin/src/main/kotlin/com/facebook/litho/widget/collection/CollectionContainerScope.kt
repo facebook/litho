@@ -27,9 +27,12 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
   val collectionChildren
     get() = collectionChildrenBuilder.toList()
 
+  internal val effectiveIndexToId: MutableMap<Int, MutableSet<Any>> by lazy { mutableMapOf() }
+  internal val idToChild: MutableMap<Any, CollectionChild> by lazy { mutableMapOf() }
+
   private val collectionChildrenBuilder = mutableListOf<CollectionChild>()
   private var nextStaticId = 0
-  private var typeToFreq: MutableMap<Int, Int>? = null
+  private val typeToFreq: MutableMap<Int, Int> by lazy { mutableMapOf() }
 
   /** Prepare the final id that will be assigned to the child. */
   private fun getResolvedId(id: Any?, component: Component? = null): Any {
@@ -47,14 +50,17 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
   /** Generate an id for a non-null Component. */
   private fun generateIdForComponent(component: Component?): Any? {
     val typeId = component?.typeId ?: return null
-    if (typeToFreq == null) {
-      typeToFreq = mutableMapOf()
-    }
+    typeToFreq[typeId] = (typeToFreq[typeId] ?: 0) + 1
+    return "${typeId}:${typeToFreq[typeId]}"
+  }
 
-    return typeToFreq?.let {
-      it[typeId] = (it[typeId] ?: 0) + 1
-      "${typeId}:${it[typeId]}"
-    }
+  private fun maybeRegisterForOnEnterOrNearCallbacks(child: CollectionChild) {
+    child.onNearViewport ?: return
+
+    idToChild[child.id] = child
+    val index = collectionChildrenBuilder.lastIndex
+    val effectiveIndex = index - child.onNearViewport.tailOffset
+    effectiveIndexToId.getOrPut(effectiveIndex) { mutableSetOf() }.add(child.id)
   }
 
   /**
@@ -64,7 +70,9 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
    * @param id A unique identifier for the child
    * @param isSticky Fix the child to the top of the collection if it is scrolled out of view
    * @param isFullSpan Span the child across all columns
-   * @Param spanSize Span the specified number of columns
+   * @param spanSize Span the specified number of columns
+   * @param onNearViewport A callback that will be invoked when the child is close to or enters the
+   * visible area.
    */
   fun child(
       component: Component?,
@@ -72,11 +80,23 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
+      onNearViewport: OnNearViewport? = null,
   ) {
     val resolvedId = getResolvedId(id, component)
     component ?: return
-    collectionChildrenBuilder.add(
-        CollectionChild(resolvedId, component, null, isSticky, isFullSpan, spanSize, null))
+    val child =
+        CollectionChild(
+            resolvedId,
+            component,
+            null,
+            isSticky,
+            isFullSpan,
+            spanSize,
+            null,
+            onNearViewport,
+        )
+    collectionChildrenBuilder.add(child)
+    maybeRegisterForOnEnterOrNearCallbacks(child)
   }
 
   /**
@@ -91,6 +111,8 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
    * @param isSticky Fix the child to the top of the collection if it is scrolled out of view
    * @param isFullSpan Span the child across all columns
    * @param spanSize Span the specified number of columns
+   * @param onNearViewport A callback that will be invoked when the child is close to or enters the
+   * visible area.
    * @param deps An array of prop and state values used by [componentFunction] to create the
    * [Component]. A change to one of these values will cause [componentFunction] to recreate the
    * [Component].
@@ -101,11 +123,30 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
+      onNearViewport: OnNearViewport? = null,
       deps: Array<Any?>,
       componentFunction: () -> Component?,
   ) {
-    collectionChildrenBuilder.add(
+    val child =
         CollectionChild(
-            getResolvedId(id), null, componentFunction, isSticky, isFullSpan, spanSize, deps))
+            getResolvedId(id),
+            null,
+            componentFunction,
+            isSticky,
+            isFullSpan,
+            spanSize,
+            deps,
+            onNearViewport,
+        )
+    collectionChildrenBuilder.add(child)
+    maybeRegisterForOnEnterOrNearCallbacks(child)
   }
 }
+
+/**
+ * Specify a callback that can be applied to a [LazyCollection] child's `onNearOrEnteredViewPort`
+ * parameter. The callback will be invoked when the child enters the screen, or is positioned less
+ * than `tailOffset` items away from the end of the visible area.
+ */
+@Suppress("KtDataClass")
+data class OnNearViewport(val tailOffset: Int = 0, val callback: () -> Unit)
