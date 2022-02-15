@@ -27,22 +27,22 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
+import com.facebook.samples.litho.onboarding.model.Post;
 
 // start_example
 @LayoutSpec
-public class PostSpec {
+public class PostSimpleSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c, @Prop String username, @Prop int avatarRes, @Prop int imageRes) {
+  static Component onCreateLayout(ComponentContext c, @Prop Post post) {
     return Column.create(c)
         .child(
             Row.create(c)
-                .child(Image.create(c).drawableRes(avatarRes))
-                .child(Text.create(c).text(username).textStyle(Typeface.BOLD)))
+                .child(Image.create(c).drawableRes(post.getUser().getAvatarRes()))
+                .child(Text.create(c).text(post.getUser().getUsername()).textStyle(Typeface.BOLD)))
         .child(
             Image.create(c)
-                .drawableRes(imageRes)
+                .drawableRes(post.getImageRes())
                 .scaleType(ImageView.ScaleType.CENTER_CROP)
                 .aspectRatio(1))
         .build();

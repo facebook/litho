@@ -3,6 +3,9 @@ id: first-components
 title: Components and Props
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 In this part of the tutorial, you'll learn the basic Litho building blocks, write a simple component,
 extend it to accept **props** and get familiar with building layouts with Flexbox in Litho.
 
@@ -55,7 +58,13 @@ autocompletion without having to rebuild, make sure you've installed the [Litho 
 
 Enough of HelloWorlds – let's get to building our Instagram app!
 
-You'll start with creating a component for an Instagram post and that requires layouting 2 images
+Before we start, let's add 2 simple classes to represent `User` and `Post` data models:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/model/models.kt start=start_example end=end_example
+```
+
+Now it's time for UI work!
+First you'll create a component for an Instagram post and that requires layouting 2 images
 and a text in a particular way. Layouts in Litho are defined via the Flexbox API. You can read more
 about different layouting options in [Layout with Flexbox](../mainconcepts/uicomposition/flexbox-yoga.mdx)
 doc, but for now it's enough to know that the main Flexbox primitives are **Column** and **Row**,
@@ -63,14 +72,30 @@ and they are used to arrange children vertically and horizontally, respectively.
 
 With their help a `Post` component that will render the UI of an Instagram post will look like that:
 
-```java file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostSpec.java start=start_example end=end_example
+```java file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostSimpleSpec.java start=start_example end=end_example
 ```
 
 Though hierarchically components are placed correctly, this doesn't look nice, so, as a final touch
 let's apply some flexbox styles:
 
+<Tabs
+  groupId="state-overview"
+  defaultValue="kotlin"
+  values={[
+    {label: 'Kotlin API', value: 'kotlin'},
+    {label: 'Spec API', value: 'java'},
+  ]}>
+  <TabItem value="kotlin">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostStyledKComponent.kt start=start_example end=end_example
+```
+  </TabItem>
+  <TabItem value="java">
+
 ```java file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostStyledSpec.java start=start_example end=end_example
 ```
+  </TabItem>
+</Tabs>
 
 #### Key Points:
 - `Column` and `Row`: The key container types in Litho. They stack children vertically and

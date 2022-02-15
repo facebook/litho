@@ -117,6 +117,8 @@ import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
 import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity
 import com.facebook.samples.litho.onboarding.HelloWorldActivity
+import com.facebook.samples.litho.onboarding.PostStyledKComponent
+import com.facebook.samples.litho.onboarding.model.OBI_WAN_POST
 
 class Demos {
   companion object {
@@ -476,7 +478,11 @@ class Demos {
                             },
                             SingleDemo(name = "3.1. More with Layout") { context ->
                               LayoutWithImageComponent.create(context).name("Linda").build()
-                            })))))
+                            },
+                            SingleDemo(name = "3.2. Flexbox Styling") { _ ->
+                              PostStyledKComponent(post = OBI_WAN_POST)
+                            },
+                        )))))
   }
 
   interface DemoItem {

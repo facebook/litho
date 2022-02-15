@@ -27,6 +27,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
+import com.facebook.samples.litho.onboarding.model.Post;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 
@@ -35,8 +36,7 @@ public class PostStyledSpec {
 
   // start_example
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c, @Prop String username, @Prop int avatarRes, @Prop int imageRes) {
+  static Component onCreateLayout(ComponentContext c, @Prop Post post) {
     return Column.create(c)
         .child(
             Row.create(c)
@@ -44,15 +44,15 @@ public class PostStyledSpec {
                 .alignItems(YogaAlign.CENTER)
                 .child(
                     Image.create(c)
-                        .drawableRes(avatarRes)
+                        .drawableRes(post.getUser().getAvatarRes())
                         .widthDip(36)
                         .heightDip(36)
                         .marginDip(YogaEdge.START, 4)
                         .marginDip(YogaEdge.END, 8))
-                .child(Text.create(c).text(username).textStyle(Typeface.BOLD)))
+                .child(Text.create(c).text(post.getUser().getUsername()).textStyle(Typeface.BOLD)))
         .child(
             Image.create(c)
-                .drawableRes(imageRes)
+                .drawableRes(post.getImageRes())
                 .scaleType(ImageView.ScaleType.CENTER_CROP)
                 .aspectRatio(1))
         .build();
