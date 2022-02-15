@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.java.onboarding;
+package com.facebook.samples.litho.onboarding;
 
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.widget.Text;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 
-public class FirstComponentSpecActivity extends NavigatableDemoActivity {
+public class HelloWorldActivity extends NavigatableDemoActivity {
 
+  // start_example
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     ComponentContext c = new ComponentContext(this);
-    // start_example
-    setContentView(LithoView.create(this, FirstComponent.create(c).name("Linda").build()));
-    // end_example
+    setContentView(LithoView.create(this, Text.create(c).text("Hello World!").build()));
   }
+  // end_example
 }
