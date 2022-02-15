@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.bordereffects
 
-import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -24,23 +23,27 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
+import com.facebook.litho.widget.Border
+import com.facebook.litho.widget.BorderEdge
+import com.facebook.litho.widget.BorderEffect
+import com.facebook.litho.widget.BorderRadius
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge
 
+// this doesn't actually have a path on it though?
 class AlternateColorCornerPathEffectBorder : KComponent() {
 
   override fun ComponentScope.render(): Component {
     return Row(
         style =
             Style.border(
-                Border.create(context)
-                    .widthDip(YogaEdge.ALL, 20f)
-                    .color(YogaEdge.LEFT, NiceColor.RED)
-                    .color(YogaEdge.TOP, NiceColor.ORANGE)
-                    .color(YogaEdge.RIGHT, NiceColor.GREEN)
-                    .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                    .radiusDip(20f)
-                    .build())) {
+                Border(
+                    edgeAll = BorderEdge(width = 5f.dp),
+                    edgeTop = BorderEdge(color = NiceColor.ORANGE),
+                    edgeBottom = BorderEdge(color = NiceColor.BLUE),
+                    edgeLeft = BorderEdge(color = NiceColor.RED),
+                    edgeRight = BorderEdge(color = NiceColor.GREEN),
+                    radius = BorderRadius(20f.dp),
+                    effect = BorderEffect.discrete(4f, 11f)))) {
       child(
           Text(
               "This component has a path effect with rounded corners + multiple colors",

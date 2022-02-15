@@ -31,6 +31,7 @@ class BorderEffectsComponentKotlin : KComponent() {
 
   private val components =
       listOf(
+          AllBorder(),
           AlternateColorBorder(),
           AlternateWidthBorder(),
           AlternateColorWidthBorder(),

@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.bordereffects
 
-import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -24,8 +23,10 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
+import com.facebook.litho.widget.Border
+import com.facebook.litho.widget.BorderEdge
+import com.facebook.litho.widget.BorderEffect
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge
 
 class AlternateColorPathEffectBorder : KComponent() {
 
@@ -33,14 +34,13 @@ class AlternateColorPathEffectBorder : KComponent() {
     return Row(
         style =
             Style.border(
-                Border.create(context)
-                    .color(YogaEdge.LEFT, NiceColor.RED)
-                    .color(YogaEdge.TOP, NiceColor.ORANGE)
-                    .color(YogaEdge.RIGHT, NiceColor.GREEN)
-                    .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                    .widthDip(YogaEdge.ALL, 5f)
-                    .discreteEffect(5f, 10f)
-                    .build())) {
+                Border(
+                    edgeAll = BorderEdge(width = 5f.dp),
+                    edgeLeft = BorderEdge(NiceColor.RED),
+                    edgeTop = BorderEdge(NiceColor.ORANGE),
+                    edgeRight = BorderEdge(NiceColor.GREEN),
+                    edgeBottom = BorderEdge(NiceColor.BLUE),
+                    effect = BorderEffect.discrete(5f, 10f)))) {
       child(Text("This component has a path effect with multiple colors", textSize = 20f.dp))
     }
   }

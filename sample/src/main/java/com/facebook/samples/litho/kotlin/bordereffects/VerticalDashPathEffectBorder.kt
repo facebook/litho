@@ -24,8 +24,10 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
+import com.facebook.litho.widget.Border
+import com.facebook.litho.widget.BorderEdge
+import com.facebook.litho.widget.BorderEffect
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge
 
 class VerticalDashPathEffectBorder : KComponent() {
 
@@ -33,11 +35,10 @@ class VerticalDashPathEffectBorder : KComponent() {
     return Row(
         style =
             Style.border(
-                Border.create(context)
-                    .color(YogaEdge.VERTICAL, NiceColor.RED)
-                    .widthDip(YogaEdge.ALL, 5f)
-                    .dashEffect(floatArrayOf(20f, 5f), 0f)
-                    .build())) {
+                Border(
+                    BorderEdge(width = 5f.dp),
+                    edgeVertical = BorderEdge(color = NiceColor.RED),
+                    effect = BorderEffect.dashed(floatArrayOf(20f, 5f), 0f)))) {
       child(Text("This component has a dash path effect on its vertical edges", textSize = 20f.dp))
     }
   }

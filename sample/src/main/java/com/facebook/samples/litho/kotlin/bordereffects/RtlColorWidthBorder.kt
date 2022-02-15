@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.bordereffects
 
-import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -25,26 +24,23 @@ import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.layoutDirection
+import com.facebook.litho.widget.Border
+import com.facebook.litho.widget.BorderEdge
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaDirection
-import com.facebook.yoga.YogaEdge
 
 class RtlColorWidthBorder : KComponent() {
 
   override fun ComponentScope.render(): Component {
+
     return Row(
         style =
             Style.border(
-                    Border.create(context)
-                        .color(YogaEdge.START, NiceColor.RED)
-                        .color(YogaEdge.TOP, NiceColor.YELLOW)
-                        .color(YogaEdge.END, NiceColor.GREEN)
-                        .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                        .widthDip(YogaEdge.START, 2f)
-                        .widthDip(YogaEdge.TOP, 4f)
-                        .widthDip(YogaEdge.END, 8f)
-                        .widthDip(YogaEdge.BOTTOM, 16f)
-                        .build())
+                    Border(
+                        edgeStart = BorderEdge(NiceColor.RED, 2f.dp),
+                        edgeEnd = BorderEdge(NiceColor.GREEN, 8f.dp),
+                        edgeTop = BorderEdge(NiceColor.YELLOW, 4f.dp),
+                        edgeBottom = BorderEdge(NiceColor.BLUE, 16f.dp)))
                 .layoutDirection(YogaDirection.RTL)) {
       child(Text("This component is RTL", textSize = 20f.dp))
     }

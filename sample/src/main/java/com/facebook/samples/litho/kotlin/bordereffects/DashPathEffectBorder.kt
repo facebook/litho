@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.bordereffects
 
-import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -24,8 +23,10 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
+import com.facebook.litho.widget.Border
+import com.facebook.litho.widget.BorderEdge
+import com.facebook.litho.widget.BorderEffect
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge
 
 class DashPathEffectBorder : KComponent() {
 
@@ -33,11 +34,9 @@ class DashPathEffectBorder : KComponent() {
     return Row(
         style =
             Style.border(
-                Border.create(context)
-                    .color(YogaEdge.ALL, NiceColor.BLUE)
-                    .widthDip(YogaEdge.ALL, 5f)
-                    .dashEffect(floatArrayOf(10f, 5f), 0f)
-                    .build())) {
+                Border(
+                    BorderEdge(NiceColor.BLUE, 5f.dp),
+                    effect = BorderEffect.dashed(floatArrayOf(10f, 5f), 0f)))) {
       child(Text("This component has a dash path effect applied", textSize = 20f.dp))
     }
   }
