@@ -24,7 +24,6 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.litho.config.ComponentsConfiguration.canRemeasureCachedLayouts;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -392,9 +391,7 @@ class Layout {
             currentLayout.getLastMeasuredWidth(),
             currentLayout.getLastMeasuredHeight())) {
 
-      if (currentLayout != null
-          && canRemeasureCachedLayouts
-          && !isLayoutSpecWithSizeSpec(component)) {
+      if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
         layout = remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec);
       } else {
 
@@ -648,7 +645,7 @@ class Layout {
       if (isFromCurrentLayout && hasValidDirection) {
         if (hasCompatibleSizeSpec) {
           return cachedLayout;
-        } else if (canRemeasureCachedLayouts && !isLayoutSpecWithSizeSpec(component)) {
+        } else if (!isLayoutSpecWithSizeSpec(component)) {
           return remeasure(layoutStateContext, cachedLayout, widthSpec, heightSpec);
         }
       }
