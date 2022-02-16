@@ -94,7 +94,7 @@ If you want to access a TreeProp from the component that created it, you can tra
 
 ## TreeProps with Lists
 
-TreeProps can be used in Components, Sections and the Collections Kotlin API. They can even be modified between them.
+TreeProps can be used in Components, Sections and Lazy Collections. They can even be modified between them.
 
 The following code is an example of a logging data structure that is passed down from the root component to capture information about the hierarchy.
 
@@ -118,7 +118,7 @@ The following diagram shows the component hierarchy.
   ]}>
   <TabItem value="kotlin">
 
-Start by setting up the `RootComponent` with the `Collection` as one of its children:
+Start by setting up the `RootComponent` with the `LazyList` as one of its children:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/RootKComponent.kt start=start_example end=end_example
 ```

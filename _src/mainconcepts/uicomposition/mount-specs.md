@@ -19,7 +19,7 @@ The lifecycle of mount spec components is as follows:
 - Run `@OnPrepare` once, before layout calculation. `BG`/`UI`
 - Run `@OnMeasure` optionally during layout calculation. This will **not** be called if Yoga has already determined your component's bounds (e.g. a static width/height was set on the component). `BG`/`UI`
 - Run `@OnBoundsDefined` once, after layout calculation. This will be called whether or not `@OnMeasure` was called. `BG`/`UI`
-- Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. `UI`
+- Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. **Must not return null.** `UI`
 - Run `@OnMount` before the component is attached to a hosting view. This will happen when the component is about to become visible when incremental mount is enabled (it is enabled by default). `UI`/`PC`
 - Run `@OnBind` after the component is attached to a hosting view. `UI`/`PC`
 - Run `@OnUnbind` before the component is detached from a hosting view. `UI`/`PC`
