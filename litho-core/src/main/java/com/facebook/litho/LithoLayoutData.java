@@ -37,18 +37,54 @@ public class LithoLayoutData {
   public final int height;
   public final int currentLayoutStateId;
   public final int previousLayoutStateId;
-  public final @Nullable InterStagePropsContainer mLayoutData;
+  public final @Nullable Object mLayoutData;
 
   public LithoLayoutData(
       int width,
       int height,
       int currentLayoutStateId,
       int previousLayoutStateId,
-      @Nullable InterStagePropsContainer mLayoutData) {
+      @Nullable Object mLayoutData) {
     this.width = width;
     this.height = height;
     this.currentLayoutStateId = currentLayoutStateId;
     this.previousLayoutStateId = previousLayoutStateId;
     this.mLayoutData = mLayoutData;
+  }
+
+  /**
+   * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
+   * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
+   */
+  static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
+    if (layoutData == null) {
+      throw new RuntimeException("layout data must not be null.");
+    }
+
+    if (!(layoutData instanceof LithoLayoutData)) {
+      throw new RuntimeException(
+          "RenderTreeNode layout data for Litho should be LithoLayoutData but was <cls>"
+              + layoutData.getClass().getName()
+              + "</cls>");
+    }
+
+    return (LithoLayoutData) layoutData;
+  }
+
+  static @Nullable InterStagePropsContainer getInterStageProps(@Nullable Object data) {
+    final LithoLayoutData layoutData = verifyAndGetLithoLayoutData(data);
+
+    if (layoutData.mLayoutData == null) {
+      return null;
+    }
+
+    if (!(layoutData.mLayoutData instanceof InterStagePropsContainer)) {
+      throw new RuntimeException(
+          "Layout data was not InterStagePropsContainer but was <cls>"
+              + layoutData.mLayoutData.getClass().getName()
+              + "</cls>");
+    }
+
+    return (InterStagePropsContainer) layoutData.mLayoutData;
   }
 }

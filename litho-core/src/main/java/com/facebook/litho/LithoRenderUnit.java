@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
+import static com.facebook.litho.LithoLayoutData.getInterStageProps;
+import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
 import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
@@ -251,29 +253,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final LayoutOutput output = unit.output;
       output.getComponent().unbind(getComponentContext(unit), content, getInterStageProps(data));
     }
-  }
-
-  /**
-   * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
-   * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
-   */
-  private static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
-    if (layoutData == null) {
-      throw new RuntimeException("LayoutData is null in LithoMountBinder.shouldUpdate");
-    }
-
-    if (!(layoutData instanceof LithoLayoutData)) {
-      throw new RuntimeException(
-          "LayoutData is not LithoLayoutData in LithoMountBinder.shouldUpdate. ("
-              + layoutData.getClass().getSimpleName()
-              + ")");
-    }
-
-    return (LithoLayoutData) layoutData;
-  }
-
-  private static @Nullable InterStagePropsContainer getInterStageProps(@Nullable Object data) {
-    return verifyAndGetLithoLayoutData(data).mLayoutData;
   }
 
   public static boolean isMountableView(RenderUnit unit) {

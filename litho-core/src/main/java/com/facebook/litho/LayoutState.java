@@ -397,7 +397,7 @@ public class LayoutState
             bounds.height(),
             layoutState.mId,
             layoutState.mPreviousLayoutStateId,
-            (InterStagePropsContainer) layoutData),
+            layoutData),
         parent);
   }
 
@@ -686,7 +686,8 @@ public class LayoutState
       }
 
       try {
-        component.onBoundsDefined(scopedContext, result, layoutData.mLayoutData);
+        component.onBoundsDefined(
+            scopedContext, result, (InterStagePropsContainer) layoutData.mLayoutData);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       } finally {

@@ -397,7 +397,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
   }
 
-  public static InterStagePropsContainer getInterStageProps(MountItem item) {
-    return ((LithoLayoutData) item.getRenderTreeNode().getLayoutData()).mLayoutData;
+  public static @Nullable InterStagePropsContainer getInterStageProps(MountItem item) {
+    return LithoLayoutData.getInterStageProps(item.getRenderTreeNode().getLayoutData());
   }
 }
