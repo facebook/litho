@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.stats.LithoStats;
-import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -397,20 +396,6 @@ public class StateHandler {
   @VisibleForTesting
   synchronized Map<String, List<StateUpdate>> getAppliedStateUpdates() {
     return mAppliedStateUpdates;
-  }
-
-  synchronized void consumePendingStateUpdateTransitions(
-      List<Transition> outList, @Nullable String logContext) {
-    if (mPendingStateUpdateTransitions == null) {
-      return;
-    }
-
-    for (List<Transition> pendingTransitions : mPendingStateUpdateTransitions.values()) {
-      for (int i = 0, size = pendingTransitions.size(); i < size; i++) {
-        TransitionUtils.addTransitions(pendingTransitions.get(i), outList, logContext);
-      }
-    }
-    mPendingStateUpdateTransitions = null;
   }
 
   @Nullable

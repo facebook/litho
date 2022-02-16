@@ -1898,13 +1898,6 @@ public class ComponentTree implements LithoLifecycleListener {
         ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
   }
 
-  synchronized void consumeStateUpdateTransitions(
-      List<Transition> outList, @Nullable String logContext) {
-    if (mStateHandler != null) {
-      mStateHandler.consumePendingStateUpdateTransitions(outList, logContext);
-    }
-  }
-
   synchronized @Nullable List<Transition> getStateUpdateTransitions() {
     final List<Transition> updateStateTransitions;
     if (mStateHandler != null && mStateHandler.getPendingStateUpdateTransitions() != null) {
