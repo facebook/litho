@@ -686,7 +686,7 @@ public class LayoutState
       }
 
       try {
-        component.onBoundsDefined(scopedContext, result, layoutData.interStagePropsContainer);
+        component.onBoundsDefined(scopedContext, result, layoutData.mLayoutData);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       } finally {

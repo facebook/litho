@@ -37,18 +37,18 @@ public class LithoLayoutData {
   public final int height;
   public final int currentLayoutStateId;
   public final int previousLayoutStateId;
-  public final @Nullable InterStagePropsContainer interStagePropsContainer;
+  public final @Nullable InterStagePropsContainer mLayoutData;
 
   public LithoLayoutData(
       int width,
       int height,
       int currentLayoutStateId,
       int previousLayoutStateId,
-      @Nullable InterStagePropsContainer interStagePropsContainer) {
+      @Nullable InterStagePropsContainer mLayoutData) {
     this.width = width;
     this.height = height;
     this.currentLayoutStateId = currentLayoutStateId;
     this.previousLayoutStateId = previousLayoutStateId;
-    this.interStagePropsContainer = interStagePropsContainer;
+    this.mLayoutData = mLayoutData;
   }
 }

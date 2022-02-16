@@ -398,6 +398,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   public static InterStagePropsContainer getInterStageProps(MountItem item) {
-    return ((LithoLayoutData) item.getRenderTreeNode().getLayoutData()).interStagePropsContainer;
+    return ((LithoLayoutData) item.getRenderTreeNode().getLayoutData()).mLayoutData;
   }
 }
