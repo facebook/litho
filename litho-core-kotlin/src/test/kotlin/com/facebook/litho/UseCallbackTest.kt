@@ -16,12 +16,10 @@
 
 package com.facebook.litho
 
-import android.os.Looper.getMainLooper
-import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -30,14 +28,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Shadows.shadowOf
-import org.robolectric.shadows.ShadowLooper
 
 /** Tests for [useCallback] and capturing of props/state within collections lambdas. */
 @RunWith(AndroidJUnit4::class)
 class UseCallbackTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun useCallbackWithCollection_whenUseCallbackCapturesState_stateInCallbackIsUpToDate() {
@@ -71,22 +67,15 @@ class UseCallbackTest {
     }
 
     val selectionEvents = mutableListOf<List<Int>>()
-    lithoViewRule
-        .setRoot {
+    val lithoView =
+        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) })
         }
-        .setSizePx(1000, 1000)
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    ShadowLooper.idleMainLooper()
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    ShadowLooper.idleMainLooper()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
   }
@@ -113,36 +102,25 @@ class UseCallbackTest {
     }
 
     val rowClickedEvents = mutableListOf<String>()
-    lithoViewRule
-        .setRoot {
+    val lithoView =
+        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithUseCallback(
               data = listOf(1, 2, 3, 4, 5),
               rowClickedTag = "setRoot1",
               onRowClick = { data -> rowClickedEvents.add(data) })
         }
-        .setSizePx(1000, 1000)
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    ShadowLooper.idleMainLooper()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    ShadowLooper.idleMainLooper()
+    lithoView.setRoot(
+        CollectionWithUseCallback(
+            data = listOf(1, 2, 3, 4, 5),
+            rowClickedTag = "setRoot2",
+            onRowClick = { data -> rowClickedEvents.add(data) }))
 
-    lithoViewRule.setRoot {
-      CollectionWithUseCallback(
-          data = listOf(1, 2, 3, 4, 5),
-          rowClickedTag = "setRoot2",
-          onRowClick = { data -> rowClickedEvents.add(data) })
-    }
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    ShadowLooper.idleMainLooper()
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    ShadowLooper.idleMainLooper()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(rowClickedEvents).containsExactly("setRoot1", "setRoot1", "setRoot2", "setRoot2")
   }
@@ -185,22 +163,15 @@ class UseCallbackTest {
     }
 
     val selectionEvents = mutableListOf<List<Int>>()
-    lithoViewRule
-        .setRoot {
+    val lithoView =
+        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) })
         }
-        .setSizePx(1000, 1000)
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    shadowOf(getMainLooper()).idle()
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    shadowOf(getMainLooper()).idle()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
     // If we had our desired behavior (see docs on this test case), the assertion would instead be:
     //   assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
@@ -241,22 +212,15 @@ class UseCallbackTest {
     }
 
     val selectionEvents = mutableListOf<List<Int>>()
-    lithoViewRule
-        .setRoot {
+    val lithoView =
+        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               onSelectedChanged = { list -> selectionEvents.add(list) })
         }
-        .setSizePx(1000, 1000)
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    shadowOf(getMainLooper()).idle()
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    shadowOf(getMainLooper()).idle()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
     assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
   }
@@ -290,36 +254,25 @@ class UseCallbackTest {
     }
 
     val onRowClickEvents = mutableListOf<String>()
-    lithoViewRule
-        .setRoot {
+    val lithoView =
+        lithoViewRule.render(widthPx = 1000, heightPx = 1000) {
           CollectionWithSelectedRows(
               data = listOf(1, 2, 3, 4, 5),
               rowClickedTag = "setRoot1",
               onRowClick = { data -> onRowClickEvents.add(data) })
         }
-        .setSizePx(1000, 1000)
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    shadowOf(getMainLooper()).idle()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    shadowOf(getMainLooper()).idle()
+    lithoView.setRoot(
+        CollectionWithSelectedRows(
+            data = listOf(1, 2, 3, 4, 5),
+            rowClickedTag = "setRoot2",
+            onRowClick = { data -> onRowClickEvents.add(data) }))
 
-    lithoViewRule.setRoot {
-      CollectionWithSelectedRows(
-          data = listOf(1, 2, 3, 4, 5),
-          rowClickedTag = "setRoot2",
-          onRowClick = { data -> onRowClickEvents.add(data) })
-    }
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
-    shadowOf(getMainLooper()).idle()
-
-    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
-    shadowOf(getMainLooper()).idle()
+    lithoViewRule.act(lithoView) { clickOnTag("item_1") }
+    lithoViewRule.act(lithoView) { clickOnTag("item_2") }
 
     // If we had our desired behavior (see docs on this test case), the assertion would instead be:
     //   assertThat(onRowClickEvents)
