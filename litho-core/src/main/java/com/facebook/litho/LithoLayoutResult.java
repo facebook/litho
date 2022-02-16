@@ -464,6 +464,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       int outputWidth;
       int outputHeight;
 
+      // Resolve or remeasure a nested tree or cached layout
       if (isNestedTree(component)
           || hasCachedLayout(mLayoutContext, component)
           || this instanceof NestedTreeHolderResult) {
@@ -508,12 +509,16 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
             ComponentsSystrace.endSection();
           }
         }
+
+        // If diff node is set check if measurements from the previous pass can be reused
       } else if (diffNode != null
           && diffNode.getLastWidthSpec() == widthSpec
           && diffNode.getLastHeightSpec() == heightSpec
           && !component.shouldAlwaysRemeasure()) {
         outputWidth = (int) diffNode.getLastMeasuredWidth();
         outputHeight = (int) diffNode.getLastMeasuredHeight();
+
+        // Measure the component
       } else {
         final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
