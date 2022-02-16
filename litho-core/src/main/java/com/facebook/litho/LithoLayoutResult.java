@@ -95,7 +95,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
      This should get cleaned up once the implementation is general enough for MountableComponents.
 
     */
-    mLayoutData = node.getTailComponent().createInterStagePropsContainer();
+    final Component component = node.getTailComponent();
+    if (!Component.isMountable(component)) {
+      mLayoutData = component.createInterStagePropsContainer();
+    }
   }
 
   public LayoutStateContext getLayoutStateContext() {
@@ -515,8 +518,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           && diffNode.getLastWidthSpec() == widthSpec
           && diffNode.getLastHeightSpec() == heightSpec
           && !component.shouldAlwaysRemeasure()) {
+
         outputWidth = (int) diffNode.getLastMeasuredWidth();
         outputHeight = (int) diffNode.getLastMeasuredHeight();
+        mLayoutData = diffNode.getLayoutData();
 
         // Measure the component
       } else {
@@ -526,13 +531,20 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
         }
         try {
-          component.onMeasure(
-              componentScopedContext,
-              this,
-              widthSpec,
-              heightSpec,
-              size,
-              (InterStagePropsContainer) getLayoutData());
+
+          if (mMountable != null) {
+            mLayoutData =
+                mMountable.measure(mNode.getAndroidContext(), widthSpec, heightSpec, size);
+          } else {
+            component.onMeasure(
+                componentScopedContext,
+                this,
+                widthSpec,
+                heightSpec,
+                size,
+                (InterStagePropsContainer) getLayoutData());
+          }
+
         } catch (Exception e) {
           ComponentUtils.handle(componentScopedContext, e);
           return YogaMeasureOutput.make(0, 0);

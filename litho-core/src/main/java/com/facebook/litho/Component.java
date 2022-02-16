@@ -1385,6 +1385,10 @@ public abstract class Component
     return (component != null && component.getMountType() != MountType.NONE);
   }
 
+  static boolean isMountable(@Nullable Component component) {
+    return (component != null && component.getMountType() == MountType.MOUNTABLE);
+  }
+
   static boolean isNestedTree(@Nullable Component component) {
     return isLayoutSpecWithSizeSpec(component);
   }
