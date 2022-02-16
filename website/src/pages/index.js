@@ -99,6 +99,29 @@ function Feature({imageUrl, title, description, dark}) {
   );
 }
 
+function VideoContainer() {
+  return (
+    <div className="container text--center margin-bottom--xl margin-top--lg">
+      <div className="row">
+        <div className="col">
+          <h2>Check it out in the intro video</h2>
+          <div className={styles.ytVideo}>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/RFI-fuiMRK4"
+              title="Explain Like I'm 5: Litho"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const context = useDocusaurusContext();
   const {siteConfig = {}} = context;
@@ -133,6 +156,7 @@ function Home() {
         </div>
       </div>
       <main>
+        <VideoContainer />
         {features &&
           features.length > 0 &&
           features.map((props, idx) => <Feature key={idx} {...props} />)}
