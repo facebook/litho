@@ -60,7 +60,7 @@ constructor(
     val themeResId: Int? = null
 ) : TestRule {
   lateinit var context: ComponentContext
-  private val threadLooperController: ThreadLooperController = ThreadLooperController()
+  private lateinit var threadLooperController: ThreadLooperController
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
@@ -74,6 +74,8 @@ constructor(
             context = ComponentContext(getApplicationContext<Context>())
           }
           context.setLayoutStateContextForTesting()
+
+          threadLooperController = ThreadLooperController()
           threadLooperController.init()
           base.evaluate()
         } finally {

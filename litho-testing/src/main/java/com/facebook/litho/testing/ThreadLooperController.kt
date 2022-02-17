@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowLooper
 class ThreadLooperController {
   private lateinit var messageQueue: BlockingQueue<Message>
   private lateinit var layoutLooper: ShadowLooper
+  private var isInitialized = false
 
   fun init() {
     layoutLooper =
@@ -40,13 +41,19 @@ class ThreadLooperController {
     messageQueue = ArrayBlockingQueue(100)
     val layoutLooperThread = LayoutLooperThread(layoutLooper, messageQueue)
     layoutLooperThread.start()
+    isInitialized = true
   }
 
   fun clean() {
+    if (!isInitialized) {
+      return
+    }
+
     quitSync()
     if (ShadowLooper.looperMode() != LooperMode.Mode.PAUSED) {
       layoutLooper.quitUnchecked()
     }
+    isInitialized = false
   }
 
   private fun quitSync() {
