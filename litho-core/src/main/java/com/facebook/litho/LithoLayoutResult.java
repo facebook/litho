@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Component.hasCachedLayout;
-import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -468,9 +466,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       int outputHeight;
 
       // Resolve or remeasure a nested tree or cached layout
-      if (isNestedTree(component)
-          || hasCachedLayout(mLayoutContext, component)
-          || this instanceof NestedTreeHolderResult) {
+      if (this instanceof NestedTreeHolderResult) {
 
         final LayoutState layoutState = mLayoutContext.getLayoutState();
         if (layoutState == null) {
