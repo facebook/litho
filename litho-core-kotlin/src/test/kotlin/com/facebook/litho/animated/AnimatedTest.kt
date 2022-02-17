@@ -36,7 +36,6 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.LooperMode
@@ -45,13 +44,15 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class AnimatedTest {
 
+  // TODO(t112256774): Re-enable AnimatedTest tests. See https://fburl.com/h50b38s9 for more details
+
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
 
   private lateinit var listener: AnimationFinishListener
   private lateinit var listener2: AnimationFinishListener
   private lateinit var listener3: AnimationFinishListener
 
-  @Test(expected = IllegalStateException::class)
+  // @Test(expected = IllegalStateException::class)
   fun startAnimation_called_twice_expect_IllegalStateException() {
     listener = mock()
     listener2 = mock()
@@ -67,7 +68,7 @@ class AnimatedTest {
     sequence.start()
     shadowOf(getMainLooper()).idle()
   }
-  @Test
+  // @Test
   fun cancelAnimation_called_twice_expect_one_cancel_call_behaviour() {
     listener = mock()
     listener2 = mock()
@@ -103,7 +104,7 @@ class AnimatedTest {
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
   }
 
-  @Test
+  // @Test
   fun timingAnimation_whenAnimationFinish_alphaValueChange() {
     val alphaProgress = DynamicValue(0f)
     val animation = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
@@ -121,7 +122,7 @@ class AnimatedTest {
     assertThat(view.alpha).isEqualTo(1f).describedAs("value after animation")
   }
 
-  @Test
+  // @Test
   fun timingAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -146,7 +147,7 @@ class AnimatedTest {
         .onFinish(true)
   }
 
-  @Test
+  // @Test
   fun springAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -174,7 +175,7 @@ class AnimatedTest {
         .onFinish(true)
   }
 
-  @Test
+  // @Test
   fun sequenceAnimation_whenMainAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -211,7 +212,7 @@ class AnimatedTest {
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
   }
 
-  @Test
+  // @Test
   fun sequenceAnimation_whenAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -248,7 +249,7 @@ class AnimatedTest {
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
   }
 
-  @Test
+  // @Test
   fun sequenceAnimation_whenSpringAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -297,7 +298,7 @@ class AnimatedTest {
     verify(listener2, never().description("spring2 animation listener not invoked")).onFinish(any())
   }
 
-  @Test
+  // @Test
   fun sequenceAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -345,7 +346,7 @@ class AnimatedTest {
                     "main sequence animation listener called onFinish(true) as it was cancelled"))
         .onFinish(true)
   }
-  @Test
+  // @Test
   fun parralelAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -400,7 +401,7 @@ class AnimatedTest {
         .onFinish(true)
   }
 
-  @Test
+  // @Test
   fun sequenceAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
@@ -423,7 +424,7 @@ class AnimatedTest {
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
   }
 
-  @Test
+  // @Test
   fun sequenceAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -451,7 +452,7 @@ class AnimatedTest {
         .onFinish(false)
   }
 
-  @Test
+  // @Test
   fun loopAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
@@ -474,7 +475,7 @@ class AnimatedTest {
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
   }
 
-  @Test
+  // @Test
   fun loopAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
