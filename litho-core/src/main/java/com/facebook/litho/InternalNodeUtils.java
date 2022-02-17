@@ -385,6 +385,20 @@ public class InternalNodeUtils {
       flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
     }
 
+    Mountable<?> mountable = node.getMountable();
+    if (mountable != null) {
+      return MountableLithoRenderUnit.create(
+          id,
+          component,
+          context,
+          layoutOutputNodeInfo,
+          layoutOutputViewNodeInfo,
+          flags,
+          importantForAccessibility,
+          updateState,
+          mountable);
+    }
+
     return MountSpecLithoRenderUnit.create(
         id,
         component,

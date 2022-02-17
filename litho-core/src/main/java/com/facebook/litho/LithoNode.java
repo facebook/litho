@@ -178,9 +178,19 @@ public class LithoNode implements Node<LithoRenderContext> {
 
   protected long mPrivateFlags;
 
+  private @Nullable Mountable<?> mMountable;
+
   protected LithoNode(ComponentContext componentContext) {
     mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
+  }
+
+  public @Nullable Mountable<?> getMountable() {
+    return mMountable;
+  }
+
+  public void setMountable(@Nullable Mountable<?> mountable) {
+    mMountable = mountable;
   }
 
   public void addChildAt(LithoNode child, int index) {

@@ -678,6 +678,13 @@ public abstract class Component
       final int componentBoundsY,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
+  protected @Nullable PrepareResult prepare(ComponentContext c) {
+    // default implementation runs onPrepare(), MountableComponents will override to return a
+    // Mountable
+    onPrepare(c);
+    return null;
+  }
+
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
   }

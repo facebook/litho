@@ -344,10 +344,15 @@ class Layout {
       node.addAttachable(new LayoutSpecAttachable(globalKey, component, scopedComponentInfo));
     }
 
-    // 13. Call onPrepare for MountSpecs.
+    // 13. Call onPrepare for MountSpecs or prepare for MountableComponents.
     if (isMountSpec(component)) {
       try {
-        component.onPrepare(c);
+        if (isMountSpec(component)) {
+          PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
+          if (prepareResult != null) {
+            node.setMountable(prepareResult.mountable);
+          }
+        }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(parent, component, e);
       }
