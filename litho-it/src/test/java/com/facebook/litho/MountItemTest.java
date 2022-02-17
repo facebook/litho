@@ -279,7 +279,7 @@ public class MountItemTest {
   @Test
   public void testUpdateDoesntChangeFlags() {
     LithoRenderUnit unit =
-        LithoRenderUnit.create(
+        MountSpecLithoRenderUnit.create(
             0, mComponent, mContext, mNodeInfo, null, 0, 0, LayoutOutput.STATE_UNKNOWN);
     RenderTreeNode node = RenderTreeNodeUtils.create(unit, new Rect(0, 0, 0, 0), null, null);
 

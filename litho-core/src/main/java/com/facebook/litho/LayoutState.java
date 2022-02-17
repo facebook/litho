@@ -299,7 +299,7 @@ public class LayoutState
     final int height = result != null ? result.getHeight() : 0;
 
     final LithoRenderUnit unit =
-        LithoRenderUnit.create(
+        MountSpecLithoRenderUnit.create(
             ROOT_HOST_ID,
             HostComponent.create(),
             null,
@@ -317,7 +317,7 @@ public class LayoutState
                 width, height, layoutState.mId, layoutState.mPreviousLayoutStateId, null),
             null);
 
-    final LayoutOutput hostOutput = unit.output;
+    final LayoutOutput hostOutput = unit.getLayoutOutput();
 
     if (hierarchy != null) {
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
@@ -334,12 +334,10 @@ public class LayoutState
       @Nullable RenderTreeNode parent,
       @Nullable DebugHierarchy.Node hierarchy) {
 
-    final Component hostComponent = unit.output.getComponent();
-
     final RenderTreeNode renderTreeNode =
         createRenderTreeNode(unit, layoutState, result, false, null, parent);
 
-    final LayoutOutput hostOutput = unit.output;
+    final LayoutOutput hostOutput = unit.getLayoutOutput();
 
     if (hierarchy != null) {
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
@@ -407,7 +405,11 @@ public class LayoutState
       final @OutputUnitType int outputType,
       final @Nullable TransitionId transitionId) {
     return new LithoAnimtableItem(
-        unit.getId(), absoluteBounds, outputType, unit.output.getNodeInfo(), transitionId);
+        unit.getId(),
+        absoluteBounds,
+        outputType,
+        unit.getLayoutOutput().getNodeInfo(),
+        transitionId);
   }
 
   /**
@@ -676,7 +678,7 @@ public class LayoutState
     if (contentRenderTreeNode != null) {
       final LithoRenderUnit contentRenderUnit =
           (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
-      final LayoutOutput contentLayoutOutput = contentRenderUnit.output;
+      final LayoutOutput contentLayoutOutput = contentRenderUnit.getLayoutOutput();
       final LithoLayoutData layoutData =
           (LithoLayoutData) Preconditions.checkNotNull(contentRenderTreeNode.getLayoutData());
 
@@ -934,13 +936,13 @@ public class LayoutState
         createRenderTreeNode(unit, layoutState, result, false, null, parent);
 
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
-    final LayoutOutput output = drawableRenderUnit.output;
+    final LayoutOutput output = drawableRenderUnit.getLayoutOutput();
 
     addRenderTreeNode(
         layoutState,
         renderTreeNode,
         drawableRenderUnit,
-        drawableRenderUnit.output,
+        drawableRenderUnit.getLayoutOutput(),
         type,
         !matchHostBoundsTransitions ? layoutState.mCurrentTransitionId : null,
         parent);
@@ -1032,7 +1034,7 @@ public class LayoutState
 
     final RenderTreeNode hostRenderTreeNode =
         createHostRenderTreeNode(hostRenderUnit, layoutState, result, node, parent, hierarchy);
-    final LayoutOutput hostLayoutOutput = hostRenderUnit.output;
+    final LayoutOutput hostLayoutOutput = hostRenderUnit.getLayoutOutput();
 
     if (diffNode != null) {
       diffNode.setHostOutput(hostRenderUnit);

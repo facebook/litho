@@ -258,7 +258,8 @@ public class InternalNodeUtils {
     if (recycle != null) {
       try {
         isCachedOutputUpdated =
-            !component.shouldComponentUpdate(null, recycle.output.getComponent(), null, component);
+            !component.shouldComponentUpdate(
+                null, recycle.getLayoutOutput().getComponent(), null, component);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
         isCachedOutputUpdated = false;
@@ -384,7 +385,7 @@ public class InternalNodeUtils {
       flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
     }
 
-    return LithoRenderUnit.create(
+    return MountSpecLithoRenderUnit.create(
         id,
         component,
         context,

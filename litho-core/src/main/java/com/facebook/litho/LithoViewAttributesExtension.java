@@ -71,7 +71,7 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.output;
+      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
       final LithoViewAttributesState state = extensionState.getState();
       final long id = lithoRenderUnit.getId();
 
@@ -91,7 +91,7 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.output;
+      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
       final LithoViewAttributesState state = extensionState.getState();
       final int flags = state.getDefaultViewAttributes(lithoRenderUnit.getId());
       MountState.unsetViewAttributes(content, output, flags);
@@ -111,8 +111,14 @@ public class LithoViewAttributesExtension
     final LithoRenderUnit prevLithoRenderUnit = (LithoRenderUnit) previousRenderUnit;
     final LithoRenderUnit nextLithoRenderUnit = (LithoRenderUnit) nextRenderUnit;
 
-    return LithoRenderUnit.shouldUpdateMountItem(
-            prevLithoRenderUnit, nextLithoRenderUnit, previousLayoutData, nextLayoutData)
-        || MountState.shouldUpdateViewInfo(nextLithoRenderUnit.output, prevLithoRenderUnit.output);
+    return MountState.shouldUpdateViewInfo(
+            nextLithoRenderUnit.getLayoutOutput(), prevLithoRenderUnit.getLayoutOutput())
+        || (previousRenderUnit instanceof MountSpecLithoRenderUnit
+            && nextLithoRenderUnit instanceof MountSpecLithoRenderUnit
+            && MountSpecLithoRenderUnit.shouldUpdateMountItem(
+                (MountSpecLithoRenderUnit) prevLithoRenderUnit,
+                (MountSpecLithoRenderUnit) nextLithoRenderUnit,
+                previousLayoutData,
+                nextLayoutData));
   }
 }

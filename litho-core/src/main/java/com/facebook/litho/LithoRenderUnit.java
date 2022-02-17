@@ -16,88 +16,34 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
-import static com.facebook.litho.LithoLayoutData.getInterStageProps;
-import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
-import static com.facebook.rendercore.RenderUnit.Extension.extension;
-
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
 
-/** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
-public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public abstract class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
 
-  final long mId;
-  final LayoutOutput output;
-  final @Nullable ComponentContext mContext;
+  protected final long mId;
+  protected final LayoutOutput output;
+  protected final @Nullable ComponentContext mContext;
 
-  private boolean mIsShouldUpdateCachingEnabled;
-  private boolean mIsShouldUpdateResultCached;
-  private boolean mCachedShouldUpdateResult;
-
-  LithoRenderUnit(long id, LayoutOutput output, @Nullable ComponentContext context) {
-    super(getRenderType(output));
-    addMountUnmountExtensions(extension(this, LithoMountBinder.INSTANCE));
-    addAttachDetachExtension(extension(this, LithoBindBinder.INSTANCE));
+  protected LithoRenderUnit(
+      long id, LayoutOutput output, RenderType renderType, @Nullable ComponentContext context) {
+    super(renderType);
     this.mContext = context;
     this.output = output;
     this.mId = id;
   }
 
-  static @Nullable ComponentContext getComponentContext(MountItem item) {
-    return ((LithoRenderUnit) item.getRenderTreeNode().getRenderUnit()).mContext;
+  public LayoutOutput getLayoutOutput() {
+    return output;
   }
 
-  static @Nullable ComponentContext getComponentContext(RenderTreeNode node) {
-    return ((LithoRenderUnit) node.getRenderUnit()).mContext;
-  }
-
-  static @Nullable ComponentContext getComponentContext(LithoRenderUnit unit) {
-    return unit.mContext;
-  }
-
-  @Override
-  public boolean isRecyclingDisabled() {
-    return this.output.getComponent().isRecyclingDisabled();
-  }
-
-  @Override
-  protected Class getDescription() {
-    return this.output.getComponent().getClass();
-  }
-
-  @Override
-  protected void onStartUpdateRenderUnit() {
-    mIsShouldUpdateCachingEnabled = true;
-  }
-
-  @Override
-  protected void onEndUpdateRenderUnit() {
-    mIsShouldUpdateCachingEnabled = false;
-    mIsShouldUpdateResultCached = false;
-  }
-
-  @Override
-  @Nullable
-  public MountItemsPool.ItemPool createRecyclingPool() {
-    try {
-      return output.getComponent().createRecyclingPool();
-    } catch (Exception e) {
-      ComponentUtils.handle(mContext, e);
-      return null;
-    }
-  }
-
-  @Override
-  public Object createContent(Context c) {
-    return output.getComponent().createMountContent(c);
+  public @Nullable ComponentContext getComponentContext() {
+    return mContext;
   }
 
   @Override
@@ -106,153 +52,30 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   }
 
   @Override
-  public Class<?> getRenderContentType() {
-    return output.getComponent().getClass();
-  }
-
-  private static RenderType getRenderType(LayoutOutput output) {
-    if (output == null) {
-      throw new IllegalArgumentException("Null output used for LithoRenderUnit.");
-    }
-    return output.getComponent().getMountType() == Component.MountType.DRAWABLE
-        ? RenderType.DRAWABLE
-        : RenderType.VIEW;
-  }
-
-  @Override
   public boolean getMatchHostBounds() {
     return (output.getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
   }
 
-  public static LithoRenderUnit create(
-      final long id,
-      final Component component,
-      final @Nullable ComponentContext context,
-      final @Nullable NodeInfo nodeInfo,
-      final @Nullable ViewNodeInfo viewNodeInfo,
-      final int flags,
-      final int importantForAccessibility,
-      final @LayoutOutput.UpdateState int updateState) {
-    final LayoutOutput output =
-        new LayoutOutput(
-            component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
-
-    return new LithoRenderUnit(id, output, context);
+  @Override
+  public boolean isRecyclingDisabled() {
+    return output.getComponent().isRecyclingDisabled();
   }
 
-  public static boolean shouldUpdateMountItem(
-      final LithoRenderUnit current,
-      final LithoRenderUnit next,
-      final @Nullable Object currentData,
-      final @Nullable Object nextData) {
-    if (current.mIsShouldUpdateCachingEnabled && current.mIsShouldUpdateResultCached) {
-      return current.mCachedShouldUpdateResult;
-    }
-
-    final LithoLayoutData currentLithoData = verifyAndGetLithoLayoutData(currentData);
-    final LithoLayoutData nextLithoData = verifyAndGetLithoLayoutData(nextData);
-
-    final @Nullable ComponentContext nextContext = getComponentContext(next);
-    final int previousIdFromNextOutput = nextLithoData.previousLayoutStateId;
-
-    final @Nullable ComponentContext currentContext = getComponentContext(current);
-    final int idFromCurrentOutput = currentLithoData.currentLayoutStateId;
-
-    final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
-
-    final boolean result =
-        MountState.shouldUpdateMountItem(
-            next.output,
-            (LithoLayoutData) nextData,
-            nextContext,
-            current.output,
-            (LithoLayoutData) currentData,
-            currentContext,
-            updateValueFromLayoutOutput);
-
-    if (current.mIsShouldUpdateCachingEnabled && !current.mIsShouldUpdateResultCached) {
-      current.mCachedShouldUpdateResult = result;
-      current.mIsShouldUpdateResultCached = true;
-    }
-
-    return result;
+  @Override
+  protected Class getDescription() {
+    return output.getComponent().getClass();
   }
 
-  public static class LithoMountBinder implements Binder<LithoRenderUnit, Object> {
-
-    public static final LithoMountBinder INSTANCE = new LithoMountBinder();
-
-    @Override
-    public boolean shouldUpdate(
-        final LithoRenderUnit current,
-        final LithoRenderUnit next,
-        final @Nullable Object currentData,
-        final @Nullable Object nextData) {
-      if (next.output.getComponent() instanceof HostComponent) {
-        return false;
-      }
-
-      return shouldUpdateMountItem(current, next, currentData, nextData);
-    }
-
-    @Override
-    public void bind(
-        final Context context,
-        final Object content,
-        final LithoRenderUnit unit,
-        final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      output.getComponent().mount(getComponentContext(unit), content, getInterStageProps(data));
-    }
-
-    @Override
-    public void unbind(
-        final Context context,
-        final Object content,
-        final LithoRenderUnit unit,
-        final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      output.getComponent().unmount(getComponentContext(unit), content, getInterStageProps(data));
-    }
+  static @Nullable ComponentContext getComponentContext(MountItem item) {
+    return ((LithoRenderUnit) item.getRenderTreeNode().getRenderUnit()).getComponentContext();
   }
 
-  public static class LithoBindBinder implements Binder<LithoRenderUnit, Object> {
+  static @Nullable ComponentContext getComponentContext(RenderTreeNode node) {
+    return ((LithoRenderUnit) node.getRenderUnit()).getComponentContext();
+  }
 
-    public static final LithoBindBinder INSTANCE = new LithoBindBinder();
-
-    @Override
-    public boolean shouldUpdate(
-        final LithoRenderUnit current, final LithoRenderUnit next, final Object c, final Object n) {
-      return true;
-    }
-
-    @Override
-    public void bind(
-        final Context context,
-        final Object content,
-        final LithoRenderUnit unit,
-        final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      if (content instanceof Drawable) {
-        final Drawable drawable = (Drawable) content;
-        if (drawable.getCallback() instanceof View) {
-          final View view = (View) drawable.getCallback();
-          maybeSetDrawableState(view, drawable, output.getFlags(), output.getNodeInfo());
-        }
-      }
-
-      output.getComponent().bind(getComponentContext(unit), content, getInterStageProps(data));
-    }
-
-    @Override
-    public void unbind(
-        final Context context,
-        final Object content,
-        final LithoRenderUnit unit,
-        final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      output.getComponent().unbind(getComponentContext(unit), content, getInterStageProps(data));
-    }
+  static @Nullable ComponentContext getComponentContext(LithoRenderUnit unit) {
+    return unit.getComponentContext();
   }
 
   public static boolean isMountableView(RenderUnit unit) {
