@@ -61,11 +61,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
     return output.getComponent().isRecyclingDisabled();
   }
 
-  @Override
-  protected Class getDescription() {
-    return output.getComponent().getClass();
-  }
-
   static @Nullable ComponentContext getComponentContext(MountItem item) {
     return ((LithoRenderUnit) item.getRenderTreeNode().getRenderUnit()).getComponentContext();
   }

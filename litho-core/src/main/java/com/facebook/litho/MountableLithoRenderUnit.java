@@ -29,7 +29,10 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   private final Mountable<?> mMountable;
 
   private MountableLithoRenderUnit(
-      long id, LayoutOutput output, Mountable mountable, @Nullable ComponentContext context) {
+      final long id,
+      final LayoutOutput output,
+      final Mountable mountable,
+      final @Nullable ComponentContext context) {
     super(id, output, mountable.getRenderType(), context);
     this.mMountable = mountable;
 
@@ -65,5 +68,10 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   @Override
   public Object createContent(Context c) {
     return mMountable.createContent(c);
+  }
+
+  @Override
+  protected Class getDescription() {
+    return mMountable.getClass();
   }
 }
