@@ -28,16 +28,25 @@ import kotlin.reflect.KClass
  *
  * example:
  * ```
- * FBStory
- * --Story
- *    |__Text
- *   |__Text
- * --Column
- *   |__Text
- *   |__Text
+ * class FBStory : KComponent() {
+ * override fun ComponentScope.render() {
+ * return Story()
+ * }
  * ```
- * findDirectComponentInLithoView will only be able to return Story or Column from the LithoView
+ *
+ * findDirectComponentInLithoView will only be able to return Story Component from the LithoView
  * with FBStory as a root
+ *
+ * ```
+ * class FBStory : KComponent() {
+ * override fun ComponentScope.render() {
+ * return Column{
+ *    child(CommentComponent())
+ *    child(AuthorComponent())
+ *    }
+ * }
+ * findDirectComponentInLithoView here will only be able to return Column
+ * ```
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
   val internalNode = getLayoutRoot(lithoView)?.node ?: return null
