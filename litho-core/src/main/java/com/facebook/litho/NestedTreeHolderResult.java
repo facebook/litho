@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.yoga.YogaNode;
 
 /**
@@ -49,6 +50,47 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
     mNestedTree = tree;
     if (tree != null) {
       tree.setParent(this);
+    }
+  }
+
+  @Override
+  protected void measureInternal(int widthSpec, int heightSpec, Size size) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    final LayoutState layoutState = mLayoutContext.getLayoutState();
+    final Component component = Preconditions.checkNotNull(mNode.getTailComponent());
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          component.getSimpleName()
+              + ": To measure a component outside of a layout calculation use"
+              + " Component#measureMightNotCacheInternalNode.");
+    }
+
+    final int count = mNode.getComponentCount();
+    final ComponentContext parentContext;
+    if (count == 1) {
+      if (getParent() != null) {
+        final LithoNode internalNode = getParent().getNode();
+        parentContext = internalNode.getTailComponentContext();
+      } else {
+        parentContext = layoutState.getComponentContext();
+      }
+    } else {
+      parentContext = mNode.getComponentContextAt(1);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("resolveNestedTree:" + component.getSimpleName());
+    }
+    try {
+      final @Nullable LithoLayoutResult nestedTree =
+          Layout.create(mLayoutContext, parentContext, this, widthSpec, heightSpec);
+
+      size.width = nestedTree != null ? nestedTree.getWidth() : 0;
+      size.height = nestedTree != null ? nestedTree.getHeight() : 0;
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 }
