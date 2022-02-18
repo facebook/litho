@@ -28,10 +28,10 @@ import androidx.annotation.Px;
 import androidx.core.util.Preconditions;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
@@ -435,15 +435,13 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mYogaNode;
   }
 
-  long measure(float width, YogaMeasureMode widthMode, float height, YogaMeasureMode heightMode) {
+  long measure(final int widthSpec, final int heightSpec) {
 
     if (mLayoutContext.isLayoutReleased()) {
       return 0;
     }
 
     final Component component = Preconditions.checkNotNull(mNode.getTailComponent());
-    final int widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
-    final int heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -464,14 +462,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         throw new IllegalStateException(
             "MeasureOutput not set, Component is: "
                 + component
-                + " Width: "
-                + width
-                + " Height: "
-                + height
-                + " WidthMode: "
-                + widthMode.name()
-                + " HeightMode: "
-                + heightMode.name()
+                + " WidthSpec: "
+                + MeasureSpecUtils.getMeasureSpecDescription(widthSpec)
+                + " HeightSpec: "
+                + MeasureSpecUtils.getMeasureSpecDescription(heightSpec)
                 + " Measured width : "
                 + size.width
                 + " Measured Height: "
