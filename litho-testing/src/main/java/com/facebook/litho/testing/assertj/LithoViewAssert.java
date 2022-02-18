@@ -439,6 +439,12 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
     Component component = ComponentsFinderKt.findDirectComponentInLithoView(actual, kClass);
 
+    Assertions.assertThat(component)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains direct component with props that matches given matcher, but the component of given class: \n <%s>  was not found as direct one",
+            actual, kClass.toString())
+        .isNotNull();
+
     boolean hasMatchingProps = comparedPropsAreEqual(component, propsValuePairs);
     Assertions.assertThat(hasMatchingProps)
         .overridingErrorMessage(
@@ -492,6 +498,12 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
       KClass kClass, Pair<KProperty1<T2, T1>, Matcher<T1>>... propsMatcherPairs) {
 
     Component component = ComponentsFinderKt.findDirectComponentInLithoView(actual, kClass);
+
+    Assertions.assertThat(component)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains direct component with props that matches given matcher, but the component of given class: \n <%s> \n was not found as direct one",
+            actual, kClass.toString())
+        .isNotNull();
 
     boolean isMatching = comparedPropsMatch(component, propsMatcherPairs);
 
