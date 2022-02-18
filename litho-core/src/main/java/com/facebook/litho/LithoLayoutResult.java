@@ -454,12 +454,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           .flush();
     }
 
+    final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
+
     try {
-
-      setLastWidthSpec(widthSpec);
-      setLastHeightSpec(heightSpec);
-
-      final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
       measureInternal(widthSpec, heightSpec, size);
 
@@ -481,11 +478,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
                 + size.height);
       }
 
-      setLastMeasuredWidth(size.width);
-      setLastMeasuredHeight(size.height);
-      setLastWidthSpec(widthSpec);
-      setLastHeightSpec(heightSpec);
-
       if (getDiffNode() != null) {
         getDiffNode().setLastWidthSpec(widthSpec);
         getDiffNode().setLastHeightSpec(heightSpec);
@@ -494,7 +486,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       }
 
       return YogaMeasureOutput.make(size.width, size.height);
+
     } finally {
+
+      // Record the last measure width and height spec
+      setLastMeasuredWidth(size.width);
+      setLastMeasuredHeight(size.height);
+      setLastWidthSpec(widthSpec);
+      setLastHeightSpec(heightSpec);
+
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
