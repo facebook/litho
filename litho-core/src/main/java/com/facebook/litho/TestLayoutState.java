@@ -405,11 +405,6 @@ public class TestLayoutState {
       }
     }
 
-    // 9. Copy the common props
-    // Skip if resolving a layout with size spec because common props were copied in the previous
-    // layout pass.
-    final CommonProps commonProps = component.getCommonProps();
-
     // 10. Add the component to the InternalNode.
     node.appendComponent(scopedComponentInfo);
 
