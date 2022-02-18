@@ -17,7 +17,6 @@
 package com.facebook.litho.animated
 
 import android.os.Looper.getMainLooper
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DynamicValue
@@ -27,8 +26,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.unspecified
+import com.facebook.litho.testing.LithoViewRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -36,23 +34,25 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.PAUSED)
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class AnimatedTest {
 
   // TODO(t112256774): Re-enable AnimatedTest tests. See https://fburl.com/h50b38s9 for more details
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   private lateinit var listener: AnimationFinishListener
   private lateinit var listener2: AnimationFinishListener
   private lateinit var listener3: AnimationFinishListener
 
-  // @Test(expected = IllegalStateException::class)
+  @Test(expected = IllegalStateException::class)
   fun startAnimation_called_twice_expect_IllegalStateException() {
     listener = mock()
     listener2 = mock()
@@ -68,7 +68,7 @@ class AnimatedTest {
     sequence.start()
     shadowOf(getMainLooper()).idle()
   }
-  // @Test
+  @Test
   fun cancelAnimation_called_twice_expect_one_cancel_call_behaviour() {
     listener = mock()
     listener2 = mock()
@@ -104,25 +104,20 @@ class AnimatedTest {
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
   }
 
-  // @Test
+  @Test
   fun timingAnimation_whenAnimationFinish_alphaValueChange() {
     val alphaProgress = DynamicValue(0f)
     val animation = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(TestComponent(alphaProgress = alphaProgress))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoview = lithoViewRule.render { TestComponent(alphaProgress = alphaProgress) }
 
-    val view = lithoViewRule.lithoView
+    val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("initial value")
     animation.start()
     shadowOf(getMainLooper()).idle()
     assertThat(view.alpha).isEqualTo(1f).describedAs("value after animation")
   }
 
-  // @Test
+  @Test
   fun timingAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -147,7 +142,7 @@ class AnimatedTest {
         .onFinish(true)
   }
 
-  // @Test
+  @Test
   fun springAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -175,7 +170,7 @@ class AnimatedTest {
         .onFinish(true)
   }
 
-  // @Test
+  @Test
   fun sequenceAnimation_whenMainAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -212,7 +207,7 @@ class AnimatedTest {
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
   }
 
-  // @Test
+  @Test
   fun sequenceAnimation_whenAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -249,7 +244,7 @@ class AnimatedTest {
     verify(listener2, never().description("timing2 animation listener not invoked")).onFinish(any())
   }
 
-  // @Test
+  @Test
   fun sequenceAnimation_whenSpringAnimationCancelledImmediately_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -298,7 +293,7 @@ class AnimatedTest {
     verify(listener2, never().description("spring2 animation listener not invoked")).onFinish(any())
   }
 
-  // @Test
+  @Test
   fun sequenceAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -346,7 +341,7 @@ class AnimatedTest {
                     "main sequence animation listener called onFinish(true) as it was cancelled"))
         .onFinish(true)
   }
-  // @Test
+  @Test
   fun parralelAnimation_whenAnimationCancelledFromSecondAnimation_onCancelCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -401,20 +396,16 @@ class AnimatedTest {
         .onFinish(true)
   }
 
-  // @Test
+  @Test
   fun sequenceAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     val animation2 = Animated.timing(target = xProgress, to = 200f, duration = 1000)
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(TestComponent(alphaProgress = alphaProgress, xProgress = xProgress))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoview =
+        lithoViewRule.render { TestComponent(alphaProgress = alphaProgress, xProgress = xProgress) }
 
-    val view = lithoViewRule.lithoView
+    val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
     assertThat(view.translationX).isEqualTo(100f).describedAs("translationX initial value")
     val sequence = Animated.sequence(animation1, animation2)
@@ -424,7 +415,7 @@ class AnimatedTest {
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
   }
 
-  // @Test
+  @Test
   fun sequenceAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
@@ -452,20 +443,16 @@ class AnimatedTest {
         .onFinish(false)
   }
 
-  // @Test
+  @Test
   fun loopAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     val animation2 = Animated.timing(target = xProgress, to = 200f, duration = 1000)
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(TestComponent(alphaProgress = alphaProgress, xProgress = xProgress))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoview =
+        lithoViewRule.render { TestComponent(alphaProgress = alphaProgress, xProgress = xProgress) }
 
-    val view = lithoViewRule.lithoView
+    val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
     assertThat(view.translationX).isEqualTo(100f).describedAs("translationX initial value")
     val loop = Animated.loop(Animated.sequence(animation1, animation2), 2)
@@ -475,7 +462,7 @@ class AnimatedTest {
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
   }
 
-  // @Test
+  @Test
   fun loopAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
