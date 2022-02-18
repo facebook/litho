@@ -435,6 +435,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mYogaNode;
   }
 
+  boolean wasMeasured() {
+    return mLastMeasuredWidth != DiffNode.UNSPECIFIED;
+  }
+
   long measure(final int widthSpec, final int heightSpec) {
 
     if (mLayoutContext.isLayoutReleased()) {

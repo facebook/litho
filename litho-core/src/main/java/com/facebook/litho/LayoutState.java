@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
@@ -31,6 +32,7 @@ import static com.facebook.litho.LithoLayoutResult.willMountView;
 import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 
 import android.graphics.Rect;
 import android.text.TextUtils;
@@ -688,8 +690,12 @@ public class LayoutState
       }
 
       try {
-        component.onBoundsDefined(
-            scopedContext, result, (InterStagePropsContainer) layoutData.mLayoutData);
+        if (isMountable(component) && !result.wasMeasured()) {
+          result.measure(exactly(result.getWidth()), exactly(result.getHeight()));
+        } else {
+          component.onBoundsDefined(
+              scopedContext, result, (InterStagePropsContainer) layoutData.mLayoutData);
+        }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       } finally {
