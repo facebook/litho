@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.experimental
+package com.facebook.litho
 
 import android.content.Context
-import com.facebook.litho.Mountable
 import com.facebook.rendercore.RenderUnit
 
 /** Experimental. Currently for Litho team internal use only. */

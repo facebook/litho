@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.experimental
-
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentScope
-import com.facebook.litho.Mountable
-import com.facebook.litho.PrepareResult
+package com.facebook.litho
 
 /** Experimental. Currently for Litho team internal use only. */
 abstract class MountableComponent : Component() {
