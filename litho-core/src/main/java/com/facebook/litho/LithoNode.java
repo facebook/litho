@@ -598,22 +598,16 @@ public class LithoNode implements Node<LithoRenderContext> {
     return mFullImpressionHandler;
   }
 
-  public @Nullable Component getHeadComponent() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getComponent();
+  public Component getHeadComponent() {
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getComponent();
   }
 
-  public @Nullable String getHeadComponentKey() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext().getGlobalKey();
+  public String getHeadComponentKey() {
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext().getGlobalKey();
   }
 
-  public @Nullable ComponentContext getHeadComponentContext() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
+  public ComponentContext getHeadComponentContext() {
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
   }
 
   public int getImportantForAccessibility() {
