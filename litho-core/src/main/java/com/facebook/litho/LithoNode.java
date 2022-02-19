@@ -656,22 +656,20 @@ public class LithoNode implements Node<LithoRenderContext> {
     }
   }
 
-  public @Nullable Component getTailComponent() {
-    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0).getComponent();
+  public Component getTailComponent() {
+    return mScopedComponentInfos.get(0).getComponent();
   }
 
-  public @Nullable String getTailComponentKey() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(0).getContext().getGlobalKey();
+  public String getTailComponentKey() {
+    return mScopedComponentInfos.get(0).getContext().getGlobalKey();
   }
 
-  public @Nullable ComponentContext getTailComponentContext() {
-    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0).getContext();
+  public ComponentContext getTailComponentContext() {
+    return mScopedComponentInfos.get(0).getContext();
   }
 
-  public @Nullable ScopedComponentInfo getTailScopedComponentInfo() {
-    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0);
+  public ScopedComponentInfo getTailScopedComponentInfo() {
+    return mScopedComponentInfos.get(0);
   }
 
   public ScopedComponentInfo getComponentInfoAt(int index) {
