@@ -227,7 +227,7 @@ public class TestLayoutState {
       commonProps.copyInto(c, node);
     }
 
-    if (node.getTailComponent() == null) {
+    if (node.getChildCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure) {
         node.setMeasureFunction(sMeasureFunction);
@@ -398,7 +398,7 @@ public class TestLayoutState {
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component, i.e. the root node belongs to
     // another component.
-    if (node.getTailComponent() == null) {
+    if (node.getChildCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || (isNestedTree(component))) {
         node.setMeasureFunction(sMeasureFunction);

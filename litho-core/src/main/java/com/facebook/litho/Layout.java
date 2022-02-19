@@ -303,7 +303,7 @@ class Layout {
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component, i.e. the root node belongs to
     // another component.
-    if (node.getTailComponent() == null) {
+    if (node.getComponentCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || ((isNestedTree || hasCachedLayout) && !resolveNestedTree)) {
         node.setMeasureFunction(sMeasureFunction);
