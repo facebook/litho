@@ -1257,9 +1257,7 @@ public class LithoNode implements Node<LithoRenderContext> {
       final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey,
       final Set<String> keys) {
-    final int mode =
-        getReconciliationMode(
-            Preconditions.checkNotNull(nextScopedComponentInfo.getContext()), current, keys);
+    final int mode = getReconciliationMode(nextScopedComponentInfo.getContext(), current, keys);
     final LithoNode layout;
 
     switch (mode) {
@@ -1362,10 +1360,9 @@ public class LithoNode implements Node<LithoRenderContext> {
   static @ReconciliationMode int getReconciliationMode(
       final ComponentContext c, final LithoNode current, final Set<String> keys) {
     final List<ScopedComponentInfo> components = current.getScopedComponentInfos();
-    final Component root = current.getHeadComponent();
 
     // 1.0 check early exit conditions
-    if (c == null || root == null || current instanceof NestedTreeHolder) {
+    if (c == null || current instanceof NestedTreeHolder) {
       return ReconciliationMode.RECREATE;
     }
 

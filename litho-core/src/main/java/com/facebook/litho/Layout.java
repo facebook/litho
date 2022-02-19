@@ -31,7 +31,6 @@ import android.content.pm.ApplicationInfo;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderState.LayoutContext;
@@ -520,8 +519,7 @@ class Layout {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "measureTree:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
+      ComponentsSystrace.beginSection("measureTree:" + root.getHeadComponent().getSimpleName());
     }
 
     final LayoutContext<LithoRenderContext> context =
@@ -552,8 +550,7 @@ class Layout {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "resume:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
+      ComponentsSystrace.beginSection("resume:" + root.getHeadComponent().getSimpleName());
     }
 
     resume(layoutStateContext, root);

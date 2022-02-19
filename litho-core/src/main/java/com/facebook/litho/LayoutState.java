@@ -1523,8 +1523,7 @@ public class LayoutState
       return false;
     }
 
-    final Component currentRootComponent =
-        Preconditions.checkNotNull(currentLayoutResult.getHeadComponent());
+    final Component currentRootComponent = currentLayoutResult.getHeadComponent();
 
     if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
       return false;
