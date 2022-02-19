@@ -71,7 +71,7 @@ public class InternalNodeUtils {
     final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
 
-    if (component == null || component.getMountType() == NONE) {
+    if (component.getMountType() == NONE) {
       return null;
     }
 
@@ -508,7 +508,7 @@ public class InternalNodeUtils {
 
     final boolean implementsAccessibility =
         (nodeInfo != null && nodeInfo.needsAccessibilityDelegate())
-            || (component != null && component.implementsAccessibility());
+            || component.implementsAccessibility();
 
     final int importantForAccessibility = node.getImportantForAccessibility();
 

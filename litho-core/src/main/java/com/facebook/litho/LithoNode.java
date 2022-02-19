@@ -318,18 +318,17 @@ public class LithoNode implements Node<LithoRenderContext> {
 
     if (!Layout.shouldComponentUpdate(this, diff)) {
       if (component != null) {
-        final @Nullable ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
-        final @Nullable ScopedComponentInfo diffNodeScopedComponentInfo =
-            diff.getScopedComponentInfo();
+        final ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
+        final ScopedComponentInfo diffNodeScopedComponentInfo =
+            Preconditions.checkNotNull(diff.getScopedComponentInfo());
 
         component.copyInterStageImpl(
             (InterStagePropsContainer) result.getLayoutData(),
             (InterStagePropsContainer) diff.getLayoutData());
 
         component.copyPrepareInterStageImpl(
-            Preconditions.checkNotNull(scopedComponentInfo).getPrepareInterStagePropsContainer(),
-            Preconditions.checkNotNull(diffNodeScopedComponentInfo)
-                .getPrepareInterStagePropsContainer());
+            scopedComponentInfo.getPrepareInterStagePropsContainer(),
+            diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer());
       }
 
       result.setCachedMeasuresValid(true);
@@ -1173,8 +1172,7 @@ public class LithoNode implements Node<LithoRenderContext> {
           final int styleAttr = props.getDefStyleAttr();
           final int styleRes = props.getDefStyleRes();
           if (styleAttr != 0 || styleRes != 0) {
-            final Context context =
-                Preconditions.checkNotNull(getTailComponentContext()).getAndroidContext();
+            final Context context = getTailComponentContext().getAndroidContext();
             final TypedArray a =
                 context.obtainStyledAttributes(
                     null, com.facebook.litho.R.styleable.ComponentLayout, styleAttr, styleRes);
@@ -1229,8 +1227,7 @@ public class LithoNode implements Node<LithoRenderContext> {
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new LithoLayoutResult(
-        context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
+    return new LithoLayoutResult(context, getTailComponentContext(), this, node, parent);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {
@@ -1399,8 +1396,7 @@ public class LithoNode implements Node<LithoRenderContext> {
 
   private static void applyOverridesRecursive(LayoutStateContext c, LithoNode node) {
     if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(
-          Preconditions.checkNotNull(node.getTailComponentContext()), node);
+      DebugComponent.applyOverrides(node.getTailComponentContext(), node);
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
         applyOverridesRecursive(c, node.getChildAt(i));
       }

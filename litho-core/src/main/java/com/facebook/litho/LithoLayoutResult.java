@@ -25,7 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.core.util.Preconditions;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -445,7 +444,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       return 0;
     }
 
-    final Component component = Preconditions.checkNotNull(mNode.getTailComponent());
+    final Component component = mNode.getTailComponent();
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -502,7 +501,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   protected void measureInternal(final int widthSpec, final int heightSpec, final Size size) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final LithoNode node = mNode;
-    final Component component = Preconditions.checkNotNull(node.getTailComponent());
+    final Component component = node.getTailComponent();
     final ComponentContext componentScopedContext = node.getTailComponentContext();
     final DiffNode diffNode = areCachedMeasuresValid() ? getDiffNode() : null;
 

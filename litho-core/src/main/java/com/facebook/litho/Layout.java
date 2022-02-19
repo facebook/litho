@@ -377,11 +377,7 @@ class Layout {
 
     final LithoNode node = holder.getNode();
     final Component component = node.getTailComponent();
-    if (component == null) {
-      throw new IllegalArgumentException("A component is required to resolve a nested tree.");
-    }
-
-    final String globalKey = Preconditions.checkNotNull(node.getTailComponentKey());
+    final String globalKey = node.getTailComponentKey();
     final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // The resolved layout to return.
@@ -584,9 +580,9 @@ class Layout {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
-      final ComponentContext context = Preconditions.checkNotNull(root.getTailComponentContext());
+      final ComponentContext context = root.getTailComponentContext();
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(c, Preconditions.checkNotNull(context), unresolved.get(i));
+        root.child(c, context, unresolved.get(i));
       }
       unresolved.clear();
     }
@@ -716,17 +712,13 @@ class Layout {
     }
 
     final Component component = layoutNode.getTailComponent();
+    final ComponentContext scopedContext = layoutNode.getTailComponentContext();
 
-    if (component != null) {
-      final ComponentContext scopedContext =
-          Preconditions.checkNotNull(layoutNode.getTailComponentContext());
-
-      try {
-        return component.shouldComponentUpdate(
-            getDiffNodeScopedContext(diffNode), diffNode.getComponent(), scopedContext, component);
-      } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(Preconditions.checkNotNull(scopedContext), component, e);
-      }
+    try {
+      return component.shouldComponentUpdate(
+          getDiffNodeScopedContext(diffNode), diffNode.getComponent(), scopedContext, component);
+    } catch (Exception e) {
+      ComponentUtils.handleWithHierarchy(scopedContext, component, e);
     }
 
     return true;

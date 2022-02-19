@@ -441,7 +441,7 @@ public class LayoutState
     final String componentGlobalKey = node.getTailComponentKey();
 
     return new VisibilityOutput(
-        component != null ? Preconditions.checkNotNull(componentGlobalKey) : "null",
+        componentGlobalKey,
         component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
         renderTreeNode != null,
@@ -537,7 +537,7 @@ public class LayoutState
       return;
     }
 
-    final Component component = Preconditions.checkNotNull(node.getTailComponent());
+    final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy = getDebugHierarchy(parentHierarchy, node);
@@ -669,8 +669,7 @@ public class LayoutState
       }
     }
 
-    final ComponentContext scopedContext =
-        Preconditions.checkNotNull(node.getTailComponentContext());
+    final ComponentContext scopedContext = node.getTailComponentContext();
 
     // Generate the RenderTreeNode for the given node.
     final @Nullable RenderTreeNode contentRenderTreeNode =

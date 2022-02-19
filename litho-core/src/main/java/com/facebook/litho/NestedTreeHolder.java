@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.graphics.PathEffect;
 import androidx.annotation.Nullable;
-import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.yoga.YogaNode;
 
@@ -74,8 +73,7 @@ public class NestedTreeHolder extends LithoNode {
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new NestedTreeHolderResult(
-        context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
+    return new NestedTreeHolderResult(context, getTailComponentContext(), this, node, parent);
   }
 
   public void copyInto(LithoNode target) {
