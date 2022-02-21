@@ -34,6 +34,7 @@ import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
+import com.facebook.litho.widget.collection.LazyCollection
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
 import org.robolectric.Shadows
@@ -348,6 +349,13 @@ internal constructor(
 
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
     return viewTree.findChild(predicate)?.last()
+  }
+
+  /** Returns the first [LazyCollection] from the ComponentTree or null, if one isn't not found */
+  fun findLazyCollectionComponent(): TestListComponent? {
+    val lazyCollection = findComponent(LazyCollection::class) as LazyCollection?
+
+    return if (lazyCollection != null) TestListComponent(lazyCollection) else null
   }
 
   /**

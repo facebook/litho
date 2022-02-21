@@ -33,6 +33,9 @@ litho_robolectric4_test(
         ],
     ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    friend_paths = [
+        LITHO_WIDGET_KOTLIN_COLLECTION_TARGET,
+    ],
     is_androidx = True,
     jni_deps = LITHO_JNI_DEPS,
     language = "KOTLIN",
