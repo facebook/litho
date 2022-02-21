@@ -42,7 +42,9 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 public class SpecModelUtils {
 
   public static String getSpecAccessor(SpecModel specModel) {
-    if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
+    if (specModel.getSpecElementType() == SpecElementType.KOTLIN_CLASS) {
+      return specModel.getSpecName() + ".Companion";
+    } else if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
       return specModel.getSpecName() + ".INSTANCE";
     }
 

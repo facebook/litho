@@ -358,7 +358,9 @@ public class ComponentBodyGenerator {
   private static void assignInitializer(
       FieldSpec.Builder fieldBuilder, SpecModel specModel, PropModel prop) {
 
-    if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
+    SpecElementType type = specModel.getSpecElementType();
+
+    if (type == SpecElementType.KOTLIN_SINGLETON || type == SpecElementType.KOTLIN_CLASS) {
       final String propName = prop.getName();
       final boolean needGetter = !propName.startsWith("is");
       final String propAccessor =
@@ -366,7 +368,11 @@ public class ComponentBodyGenerator {
               + propName.substring(1)
               + "()";
 
-      fieldBuilder.initializer("$L.$L.$L", specModel.getSpecName(), "INSTANCE", propAccessor);
+      fieldBuilder.initializer(
+          "$L.$L.$L",
+          specModel.getSpecName(),
+          type == SpecElementType.KOTLIN_SINGLETON ? "INSTANCE" : "Companion",
+          propAccessor);
     } else {
       fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
     }
