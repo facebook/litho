@@ -468,7 +468,7 @@ public class ComponentContext implements Cloneable {
    * <p>Finally, note that you should never hold a reference to the view returned by this function
    * as Litho may unmount your Component and mount it to a different View.
    */
-  public @Nullable <T extends View> T findViewWithTag(String tag) {
+  public @Nullable <T extends View> T findViewWithTag(Object tag) {
     ThreadUtils.assertMainThread();
 
     if (mComponentTree == null) {
