@@ -226,15 +226,20 @@ public class TriggerGenerator {
       } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
         delegation.add("c", methodParamModel.getTypeName());
       } else if (methodParamModel instanceof TreePropModel) {
-        delegation.add(
-            "useTreePropsFromContext() ? (($T) $L) : (($T) $L.$L)",
-            methodParamModel.getTypeName(),
-            "c.getParentTreeProp("
-                + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
-                + ".class)",
-            methodParamModel.getTypeName(),
-            REF_VARIABLE_NAME,
-            methodParamModel.getName());
+        if (specModel.isStateful()) {
+          delegation.add(
+              "(($T) $L.$L)",
+              methodParamModel.getTypeName(),
+              REF_VARIABLE_NAME,
+              methodParamModel.getName());
+        } else {
+          delegation.add(
+              "(($T) $L)",
+              methodParamModel.getTypeName(),
+              "c.getParentTreeProp("
+                  + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+                  + ".class)");
+        }
       } else {
         delegation.add(
             "($T) $L.$L",
