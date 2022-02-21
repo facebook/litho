@@ -282,16 +282,21 @@ public class EventGenerator {
         delegation.add(methodParamModel.getName());
 
       } else if (methodParamModel instanceof TreePropModel) {
-        delegation.add(
-            "useTreePropsFromContext() ? (($T) $L) : (($T) $L.$L)",
-            methodParamModel.getTypeName(),
-            contextParamName
-                + ".getParentTreeProp("
-                + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
-                + ".class)",
-            methodParamModel.getTypeName(),
-            REF_VARIABLE_NAME,
-            methodParamModel.getName());
+        if (specModel.isStateful()) {
+          delegation.add(
+              "(($T) $L.$L)",
+              methodParamModel.getTypeName(),
+              REF_VARIABLE_NAME,
+              methodParamModel.getName());
+        } else {
+          delegation.add(
+              "(($T) $L)",
+              methodParamModel.getTypeName(),
+              contextParamName
+                  + ".getParentTreeProp("
+                  + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+                  + ".class)");
+        }
       } else if (methodParamModel instanceof StateParamModel) {
         delegation.add(
             "($T) $L",
