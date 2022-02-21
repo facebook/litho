@@ -128,15 +128,18 @@ public class TreePropGenerator {
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else if (MethodParamModelUtils.isAnnotatedWith(
             onCreateTreePropsMethod.methodParams.get(i), TreeProp.class)) {
-          block.add(
-              "useTreePropsFromContext() ? (($T) $T.getTreePropFromParent(parentTreeProps,"
-                  + TreePropGenerator.findTypeByTypeName(
-                      onCreateTreePropsMethod.methodParams.get(i).getTypeName())
-                  + ".class"
-                  + ")) : $L",
-              onCreateTreePropsMethod.methodParams.get(i).getTypeName(),
-              ClassNames.COMPONENT,
-              onCreateTreePropsMethod.methodParams.get(i).getName());
+          if (specModel.isStateful()) {
+            block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());
+          } else {
+            block.add(
+                "(($T) $T.getTreePropFromParent(parentTreeProps,"
+                    + TreePropGenerator.findTypeByTypeName(
+                        onCreateTreePropsMethod.methodParams.get(i).getTypeName())
+                    + ".class"
+                    + "))",
+                onCreateTreePropsMethod.methodParams.get(i).getTypeName(),
+                ClassNames.COMPONENT);
+          }
         } else {
           block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());
         }
