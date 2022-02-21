@@ -124,6 +124,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private final @Nullable MountState mMountState;
   private final ComponentContext mComponentContext;
   private boolean mIsAttached;
+  private boolean mIsAttachedForTest;
   // The bounds of the visible rect that was used for the previous incremental mount.
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
 
@@ -344,14 +345,39 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     onDetach();
   }
 
+  /**
+   * Along with {@link #onDetachedFromWindowForTest} below, makes the LithoView think it's attached/
+   * detached in a unit test environment. This also handles setting the same state for all LithoView
+   * children.
+   *
+   * <p>Implementation Note: Ideally, we'd just attach the LithoView to a View hierarchy and let
+   * AOSP handle all this for us. The reason we haven't is because attaching to an Activity while
+   * also trying to make sure the full LithoView is always considered visible (for the purposes of
+   * visibility events and incremental mount) proved difficult - if interested, see summary on the
+   * blame diff for this comment for more info.
+   */
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public void onAttachedToWindowForTest() {
+    if (mIsAttachedForTest) {
+      return;
+    }
+
     onAttachedToWindow();
+    mIsAttachedForTest = true;
+
+    dispatchAttachedForTestToChildren();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public void onDetachedFromWindowForTest() {
+    if (!mIsAttachedForTest) {
+      return;
+    }
+
+    mIsAttachedForTest = false;
     onDetachedFromWindow();
+
+    dispatchAttachedForTestToChildren();
   }
 
   @Override
@@ -1511,6 +1537,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mIsMountStateDirty = false;
 
+    if (mIsAttachedForTest) {
+      dispatchAttachedForTestToChildren();
+    }
+
     if (loggedFirstMount) {
       MountStartupLoggingInfo.logFirstMountEnd(mMountStartupLoggingInfo);
     }
@@ -1858,6 +1888,26 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return mLithoHostListenerCoordinator.getEndToEndTestingExtension().findTestItems(testKey);
     } else {
       return mMountState.findTestItems(testKey);
+    }
+  }
+
+  private void dispatchAttachedForTestToChildren() {
+    recursivelyDispatchedAttachedForTest(this, mIsAttachedForTest);
+  }
+
+  private static void recursivelyDispatchedAttachedForTest(
+      ViewGroup viewGroup, boolean isAttachedForTest) {
+    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+      View child = viewGroup.getChildAt(i);
+      if (child instanceof LithoView) {
+        if (isAttachedForTest) {
+          ((LithoView) child).onAttachedToWindowForTest();
+        } else {
+          ((LithoView) child).onDetachedFromWindowForTest();
+        }
+      } else if (child instanceof ViewGroup) {
+        recursivelyDispatchedAttachedForTest((ViewGroup) child, isAttachedForTest);
+      }
     }
   }
 

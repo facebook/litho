@@ -118,6 +118,7 @@ class UseCallbackTest {
             data = listOf(1, 2, 3, 4, 5),
             rowClickedTag = "setRoot2",
             onRowClick = { data -> rowClickedEvents.add(data) }))
+    lithoViewRule.idle()
 
     lithoViewRule.act(lithoView) { clickOnTag("item_1") }
     lithoViewRule.act(lithoView) { clickOnTag("item_2") }
@@ -175,7 +176,8 @@ class UseCallbackTest {
 
     // If we had our desired behavior (see docs on this test case), the assertion would instead be:
     //   assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
-    assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(2))
+    // TODO: Fix up this test in next diff
+    assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
   }
 
   /**
@@ -270,6 +272,7 @@ class UseCallbackTest {
             data = listOf(1, 2, 3, 4, 5),
             rowClickedTag = "setRoot2",
             onRowClick = { data -> onRowClickEvents.add(data) }))
+    lithoViewRule.idle()
 
     lithoViewRule.act(lithoView) { clickOnTag("item_1") }
     lithoViewRule.act(lithoView) { clickOnTag("item_2") }
@@ -277,7 +280,8 @@ class UseCallbackTest {
     // If we had our desired behavior (see docs on this test case), the assertion would instead be:
     //   assertThat(onRowClickEvents)
     //       .containsExactly("setRoot1", "setRoot1", "setRoot2", "setRoot2")
-    assertThat(onRowClickEvents).containsExactly("setRoot1", "setRoot1", "setRoot1", "setRoot1")
+    // TODO: Fix up this test in next diff
+    assertThat(onRowClickEvents).containsExactly("setRoot1", "setRoot1", "setRoot2", "setRoot2")
   }
 }
 
