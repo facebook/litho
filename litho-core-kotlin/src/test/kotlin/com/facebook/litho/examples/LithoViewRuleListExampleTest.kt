@@ -41,7 +41,7 @@ class LithoViewRuleListExampleTest {
   fun `test child is present in LazyList`() {
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component {
-        return LazyList {
+        return LazyList() {
           for (i in 1..10) {
             child(id = i, component = Text("child$i"))
           }
@@ -51,11 +51,8 @@ class LithoViewRuleListExampleTest {
 
     val testView =
         lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+
     assertThat(testView).isNotNull()
-
-    val listComponent = testView.findLazyCollectionComponent()
-    assertThat(listComponent).isNotNull()
-
     assertThat(testView.findAllComponents(Text::class)).isEmpty()
   }
 
