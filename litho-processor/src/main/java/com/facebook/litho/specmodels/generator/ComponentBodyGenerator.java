@@ -1144,14 +1144,16 @@ public class ComponentBodyGenerator {
       if (contextParamName == null) {
         return methodParamModel.getName();
       }
-      return "(useTreePropsFromContext() ? "
-          + contextParamName
-          + ".getParentTreeProp("
-          + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
-          + ".class"
-          + ") : "
-          + methodParamModel.getName()
-          + ")";
+      if (specModel.isStateful()) {
+        return "(" + methodParamModel.getName() + ")";
+      } else {
+        return "("
+            + contextParamName
+            + ".getParentTreeProp("
+            + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+            + ".class"
+            + "))";
+      }
     }
 
     return methodParamModel.getName();

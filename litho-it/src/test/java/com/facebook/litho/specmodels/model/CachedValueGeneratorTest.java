@@ -834,10 +834,10 @@ public class CachedValueGeneratorTest {
         .isEqualTo(
             "private java.lang.String getExpensiveValueWithTreeProp(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
-                + "  final ExpensiveValueWithTreePropInputs inputs = new ExpensiveValueWithTreePropInputs(globalKey,arg0,(useTreePropsFromContext() ? c.getParentTreeProp(long.class) : arg6));\n"
+                + "  final ExpensiveValueWithTreePropInputs inputs = new ExpensiveValueWithTreePropInputs(globalKey,arg0,(c.getParentTreeProp(long.class)));\n"
                 + "  java.lang.String expensiveValueWithTreeProp = (java.lang.String) c.getCachedValue(inputs);\n"
                 + "  if (expensiveValueWithTreeProp == null) {\n"
-                + "    expensiveValueWithTreeProp = CachedValueTestSpec.onCreateExpensiveValueWithTreeProp(arg0,(useTreePropsFromContext() ? c.getParentTreeProp(long.class) : arg6));\n"
+                + "    expensiveValueWithTreeProp = CachedValueTestSpec.onCreateExpensiveValueWithTreeProp(arg0,(c.getParentTreeProp(long.class)));\n"
                 + "    c.putCachedValue(inputs, expensiveValueWithTreeProp);\n"
                 + "  }\n"
                 + "  return expensiveValueWithTreeProp;\n"
