@@ -31,7 +31,8 @@ import java.lang.Long.toHexString
  * - For a literal value, use the [px], [dp], and [sp] extension functions, e.g. `10.dp`.
  * - For a value resolved from a resource, use [dimenRes], e.g. `dimenRes(R.dimen.my_dimen)`
  */
-inline class Dimen(val encodedValue: Long) {
+@JvmInline
+value class Dimen(val encodedValue: Long) {
 
   /** Converts the given Dimen to pixels. */
   fun toPixels(resourceResolver: ResourceResolver): Int =

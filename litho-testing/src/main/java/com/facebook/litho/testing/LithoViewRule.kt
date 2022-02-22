@@ -60,7 +60,7 @@ constructor(
     val themeResId: Int? = null
 ) : TestRule {
   lateinit var context: ComponentContext
-  private val threadLooperController: ThreadLooperController = ThreadLooperController()
+  private lateinit var threadLooperController: ThreadLooperController
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
@@ -74,6 +74,8 @@ constructor(
             context = ComponentContext(getApplicationContext<Context>())
           }
           context.setLayoutStateContextForTesting()
+
+          threadLooperController = ThreadLooperController()
           threadLooperController.init()
           base.evaluate()
         } finally {
@@ -104,23 +106,6 @@ constructor(
    */
   @JvmOverloads
   fun createTestLithoView(
-      componentFunction: (ComponentScope.() -> Component)? = null
-  ): TestLithoView {
-    val testLithoView = TestLithoView(context, componentsConfiguration)
-    componentFunction?.let {
-      testLithoView.setRoot(with(ComponentScope(context)) { componentFunction() })
-    }
-    return testLithoView
-  }
-
-  /**
-   * Creates new TestLithoView holder responsible for keeping an instance of LithoView, allowing to
-   * find Views/Components or perform assertions on it. You can pass additional parameters, if null,
-   * the default values will be provided. For simple Component rendering without fine-grained
-   * control, use [render]
-   */
-  @JvmOverloads
-  fun createTestLithoViewWith(
       lithoView: LithoView? = null,
       componentTree: ComponentTree? = null,
       widthPx: Int? = null,
@@ -147,16 +132,13 @@ constructor(
       componentFunction: ComponentScope.() -> Component
   ): TestLithoView {
     val testLithoView =
-        createTestLithoViewWith(
+        createTestLithoView(
             lithoView = lithoView,
             componentTree = componentTree,
             widthPx = widthPx,
-            heightPx = heightPx)
-    return testLithoView
-        .attachToWindow()
-        .setRoot(with(ComponentScope(context)) { componentFunction() })
-        .measure()
-        .layout()
+            heightPx = heightPx,
+            componentFunction = componentFunction)
+    return testLithoView.attachToWindow().measure().layout()
   }
 
   /**

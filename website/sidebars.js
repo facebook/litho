@@ -19,9 +19,11 @@
 const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 module.exports = {
   mainSidebar: {
+    // TODO: update content
     'What is Litho?': ['intro/motivation', 'intro/built-with-litho'],
     'Tutorial': [
       'tutorial/overview',
+      // TODO: add kotlin dep
       'tutorial/project-setup',
       'tutorial/first-components',
       'tutorial/adding-state',
@@ -49,7 +51,6 @@ module.exports = {
           'mainconcepts/coordinate-state-actions/visibility-handling',
           'mainconcepts/coordinate-state-actions/keys-and-identity',
         ],
-        'Handling User Interactions': [],
       },
     ],
     'Building lists': [
@@ -64,85 +65,32 @@ module.exports = {
       'sections/diff-sections',
       'sections/architecture',
     ],
+    // TODO: revisit wording to make it clear it's not just the 'kotlin' testing API
+    'Testing': [
+      'kotlin/testing-getting-started',
+      'kotlin/testing-assertions',
+      'kotlin/testing-actions',
+    ],
     ...fbInternalOnly({
       'Kotlin API': [
-        'fb/kotlin/kotlin-intro',
-        'fb/kotlin/kotlin-api-basics',
+        'kotlin/kotlin-intro',
+        'kotlin/kotlin-api-basics',
         {
           'Hooks and State': [
-            'fb/kotlin/hooks-intro',
-            'fb/kotlin/use-state',
-            'fb/kotlin/use-effect',
-            'fb/kotlin/use-ref',
-            'fb/kotlin/use-transition',
-            'fb/kotlin/use-error-boundary',
+            'kotlin/hooks-intro',
+            'kotlin/use-state',
+            'kotlin/use-effect',
+            'kotlin/use-ref',
+            'kotlin/use-transition',
+            'kotlin/use-error-boundary',
           ],
         },
-        'fb/kotlin/kotlin-flexbox-containers',
-        'fb/kotlin/collections',
-        'fb/kotlin/event-handling',
-         {
-           'Testing': [
-             'fb/kotlin/testing-getting-started',
-             'fb/kotlin/testing-assertions',
-             'fb/kotlin/testing-actions',
-           ],
-         },
-        'fb/kotlin/kotlin-api-cheatsheet',
+        'kotlin/kotlin-flexbox-containers',
+        'kotlin/collections',
+        'kotlin/event-handling',
+        'kotlin/kotlin-api-cheatsheet',
       ],
     }),
-    'Widgets': [
-      'widgets/builtin-widgets',
-      ...fbInternalOnly(['fb/widgets/design-components']),
-    ],
-
-    'Debugging': [
-        'debugging/debugging-tips',
-        'debugging/debugging-sections',
-        ...fbInternalOnly(['debugging/fb/debugging-time-travel'])
-    ],
-    'Developer Tools': [
-        'devtools/android-studio-plugin',
-        'devtools/flipper-plugins',
-      ],
-    'Testing': [
-      'testing/testing-overview',
-      {
-        'Unit Tests': [
-          'testing/unit-testing',
-          ...fbInternalOnly(['testing/fb/unit-testing-at-facebook']),
-          'testing/subcomponent-testing',
-          'testing/prop-matching',
-          'testing/testing-treeprops',
-          'testing/injectprop-matching',
-          'testing/event-handler-testing',
-          'testing/sections-testing',
-        ],
-      },
-      {
-        'UI Tests': [
-          'testing/espresso-testing',
-          ...fbInternalOnly(['testing/fb/buddy-tests-at-facebook']),
-        ],
-      },
-      ...fbInternalOnly([
-        {
-          'Benchmark Tests': [
-            'testing/fb/litho-benchmark-tests',
-            {
-              'MobileLab Tests': [
-                'testing/fb/mobilelab-benchmark-tests/mobilelab-tests',
-                'testing/fb/mobilelab-benchmark-tests/getting-started',
-                'testing/fb/mobilelab-benchmark-tests/memory-benchmarks',
-                'testing/fb/mobilelab-benchmark-tests/mobilelab-integration',
-                'testing/fb/mobilelab-benchmark-tests/profiling-benchmarks',
-              ],
-            },
-          ],
-        },
-      ]),
-      'testing/tests-in-android-studio',
-    ],
     'Animations': [
       'animations/transition-basics',
       'animations/transition-types',
@@ -152,37 +100,38 @@ module.exports = {
       'animations/transition-key-types',
       'animations/dynamic-props',
     ],
+    'Widgets': [
+      'widgets/builtin-widgets',
+      ...fbInternalOnly(['fb/widgets/design-components']),
+    ],
     'Accessibility': ['accessibility/accessibility-overview'],
-    'Performance': [
+    // TODO: clean this section up, add intro page
+    'Tooling': [
+      {
+        'Debugging': [
+          'debugging/debugging-tips',
+          'debugging/debugging-sections',
+          ...fbInternalOnly(['debugging/fb/debugging-time-travel']),
+        ],
+        'Developer Tools': [
+          'devtools/android-studio-plugin',
+          'devtools/flipper-plugins',
+        ],
+      },
       'performance/analysing-performance',
-      'performance/spotting-performance-regressions',
     ],
     'Best Practices': [
       'best-practices/immutability',
       'best-practices/props-vs-state',
       'best-practices/coding-style',
     ],
-    'Deep Dive': [
-      {
-        Reconciliation: [
-          'deep-dive/reconciliation',
-          'deep-dive/reconciliation/enabling-reconciliation',
-          ...fbInternalOnly([
-            'deep-dive/reconciliation/fb/when-to-use-reconciliation',
-          ]),
-        ],
-      },
-      'deep-dive/incremental-mount',
-      {
-        'Debugging': ['annotation-processor-debugging'],
-      },
-    ],
     ...fbInternalOnly({
-    'Contributing to the Documentation': [
-      'fb/documentation/contributing-documentation',
-      'fb/documentation/formatting-tips',
-      'fb/documentation/writing-guide',
-    ]}),
+      'Contributing to the Documentation': [
+        'fb/documentation/contributing-documentation',
+        'fb/documentation/formatting-tips',
+        'fb/documentation/writing-guide',
+      ],
+    }),
     ...fbInternalOnly({
       '[Internal]': [
         'fb/internal-litho',
@@ -220,6 +169,11 @@ module.exports = {
         'fb/sample-app',
       ],
     }),
+
+    //
+    // Begin unused content
+    //
+
     ...fbInternalOnly({
       '[Old Not Reused Content]': [
         {
@@ -257,6 +211,59 @@ module.exports = {
             'contributing',
             'community-showcase',
             'repo-structure',
+          ],
+          'Testing': [
+            'testing/testing-overview',
+            {
+              'Unit Tests': [
+                'testing/unit-testing',
+                ...fbInternalOnly(['testing/fb/unit-testing-at-facebook']),
+                'testing/subcomponent-testing',
+                'testing/prop-matching',
+                'testing/testing-treeprops',
+                'testing/injectprop-matching',
+                'testing/event-handler-testing',
+                'testing/sections-testing',
+              ],
+            },
+            {
+              'UI Tests': [
+                'testing/espresso-testing',
+                ...fbInternalOnly(['testing/fb/buddy-tests-at-facebook']),
+              ],
+            },
+            ...fbInternalOnly([
+              {
+                'Benchmark Tests': [
+                  'testing/fb/litho-benchmark-tests',
+                  {
+                    'MobileLab Tests': [
+                      'testing/fb/mobilelab-benchmark-tests/mobilelab-tests',
+                      'testing/fb/mobilelab-benchmark-tests/getting-started',
+                      'testing/fb/mobilelab-benchmark-tests/memory-benchmarks',
+                      'testing/fb/mobilelab-benchmark-tests/mobilelab-integration',
+                      'testing/fb/mobilelab-benchmark-tests/profiling-benchmarks',
+                    ],
+                  },
+                ],
+              },
+            ]),
+            'testing/tests-in-android-studio',
+          ],
+          'Deep Dive': [
+            {
+              Reconciliation: [
+                'deep-dive/reconciliation',
+                'deep-dive/reconciliation/enabling-reconciliation',
+                ...fbInternalOnly([
+                  'deep-dive/reconciliation/fb/when-to-use-reconciliation',
+                ]),
+              ],
+            },
+            'deep-dive/incremental-mount',
+            {
+              Debugging: ['annotation-processor-debugging'],
+            },
           ],
         },
       ],

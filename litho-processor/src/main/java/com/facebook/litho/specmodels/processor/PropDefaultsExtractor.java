@@ -23,11 +23,13 @@ import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
@@ -42,7 +44,10 @@ public class PropDefaultsExtractor {
     final List<? extends Element> enclosedElements = typeElement.getEnclosedElements();
     for (Element enclosedElement : enclosedElements) {
       propDefaults.addAll(extractFromField(enclosedElement));
-      propDefaults.addAll(extractFromMethod(enclosedElement));
+      propDefaults.addAll(
+          extractFromMethod(
+              enclosedElement, enclosedElement.getEnclosingElement().getEnclosedElements()));
+      propDefaults.addAll(extractFromCompanionClass(enclosedElement));
     }
 
     return ImmutableList.copyOf(propDefaults);
@@ -82,7 +87,8 @@ public class PropDefaultsExtractor {
    * annotation, we will try to find a matching field of this name and add use it as basis for our
    * prop-default.
    */
-  private static ImmutableList<PropDefaultModel> extractFromMethod(Element enclosedElement) {
+  private static ImmutableList<PropDefaultModel> extractFromMethod(
+      Element enclosedElement, List<? extends Element> elementsToSearch) {
     if (enclosedElement.getKind() != ElementKind.METHOD) {
       return ImmutableList.of();
     }
@@ -120,7 +126,7 @@ public class PropDefaultsExtractor {
     }
 
     final Optional<? extends Element> element =
-        enclosedElement.getEnclosingElement().getEnclosedElements().stream()
+        elementsToSearch.stream()
             .filter(e -> e.getSimpleName().toString().equals(baseName))
             .findFirst();
 
@@ -151,5 +157,25 @@ public class PropDefaultsExtractor {
                       propDefaultResId));
             })
         .orElseGet(ImmutableList::of);
+  }
+
+  private static Collection<? extends PropDefaultModel> extractFromCompanionClass(Element element) {
+    if (element.getKind() != ElementKind.CLASS
+        || !element.getModifiers().contains(Modifier.PUBLIC)
+        || !element.getModifiers().contains(Modifier.STATIC)
+        || !element.getModifiers().contains(Modifier.FINAL)
+        || !element.getSimpleName().toString().equals("Companion")) {
+      return ImmutableList.of();
+    }
+
+    List<PropDefaultModel> models = new ArrayList<>();
+
+    final List<? extends Element> enclosedElements = element.getEnclosedElements();
+    for (Element enclosedElement : enclosedElements) {
+      models.addAll(
+          extractFromMethod(enclosedElement, element.getEnclosingElement().getEnclosedElements()));
+    }
+
+    return ImmutableList.copyOf(models);
   }
 }

@@ -435,8 +435,7 @@ public class RecyclerBinder
     private boolean isCircular;
     private boolean hasDynamicItemHeight;
     private boolean wrapContent;
-    private boolean customViewTypeEnabled;
-    private int componentViewType;
+    private int componentViewType = DEFAULT_COMPONENT_VIEW_TYPE;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private boolean enableStableIds;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
@@ -599,7 +598,6 @@ public class RecyclerBinder
      *     ComponentRenderInfo}. Set this to a value that won't conflict with your custom viewTypes.
      */
     public Builder enableCustomViewType(int componentViewType) {
-      this.customViewTypeEnabled = true;
       this.componentViewType = componentViewType;
       return this;
     }
@@ -931,11 +929,7 @@ public class RecyclerBinder
     }
 
     mRenderInfoViewCreatorController =
-        new RenderInfoViewCreatorController(
-            builder.customViewTypeEnabled,
-            builder.customViewTypeEnabled
-                ? builder.componentViewType
-                : DEFAULT_COMPONENT_VIEW_TYPE);
+        new RenderInfoViewCreatorController(builder.componentViewType);
 
     mIsCircular = builder.isCircular;
     mHasDynamicItemHeight =

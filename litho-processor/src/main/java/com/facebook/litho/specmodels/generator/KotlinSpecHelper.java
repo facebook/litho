@@ -25,7 +25,8 @@ import com.squareup.javapoet.WildcardTypeName;
 /** Helper functions to handle wildcard cases from Kotlin spec files */
 class KotlinSpecHelper {
   static boolean isKotlinSpec(SpecModel specModel) {
-    return specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON;
+    return specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON
+        || specModel.getSpecElementType() == SpecElementType.KOTLIN_CLASS;
   }
 
   /**

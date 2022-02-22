@@ -1,0 +1,80 @@
+---
+id: use-state
+title: useState
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+The `useState` hook is the most common hook you'll encounter. It corresponds to the Java Spec API's `@State` functionality. If you haven't already, make sure to review the [Hooks Intro](hooks-intro.mdx) docs to understand more about hooks.
+
+## Declaring and Using State
+
+Declare state with `useState`, passing an initial value. It will start with the initial value, and in subsequent renders, `useState` will return a `State<T>` holding whatever the current value of that state is:
+
+
+```kotlin {3,6}
+class MyComponent : KComponent() {
+  override fun ComponentScope.render(): Component {
+    val clicks = useState { 0 }
+    return Text(
+        style = Style.onClick { clicks.update { c -> c + 1 } },
+        text = "Clicks: ${clicks.value}")
+  }
+}
+```
+
+## Updating State
+
+:::note
+Like in the Java Spec API, `update` is **async by default**. If you need to perform a synchronous state update (i.e. one which will cause a re-render synchronously on the current thread), use `updateSync`.
+:::
+
+To update state, use the `update` method on the `State<T>` returned from `useState`: this will trigger a render pass with the new state value.
+
+<Tabs
+  groupId="state"
+  defaultValue="kotlin_state"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_state'},
+    {label: 'Java', value: 'java_state'},
+  ]}>
+  <TabItem value="kotlin_state">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_state">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/CheckboxComponentSpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>
+
+### Lambda Variant
+
+`update` and `updateSync` have two variants:
+1. **Value variant** which takes a determined value, e.g. `myState.update(1)`
+2. **Lambda variant** which takes a lambda receiving the old value which can be used to compute a new value, e.g. `myState.update { c -> c + 1 }`
+
+Use the lambda variant when there could be other enqueued updates that may not have been applied yet. For example, if your state update should increment a counter, using the function version of `update` with `count -> count + 1` will allow you to account for updates that are in flight but not yet applied (e.g. if the user has tapped a button triggering the update multiple times in succession).
+
+## Side Effects in `@OnCreateInitialState`
+
+A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState`, e.g. attaching a listener. Instead, any side effects like this should now be done with the [`useEffect` hook](use-effect.mdx) which provides functionality to clean up and handler prop changes.
+
+## Using state in child component
+
+Avoid passing a State directly to the child component. Use an lambda or `eventHandler` instead.
+
+```kotlin {3,6,7,8} file=sample/src/main/java/com/facebook/samples/litho/kotlin/state/StateParentChildComponent.kt start=start_example_parent end=end_example_parent
+```
+
+
+And then in the child component:
+
+```kotlin {1,5,7} file=sample/src/main/java/com/facebook/samples/litho/kotlin/state/ChildComponent.kt start=start_example_child end=end_example_child
+```

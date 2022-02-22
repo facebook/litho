@@ -71,7 +71,7 @@ public class InternalNodeUtils {
     final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
 
-    if (component == null || component.getMountType() == NONE) {
+    if (component.getMountType() == NONE) {
       return null;
     }
 
@@ -258,7 +258,8 @@ public class InternalNodeUtils {
     if (recycle != null) {
       try {
         isCachedOutputUpdated =
-            !component.shouldComponentUpdate(null, recycle.output.getComponent(), null, component);
+            !component.shouldComponentUpdate(
+                null, recycle.getLayoutOutput().getComponent(), null, component);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
         isCachedOutputUpdated = false;
@@ -384,7 +385,21 @@ public class InternalNodeUtils {
       flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
     }
 
-    return LithoRenderUnit.create(
+    Mountable<?> mountable = node.getMountable();
+    if (mountable != null) {
+      return MountableLithoRenderUnit.create(
+          id,
+          component,
+          context,
+          layoutOutputNodeInfo,
+          layoutOutputViewNodeInfo,
+          flags,
+          importantForAccessibility,
+          updateState,
+          mountable);
+    }
+
+    return MountSpecLithoRenderUnit.create(
         id,
         component,
         context,
@@ -493,7 +508,7 @@ public class InternalNodeUtils {
 
     final boolean implementsAccessibility =
         (nodeInfo != null && nodeInfo.needsAccessibilityDelegate())
-            || (component != null && component.implementsAccessibility());
+            || component.implementsAccessibility();
 
     final int importantForAccessibility = node.getImportantForAccessibility();
 

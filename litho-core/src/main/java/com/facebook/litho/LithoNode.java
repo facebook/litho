@@ -178,9 +178,19 @@ public class LithoNode implements Node<LithoRenderContext> {
 
   protected long mPrivateFlags;
 
+  private @Nullable Mountable<?> mMountable;
+
   protected LithoNode(ComponentContext componentContext) {
     mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
+  }
+
+  public @Nullable Mountable<?> getMountable() {
+    return mMountable;
+  }
+
+  public void setMountable(@Nullable Mountable<?> mountable) {
+    mMountable = mountable;
   }
 
   public void addChildAt(LithoNode child, int index) {
@@ -308,18 +318,17 @@ public class LithoNode implements Node<LithoRenderContext> {
 
     if (!Layout.shouldComponentUpdate(this, diff)) {
       if (component != null) {
-        final @Nullable ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
-        final @Nullable ScopedComponentInfo diffNodeScopedComponentInfo =
-            diff.getScopedComponentInfo();
+        final ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
+        final ScopedComponentInfo diffNodeScopedComponentInfo =
+            Preconditions.checkNotNull(diff.getScopedComponentInfo());
 
         component.copyInterStageImpl(
             (InterStagePropsContainer) result.getLayoutData(),
             (InterStagePropsContainer) diff.getLayoutData());
 
         component.copyPrepareInterStageImpl(
-            Preconditions.checkNotNull(scopedComponentInfo).getPrepareInterStagePropsContainer(),
-            Preconditions.checkNotNull(diffNodeScopedComponentInfo)
-                .getPrepareInterStagePropsContainer());
+            scopedComponentInfo.getPrepareInterStagePropsContainer(),
+            diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer());
       }
 
       result.setCachedMeasuresValid(true);
@@ -589,22 +598,16 @@ public class LithoNode implements Node<LithoRenderContext> {
     return mFullImpressionHandler;
   }
 
-  public @Nullable Component getHeadComponent() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getComponent();
+  public Component getHeadComponent() {
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getComponent();
   }
 
-  public @Nullable String getHeadComponentKey() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext().getGlobalKey();
+  public String getHeadComponentKey() {
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext().getGlobalKey();
   }
 
-  public @Nullable ComponentContext getHeadComponentContext() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
+  public ComponentContext getHeadComponentContext() {
+    return mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext();
   }
 
   public int getImportantForAccessibility() {
@@ -646,22 +649,20 @@ public class LithoNode implements Node<LithoRenderContext> {
     }
   }
 
-  public @Nullable Component getTailComponent() {
-    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0).getComponent();
+  public Component getTailComponent() {
+    return mScopedComponentInfos.get(0).getComponent();
   }
 
-  public @Nullable String getTailComponentKey() {
-    return mScopedComponentInfos.isEmpty()
-        ? null
-        : mScopedComponentInfos.get(0).getContext().getGlobalKey();
+  public String getTailComponentKey() {
+    return mScopedComponentInfos.get(0).getContext().getGlobalKey();
   }
 
-  public @Nullable ComponentContext getTailComponentContext() {
-    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0).getContext();
+  public ComponentContext getTailComponentContext() {
+    return mScopedComponentInfos.get(0).getContext();
   }
 
-  public @Nullable ScopedComponentInfo getTailScopedComponentInfo() {
-    return mScopedComponentInfos.isEmpty() ? null : mScopedComponentInfos.get(0);
+  public ScopedComponentInfo getTailScopedComponentInfo() {
+    return mScopedComponentInfos.get(0);
   }
 
   public ScopedComponentInfo getComponentInfoAt(int index) {
@@ -1165,8 +1166,7 @@ public class LithoNode implements Node<LithoRenderContext> {
           final int styleAttr = props.getDefStyleAttr();
           final int styleRes = props.getDefStyleRes();
           if (styleAttr != 0 || styleRes != 0) {
-            final Context context =
-                Preconditions.checkNotNull(getTailComponentContext()).getAndroidContext();
+            final Context context = getTailComponentContext().getAndroidContext();
             final TypedArray a =
                 context.obtainStyledAttributes(
                     null, com.facebook.litho.R.styleable.ComponentLayout, styleAttr, styleRes);
@@ -1221,8 +1221,7 @@ public class LithoNode implements Node<LithoRenderContext> {
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new LithoLayoutResult(
-        context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
+    return new LithoLayoutResult(context, getTailComponentContext(), this, node, parent);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {
@@ -1258,9 +1257,7 @@ public class LithoNode implements Node<LithoRenderContext> {
       final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey,
       final Set<String> keys) {
-    final int mode =
-        getReconciliationMode(
-            Preconditions.checkNotNull(nextScopedComponentInfo.getContext()), current, keys);
+    final int mode = getReconciliationMode(nextScopedComponentInfo.getContext(), current, keys);
     final LithoNode layout;
 
     switch (mode) {
@@ -1363,10 +1360,9 @@ public class LithoNode implements Node<LithoRenderContext> {
   static @ReconciliationMode int getReconciliationMode(
       final ComponentContext c, final LithoNode current, final Set<String> keys) {
     final List<ScopedComponentInfo> components = current.getScopedComponentInfos();
-    final Component root = current.getHeadComponent();
 
     // 1.0 check early exit conditions
-    if (c == null || root == null || current instanceof NestedTreeHolder) {
+    if (c == null || current instanceof NestedTreeHolder) {
       return ReconciliationMode.RECREATE;
     }
 
@@ -1391,8 +1387,7 @@ public class LithoNode implements Node<LithoRenderContext> {
 
   private static void applyOverridesRecursive(LayoutStateContext c, LithoNode node) {
     if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(
-          Preconditions.checkNotNull(node.getTailComponentContext()), node);
+      DebugComponent.applyOverrides(node.getTailComponentContext(), node);
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
         applyOverridesRecursive(c, node.getChildAt(i));
       }

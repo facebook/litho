@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import android.view.View
+
 /**
  * The implicit receiver for [KComponent.render] call. This class exposes the ability to use hooks,
  * like [useState], and convenience functions, like [dp].
@@ -26,4 +28,22 @@ class ComponentScope(override val context: ComponentContext) : ResourcesScope {
   internal var useCachedIndex = 0
   internal var transitions: MutableList<Transition>? = null
   internal var useEffectEntries: MutableList<Attachable>? = null
+
+  /**
+   * A utility function to find the View with a given tag under the current Component's LithoView.
+   * To set a view tag, use Style.viewTag. An appropriate time to call this is in your Component's
+   * onVisible callback.
+   *
+   * <p>As with View.findViewWithTag in general, this must be called on the main thread.
+   *
+   * <p>Note that null may be returned if the associated View doesn't exist or isn't mounted: with
+   * incremental mount turned on (which is the default), if the component is off-screen, it won't be
+   * mounted.
+   *
+   * <p>Finally, note that you should never hold a reference to the view returned by this function
+   * as Litho may unmount your Component and mount it to a different View.
+   */
+  fun <T : View> findViewWithTag(tag: Any): T? {
+    return context.findViewWithTag(tag)
+  }
 }

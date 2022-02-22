@@ -1,0 +1,91 @@
+---
+id: kotlin-flexbox-containers
+title: Flexbox Containers
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+## Rows and Columns, Revisited
+
+As in the Spec API, `Row` and `Column` are the primary layout containers used in the KComponent API. If you need a refresher on them, check out the main [layout docs](/docs/mainconcepts/uicomposition/flexbox-yoga).
+
+<img src={useBaseUrl('/images/litho-layout-row-column-simple.png')} />
+
+### Differences from the Spec API
+
+If you're used to the Spec way of writing containers, there are a few important differences when using `Row` and `Column` in the KComponent API:
+1. **Props of Rows and Columns**: Props that configure the `Row`/`Column` itself, like `alignItems` or `justifyContent`, now appear as props directly on the container Component. In this way, there is no difference from setting props on any other component.
+2. **Common Props**: Props that configure a particular child's positioning within the context of a `Row`/`Column`, like `alignSelf` or `flex`, now appear with other [common props](/docs/kotlin/kotlin-api-basics#common-props) on the `Style` passed to that child. You can think of this as akin to `LayoutParams` in vanilla Android - they must be able to go on any component and are read by the parent.
+3. **Children**: Children are added within a trailing lambda using the `child()` call.
+
+You can see this in practice in the following code:
+
+ ```kotlin
+  Column(style = Style.padding(all = 8.dp), alignItems = YogaAlign.CENTER) {
+    child(Text(style = Style.flex(grow = 1f), text = "Foo"))
+    child(Text(text = "Bar"))
+  }
+ ```
+
+## Migrating from the Spec API
+
+:::note
+#### Why are Layout Props Defined in Two Different Ways Now?
+
+Without code-generated builders, we've had to make a distinction between props of the container itself and common props that can be set on children of the container.
+
+For example, `alignItems` configures the default alignment for children in this container and is only valid on a flexbox container. It's set like a normal component prop on `Row`/`Column`.
+
+On the other hand, `alignSelf` can be respected on any child of a container, whether it's a Text, a Switch, or some custom Component: it's therefore exposed as a common prop via `Style`.
+
+The benefit of this is that we can now statically verify all required props are set instead of verifying at runtime (as well as not rely on codegen!).
+:::
+
+### Flexbox Properties Cheatsheet
+
+Following is a table to help you tell, at a glance, whether to set a layout property directly on the `Row`/`Column` or on `Style`:
+
+| Flexbox Property | Configures a Specific Child? | Example KComponent Usage |
+| -- | -- | -- |
+| `alignContent` | No | `Row(alignContent = YogaAlign.CENTER)` |
+| `alignItems` | No | `Row(alignItems = YogaAlign.CENTER)` |
+| `alignSelf` | Yes | `Style.alignSelf(YogaAlign.CENTER)` |
+| `height` | Yes | `Style.height(50.dp)` |
+| `flexBasis` | Yes | `Style.flex(basis = 8.dp)` |
+| `flexGrow` | Yes | `Style.flex(grow = 1f)` |
+| `flexShrink` | Yes | `Style.flex(shrink = 1f)` |
+| `justifyContent` | No | `Row(justifyContent = YogaJustify.CENTER)` |
+| `margin` | Yes | `Style.margin(8.dp)` |
+| `padding` | Yes | `Style.padding(8.dp)` |
+| `width` | Yes | `Style.width(50.dp)` |
+| `wrap` | No | `Row(wrap = YogaWrap.NO_WRAP)` |
+
+Notice that a property is set via `Style` if and only if it configures a specific child!
+
+### Example Migration
+
+Below is an example of a simple `Component` using various layout properties, converted to an equivalent KComponent:
+
+<Tabs
+  groupId="flexbox"
+  defaultValue="kotlin_flexbox"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_flexbox'},
+    {label: 'Java', value: 'java_flexbox'},
+  ]}>
+  <TabItem value="kotlin_flexbox">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/FlexboxComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_flexbox">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/JavaApiComponentSpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>

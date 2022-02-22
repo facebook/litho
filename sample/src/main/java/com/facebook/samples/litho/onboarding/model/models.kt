@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.java.onboarding;
+package com.facebook.samples.litho.onboarding.model
 
-import android.os.Bundle;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.Text;
-import com.facebook.samples.litho.NavigatableDemoActivity;
+import androidx.annotation.DrawableRes
+import com.facebook.samples.litho.R
 
-public class HelloWorldActivity extends NavigatableDemoActivity {
+// start_example
+class User(val username: String, @DrawableRes val avatarRes: Int)
 
-  // start_example
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+class Post(val user: User, @DrawableRes val imageRes: Int)
+// end_example
 
-    ComponentContext c = new ComponentContext(this);
-    setContentView(LithoView.create(this, Text.create(c).text("Hello World!").build()));
-  }
-  // end_example
-}
+val OBI_WAN_POST =
+    Post(
+        user = User(username = "Obi-Wan Kenobi", avatarRes = R.drawable.ic_launcher),
+        imageRes = R.drawable.header)

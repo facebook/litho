@@ -26,9 +26,13 @@ load(
 
 litho_robolectric4_test(
     name = "litho",
-    srcs = glob(["**/*.kt"]),
+    srcs = glob(
+        ["**/*.kt"],
+        exclude = [
+            "animated/**/*",
+        ],
+    ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
-    fork_mode = "per_test",
     is_androidx = True,
     jni_deps = LITHO_JNI_DEPS,
     language = "KOTLIN",

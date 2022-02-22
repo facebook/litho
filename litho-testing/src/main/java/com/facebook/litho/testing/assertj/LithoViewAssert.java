@@ -27,16 +27,22 @@ import com.facebook.litho.Component;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;
+import com.facebook.litho.componentsfinder.ComponentsFinderKt;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
+import kotlin.Pair;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
+import kotlin.reflect.KProperty1;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.assertj.core.api.ListAssert;
+import org.hamcrest.Matcher;
 
 /**
  * Assertion methods for {@link LithoView}s.
@@ -334,6 +340,236 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
             actual.getChildCount(), actual.getMountItemCount(), actual.toString())
         .isTrue();
     return this;
+  }
+
+  /**
+   * Asserts that the LithoView will render Component as a direct children of the root satisfying
+   * the given condition.
+   *
+   * <p>example:
+   *
+   * <pre>
+   * FBStory -> Story -> Column
+   * -- StoryDescription -> Column
+   * ---- Text
+   * -- Text
+   * -- Comments -> Column
+   * ---- Text
+   * ---- Text
+   * </pre>
+   *
+   * Each row here is a single Node and the arrow indicates 'returns from render'. Direct children
+   * for FBStory Component is Story only and direct components for StoryDescription and Comments
+   * Components are Columns
+   */
+  public LithoViewAssert hasDirectMatchingComponent(Condition<InspectableComponent> condition) {
+    InspectableComponent inspectableComponent = InspectableComponent.getRootInstance(actual);
+    boolean conditionMet = false;
+    for (InspectableComponent component : inspectableComponent.getChildComponents()) {
+      if (condition.matches(component)) {
+        conditionMet = true;
+        break;
+      }
+    }
+    Assertions.assertThat(conditionMet)
+        .overridingErrorMessage(
+            "Expected LithoView <%s> to satisfy condition <%s>", actual, condition)
+        .isTrue();
+    return this;
+  }
+
+  /**
+   * Asserts that the LithoView contains a Component satisfying the given condition at any level of
+   * the hierarchy
+   */
+  public LithoViewAssert hasAnyMatchingComponent(Condition<InspectableComponent> condition) {
+    InspectableComponent inspectableComponent = InspectableComponent.getRootInstance(actual);
+    boolean conditionMet =
+        iterateOverAllChildren(inspectableComponent.getChildComponents(), condition);
+    Assertions.assertThat(conditionMet)
+        .overridingErrorMessage(
+            "Expected LithoView <%s> to satisfy condition <%s>", actual, condition)
+        .isTrue();
+    return this;
+  }
+
+  private boolean iterateOverAllChildren(
+      List<InspectableComponent> inspectableComponents, Condition<InspectableComponent> condition) {
+    for (InspectableComponent component : inspectableComponents) {
+      if (condition.matches(component)) {
+        return true;
+      }
+      if (iterateOverAllChildren(component.getChildComponents(), condition)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Asserts that the LithoView contains a Component with given props at any level of the hierarchy.
+   * This function uses DFS algorithm to go through the whole component tree
+   *
+   * @param kClass class of a component
+   * @param propsValuePairs Pairs of props and their expected values
+   */
+  public <T1, T2> LithoViewAssert hasAnyMatchingComponent(
+      KClass kClass, Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
+
+    List<Component> componentsList =
+        ComponentsFinderKt.findAllComponentsInLithoView(actual, kClass);
+    boolean hasMatchingProps = hasMatchingProps(componentsList, propsValuePairs);
+    Assertions.assertThat(hasMatchingProps)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains component with given props, but the components that were found of given class: \n <%s> \ndid not satisfy all those props: \n %s ",
+            actual, kClass.toString(), getPropsFormattedString(propsValuePairs))
+        .isTrue();
+
+    return this;
+  }
+
+  /**
+   * Asserts that the LithoView contains a direct Component with given props
+   *
+   * @param kClass class of a component
+   * @param propsValuePairs Pairs of props and their expected values
+   */
+  public <T1, T2> LithoViewAssert hasDirectMatchingComponent(
+      KClass kClass, Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
+
+    Component component = ComponentsFinderKt.findDirectComponentInLithoView(actual, kClass);
+
+    Assertions.assertThat(component)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains direct component with props that matches given matcher, but the component of given class: \n <%s>  was not found as direct one",
+            actual, kClass.toString())
+        .isNotNull();
+
+    boolean hasMatchingProps = comparedPropsAreEqual(component, propsValuePairs);
+    Assertions.assertThat(hasMatchingProps)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains component with given props, but the components that were found of given class: \n <%s> \ndid not satisfy all those props: \n %s ",
+            actual, kClass.toString(), getPropsFormattedString(propsValuePairs))
+        .isTrue();
+
+    return this;
+  }
+
+  private <T1, T2> boolean hasMatchingProps(
+      List<Component> componentsList, Pair<KProperty1<T2, T1>, T1>[] propsValuePairs) {
+    for (Component component : componentsList) {
+      if (comparedPropsAreEqual(component, propsValuePairs)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Asserts that the LithoView contains a Component with props that matches given matcher at any
+   * level of the hierarchy
+   *
+   * @param kClass class of a component
+   * @param propsMatcherPairs Pairs of props and their matchers
+   */
+  public <T2, T1> LithoViewAssert hasAnyMatchingComponentWithMatcher(
+      KClass kClass, Pair<KProperty1<T2, T1>, Matcher<T1>>... propsMatcherPairs) {
+
+    List<Component> componentsList =
+        ComponentsFinderKt.findAllComponentsInLithoView(actual, kClass);
+    boolean isMatching = hasMatchingPropsWithMatcher(componentsList, propsMatcherPairs);
+
+    Assertions.assertThat(isMatching)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains component with props that matches given matcher, but the components that were found of given class: \n <%s> \ndid not satisfy those matchers: \n %s ",
+            actual, kClass.toString(), getPropsMatcherFormattedString(propsMatcherPairs))
+        .isTrue();
+    return this;
+  }
+
+  /**
+   * Asserts that the LithoView contains a Component with props that matches given matcher at any
+   * level of the hierarchy
+   *
+   * @param kClass class of a component
+   * @param propsMatcherPairs Pairs of props and their matchers
+   */
+  public <T2, T1> LithoViewAssert hasDirectMatchingComponentWithMatcher(
+      KClass kClass, Pair<KProperty1<T2, T1>, Matcher<T1>>... propsMatcherPairs) {
+
+    Component component = ComponentsFinderKt.findDirectComponentInLithoView(actual, kClass);
+
+    Assertions.assertThat(component)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains direct component with props that matches given matcher, but the component of given class: \n <%s> \n was not found as direct one",
+            actual, kClass.toString())
+        .isNotNull();
+
+    boolean isMatching = comparedPropsMatch(component, propsMatcherPairs);
+
+    Assertions.assertThat(isMatching)
+        .overridingErrorMessage(
+            "\nExpected LithoView : \n <%s> \n to contains direct component with props that matches given matcher, but the components that were found of given class: \n <%s> \ndid not satisfy those matchers: \n %s ",
+            actual, kClass.toString(), getPropsMatcherFormattedString(propsMatcherPairs))
+        .isTrue();
+    return this;
+  }
+
+  /**
+   * Helper method that checks if the componentsList contains a component that matches given matcher
+   */
+  private <T2, T1> boolean hasMatchingPropsWithMatcher(
+      List<Component> componentsList, Pair<KProperty1<T2, T1>, Matcher<T1>>[] propsMatcherPairs) {
+    for (Component component : componentsList) {
+      if (comparedPropsMatch(component, propsMatcherPairs)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private <T2, T1> String getPropsFormattedString(Pair<KProperty1<T2, T1>, T1>[] propsValuePairs) {
+    final StringBuilder sb = new StringBuilder();
+    for (Pair<KProperty1<T2, T1>, T1> pair : propsValuePairs) {
+      appendPairString(pair.getFirst().getName(), pair.getSecond().toString(), sb);
+    }
+    return sb.toString();
+  }
+
+  private <T2, T1> String getPropsMatcherFormattedString(
+      Pair<KProperty1<T2, T1>, Matcher<T1>>[] propsMatcherPairs) {
+    final StringBuilder sb = new StringBuilder();
+    for (Pair<KProperty1<T2, T1>, Matcher<T1>> pair : propsMatcherPairs) {
+      appendPairString(pair.getFirst().getName(), pair.getSecond().toString(), sb);
+    }
+    return sb.toString();
+  }
+
+  private void appendPairString(String valueName, String value, StringBuilder sb) {
+    sb.append(valueName);
+    sb.append(" : ");
+    sb.append(value);
+    sb.append("\n");
+  }
+
+  private <T2, T1> boolean comparedPropsMatch(
+      Component component, Pair<KProperty1<T2, T1>, Matcher<T1>>[] propsMatcherPairs) {
+    for (Pair<KProperty1<T2, T1>, Matcher<T1>> pair : propsMatcherPairs) {
+      if (!(pair.getSecond().matches(pair.getFirst().get((T2) component)))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private <T2, T1> boolean comparedPropsAreEqual(
+      Component component, Pair<KProperty1<T2, T1>, T1>[] propsValuePairs) {
+    for (Pair<KProperty1<T2, T1>, T1> pair : propsValuePairs) {
+      if (!(pair.getFirst().get((T2) component).equals(pair.getSecond()))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public static OccurrenceCount times(int i) {

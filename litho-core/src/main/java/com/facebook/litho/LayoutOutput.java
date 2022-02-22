@@ -123,7 +123,7 @@ class LayoutOutput implements Cloneable {
   }
 
   static LayoutOutput getLayoutOutput(RenderTreeNode node) {
-    return ((LithoRenderUnit) node.getRenderUnit()).output;
+    return ((LithoRenderUnit) node.getRenderUnit()).getLayoutOutput();
   }
 
   static LayoutOutput getLayoutOutput(MountItem item) {

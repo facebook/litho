@@ -169,13 +169,6 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     if (prop8 != testMountRef.prop8) {
       return false;
     }
-    if (!useTreePropsFromContext()) {
-      if (treeProp != null
-          ? !treeProp.equals(testMountRef.treeProp)
-          : testMountRef.treeProp != null) {
-        return false;
-      }
-    }
     return true;
   }
 
@@ -321,10 +314,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         (S) _state.state2,
         (Long) getInterStagePropsContainerImpl(c, _interStageProps).measureOutput,
         (TestTreeProp)
-            (useTreePropsFromContext()
-                ? c.getParentTreeProp(
-                    com.facebook.litho.processor.integration.resources.TestTreeProp.class)
-                : treeProp));
+            (c.getParentTreeProp(
+                com.facebook.litho.processor.integration.resources.TestTreeProp.class)));
   }
 
   @Override

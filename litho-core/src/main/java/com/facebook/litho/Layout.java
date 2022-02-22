@@ -24,7 +24,6 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.litho.config.ComponentsConfiguration.canRemeasureCachedLayouts;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -32,7 +31,6 @@ import android.content.pm.ApplicationInfo;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderState.LayoutContext;
@@ -304,7 +302,7 @@ class Layout {
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component, i.e. the root node belongs to
     // another component.
-    if (node.getTailComponent() == null) {
+    if (node.getComponentCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || ((isNestedTree || hasCachedLayout) && !resolveNestedTree)) {
         node.setMeasureFunction(sMeasureFunction);
@@ -345,10 +343,13 @@ class Layout {
       node.addAttachable(new LayoutSpecAttachable(globalKey, component, scopedComponentInfo));
     }
 
-    // 13. Call onPrepare for MountSpecs.
+    // 13. Call onPrepare for MountSpecs or prepare for MountableComponents.
     if (isMountSpec(component)) {
       try {
-        component.onPrepare(c);
+        PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
+        if (prepareResult != null) {
+          node.setMountable(prepareResult.mountable);
+        }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(parent, component, e);
       }
@@ -373,11 +374,7 @@ class Layout {
 
     final LithoNode node = holder.getNode();
     final Component component = node.getTailComponent();
-    if (component == null) {
-      throw new IllegalArgumentException("A component is required to resolve a nested tree.");
-    }
-
-    final String globalKey = Preconditions.checkNotNull(node.getTailComponentKey());
+    final String globalKey = node.getTailComponentKey();
     final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // The resolved layout to return.
@@ -392,9 +389,7 @@ class Layout {
             currentLayout.getLastMeasuredWidth(),
             currentLayout.getLastMeasuredHeight())) {
 
-      if (currentLayout != null
-          && canRemeasureCachedLayouts
-          && !isLayoutSpecWithSizeSpec(component)) {
+      if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
         layout = remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec);
       } else {
 
@@ -473,7 +468,6 @@ class Layout {
     }
   }
 
-  /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
   static ComponentContext update(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
@@ -492,8 +486,13 @@ class Layout {
     // 1. Update the internal state of the component wrt the parent.
     // 2. Get the scoped context from the updated component.
     final ComponentContext c =
-        component.updateInternalChildState(layoutStateContext, parent, globalKeyToReuse);
-
+        ComponentContext.withComponentScope(
+            layoutStateContext,
+            parent,
+            component,
+            globalKeyToReuse == null
+                ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
+                : globalKeyToReuse);
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
@@ -518,8 +517,7 @@ class Layout {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "measureTree:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
+      ComponentsSystrace.beginSection("measureTree:" + root.getHeadComponent().getSimpleName());
     }
 
     final LayoutContext<LithoRenderContext> context =
@@ -550,8 +548,7 @@ class Layout {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "resume:" + Preconditions.checkNotNull(root.getHeadComponent()).getSimpleName());
+      ComponentsSystrace.beginSection("resume:" + root.getHeadComponent().getSimpleName());
     }
 
     resume(layoutStateContext, root);
@@ -578,9 +575,9 @@ class Layout {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
-      final ComponentContext context = Preconditions.checkNotNull(root.getTailComponentContext());
+      final ComponentContext context = root.getTailComponentContext();
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(c, Preconditions.checkNotNull(context), unresolved.get(i));
+        root.child(c, context, unresolved.get(i));
       }
       unresolved.clear();
     }
@@ -644,7 +641,7 @@ class Layout {
       if (isFromCurrentLayout && hasValidDirection) {
         if (hasCompatibleSizeSpec) {
           return cachedLayout;
-        } else if (canRemeasureCachedLayouts && !isLayoutSpecWithSizeSpec(component)) {
+        } else if (!isLayoutSpecWithSizeSpec(component)) {
           return remeasure(layoutStateContext, cachedLayout, widthSpec, heightSpec);
         }
       }
@@ -710,17 +707,13 @@ class Layout {
     }
 
     final Component component = layoutNode.getTailComponent();
+    final ComponentContext scopedContext = layoutNode.getTailComponentContext();
 
-    if (component != null) {
-      final ComponentContext scopedContext =
-          Preconditions.checkNotNull(layoutNode.getTailComponentContext());
-
-      try {
-        return component.shouldComponentUpdate(
-            getDiffNodeScopedContext(diffNode), diffNode.getComponent(), scopedContext, component);
-      } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(Preconditions.checkNotNull(scopedContext), component, e);
-      }
+    try {
+      return component.shouldComponentUpdate(
+          getDiffNodeScopedContext(diffNode), diffNode.getComponent(), scopedContext, component);
+    } catch (Exception e) {
+      ComponentUtils.handleWithHierarchy(scopedContext, component, e);
     }
 
     return true;

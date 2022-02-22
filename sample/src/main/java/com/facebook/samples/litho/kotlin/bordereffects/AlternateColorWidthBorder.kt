@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.bordereffects
 
-import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -24,8 +23,9 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
+import com.facebook.litho.widget.Border
+import com.facebook.litho.widget.BorderEdge
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge
 
 class AlternateColorWidthBorder : KComponent() {
 
@@ -33,16 +33,12 @@ class AlternateColorWidthBorder : KComponent() {
     return Row(
         style =
             Style.border(
-                Border.create(context)
-                    .color(YogaEdge.LEFT, NiceColor.RED)
-                    .color(YogaEdge.TOP, NiceColor.YELLOW)
-                    .color(YogaEdge.RIGHT, NiceColor.GREEN)
-                    .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                    .widthDip(YogaEdge.LEFT, 2f)
-                    .widthDip(YogaEdge.TOP, 4f)
-                    .widthDip(YogaEdge.RIGHT, 8f)
-                    .widthDip(YogaEdge.BOTTOM, 16f)
-                    .build())) {
+                Border(
+                    edgeTop = BorderEdge(NiceColor.YELLOW, 4f.dp),
+                    edgeBottom = BorderEdge(NiceColor.BLUE, 16f.dp),
+                    edgeLeft = BorderEdge(NiceColor.RED, 2f.dp),
+                    edgeRight = BorderEdge(NiceColor.GREEN, 8f.dp),
+                ))) {
       child(
           Text(
               "This component has each border specified to a different color + width",

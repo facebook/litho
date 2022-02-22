@@ -48,7 +48,7 @@ public class DynamicPropsExtension
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.output;
+      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
       final DynamicPropsExtensionState state = extensionState.getState();
 
       state.mDynamicPropsManager.onBindComponentToContent(
@@ -66,7 +66,7 @@ public class DynamicPropsExtension
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.output;
+      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
       final DynamicPropsExtensionState state = extensionState.getState();
 
       state.mDynamicPropsManager.onUnbindComponent(output.getComponent(), content);

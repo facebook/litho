@@ -17,11 +17,12 @@
 package com.facebook.litho
 
 import androidx.annotation.UiThread
+import com.facebook.litho.annotations.Hook
 
 /**
  * [useCallback] allows a parent to pass a child component a callback which: 1) maintains
- * referential equality across multiple layout passes via MemoizedCallback 2) is updated to have the
- * latest parent props and state, even if the child doesn't re-render.
+ * referential equality across multiple layout passes 2) is updated to have the latest parent props
+ * and state, even if the child doesn't re-render.
  *
  * ## Example
  *
@@ -48,37 +49,197 @@ import androidx.annotation.UiThread
  * [useCallback] tries to give the best of both worlds: it doesn't cause children to re-render, and
  * also gives a mechanism for them to invoke a lambda that has captured the latest props and state.
  *
- * ## Notes
+ * ## Notes: Thread Safety
  *
- * The lambda reference in the returned [MemoizedCallback] is updated when a new layout has been
- * committed **on the main thread**. This means that [useCallback] should only be used with events
- * that will also be invoked from the main thread, e.g. onClick.
+ * The callback that will be invoked by the function returned by [useCallback] is updated when a new
+ * layout has been committed **on the main thread**. This means that [useCallback] should only be
+ * used with events that will also be invoked from the main thread, e.g. onClick.
  */
-fun <CallbackT : Function<*>> ComponentScope.useCallback(
-    callback: CallbackT
-): MemoizedCallback<CallbackT> {
-  val callbackRef = useState { MemoizedCallback(callback) }
+@Hook
+fun <R> ComponentScope.useCallback(
+    callback: () -> R,
+): () -> R {
+  val callbackRef = useState { MemoizedCallback0(CallbackHolder(callback)) }
   useEffect {
-    callbackRef.value.callback = callback
+    callbackRef.value.callbackHolder.callback = callback
     null
   }
   return callbackRef.value
 }
 
-/**
- * A simple box for a lambda/function which can receive the latest version of the callback on the
- * main thread. Primarily used to just access and invoke the contained lambda (`current`).
- */
-class MemoizedCallback<CallbackT : Function<*>>(@UiThread internal var callback: CallbackT) {
-
-  /**
-   * The current version of the lambda stored in this MemoizedCallback. Should only be accessed on
-   * the main thread (see note in docs on [useCallback])
-   */
-  val current
-    @UiThread
-    get(): CallbackT {
-      ThreadUtils.assertMainThread()
-      return callback
-    }
+/** 1-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, R> ComponentScope.useCallback(
+    callback: (A) -> R,
+): (A) -> R {
+  val callbackRef = useState { MemoizedCallback1(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
 }
+
+/** 2-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, B, R> ComponentScope.useCallback(
+    callback: (A, B) -> R,
+): (A, B) -> R {
+  val callbackRef = useState { MemoizedCallback2(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
+}
+
+/** 3-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, B, C, R> ComponentScope.useCallback(
+    callback: (A, B, C) -> R,
+): (A, B, C) -> R {
+  val callbackRef = useState { MemoizedCallback3(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
+}
+
+/** 4-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, B, C, D, R> ComponentScope.useCallback(
+    callback: (A, B, C, D) -> R,
+): (A, B, C, D) -> R {
+  val callbackRef = useState { MemoizedCallback4(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
+}
+
+/** 5-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, B, C, D, E, R> ComponentScope.useCallback(
+    callback: (A, B, C, D, E) -> R,
+): (A, B, C, D, E) -> R {
+  val callbackRef = useState { MemoizedCallback5(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
+}
+
+/** 6-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, B, C, D, E, F, R> ComponentScope.useCallback(
+    callback: (A, B, C, D, E, F) -> R,
+): (A, B, C, D, E, F) -> R {
+  val callbackRef = useState { MemoizedCallback6(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
+}
+
+/** 7-parameter overload of [useCallback]: refer to docs there. */
+@Hook
+fun <A, B, C, D, E, F, G, R> ComponentScope.useCallback(
+    callback: (A, B, C, D, E, F, G) -> R,
+): (A, B, C, D, E, F, G) -> R {
+  val callbackRef = useState { MemoizedCallback7(CallbackHolder(callback)) }
+  useEffect {
+    callbackRef.value.callbackHolder.callback = callback
+    null
+  }
+  return callbackRef.value
+}
+
+// Implementation Notes:
+//
+// So that we don't have to introduce a bunch of classes to support these callback holders, these
+// are all value classes that hold a single CallbackHolder. Their purpose is to behave as a function
+// of some type (e.g. (A, B) -> R) such that when they are invoked, they just invoke the latest
+// callback that has been set on them.
+
+@JvmInline
+private value class MemoizedCallback0<R>(val callbackHolder: CallbackHolder<() -> R>) : () -> R {
+  override fun invoke(): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback()
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback1<A, R>(val callbackHolder: CallbackHolder<(A) -> R>) :
+    (A) -> R {
+  override fun invoke(p1: A): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1)
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback2<A, B, R>(val callbackHolder: CallbackHolder<(A, B) -> R>) :
+    (A, B) -> R {
+  override fun invoke(p1: A, p2: B): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1, p2)
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback3<A, B, C, R>(
+    val callbackHolder: CallbackHolder<(A, B, C) -> R>
+) : (A, B, C) -> R {
+  override fun invoke(p1: A, p2: B, p3: C): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1, p2, p3)
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback4<A, B, C, D, R>(
+    val callbackHolder: CallbackHolder<(A, B, C, D) -> R>
+) : (A, B, C, D) -> R {
+  override fun invoke(p1: A, p2: B, p3: C, p4: D): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1, p2, p3, p4)
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback5<A, B, C, D, E, R>(
+    val callbackHolder: CallbackHolder<(A, B, C, D, E) -> R>
+) : (A, B, C, D, E) -> R {
+  override fun invoke(p1: A, p2: B, p3: C, p4: D, p5: E): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1, p2, p3, p4, p5)
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback6<A, B, C, D, E, F, R>(
+    val callbackHolder: CallbackHolder<(A, B, C, D, E, F) -> R>
+) : (A, B, C, D, E, F) -> R {
+  override fun invoke(p1: A, p2: B, p3: C, p4: D, p5: E, p6: F): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1, p2, p3, p4, p5, p6)
+  }
+}
+
+@JvmInline
+private value class MemoizedCallback7<A, B, C, D, E, F, G, R>(
+    val callbackHolder: CallbackHolder<(A, B, C, D, E, F, G) -> R>
+) : (A, B, C, D, E, F, G) -> R {
+  override fun invoke(p1: A, p2: B, p3: C, p4: D, p5: E, p6: F, p7: G): R {
+    ThreadUtils.assertMainThread()
+    return callbackHolder.callback(p1, p2, p3, p4, p5, p6, p7)
+  }
+}
+
+/** A simple holder for a lambda that can be updated to a newer instance on the UI thread. */
+private class CallbackHolder<T : Function<*>>(@UiThread internal var callback: T)

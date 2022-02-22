@@ -65,7 +65,6 @@ internal enum class ObjectField {
 @PublishedApi
 internal enum class FloatField {
   ALPHA,
-  ELEVATION,
   ROTATION,
   ROTATION_X,
   ROTATION_Y,
@@ -84,6 +83,7 @@ internal enum class DimenField {
   TOUCH_EXPANSION_HORIZONTAL,
   TOUCH_EXPANSION_VERTICAL,
   TOUCH_EXPANSION_ALL,
+  ELEVATION,
 }
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
@@ -127,7 +127,6 @@ internal data class FloatStyleItem(val field: FloatField, val value: Float) : St
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       FloatField.ALPHA -> commonProps.alpha(value)
-      FloatField.ELEVATION -> commonProps.shadowElevationPx(value)
       FloatField.ROTATION -> commonProps.rotation(value)
       FloatField.ROTATION_X -> commonProps.rotationX(value)
       FloatField.ROTATION_Y -> commonProps.rotationY(value)
@@ -154,6 +153,7 @@ internal data class DimenStyleItem(val field: DimenField, val value: Dimen) : St
       DimenField.TOUCH_EXPANSION_VERTICAL ->
           commonProps.touchExpansionPx(YogaEdge.VERTICAL, pixelValue)
       DimenField.TOUCH_EXPANSION_ALL -> commonProps.touchExpansionPx(YogaEdge.ALL, pixelValue)
+      DimenField.ELEVATION -> commonProps.shadowElevationPx(pixelValue.toFloat())
     }.exhaustive
   }
 }
@@ -220,8 +220,8 @@ inline fun Style.clipToOutline(clipToOutline: Boolean): Style =
  *
  * See [android.view.View.setElevation]
  */
-inline fun Style.elevation(elevation: Float): Style =
-    this + FloatStyleItem(FloatField.ELEVATION, elevation)
+inline fun Style.elevation(elevation: Dimen): Style =
+    this + DimenStyleItem(DimenField.ELEVATION, elevation)
 
 /**
  * Setting this property will cause the Component to be focusable. Setting this property will cause

@@ -17,7 +17,6 @@
 package com.facebook.litho.animated
 
 import android.os.Looper.getMainLooper
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DynamicValue
@@ -27,8 +26,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.unspecified
+import com.facebook.litho.testing.LithoViewRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -38,14 +36,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.PAUSED)
-@RunWith(AndroidJUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class AnimatedTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  // TODO(t112256774): Re-enable AnimatedTest tests. See https://fburl.com/h50b38s9 for more details
+
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   private lateinit var listener: AnimationFinishListener
   private lateinit var listener2: AnimationFinishListener
@@ -107,14 +108,9 @@ class AnimatedTest {
   fun timingAnimation_whenAnimationFinish_alphaValueChange() {
     val alphaProgress = DynamicValue(0f)
     val animation = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(TestComponent(alphaProgress = alphaProgress))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoview = lithoViewRule.render { TestComponent(alphaProgress = alphaProgress) }
 
-    val view = lithoViewRule.lithoView
+    val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("initial value")
     animation.start()
     shadowOf(getMainLooper()).idle()
@@ -406,14 +402,10 @@ class AnimatedTest {
     val xProgress = DynamicValue(100f)
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     val animation2 = Animated.timing(target = xProgress, to = 200f, duration = 1000)
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(TestComponent(alphaProgress = alphaProgress, xProgress = xProgress))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoview =
+        lithoViewRule.render { TestComponent(alphaProgress = alphaProgress, xProgress = xProgress) }
 
-    val view = lithoViewRule.lithoView
+    val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
     assertThat(view.translationX).isEqualTo(100f).describedAs("translationX initial value")
     val sequence = Animated.sequence(animation1, animation2)
@@ -457,14 +449,10 @@ class AnimatedTest {
     val xProgress = DynamicValue(100f)
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     val animation2 = Animated.timing(target = xProgress, to = 200f, duration = 1000)
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot(TestComponent(alphaProgress = alphaProgress, xProgress = xProgress))
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoview =
+        lithoViewRule.render { TestComponent(alphaProgress = alphaProgress, xProgress = xProgress) }
 
-    val view = lithoViewRule.lithoView
+    val view = testLithoview.lithoView
     assertThat(view.alpha).isEqualTo(0f).describedAs("alpha initial value")
     assertThat(view.translationX).isEqualTo(100f).describedAs("translationX initial value")
     val loop = Animated.loop(Animated.sequence(animation1, animation2), 2)

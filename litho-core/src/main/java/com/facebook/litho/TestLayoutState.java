@@ -46,12 +46,18 @@ public class TestLayoutState {
 
   public static @Nullable LithoNode createAndMeasureTreeForComponent(
       LayoutStateContext layoutStateContext,
-      ComponentContext c,
+      ComponentContext context,
       Component component,
       int widthSpec,
       int heightSpec) {
 
-    c = component.updateInternalChildState(layoutStateContext, c, null);
+    final ComponentContext c =
+        ComponentContext.withComponentScope(
+            layoutStateContext,
+            context,
+            component,
+            ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
+
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     final LithoNode root =
@@ -87,7 +93,11 @@ public class TestLayoutState {
 
     final LithoNode node = createInternalNode(c);
     final ComponentContext scopedContext =
-        component.updateInternalChildState(layoutStateContext, c, null);
+        ComponentContext.withComponentScope(
+            layoutStateContext,
+            c,
+            component,
+            ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     node.appendComponent(
@@ -217,7 +227,7 @@ public class TestLayoutState {
       commonProps.copyInto(c, node);
     }
 
-    if (node.getTailComponent() == null) {
+    if (node.getChildCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure) {
         node.setMeasureFunction(sMeasureFunction);
@@ -388,17 +398,12 @@ public class TestLayoutState {
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component, i.e. the root node belongs to
     // another component.
-    if (node.getTailComponent() == null) {
+    if (node.getChildCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || (isNestedTree(component))) {
         node.setMeasureFunction(sMeasureFunction);
       }
     }
-
-    // 9. Copy the common props
-    // Skip if resolving a layout with size spec because common props were copied in the previous
-    // layout pass.
-    final CommonProps commonProps = component.getCommonProps();
 
     // 10. Add the component to the InternalNode.
     node.appendComponent(scopedComponentInfo);

@@ -54,8 +54,8 @@ public abstract class MountExtension<Input, State> {
    */
   public void beforeMount(
       final ExtensionState<State> extensionState,
-      final Input input,
-      final @Nullable Rect localVisibleRect) {}
+      final @Nullable Input input,
+      final Rect localVisibleRect) {}
 
   public void beforeMountItem(
       final ExtensionState<State> extensionState,

@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
-import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.Conditions.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -69,29 +68,7 @@ class CachedLayoutTest {
   }
 
   @Test
-  fun `when component has incompatible cached layout it should be recreated or remeasured`() {
-
-    val tracker = LifecycleTracker()
-    val steps = mutableListOf<StepInfo>()
-    val size = Size(exactly(200), 200)
-    val root = TrackingComponent(tracker, steps, size, commonAssertion)
-
-    lithoViewRule.render { root }
-
-    assertThat(LifecycleStep.getSteps(steps))
-        .describedAs("cached layout spec should be resolved twice")
-        .has(exactly(LifecycleStep.ON_CREATE_LAYOUT, 2))
-
-    assertThat(tracker.steps)
-        .describedAs("cached mount spec should be measured twice")
-        .has(exactly(LifecycleStep.ON_MEASURE, 2))
-  }
-
-  @Test
   fun `when component has incompatible cached layout it should only be remeasured`() {
-
-    TempComponentsConfigurations.setCanRemeasureCachedLayouts(true)
-
     val tracker = LifecycleTracker()
     val steps = mutableListOf<StepInfo>()
     val size = Size(exactly(200), 200)
@@ -102,15 +79,10 @@ class CachedLayoutTest {
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("cached layout spec should be resolved only once")
         .containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
-
-    TempComponentsConfigurations.restoreCanRemeasureCachedLayouts()
   }
 
   @Test
   fun `when component with flex has incompatible cached layout it should only be remeasured`() {
-
-    TempComponentsConfigurations.setCanRemeasureCachedLayouts(true)
-
     val c: ComponentContext = lithoViewRule.context
     val tracker = LifecycleTracker()
     val steps = mutableListOf<StepInfo>()
@@ -130,8 +102,6 @@ class CachedLayoutTest {
     assertThat(LifecycleStep.getSteps(steps))
         .describedAs("cached layout spec should be resolved only once")
         .containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT)
-
-    TempComponentsConfigurations.restoreCanRemeasureCachedLayouts()
   }
 
   class TrackingComponent(

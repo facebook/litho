@@ -37,9 +37,40 @@ public class SpecElementTypeDeterminator {
                 });
   }
 
+  static boolean isKotlinClass(TypeElement element) {
+    return element.getKind() == ElementKind.CLASS
+        /* should contain a companion static field instance */
+        && element.getEnclosedElements().stream()
+            .anyMatch(
+                e -> {
+                  final CharSequence instanceFieldName = "Companion";
+                  return e.getSimpleName().contentEquals(instanceFieldName)
+                      && e.asType()
+                          .toString()
+                          .equals(element.getQualifiedName().toString() + ".Companion")
+                      && e.getModifiers()
+                          .containsAll(
+                              ImmutableList.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL));
+                })
+        /* should contain a Companion class declaration. */
+        && element.getEnclosedElements().stream()
+            .anyMatch(
+                e ->
+                    e.getKind() == ElementKind.CLASS
+                        && e.getSimpleName().contentEquals("Companion")
+                        && e.getModifiers()
+                            .containsAll(
+                                ImmutableList.of(
+                                    Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)));
+  }
+
   public static SpecElementType determine(TypeElement element) {
     if (isKotlinSingleton(element)) {
       return SpecElementType.KOTLIN_SINGLETON;
+    }
+
+    if (isKotlinClass(element)) {
+      return SpecElementType.KOTLIN_CLASS;
     }
 
     return SpecElementType.JAVA_CLASS;

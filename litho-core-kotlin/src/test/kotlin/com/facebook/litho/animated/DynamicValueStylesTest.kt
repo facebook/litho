@@ -18,78 +18,71 @@ package com.facebook.litho.animated
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.setRoot
-import com.facebook.litho.testing.unspecified
-import com.facebook.litho.view.background
-import org.assertj.core.api.Java6Assertions.assertThat
+import com.facebook.litho.testing.LithoViewRule
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.LooperMode
 
 /** Unit tests for common styles defined in [DynamicValueStyles]. */
-@RunWith(AndroidJUnit4::class)
+@LooperMode(LooperMode.Mode.PAUSED)
+@RunWith(RobolectricTestRunner::class)
 class DynamicValueStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun dynamic_backgroundColor_whenSet_isRespected() {
     val startValue: Int = Color.RED
     val backgroundColorDV: DynamicValue<Int> = DynamicValue<Int>(startValue)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoViewRule.render {
           Row(style = Style.width(100.px).height(100.px).backgroundColor(backgroundColorDV))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.background).isInstanceOf(ColorDrawable::class.java)
-    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color).isEqualTo(Color.RED)
+    assertThat(testLithoView.lithoView.background).isInstanceOf(ColorDrawable::class.java)
+    assertThat((testLithoView.lithoView.background as ColorDrawable).color).isEqualTo(Color.RED)
 
     backgroundColorDV.set(Color.WHITE)
-    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color).isEqualTo(Color.WHITE)
+    assertThat((testLithoView.lithoView.background as ColorDrawable).color).isEqualTo(Color.WHITE)
 
     backgroundColorDV.set(Color.TRANSPARENT)
-    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color)
+    assertThat((testLithoView.lithoView.background as ColorDrawable).color)
         .isEqualTo(Color.TRANSPARENT)
   }
+
+  @Test
   fun dynamic_alpha_whenSet_isRespected() {
     val alpha = 0.5f
     val alphaDV: DynamicValue<Float> = DynamicValue<Float>(alpha)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).alpha(alphaDV)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render { Row(style = Style.width(100.px).height(100.px).alpha(alphaDV)) }
 
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(alpha)
+    assertThat(testLithoView.lithoView.alpha).isEqualTo(alpha)
 
     alphaDV.set(1f)
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(1f)
+    assertThat(testLithoView.lithoView.alpha).isEqualTo(1f)
     alphaDV.set(0.7f)
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(0.7f)
+    assertThat(testLithoView.lithoView.alpha).isEqualTo(0.7f)
   }
 
+  @Test
   fun dynamic_translation_whenSet_isRespected() {
     val translationXDV: DynamicValue<Float> = DynamicValue<Float>(10f)
     val translationYDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoViewRule.render {
           Row(
               style =
                   Style.width(100.px)
@@ -97,67 +90,60 @@ class DynamicValueStylesTest {
                       .translationX(translationXDV)
                       .translationY(translationYDV))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.translationX).isEqualTo(10f)
-    assertThat(lithoViewRule.lithoView.translationY).isEqualTo(10f)
+    assertThat(testLithoView.lithoView.translationX).isEqualTo(10f)
+    assertThat(testLithoView.lithoView.translationY).isEqualTo(10f)
 
     translationXDV.set(-50f)
     translationYDV.set(20f)
-    assertThat(lithoViewRule.lithoView.translationX).isEqualTo(-50f)
-    assertThat(lithoViewRule.lithoView.translationY).isEqualTo(20f)
+    assertThat(testLithoView.lithoView.translationX).isEqualTo(-50f)
+    assertThat(testLithoView.lithoView.translationY).isEqualTo(20f)
 
     translationXDV.set(35f)
     translationYDV.set(-75f)
-    assertThat(lithoViewRule.lithoView.translationX).isEqualTo(35f)
-    assertThat(lithoViewRule.lithoView.translationY).isEqualTo(-75f)
+    assertThat(testLithoView.lithoView.translationX).isEqualTo(35f)
+    assertThat(testLithoView.lithoView.translationY).isEqualTo(-75f)
   }
 
+  @Test
   fun dynamic_rotation_whenSet_isRespected() {
     val rotationDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).rotation(rotationDV)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render {
+          Row(style = Style.width(100.px).height(100.px).rotation(rotationDV))
+        }
 
-    assertThat(lithoViewRule.lithoView.rotation).isEqualTo(10f)
+    assertThat(testLithoView.lithoView.rotation).isEqualTo(10f)
 
     rotationDV.set(-350f)
-    assertThat(lithoViewRule.lithoView.rotation).isEqualTo(-350f)
+    assertThat(testLithoView.lithoView.rotation).isEqualTo(-350f)
 
     rotationDV.set(0.5f)
-    assertThat(lithoViewRule.lithoView.rotation).isEqualTo(0.5f)
+    assertThat(testLithoView.lithoView.rotation).isEqualTo(0.5f)
   }
 
+  @Test
   fun dynamic_scale_whenSet_isRespected() {
     val scaleXDV: DynamicValue<Float> = DynamicValue<Float>(10f)
     val scaleYDV: DynamicValue<Float> = DynamicValue<Float>(10f)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoViewRule.render {
           Row(style = Style.width(100.px).height(100.px).scaleX(scaleXDV).scaleY(scaleYDV))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.scaleX).isEqualTo(10f)
-    assertThat(lithoViewRule.lithoView.scaleY).isEqualTo(10f)
+    assertThat(testLithoView.lithoView.scaleX).isEqualTo(10f)
+    assertThat(testLithoView.lithoView.scaleY).isEqualTo(10f)
 
     scaleXDV.set(-50f)
     scaleYDV.set(20f)
-    assertThat(lithoViewRule.lithoView.scaleX).isEqualTo(-50f)
-    assertThat(lithoViewRule.lithoView.scaleY).isEqualTo(20f)
+    assertThat(testLithoView.lithoView.scaleX).isEqualTo(-50f)
+    assertThat(testLithoView.lithoView.scaleY).isEqualTo(20f)
 
     scaleXDV.set(0.5f)
     scaleYDV.set(0.7f)
-    assertThat(lithoViewRule.lithoView.scaleX).isEqualTo(0.5f)
-    assertThat(lithoViewRule.lithoView.scaleY).isEqualTo(0.7f)
+    assertThat(testLithoView.lithoView.scaleX).isEqualTo(0.5f)
+    assertThat(testLithoView.lithoView.scaleY).isEqualTo(0.7f)
   }
 }

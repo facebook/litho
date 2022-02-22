@@ -71,8 +71,8 @@
     <activity android:name=".java.lifecycle.LifecycleFragmentActivity" />
     <activity android:name=".java.animations.sharedelements.SharedDetailActivityElementsFragmentActivity" />
     <activity android:name=".java.editor.SimpleEditorExampleActivity" />
-    <activity android:name=".java.onboarding.HelloWorldActivity" />
-    <activity android:name=".java.onboarding.FirstComponentSpecActivity" />
+    <activity android:name=".onboarding.HelloWorldActivity" />
+    <activity android:name=".onboarding.FirstComponentSpecActivity" />
 
     <activity android:name=".kotlin.lithography.LithographyKotlinActivity" />
     <activity android:name=".kotlin.errors.ErrorHandlingKotlinActivity" />

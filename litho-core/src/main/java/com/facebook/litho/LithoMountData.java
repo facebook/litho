@@ -118,7 +118,7 @@ public class LithoMountData {
     final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
     final LithoRenderUnit unit =
-        LithoRenderUnit.create(
+        MountSpecLithoRenderUnit.create(
             ROOT_HOST_ID,
             HostComponent.create(),
             null,

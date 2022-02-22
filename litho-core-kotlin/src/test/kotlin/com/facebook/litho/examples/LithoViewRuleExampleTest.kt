@@ -45,8 +45,10 @@ import com.facebook.litho.widget.Text
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import java.lang.AssertionError
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Rule
 import org.junit.Test
@@ -210,6 +212,59 @@ class LithoViewRuleExampleTest {
             InnerComponent::style to Style.height(100.dp).width(100.dp))
         .hasPropsMatching(InnerComponent::value to IsInstanceOf.instanceOf(String::class.java))
     // has_props_end
+  }
+
+  @Test
+  fun `verify InnerComponent has given props asserting on LithoView`() {
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    assertThat(testLithoView)
+        .willRenderContent()
+        .hasDirectMatchingComponent(
+            InnerComponent::class,
+            InnerComponent::value to "some_value",
+            InnerComponent::style to Style.height(100.dp).width(100.dp))
+        .hasDirectMatchingComponentWithMatcher(
+            InnerComponent::class,
+            InnerComponent::value to IsInstanceOf.instanceOf(String::class.java))
+  }
+
+  @Test
+  fun `verify InnerComponent has given props not on a direct child asserting on LithoView`() {
+    class ParentTestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column { child(TestComponent()) }
+      }
+    }
+    val testLithoView = lithoViewRule.render { ParentTestComponent() }
+    assertThat(testLithoView).willRenderContent()
+    // We want to catch that the component does not have props in direct component
+    assertThatThrownBy {
+          assertThat(testLithoView)
+              .hasDirectMatchingComponent(
+                  InnerComponent::class,
+                  InnerComponent::value to "some_value",
+                  InnerComponent::style to Style.height(100.dp).width(100.dp))
+        }
+        .isInstanceOf(AssertionError::class.java)
+
+    // We want to catch that the component does not have matching props to th matcher in direct
+    // component
+    assertThatThrownBy {
+          assertThat(testLithoView)
+              .hasDirectMatchingComponentWithMatcher(
+                  InnerComponent::class,
+                  InnerComponent::value to IsInstanceOf.instanceOf(String::class.java))
+        }
+        .isInstanceOf(AssertionError::class.java)
+
+    assertThat(testLithoView)
+        .hasAnyMatchingComponent(
+            InnerComponent::class,
+            InnerComponent::value to "some_value",
+            InnerComponent::style to Style.height(100.dp).width(100.dp))
+        .hasAnyMatchingComponentWithMatcher(
+            InnerComponent::class,
+            InnerComponent::value to IsInstanceOf.instanceOf(String::class.java))
   }
 
   @Test

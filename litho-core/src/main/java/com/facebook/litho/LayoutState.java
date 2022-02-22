@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
@@ -31,6 +32,7 @@ import static com.facebook.litho.LithoLayoutResult.willMountView;
 import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 
 import android.graphics.Rect;
 import android.text.TextUtils;
@@ -299,7 +301,7 @@ public class LayoutState
     final int height = result != null ? result.getHeight() : 0;
 
     final LithoRenderUnit unit =
-        LithoRenderUnit.create(
+        MountSpecLithoRenderUnit.create(
             ROOT_HOST_ID,
             HostComponent.create(),
             null,
@@ -317,7 +319,7 @@ public class LayoutState
                 width, height, layoutState.mId, layoutState.mPreviousLayoutStateId, null),
             null);
 
-    final LayoutOutput hostOutput = unit.output;
+    final LayoutOutput hostOutput = unit.getLayoutOutput();
 
     if (hierarchy != null) {
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
@@ -334,12 +336,10 @@ public class LayoutState
       @Nullable RenderTreeNode parent,
       @Nullable DebugHierarchy.Node hierarchy) {
 
-    final Component hostComponent = unit.output.getComponent();
-
     final RenderTreeNode renderTreeNode =
         createRenderTreeNode(unit, layoutState, result, false, null, parent);
 
-    final LayoutOutput hostOutput = unit.output;
+    final LayoutOutput hostOutput = unit.getLayoutOutput();
 
     if (hierarchy != null) {
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
@@ -397,7 +397,7 @@ public class LayoutState
             bounds.height(),
             layoutState.mId,
             layoutState.mPreviousLayoutStateId,
-            (InterStagePropsContainer) layoutData),
+            layoutData),
         parent);
   }
 
@@ -407,7 +407,11 @@ public class LayoutState
       final @OutputUnitType int outputType,
       final @Nullable TransitionId transitionId) {
     return new LithoAnimtableItem(
-        unit.getId(), absoluteBounds, outputType, unit.output.getNodeInfo(), transitionId);
+        unit.getId(),
+        absoluteBounds,
+        outputType,
+        unit.getLayoutOutput().getNodeInfo(),
+        transitionId);
   }
 
   /**
@@ -437,7 +441,7 @@ public class LayoutState
     final String componentGlobalKey = node.getTailComponentKey();
 
     return new VisibilityOutput(
-        component != null ? Preconditions.checkNotNull(componentGlobalKey) : "null",
+        componentGlobalKey,
         component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
         renderTreeNode != null,
@@ -533,7 +537,7 @@ public class LayoutState
       return;
     }
 
-    final Component component = Preconditions.checkNotNull(node.getTailComponent());
+    final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy = getDebugHierarchy(parentHierarchy, node);
@@ -665,8 +669,7 @@ public class LayoutState
       }
     }
 
-    final ComponentContext scopedContext =
-        Preconditions.checkNotNull(node.getTailComponentContext());
+    final ComponentContext scopedContext = node.getTailComponentContext();
 
     // Generate the RenderTreeNode for the given node.
     final @Nullable RenderTreeNode contentRenderTreeNode =
@@ -676,7 +679,7 @@ public class LayoutState
     if (contentRenderTreeNode != null) {
       final LithoRenderUnit contentRenderUnit =
           (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
-      final LayoutOutput contentLayoutOutput = contentRenderUnit.output;
+      final LayoutOutput contentLayoutOutput = contentRenderUnit.getLayoutOutput();
       final LithoLayoutData layoutData =
           (LithoLayoutData) Preconditions.checkNotNull(contentRenderTreeNode.getLayoutData());
 
@@ -686,7 +689,12 @@ public class LayoutState
       }
 
       try {
-        component.onBoundsDefined(scopedContext, result, layoutData.interStagePropsContainer);
+        if (isMountable(component) && !result.wasMeasured()) {
+          result.measure(exactly(result.getWidth()), exactly(result.getHeight()));
+        } else {
+          component.onBoundsDefined(
+              scopedContext, result, (InterStagePropsContainer) layoutData.mLayoutData);
+        }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       } finally {
@@ -933,13 +941,13 @@ public class LayoutState
         createRenderTreeNode(unit, layoutState, result, false, null, parent);
 
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
-    final LayoutOutput output = drawableRenderUnit.output;
+    final LayoutOutput output = drawableRenderUnit.getLayoutOutput();
 
     addRenderTreeNode(
         layoutState,
         renderTreeNode,
         drawableRenderUnit,
-        drawableRenderUnit.output,
+        drawableRenderUnit.getLayoutOutput(),
         type,
         !matchHostBoundsTransitions ? layoutState.mCurrentTransitionId : null,
         parent);
@@ -1031,7 +1039,7 @@ public class LayoutState
 
     final RenderTreeNode hostRenderTreeNode =
         createHostRenderTreeNode(hostRenderUnit, layoutState, result, node, parent, hierarchy);
-    final LayoutOutput hostLayoutOutput = hostRenderUnit.output;
+    final LayoutOutput hostLayoutOutput = hostRenderUnit.getLayoutOutput();
 
     if (diffNode != null) {
       diffNode.setHostOutput(hostRenderUnit);
@@ -1515,8 +1523,7 @@ public class LayoutState
       return false;
     }
 
-    final Component currentRootComponent =
-        Preconditions.checkNotNull(currentLayoutResult.getHeadComponent());
+    final Component currentRootComponent = currentLayoutResult.getHeadComponent();
 
     if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
       return false;

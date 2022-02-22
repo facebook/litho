@@ -33,6 +33,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       float height,
       YogaMeasureMode heightMode) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
-    return result.measure(width, widthMode, height, heightMode);
+    final int widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
+    final int heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+    return result.measure(widthSpec, heightSpec);
   }
 }

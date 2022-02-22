@@ -744,7 +744,8 @@ public class TreeDiffingTest {
 
   private static RenderTreeNode createNode(final Component component) {
     LithoRenderUnit unit =
-        LithoRenderUnit.create(0, component, null, null, null, 0, 0, LayoutOutput.STATE_UNKNOWN);
+        MountSpecLithoRenderUnit.create(
+            0, component, null, null, null, 0, 0, LayoutOutput.STATE_UNKNOWN);
     return RenderTreeNodeUtils.create(unit, new Rect(), null, null);
   }
 

@@ -37,7 +37,7 @@ public class MountItemTestHelper {
       int orientation,
       TransitionId transitionId) {
     LithoRenderUnit unit =
-        LithoRenderUnit.create(
+        MountSpecLithoRenderUnit.create(
             0,
             component,
             null,

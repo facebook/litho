@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.kotlin.collection
 
 import android.graphics.Color
-import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -39,61 +38,57 @@ class SelectionCollectionKComponent : KComponent() {
   private val items = listOf("O-Ren Ishii", "Vernita Green", "Budd", "Elle Driver", "Bill")
 
   override fun ComponentScope.render(): Component? {
-    val selected = useState { setOf<Int>() }
+    val selected = useState { setOf<String>() }
 
-    fun isSelected(itemIndex: Int): Boolean = selected.value.contains(itemIndex)
+    fun isSelected(itemIndex: String): Boolean = selected.value.contains(itemIndex)
 
     fun isAllSelected(): Boolean = selected.value.size == items.size
 
-    val selectItemClickCallback = useCallback { itemIndex: Int ->
+    val selectItemClickCallback = useCallback { item: String ->
       selected.update(
           selected
               .value
               .toMutableSet()
-              .apply { if (isSelected(itemIndex)) remove(itemIndex) else add(itemIndex) }
+              .apply { if (isSelected(item)) remove(item) else add(item) }
               .toSet())
     }
 
-    val selectAllClickCallback = useCallback {
-      selected.update(if (isAllSelected()) emptySet() else (0..items.lastIndex).toSet())
+    val selectAllClickCallback = useCallback { _: String ->
+      selected.update(if (isAllSelected()) emptySet() else items.toSet())
     }
 
     return LazyList {
       val isAllSelected = isAllSelected()
       child(deps = arrayOf(isAllSelected)) {
         Selectable(
-            text = "Select All",
-            selected = isAllSelected,
-            onClick = { selectAllClickCallback.current() })
+            item = "Select All", selected = isAllSelected, onRowClick = selectAllClickCallback)
       }
 
-      items.forEachIndexed { index, name ->
-        val selected = isSelected(index)
+      items.forEach { name ->
+        val selected = isSelected(name)
         child(id = name, deps = arrayOf(selected)) {
-          Selectable(
-              text = name,
-              selected = selected,
-              onClick = { selectItemClickCallback.current(index) })
+          Selectable(item = name, selected = selected, onRowClick = selectItemClickCallback)
         }
       }
 
       child(
           Text(
-              selected.value.joinToString(prefix = "Selected: ") { items[it] },
+              selected.value.joinToString(prefix = "Selected: "),
               textColor = Color.DKGRAY,
               style = Style.padding(horizontal = 20.dp, vertical = 10.dp)))
     }
   }
 }
 
-class Selectable(val text: String, val selected: Boolean, val onClick: (ClickEvent) -> Unit) :
+class Selectable(val item: String, val selected: Boolean, val onRowClick: (String) -> Unit) :
     KComponent() {
 
   override fun ComponentScope.render(): Component =
       Row(
           justifyContent = YogaJustify.SPACE_BETWEEN,
-          style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(onClick)) {
-        child(Text(text))
+          style =
+              Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick { onRowClick(item) }) {
+        child(Text(item))
         child(
             Image(
                 drawableRes(

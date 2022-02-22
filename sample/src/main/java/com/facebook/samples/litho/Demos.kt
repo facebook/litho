@@ -64,8 +64,6 @@ import com.facebook.samples.litho.java.lifecycle.LifecycleDelegateActivity
 import com.facebook.samples.litho.java.lifecycle.LifecycleFragmentActivity
 import com.facebook.samples.litho.java.lifecycle.ViewPagerLifecycleActivity
 import com.facebook.samples.litho.java.lithography.LithographyActivity
-import com.facebook.samples.litho.java.onboarding.FirstComponentSpecActivity
-import com.facebook.samples.litho.java.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.java.onboarding.IntroducingLayoutComponent
 import com.facebook.samples.litho.java.onboarding.LayoutWithImageComponent
 import com.facebook.samples.litho.java.playground.PlaygroundComponent
@@ -117,6 +115,10 @@ import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
+import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity
+import com.facebook.samples.litho.onboarding.HelloWorldActivity
+import com.facebook.samples.litho.onboarding.PostStyledKComponent
+import com.facebook.samples.litho.onboarding.model.OBI_WAN_POST
 
 class Demos {
   companion object {
@@ -476,7 +478,11 @@ class Demos {
                             },
                             SingleDemo(name = "3.1. More with Layout") { context ->
                               LayoutWithImageComponent.create(context).name("Linda").build()
-                            })))))
+                            },
+                            SingleDemo(name = "3.2. Flexbox Styling") { _ ->
+                              PostStyledKComponent(post = OBI_WAN_POST)
+                            },
+                        )))))
   }
 
   interface DemoItem {

@@ -38,8 +38,8 @@ public class RenderInfoViewCreatorController {
   private final int mComponentViewType;
   private int mViewTypeCounter;
 
-  public RenderInfoViewCreatorController(boolean customViewTypeEnabled, int componentViewType) {
-    mCustomViewTypeEnabled = customViewTypeEnabled;
+  public RenderInfoViewCreatorController(int componentViewType) {
+    mCustomViewTypeEnabled = (componentViewType != DEFAULT_COMPONENT_VIEW_TYPE);
     mComponentViewType = componentViewType;
     mViewTypeCounter = componentViewType + 1;
   }

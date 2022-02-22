@@ -1,0 +1,38 @@
+---
+id: kotlin-intro
+title: Setup and Intro
+keywords:
+    - litho
+    - litho kotlin
+    - kotlin litho
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/fbandroid/libraries/components/docs/kotlin/setup-and-intro.mdx
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+## About these Docs
+
+The Kotlin API section of the Litho docs are aimed at Developers already familiar with general Java Spec API and Litho concepts. Within the Kotlin API section, comparisons are made between use of the Java Spec API and the Kotlin API.
+
+Your next step:
+
+* If you aren't familiar with Litho, start with the [introductory pages](../tutorial/overview.md) then return here later.
+* If you're new to the Litho Kotlin API, start with the [Kotlin API basics](basics.mdx).
+* If you just want a reference comparing features in the Spec API to their equivalents in Kotlin, have a look at the [cheatsheet](cheatsheet.mdx).
+
+## Adding Dependencies
+
+To use the Kotlin Litho API, you'll need to add the following dependencies into your BUCK file:
+
+```python title="BUCK"
+deps = [
+    "//fbandroid/libraries/components:litho_core_kotlin",
+    "//fbandroid/libraries/components/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget:widget-kotlin", # for widgets
+],
+```
+
+:::note
+If you're getting an `unresolved supertypes: com.facebook.litho.KComponent` or `incompatible types: com.facebook.<Your new KComponent> cannot be converted to com.facebook.litho.Component` error, be sure to also add the `litho_core_kotlin` dependency in the BUCK file for the module that is using the Kotlin component.
+:::

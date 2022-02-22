@@ -23,7 +23,6 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Ref
 import com.facebook.litho.Style
 import com.facebook.litho.animated.useBinding
 import com.facebook.litho.core.padding
@@ -38,12 +37,12 @@ import java.util.concurrent.TimeUnit
 // start_example
 class AnimateDynamicPropsKComponent : KComponent() {
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val time = useBinding(0L)
-    val animator: Ref<ValueAnimator?> = useRef { null }
+    val animator = useRef<ValueAnimator?> { null }
 
     val startAnimator: (ClickEvent) -> Unit = {
-      animator.value?.let { it.cancel() }
+      animator.value?.cancel()
       animator.value =
           ValueAnimator.ofInt(0, TimeUnit.HOURS.toMillis(12).toInt()).apply {
             duration = 2000
@@ -57,7 +56,7 @@ class AnimateDynamicPropsKComponent : KComponent() {
       child(Text("Click to Start Animation", style = Style.onClick(startAnimator)))
       child(
           ClockFace.create(context)
-              .time(time.get())
+              .time(time)
               .widthDip(200f)
               .heightDip(200f)
               .marginDip(YogaEdge.TOP, 20f)

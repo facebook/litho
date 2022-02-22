@@ -1,0 +1,87 @@
+---
+id: testing-actions
+title: Interactions
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+
+We define `Interactions` as any type of action that user can perform on your `Components`, a good example is touching or clicking a `Button`.
+
+## `act{InteractionsScope.() -> Unit}`
+Currently in `Litho` we update the state of the `Components` asynchronously - off the Main Thread.
+Once the background operations are finished, we post them to the Main Thread to update the `Component`.
+During tests we need to make sure that everything is in sync in Main Thread and in the Background Thread, just like in real life use case.
+That is why we have an `act{}` function.  It removes the responsibility from you to use the Loopers and manage the thread synchronisation. You only need to call one of the defined interactions from `InteractionsScope` and we will take care of all of the rest.
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=act_example_start end=act_example_end
+```
+
+Currently we expose the following interactions via `act()`:
+- `clickOnText`
+- `clickOnTag`
+- `clickOnContentDescription`
+- `clickOnRootView`
+
+You can chain interactions to invoke multiple of them in a given order:
+```kotlin
+ lithoViewRule
+        .act { clickOnText("Menu") }
+        .act { clickOnText("File") }
+        .act { clickOnText("New") }
+        .act { clickOnText("New Project...") }
+```
+## `idle()`
+You should use `act()` for events that trigger async updates (for example `clicks`).
+Otherwise, there are sometimes async events triggered by layout (for example visibility events, or when you immediately update the state in render call)
+that you can manually wait for to finish by calling: `idle()`.
+For example, you may need to do this if your component defines a visibility event that triggers an async state update: in that case, idle should be called after layout to make sure the update is reflected in the UI before making test assertions.
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=idle_component_start end=idle_component_end
+```
+
+## Interactions with LithoViewRule
+
+### How to test click action
+Currently we support four types of clicks:
+- `clickOnText`
+- `clickOnTag`
+- `clickOnContentDescription`
+- `clickOnRootView`
+
+
+In order to test the click interaction, let's create a `TestComponent` that shows or hides the Text after the click action is performed on a `Row`:
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=component_for_action_start end=component_for_action_end
+```
+
+Our test case will perform three steps:
+1. Confirm that the `Component` is not being rendered if we didn't click on the `Row`.
+    - In order to do this we will find the `Component` based on the Text or its Class by using either: `findViewWithTextOrNull(String)` or `findComponent(Class<out Component?>)` and assert that its null.
+2. Perform an action on our `LithoView` with the help of `LithoViewRule.act{}`.
+    - We will click on content description of the row which will trigger the state update
+3. Confirm that the `Component` is being rendered and it's not null
+    - Once again we can use any of the available methods to just find our `Component`
+
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=test_interaction_start end=test_interaction_end
+```
+
+### How to test `VisiblityEvent`
+
+In order to test `VisiblityEvent` instead of using `LithoViewRule.render(Component)` we will separate the methods that are being called under the render call.
+This allows us to check the state of the component before and after the visibility event is triggered:
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=visibility_test_start end=visibility_test_end
+```
+Remember to call `idle()` after `layout()` if there is any background work happening in your `onVisible` call.
+
+### How to test State Update
+
+If you want to test a state update, the best thing to do is to trigger the event that causes the state update, as we are not exposing state of the `Component`.
+Take a look at the code example above in the `clicking` section, where we trigger the State Update by the `Click Action`.
+
+
+
+
+
+
+
+

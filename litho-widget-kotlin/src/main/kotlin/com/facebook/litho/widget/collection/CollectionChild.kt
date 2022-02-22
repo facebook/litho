@@ -27,4 +27,5 @@ data class CollectionChild(
     val isFullSpan: Boolean = false,
     val spanSize: Int? = null,
     val deps: Array<Any?>? = null,
+    val onNearViewport: OnNearViewport? = null,
 )

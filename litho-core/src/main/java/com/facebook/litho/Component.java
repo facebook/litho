@@ -678,6 +678,13 @@ public abstract class Component
       final int componentBoundsY,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
+  protected @Nullable PrepareResult prepare(ComponentContext c) {
+    // default implementation runs onPrepare(), MountableComponents will override to return a
+    // Mountable
+    onPrepare(c);
+    return null;
+  }
+
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
   }
@@ -723,10 +730,6 @@ public abstract class Component
   protected @Nullable LithoNode resolve(
       final LayoutStateContext layoutContext, final ComponentContext c) {
     return Layout.create(layoutContext, c, this);
-  }
-
-  protected final boolean useTreePropsFromContext() {
-    return true;
   }
 
   /**
@@ -1307,24 +1310,6 @@ public abstract class Component
     return null;
   }
 
-  /** Called to install internal state based on a component's parent context. */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected final ComponentContext updateInternalChildState(
-      final LayoutStateContext layoutStateContext,
-      ComponentContext parentContext,
-      @Nullable String existingGlobalKey) {
-
-    String globalKey = existingGlobalKey;
-
-    if (globalKey == null) {
-      globalKey =
-          ComponentKeyUtils.generateGlobalKey(
-              parentContext, parentContext.getComponentScope(), this);
-    }
-
-    return ComponentContext.withComponentScope(layoutStateContext, parentContext, this, globalKey);
-  }
-
   /**
    * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
    *     needed
@@ -1401,6 +1386,10 @@ public abstract class Component
 
   static boolean isMountSpec(@Nullable Component component) {
     return (component != null && component.getMountType() != MountType.NONE);
+  }
+
+  static boolean isMountable(@Nullable Component component) {
+    return (component != null && component.getMountType() == MountType.MOUNTABLE);
   }
 
   static boolean isNestedTree(@Nullable Component component) {

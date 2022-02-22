@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.java.onboarding;
+package com.facebook.samples.litho.onboarding;
 
-import com.facebook.litho.Component;
+import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.Text;
+import com.facebook.samples.litho.NavigatableDemoActivity;
 
-// start_example
-@LayoutSpec
-public class FirstComponentSpec {
+public class HelloWorldActivity extends NavigatableDemoActivity {
 
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop String name) {
-    return Text.create(c).text("Hello " + name + "!").build();
+  // start_example
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    ComponentContext c = new ComponentContext(this);
+    setContentView(LithoView.create(this, Text.create(c).text("Hello World!").build()));
   }
+  // end_example
 }
-// end_example

@@ -22,16 +22,20 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
 import com.facebook.litho.widget.EmptyComponent;
+import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Progress;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.TextInput;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaEdge;
@@ -267,6 +271,54 @@ public class MountStateTest {
 
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
+    TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
+  }
+
+  @Test
+  public void shouldUnregisterAllExtensions_whenUnmountAllItems() {
+    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
+    TempComponentsConfigurations.setEnsureParentMountedInRenderCoreMountState(true);
+
+    final Component root =
+        Row.create(mContext)
+            .backgroundColor(Color.BLUE)
+            .child(
+                Image.create(mContext)
+                    .drawable(new ColorDrawable(Color.RED))
+                    .heightPx(100)
+                    .widthPx(200))
+            .build();
+
+    mLegacyLithoViewRule
+        .attachToWindow()
+        .setRoot(root)
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLegacyLithoViewRule.getLithoView();
+    final MountDelegate mountDelegate = lithoView.getMountDelegateTarget().getMountDelegate();
+    LithoHostListenerCoordinator coordinator;
+
+    coordinator = Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
+
+    assertThat(coordinator).isNotNull();
+    assertThat(coordinator.getVisibilityExtensionState()).isNotNull();
+    assertThat(coordinator.getIncrementalMountExtensionState()).isNotNull();
+
+    assertThat(mountDelegate).isNotNull();
+    assertThat(mountDelegate.getExtensionStates()).isNotEmpty();
+
+    // Unmount the parent
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
+
+    coordinator = Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
+
+    assertThat(coordinator).isNull();
+    assertThat(mountDelegate).isNotNull();
+    assertThat(mountDelegate.getExtensionStates()).isEmpty();
+
+    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
     TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
   }
 }

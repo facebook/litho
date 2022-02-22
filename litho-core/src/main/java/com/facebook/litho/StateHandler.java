@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.stats.LithoStats;
-import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -170,34 +169,19 @@ public class StateHandler {
     return mStateContainers.get(key);
   }
 
-  /**
-   * Sets the initial value for a state or transfers the previous state value to the new component,
-   * then applies all the states updates that have been enqueued for the new component's global key.
-   * Assumed thread-safe because the one write is before all the reads.
-   *
-   * @param component the new component
-   */
-  @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesForComponent(
+  private StateContainer createOrGetStateContainerForComponent(
       final ComponentContext scopedContext, final Component component, final String key) {
-    maybeInitStateContainers();
-    maybeInitNeededStateContainers();
-
-    if (!component.hasState()) {
-      return;
-    }
-
     final StateContainer currentStateContainer;
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
-      mNeededStateContainers.add(key);
     }
 
-    final StateContainer newStateContainer;
     if (currentStateContainer != null) {
-      newStateContainer = Component.getStateContainer(scopedContext, component);
+      final StateContainer newStateContainer =
+          Component.getStateContainer(scopedContext, component);
       component.transferState(currentStateContainer, newStateContainer);
+      return newStateContainer;
     } else {
       final ComponentTree componentTree = scopedContext.getComponentTree();
       if (componentTree != null && componentTree.getInitialStateContainer() != null) {
@@ -207,9 +191,11 @@ public class StateHandler {
       } else {
         component.createInitialState(scopedContext);
       }
-      newStateContainer = Component.getStateContainer(scopedContext, component);
+      return Component.getStateContainer(scopedContext, component);
     }
+  }
 
+  private void applyStateUpdates(final String key, final StateContainer newStateContainer) {
     final List<StateUpdate> stateUpdatesForKey;
 
     synchronized (this) {
@@ -239,16 +225,36 @@ public class StateHandler {
           mPendingLazyStateUpdates.remove(key); // remove from pending lazy
         }
         mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
+
+        if (transitionsFromStateUpdate != null && !transitionsFromStateUpdate.isEmpty()) {
+          maybeInitPendingStateUpdateTransitions();
+          mPendingStateUpdateTransitions.put(key, transitionsFromStateUpdate);
+        }
       }
+    }
+  }
+
+  /**
+   * Sets the initial value for a state or transfers the previous state value to the new component,
+   * then applies all the states updates that have been enqueued for the new component's global key.
+   * Assumed thread-safe because the one write is before all the reads.
+   *
+   * @param component the new component
+   */
+  @ThreadSafe(enableChecks = false)
+  void applyStateUpdatesForComponent(
+      final ComponentContext scopedContext, final Component component, final String key) {
+    if (!component.hasState()) {
+      return;
     }
 
-    synchronized (this) {
-      mStateContainers.put(key, newStateContainer);
-      if (transitionsFromStateUpdate != null && !transitionsFromStateUpdate.isEmpty()) {
-        maybeInitPendingStateUpdateTransitions();
-        mPendingStateUpdateTransitions.put(key, transitionsFromStateUpdate);
-      }
-    }
+    maybeInitStateContainers();
+    maybeInitNeededStateContainers();
+
+    final StateContainer newStateContainer =
+        createOrGetStateContainerForComponent(scopedContext, component, key);
+    addStateContainer(key, newStateContainer);
+    applyStateUpdates(key, newStateContainer);
   }
 
   public synchronized void addStateContainer(String key, StateContainer state) {
@@ -397,20 +403,6 @@ public class StateHandler {
   @VisibleForTesting
   synchronized Map<String, List<StateUpdate>> getAppliedStateUpdates() {
     return mAppliedStateUpdates;
-  }
-
-  synchronized void consumePendingStateUpdateTransitions(
-      List<Transition> outList, @Nullable String logContext) {
-    if (mPendingStateUpdateTransitions == null) {
-      return;
-    }
-
-    for (List<Transition> pendingTransitions : mPendingStateUpdateTransitions.values()) {
-      for (int i = 0, size = pendingTransitions.size(); i < size; i++) {
-        TransitionUtils.addTransitions(pendingTransitions.get(i), outList, logContext);
-      }
-    }
-    mPendingStateUpdateTransitions = null;
   }
 
   @Nullable

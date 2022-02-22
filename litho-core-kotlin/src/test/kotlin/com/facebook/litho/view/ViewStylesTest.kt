@@ -310,11 +310,11 @@ class ViewStylesTest {
    */
   @Test
   fun elevation_whenSet_isRespected() {
-    val elevation = 0.5f
+    val elevation = 1f
 
     class ElevationComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(style = Style.elevation(elevation))
+        return Row(style = Style.elevation(elevation.px))
       }
     }
 

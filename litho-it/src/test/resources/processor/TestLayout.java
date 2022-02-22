@@ -205,10 +205,8 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
                 (S) _state.state2,
                 (int) _state.state3,
                 (TestTreeProp)
-                    (useTreePropsFromContext()
-                        ? context.getParentTreeProp(
-                            com.facebook.litho.processor.integration.resources.TestTreeProp.class)
-                        : treeProp),
+                    (context.getParentTreeProp(
+                        com.facebook.litho.processor.integration.resources.TestTreeProp.class)),
                 (int) getCached(context));
     return _result;
   }

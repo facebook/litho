@@ -409,9 +409,6 @@ public class ComponentUtils {
       }
 
       final Component component = node.getTailComponent();
-      if (component == null) {
-        continue;
-      }
 
       if (node != root) {
         builder.append('\n');

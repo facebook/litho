@@ -329,11 +329,6 @@ public class IncrementalMountExtension
       extensionState.acquireMountReference(incrementalMountOutput.getId(), isMounting);
     } else if (!isMountable && hasAcquiredMountRef) {
       extensionState.releaseMountReference(id, isMounting);
-    } else if (isMountable && hasAcquiredMountRef && isMounting) {
-      // If we're in the process of mounting now, we know the item we're updating is already
-      // mounted and that MountState.mount will not be called. We have to call the binder
-      // ourselves.
-      recursivelyNotifyVisibleBoundsChanged(extensionState, id, content);
     }
   }
 

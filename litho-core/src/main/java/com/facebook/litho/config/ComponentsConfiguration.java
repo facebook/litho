@@ -262,7 +262,7 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUsePositionInParentForMounting = false;
 
-  public static boolean canRemeasureCachedLayouts = false;
+  public static boolean isBuildAndLayoutSplitEnabled = false;
 
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 

@@ -20,55 +20,39 @@ import com.facebook.litho.annotations.MountSpec
 import com.facebook.litho.annotations.OnBind
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.specmodels.internal.RunMode
-import com.facebook.litho.specmodels.model.SpecModel
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory
 import com.google.testing.compile.CompilationRule
-import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.mockito.MockitoAnnotations
+
+@MountSpec
+object MountTestSpec {
+  @OnBind
+  fun onBind(
+      @Prop(dynamic = true) intArg: Int,
+      @Prop(dynamic = true) longArg: Long,
+      @Prop(dynamic = true) floatArg: Float,
+      @Prop(dynamic = true) doubleArg: Double,
+      @Prop(dynamic = true) objectArg: Any?
+  ) = Unit
+}
 
 @RunWith(JUnit4::class)
 class DynamicPropsEquivalenceGeneratorTest {
 
   @Rule @JvmField val compilationRule = CompilationRule()
 
-  private val elements: Elements
-    get() = compilationRule.elements
-  private val types: Types
-    get() = compilationRule.types
-
-  @Before
-  fun setup() {
-    MockitoAnnotations.initMocks(this)
-  }
-
   @Test
   fun `test dynamic prop equivalency checks only compare refs`() {
-
-    @MountSpec
-    class MountTestSpec {
-      @OnBind
-      fun testDelegateMethod(
-          @Prop(dynamic = true) intArg: Int,
-          @Prop(dynamic = true) longArg: Long,
-          @Prop(dynamic = true) floatArg: Float,
-          @Prop(dynamic = true) doubleArg: Double,
-          @Prop(dynamic = true) objectArg: Any?
-      ) = Unit
-    }
-
-    val mountSpecModel: SpecModel =
+    val mountSpecModel =
         MountSpecModelFactory()
             .create(
-                elements,
-                types,
-                elements.getTypeElement(MountTestSpec::class.java.canonicalName),
+                compilationRule.elements,
+                compilationRule.types,
+                compilationRule.elements.getTypeElement(MountTestSpec::class.java.canonicalName),
                 null,
                 RunMode.normal(),
                 null,
