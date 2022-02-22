@@ -66,8 +66,8 @@ public class TextMeasurementUtils {
   public static class TextLayoutContext {
     public Layout layout;
     CharSequence processedText;
-    float textLayoutTranslationX;
-    float textLayoutTranslationY;
+    public float textLayoutTranslationX;
+    public float textLayoutTranslationY;
     ClickableSpan[] clickableSpans;
     ImageSpan[] imageSpans;
     TextStyle textStyle;
