@@ -12,7 +12,7 @@ In the Spec API, communicating from a child to a parent is done through an `Even
 <FbInternalOnly>
 
 In the Kotlin API, the parent component can simply pass a [lambda](https://kotlinlang.org/docs/lambdas.html) as the callback instead of a reference to a generated `EventHandler`.
-For more information on Kotlin events, see [Event Handling](/docs/fb/kotlin/event-handling).
+For more information on Kotlin events, see [Event Handling](/docs/kotlin/event-handling).
 
 </FbInternalOnly>
 

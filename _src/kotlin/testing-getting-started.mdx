@@ -1,0 +1,44 @@
+---
+id: testing-getting-started
+title: Getting Started
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+The **Kotlin Litho Testing API** is presented through the `LithoViewRule` class. It allows you to:
+- make assertions against the component hierarchy,
+- mark assertions against the view hierarchy,
+- and gives access to utility functions to interact with the view hierarchy, e.g. by clicking
+
+`LithoViewRule` uses `Junit TestRule` which provides a flexible mechanism to execute code before and after a test method, as a result of which, we are able to prepare the environment and then clean it up after test, so you don't have to worry about it.
+
+If you would like to read more about the TestRules, please [visit the official JUnit documentation.](https://junit.org/junit4/javadoc/4.12/org/junit/rules/TestRule.html)
+
+### Adding Dependencies
+
+In order to use Kotlin Litho Testing API you'll need to add the `litho-testing` dependency into your BUCK file:
+
+```python title="BUCK"
+deps = [
+    "//fbandroid/libraries/components/litho-testing/src/main/java/com/facebook/litho/testing:testing"
+],
+```
+
+### Basics
+
+In order to use the @Rule inside of your test class you need to initialise it:
+
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=start_example end=end_example
+```
+
+Then, within a test, you will generally render your component with the help of the `LithoViewRule.render(Component)` method and perform assertions or other actions on the `LithoView` returned by the `render` call.
+
+```kotlin file=litho-core-kotlin/src/test/kotlin/com/facebook/litho/examples/LithoViewRuleExampleTest.kt start=start_render_example end=end_render_example
+```
+
+In the next Sections we will describe how to use well known `Assertions` and how to interact with your `Components`.
+
+
+

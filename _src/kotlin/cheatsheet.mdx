@@ -1,0 +1,30 @@
+---
+id: kotlin-api-cheatsheet
+title: Cheatsheet
+custom_edit_url: https://www.internalfb.com/intern/diffusion/FBS/browsefile/master/fbandroid/libraries/components/docs/kotlin/cheatsheet.mdx
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+| Java Spec API | Kotlin API |
+| -- | -- |
+| @LayoutSpec | [KComponent](basics.mdx) |
+| @OnCreateLayout | [ComponentScope.render()](basics.mdx) |
+| @OnCreateTransition | [useTransition()](use-transition.mdx) |
+| @OnCreateInitialState / @OnUpdateState | [useState()](use-state.mdx) |
+| Lazy State | [useRef()](use-ref.mdx) |
+| @OnError | [useErrorBoundary()](use-error-boundary.mdx) |
+| @OnAttached / @OnDetached | [useEffect()](use-effect.mdx) |
+| @OnEvent | [Event Handling](event-handling.mdx) |
+| @OnCalculateCachedValue | [useCached()](https://fburl.com/code/s2xoyg3o) |
+| @TreeProp | [getTreeProp()](basics.mdx#treeprops) |
+| @OnCreateTreeProp | [TreePropProvider](basics.mdx#treeprops) |
+| Common Props | [Style](basics.mdx#common-props) |
+| @InjectProp | [use new Static DI API](https://www.internalfb.com/intern/wiki/Ultralight/Static_Injector/) |
+| Column.create(context) | [Column()](flexbox-containers.mdx); see [Flexbox Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| Row.create(context) | [Row()](flexbox-containers.mdx); see [Flexbox Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| @OnCreateLayoutWithSizeSpec | not yet supported: [suggested workaround](../custom-layout.md#kotlin-integration) |
+| @MountSpec / @GroupSectionSpec | not yet supported: use Spec API for now |
+| @OnTrigger | not yet supported; use Spec API for now |
