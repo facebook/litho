@@ -1,0 +1,81 @@
+---
+id: collections
+title: Lazy Collections
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+A lazy collection is a Component that can efficiently render a scrollable list of child `Component`s using Android's `RecyclerView`. Lazy collections are available as `LazyList`, `LazyGrid` or `LazyStaggeredGrid`.
+
+## Creating a Scrollable List
+
+Consider the following example data representing the response from a server request.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_original_data_example end=end_original_data_example
+```
+
+To render this data in a `LazyList`, you can use the following:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_example end=end_example
+```
+
+The `LazyList` is the container for the scrollable area, it should be sized to fit the area you require as it will not grow to fit its contents by default. In this case, it is a root component so it will automatically match the `LithoView`'s size.
+
+Items are added to the `LazyList` using the `child()` function. For each child, you provide the `Component` to be displayed. First, add a title as a child. Next, loop through the list and add each list item as a child. For each of the list items, include an `id`, which is used for applying list updates.
+
+## Updates
+
+When a list is updated, items may have changed position or have been added/removed. There needs to be a method to identify each item so that rows maintain the right state across updates, as well as to animate changes. This identity is provided by an `id` parameter to each child.
+
+In the following example data, Ross has been removed, Janice has been added, and the whole list has been sorted alphabetically. Since all of the IDs have remained the same, it's possible to automatically detect all the changes and apply the list updates.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_modified_data_example end=end_modified_data_example
+```
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px"  muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/update_data.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+When an item's contents are updated, the change is automatically detected and animated using the parameter 'id'. For example, if the item `Person("Monica Geller", 2)` is updated to `Person("Monica Geller-Bing", 2)`, the change is identified using id:2. The name change is detected (Geller to Geller-Bing) from a comparison of all the props used by that item.
+
+## Pagination
+
+Lists of data are often retrieved from the server in pages; additional data is requested only if the user scrolls. `LazyCollection` has an API for working with paginated lists.
+
+First, use the `tailPagination` helper to create a pagination handler lambda and assign it to the LazyCollection's `pagination` parameter. The 'handler' is used for fetching the next page of data.
+
+Next, provide a visual indicator to the user that a request is in progress by directly adding a progress spinner as a child to the end of the LazyCollection. The following code provides an example:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/PaginationCollectionKComponent.kt start=start_example end=end_example
+```
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/pagination.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+## Pull to Refresh
+
+To implement 'pull to refresh' behaviour, provide a lambda to `LazyList`'s `onPullToRefresh` parameter. This can then trigger your refresh logic, for events such as fetching new data.
+
+To dismiss the refreshing indicator use `Collection.clearRefreshing(context, collectionHandle)`. This requires a [`Handle`](../mainconcepts/coordinate-state-actions/trigger-events.md) to be specified on the `LazyList`:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/PullToRefreshCollectionKComponent.kt start=start_example end=end_example
+```
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px"  muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/pull_to_refresh.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+## Configuration options
+
+A `LazyList`s are rendered using a `RecyclerView`. You can configure the underlying `RecyclerView` using `LazyList`'s props.
+
+The following example specifies `orientation = RecyclerView.HORIZONTAL` which sets the orientation to horizontal, then configures `itemDecoration` to apply custom spacing around each item:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/HorizontalScrollKComponent.kt start=start_example end=end_example
+```
+
+For all configuration options, see the [`LazyList` class](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyList.kt).

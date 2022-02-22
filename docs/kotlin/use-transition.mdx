@@ -1,0 +1,32 @@
+---
+id: use-transition
+title: useTransition
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+The `useTransition` hook corresponds to the Java Spec API's `@OnCreateTransition` functionality. If you haven't already, make sure to review the [Hooks Intro](hooks-intro.mdx) docs to understand more about hooks.
+
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_transition'},
+    {label: 'Java', value: 'java_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/TransitionComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_transition">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/AlphaTransitionComponentSpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>
