@@ -346,11 +346,9 @@ class Layout {
     // 13. Call onPrepare for MountSpecs or prepare for MountableComponents.
     if (isMountSpec(component)) {
       try {
-        if (isMountSpec(component)) {
-          PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
-          if (prepareResult != null) {
-            node.setMountable(prepareResult.mountable);
-          }
+        PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
+        if (prepareResult != null) {
+          node.setMountable(prepareResult.mountable);
         }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(parent, component, e);
