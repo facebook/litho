@@ -66,7 +66,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private @Nullable LithoRenderUnit mForegroundRenderUnit;
   private @Nullable LithoRenderUnit mBorderRenderUnit;
 
-  private @Nullable Mountable mMountable;
   private @Nullable Object mLayoutData;
 
   public LithoLayoutResult(
@@ -522,9 +521,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         ComponentsSystrace.beginSection("onMeasure:" + component.getSimpleName());
       }
       try {
-
-        if (mMountable != null) {
-          mLayoutData = mMountable.measure(mNode.getAndroidContext(), widthSpec, heightSpec, size);
+        final @Nullable Mountable<?> mountable = node.getMountable();
+        if (mountable != null) {
+          mLayoutData = mountable.measure(mNode.getAndroidContext(), widthSpec, heightSpec, size);
         } else {
           component.onMeasure(
               componentScopedContext,
@@ -556,8 +555,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
    * @return {@code true} iff the result will mount a view.
    */
   public static boolean willMountView(LithoLayoutResult result) {
-    if (result.mMountable != null) {
-      return result.mMountable.getRenderType() == RenderUnit.RenderType.VIEW;
+    if (result.mNode.getMountable() != null) {
+      return result.mNode.getMountable().getRenderType() == RenderUnit.RenderType.VIEW;
     } else {
       final Component component = result.getNode().getTailComponent();
       return (component != null && component.getMountType() == Component.MountType.VIEW);
