@@ -16,14 +16,30 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
-import org.junit.Assert;
 
 class PropDefaultsExtractorTestHelper {
-  static void assertPropDefaultsExtraction(ImmutableList<PropDefaultModel> propDefaults) {
-    Assert.assertEquals(1, propDefaults.size());
+  static void assertFieldPropDefaultExtraction(ImmutableList<PropDefaultModel> propDefaults) {
+    assertPropDefaultsExtraction(propDefaults);
 
-    Assert.assertEquals("title", propDefaults.get(0).getName());
+    final PropDefaultModel propDefault = propDefaults.get(0);
+    assertThat(propDefault.isGetterMethodAccessor()).isFalse();
+  }
+
+  static void assertGetterPropDefaultExtraction(ImmutableList<PropDefaultModel> propDefaults) {
+    assertPropDefaultsExtraction(propDefaults);
+
+    final PropDefaultModel propDefault = propDefaults.get(0);
+    assertThat(propDefault.isGetterMethodAccessor()).isTrue();
+  }
+
+  private static void assertPropDefaultsExtraction(ImmutableList<PropDefaultModel> propDefaults) {
+    assertThat(propDefaults).hasSize(1);
+
+    final PropDefaultModel propDefault = propDefaults.get(0);
+    assertThat(propDefault.getName()).isEqualTo("title");
   }
 }

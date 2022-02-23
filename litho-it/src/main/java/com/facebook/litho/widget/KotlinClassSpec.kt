@@ -29,16 +29,24 @@ class KotlinClassSpec {
 
   companion object {
 
-    @get:PropDefault val propWithDefault: String = "default"
+    @get:PropDefault val getPropDefault: String = "Default"
+    @PropDefault const val constPropDefault: Int = 10_000
+    @PropDefault @JvmField val jvmFieldPropDefault: List<String> = listOf("Prop", "Default")
 
     @JvmStatic
     @OnCreateLayout
     fun onCreateLayout(
         c: ComponentContext,
-        @Prop assertion: (String) -> Unit,
-        @Prop(optional = true) propWithDefault: String,
+        @Prop(optional = true) getPropDefaultAssertion: ((String) -> Unit)?,
+        @Prop(optional = true) constPropDefaultAssertion: ((Int) -> Unit)?,
+        @Prop(optional = true) jvmFieldPropDefaultAssertion: ((List<String>) -> Unit)?,
+        @Prop(optional = true) getPropDefault: String,
+        @Prop(optional = true) constPropDefault: Int,
+        @Prop(optional = true) jvmFieldPropDefault: List<String>,
     ): Component {
-      assertion(propWithDefault)
+      getPropDefaultAssertion?.invoke(getPropDefault)
+      constPropDefaultAssertion?.invoke(constPropDefault)
+      jvmFieldPropDefaultAssertion?.invoke(jvmFieldPropDefault)
       return Column.create(c).build()
     }
   }

@@ -38,7 +38,7 @@ public class PsiPropDefaultsExtractorTest extends LithoPluginIntellijTest {
           final ImmutableList<PropDefaultModel> propDefaults =
               PsiPropDefaultsExtractor.getPropDefaults(cls);
 
-          PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
+          PropDefaultsExtractorTestHelper.assertFieldPropDefaultExtraction(propDefaults);
           return true;
         },
         "PropDefaultExtractionWithField.java");

@@ -163,8 +163,18 @@ public class ComponentBodyGeneratorTest {
   static class TestKotlinWildcardsSpec {
     public static final TestKotlinWildcardsSpec INSTANCE = null;
 
-    @PropDefault boolean isArg1 = true;
-    @PropDefault boolean arg2 = true;
+    private static final boolean isArg1 = true;
+    private static final boolean arg2 = true;
+
+    @PropDefault
+    public final boolean isArg1() {
+      return isArg1;
+    }
+
+    @PropDefault
+    public final boolean getArg2() {
+      return arg2;
+    }
 
     @OnCreateLayout
     public final Component onCreateLayout(

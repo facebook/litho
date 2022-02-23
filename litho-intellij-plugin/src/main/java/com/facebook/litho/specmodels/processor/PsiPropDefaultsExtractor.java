@@ -57,6 +57,7 @@ public class PsiPropDefaultsExtractor {
             PsiModifierExtractor.extractModifiers(psiField.getModifierList()),
             psiField,
             propDefaultResType,
-            propDefaultResId));
+            propDefaultResId,
+            PropDefaultModel.AccessorType.FIELD));
   }
 }

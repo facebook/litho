@@ -87,6 +87,7 @@ fb_java_library(
         "PUBLIC",
     ],
     deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
     ],
 )

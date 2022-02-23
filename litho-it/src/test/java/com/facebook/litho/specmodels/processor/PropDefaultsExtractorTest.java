@@ -33,10 +33,10 @@ public class PropDefaultsExtractorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
   static class TestClassWithoutGetAnnotation {
-    private static final String title = "PROP_DEFAULT";
+    public static final String title = "PROP_DEFAULT";
 
     @PropDefault
-    public static void title$annotations() {}
+    public static void getTitle$annotations() {}
   }
 
   static class TestClassWithGet {
@@ -61,7 +61,7 @@ public class PropDefaultsExtractorTest {
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
 
-    PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
+    PropDefaultsExtractorTestHelper.assertFieldPropDefaultExtraction(propDefaults);
   }
 
   @Test
@@ -73,7 +73,7 @@ public class PropDefaultsExtractorTest {
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
 
-    PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
+    PropDefaultsExtractorTestHelper.assertFieldPropDefaultExtraction(propDefaults);
   }
 
   @Test
@@ -84,6 +84,6 @@ public class PropDefaultsExtractorTest {
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
 
-    PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
+    PropDefaultsExtractorTestHelper.assertGetterPropDefaultExtraction(propDefaults);
   }
 }

@@ -74,18 +74,20 @@ public class PropDefaultsExtractor {
             ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers())),
             variableElement,
             propDefaultResType,
-            propDefaultResId));
+            propDefaultResId,
+            PropDefaultModel.AccessorType.FIELD));
   }
 
   /**
    * This attempts to extract a prop-default from a <em>method</em>. This is only necessary for
-   * Kotlin KAPT generated code, which currently does a rather strange thing where it generates a
-   * method <code>void field_name$annotations()</code> for every <code>field_name</code> that has
-   * all annotations for said field.
+   * Kotlin KAPT generated code, which currently does 2 things. It either 1) generates a method
+   * <code>void getField_name$annotations()</code> for every <code>field_name</code> that has all
+   * annotations for said field or 2) generates a getter method <code> type getField_name()</code>
+   * that has all the annotations and returns the field.
    *
-   * <p>So, if we find a method that looks like this, and it contains a <code>PropDefault</code>
-   * annotation, we will try to find a matching field of this name and add use it as basis for our
-   * prop-default.
+   * <p>So, if we find a method that matches one of those formats and contains a <code>PropDefault
+   * </code> annotation, we will try to find a matching field or getter method that provides the
+   * prop default.
    */
   private static ImmutableList<PropDefaultModel> extractFromMethod(
       Element enclosedElement, List<? extends Element> elementsToSearch) {
@@ -102,27 +104,41 @@ public class PropDefaultsExtractor {
 
     final String methodName = methodElement.getSimpleName().toString();
 
-    boolean isPropDefaultWithoutGet =
+    boolean isPropDefaultWithoutGetter =
         methodName.endsWith("$annotations")
             && methodElement.getReturnType().getKind() == TypeKind.VOID;
 
     final String baseName;
+    final PropDefaultModel.AccessorType accessorType;
 
-    /*
-     * In case an [@PropDefault] annotated variable does not include `get` on the Kotlin
-     * annotation, we fallback to the previous method of identifying `PropDefault` values.
-     * Note here that this method is deprecated and might be removed from KAPT some time in
-     * future.
-     *
-     * If a user annotates that variable with `@get:PropDefault` we identify the
-     * `PropDefault` values through the accompanying `get` method of that variable.
-     * */
-    if (isPropDefaultWithoutGet) {
-      baseName = methodName.subSequence(0, methodName.indexOf('$')).toString();
+    if (isPropDefaultWithoutGetter) {
+      /**
+       * The PropDefault was defined via the form: <code>@PropDefault const val ...</code> or <code>
+       * @PropDefault @JvmField val ...</code>
+       *
+       * <p>In case an [@PropDefault] annotated variable does not include `get` on the Kotlin
+       * annotation, we fallback to the previous method of identifying `PropDefault` values. Note
+       * here that this method is deprecated and might be removed from KAPT some time in future.
+       *
+       * <p>The method name is akin to: getSomePropDefault$annotations(). Therefore, we want to find
+       * the field: somePropDefault.
+       */
+      final String strippedConstantName =
+          methodName.substring(0, methodName.indexOf('$')).replaceFirst("get", "");
+      baseName =
+          strippedConstantName.substring(0, 1).toLowerCase() + strippedConstantName.substring(1);
+
+      accessorType = PropDefaultModel.AccessorType.FIELD;
     } else {
+      /**
+       * The method name is akin to: getSomePropDefault(). Therefore, we want to find the field:
+       * somePropDefault.
+       */
       baseName =
           methodName.replaceFirst("get", "").substring(0, 1).toLowerCase()
               + methodName.replaceFirst("get", "").substring(1);
+
+      accessorType = PropDefaultModel.AccessorType.GETTER_METHOD;
     }
 
     final Optional<? extends Element> element =
@@ -147,14 +163,23 @@ public class PropDefaultsExtractor {
                     ex);
               }
 
+              /**
+               * If the PropDefault does not have a getter method, we should access it via the field
+               * element. Otherwise, we should access it via the getter method.
+               */
+              final Element propDefaultAccessorElement =
+                  isPropDefaultWithoutGetter ? e : methodElement;
+
               return ImmutableList.of(
                   new PropDefaultModel(
                       typeName,
                       baseName,
-                      ImmutableList.copyOf(new ArrayList<>(methodElement.getModifiers())),
-                      methodElement,
+                      ImmutableList.copyOf(
+                          new ArrayList<>(propDefaultAccessorElement.getModifiers())),
+                      propDefaultAccessorElement,
                       propDefaultResType,
-                      propDefaultResId));
+                      propDefaultResId,
+                      accessorType));
             })
         .orElseGet(ImmutableList::of);
   }

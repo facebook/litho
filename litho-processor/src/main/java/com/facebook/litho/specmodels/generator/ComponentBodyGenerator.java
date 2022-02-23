@@ -27,6 +27,7 @@ import static com.facebook.litho.specmodels.generator.StateContainerGenerator.ge
 import static com.facebook.litho.specmodels.model.MethodParamModelUtils.isAnnotatedWith;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
@@ -46,6 +47,7 @@ import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
+import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
@@ -321,7 +323,9 @@ public class ComponentBodyGenerator {
                       .addMember("type", "$L", getComparableType(prop, runMode))
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
-        assignInitializer(fieldBuilder, specModel, prop);
+        final PropDefaultModel propDefault =
+            Preconditions.checkNotNull(prop.getDefault(specModel.getPropDefaults()));
+        assignInitializer(fieldBuilder, specModel, prop, propDefault);
       } else if (prop.hasVarArgs()) {
         fieldBuilder.initializer("$T.emptyList()", ClassName.get(Collections.class));
       }
@@ -356,11 +360,14 @@ public class ComponentBodyGenerator {
   }
 
   private static void assignInitializer(
-      FieldSpec.Builder fieldBuilder, SpecModel specModel, PropModel prop) {
+      FieldSpec.Builder fieldBuilder,
+      SpecModel specModel,
+      PropModel prop,
+      PropDefaultModel propDefault) {
 
     SpecElementType type = specModel.getSpecElementType();
 
-    if (type == SpecElementType.KOTLIN_SINGLETON || type == SpecElementType.KOTLIN_CLASS) {
+    if (isKotlinPropDefaultWithGetterMethod(specModel, propDefault)) {
       final String propName = prop.getName();
       final boolean needGetter = !propName.startsWith("is");
       final String propAccessor =
@@ -373,9 +380,24 @@ public class ComponentBodyGenerator {
           specModel.getSpecName(),
           type == SpecElementType.KOTLIN_SINGLETON ? "INSTANCE" : "Companion",
           propAccessor);
+
     } else {
       fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
     }
+  }
+
+  /**
+   * When the spec is written in Kotlin, the generated code will at times require that we need to
+   * access the field via a getter method. This is always the case when an the spec is a Kotlin
+   * object but only sometimes the case when it's a Kotlin class.
+   *
+   * @return true when we need to access the PropDefault via a getter method such as <code>
+   *     getSomePropDefault()</code>. Otherwise, false as we want to access the field via <code>
+   *     somePropDefault</code>
+   */
+  private static boolean isKotlinPropDefaultWithGetterMethod(
+      final SpecModel specModel, final PropDefaultModel propDefault) {
+    return KotlinSpecHelper.isKotlinSpec(specModel) && propDefault.isGetterMethodAccessor();
   }
 
   public static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {

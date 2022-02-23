@@ -23,6 +23,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /** Model that is an abstract representation of a {@link com.facebook.litho.annotations.Prop}. */
@@ -116,14 +117,19 @@ public class PropModel implements MethodParamModel {
    *     otherwise.
    */
   public boolean hasDefault(ImmutableList<PropDefaultModel> propDefaults) {
+    return getDefault(propDefaults) != null;
+  }
+
+  @Nullable
+  public PropDefaultModel getDefault(ImmutableList<PropDefaultModel> propDefaults) {
     for (PropDefaultModel propDefault : propDefaults) {
       if (propDefault.mType.equals(mParamModel.getTypeName())
           && propDefault.mName.equals(mParamModel.getName())) {
-        return true;
+        return propDefault;
       }
     }
 
-    return false;
+    return null;
   }
 
   /** @return a new {@link PropModel} instance with the given name overridden. */
