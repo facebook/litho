@@ -168,17 +168,6 @@ public class PropDefaultsExtractor {
     return element
         .map(
             e -> {
-              final TypeName typeName;
-              try {
-                typeName = TypeName.get(e.asType());
-              } catch (IllegalArgumentException ex) {
-                throw new RuntimeException(
-                    "Failed to get a type name from @PropDefault annotated field "
-                        + e
-                        + ". IF THIS IS A KOTLIN FILE, THIS IS A KNOWN PROBLEM WITH USING KAPT. Luckily, you can fix it by annotating with @get:PropDefault instead of @PropDefault.",
-                    ex);
-              }
-
               /**
                * If the PropDefault does not have a getter method, we should access it via the field
                * element. Otherwise, we should access it via the getter method.
@@ -201,7 +190,7 @@ public class PropDefaultsExtractor {
 
               return ImmutableList.of(
                   new PropDefaultModel(
-                      typeName,
+                      TypeName.get(e.asType()),
                       baseName,
                       ImmutableList.copyOf(
                           new ArrayList<>(propDefaultAccessorElement.getModifiers())),
