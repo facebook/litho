@@ -32,6 +32,7 @@ class KotlinClassSpec {
     @get:PropDefault val getPropDefault: String = "Default"
     @PropDefault const val constPropDefault: Int = 10_000
     @PropDefault @JvmField val jvmFieldPropDefault: List<String> = listOf("Prop", "Default")
+    @PropDefault val justPropDefault: Long = 54321L
 
     @JvmStatic
     @OnCreateLayout
@@ -40,13 +41,17 @@ class KotlinClassSpec {
         @Prop(optional = true) getPropDefaultAssertion: ((String) -> Unit)?,
         @Prop(optional = true) constPropDefaultAssertion: ((Int) -> Unit)?,
         @Prop(optional = true) jvmFieldPropDefaultAssertion: ((List<String>) -> Unit)?,
+        @Prop(optional = true) justPropDefaultAssertion: ((Long) -> Unit)?,
         @Prop(optional = true) getPropDefault: String,
         @Prop(optional = true) constPropDefault: Int,
         @Prop(optional = true) jvmFieldPropDefault: List<String>,
+        @Prop(optional = true) justPropDefault: Long,
     ): Component {
       getPropDefaultAssertion?.invoke(getPropDefault)
       constPropDefaultAssertion?.invoke(constPropDefault)
       jvmFieldPropDefaultAssertion?.invoke(jvmFieldPropDefault)
+      justPropDefaultAssertion?.invoke(justPropDefault)
+
       return Column.create(c).build()
     }
   }

@@ -64,6 +64,16 @@ class KotlinSpecPropDefaultsTest {
     }
   }
 
+  /** Annotation: `@PropDefault val fieldName = ...` */
+  @Test
+  fun `Kotlin object spec with just PropDefault should initialise default value`() {
+    lithoViewRule.render {
+      KotlinObject.create(lithoViewRule.context)
+          .justPropDefaultAssertion { assertThat(it).isEqualTo(KotlinObjectSpec.justPropDefault) }
+          .build()
+    }
+  }
+
   /** Annotation: `@get:PropDefault val fieldName = ...` */
   @Test
   fun `Kotlin class spec with PropDefault get annotation should initialise default value`() {
@@ -92,6 +102,16 @@ class KotlinSpecPropDefaultsTest {
           .jvmFieldPropDefaultAssertion {
             assertThat(it).isEqualTo(KotlinClassSpec.jvmFieldPropDefault)
           }
+          .build()
+    }
+  }
+
+  /** Annotation: `@PropDefault val fieldName = ...` */
+  @Test
+  fun `Kotlin class spec with just PropDefault should initialise default value`() {
+    lithoViewRule.render {
+      KotlinClass.create(lithoViewRule.context)
+          .justPropDefaultAssertion { assertThat(it).isEqualTo(KotlinClassSpec.justPropDefault) }
           .build()
     }
   }

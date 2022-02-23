@@ -52,6 +52,19 @@ public class PropDefaultsExtractorTest {
     @PropDefault static final String title = "PROP_DEFAULT";
   }
 
+  static class TestClassWithCompanionWithoutGet {
+    private static final String title = "PROP_DEFAULT";
+
+    public static final class Companion {
+      @PropDefault
+      public static void getTitle$annotations() {}
+
+      public final String getTitle() {
+        return TestClassWithCompanionWithoutGet.title;
+      }
+    }
+  }
+
   @Test
   public void testPropDefaultExtractionWithField() {
     final Elements elements = mCompilationRule.getElements();
@@ -80,6 +93,18 @@ public class PropDefaultsExtractorTest {
   public void testKotlinPropDefaultsExtractionWithGetAnnotation() {
     final Elements elements = mCompilationRule.getElements();
     final TypeElement element = elements.getTypeElement(TestClassWithGet.class.getCanonicalName());
+
+    final ImmutableList<PropDefaultModel> propDefaults =
+        PropDefaultsExtractor.getPropDefaults(element);
+
+    PropDefaultsExtractorTestHelper.assertGetterPropDefaultExtraction(propDefaults);
+  }
+
+  @Test
+  public void testKotlinPropDefaultsExtractionFromCompanionWithoutAnnotation() {
+    final Elements elements = mCompilationRule.getElements();
+    final TypeElement element =
+        elements.getTypeElement(TestClassWithCompanionWithoutGet.class.getCanonicalName());
 
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);

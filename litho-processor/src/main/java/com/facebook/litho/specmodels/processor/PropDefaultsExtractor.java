@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -26,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -44,10 +48,8 @@ public class PropDefaultsExtractor {
     final List<? extends Element> enclosedElements = typeElement.getEnclosedElements();
     for (Element enclosedElement : enclosedElements) {
       propDefaults.addAll(extractFromField(enclosedElement));
-      propDefaults.addAll(
-          extractFromMethod(
-              enclosedElement, enclosedElement.getEnclosingElement().getEnclosedElements()));
-      propDefaults.addAll(extractFromCompanionClass(enclosedElement));
+      propDefaults.addAll(extractFromMethod(enclosedElement, enclosedElements));
+      propDefaults.addAll(extractFromCompanionClass(enclosedElement, enclosedElements));
     }
 
     return ImmutableList.copyOf(propDefaults);
@@ -104,41 +106,55 @@ public class PropDefaultsExtractor {
 
     final String methodName = methodElement.getSimpleName().toString();
 
-    boolean isPropDefaultWithoutGetter =
-        methodName.endsWith("$annotations")
-            && methodElement.getReturnType().getKind() == TypeKind.VOID;
+    final KotlinAccessorExtractionType kotlinAccessorType =
+        getKotlinAccessorExtractionType(methodElement, elementsToSearch);
 
     final String baseName;
     final PropDefaultModel.AccessorType accessorType;
 
-    if (isPropDefaultWithoutGetter) {
-      /**
-       * The PropDefault was defined via the form: <code>@PropDefault const val ...</code> or <code>
-       * @PropDefault @JvmField val ...</code>
-       *
-       * <p>In case an [@PropDefault] annotated variable does not include `get` on the Kotlin
-       * annotation, we fallback to the previous method of identifying `PropDefault` values. Note
-       * here that this method is deprecated and might be removed from KAPT some time in future.
-       *
-       * <p>The method name is akin to: getSomePropDefault$annotations(). Therefore, we want to find
-       * the field: somePropDefault.
-       */
-      final String strippedConstantName =
-          methodName.substring(0, methodName.indexOf('$')).replaceFirst("get", "");
-      baseName =
-          strippedConstantName.substring(0, 1).toLowerCase() + strippedConstantName.substring(1);
-
-      accessorType = PropDefaultModel.AccessorType.FIELD;
-    } else {
-      /**
-       * The method name is akin to: getSomePropDefault(). Therefore, we want to find the field:
-       * somePropDefault.
-       */
-      baseName =
-          methodName.replaceFirst("get", "").substring(0, 1).toLowerCase()
-              + methodName.replaceFirst("get", "").substring(1);
-
-      accessorType = PropDefaultModel.AccessorType.GETTER_METHOD;
+    switch (kotlinAccessorType) {
+      case UNANNOTATED_GETTER_METHOD:
+        /**
+         * The PropDefault was defined via the form: <code>@PropDefault const val ...</code> or
+         * <code>
+         * @PropDefault @JvmField val ...</code>
+         *
+         * <p>In case an [@PropDefault] annotated variable does not include `get` on the Kotlin
+         * annotation, we fallback to the previous method of identifying `PropDefault` values. Note
+         * here that this method is deprecated and might be removed from KAPT some time in future.
+         *
+         * <p>The method name is akin to: getSomePropDefault$annotations(). Therefore, we want to
+         * find the field: somePropDefault.
+         */
+        baseName = getBaseNameFrom$AnnotationsMethod(methodName);
+        accessorType = PropDefaultModel.AccessorType.GETTER_METHOD;
+        break;
+      case UNANNOTATED_FIELD:
+        /**
+         * The PropDefault was defined via the form: <code>@PropDefault const val ...</code> or
+         * <code>@PropDefault @JvmField val ...</code>
+         *
+         * <p>In case an [@PropDefault] annotated variable does not include `get` on the Kotlin
+         * annotation, we fallback to the previous method of identifying `PropDefault` values. Note
+         * here that this method is deprecated and might be removed from KAPT some time in future.
+         *
+         * <p>The method name is akin to: getSomePropDefault$annotations(). Therefore, we want to
+         * find the field: somePropDefault.
+         */
+        baseName = getBaseNameFrom$AnnotationsMethod(methodName);
+        accessorType = PropDefaultModel.AccessorType.FIELD;
+        break;
+      case ANNOTATED_GETTER_METHOD:
+      default:
+        /**
+         * The method name is akin to: getSomePropDefault(). Therefore, we want to find the field:
+         * somePropDefault.
+         */
+        baseName =
+            methodName.replaceFirst("get", "").substring(0, 1).toLowerCase()
+                + methodName.replaceFirst("get", "").substring(1);
+        accessorType = PropDefaultModel.AccessorType.GETTER_METHOD;
+        break;
     }
 
     final Optional<? extends Element> element =
@@ -167,8 +183,21 @@ public class PropDefaultsExtractor {
                * If the PropDefault does not have a getter method, we should access it via the field
                * element. Otherwise, we should access it via the getter method.
                */
-              final Element propDefaultAccessorElement =
-                  isPropDefaultWithoutGetter ? e : methodElement;
+              final Element propDefaultAccessorElement;
+              switch (kotlinAccessorType) {
+                case UNANNOTATED_FIELD:
+                  propDefaultAccessorElement = e;
+                  break;
+                case UNANNOTATED_GETTER_METHOD:
+                  propDefaultAccessorElement =
+                      Preconditions.checkNotNull(
+                          getUnannotatedGetterMethodElement(methodName, elementsToSearch));
+                  break;
+                case ANNOTATED_GETTER_METHOD:
+                default:
+                  propDefaultAccessorElement = methodElement;
+                  break;
+              }
 
               return ImmutableList.of(
                   new PropDefaultModel(
@@ -184,7 +213,8 @@ public class PropDefaultsExtractor {
         .orElseGet(ImmutableList::of);
   }
 
-  private static Collection<? extends PropDefaultModel> extractFromCompanionClass(Element element) {
+  private static Collection<? extends PropDefaultModel> extractFromCompanionClass(
+      Element element, final List<? extends Element> specLevelElements) {
     if (element.getKind() != ElementKind.CLASS
         || !element.getModifiers().contains(Modifier.PUBLIC)
         || !element.getModifiers().contains(Modifier.STATIC)
@@ -195,12 +225,133 @@ public class PropDefaultsExtractor {
 
     List<PropDefaultModel> models = new ArrayList<>();
 
-    final List<? extends Element> enclosedElements = element.getEnclosedElements();
-    for (Element enclosedElement : enclosedElements) {
-      models.addAll(
-          extractFromMethod(enclosedElement, element.getEnclosingElement().getEnclosedElements()));
+    final List<? extends Element> enclosedCompanionElements = element.getEnclosedElements();
+    /**
+     * It's possible that we need to extract a method/field that's either: 1. Within the
+     * over-arching spec class (specLevelElements) 2. Within the Companion class
+     * (enclosedCompanionElements)
+     *
+     * <p>Therefore, we want to combine the 2 when providing the elements to search through in the
+     * extraction method.
+     */
+    final List<? extends Element> allElementsToMatchAgainst =
+        Stream.of(enclosedCompanionElements, specLevelElements)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    for (Element enclosedElement : enclosedCompanionElements) {
+      models.addAll(extractFromMethod(enclosedElement, allElementsToMatchAgainst));
     }
 
     return ImmutableList.copyOf(models);
+  }
+
+  private static KotlinAccessorExtractionType getKotlinAccessorExtractionType(
+      final ExecutableElement methodElement, final List<? extends Element> elementsToSearch) {
+    final String methodName = methodElement.getSimpleName().toString();
+
+    /**
+     * If we have a method such as: <code>
+     *  @PropDefault
+     *  public static void getSomePropDefault$annotations()
+     * </code> we know that the actual accessor (or element that returns the PropDefault) is some
+     * other element that is not annotated with PropDefault.
+     *
+     * <p>Otherwise, we already found the method that returns the PropDefault and has the
+     * annotation.
+     */
+    final boolean isPropDefaultWithoutAnnotatedGetter =
+        methodName.endsWith("$annotations")
+            && methodElement.getReturnType().getKind() == TypeKind.VOID;
+    if (!isPropDefaultWithoutAnnotatedGetter) {
+      return KotlinAccessorExtractionType.ANNOTATED_GETTER_METHOD;
+    }
+
+    /**
+     * Attempt to find if there is a getter method with the proper name that just lacks
+     * the @PropDefault annotation.
+     */
+    @Nullable
+    final Element propDefaultFoundMethod =
+        getUnannotatedGetterMethodElement(methodName, elementsToSearch);
+
+    return propDefaultFoundMethod != null
+        ? KotlinAccessorExtractionType.UNANNOTATED_GETTER_METHOD
+        : KotlinAccessorExtractionType.UNANNOTATED_FIELD;
+  }
+
+  /**
+   * The method name is akin to: getSomePropDefault$annotations(). Therefore, we want return the
+   * base name somePropDefault.
+   *
+   * @param methodName a method name akin to getSomePropDefault$annotations()
+   * @return the base name for the prop, such as somePropDefault
+   */
+  private static String getBaseNameFrom$AnnotationsMethod(final String methodName) {
+    final String strippedConstantName =
+        methodName.substring(0, methodName.indexOf('$')).replaceFirst("get", "");
+    return strippedConstantName.substring(0, 1).toLowerCase() + strippedConstantName.substring(1);
+  }
+
+  /**
+   * The expectation is this method is used to extract an unannotated getter method (but it would
+   * also return an annotated getter method, should one exist).
+   *
+   * @return a getter method for the PropDefault if one exists, otherwise null.
+   */
+  @Nullable
+  private static Element getUnannotatedGetterMethodElement(
+      final String methodName, final List<? extends Element> elementsToSearch) {
+    return elementsToSearch.stream()
+        .filter(
+            e ->
+                e instanceof ExecutableElement
+                    && e.getSimpleName()
+                        .toString()
+                        .equals(methodName.substring(0, methodName.indexOf('$'))))
+        .limit(1)
+        .reduce(null, (first, second) -> second);
+  }
+
+  /**
+   * Determines the type of accessors we want to extract when extracting from a Kotlin method
+   * annotated with PropDefault. For Kotlin methods annotated with PropDefault, these are not always
+   * the accessors for getting the PropDefault value.
+   */
+  private enum KotlinAccessorExtractionType {
+    /**
+     * The accessor is a getter method which is annotated with PropDefault.
+     *
+     * <p><code>
+     * @PropDefault
+     * public static String getSomePropDefault() { return someProp; }
+     * </code>
+     */
+    ANNOTATED_GETTER_METHOD,
+    /**
+     * The accessor is a getter method which is not annotated with PropDefault.
+     *
+     * <p><code>
+     * // accessor
+     * public static String getSomePropDefault() { return someProp; }
+     *
+     * // annotated element
+     * @PropDefault
+     * public static void getSomePropDefault$annotations() {}
+     * </code>
+     */
+    UNANNOTATED_GETTER_METHOD,
+    /**
+     * The accessor is a field (which is not annotated with PropDefault).
+     *
+     * <p><code>
+     * // accessor
+     * public static final String someProp = ""
+     *
+     * // annotated element
+     * @PropDefault
+     * public static void getSomePropDefault$annotations() {}
+     * </code>
+     */
+    UNANNOTATED_FIELD;
   }
 }
