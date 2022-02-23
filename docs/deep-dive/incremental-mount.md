@@ -3,26 +3,26 @@ id: incremental-mount
 title: Incremental Mount
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated.
+Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.
+Since there's no benefit of maintaining views outside the viewport, Incremental Mount plays a pivotal role in boosting overall performance by ensuring such views are excluded from the view hierarchy.
+
+:::note
+It is easy to confuse Litho's Incremental Mount feature with similar Android features such as view recycling in a RecyclerView. However, unlike Android's RecyclerView, Incremental Mount operates on a view-by-view resolution, rather than entire list items as in a RecyclerView.
+This means that unlike with a RecyclerView, when an individual view has exited the viewport, it will be unmounted from the view hierarchy, even if its container is partially visible within the viewport.
 :::
 
-Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.
-
-Litho can transparently spread the cost of mounting components across UI frames to avoid jank.
-
-With incremental mount enabled (which it is by default), the `LithoView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
+With Incremental Mount enabled (which it is by default), the `LithoView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
 
 ![Incremental Mount Diagram](/images/incremental-mount.png)
 
-If you are using `RecyclerCollectionComponent`, the framework will seamlessly perform incremental mount.
-
+When using a prebuilt collection component such as `RecyclerCollectionComponent` or a [Lazy Collection](../kotlin/collections.mdx), the framework will seamlessly perform Incremental Mount.
 ## Manual Incremental Mount
 
-If you're not using the [Recycler](pathname:///javadoc/com/facebook/litho/widget/Recycler.html) component, you can still integrate incremental mount in your existing UI implementation. You'll have to explicitly notify the framework every time the `LithoView`'s visible region changes, by calling:
+When not using a prebuilt collection component (such as [Recycler](pathname:///javadoc/com/facebook/litho/widget/Recycler.html)), or when manually resizing a `LithoView`'s container, you can still integrate Incremental Mount in your existing UI implementation.
+To integrate Incremental Mount, you must explicitly notify the LithoView that its visible bounds have changed. Use the following call:
 
 ```java
-myLithoView.performIncrementalMount();
+myLithoView.notifyVisibleBoundsChanged();
 ```
 
-For example, you'd call `performIncrementalMount()` in an `OnScrollListener` if you're using components in a `ListView`.
+For example, if a `LithoView` is nested within a custom scrolling container, `myLithoView.notifyVisibleBoundsChanged()` should be called within a `OnScrollListener`.
