@@ -61,8 +61,7 @@ typealias OnDataRendered =
         changesInfo: ChangesInfo,
         globalOffset: Int) -> Unit
 
-@PublishedApi
-internal class LazyCollection(
+class LazyCollection(
     private val layout: CollectionLayout,
     private val itemAnimator: RecyclerView.ItemAnimator? = null,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,

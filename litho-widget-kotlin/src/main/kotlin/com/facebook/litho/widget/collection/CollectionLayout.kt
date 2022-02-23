@@ -32,8 +32,7 @@ import com.facebook.litho.widget.SnapUtil
  * @param reverse Reverse item traversal and layout order @see
  * [LinearLayoutManager#setReverseLayout]
  */
-@PublishedApi
-internal abstract class CollectionLayout(
+abstract class CollectionLayout(
     @RecyclerView.Orientation orientation: Int,
     reverse: Boolean,
     rangeRatio: Float? = null,
