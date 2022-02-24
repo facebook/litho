@@ -28,4 +28,8 @@ abstract class MountableComponent : Component() {
   abstract fun ComponentScope.render(): Mountable<*>
 
   final override fun getMountType(): MountType = MountType.MOUNTABLE
+
+  final override fun canMeasure(): Boolean {
+    return true
+  }
 }
