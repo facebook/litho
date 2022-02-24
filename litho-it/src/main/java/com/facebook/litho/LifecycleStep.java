@@ -57,7 +57,8 @@ public enum LifecycleStep {
   ON_DETACHED,
   ON_UNFOCUSED_EVENT_VISIBLE,
   ON_EVENT_INVISIBLE,
-  SHOULD_UPDATE;
+  SHOULD_UPDATE,
+  RENDER;
 
   public static class StepInfo {
     public final LifecycleStep step;

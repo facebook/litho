@@ -46,8 +46,13 @@ private val BINDER_LIST: List<RenderUnit.Binder<*, *>> =
               currentLayoutData: Any?,
               nextLayoutData: Any?
           ): Boolean {
+            currentLayoutData as LithoLayoutData
+            nextLayoutData as LithoLayoutData
             return newMountable.shouldUpdate(
-                currentMountable, newMountable, currentLayoutData, nextLayoutData)
+                currentMountable,
+                newMountable,
+                currentLayoutData.mLayoutData,
+                nextLayoutData.mLayoutData)
           }
 
           override fun bind(
@@ -56,7 +61,8 @@ private val BINDER_LIST: List<RenderUnit.Binder<*, *>> =
               mountable: SimpleMountable<Any>,
               layoutData: Any?
           ) {
-            mountable.mount(context, content, layoutData)
+            layoutData as LithoLayoutData
+            mountable.mount(context, content, layoutData.mLayoutData)
           }
 
           override fun unbind(
@@ -65,6 +71,7 @@ private val BINDER_LIST: List<RenderUnit.Binder<*, *>> =
               mountable: SimpleMountable<Any>,
               layoutData: Any?
           ) {
-            mountable.unmount(context, content, layoutData)
+            layoutData as LithoLayoutData
+            mountable.unmount(context, content, layoutData.mLayoutData)
           }
         })
