@@ -197,7 +197,8 @@ public class IncrementalMountExtension
     final IncrementalMountExtensionState state = extensionState.getState();
     final long id = renderUnit.getId();
 
-    if (state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id)) {
+    if (!state.mInput.renderUnitWithIdHostsRenderTrees(id)
+        || state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id)) {
       return;
     }
 
@@ -217,9 +218,8 @@ public class IncrementalMountExtension
     }
 
     final IncrementalMountExtensionState state = extensionState.getState();
-    state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(id);
-
     if (state.mInput.renderUnitWithIdHostsRenderTrees(id)) {
+      state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(id);
       state.mMountedOutputIdsWithNestedContent.put(id, content);
     }
   }
@@ -270,15 +270,12 @@ public class IncrementalMountExtension
       final long id,
       final Object content) {
     assertMainThread();
-    final IncrementalMountExtensionInput input = extensionState.getState().mInput;
-    if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
-      if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
-        Log.d(DEBUG_TAG, "RecursivelyNotify [RenderUnit=" + id + "]");
-      }
-      RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
-      extensionState.getMountDelegate().notifyVisibleBoundsChangedForItem(content);
-      RenderCoreSystrace.endSection();
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, "RecursivelyNotify [RenderUnit=" + id + "]");
     }
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
+    extensionState.getMountDelegate().notifyVisibleBoundsChangedForItem(content);
+    RenderCoreSystrace.endSection();
   }
 
   private static void releaseAcquiredReferencesForRemovedItems(
