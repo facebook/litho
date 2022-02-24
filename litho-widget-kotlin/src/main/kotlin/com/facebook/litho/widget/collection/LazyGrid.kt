@@ -25,7 +25,6 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.widget.LithoRecyclerView
-import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SnapUtil
 
 /** A scrollable collection of components arranged in a grid */
@@ -59,7 +58,7 @@ inline fun ResourcesScope.LazyGrid(
     noinline pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
     onScrollListener: RecyclerView.OnScrollListener? = null,
     onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
-    recyclerEventsController: RecyclerEventsController? = null,
+    lazyCollectionController: LazyCollectionController? = null,
     noinline onDataRendered: OnDataRendered? = null,
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
@@ -101,6 +100,6 @@ inline fun ResourcesScope.LazyGrid(
         pagination,
         onScrollListener,
         onScrollListeners,
-        recyclerEventsController,
+        lazyCollectionController,
         onDataRendered,
         init)

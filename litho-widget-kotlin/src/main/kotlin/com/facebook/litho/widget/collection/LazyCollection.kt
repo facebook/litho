@@ -39,7 +39,6 @@ import com.facebook.litho.useState
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerBinder
-import com.facebook.litho.widget.RecyclerEventsController
 
 typealias OnViewportChanged =
     (
@@ -88,9 +87,7 @@ class LazyCollection(
     private val pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
     private val onScrollListener: RecyclerView.OnScrollListener? = null,
     private val onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
-    // Avoid using recyclerEventsController. This is only to assist with transitioning from
-    // Sections to Collections and will be removed in future.
-    private val recyclerEventsController: RecyclerEventsController? = null,
+    private val lazyCollectionController: LazyCollectionController? = null,
     private val onDataRendered: OnDataRendered? = null,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
@@ -190,7 +187,7 @@ class LazyCollection(
         .handle(recyclerHandle)
         .onScrollListener(onScrollListener)
         .onScrollListeners(onScrollListeners)
-        .recyclerEventsController(recyclerEventsController)
+        .lazyCollectionController(lazyCollectionController)
         .kotlinStyle(style)
         .build()
   }

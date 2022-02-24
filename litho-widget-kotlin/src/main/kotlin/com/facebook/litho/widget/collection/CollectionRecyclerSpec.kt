@@ -19,10 +19,6 @@ package com.facebook.litho.widget.collection
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ItemAnimator
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
-import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.EventHandler
@@ -151,7 +147,7 @@ object CollectionRecyclerSpec {
       @Prop(optional = true) sectionTreeTag: String?,
       @Prop(optional = true) canMeasureRecycler: Boolean,
       @Prop(optional = true) startupLogger: LithoStartupLogger?,
-      @Prop(optional = true) recyclerEventsController: RecyclerEventsController?
+      @Prop(optional = true) lazyCollectionController: LazyCollectionController?
   ) {
     val binderConfiguration = recyclerConfiguration.recyclerBinderConfiguration
     val recyclerBinder =
@@ -194,7 +190,10 @@ object CollectionRecyclerSpec {
                 binderConfiguration.isPostToFrontOfQueueForFirstChangeset)
             .build()
     sectionTree.set(sectionTreeInstance)
-    internalRecyclerEventsController.set(recyclerEventsController ?: RecyclerEventsController())
+
+    val recyclerEventsController =
+        RecyclerEventsController().apply { setOnRecyclerUpdateListener(lazyCollectionController) }
+    internalRecyclerEventsController.set(recyclerEventsController)
     val viewPortChanged =
         ViewportChanged {
         firstVisibleIndex,
