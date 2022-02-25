@@ -151,7 +151,7 @@ public class ComponentBodyGenerator {
         .addTypeSpecDataHolder(generateEventTriggers(specModel));
 
     if (specModel.shouldGenerateIsEquivalentTo()) {
-      builder.addMethod(generateIsEquivalentMethod(specModel, runMode));
+      builder.addMethod(generateIsEquivalentPropsMethod(specModel, runMode));
     }
 
     if (specModel.shouldGenerateIsEquivalentTo()
@@ -583,12 +583,12 @@ public class ComponentBodyGenerator {
     return isEquivalentBuilder.build();
   }
 
-  static MethodSpec generateIsEquivalentMethod(SpecModel specModel, EnumSet<RunMode> runMode) {
+  static MethodSpec generateIsEquivalentPropsMethod(SpecModel specModel, EnumSet<RunMode> runMode) {
     final String className = specModel.getComponentName();
     final String instanceRefName = getInstanceRefName(specModel);
 
     MethodSpec.Builder isEquivalentBuilder =
-        MethodSpec.methodBuilder("isEquivalentTo")
+        MethodSpec.methodBuilder("isEquivalentProps")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
@@ -610,14 +610,15 @@ public class ComponentBodyGenerator {
 
     for (PropModel prop : specModel.getProps()) {
       isEquivalentBuilder.addCode(
-          getCompareStatement("isEquivalentTo", specModel, instanceRefName, prop, runMode));
+          getCompareStatement("isEquivalentProps", specModel, instanceRefName, prop, runMode));
     }
 
     ImmutableList<TreePropModel> treeProps = specModel.getTreeProps();
     if (treeProps != null && !treeProps.isEmpty() && specModel.isStateful()) {
       for (TreePropModel treeProp : specModel.getTreeProps()) {
         isEquivalentBuilder.addCode(
-            getCompareStatement("isEquivalentTo", specModel, instanceRefName, treeProp, runMode));
+            getCompareStatement(
+                "isEquivalentProps", specModel, instanceRefName, treeProp, runMode));
       }
     }
 

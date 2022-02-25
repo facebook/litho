@@ -59,14 +59,14 @@ class DynamicPropsEquivalenceGeneratorTest {
                 null)
 
     val generatedIsEquivalentMethod =
-        ComponentBodyGenerator.generateIsEquivalentMethod(mountSpecModel, RunMode.normal())
+        ComponentBodyGenerator.generateIsEquivalentPropsMethod(mountSpecModel, RunMode.normal())
             .toString()
 
     assertThat(generatedIsEquivalentMethod)
         .isEqualTo(
             """
             @java.lang.Override
-            public boolean isEquivalentTo(com.facebook.litho.Component other) {
+            public boolean isEquivalentProps(com.facebook.litho.Component other) {
               if (this == other) {
                 return true;
               }

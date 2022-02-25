@@ -45,7 +45,7 @@ abstract class KComponent : Component() {
    * Compare this component to a different one to check if they are equivalent. This is used to be
    * able to skip rendering a component again.
    */
-  final override fun isEquivalentTo(other: Component?): Boolean {
+  final override fun isEquivalentProps(other: Component?): Boolean {
     if (this === other) {
       return true
     }

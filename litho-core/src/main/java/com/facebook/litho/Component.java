@@ -935,6 +935,26 @@ public abstract class Component
   }
 
   /**
+   * Determine if this component has equivalent props to a given component. This method does not
+   * compare common props.
+   *
+   * @param other the component to compare to
+   * @return true if the components have equivalent props
+   */
+  protected boolean isEquivalentProps(@Nullable Component other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    if (getId() == other.getId()) {
+      return true;
+    }
+    return ComponentUtils.hasEquivalentFields(this, other);
+  }
+
+  /**
    * Compares this component to a different one to check if they are the same
    *
    * <p>This is used to be able to skip rendering a component again. We avoid using the {@link
@@ -945,18 +965,8 @@ public abstract class Component
    * @return true if the components are of the same type and have the same props
    */
   @Override
-  public boolean isEquivalentTo(@Nullable Component other) {
-    if (this == other) {
-      return true;
-    }
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-    if (getId() == other.getId()) {
-      return true;
-    }
-
-    return ComponentUtils.hasEquivalentFields(this, other);
+  public final boolean isEquivalentTo(@Nullable Component other) {
+    return isEquivalentProps(other);
   }
 
   public Component makeShallowCopy() {

@@ -143,7 +143,7 @@ public final class Row extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentProps(Component other) {
     if (this == other) {
       return true;
     }

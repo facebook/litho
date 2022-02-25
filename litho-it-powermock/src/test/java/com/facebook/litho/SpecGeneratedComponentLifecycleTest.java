@@ -428,7 +428,7 @@ public class SpecGeneratedComponentLifecycleTest {
     }
 
     @Override
-    public boolean isEquivalentTo(Component other) {
+    public boolean isEquivalentProps(Component other) {
       return this == other;
     }
 

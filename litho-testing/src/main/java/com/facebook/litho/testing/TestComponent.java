@@ -140,9 +140,9 @@ public abstract class TestComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentProps(Component other) {
     mIsEquivalentToCalled = true;
-    return super.isEquivalentTo(other);
+    return super.isEquivalentProps(other);
   }
 
   /** Reset the tracking of which methods have been called on this component. */

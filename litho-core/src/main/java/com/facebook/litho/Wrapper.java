@@ -61,7 +61,7 @@ public final class Wrapper extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentProps(Component other) {
     if (this == other) {
       return true;
     }

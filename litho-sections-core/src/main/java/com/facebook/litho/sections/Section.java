@@ -335,6 +335,10 @@ public abstract class Section extends SectionLifecycle
     return mSimpleName;
   }
 
+  protected boolean isEquivalentProps(Section other) {
+    return this.equals(other);
+  }
+
   /**
    * Compares this section to a different one to check if they are the same
    *
@@ -347,7 +351,7 @@ public abstract class Section extends SectionLifecycle
    */
   @Override
   public boolean isEquivalentTo(Section other) {
-    return this.equals(other);
+    return isEquivalentProps(other);
   }
 
   @Nullable

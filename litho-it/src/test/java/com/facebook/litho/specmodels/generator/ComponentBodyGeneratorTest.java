@@ -434,11 +434,12 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateIsEquivalentMethod() {
     assertThat(
-            ComponentBodyGenerator.generateIsEquivalentMethod(mMountSpecModelDI, RunMode.normal())
+            ComponentBodyGenerator.generateIsEquivalentPropsMethod(
+                    mMountSpecModelDI, RunMode.normal())
                 .toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public boolean isEquivalentTo(com.facebook.litho.Component other) {\n"
+                + "public boolean isEquivalentProps(com.facebook.litho.Component other) {\n"
                 + "  if (this == other) {\n"
                 + "    return true;\n"
                 + "  }\n"
