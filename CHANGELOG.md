@@ -6,6 +6,7 @@ _release-date_
 
  * Refactor: Rename `setRootAndSizeSpec` to `setRootAndSizeSpecSync` in `ComponentTree`.
  * New: Foreground color is supported as a common `DynamicValue`.
+ * **Breaking:** Fix: More fully support `@PropDefault` annotations in Kotlin Specs.  (Results in `@field:PropDefault` failing at compilation time.  Use [fastmod](https://github.com/facebookincubator/fastmod) on existing codebase with the command: `fastmod '@field:PropDefault' '@PropDefault' --dir .`)
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.1...master).
 
