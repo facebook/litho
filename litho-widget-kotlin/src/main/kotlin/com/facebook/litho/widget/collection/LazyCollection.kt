@@ -103,52 +103,52 @@ class LazyCollection(
 
     val combinedOnViewportChanged: OnViewportChanged =
         {
-        c,
-        firstVisibleIndex,
-        lastVisibleIndex,
-        totalCount,
-        firstFullyVisibleIndex,
-        lastFullyVisibleIndex ->
-      childTracker.onScrollOrUpdated(
-          containerScope.effectiveIndexToId,
-          containerScope.idToChild,
-          firstVisibleIndex,
-          lastVisibleIndex)
-      pagination?.invoke(lastVisibleIndex, totalCount)
-      onViewportChanged?.invoke(
-          c,
-          firstVisibleIndex,
-          lastVisibleIndex,
-          totalCount,
-          firstFullyVisibleIndex,
-          lastFullyVisibleIndex)
-    }
+            c,
+            firstVisibleIndex,
+            lastVisibleIndex,
+            totalCount,
+            firstFullyVisibleIndex,
+            lastFullyVisibleIndex ->
+          childTracker.onScrollOrUpdated(
+              containerScope.effectiveIndexToId,
+              containerScope.idToChild,
+              firstVisibleIndex,
+              lastVisibleIndex)
+          pagination?.invoke(lastVisibleIndex, totalCount)
+          onViewportChanged?.invoke(
+              c,
+              firstVisibleIndex,
+              lastVisibleIndex,
+              totalCount,
+              firstFullyVisibleIndex,
+              lastFullyVisibleIndex)
+        }
 
     val combinedOnDataRendered: OnDataRendered =
         {
-        c: ComponentContext,
-        isDataChanged: Boolean,
-        isMounted: Boolean,
-        monoTimestampMs: Long,
-        firstVisibleIndex: Int,
-        lastVisibleIndex: Int,
-        changesInfo: ChangesInfo,
-        globalOffset: Int ->
-      childTracker.onScrollOrUpdated(
-          containerScope.effectiveIndexToId,
-          containerScope.idToChild,
-          firstVisibleIndex,
-          lastVisibleIndex)
-      onDataRendered?.invoke(
-          c,
-          isDataChanged,
-          isMounted,
-          monoTimestampMs,
-          firstVisibleIndex,
-          lastVisibleIndex,
-          changesInfo,
-          globalOffset)
-    }
+            c: ComponentContext,
+            isDataChanged: Boolean,
+            isMounted: Boolean,
+            monoTimestampMs: Long,
+            firstVisibleIndex: Int,
+            lastVisibleIndex: Int,
+            changesInfo: ChangesInfo,
+            globalOffset: Int ->
+          childTracker.onScrollOrUpdated(
+              containerScope.effectiveIndexToId,
+              containerScope.idToChild,
+              firstVisibleIndex,
+              lastVisibleIndex)
+          onDataRendered?.invoke(
+              c,
+              isDataChanged,
+              isMounted,
+              monoTimestampMs,
+              firstVisibleIndex,
+              lastVisibleIndex,
+              changesInfo,
+              globalOffset)
+        }
 
     val section =
         CollectionGroupSection.create(sectionContext)

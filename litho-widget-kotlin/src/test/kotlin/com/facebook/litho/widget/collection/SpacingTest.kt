@@ -45,18 +45,16 @@ class SpacingTest {
   @Before
   fun setUp() {
     view = mock {}
-    linearLayoutManager =
-        mock {
-          on { orientation } doReturn RecyclerView.VERTICAL
-          on { layoutDirection } doReturn View.LAYOUT_DIRECTION_LTR
-        }
+    linearLayoutManager = mock {
+      on { orientation } doReturn RecyclerView.VERTICAL
+      on { layoutDirection } doReturn View.LAYOUT_DIRECTION_LTR
+    }
     adapter = mock { on { itemCount } doReturn 4 }
-    recyclerView =
-        mock {
-          on { layoutManager } doReturn linearLayoutManager
-          on { getChildAdapterPosition(any()) } doReturn -1
-          on { adapter } doReturn adapter
-        }
+    recyclerView = mock {
+      on { layoutManager } doReturn linearLayoutManager
+      on { getChildAdapterPosition(any()) } doReturn -1
+      on { adapter } doReturn adapter
+    }
     state = mock {}
   }
 

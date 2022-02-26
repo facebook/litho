@@ -63,18 +63,18 @@ class CollectionOnViewPortChangedTest {
       override fun ComponentScope.render(): Component {
         val onViewportChanged =
             {
-            _: ComponentContext,
-            firstVisibleIndex: Int,
-            lastVisibleIndex: Int,
-            totalCount: Int,
-            firstFullyVisibleIndex: Int,
-            lastFullyVisibleIndex: Int ->
-          firstVisibleIndexValue.set(firstVisibleIndex)
-          lastVisibleIndexValue.set(lastVisibleIndex)
-          totalCountValue.set(totalCount)
-          firstFullyVisibleIndexValue.set(firstFullyVisibleIndex)
-          lastFullyVisibleIndexValue.set(lastFullyVisibleIndex)
-        }
+                _: ComponentContext,
+                firstVisibleIndex: Int,
+                lastVisibleIndex: Int,
+                totalCount: Int,
+                firstFullyVisibleIndex: Int,
+                lastFullyVisibleIndex: Int ->
+              firstVisibleIndexValue.set(firstVisibleIndex)
+              lastVisibleIndexValue.set(lastVisibleIndex)
+              totalCountValue.set(totalCount)
+              firstFullyVisibleIndexValue.set(firstFullyVisibleIndex)
+              lastFullyVisibleIndexValue.set(lastFullyVisibleIndex)
+            }
         return LazyList(
             handle = handle,
             onViewportChanged = onViewportChanged,

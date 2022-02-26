@@ -196,14 +196,18 @@ object CollectionRecyclerSpec {
     internalRecyclerEventsController.set(recyclerEventsController)
     val viewPortChanged =
         ViewportChanged {
-        firstVisibleIndex,
-        lastVisibleIndex,
-        firstFullyVisibleIndex,
-        lastFullyVisibleIndex,
-        state ->
-      sectionTreeInstance.viewPortChanged(
-          firstVisibleIndex, lastVisibleIndex, firstFullyVisibleIndex, lastFullyVisibleIndex, state)
-    }
+            firstVisibleIndex,
+            lastVisibleIndex,
+            firstFullyVisibleIndex,
+            lastFullyVisibleIndex,
+            state ->
+          sectionTreeInstance.viewPortChanged(
+              firstVisibleIndex,
+              lastVisibleIndex,
+              firstFullyVisibleIndex,
+              lastFullyVisibleIndex,
+              state)
+        }
     targetBinder.setViewportChangedListener(viewPortChanged)
     targetBinder.setCanMeasure(canMeasureRecycler)
   }
