@@ -915,6 +915,10 @@ class MountState implements MountDelegateTarget {
       throw new RuntimeException("Trying to update a MountItem with a null Component.");
     }
 
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("UpdateItem: " + node.getRenderUnit().getDescription());
+    }
+
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdate =
         shouldUpdateMountItem(
@@ -978,6 +982,7 @@ class MountState implements MountDelegateTarget {
     }
 
     if (isTracing) {
+      RenderCoreSystrace.endSection();
       RenderCoreSystrace.endSection();
     }
 
