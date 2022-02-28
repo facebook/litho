@@ -88,8 +88,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
-  protected Class getDescription() {
-    return output.getComponent().getClass();
+  public String getDescription() {
+    return output.getComponent().getSimpleName();
   }
 
   @Override

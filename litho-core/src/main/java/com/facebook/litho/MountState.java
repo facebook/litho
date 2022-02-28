@@ -347,10 +347,6 @@ class MountState implements MountDelegateTarget {
         final RenderTreeNode node = layoutState.getMountableOutputAt(i);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final Component component = layoutOutput.getComponent();
-        if (isTracing) {
-          RenderCoreSystrace.beginSection("MountItem: " + component.getSimpleName());
-        }
-
         final MountItem currentMountItem = getItemAt(i);
         final boolean isMounted = currentMountItem != null;
         final boolean isRoot = currentMountItem != null && currentMountItem == rootMountItem;
@@ -394,10 +390,6 @@ class MountState implements MountDelegateTarget {
               && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
             mountItemIncrementally(currentMountItem, processVisibilityOutputs);
           }
-        }
-
-        if (isTracing) {
-          RenderCoreSystrace.endSection();
         }
       }
 
@@ -1253,8 +1245,8 @@ class MountState implements MountDelegateTarget {
     final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     if (isTracing) {
-      RenderCoreSystrace.beginSection("mountRenderTreeNode");
-      RenderCoreSystrace.beginSection("MountState.beforeInitialMount");
+      RenderCoreSystrace.beginSection("MountItem: " + node.getRenderUnit().getDescription());
+      RenderCoreSystrace.beginSection("MountItem:before " + node.getRenderUnit().getDescription());
     }
 
     final long startTime = System.nanoTime();
@@ -1288,6 +1280,11 @@ class MountState implements MountDelegateTarget {
       content = MountItemsPool.acquireMountContent(mContext.getAndroidContext(), component);
     }
 
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountItem:mount " + node.getRenderUnit().getDescription());
+    }
+
     final ComponentContext context = getContextForComponent(node);
     final LithoLayoutData layoutData = (LithoLayoutData) node.getLayoutData();
     component.mount(context, content, (InterStagePropsContainer) layoutData.mLayoutData);
@@ -1298,15 +1295,11 @@ class MountState implements MountDelegateTarget {
       registerHost(node.getRenderUnit().getId(), componentHost);
     }
 
-    if (isTracing) {
-      RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.mountContent");
-    }
     // 4. Mount the content into the selected host.
     final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.initialBind");
+      RenderCoreSystrace.beginSection("MountItem:bind " + node.getRenderUnit().getDescription());
     }
 
     // 5. Notify the component that mounting has completed
@@ -1314,7 +1307,8 @@ class MountState implements MountDelegateTarget {
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.applyInitialBounds");
+      RenderCoreSystrace.beginSection(
+          "MountItem:applyBounds " + node.getRenderUnit().getDescription());
     }
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
@@ -1325,7 +1319,7 @@ class MountState implements MountDelegateTarget {
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.afterInitialMount");
+      RenderCoreSystrace.beginSection("MountItem:after " + node.getRenderUnit().getDescription());
     }
 
     // 6. Update the mount stats

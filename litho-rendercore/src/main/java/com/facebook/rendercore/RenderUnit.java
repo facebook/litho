@@ -119,8 +119,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableCon
     return null;
   }
 
-  protected Class getDescription() {
-    return getClass();
+  public String getDescription() {
+    // This API is primarily used for tracing, and the section names have a char limit of 127.
+    // If the class name exceeds that it will be replace by the simple name.
+    // In a release build the class name will be minified, so it is unlikely to hit the limit.
+    final String name = getClass().getName();
+    return name.length() > 80 ? getClass().getSimpleName() : "<cls>" + name + "</cls>";
   }
 
   @Override

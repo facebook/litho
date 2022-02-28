@@ -221,10 +221,7 @@ public class MountState implements MountDelegateTarget {
           unmountItemRecursively(renderTreeNode);
         }
       } else if (!isMounted) {
-        RenderCoreSystrace.beginSection(
-            "MountItem: ", renderTreeNode.getRenderUnit().getDescription());
         mountRenderUnit(renderTreeNode, mountLoopLogBuilder);
-        RenderCoreSystrace.endSection();
       } else {
         updateMountItemIfNeeded(mMountDelegate, mContext, renderTreeNode, currentMountItem);
       }
@@ -646,8 +643,10 @@ public class MountState implements MountDelegateTarget {
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("mountRenderTreeNode");
-      RenderCoreSystrace.beginSection("MountState.beforeInitialMount");
+      RenderCoreSystrace.beginSection(
+          "MountItem: " + renderTreeNode.getRenderUnit().getDescription());
+      RenderCoreSystrace.beginSection(
+          "MountItem:before " + renderTreeNode.getRenderUnit().getDescription());
     }
 
     // 1. Resolve the correct host to mount our content to.
@@ -676,7 +675,8 @@ public class MountState implements MountDelegateTarget {
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.mountContent");
+      RenderCoreSystrace.beginSection(
+          "MountItem:mount " + renderTreeNode.getRenderUnit().getDescription());
     }
     mountRenderUnitToContent(mMountDelegate, mContext, renderTreeNode, renderUnit, content);
 
@@ -684,7 +684,8 @@ public class MountState implements MountDelegateTarget {
     final MountItem item = mountContentInHost(content, host, renderTreeNode);
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.initialBind");
+      RenderCoreSystrace.beginSection(
+          "MountItem:bind " + renderTreeNode.getRenderUnit().getDescription());
     }
 
     // 5. Call attach binding functions
@@ -692,7 +693,8 @@ public class MountState implements MountDelegateTarget {
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.applyInitialBounds");
+      RenderCoreSystrace.beginSection(
+          "MountItem:applyBounds " + renderTreeNode.getRenderUnit().getDescription());
     }
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
@@ -701,7 +703,8 @@ public class MountState implements MountDelegateTarget {
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
-      RenderCoreSystrace.beginSection("MountState.afterInitialMount");
+      RenderCoreSystrace.beginSection(
+          "MountItem:after " + renderTreeNode.getRenderUnit().getDescription());
     }
     if (mMountDelegate != null) {
       mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
@@ -926,7 +929,7 @@ public class MountState implements MountDelegateTarget {
     currentRenderUnit.onStartUpdateRenderUnit();
 
     if (currentRenderUnit != renderUnit) {
-      RenderCoreSystrace.beginSection("Update Item: ", renderUnit.getDescription());
+      RenderCoreSystrace.beginSection("Update Item: " + renderUnit.getDescription());
 
       renderUnit.updateExtensions(
           context,

@@ -71,7 +71,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
-  protected Class getDescription() {
-    return mMountable.getClass();
+  public String getDescription() {
+    // TODO: have a similar API for Mountable.
+    return output.getComponent().getSimpleName();
   }
 }
