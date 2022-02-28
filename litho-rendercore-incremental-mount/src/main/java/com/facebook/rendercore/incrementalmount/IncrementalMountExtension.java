@@ -159,17 +159,6 @@ public class IncrementalMountExtension
       return;
     }
 
-    if (IncrementalMountExtensionConfigs.shouldSkipBoundsInNegativeCoordinateSpace
-        && ((localVisibleRect.top < 0 && localVisibleRect.bottom <= 0)
-            || (localVisibleRect.left < 0 && localVisibleRect.right < 0))) {
-      if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
-        Log.d(DEBUG_TAG, "Skipping: Visible area is in negative coordinate space");
-      }
-      notifyVisibleBoundsChangedOnNestedContent(extensionState);
-      RenderCoreSystrace.endSection();
-      return;
-    }
-
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (state.mPreviousLocalVisibleRect.isEmpty()
         || localVisibleRect.isEmpty()
