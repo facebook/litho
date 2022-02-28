@@ -17,7 +17,6 @@
 package com.facebook.litho.widget.collection
 
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.CommonProps
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
@@ -264,11 +263,6 @@ private fun componentsEquivalent(first: Component?, second: Component?): Boolean
   return first?.isEquivalentTo(second) == true
 }
 
-private fun commonPropsEquivalent(first: CommonProps?, second: CommonProps?): Boolean {
-  if (first == null && second == null) return true
-  return first?.isEquivalentTo(second) == true
-}
-
 private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionChild>): Boolean =
     isChildEquivalent(event.previousItem, event.nextItem)
 
@@ -277,6 +271,5 @@ fun isChildEquivalent(previous: CollectionChild, next: CollectionChild): Boolean
     return previous.deps?.contentDeepEquals(next.deps) == true
   }
 
-  return componentsEquivalent(previous.component, next.component) &&
-      commonPropsEquivalent(previous.component?.commonProps, next.component?.commonProps)
+  return componentsEquivalent(previous.component, next.component)
 }

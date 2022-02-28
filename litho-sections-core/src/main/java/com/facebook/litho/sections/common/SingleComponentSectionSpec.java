@@ -138,7 +138,7 @@ public class SingleComponentSectionSpec {
         || prevSpanSize != nextSpanSize
         || isPrevFullSpan != isNextFullSpan
         || !customAttributesEqual
-        || !prevComponent.isEquivalentTo(nextComponent)) {
+        || !isComponentEquivalent(prevComponent, nextComponent)) {
       changeSet.update(
           0,
           addCustomAttributes(
@@ -156,6 +156,13 @@ public class SingleComponentSectionSpec {
           prevData,
           nextData);
     }
+  }
+
+  private static boolean isComponentEquivalent(Component prevComponent, Component nextComponent) {
+    if (ComponentsConfiguration.shouldCompareCommonPropsInSingleComponentSection) {
+      return prevComponent.isEquivalentTo(nextComponent);
+    }
+    return prevComponent.isEquivalentProps(nextComponent);
   }
 
   private static ComponentRenderInfo.Builder addCustomAttributes(

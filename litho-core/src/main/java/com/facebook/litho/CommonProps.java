@@ -635,7 +635,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   }
 
   @Override
-  public boolean isEquivalentTo(CommonProps o) {
+  public boolean isEquivalentTo(@Nullable CommonProps o) {
     if (this == o) {
       return true;
     }

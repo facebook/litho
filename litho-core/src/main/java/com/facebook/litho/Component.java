@@ -797,7 +797,7 @@ public abstract class Component
     }
 
     return previous == null
-        || !previous.isEquivalentTo(next)
+        || !previous.isEquivalentProps(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 
@@ -941,7 +941,7 @@ public abstract class Component
    * @param other the component to compare to
    * @return true if the components have equivalent props
    */
-  protected boolean isEquivalentProps(@Nullable Component other) {
+  public boolean isEquivalentProps(@Nullable Component other) {
     if (this == other) {
       return true;
     }
@@ -952,6 +952,15 @@ public abstract class Component
       return true;
     }
     return ComponentUtils.hasEquivalentFields(this, other);
+  }
+
+  protected final boolean isEquivalentCommonProps(@Nullable Component other) {
+    if (other == null) {
+      return false;
+    }
+
+    return (mCommonProps == null && other.mCommonProps == null)
+        || (mCommonProps != null && mCommonProps.isEquivalentTo(other.mCommonProps));
   }
 
   /**
@@ -966,7 +975,7 @@ public abstract class Component
    */
   @Override
   public final boolean isEquivalentTo(@Nullable Component other) {
-    return isEquivalentProps(other);
+    return isEquivalentProps(other) && isEquivalentCommonProps(other);
   }
 
   public Component makeShallowCopy() {

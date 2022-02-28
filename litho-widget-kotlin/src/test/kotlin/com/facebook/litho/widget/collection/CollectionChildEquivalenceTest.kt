@@ -17,12 +17,12 @@
 package com.facebook.litho.widget.collection
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.Component
+import com.facebook.litho.ClickEvent
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.Style
 import com.facebook.litho.testing.LithoViewRule
-import com.facebook.litho.widget.EmptyComponent
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import com.facebook.litho.view.onClick
+import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -61,46 +61,36 @@ class CollectionChildEquivalenceTest {
   }
 
   @Test
-  fun `test children with equivalent components are equivalent`() {
-    val nextComponent: Component = mock {}
-    val next = CollectionChild("", nextComponent)
+  fun `test isChildEquivalent checks props and common props`() {
+    with(ComponentScope(lithoViewRule.context)) {
+      assertThat(
+              isChildEquivalent(
+                  CollectionChild("", Text("Test")),
+                  CollectionChild("", Text("Test")),
+              ))
+          .isTrue
 
-    val previousComponent: Component = mock { on { isEquivalentTo(any()) } doReturn true }
-    val previous = CollectionChild("", previousComponent)
+      assertThat(
+              isChildEquivalent(
+                  CollectionChild("", Text("Test")),
+                  CollectionChild("", Text("Production")),
+              ))
+          .isFalse
 
-    assertThat(isChildEquivalent(previous, next)).isTrue
-  }
+      val onClick = { _: ClickEvent -> }
+      assertThat(
+              isChildEquivalent(
+                  CollectionChild("", Text("Test", style = Style.onClick(onClick))),
+                  CollectionChild("", Text("Test", style = Style.onClick(onClick))),
+              ))
+          .isTrue
 
-  @Test
-  fun `test children with nonequivalent components are not equivalent`() {
-    val nextComponent: Component = mock {}
-    val next = CollectionChild("", nextComponent)
-
-    val previousComponent: Component = mock { on { isEquivalentTo(any()) } doReturn false }
-    val previous = CollectionChild("", previousComponent)
-
-    assertThat(isChildEquivalent(previous, next)).isFalse
-  }
-
-  @Test
-  fun `test children with equivalent commonProps are equivalent`() {
-    val previousComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
-    val previous = CollectionChild("", previousComponent)
-
-    val nextComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
-    val next = CollectionChild("", nextComponent)
-
-    assertThat(isChildEquivalent(previous, next)).isTrue
-  }
-
-  @Test
-  fun `test children with nonequivalent commonProps are not equivalent`() {
-    val previousComponent = EmptyComponent.create(lithoViewRule.context).alpha(.5f).build()
-    val previous = CollectionChild("", previousComponent)
-
-    val nextComponent = EmptyComponent.create(lithoViewRule.context).alpha(1f).build()
-    val next = CollectionChild("", nextComponent)
-
-    assertThat(isChildEquivalent(previous, next)).isFalse
+      assertThat(
+              isChildEquivalent(
+                  CollectionChild("", Text("", style = Style.onClick {})),
+                  CollectionChild("", Text("", style = Style.onClick {})),
+              ))
+          .isFalse
+    }
   }
 }
