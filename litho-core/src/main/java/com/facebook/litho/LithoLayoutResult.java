@@ -483,9 +483,16 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
       return YogaMeasureOutput.make(size.width, size.height);
 
+    } catch (Exception e) {
+      size.width = 0;
+      size.height = 0;
+      ComponentUtils.handle(mNode.getTailComponentContext(), e);
+
+      // If the exception is handled then return 0 size to continue layout.
+      return YogaMeasureOutput.make(0, 0);
     } finally {
 
-      // Record the last measure width and height spec
+      // Record the last measured width, and height spec
       setLastMeasuredWidth(size.width);
       setLastMeasuredHeight(size.height);
       setLastWidthSpec(widthSpec);
@@ -534,10 +541,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
               (InterStagePropsContainer) getLayoutData());
         }
 
-      } catch (Exception e) {
-        ComponentUtils.handle(componentScopedContext, e);
-        size.width = 0;
-        size.height = 0;
       } finally {
         if (isTracing) {
           ComponentsSystrace.endSection();
