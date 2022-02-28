@@ -159,7 +159,7 @@ public class SingleComponentSectionSpec {
   }
 
   private static boolean isComponentEquivalent(Component prevComponent, Component nextComponent) {
-    if (ComponentsConfiguration.shouldCompareCommonPropsInSingleComponentSection) {
+    if (ComponentsConfiguration.shouldCompareRootCommonPropsInSingleComponentSection) {
       return prevComponent.isEquivalentTo(nextComponent);
     }
     return prevComponent.isEquivalentProps(nextComponent);

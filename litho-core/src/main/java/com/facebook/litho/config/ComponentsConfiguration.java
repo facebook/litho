@@ -264,7 +264,9 @@ public class ComponentsConfiguration {
 
   public static boolean isBuildAndLayoutSplitEnabled = false;
 
-  public static boolean shouldCompareCommonPropsInSingleComponentSection = true;
+  public static boolean shouldCompareCommonPropsInIsEquivalentTo = true;
+
+  public static boolean shouldCompareRootCommonPropsInSingleComponentSection = true;
 
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 

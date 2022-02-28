@@ -17,11 +17,15 @@
 package com.facebook.litho
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.EmptyComponent
+import java.lang.Exception
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,6 +35,17 @@ import org.junit.runner.RunWith
 class KComponentEquivalenceWithCommonPropsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
+
+  @Before
+  @Throws(Exception::class)
+  fun setup() {
+    TempComponentsConfigurations.setShouldCompareCommonPropsInIsEquivalentTo(true)
+  }
+
+  @After
+  fun restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldCompareCommonPropsInIsEquivalentTo()
+  }
 
   @Test
   fun kcomponentWithCommonProps_isEquivalentTo_checksAllFields() {

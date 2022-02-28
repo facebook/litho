@@ -61,6 +61,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.MountItemsPool;
@@ -975,7 +976,11 @@ public abstract class Component
    */
   @Override
   public final boolean isEquivalentTo(@Nullable Component other) {
-    return isEquivalentProps(other) && isEquivalentCommonProps(other);
+    if (ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo
+        && !isEquivalentCommonProps(other)) {
+      return false;
+    }
+    return isEquivalentProps(other);
   }
 
   public Component makeShallowCopy() {

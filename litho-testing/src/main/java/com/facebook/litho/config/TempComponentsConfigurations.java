@@ -32,6 +32,9 @@ public class TempComponentsConfigurations {
   private static final boolean originalEnsureParentMountedInRenderCore =
       ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
 
+  private static final boolean shouldCompareCommonPropsInIsEquivalentTo =
+      ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo;
+
   public static void setShouldAddHostViewForRootComponent(boolean value) {
     ComponentsConfiguration.shouldDisableBgFgOutputs = value;
     ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
@@ -58,5 +61,16 @@ public class TempComponentsConfigurations {
   public static void restoreEnsureParentMountedInRenderCoreMountState() {
     ComponentsConfiguration.ensureParentMountedInRenderCoreMountState =
         originalEnsureParentMountedInRenderCore;
+  }
+
+  public static void setShouldCompareCommonPropsInIsEquivalentTo(
+      boolean shouldCompareCommonPropsInIsEquivalentTo) {
+    ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo =
+        shouldCompareCommonPropsInIsEquivalentTo;
+  }
+
+  public static void restoreShouldCompareCommonPropsInIsEquivalentTo() {
+    ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo =
+        shouldCompareCommonPropsInIsEquivalentTo;
   }
 }
