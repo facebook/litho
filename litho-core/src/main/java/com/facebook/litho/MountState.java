@@ -269,6 +269,13 @@ class MountState implements MountDelegateTarget {
       throw new IllegalStateException("Trying to mount a null layoutState");
     }
 
+    final boolean shouldIncrementallyMount =
+        isIncrementalMountEnabled
+            && localVisibleRect != null
+            && !mPreviousLocalVisibleRect.isEmpty()
+            && localVisibleRect.left == mPreviousLocalVisibleRect.left
+            && localVisibleRect.right == mPreviousLocalVisibleRect.right;
+
     if (mVisibilityExtension != null && mIsDirty) {
       mVisibilityExtension.beforeMount(mVisibilityExtensionState, layoutState, localVisibleRect);
     }
@@ -290,18 +297,23 @@ class MountState implements MountDelegateTarget {
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      String sectionName =
-          mIsDirty
-              ? (isIncrementalMountEnabled ? "incrementalMountDirty" : "mountDirty")
-              : (isIncrementalMountEnabled ? "incrementalMount" : "mount");
-      ComponentsSystrace.beginSectionWithArgs(sectionName)
+
+      if (mIsDirty && !shouldIncrementallyMount) {
+        // Equivalent to RCMS MountState.mount
+        RenderCoreSystrace.beginSection("MountState.mount");
+      } else {
+        // Trace special to LMS
+        RenderCoreSystrace.beginSection(
+            "LMS."
+                + (shouldIncrementallyMount ? "incrementalMount" : "mount")
+                + (mIsDirty ? "Dirty" : ""));
+      }
+
+      ComponentsSystrace.beginSectionWithArgs("MountState.mount: " + componentTree.getSimpleName())
           .arg("treeId", layoutState.getComponentTreeId())
           .arg("component", componentTree.getSimpleName())
           .arg("logTag", componentTree.getContext().getLogTag())
           .flush();
-      // We also would like to trace this section attributed with component name
-      // for component share analysis.
-      RenderCoreSystrace.beginSection(sectionName + "_" + componentTree.getSimpleName());
     }
 
     final ComponentsLogger logger = componentTree.getContext().getLogger();
@@ -337,10 +349,11 @@ class MountState implements MountDelegateTarget {
       mMountStats.enableLogging();
     }
 
-    if (!isIncrementalMountEnabled
-        || !performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs)) {
-      final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
+    if (shouldIncrementallyMount) {
+      performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs);
+    } else {
 
+      final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
       final Rect absoluteBounds = new Rect();
 
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
@@ -2696,16 +2709,8 @@ class MountState implements MountDelegateTarget {
    *     that needs mounting/unmounting in this mount step. If false then a full mount step should
    *     take place.
    */
-  private boolean performIncrementalMount(
+  private void performIncrementalMount(
       LayoutState layoutState, Rect localVisibleRect, boolean processVisibilityOutputs) {
-    if (mPreviousLocalVisibleRect.isEmpty()) {
-      return false;
-    }
-
-    if (localVisibleRect.left != mPreviousLocalVisibleRect.left
-        || localVisibleRect.right != mPreviousLocalVisibleRect.right) {
-      return false;
-    }
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
 
@@ -2807,8 +2812,6 @@ class MountState implements MountDelegateTarget {
     if (isTracing) {
       RenderCoreSystrace.endSection();
     }
-
-    return true;
   }
   /**
    * Collect transitions from layout time, mount time and from state updates.
