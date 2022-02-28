@@ -60,7 +60,6 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
@@ -84,7 +83,7 @@ import java.util.Set;
 /** {@link LithoNode} is the {@link Node} implementation of Litho. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class LithoNode implements Node<LithoRenderContext> {
+public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
@@ -1392,10 +1391,6 @@ public class LithoNode implements Node<LithoRenderContext> {
         applyOverridesRecursive(c, node.getChildAt(i));
       }
     }
-  }
-
-  public Copyable makeCopy() {
-    return clone();
   }
 
   @IntDef({ReconciliationMode.REUSE, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})

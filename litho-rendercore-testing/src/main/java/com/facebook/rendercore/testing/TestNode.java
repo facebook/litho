@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.testing;
 
-import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
@@ -83,16 +82,5 @@ public class TestNode implements Node {
 
   public long getId() {
     return mId;
-  }
-
-  @Override
-  public Copyable makeCopy() {
-    final TestNode node;
-    try {
-      node = (TestNode) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException("This should not be possible", e);
-    }
-    return node;
   }
 }

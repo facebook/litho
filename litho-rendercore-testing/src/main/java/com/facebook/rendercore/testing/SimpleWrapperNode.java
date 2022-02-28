@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.testing;
 
-import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
 
@@ -31,10 +30,5 @@ public class SimpleWrapperNode implements Node {
   @Override
   public LayoutResult calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
     return mLayoutResult;
-  }
-
-  @Override
-  public Copyable makeCopy() {
-    return new SimpleWrapperNode(mLayoutResult);
   }
 }

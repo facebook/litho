@@ -25,7 +25,7 @@ import com.facebook.rendercore.RenderState.LayoutContext;
  * Represents a single node in a RenderCore Tree. A Node has children, base layout information, and
  * whether it needs to be rendered.
  */
-public interface Node<RenderContext> extends Copyable {
+public interface Node<RenderContext> {
 
   /**
    * Implementations of Node are responsible to calculate a layout based on the width/height
