@@ -66,6 +66,7 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.PoolableContentProvider;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -294,9 +295,9 @@ public abstract class Component
     if (c != null) {
       c.enterNoStateUpdatesMethod("bind");
     }
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
+      RenderCoreSystrace.beginSection("onBind: " + getSimpleName());
     }
     try {
       onBind(c, mountedContent, interStagePropsContainer);
@@ -311,7 +312,7 @@ public abstract class Component
         c.exitNoStateUpdatesMethod();
       }
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
   }
@@ -345,9 +346,9 @@ public abstract class Component
     if (c != null) {
       c.enterNoStateUpdatesMethod("mount");
     }
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onMount:" + ((Component) this).getSimpleName());
+      RenderCoreSystrace.beginSection("onMount: " + getSimpleName());
     }
     try {
       onMount(c, convertContent, interStagePropsContainer);
@@ -362,7 +363,7 @@ public abstract class Component
         c.exitNoStateUpdatesMethod();
       }
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
   }
@@ -371,10 +372,16 @@ public abstract class Component
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("onUnbind: " + getSimpleName());
+    }
     try {
       onUnbind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       ComponentUtils.handle(c, e);
+    } finally {
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -382,10 +389,16 @@ public abstract class Component
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("onUnmount: " + getSimpleName());
+    }
     try {
       onUnmount(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       ComponentUtils.handle(c, e);
+    } finally {
+      RenderCoreSystrace.endSection();
     }
   }
 
