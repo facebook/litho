@@ -23,9 +23,8 @@ import android.text.TextUtils;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextDirectionHeuristicCompat;
-import com.facebook.rendercore.Copyable;
 
-public class TextStyle implements Copyable {
+public class TextStyle implements Cloneable {
   static final int UNSET = -1;
   @Nullable TextUtils.TruncateAt ellipsize;
   @Nullable CharSequence customEllipsisText;
@@ -78,7 +77,6 @@ public class TextStyle implements Copyable {
     this.manualCapSpacing = manualCapSpacing;
   }
 
-  @Override
   public TextStyle makeCopy() {
     try {
       return (TextStyle) super.clone();
