@@ -58,10 +58,13 @@ public class IncrementalMountExtension
       final IncrementalMountExtensionInput input,
       final Rect localVisibleRect) {
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "beforeMount");
     }
-    RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMount");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMount");
+    }
 
     final IncrementalMountExtensionState state = extensionState.getState();
 
@@ -71,21 +74,28 @@ public class IncrementalMountExtension
 
     setVisibleRect(state, localVisibleRect);
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
   public void afterMount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "afterMount");
     }
-    RenderCoreSystrace.beginSection("IncrementalMountExtension.afterMount");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.afterMount");
+    }
 
     final IncrementalMountExtensionState state = extensionState.getState();
 
     setupPreviousMountableOutputData(state, state.mPreviousLocalVisibleRect);
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
@@ -93,10 +103,13 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final RenderTreeNode renderTreeNode,
       final int index) {
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "beforeMountItem [id=" + renderTreeNode.getRenderUnit().getId() + "]");
     }
-    RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMountItem");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMountItem");
+    }
 
     final long id = renderTreeNode.getRenderUnit().getId();
     final IncrementalMountExtensionState state = extensionState.getState();
@@ -107,7 +120,9 @@ public class IncrementalMountExtension
 
     maybeAcquireReference(extensionState, state.mPreviousLocalVisibleRect, output, false);
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private static void notifyVisibleBoundsChangedOnNestedContent(
@@ -134,10 +149,13 @@ public class IncrementalMountExtension
       final Rect localVisibleRect) {
     assertMainThread();
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "onVisibleBoundsChanged [visibleBounds=" + localVisibleRect + "]");
     }
-    RenderCoreSystrace.beginSection("IncrementalMountExtension.onVisibleBoundsChanged");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.onVisibleBoundsChanged");
+    }
 
     final IncrementalMountExtensionState state = extensionState.getState();
     if (state.mInput == null) {
@@ -146,7 +164,9 @@ public class IncrementalMountExtension
       if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
         Log.d(DEBUG_TAG, "Skipping: Input is empty.");
       }
-      RenderCoreSystrace.endSection();
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
       return;
     }
 
@@ -155,7 +175,9 @@ public class IncrementalMountExtension
         Log.d(DEBUG_TAG, "Skipping: Visible area is 0");
       }
       notifyVisibleBoundsChangedOnNestedContent(extensionState);
-      RenderCoreSystrace.endSection();
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
       return;
     }
 
@@ -171,7 +193,9 @@ public class IncrementalMountExtension
 
     setVisibleRect(state, localVisibleRect);
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
@@ -259,12 +283,17 @@ public class IncrementalMountExtension
       final long id,
       final Object content) {
     assertMainThread();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "RecursivelyNotify [RenderUnit=" + id + "]");
     }
-    RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
+    }
     extensionState.getMountDelegate().notifyVisibleBoundsChangedForItem(content);
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private static void releaseAcquiredReferencesForRemovedItems(
@@ -328,7 +357,10 @@ public class IncrementalMountExtension
   private static void performIncrementalMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {
-    RenderCoreSystrace.beginSection("performIncrementalMount");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("performIncrementalMount");
+    }
 
     final IncrementalMountExtensionState state = extensionState.getState();
     final List<IncrementalMountOutput> byTopBounds = state.mInput.getOutputsOrderedByTopBounds();
@@ -444,7 +476,9 @@ public class IncrementalMountExtension
 
     state.mComponentIdsMountedInThisFrame.clear();
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private static void setupPreviousMountableOutputData(
