@@ -174,7 +174,6 @@ public class IncrementalMountExtension
       if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
         Log.d(DEBUG_TAG, "Skipping: Visible area is 0");
       }
-      notifyVisibleBoundsChangedOnNestedContent(extensionState);
       if (isTracing) {
         RenderCoreSystrace.endSection();
       }
