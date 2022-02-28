@@ -16,14 +16,25 @@
 
 package com.facebook.litho.testing
 
-import com.facebook.litho.Component
-import com.facebook.litho.widget.collection.LazyCollection
+import androidx.recyclerview.widget.RecyclerView
+import com.facebook.litho.sections.widget.SectionBinderTarget
+import com.facebook.litho.widget.Binder
+import com.facebook.litho.widget.Recycler
+import com.facebook.litho.widget.RecyclerBinder
 
 /**
  * A wrapper class that exposes methods specific to testing collection components.
  *
- * @property ListComponent The [LazyCollection] component being tested.
+ * @property recyclerBinder The [RecyclerBinder] from the list being tested.
  */
-class TestListComponent(
-    val listComponent: Component,
-) {}
+class TestListComponent {
+
+  private var recyclerBinder: RecyclerBinder
+
+  constructor(recycler: Recycler) {
+    val binder =
+        Whitebox.getInternalState<Binder<RecyclerView>>(recycler, "binder") as SectionBinderTarget
+
+    this.recyclerBinder = Whitebox.getInternalState(binder, "mRecyclerBinder")
+  }
+}

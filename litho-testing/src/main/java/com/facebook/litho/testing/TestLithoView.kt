@@ -34,6 +34,7 @@ import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
+import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.collection.LazyCollection
 import com.google.common.base.Predicate
 import kotlin.reflect.KClass
@@ -353,9 +354,9 @@ internal constructor(
 
   /** Returns the first [LazyCollection] from the ComponentTree or null, if one isn't not found */
   fun findCollectionComponent(): TestListComponent? {
-    val lazyCollection = findComponent(LazyCollection::class)
+    val recycler = findComponent(Recycler::class.java) as Recycler ?: return null
 
-    return if (lazyCollection != null) TestListComponent(lazyCollection as LazyCollection) else null
+    return TestListComponent(recycler)
   }
 
   /**
