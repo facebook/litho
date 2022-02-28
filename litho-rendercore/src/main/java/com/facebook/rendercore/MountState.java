@@ -112,17 +112,25 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("MountState.mount");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("MountState.mount");
+      RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
+    }
 
     mIsMounting = true;
-
-    RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
     RenderCoreExtension.beforeMount(mRootHost, mMountDelegate, mRenderTree.getExtensionResults());
-    RenderCoreSystrace.endSection();
 
-    RenderCoreSystrace.beginSection("MountState.prepareMount");
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("MountState.prepareMount");
+    }
+
     prepareMount(previousRenderTree);
-    RenderCoreSystrace.endSection();
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
 
     // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is found.
     // We only want to collect logs when we're not ensuring the parent is mounted. When false,
@@ -229,11 +237,17 @@ public class MountState implements MountDelegateTarget {
 
     mNeedsRemount = false;
     mIsMounting = false;
-    RenderCoreSystrace.endSection();
 
-    RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+      RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
+    }
+
     RenderCoreExtension.afterMount(mMountDelegate);
-    RenderCoreSystrace.endSection();
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   /**
@@ -411,7 +425,11 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("MountState.bind");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("MountState.bind");
+    }
 
     for (int i = 0, size = mRenderTree.getMountableOutputCount(); i < size; i++) {
       final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
@@ -432,7 +450,9 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   /** Unbinds all the MountItems currently mounted on this MountState. */
@@ -555,7 +575,11 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("unmountOrMoveOldItems");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("unmountOrMoveOldItems");
+    }
 
     // Traversing from the beginning since mRenderUnitIds unmounting won't remove entries there
     // but only from mIndexToMountedItemMap. If an host changes we're going to unmount it and
@@ -613,7 +637,9 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   // The content might be null because it's the LayoutSpec for the root host
@@ -914,7 +940,11 @@ public class MountState implements MountDelegateTarget {
       RenderTreeNode renderTreeNode,
       MountItem currentMountItem) {
 
-    RenderCoreSystrace.beginSection("updateMountItemIfNeeded");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("updateMountItemIfNeeded");
+    }
 
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final Object newLayoutData = renderTreeNode.getLayoutData();
@@ -929,7 +959,9 @@ public class MountState implements MountDelegateTarget {
     currentRenderUnit.onStartUpdateRenderUnit();
 
     if (currentRenderUnit != renderUnit) {
-      RenderCoreSystrace.beginSection("UpdateItem: " + renderUnit.getDescription());
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("UpdateItem: " + renderUnit.getDescription());
+      }
 
       renderUnit.updateExtensions(
           context,
@@ -959,11 +991,13 @@ public class MountState implements MountDelegateTarget {
 
     currentRenderUnit.onEndUpdateRenderUnit();
 
-    if (currentRenderUnit != renderUnit) {
-      RenderCoreSystrace.endSection(); // UPDATE
-    }
+    if (isTracing) {
+      if (currentRenderUnit != renderUnit) {
+        RenderCoreSystrace.endSection(); // UPDATE
+      }
 
-    RenderCoreSystrace.endSection();
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private static void assertParentContentType(
