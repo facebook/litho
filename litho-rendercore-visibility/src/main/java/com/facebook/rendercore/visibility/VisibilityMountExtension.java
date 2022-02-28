@@ -62,10 +62,13 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       Input input,
       @Nullable Rect localVisibleRect) {
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "beforeMount");
     }
-    RenderCoreSystrace.beginSection("VisibilityExtension.beforeMount");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("VisibilityExtension.beforeMount");
+    }
 
     final VisibilityMountExtensionState state = extensionState.getState();
 
@@ -75,16 +78,21 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mCurrentLocalVisibleRect = localVisibleRect;
     state.mInput = input;
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
   public void afterMount(ExtensionState<VisibilityMountExtensionState> extensionState) {
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "afterMount");
     }
-    RenderCoreSystrace.beginSection("VisibilityExtension.afterMount");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("VisibilityExtension.afterMount");
+    }
 
     final boolean processVisibilityOutputs = shouldProcessVisibilityOutputs(extensionState);
 
@@ -93,7 +101,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       processVisibilityOutputs(extensionState, state.mCurrentLocalVisibleRect, true);
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
@@ -101,19 +111,24 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect) {
     final boolean processVisibilityOutputs = shouldProcessVisibilityOutputs(extensionState);
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
           DEBUG_TAG,
           "onVisibleBoundsChanged [processVisibilityOutputs=" + processVisibilityOutputs + "]");
     }
-    RenderCoreSystrace.beginSection("VisibilityExtension.onVisibleBoundsChanged");
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("VisibilityExtension.onVisibleBoundsChanged");
+    }
 
     if (processVisibilityOutputs) {
       processVisibilityOutputs(extensionState, localVisibleRect, false);
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
@@ -161,17 +176,22 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       @Nullable Rect localVisibleRect,
       boolean isDirty) {
     final VisibilityMountExtensionState state = extensionState.getState();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     try {
 
       if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
         Log.d(DEBUG_TAG, "processVisibilityOutputs");
       }
-      RenderCoreSystrace.beginSection("VisibilityExtension.processVisibilityOutputs");
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("VisibilityExtension.processVisibilityOutputs");
+      }
 
       processVisibilityOutputsNonInc(extensionState, localVisibleRect, isDirty);
 
     } finally {
-      RenderCoreSystrace.endSection();
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
 
     if (localVisibleRect != null) {
@@ -207,6 +227,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       Log.d(DEBUG_TAG, "Visibility Outputs to process: " + size);
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+
     final Rect intersection = new Rect();
     for (int j = 0; j < size; j++) {
       final VisibilityOutput visibilityOutput = state.mVisibilityOutputs.get(j);
@@ -215,7 +237,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
         Log.d(DEBUG_TAG, "Processing Visibility for: " + componentName);
       }
-      RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
+      }
 
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
@@ -237,7 +261,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           && wasFullyVisible
           && VisibilityExtensionConfigs.skipVisChecksForFullyVisible) {
         // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
-        RenderCoreSystrace.endSection();
+        if (isTracing) {
+          RenderCoreSystrace.endSection();
+        }
 
         visibilityItem.setDoNotClearInThisPass(isDirty);
         continue;
@@ -352,7 +378,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         }
       }
 
-      RenderCoreSystrace.endSection();
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
 
     final MountDelegate mountDelegate = extensionState.getMountDelegate();
@@ -410,7 +438,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   @UiThread
   private static void clearVisibilityItemsNonincremental(
       final VisibilityMountExtensionState state) {
-    RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
+    }
 
     final List<String> toClear = new ArrayList<>();
 
@@ -455,7 +486,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       state.mVisibilityIdToItemMap.remove(key);
     }
 
-    RenderCoreSystrace.endSection();
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private static boolean shouldProcessVisibilityOutputs(
