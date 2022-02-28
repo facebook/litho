@@ -36,7 +36,7 @@ import java.util.Map;
  * <p>Immutability: RenderUnits should be immutable! Continuing to change them after they are built
  * and given to RenderCore (e.g. via RenderState) is not safe.
  */
-public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableContentProvider {
+public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvider {
 
   public enum RenderType {
     DRAWABLE,
@@ -125,28 +125,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable, PoolableCon
     // In a release build the class name will be minified, so it is unlikely to hit the limit.
     final String name = getClass().getName();
     return name.length() > 80 ? getClass().getSimpleName() : "<cls>" + name + "</cls>";
-  }
-
-  @Override
-  public RenderUnit makeCopy() {
-    try {
-      RenderUnit renderUnit = (RenderUnit) super.clone();
-      if (mMountUnmountExtensions != null) {
-        renderUnit.mMountUnmountExtensions = new ArrayList<>(mMountUnmountExtensions);
-        renderUnit.mMountUnmountBinderTypeToExtensionMap =
-            new HashMap<>(mMountUnmountBinderTypeToExtensionMap);
-      }
-
-      if (mAttachDetachExtensions != null) {
-        renderUnit.mAttachDetachExtensions = new ArrayList<>(mAttachDetachExtensions);
-        renderUnit.mAttachDetachBinderTypeToExtensionMap =
-            new HashMap<>(mAttachDetachBinderTypeToExtensionMap);
-      }
-
-      return renderUnit;
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**
