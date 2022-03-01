@@ -40,4 +40,30 @@ This page covers some of the main hooks and how they compare to their spec API e
 
 ### Side Effects in `@OnCreateInitialState`
 
-A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side effects like this should now be done with the [useEffect Hook](/kotlin/use-effect.mdx), which provides functionality to clean up and handle prop changes.
+A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side effects like this should now be done with the [useEffect Hook](/mainconcepts/use-effect.mdx), which provides functionality to clean up and handle prop changes.
+
+## [`useEffect`](/mainconcepts/use-effect.mdx)
+
+The `useEffect` hook gives the ability to safely perform side-effects from a component and corresponds to the Java Spec API's `@OnAttached`/`@OnDetached` lifecycle methods.
+
+```kotlin
+useEffect(username) {
+  println("I've been attached with prop $username!")
+  onCleanup { println("I've been detached with prop $username!") }
+}
+```
+
+In addition to the existing `@OnAttached`/`@OnDetached` functionality, it provides the ability to perform side-effects in response to changes in committed props or state. Both the effect lambda and the cleanup lambda are invoked on the main thread, meaning it's safe to perform UI-thread confined side effects.
+
+### Changes to Attach/Detach Contract
+
+In the Java Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the component was first attached to/detached from the tree. This could lead to bugs where, for example, your component subscribes to a data store using a userId prop, and then that prop changes.
+
+`useEffect` tries to solve this by taking a var-arg list of *dependencies*: any time any of these dependencies changes, the cleanup lambda (previously `@OnDetached`) will be called followed by the new effect lambda. If no dependencies are provided, the previous cleanup and new effect lambdas will be invoked again **every time a new layout is committed**.
+
+### Listening to Prop/State Changes
+
+An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached` is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever some prop changes:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
+```
