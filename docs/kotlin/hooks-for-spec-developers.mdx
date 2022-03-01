@@ -67,3 +67,14 @@ An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
 ```
+
+## [`useRef`](/mainconcepts/use-ref.mdx)
+
+The `useRef` hook allows a component to maintain a mutable reference that doesn't trigger a re-render when updated.
+
+It returns an instance of `Ref` which has a single mutable `value` property which should only be read/written on the UI thread. `useRef` can be used as a replacement for [lazy state](/docs/mainconcepts/coordinate-state-actions/state-overview#lazy-state-updates) from the Spec API, though it has more uses beyond that.
+
+### Example: Logging Seen State
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LogOnceComponent.kt start=start_useref_example end=end_useref_example
+```

@@ -38,6 +38,7 @@ module.exports = {
           'mainconcepts/hooks-intro',
           'mainconcepts/use-state',
           'mainconcepts/use-effect',
+          'mainconcepts/use-ref',
         ],
       },
       'mainconcepts/uicomposition/flexbox-yoga',
@@ -81,7 +82,6 @@ module.exports = {
         {
           'Hooks and State': [
             'kotlin/hooks-for-spec-developers',
-            'kotlin/use-ref',
             'kotlin/use-transition',
             'kotlin/use-error-boundary',
           ],
