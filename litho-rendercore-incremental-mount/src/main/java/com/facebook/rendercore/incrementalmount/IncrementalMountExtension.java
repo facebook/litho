@@ -113,6 +113,11 @@ public class IncrementalMountExtension
 
     final long id = renderTreeNode.getRenderUnit().getId();
     final IncrementalMountExtensionState state = extensionState.getState();
+
+    if (state.mInput == null) {
+      return;
+    }
+
     final IncrementalMountOutput output = state.mInput.getIncrementalMountOutputForId(id);
     if (output == null) {
       throw new IllegalArgumentException("Output with id=" + id + " not found.");
@@ -209,6 +214,10 @@ public class IncrementalMountExtension
     final IncrementalMountExtensionState state = extensionState.getState();
     final long id = renderUnit.getId();
 
+    if (state.mInput == null) {
+      return;
+    }
+
     if (!state.mInput.renderUnitWithIdHostsRenderTrees(id)
         || state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id)) {
       return;
@@ -230,7 +239,7 @@ public class IncrementalMountExtension
     }
 
     final IncrementalMountExtensionState state = extensionState.getState();
-    if (state.mInput.renderUnitWithIdHostsRenderTrees(id)) {
+    if (state.mInput != null && state.mInput.renderUnitWithIdHostsRenderTrees(id)) {
       state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(id);
       state.mMountedOutputIdsWithNestedContent.put(id, content);
     }
@@ -316,6 +325,11 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {
     final IncrementalMountExtensionState state = extensionState.getState();
+
+    if (state.mInput == null) {
+      return;
+    }
+
     final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
     for (IncrementalMountOutput output : outputs) {
       maybeAcquireReference(extensionState, localVisibleRect, output, true);
@@ -362,6 +376,11 @@ public class IncrementalMountExtension
     }
 
     final IncrementalMountExtensionState state = extensionState.getState();
+
+    if (state.mInput == null) {
+      return;
+    }
+
     final List<IncrementalMountOutput> byTopBounds = state.mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds =
         state.mInput.getOutputsOrderedByBottomBounds();
@@ -482,7 +501,7 @@ public class IncrementalMountExtension
 
   private static void setupPreviousMountableOutputData(
       final IncrementalMountExtensionState state, final Rect localVisibleRect) {
-    if (localVisibleRect.isEmpty()) {
+    if (localVisibleRect.isEmpty() || state.mInput == null) {
       return;
     }
 
@@ -558,7 +577,7 @@ public class IncrementalMountExtension
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
     private final HashMap<Long, Object> mMountedOutputIdsWithNestedContent = new HashMap<>(8);
 
-    private IncrementalMountExtensionInput mInput;
+    private @Nullable IncrementalMountExtensionInput mInput;
     private int mPreviousTopsIndex;
     private int mPreviousBottomsIndex;
   }
