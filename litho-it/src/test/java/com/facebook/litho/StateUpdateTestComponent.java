@@ -88,7 +88,7 @@ class StateUpdateTestComponent extends SpecGeneratedComponent {
 
   @Nullable
   protected TestStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestStateContainer) Component.getStateContainer(c, this);
+    return (TestStateContainer) getStateContainer(c);
   }
 
   static class TestStateContainer extends StateContainer {

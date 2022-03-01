@@ -130,7 +130,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   }
 
   private TestLayoutStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestLayoutStateContainer) Component.getStateContainer(c, this);
+    return (TestLayoutStateContainer) getStateContainer(c);
   }
 
   @Override
@@ -439,7 +439,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestLayout component) {
     TestLayoutStateContainer _stateContainer = new TestLayoutStateContainer();
-    transferState(Component.getStateContainer(c, component), _stateContainer);
+    transferState(getStateContainerImpl(c), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
     return _stateContainer;
   }

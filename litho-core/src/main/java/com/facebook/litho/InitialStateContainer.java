@@ -78,10 +78,10 @@ public class InitialStateContainer {
       final StateContainer stateContainer = mInitialStates.get(key);
       if (stateContainer == null) {
         component.createInitialState(scopedContext);
-        mInitialStates.put(key, Component.getStateContainer(scopedContext, component));
+        mInitialStates.put(key, scopedContext.getScopedComponentInfo().getStateContainer());
       } else {
         component.transferState(
-            stateContainer, Component.getStateContainer(scopedContext, component));
+            stateContainer, scopedContext.getScopedComponentInfo().getStateContainer());
       }
     }
   }

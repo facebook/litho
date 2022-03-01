@@ -768,11 +768,11 @@ public abstract class Component
             currentComponent,
             currentComponent == null || previousScopedContext == null
                 ? null
-                : currentComponent.getStateContainer(previousScopedContext),
+                : previousScopedContext.getScopedComponentInfo().getStateContainer(),
             nextComponent,
             nextComponent == null || nextScopedContext == null
                 ? null
-                : nextComponent.getStateContainer(nextScopedContext));
+                : nextScopedContext.getScopedComponentInfo().getStateContainer());
 
     if (!implementsShouldUpdate()) {
       return shouldUpdate
@@ -1301,21 +1301,7 @@ public abstract class Component
     return mId;
   }
 
-  protected static @Nullable StateContainer getStateContainer(
-      final ComponentContext scopedContext, Component component) {
-    return scopedContext.getScopedComponentInfo().getStateContainer();
-  }
-
-  final @Nullable StateContainer getStateContainer(final @Nullable ComponentContext scopedContext) {
-    if (scopedContext == null) {
-      throw new IllegalStateException(
-          "Cannot access a state container outside of a layout state calculation.");
-    }
-
-    if (!hasState()) {
-      return null;
-    }
-
+  protected @Nullable StateContainer getStateContainer(final ComponentContext scopedContext) {
     return scopedContext.getScopedComponentInfo().getStateContainer();
   }
 

@@ -272,15 +272,21 @@ public class ComponentBodyGenerator {
 
   static MethodSpec generateStateContainerImplGetter(
       SpecModel specModel, TypeName stateContainerImplClassName) {
-    return MethodSpec.methodBuilder(STATE_CONTAINER_IMPL_GETTER)
-        .addModifiers(Modifier.PRIVATE)
-        .addParameter(specModel.getContextClass(), "c")
-        .returns(stateContainerImplClassName)
-        .addStatement(
-            "return ($T) $T." + STATE_CONTAINER_GETTER + "(c, this)",
-            stateContainerImplClassName,
-            StateGenerator.getStateContainerGetterClassName(specModel))
-        .build();
+    MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(STATE_CONTAINER_IMPL_GETTER)
+            .addModifiers(Modifier.PRIVATE)
+            .addParameter(specModel.getContextClass(), "c")
+            .returns(stateContainerImplClassName);
+
+    if (specModel.isStateful()) {
+      builder.addStatement(
+          "return ($T) $T." + STATE_CONTAINER_GETTER + "(c, this)",
+          stateContainerImplClassName,
+          StateGenerator.getStateContainerGetterClassName(specModel));
+    } else {
+      builder.addStatement("return ($T) getStateContainer(c)", stateContainerImplClassName);
+    }
+    return builder.build();
   }
 
   static MethodSpec generateStateContainerCreator(ClassName stateContainerImplClassName) {

@@ -117,7 +117,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   private TestMountStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestMountStateContainer) Component.getStateContainer(c, this);
+    return (TestMountStateContainer) getStateContainer(c);
   }
 
   @Override
@@ -637,7 +637,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestMount component) {
     TestMountStateContainer _stateContainer = new TestMountStateContainer();
-    transferState(Component.getStateContainer(c, component), _stateContainer);
+    transferState(getStateContainerImpl(c), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
     return _stateContainer;
   }

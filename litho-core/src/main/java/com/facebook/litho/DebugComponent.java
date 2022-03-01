@@ -113,7 +113,7 @@ public final class DebugComponent {
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
       overrider.applyComponentOverrides(key, component);
-      overrider.applyStateOverrides(key, component.getStateContainer(context));
+      overrider.applyStateOverrides(key, context.getScopedComponentInfo().getStateContainer());
     }
   }
 
@@ -399,7 +399,7 @@ public final class DebugComponent {
 
   @Nullable
   public StateContainer getStateContainer() {
-    return getComponent().getStateContainer(getContext());
+    return getContext().getScopedComponentInfo().getStateContainer();
   }
 
   @Nullable

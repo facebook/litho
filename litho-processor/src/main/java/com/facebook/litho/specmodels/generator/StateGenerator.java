@@ -144,10 +144,7 @@ public class StateGenerator {
                 stateContainerClassName,
                 STATE_CONTAINER_NAME,
                 stateContainerClassName)
-            .addStatement(
-                "transferState($T.getStateContainer(c, component), $L)",
-                getStateContainerGetterClassName(specModel),
-                STATE_CONTAINER_NAME)
+            .addStatement("transferState(getStateContainerImpl(c), $L)", STATE_CONTAINER_NAME)
             .addStatement("c.applyLazyStateUpdatesForContainer($L)", STATE_CONTAINER_NAME)
             .addStatement("return $L", STATE_CONTAINER_NAME)
             .build();

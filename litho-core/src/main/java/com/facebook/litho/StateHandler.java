@@ -179,7 +179,7 @@ public class StateHandler {
 
     if (currentStateContainer != null) {
       final StateContainer newStateContainer =
-          Component.getStateContainer(scopedContext, component);
+          scopedContext.getScopedComponentInfo().getStateContainer();
       component.transferState(currentStateContainer, newStateContainer);
       return newStateContainer;
     } else {
@@ -191,7 +191,7 @@ public class StateHandler {
       } else {
         component.createInitialState(scopedContext);
       }
-      return Component.getStateContainer(scopedContext, component);
+      return scopedContext.getScopedComponentInfo().getStateContainer();
     }
   }
 
