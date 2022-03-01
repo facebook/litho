@@ -232,24 +232,6 @@ public class LayoutDiffingTest {
   }
 
   @Test
-  public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem_with_reuse() {
-
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
-    final Component component =
-        Column.create(c)
-            .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
-            .build();
-    mLegacyLithoViewRule.attachToWindow().setRoot(component).measure().layout();
-
-    final View view = mLegacyLithoViewRule.getLithoView().getChildAt(0);
-    assertThat(view).isNotNull();
-    assertThat(view).isInstanceOf(TextView.class);
-    assertThat(((TextView) view).getText()).isEqualTo("0");
-    view.callOnClick();
-    assertThat(((TextView) view).getText()).isEqualTo("1");
-  }
-
-  @Test
   public void onSetRootWithSameComponent_thenShouldNotRemeasureMountSpec() {
     final ComponentContext c = mLegacyLithoViewRule.getContext();
     final ArrayList<LifecycleStep> operations = new ArrayList<>();
