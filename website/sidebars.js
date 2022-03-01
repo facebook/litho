@@ -33,6 +33,12 @@ module.exports = {
     'Main Concepts': [
       'mainconcepts/components-basics',
       'mainconcepts/props',
+      {
+        'Hooks and State': [
+          'mainconcepts/hooks-intro',
+          'mainconcepts/use-state',
+        ],
+      },
       'mainconcepts/uicomposition/flexbox-yoga',
       {
         // TODO: remove/replace 'Coordinating State and Actions'
@@ -73,8 +79,7 @@ module.exports = {
         'kotlin/kotlin-api-basics',
         {
           'Hooks and State': [
-            'kotlin/hooks-intro',
-            'kotlin/use-state',
+            'kotlin/hooks-for-spec-developers',
             'kotlin/use-effect',
             'kotlin/use-ref',
             'kotlin/use-transition',

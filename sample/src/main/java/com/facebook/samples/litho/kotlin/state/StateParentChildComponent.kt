@@ -20,28 +20,16 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Style
-import com.facebook.litho.core.margin
-import com.facebook.litho.dp
-import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.TextAlignment
-import com.facebook.yoga.YogaAlign
 
 // start_example_parent
 class StateParentChildComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val clicks = useState { 0 }
     return Column {
-      child(ChildComponent { clickNumber -> clicks.update { c -> c + clickNumber } })
-      child(
-          Text(
-              style = Style.alignSelf(YogaAlign.CENTER).margin(vertical = 16.dp),
-              text = "Counter: ${clicks.value}",
-              alignment = TextAlignment.CENTER,
-              textSize = 14.sp))
+      child(ChildComponent { clicks.update { c -> c + 1 } })
+      child(Text(text = "Counter: ${clicks.value}"))
     }
   }
 }

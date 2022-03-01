@@ -34,12 +34,13 @@ class CheckboxComponent : KComponent() {
     return Column(style = Style.onClick { isChecked.update(!isChecked.value) }) {
       child(
           Image(
-              drawableRes(
-                  if (isChecked.value) {
-                    android.R.drawable.checkbox_on_background
-                  } else {
-                    android.R.drawable.checkbox_off_background
-                  })))
+              drawable =
+                  drawableRes(
+                      if (isChecked.value) {
+                        android.R.drawable.checkbox_on_background
+                      } else {
+                        android.R.drawable.checkbox_off_background
+                      })))
     }
   }
 }

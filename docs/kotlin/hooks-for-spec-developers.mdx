@@ -1,0 +1,43 @@
+---
+id: hooks-for-spec-developers
+title: Hooks for Spec Developers
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
+
+To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](/mainconcepts/hooks-intro.mdx) page.
+
+This page covers some of the main hooks and how they compare to their spec API equivalents.
+
+## [`useState`](/mainconcepts/use-state.mdx)
+
+`useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The code below shows a comparison of Spec API and Kotlin API code for the same component:
+
+<Tabs
+  groupId="state"
+  defaultValue="kotlin_state"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_state'},
+    {label: 'Java', value: 'java_state'},
+  ]}>
+  <TabItem value="kotlin_state">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_state">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/CheckboxComponentSpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>
+
+### Side Effects in `@OnCreateInitialState`
+
+A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side effects like this should now be done with the [useEffect Hook](/kotlin/use-effect.mdx), which provides functionality to clean up and handle prop changes.

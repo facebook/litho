@@ -16,38 +16,19 @@
 
 package com.facebook.samples.litho.kotlin.state
 
-import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.core.margin
-import com.facebook.litho.core.padding
-import com.facebook.litho.dp
-import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
-import com.facebook.litho.view.onLongClick
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.TextAlignment
-import com.facebook.yoga.YogaAlign
 
 // start_example_child
-class ChildComponent(private val clickHandler: (Int) -> Unit) : KComponent() {
+class ChildComponent(private val onIncrementCounter: () -> Unit) : KComponent() {
   override fun ComponentScope.render(): Component {
     return Text(
-        style =
-            Style.onClick { clickHandler(1) }
-                .onLongClick {
-                  clickHandler(2)
-                  true
-                }
-                .alignSelf(YogaAlign.CENTER)
-                .margin(vertical = 16.dp)
-                .padding(all = 16.dp)
-                .backgroundColor(Color.RED),
-        text = "Long click counts for 2",
-        alignment = TextAlignment.CENTER,
+        style = Style.onClick { onIncrementCounter() },
+        text = "Tap to increment the parent!",
     )
   }
 }

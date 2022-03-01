@@ -7,14 +7,14 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Java Spec API's `@OnError` functionality. If you haven't already, make sure to review the [Hooks Intro](hooks-intro.mdx) docs to understand more about hooks.
+The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Java Spec API's `@OnError` functionality. If you haven't already, make sure to review the [Hooks Intro](/mainconcepts/hooks-intro.mdx) docs to understand more about hooks.
 
 ## Conceptual Overview
 
 A KComponent becomes an error boundary when it declares a `useErrorBoundary` hook.
 The hook parameter will receive all exceptions that are raised in the lifecycle methods of components sitting underneath the error boundary in the tree, regardless of whether those are other KComponents or Litho Specs.
 
-The KComponent can leverage the [`useState` hook](use-state.mdx), to update the state with the exception that was caught, then trigger a render pass with the new state value in order to replace the crashing component with an error component, or not display it at all.
+The KComponent can leverage the [`useState` hook](/mainconcepts/use-state.mdx), to update the state with the exception that was caught, then trigger a render pass with the new state value in order to replace the crashing component with an error component, or not display it at all.
 
 <Tabs
   groupId="error_boundary"
