@@ -17,12 +17,15 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.graphics.Color
 import android.view.View
 import android.widget.TextView
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.widget.Border
 import com.facebook.rendercore.RenderUnit
+import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -47,7 +50,14 @@ class MountableComponentsTest {
                 Wrapper.create(c)
                     .widthPx(100)
                     .heightPx(100)
-                    .delegate(TestMountableComponent(TextView(c.androidContext), steps)))
+                    .delegate(TestMountableComponent(TextView(c.androidContext), steps))
+                    .paddingPx(YogaEdge.ALL, 20)
+                    .backgroundColor(Color.LTGRAY)
+                    .border(
+                        Border.create(c)
+                            .widthPx(YogaEdge.ALL, 5)
+                            .color(YogaEdge.ALL, Color.BLACK)
+                            .build()))
             .build()
 
     lithoViewRule.render { root }

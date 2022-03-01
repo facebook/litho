@@ -22,6 +22,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
 import static com.facebook.litho.Component.isHostSpec;
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
@@ -386,7 +387,7 @@ public class InternalNodeUtils {
     }
 
     Mountable<?> mountable = node.getMountable();
-    if (mountable != null) {
+    if (mountable != null && isMountable(component)) {
       return MountableLithoRenderUnit.create(
           id,
           component,
