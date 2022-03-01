@@ -22,7 +22,9 @@ import com.facebook.litho.widget.KotlinClass
 import com.facebook.litho.widget.KotlinClassSpec
 import com.facebook.litho.widget.KotlinObject
 import com.facebook.litho.widget.KotlinObjectSpec
+import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,14 +34,26 @@ class KotlinSpecPropDefaultsTest {
 
   @JvmField @Rule var lithoViewRule = LegacyLithoViewRule()
 
+  private lateinit var ensureAssertion: AtomicBoolean
+
+  @Before
+  fun setup() {
+    ensureAssertion = AtomicBoolean(false)
+  }
+
   /** Annotation: `@get:PropDefault val fieldName = ...` */
   @Test
   fun `Kotlin object spec with PropDefault get annotation should initialise default value`() {
     lithoViewRule.render {
       KotlinObject.create(lithoViewRule.context)
-          .getPropDefaultAssertion { assertThat(it).isEqualTo(KotlinObjectSpec.getPropDefault) }
+          .getPropDefaultAssertion {
+            assertThat(it).isEqualTo(KotlinObjectSpec.getPropDefault)
+            ensureAssertion.set(true)
+          }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@PropDefault const val fieldName = ...` */
@@ -47,9 +61,14 @@ class KotlinSpecPropDefaultsTest {
   fun `Kotlin object spec with const PropDefault should initialise default value`() {
     lithoViewRule.render {
       KotlinObject.create(lithoViewRule.context)
-          .constPropDefaultAssertion { assertThat(it).isEqualTo(KotlinObjectSpec.constPropDefault) }
+          .constPropDefaultAssertion {
+            assertThat(it).isEqualTo(KotlinObjectSpec.constPropDefault)
+            ensureAssertion.set(true)
+          }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@PropDefault @JvmField val fieldName = ...` */
@@ -59,9 +78,12 @@ class KotlinSpecPropDefaultsTest {
       KotlinObject.create(lithoViewRule.context)
           .jvmFieldPropDefaultAssertion {
             assertThat(it).isEqualTo(KotlinObjectSpec.jvmFieldPropDefault)
+            ensureAssertion.set(true)
           }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@PropDefault val fieldName = ...` */
@@ -69,9 +91,14 @@ class KotlinSpecPropDefaultsTest {
   fun `Kotlin object spec with just PropDefault should initialise default value`() {
     lithoViewRule.render {
       KotlinObject.create(lithoViewRule.context)
-          .justPropDefaultAssertion { assertThat(it).isEqualTo(KotlinObjectSpec.justPropDefault) }
+          .justPropDefaultAssertion {
+            assertThat(it).isEqualTo(KotlinObjectSpec.justPropDefault)
+            ensureAssertion.set(true)
+          }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@get:PropDefault val fieldName = ...` */
@@ -79,9 +106,14 @@ class KotlinSpecPropDefaultsTest {
   fun `Kotlin class spec with PropDefault get annotation should initialise default value`() {
     lithoViewRule.render {
       KotlinClass.create(lithoViewRule.context)
-          .getPropDefaultAssertion { assertThat(it).isEqualTo(KotlinClassSpec.getPropDefault) }
+          .getPropDefaultAssertion {
+            assertThat(it).isEqualTo(KotlinClassSpec.getPropDefault)
+            ensureAssertion.set(true)
+          }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@PropDefault const val fieldName = ...` */
@@ -89,9 +121,14 @@ class KotlinSpecPropDefaultsTest {
   fun `Kotlin class spec with const PropDefault should initialise default value`() {
     lithoViewRule.render {
       KotlinClass.create(lithoViewRule.context)
-          .constPropDefaultAssertion { assertThat(it).isEqualTo(KotlinClassSpec.constPropDefault) }
+          .constPropDefaultAssertion {
+            assertThat(it).isEqualTo(KotlinClassSpec.constPropDefault)
+            ensureAssertion.set(true)
+          }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@PropDefault @JvmField val fieldName = ...` */
@@ -101,9 +138,12 @@ class KotlinSpecPropDefaultsTest {
       KotlinClass.create(lithoViewRule.context)
           .jvmFieldPropDefaultAssertion {
             assertThat(it).isEqualTo(KotlinClassSpec.jvmFieldPropDefault)
+            ensureAssertion.set(true)
           }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 
   /** Annotation: `@PropDefault val fieldName = ...` */
@@ -111,8 +151,13 @@ class KotlinSpecPropDefaultsTest {
   fun `Kotlin class spec with just PropDefault should initialise default value`() {
     lithoViewRule.render {
       KotlinClass.create(lithoViewRule.context)
-          .justPropDefaultAssertion { assertThat(it).isEqualTo(KotlinClassSpec.justPropDefault) }
+          .justPropDefaultAssertion {
+            assertThat(it).isEqualTo(KotlinClassSpec.justPropDefault)
+            ensureAssertion.set(true)
+          }
           .build()
     }
+
+    assertThat(ensureAssertion.get()).isTrue
   }
 }
