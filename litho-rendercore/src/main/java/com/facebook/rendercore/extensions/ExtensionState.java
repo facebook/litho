@@ -69,11 +69,11 @@ public class ExtensionState<State> {
   }
 
   public void acquireMountReference(final long id, final boolean isMounting) {
-    if (ownsReference(id)) {
+    final boolean alreadyOwnedRef = !mLayoutOutputMountRefs.add(id);
+    if (alreadyOwnedRef) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
 
-    mLayoutOutputMountRefs.add(id);
     if (isMounting) {
       mMountDelegate.acquireAndMountRef(id);
     } else {
@@ -82,11 +82,11 @@ public class ExtensionState<State> {
   }
 
   public void releaseMountReference(final long id, final boolean isMounting) {
-    if (!ownsReference(id)) {
+    final boolean ownedRef = mLayoutOutputMountRefs.remove(id);
+    if (!ownedRef) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
 
-    mLayoutOutputMountRefs.remove(id);
     if (isMounting) {
       mMountDelegate.releaseAndUnmountRef(id);
     } else {
