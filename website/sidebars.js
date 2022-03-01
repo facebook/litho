@@ -31,16 +31,11 @@ module.exports = {
       'tutorial/building-lists',
     ],
     'Main Concepts': [
+      'mainconcepts/components-basics',
+      'mainconcepts/props',
+      'mainconcepts/uicomposition/flexbox-yoga',
       {
-        'UI Composition': [
-          'mainconcepts/uicomposition/layout-specs',
-          'mainconcepts/uicomposition/mount-specs',
-          'mainconcepts/uicomposition/flexbox-yoga',
-        ],
-        'Passing Data To Components': [
-          'mainconcepts/passing-data-to-components/props',
-          'mainconcepts/passing-data-to-components/treeprops',
-        ],
+        // TODO: remove/replace 'Coordinating State and Actions'
         'Coordinating State and Actions': [
           'mainconcepts/coordinate-state-actions/state-overview',
           'mainconcepts/coordinate-state-actions/hoisting-state',
@@ -71,8 +66,9 @@ module.exports = {
       'kotlin/testing-assertions',
       'kotlin/testing-actions',
     ],
+    // TODO: de-dupe content with main concepts
     ...fbInternalOnly({
-      'Kotlin API': [
+      'Migrating to the Kotlin API': [
         'kotlin/kotlin-intro',
         'kotlin/kotlin-api-basics',
         {
@@ -91,6 +87,17 @@ module.exports = {
         'kotlin/kotlin-api-cheatsheet',
       ],
     }),
+    // TODO: clean this section up, add intro page
+    'Codegen APIs': [
+      'mainconcepts/uicomposition/layout-specs',
+      'mainconcepts/uicomposition/mount-specs',
+      {
+        'Passing Data To Components': [
+          'mainconcepts/passing-data-to-components/props',
+          'mainconcepts/passing-data-to-components/treeprops',
+        ],
+      },
+    ],
     'Animations': [
       'animations/transition-basics',
       'animations/transition-types',

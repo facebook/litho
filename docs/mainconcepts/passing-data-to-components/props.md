@@ -38,7 +38,7 @@ The way props are defined is shown in the following sample:
 
 Props are just `val` properties of a Component.
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/KotlinApiComponent.kt start=start_example end=end_example
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
 ```
   </TabItem>
   <TabItem value="java_props_tab">

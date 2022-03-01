@@ -19,13 +19,30 @@ package com.facebook.samples.litho.kotlin.documentation
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Style
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 
-// start_example
-class KotlinApiComponent(private val name: String) : KComponent() {
+// start_simple_example
+class HelloComponent(private val name: String) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     return Text(text = "Hello $name!")
   }
 }
-// end_example
+// end_simple_example
+
+fun log(s: String) = Unit
+
+// start_styled_example
+class StyledHelloComponent(private val style: Style? = null, private val name: String) :
+    KComponent() {
+
+  override fun ComponentScope.render(): Component? {
+    return Text(style = style, text = "Hello $name!")
+  }
+}
+
+val componentWithOnClick =
+    StyledHelloComponent(style = Style.onClick { log("clicked!") }, name = "Common Props")
+// end_styled_example
