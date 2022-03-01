@@ -73,7 +73,7 @@ public class ScopedComponentInfo implements Cloneable {
   }
 
   @Nullable
-  StateContainer getStateContainer() {
+  public StateContainer getStateContainer() {
     return mStateContainer;
   }
 

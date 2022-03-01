@@ -117,7 +117,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   private TestMountStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestMountStateContainer) getStateContainer(c);
+    return (TestMountStateContainer) c.getScopedComponentInfo().getStateContainer();
   }
 
   @Override

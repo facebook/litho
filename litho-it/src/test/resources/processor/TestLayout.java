@@ -130,7 +130,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   }
 
   private TestLayoutStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestLayoutStateContainer) getStateContainer(c);
+    return (TestLayoutStateContainer) c.getScopedComponentInfo().getStateContainer();
   }
 
   @Override

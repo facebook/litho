@@ -1301,10 +1301,6 @@ public abstract class Component
     return mId;
   }
 
-  protected @Nullable StateContainer getStateContainer(final ComponentContext scopedContext) {
-    return scopedContext.getScopedComponentInfo().getStateContainer();
-  }
-
   protected @Nullable StateContainer createStateContainer() {
     return null;
   }

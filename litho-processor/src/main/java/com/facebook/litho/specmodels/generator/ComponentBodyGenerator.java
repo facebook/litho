@@ -284,7 +284,9 @@ public class ComponentBodyGenerator {
           stateContainerImplClassName,
           StateGenerator.getStateContainerGetterClassName(specModel));
     } else {
-      builder.addStatement("return ($T) getStateContainer(c)", stateContainerImplClassName);
+      builder.addStatement(
+          "return ($T) c.getScopedComponentInfo().getStateContainer()",
+          stateContainerImplClassName);
     }
     return builder.build();
   }
