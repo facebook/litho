@@ -13,6 +13,8 @@ To familiarize yourself with the concept and rules for hooks, see the [Introduct
 
 This page covers some of the main hooks and how they compare to their spec API equivalents.
 
+**These docs are meant to be used by someone who is familiar with the Java Spec API and is now learning the Kotlin API.** In this page, we'll go over the major hooks introduced in the Kotlin API and give code samples to demonstrate what they replace in the Java Spec API.
+
 ## [`useState`](/mainconcepts/use-state.mdx)
 
 `useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The code below shows a comparison of Spec API and Kotlin API code for the same component:
@@ -78,3 +80,34 @@ It returns an instance of `Ref` which has a single mutable `value` property whic
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LogOnceComponent.kt start=start_useref_example end=end_useref_example
 ```
+
+## [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx)
+
+The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Java Spec API's `@OnError` functionality.
+
+### Example: Providing an Error State in UI
+
+A KComponent becomes an error boundary when it declares a `useErrorBoundary` hook. The example below shows how the implementation of a boundary that renders an error state compares between the Java Spec API and the Kotlin API:
+
+<Tabs
+  groupId="error_boundary"
+  defaultValue="kotlin_state"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_state'},
+    {label: 'Java', value: 'java_state'},
+  ]}>
+  <TabItem value="kotlin_state">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/errors/KErrorBoundary.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_state">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/errors/ErrorBoundarySpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>
+
+Check out the main [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx) for more detailed information.
