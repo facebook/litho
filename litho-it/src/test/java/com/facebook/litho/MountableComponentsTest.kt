@@ -90,7 +90,8 @@ class ViewMountable(
       context: Context,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size
+      size: Size,
+      previousLayoutData: Any?,
   ): ViewLayoutData {
     steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
     val width =

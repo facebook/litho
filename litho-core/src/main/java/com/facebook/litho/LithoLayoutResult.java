@@ -530,7 +530,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
         if (mountable != null) {
-          mLayoutData = mountable.measure(mNode.getAndroidContext(), widthSpec, heightSpec, size);
+          mLayoutData =
+              mountable.measure(
+                  mNode.getAndroidContext(), widthSpec, heightSpec, size, mLayoutData);
         } else {
           component.onMeasure(
               componentScopedContext,

@@ -31,7 +31,12 @@ public interface Mountable<ContentT> {
   ContentT createContent(Context context);
 
   @Nullable
-  Object measure(Context context, int widthSpec, int heightSpec, Size size);
+  Object measure(
+      final Context context,
+      final int widthSpec,
+      final int heightSpec,
+      final Size size,
+      final @Nullable Object previousLayoutData);
 
   @Nullable
   List<Binder<?, ContentT>> getBinders();
