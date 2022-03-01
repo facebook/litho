@@ -212,6 +212,10 @@ public class MountDelegate {
     }
 
     mNotifyVisibleBoundsChangedNestCount--;
+    if (mNotifyVisibleBoundsChangedNestCount < 0) {
+      throw new RuntimeException(
+          "mNotifyVisibleBoundsChangedNestCount should not be decremented below zero!");
+    }
 
     if (mNotifyVisibleBoundsChangedNestCount == 0) {
       for (Object item : mNotifyVisibleBoundsChangedItems) {
