@@ -1,0 +1,113 @@
+---
+id: hooks-for-spec-developers
+title: Hooks for Spec Developers
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
+
+To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](/mainconcepts/hooks-intro.mdx) page.
+
+This page covers some of the main hooks and how they compare to their spec API equivalents.
+
+**These docs are meant to be used by someone who is familiar with the Java Spec API and is now learning the Kotlin API.** In this page, we'll go over the major hooks introduced in the Kotlin API and give code samples to demonstrate what they replace in the Java Spec API.
+
+## [`useState`](/mainconcepts/use-state.mdx)
+
+`useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The code below shows a comparison of Spec API and Kotlin API code for the same component:
+
+<Tabs
+  groupId="state"
+  defaultValue="kotlin_state"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_state'},
+    {label: 'Java', value: 'java_state'},
+  ]}>
+  <TabItem value="kotlin_state">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_state">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/CheckboxComponentSpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>
+
+### Side Effects in `@OnCreateInitialState`
+
+A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side effects like this should now be done with the [useEffect Hook](/mainconcepts/use-effect.mdx), which provides functionality to clean up and handle prop changes.
+
+## [`useEffect`](/mainconcepts/use-effect.mdx)
+
+The `useEffect` hook gives the ability to safely perform side-effects from a component and corresponds to the Java Spec API's `@OnAttached`/`@OnDetached` lifecycle methods.
+
+```kotlin
+useEffect(username) {
+  println("I've been attached with prop $username!")
+  onCleanup { println("I've been detached with prop $username!") }
+}
+```
+
+In addition to the existing `@OnAttached`/`@OnDetached` functionality, it provides the ability to perform side-effects in response to changes in committed props or state. Both the effect lambda and the cleanup lambda are invoked on the main thread, meaning it's safe to perform UI-thread confined side effects.
+
+### Changes to Attach/Detach Contract
+
+In the Java Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the component was first attached to/detached from the tree. This could lead to bugs where, for example, your component subscribes to a data store using a userId prop, and then that prop changes.
+
+`useEffect` tries to solve this by taking a var-arg list of *dependencies*: any time any of these dependencies changes, the cleanup lambda (previously `@OnDetached`) will be called followed by the new effect lambda. If no dependencies are provided, the previous cleanup and new effect lambdas will be invoked again **every time a new layout is committed**.
+
+### Listening to Prop/State Changes
+
+An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached` is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever some prop changes:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
+```
+
+## [`useRef`](/mainconcepts/use-ref.mdx)
+
+The `useRef` hook allows a component to maintain a mutable reference that doesn't trigger a re-render when updated.
+
+It returns an instance of `Ref` which has a single mutable `value` property which should only be read/written on the UI thread. `useRef` can be used as a replacement for [lazy state](/docs/mainconcepts/coordinate-state-actions/state-overview#lazy-state-updates) from the Spec API, though it has more uses beyond that.
+
+### Example: Logging Seen State
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LogOnceComponent.kt start=start_useref_example end=end_useref_example
+```
+
+## [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx)
+
+The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Java Spec API's `@OnError` functionality.
+
+### Example: Providing an Error State in UI
+
+A KComponent becomes an error boundary when it declares a `useErrorBoundary` hook. The example below shows how the implementation of a boundary that renders an error state compares between the Java Spec API and the Kotlin API:
+
+<Tabs
+  groupId="error_boundary"
+  defaultValue="kotlin_state"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_state'},
+    {label: 'Java', value: 'java_state'},
+  ]}>
+  <TabItem value="kotlin_state">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/errors/KErrorBoundary.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_state">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/errors/ErrorBoundarySpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>
+
+Check out the main [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx) for more detailed information.
