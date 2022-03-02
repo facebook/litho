@@ -1,19 +1,21 @@
 ---
 id: hooks-for-spec-developers
-title: Hooks for Spec Developers
+title: Introducing Hooks for State
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
+:::note
+**This page is meant to be used by someone who is familiar with the Java Spec API and is now learning the Kotlin API.** If you're new to Litho, use [this page](mainconcepts/hooks-intro.mdx) to learn about hooks instead.
+:::
+
 One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](/mainconcepts/hooks-intro.mdx) page.
 
-This page covers some of the main hooks and how they compare to their spec API equivalents.
-
-**These docs are meant to be used by someone who is familiar with the Java Spec API and is now learning the Kotlin API.** In this page, we'll go over the major hooks introduced in the Kotlin API and give code samples to demonstrate what they replace in the Java Spec API.
+This page covers some of the main hooks and how they compare to their Spec API equivalents.
 
 ## [`useState`](/mainconcepts/use-state.mdx)
 
@@ -111,3 +113,28 @@ A KComponent becomes an error boundary when it declares a `useErrorBoundary` hoo
 </Tabs>
 
 Check out the main [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx) for more detailed information.
+
+## `useTransition`
+
+`useTransition` registers a transition to be applied when the current layout is committed. It corresponds to the Java Spec API's `@OnCreateTransition` functionality.
+
+<Tabs
+  groupId="transition"
+  defaultValue="kotlin_transition"
+  values={[
+    {label: 'Kotlin', value: 'kotlin_transition'},
+    {label: 'Java', value: 'java_transition'},
+  ]}>
+  <TabItem value="kotlin_transition">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/TransitionComponent.kt start=start_example end=end_example
+```
+
+  </TabItem>
+  <TabItem value="java_transition">
+
+```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/AlphaTransitionComponentSpec.java start=start_example end=end_example
+```
+  </TabItem>
+
+</Tabs>

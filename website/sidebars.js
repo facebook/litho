@@ -80,12 +80,7 @@ module.exports = {
       'Migrating to the Kotlin API': [
         'kotlin/kotlin-intro',
         'kotlin/kotlin-api-basics',
-        {
-          'Hooks and State': [
-            'kotlin/hooks-for-spec-developers',
-            'kotlin/use-transition',
-          ],
-        },
+        'kotlin/hooks-for-spec-developers',
         'kotlin/kotlin-flexbox-containers',
         'kotlin/collections',
         'kotlin/event-handling',
