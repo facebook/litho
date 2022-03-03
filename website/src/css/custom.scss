@@ -96,3 +96,20 @@ html {
 .white-background {
   background: white;
 }
+
+div[class^='announcementBarContent'] {
+  font-weight: bold;
+  font-size: 20px;
+  background-color: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+}
+
+div[class^='announcementBarContent'] a {
+  color: var(--ifm-link-color);
+  text-decoration: inherit;
+}
+
+div[class^='announcementBarContent'] a:hover {
+  color: var(--ifm-link-color);
+  text-decoration: underline;
+}

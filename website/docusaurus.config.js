@@ -36,6 +36,13 @@ module.exports = {
   organizationName: 'facebook',
   projectName: 'litho',
   themeConfig: {
+    announcementBar: {
+          id: 'support_ukraine',
+          content:
+            'Support Ukraine 🇺🇦 <a target="_blank" rel="noopener noreferrer" href="https://opensource.facebook.com/support-ukraine">Help Provide Humanitarian Aid to Ukraine</a>',
+          textColor: '#091E42',
+          isCloseable: false,
+        },
     navbar: {
       title: siteTitle,
       logo: {
