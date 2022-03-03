@@ -37,4 +37,12 @@ class TestListComponent {
 
     this.recyclerBinder = Whitebox.getInternalState(binder, "mRecyclerBinder")
   }
+
+  /**
+   * Get the number of items in the recycler binder
+   *
+   * This is not the same as the number of items that are displayed.
+   */
+  val itemCount: Int
+    get() = recyclerBinder.itemCount
 }

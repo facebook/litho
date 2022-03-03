@@ -57,7 +57,7 @@ class LithoViewRuleListExampleTest {
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull()
 
-    assertThat(testView.findAllComponents(Text::class)).isEmpty()
+    assertThat(listComponent?.itemCount ?: return).isEqualTo(10)
   }
 
   @Test
