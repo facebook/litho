@@ -96,3 +96,40 @@ html {
 .white-background {
   background: white;
 }
+
+/* Announcement banner */
+
+:root {
+  --docusaurus-announcement-bar-height: auto !important;
+}
+
+div[class^="announcementBarContent"] {
+  line-height: 40px;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 8px 30px;
+
+  a {
+    text-decoration: underline;
+    display: inline-block;
+    color: var(--brand) !important;
+
+    &:hover {
+      color: var(--ifm-color-primary) !important;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .announcement {
+    font-size: 18px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .announcement {
+    font-size: 15px;
+    line-height: 22px;
+    padding: 6px 30px;
+  }
+}
