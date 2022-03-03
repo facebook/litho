@@ -58,6 +58,7 @@ class LithoViewRuleListExampleTest {
     assertThat(listComponent).isNotNull()
 
     assertThat(listComponent?.itemCount ?: return).isEqualTo(10)
+    assertThat(listComponent.components[0]).hasFieldOrPropertyWithValue("text", "child1")
   }
 
   @Test

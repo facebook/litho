@@ -17,6 +17,7 @@
 package com.facebook.litho.testing
 
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.litho.Component
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.Recycler
@@ -45,4 +46,8 @@ class TestListComponent {
    */
   val itemCount: Int
     get() = recyclerBinder.itemCount
+
+  /** All Components managed by the lazy collection */
+  val components: List<Component>
+    get() = (0 until itemCount).map { recyclerBinder.getRenderInfoAt(it).component }
 }
