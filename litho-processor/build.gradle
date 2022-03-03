@@ -32,6 +32,7 @@ dependencies {
     // Processor
     implementation deps.javapoet
     implementation deps.supportAnnotations
+    implementation deps.guava
 
     testImplementation deps.junit
     testImplementation deps.assertjCore

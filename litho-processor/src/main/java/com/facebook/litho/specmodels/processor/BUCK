@@ -7,8 +7,8 @@ load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFr
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_GUAVA_TARGET",
     "LITHO_JAVAPOET_TARGET",
     "LITHO_JSR_TARGET",
     "fb_java_library",
@@ -79,7 +79,7 @@ fb_java_library(
     ],
     deps = [
         LITHO_ANNOTATIONS_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_GUAVA_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
@@ -99,7 +99,7 @@ fb_java_library(
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
         LITHO_ANNOTATIONS_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_GUAVA_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare4idea"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal4idea"),
         make_dep_path("litho-processor/src/main/java8:files4idea"),

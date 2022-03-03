@@ -27,7 +27,6 @@ import static com.facebook.litho.specmodels.generator.StateContainerGenerator.ge
 import static com.facebook.litho.specmodels.model.MethodParamModelUtils.isAnnotatedWith;
 
 import androidx.annotation.Nullable;
-import androidx.core.util.Preconditions;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
@@ -58,6 +57,7 @@ import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.TypeSpec.DeclaredTypeSpec;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
+import com.google.common.base.Preconditions;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
