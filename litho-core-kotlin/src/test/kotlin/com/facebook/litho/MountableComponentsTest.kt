@@ -23,7 +23,6 @@ import android.widget.TextView
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.Border
 import com.facebook.rendercore.RenderUnit
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
