@@ -114,6 +114,7 @@ public class RecyclerBinder
   static final int UNSET = -1;
   static final int APPLY_READY_BATCHES_RETRY_LIMIT = 100;
   public static final String HANDLE_CUSTOM_ATTR_KEY = "handle";
+  public static final String ID_CUSTOM_ATTR_KEY = "id";
 
   private static Field mViewHolderField;
 
@@ -3070,6 +3071,13 @@ public class RecyclerBinder
 
   @UiThread
   public void scrollSmoothToPosition(
+      Object id, final int offset, final SmoothScrollAlignmentType type) {
+    final int index = getPositionForId(id);
+    scrollSmoothToPosition(index, offset, type);
+  }
+
+  @UiThread
+  public void scrollSmoothToPosition(
       int position, final int offset, final SmoothScrollAlignmentType type) {
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
@@ -3103,8 +3111,32 @@ public class RecyclerBinder
   }
 
   @UiThread
+  private synchronized int getPositionForId(Object id) {
+    for (int i = 0; i < mComponentTreeHolders.size(); i++) {
+      final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(i);
+
+      final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
+      if (renderInfo == null) {
+        continue;
+      }
+      @Nullable final Object childId = renderInfo.getCustomAttribute(ID_CUSTOM_ATTR_KEY);
+
+      if (childId == id) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  @UiThread
   public void scrollToPositionWithOffset(Handle target, int offset) {
     final int index = getPositionForHandle(target);
+    scrollToPositionWithOffset(index, offset);
+  }
+
+  @UiThread
+  public void scrollToPositionWithOffset(Object id, int offset) {
+    final int index = getPositionForId(id);
     scrollToPositionWithOffset(index, offset);
   }
 

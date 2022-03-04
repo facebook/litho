@@ -118,6 +118,40 @@ class LazyCollectionController {
   ) {
     sectionTree?.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
   }
+
+  /**
+   * Scroll the [LazyCollection] so that the child with the given id is fully visible. For an
+   * animated scroll use [smoothScrollToId].
+   *
+   * @param id The id of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   * Collection.
+   */
+  @UiThread
+  fun scrollToId(
+      id: Any,
+      @Px offset: Int = 0,
+  ) {
+    sectionTree?.requestFocusOnRoot(id, offset)
+  }
+
+  /**
+   * Perform an animated scroll on the [LazyCollection] so that the child with the given id is fully
+   * visible. For an animated scroll use [smoothScrollToId].
+   *
+   * @param id The id of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   * Collection.
+   * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
+   */
+  @UiThread
+  fun smoothScrollToId(
+      id: Any,
+      @Px offset: Int = 0,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+  ) {
+    sectionTree?.requestSmoothFocusOnRoot(id, offset, smoothScrollAlignmentType)
+  }
 }
 
 /**
@@ -175,3 +209,35 @@ fun ResourcesScope.smoothScrollToIndex(
     offset: Dimen = 0.px,
     smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
 ) = controller.smoothScrollToIndex(index, offset.toPixels(), smoothScrollAlignmentType)
+
+/**
+ * Scroll the [LazyCollection] so that the child with the given id is fully visible. For an animated
+ * scroll use [smoothScrollToId].
+ *
+ * @param controller The controller for the [LazyCollection] being scrolled.
+ * @param id The id of the child to scroll to
+ * @param offset Attempt to offset the child by this distance from the start of the Collection.
+ */
+@UiThread
+fun ResourcesScope.scrollToId(
+    controller: LazyCollectionController,
+    id: Any,
+    offset: Dimen = 0.px,
+) = controller.scrollToId(id, offset.toPixels())
+
+/**
+ * Perform an animated scroll on the [LazyCollection] so that the child with the given id is fully
+ * visible. For an animated scroll use [smoothScrollToId].
+ *
+ * @param controller The controller for the [LazyCollection] being scrolled.
+ * @param id The id of the child to scroll to
+ * @param offset Attempt to offset the child this distance from the start of the Collection.
+ * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
+ */
+@UiThread
+fun ResourcesScope.smoothScrollToId(
+    controller: LazyCollectionController,
+    id: Any,
+    offset: Dimen = 0.px,
+    smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+) = controller.smoothScrollToId(id, offset.toPixels(), smoothScrollAlignmentType)

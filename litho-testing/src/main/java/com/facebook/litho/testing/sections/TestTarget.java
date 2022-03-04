@@ -197,7 +197,13 @@ public class TestTarget implements SectionTree.Target {
   public void requestSmoothFocus(Handle target, int offset, SmoothScrollAlignmentType type) {}
 
   @Override
+  public void requestSmoothFocus(Object id, int offset, SmoothScrollAlignmentType type) {}
+
+  @Override
   public void requestFocusWithOffset(Handle target, int offset) {}
+
+  @Override
+  public void requestFocusWithOffset(Object id, int offset) {}
 
   @Override
   public boolean supportsBackgroundChangeSets() {

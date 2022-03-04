@@ -245,6 +245,7 @@ private fun createDataDiffSection(
                   item.component?.handle?.let {
                     customAttribute(RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY, it)
                   }
+                  customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
                 }
                 .component(component)
                 .build()

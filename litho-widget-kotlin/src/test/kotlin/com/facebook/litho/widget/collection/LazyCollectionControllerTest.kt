@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget.collection
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
@@ -30,6 +31,7 @@ import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SmoothScrollAlignmentType
+import com.facebook.litho.widget.Text
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -148,5 +150,37 @@ class LazyCollectionControllerTest {
 
     lazyCollectionController.smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
     verify(mockSectionTree).requestSmoothFocusOnRoot(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
+  }
+
+  @Test
+  fun `test scrollToId brings child with id into viewport`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    class Test : KComponent() {
+      override fun ComponentScope.render(): Component =
+          LazyList(
+              lazyCollectionController = lazyCollectionController,
+              style = Style.viewTag("collection_tag"),
+          ) { (0..10).forEach { child(id = it, component = Text("$it", Style.viewTag("$it"))) } }
+    }
+
+    val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
+    lithoViewRule.idle()
+
+    lithoViewRule.act(testLithoView) { lazyCollectionController.scrollToId(9) }
+
+    // Additional `setRoot()` to kick the test infra into applying RecyclerView changes
+    testLithoView.setRoot(Test())
+    lithoViewRule.idle()
+
+    val recyclerView = getLazyCollectionRecyclerView(testLithoView, "collection_tag")
+    assertThat(recyclerView).isNotNull
+    recyclerView ?: return
+
+    val visibleRange =
+        with(recyclerView.layoutManager as LinearLayoutManager) {
+          (findFirstVisibleItemPosition()..findLastVisibleItemPosition())
+        }
+    assertThat(visibleRange).contains(9)
   }
 }

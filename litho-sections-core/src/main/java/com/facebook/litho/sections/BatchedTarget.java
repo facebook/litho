@@ -164,6 +164,11 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
+  public void requestSmoothFocus(Object id, int offset, SmoothScrollAlignmentType type) {
+    mTarget.requestSmoothFocus(id, offset, type);
+  }
+
+  @Override
   public void requestFocusWithOffset(int index, int offset) {
     mTarget.requestFocusWithOffset(index, offset);
     maybeLogRequestFocusWithOffset(index, offset);
@@ -172,6 +177,11 @@ class BatchedTarget implements SectionTree.Target {
   @Override
   public void requestFocusWithOffset(Handle target, int offset) {
     mTarget.requestFocusWithOffset(target, offset);
+  }
+
+  @Override
+  public void requestFocusWithOffset(Object id, int offset) {
+    mTarget.requestFocusWithOffset(id, offset);
   }
 
   @Override

@@ -173,6 +173,16 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
+  public void requestSmoothFocus(Object id, int offset, SmoothScrollAlignmentType type) {
+    mRecyclerBinder.scrollSmoothToPosition(id, offset, type);
+  }
+
+  @Override
+  public void requestFocusWithOffset(Object id, int offset) {
+    mRecyclerBinder.scrollToPositionWithOffset(id, offset);
+  }
+
+  @Override
   public void delete(int index) {
     if (mUseBackgroundChangeSets) {
       mRecyclerBinder.removeItemAtAsync(index);

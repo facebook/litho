@@ -19,7 +19,6 @@ package com.facebook.samples.litho.kotlin.collection
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -29,16 +28,12 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
 import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
 
 class ScrollToCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    val lazyListHandle = Handle()
-    val endItemHandle = Handle()
-
     val controller = useState { LazyCollectionController() }.value
     return Column(style = Style.padding(16.dp)) {
       child(
@@ -50,23 +45,15 @@ class ScrollToCollectionKComponent : KComponent() {
                   controller.smoothScrollToIndex(
                       50, smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_CENTER)
                 })
-            child(
-                Button("End") {
-                  Collection.smoothScrollToHandle(
-                      context,
-                      lazyListHandle,
-                      endItemHandle,
-                      smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_END)
-                })
+            child(Button("End") { controller.smoothScrollToId("End") })
           })
       child(
           LazyList(
-              handle = lazyListHandle,
               lazyCollectionController = controller,
               style = Style.flex(grow = 1f),
           ) {
             (0..99).forEach { child(id = it, component = Text("$it ")) }
-            child(Text("End", handle = endItemHandle))
+            child(id = "End", component = Text("End"))
           })
     }
   }

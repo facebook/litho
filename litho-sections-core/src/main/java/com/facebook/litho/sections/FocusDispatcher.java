@@ -71,6 +71,14 @@ class FocusDispatcher {
     }
   }
 
+  @UiThread
+  void requestSmoothFocus(Object id, int offset, SmoothScrollAlignmentType type) {
+    if (shouldDispatchRequests()) {
+      mTarget.requestSmoothFocus(id, offset, type);
+      return;
+    }
+  }
+
   /**
    * Request focus to a specific index position with an offset.
    *
@@ -91,6 +99,14 @@ class FocusDispatcher {
   void requestFocusWithOffset(Handle target, int offset) {
     if (shouldDispatchRequests()) {
       mTarget.requestFocusWithOffset(target, offset);
+      return;
+    }
+  }
+
+  @UiThread
+  void requestFocusWithOffset(Object id, int offset) {
+    if (shouldDispatchRequests()) {
+      mTarget.requestFocusWithOffset(id, offset);
       return;
     }
   }
