@@ -17,11 +17,12 @@
 package com.facebook.litho
 
 /** Experimental. Currently for Litho team internal use only. */
-abstract class MountableComponent : Component() {
+abstract class MountableComponent(open val style: Style? = null) : Component() {
 
   final override fun prepare(c: ComponentContext): PrepareResult {
     val componentScope = ComponentScope(c)
     val mountable = componentScope.render()
+    style?.applyToComponent(c.resourceResolver, this)
     return PrepareResult(mountable, componentScope.transitions, componentScope.useEffectEntries)
   }
 
