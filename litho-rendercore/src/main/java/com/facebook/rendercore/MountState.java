@@ -226,7 +226,7 @@ public class MountState implements MountDelegateTarget {
 
       if (!isMountable) {
         if (isMounted) {
-          unmountItemRecursively(renderTreeNode);
+          unmountItemRecursively(currentMountItem.getRenderTreeNode());
         }
       } else if (!isMounted) {
         mountRenderUnit(renderTreeNode, mountLoopLogBuilder);
@@ -743,13 +743,16 @@ public class MountState implements MountDelegateTarget {
     }
   }
 
-  private void unmountItemRecursively(RenderTreeNode node) {
-    final RenderUnit unit = node.getRenderUnit();
-    final MountItem item = mIdToMountedItemMap.get(unit.getId());
+  private void unmountItemRecursively(RenderTreeNode renderTreeNode) {
+    final MountItem item = mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
     // Already has been unmounted.
     if (item == null) {
       return;
     }
+
+    // When unmounting use the render unit from the MountItem
+    final RenderTreeNode node = item.getRenderTreeNode();
+    final RenderUnit unit = item.getRenderUnit();
 
     // The root host item cannot be unmounted as it's a reference
     // to the top-level Host, and it is not mounted in a host.
