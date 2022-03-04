@@ -16,14 +16,162 @@
 
 package com.facebook.litho.widget.collection
 
+import androidx.annotation.Px
+import androidx.annotation.UiThread
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.litho.widget.RecyclerEventsController.OnRecyclerUpdateListener
+import com.facebook.litho.Dimen
+import com.facebook.litho.ResourcesScope
+import com.facebook.litho.px
+import com.facebook.litho.sections.SectionTree
+import com.facebook.litho.widget.RecyclerEventsController
+import com.facebook.litho.widget.SmoothScrollAlignmentType
 
-class LazyCollectionController : OnRecyclerUpdateListener {
-  var recyclerView: RecyclerView? = null
-    private set
+/**
+ * A controller that can be set on a [LazyCollection] to trigger external events. Most calls should
+ * be made on the main thread e.g. within a `Style.onClick { }` callback.
+ */
+class LazyCollectionController {
 
-  override fun onUpdate(recyclerView: RecyclerView?) {
-    this.recyclerView = recyclerView
+  internal var sectionTree: SectionTree? = null
+  internal var recyclerEventsController: RecyclerEventsController? = null
+
+  /** Request a call back when a [RecyclerView] is bound or unbound. */
+  fun setRecyclerUpdate(listener: (RecyclerView?) -> Unit) {
+    recyclerEventsController?.setOnRecyclerUpdateListener(listener)
+  }
+
+  /**
+   * Retrieve a reference to the RecyclerView. This should be avoided if possible, but may be
+   * necessary e.g. for custom animations.
+   */
+  val recyclerView: RecyclerView?
+    @UiThread get() = recyclerEventsController?.recyclerView
+
+  /**
+   * Show the refresh indicator.
+   *
+   * It should not be necessary to call this directly. It will be triggered by the pull to refresh
+   * gesture when a `onPullToRefresh` has been specified on a [LazyCollection].
+   */
+  @UiThread
+  fun showRefreshing() {
+    recyclerEventsController?.showRefreshing()
+  }
+
+  /** Clear the refresh indicator */
+  @UiThread
+  fun clearRefreshing() {
+    recyclerEventsController?.clearRefreshing()
+  }
+
+  /**
+   * Scroll the [LazyCollection] by a given number of pixels. The Scroll is instant. For an animated
+   * scroll use [smoothScrollBy].
+   *
+   * @param dx Pixel distance to scroll along the x axis
+   * @param dy Pixel distance to scroll along the y axis
+   */
+  @UiThread
+  fun scrollBy(@Px dx: Int, @Px dy: Int) {
+    recyclerEventsController?.recyclerView?.scrollBy(dx, dy)
+  }
+
+  /**
+   * Perform and animated scroll on the [LazyCollection] by a given number of pixels. For an
+   * instantaneous scroll use [scrollBy].
+   *
+   * @param dx Pixel distance to scroll along the x axis
+   * @param dy Pixel distance to scroll along the y axis
+   */
+  @UiThread
+  fun smoothScrollBy(@Px dx: Int, @Px dy: Int) {
+    recyclerEventsController?.recyclerView?.smoothScrollBy(dx, dy)
+  }
+
+  /**
+   * Scroll the [LazyCollection] so that the child at the given index is fully visible. For an
+   * animated scroll use [smoothScrollToIndex].
+   *
+   * @param index The index of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   * Collection.
+   */
+  @UiThread
+  fun scrollToIndex(index: Int, @Px offset: Int = 0) {
+    sectionTree?.requestFocusOnRoot(index, offset)
+  }
+
+  /**
+   * Perform an animated scroll on the [LazyCollection] so that the child at the given index is
+   * fully visible. For an instantaneous scroll use [scrollToIndex].
+   *
+   * @param index The index of the child to scroll to
+   * @param offset Attempt to offset the child by this number of pixels from the start of the
+   * Collection.
+   * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
+   */
+  @UiThread
+  fun smoothScrollToIndex(
+      index: Int,
+      @Px offset: Int = 0,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+  ) {
+    sectionTree?.requestSmoothFocusOnRoot(index, offset, smoothScrollAlignmentType)
   }
 }
+
+/**
+ * Scroll the [LazyCollection] by a given number of pixels. The Scroll is instant. For an animated
+ * scroll use [smoothScrollBy].
+ *
+ * @param controller The controller for the [LazyCollection] being scrolled.
+ * @param dx Distance to scroll along the x axis
+ * @param dy Distance to scroll along the y axis
+ */
+@UiThread
+fun ResourcesScope.scrollBy(controller: LazyCollectionController, dx: Dimen, dy: Dimen) =
+    controller.scrollBy(dx.toPixels(), dy.toPixels())
+
+/**
+ * Perform and animated scroll on the [LazyCollection] by a given number of pixels. For an
+ * instantaneous scroll use [scrollBy].
+ *
+ * @param controller The controller for the [LazyCollection] being scrolled.
+ * @param dx Distance to scroll along the x axis
+ * @param dy Distance to scroll along the y axis
+ */
+@UiThread
+fun ResourcesScope.smoothScrollBy(controller: LazyCollectionController, dx: Dimen, dy: Dimen) =
+    controller.smoothScrollBy(dx.toPixels(), dy.toPixels())
+
+/**
+ * Scroll the [LazyCollection] so that the child at the given index is fully visible. For an
+ * animated scroll use [smoothScrollToIndex].
+ *
+ * @param controller The controller for the [LazyCollection] being scrolled.
+ * @param index The index of the child to scroll to
+ * @param offset Attempt to offset the child by this distance from the start of the Collection.
+ */
+@UiThread
+fun ResourcesScope.scrollToIndex(
+    controller: LazyCollectionController,
+    index: Int,
+    offset: Dimen = 0.px
+) = controller.scrollToIndex(index, offset.toPixels())
+
+/**
+ * Perform an animated scroll on the [LazyCollection] so that the child at the given index is fully
+ * visible. For an instantaneous scroll use [scrollToIndex].
+ *
+ * @param controller The controller for the [LazyCollection] being scrolled.
+ * @param index The index of the child to scroll to
+ * @param offset Attempt to offset the child by this distance from the start of the Collection.
+ * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
+ */
+@UiThread
+fun ResourcesScope.smoothScrollToIndex(
+    controller: LazyCollectionController,
+    index: Int,
+    offset: Dimen = 0.px,
+    smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+) = controller.smoothScrollToIndex(index, offset.toPixels(), smoothScrollAlignmentType)

@@ -23,10 +23,16 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
+import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.view.viewTag
+import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
+import com.facebook.litho.widget.SmoothScrollAlignmentType
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -47,7 +53,6 @@ class LazyCollectionControllerTest {
               SectionsRecyclerView?)
           ?.recyclerView
 
-  @Test
   fun `test lazyCollectionController recyclerView reference is updated`() {
     val lazyCollectionController = LazyCollectionController()
 
@@ -67,5 +72,81 @@ class LazyCollectionControllerTest {
 
     assertThat(lazyCollectionController.recyclerView)
         .isSameAs(getLazyCollectionRecyclerView(testLithoView, "collection_tag"))
+  }
+
+  @Test
+  fun `test showRefreshing delegates to RecyclerEventsController`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    val recyclerEventsController = mock<RecyclerEventsController>()
+    lazyCollectionController.recyclerEventsController = recyclerEventsController
+
+    lazyCollectionController.showRefreshing()
+    verify(recyclerEventsController).showRefreshing()
+  }
+
+  @Test
+  fun `test clearRefreshing delegates to RecyclerEventsController`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    val recyclerEventsController = mock<RecyclerEventsController>()
+    lazyCollectionController.recyclerEventsController = recyclerEventsController
+
+    lazyCollectionController.clearRefreshing()
+    verify(recyclerEventsController).clearRefreshing()
+  }
+
+  @Test
+  fun `test scrollBy delegates to RecyclerView`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    val mockRecyclerView = mock<RecyclerView>()
+    val recyclerEventsController = mock<RecyclerEventsController>()
+    whenever(recyclerEventsController.recyclerView).thenReturn(mockRecyclerView)
+    lazyCollectionController.recyclerEventsController = recyclerEventsController
+
+    lazyCollectionController.scrollBy(10, 20)
+    verify(mockRecyclerView).scrollBy(10, 20)
+
+    lazyCollectionController.scrollBy(30, 40)
+    verify(mockRecyclerView).scrollBy(30, 40)
+  }
+
+  @Test
+  fun `test smoothScrollBy delegates to RecyclerView`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    val mockRecyclerView = mock<RecyclerView>()
+    val recyclerEventsController = mock<RecyclerEventsController>()
+    whenever(recyclerEventsController.recyclerView).thenReturn(mockRecyclerView)
+    lazyCollectionController.recyclerEventsController = recyclerEventsController
+
+    lazyCollectionController.smoothScrollBy(10, 20)
+    verify(mockRecyclerView).smoothScrollBy(10, 20)
+
+    lazyCollectionController.smoothScrollBy(30, 40)
+    verify(mockRecyclerView).smoothScrollBy(30, 40)
+  }
+
+  @Test
+  fun `test scrollToIndex delegates to SectionTree`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    val mockSectionTree = mock<SectionTree>()
+    lazyCollectionController.sectionTree = mockSectionTree
+
+    lazyCollectionController.scrollToIndex(5, 10)
+    verify(mockSectionTree).requestFocusOnRoot(5, 10)
+  }
+
+  @Test
+  fun `test smoothScrollToIndex delegates to SectionTree`() {
+    val lazyCollectionController = LazyCollectionController()
+
+    val mockSectionTree = mock<SectionTree>()
+    lazyCollectionController.sectionTree = mockSectionTree
+
+    lazyCollectionController.smoothScrollToIndex(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
+    verify(mockSectionTree).requestSmoothFocusOnRoot(5, 10, SmoothScrollAlignmentType.SNAP_TO_START)
   }
 }

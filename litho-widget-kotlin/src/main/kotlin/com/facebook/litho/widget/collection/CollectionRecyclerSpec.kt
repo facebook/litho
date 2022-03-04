@@ -190,9 +190,9 @@ object CollectionRecyclerSpec {
                 binderConfiguration.isPostToFrontOfQueueForFirstChangeset)
             .build()
     sectionTree.set(sectionTreeInstance)
-
-    val recyclerEventsController =
-        RecyclerEventsController().apply { setOnRecyclerUpdateListener(lazyCollectionController) }
+    lazyCollectionController?.sectionTree = sectionTreeInstance
+    val recyclerEventsController = RecyclerEventsController()
+    lazyCollectionController?.recyclerEventsController = recyclerEventsController
     internalRecyclerEventsController.set(recyclerEventsController)
     val viewPortChanged =
         ViewportChanged {

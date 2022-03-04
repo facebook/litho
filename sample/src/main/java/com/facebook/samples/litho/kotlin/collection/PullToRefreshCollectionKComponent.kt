@@ -23,13 +23,10 @@ import android.text.style.ForegroundColorSpan
 import androidx.annotation.ColorInt
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
-import com.facebook.litho.Style
-import com.facebook.litho.flexbox.flex
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
 
 // start_example
@@ -37,13 +34,12 @@ class PullToRefreshCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
     val deck = useState { (0..51).map { Card(it) }.shuffled() }
-    val lazyListHandle = Handle()
+    val lazyCollectionController = useState { LazyCollectionController() }.value
     return LazyList(
-        handle = lazyListHandle,
-        style = Style.flex(grow = 1f),
+        lazyCollectionController = lazyCollectionController,
         onPullToRefresh = {
           deck.update { it.shuffled() }
-          Collection.clearRefreshing(context, lazyListHandle)
+          lazyCollectionController.clearRefreshing()
         },
     ) { deck.value.forEach { card -> child(id = card.index, component = Text(card.styledText)) } }
   }

@@ -19,7 +19,6 @@ package com.facebook.litho.widget.collection
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.testing.LithoViewRule
@@ -47,17 +46,16 @@ class CollectionPaginationTest {
 
     class Test : KComponent() {
       override fun ComponentScope.render(): Component {
-        val handle = Handle()
+        val controller = LazyCollectionController()
         return LazyList(
-            handle = handle,
+            lazyCollectionController = controller,
             pagination = { lastVisibleIndex: Int, totalCount: Int ->
               lastVisibleIndexValue.set(lastVisibleIndex)
               totalCountValue.set(totalCount)
             },
-            style =
-                Style.viewTag("collection_tag").onClick {
-                  Collection.scrollTo(context, handle, 4)
-                }) { (0..4).forEach { child(Text("Child $it")) } }
+            style = Style.viewTag("collection_tag").onClick { controller.scrollToIndex(4) }) {
+          (0..4).forEach { child(Text("Child $it")) }
+        }
       }
     }
 

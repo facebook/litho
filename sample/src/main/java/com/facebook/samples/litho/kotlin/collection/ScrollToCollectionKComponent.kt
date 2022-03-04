@@ -26,9 +26,11 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.useState
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.Collection
+import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
 
 class ScrollToCollectionKComponent : KComponent() {
@@ -36,18 +38,17 @@ class ScrollToCollectionKComponent : KComponent() {
   override fun ComponentScope.render(): Component {
     val lazyListHandle = Handle()
     val endItemHandle = Handle()
+
+    val controller = useState { LazyCollectionController() }.value
     return Column(style = Style.padding(16.dp)) {
       child(
           Row {
-            child(Button("First") { Collection.scrollTo(context, lazyListHandle, 0) })
-            child(Button("Position 10") { Collection.scrollTo(context, lazyListHandle, 10) })
+            child(Button("First") { controller.scrollToIndex(0) })
+            child(Button("Position 10") { controller.scrollToIndex(10) })
             child(
                 Button("50 to center") {
-                  Collection.smoothScrollTo(
-                      context,
-                      lazyListHandle,
-                      50,
-                      smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_CENTER)
+                  controller.smoothScrollToIndex(
+                      50, smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_CENTER)
                 })
             child(
                 Button("End") {
@@ -61,6 +62,7 @@ class ScrollToCollectionKComponent : KComponent() {
       child(
           LazyList(
               handle = lazyListHandle,
+              lazyCollectionController = controller,
               style = Style.flex(grow = 1f),
           ) {
             (0..99).forEach { child(id = it, component = Text("$it ")) }

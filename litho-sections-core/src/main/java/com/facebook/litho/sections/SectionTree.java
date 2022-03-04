@@ -781,6 +781,15 @@ public class SectionTree {
     requestFocus(sectionKey, index);
   }
 
+  public void requestFocusOnRoot(int index, int offset) {
+    final String sectionKey = getRootSectionKey();
+    if (sectionKey == null) {
+      return;
+    }
+
+    requestFocusWithOffset(sectionKey, index, offset);
+  }
+
   public void requestFocusOnRoot(Handle target, int offset) {
     final String sectionKey = getRootSectionKey();
     if (sectionKey == null) {
