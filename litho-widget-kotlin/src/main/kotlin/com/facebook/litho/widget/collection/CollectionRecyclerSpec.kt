@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.EventHandler
-import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.StateValue
 import com.facebook.litho.TouchEvent
@@ -45,10 +44,8 @@ import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
 import com.facebook.litho.sections.widget.ScrollEvent
-import com.facebook.litho.sections.widget.ScrollToHandle
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.sections.widget.SmoothScrollEvent
-import com.facebook.litho.sections.widget.SmoothScrollToHandleEvent
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.litho.widget.PTRRefreshEvent
@@ -236,15 +233,6 @@ object CollectionRecyclerSpec {
   ): Unit = sectionTree.requestFocusOnRoot(position)
 
   @JvmStatic
-  @OnTrigger(ScrollToHandle::class)
-  fun onScrollToHandle(
-      c: ComponentContext,
-      @FromTrigger target: Handle?,
-      @FromTrigger offset: Int,
-      @State sectionTree: SectionTree
-  ): Unit = sectionTree.requestFocusOnRoot(target, offset)
-
-  @JvmStatic
   @OnTrigger(SmoothScrollEvent::class)
   fun onSmoothScroll(
       c: ComponentContext,
@@ -253,16 +241,6 @@ object CollectionRecyclerSpec {
       @FromTrigger type: SmoothScrollAlignmentType?,
       @State sectionTree: SectionTree
   ): Unit = sectionTree.requestSmoothFocusOnRoot(index, offset, type)
-
-  @JvmStatic
-  @OnTrigger(SmoothScrollToHandleEvent::class)
-  fun onSmoothScrollToHandle(
-      c: ComponentContext,
-      @FromTrigger target: Handle?,
-      @FromTrigger offset: Int,
-      @FromTrigger type: SmoothScrollAlignmentType?,
-      @State sectionTree: SectionTree
-  ): Unit = sectionTree.requestSmoothFocusOnRoot(target, offset, type)
 
   @JvmStatic
   @OnTrigger(ClearRefreshingEvent::class)

@@ -242,9 +242,6 @@ private fun createDataDiffSection(
                     isFullSpan(item.isFullSpan)
                   }
                   item.spanSize?.let { spanSize(it) }
-                  item.component?.handle?.let {
-                    customAttribute(RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY, it)
-                  }
                   customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
                 }
                 .component(component)

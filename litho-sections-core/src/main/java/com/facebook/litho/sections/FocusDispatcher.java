@@ -18,7 +18,6 @@ package com.facebook.litho.sections;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import com.facebook.litho.Handle;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 /**
@@ -64,14 +63,6 @@ class FocusDispatcher {
   }
 
   @UiThread
-  void requestSmoothFocus(Handle target, int offset, SmoothScrollAlignmentType type) {
-    if (shouldDispatchRequests()) {
-      mTarget.requestSmoothFocus(target, offset, type);
-      return;
-    }
-  }
-
-  @UiThread
   void requestSmoothFocus(Object id, int offset, SmoothScrollAlignmentType type) {
     if (shouldDispatchRequests()) {
       mTarget.requestSmoothFocus(id, offset, type);
@@ -93,14 +84,6 @@ class FocusDispatcher {
     }
 
     queueRequest(index, offset);
-  }
-
-  @UiThread
-  void requestFocusWithOffset(Handle target, int offset) {
-    if (shouldDispatchRequests()) {
-      mTarget.requestFocusWithOffset(target, offset);
-      return;
-    }
   }
 
   @UiThread

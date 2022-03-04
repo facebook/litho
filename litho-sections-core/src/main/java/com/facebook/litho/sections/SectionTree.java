@@ -136,16 +136,10 @@ public class SectionTree {
     void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type);
 
     /** Request smooth focus on the item with the given Handle. */
-    void requestSmoothFocus(Handle target, int offset, SmoothScrollAlignmentType type);
-
-    /** Request smooth focus on the item with the given Handle. */
     void requestSmoothFocus(Object id, int offset, SmoothScrollAlignmentType type);
 
     /** Request focus on the item with the given index, plus some additional offset. */
     void requestFocusWithOffset(int index, int offset);
-
-    /** Request focus on the item with the given Handle, plus some additional offset. */
-    void requestFocusWithOffset(Handle target, int offset);
 
     /** Request focus on the item with the given id, plus some additional offset. */
     void requestFocusWithOffset(Object id, int offset);
@@ -796,15 +790,6 @@ public class SectionTree {
     requestFocusWithOffset(sectionKey, index, offset);
   }
 
-  public void requestFocusOnRoot(Handle target, int offset) {
-    final String sectionKey = getRootSectionKey();
-    if (sectionKey == null) {
-      return;
-    }
-
-    requestFocusWithOffset(sectionKey, target, offset);
-  }
-
   public void requestFocusOnRoot(Object id, int offset) {
     final String sectionKey = getRootSectionKey();
     if (sectionKey == null) {
@@ -899,17 +884,6 @@ public class SectionTree {
         });
   }
 
-  void requestFocusWithOffset(final String sectionKey, final Handle target, final int offset) {
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            mFocusDispatcher.requestFocusWithOffset(target, offset);
-          }
-        });
-  }
-
   void requestFocusWithOffset(final String sectionKey, final Object id, final int offset) {
     focusRequestOnUiThread(
         mMainThreadHandler,
@@ -928,15 +902,6 @@ public class SectionTree {
     }
 
     requestSmoothFocus(rootSectionKey, index, offset, type);
-  }
-
-  public void requestSmoothFocusOnRoot(Handle handle, int offset, SmoothScrollAlignmentType type) {
-    @Nullable final String rootSectionKey = getRootSectionKey();
-    if (rootSectionKey == null) {
-      return;
-    }
-
-    requestSmoothFocus(rootSectionKey, handle, offset, type);
   }
 
   public void requestSmoothFocusOnRoot(Object id, int offset, SmoothScrollAlignmentType type) {
@@ -963,21 +928,6 @@ public class SectionTree {
               mFocusDispatcher.requestSmoothFocus(
                   sectionLocationInfo.mStartIndex + index, offset, type);
             }
-          }
-        });
-  }
-
-  void requestSmoothFocus(
-      final String globalKey,
-      final Handle target,
-      final int offset,
-      final SmoothScrollAlignmentType type) {
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            mFocusDispatcher.requestSmoothFocus(target, offset, type);
           }
         });
   }

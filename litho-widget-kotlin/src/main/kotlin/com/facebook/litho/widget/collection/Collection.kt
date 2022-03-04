@@ -16,43 +16,7 @@
 
 package com.facebook.litho.widget.collection
 
-import androidx.annotation.Px
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.Handle
-import com.facebook.litho.widget.SmoothScrollAlignmentType
-
 object Collection {
-
-  fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
-      CollectionRecycler.onScroll(c, handle, position)
-
-  fun scrollToHandle(
-      c: ComponentContext,
-      handle: Handle,
-      target: Handle,
-      @Px offset: Int = 0,
-  ): Unit = CollectionRecycler.onScrollToHandle(c, handle, target, offset)
-
-  fun smoothScrollTo(
-      c: ComponentContext,
-      handle: Handle,
-      index: Int,
-      @Px offset: Int = 0,
-      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
-  ): Unit = CollectionRecycler.onSmoothScroll(c, handle, index, offset, smoothScrollAlignmentType)
-
-  fun smoothScrollToHandle(
-      c: ComponentContext,
-      handle: Handle,
-      target: Handle,
-      @Px offset: Int = 0,
-      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
-  ): Unit =
-      CollectionRecycler.onSmoothScrollToHandle(
-          c, handle, target, offset, smoothScrollAlignmentType)
-
-  fun clearRefreshing(c: ComponentContext, handle: Handle): Unit =
-      CollectionRecycler.onClearRefreshing(c, handle)
 
   /**
    * Create a manager for tail pagination, i.e. fetch more data when a [Collection] is scrolled near
