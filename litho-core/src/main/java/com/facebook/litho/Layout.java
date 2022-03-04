@@ -244,12 +244,18 @@ class Layout {
         node = component.resolve(layoutStateContext, c);
       }
 
-      // If the component is a MountSpec.
+      // If the component is a MountSpec (including MountableComponents).
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
         node = InternalNodeUtils.create(c);
         node.flexDirection(YogaFlexDirection.COLUMN);
+
+        // Call onPrepare for MountSpecs or prepare for MountableComponents.
+        PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
+        if (prepareResult != null) {
+          node.setMountable(prepareResult.mountable);
+        }
       }
 
       // If the component is a LayoutSpec.
@@ -343,19 +349,7 @@ class Layout {
       node.addAttachable(new LayoutSpecAttachable(globalKey, component, scopedComponentInfo));
     }
 
-    // 13. Call onPrepare for MountSpecs or prepare for MountableComponents.
-    if (isMountSpec(component)) {
-      try {
-        PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
-        if (prepareResult != null) {
-          node.setMountable(prepareResult.mountable);
-        }
-      } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(parent, component, e);
-      }
-    }
-
-    // 14. Add working ranges to the InternalNode.
+    // 13. Add working ranges to the InternalNode.
     scopedComponentInfo.addWorkingRangeToNode(node);
 
     if (isTracing) {
