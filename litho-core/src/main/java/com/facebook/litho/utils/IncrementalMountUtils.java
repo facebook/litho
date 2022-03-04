@@ -50,7 +50,7 @@ public class IncrementalMountUtils {
    *     setting Left / Top, or calling offsetTopAndBottom
    */
   public static void incrementallyMountLithoViews(View view, boolean isManualPositionChange) {
-    if (view instanceof LithoView && ((LithoView) view).isIncrementalMountEnabled()) {
+    if (view instanceof LithoView) {
       final LithoView lithoView = (LithoView) view;
       if (isManualPositionChange) {
         lithoView.notifyLithoViewGlobalPositionChanged();
