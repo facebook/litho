@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
+import com.facebook.litho.widget.Progress
 
 /** Builder function for creating [ProgressSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")

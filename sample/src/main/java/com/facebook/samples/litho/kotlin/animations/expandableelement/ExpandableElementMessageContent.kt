@@ -24,9 +24,9 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
-import com.facebook.litho.widget.Text
 
 class ExpandableElementMessageContent(
     private val messageText: String,

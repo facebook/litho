@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.view.View
 import com.facebook.litho.Component
 import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
+import com.facebook.litho.widget.HorizontalScroll
+import com.facebook.litho.widget.HorizontalScrollEventsController
 
 /** Builder function for creating [HorizontalScrollSpec] components. */
 @Suppress("FunctionName")

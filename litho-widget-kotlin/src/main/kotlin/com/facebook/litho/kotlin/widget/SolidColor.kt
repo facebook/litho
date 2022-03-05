@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
+import androidx.annotation.ColorInt
 import com.facebook.litho.ResourcesScope
+import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
+import com.facebook.litho.widget.SolidColor
 
-/** A component that doesn't render anything. */
-inline fun ResourcesScope.EmptyComponent(): EmptyComponent = EmptyComponent.create(context).build()
+/** Builder function for creating [SolidColorSpec] components. */
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
+inline fun ResourcesScope.SolidColor(@ColorInt color: Int, style: Style? = null): SolidColor =
+    SolidColor.create(context).color(color).kotlinStyle(style).build()

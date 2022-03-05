@@ -20,8 +20,8 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
-import com.facebook.litho.widget.Text
 
 // start_example
 class VariableArgumentPropKComponent(private vararg val names: String) : KComponent() {

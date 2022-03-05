@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
@@ -23,6 +23,8 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sp
+import com.facebook.litho.widget.ItemSelectedEvent
+import com.facebook.litho.widget.Spinner
 
 /** Builder function for creating [SpinnerSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")

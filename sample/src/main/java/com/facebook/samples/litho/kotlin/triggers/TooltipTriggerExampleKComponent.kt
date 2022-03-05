@@ -33,11 +33,11 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.handle
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useCached
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.litho.visibility.onVisible
-import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaAlign
 
 class TooltipTriggerExampleKComponent : KComponent() {

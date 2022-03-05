@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.view.MotionEvent
 import androidx.core.widget.NestedScrollView
@@ -25,6 +25,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.px
+import com.facebook.litho.widget.VerticalScroll
+import com.facebook.litho.widget.VerticalScrollEventsController
 
 /** Builder function for creating [VerticalScrollSpec] components. */
 @Suppress("FunctionName")

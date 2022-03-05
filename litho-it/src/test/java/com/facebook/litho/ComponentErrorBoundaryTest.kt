@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.Rect
 import android.view.View
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -40,7 +41,6 @@ import com.facebook.litho.widget.OnErrorPassUpChildTester
 import com.facebook.litho.widget.OnErrorPassUpParentTester
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
-import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
 import com.facebook.yoga.YogaEdge
 import java.lang.Exception

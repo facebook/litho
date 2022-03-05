@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
@@ -24,6 +24,7 @@ import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
+import com.facebook.litho.widget.Card
 
 /** Builder function for creating [CardSpec] components. */
 @Suppress("FunctionName")

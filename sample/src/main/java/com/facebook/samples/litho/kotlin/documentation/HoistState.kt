@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.eventHandlerWithReturn
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useEffect
 import com.facebook.litho.useRef
 import com.facebook.litho.useState
-import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextInput
 
 // start_example

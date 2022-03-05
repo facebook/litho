@@ -21,12 +21,12 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.rotation
 import com.facebook.litho.view.scale
 import com.facebook.litho.view.viewTag
-import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

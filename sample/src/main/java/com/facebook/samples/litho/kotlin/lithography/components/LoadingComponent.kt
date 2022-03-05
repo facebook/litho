@@ -24,7 +24,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
-import com.facebook.litho.widget.Progress
+import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 
 class LoadingComponent : KComponent() {

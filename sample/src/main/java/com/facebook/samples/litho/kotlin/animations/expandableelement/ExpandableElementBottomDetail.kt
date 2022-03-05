@@ -23,9 +23,9 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
 import com.facebook.litho.transition.transitionKey
-import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.animations.expandableelement.TRANSITION_BOTTOM_DETAIL
 import com.facebook.yoga.YogaAlign
 

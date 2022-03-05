@@ -21,8 +21,8 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.Text
 
 // start_example
 class ClickEventComponent(

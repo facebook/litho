@@ -31,6 +31,7 @@ import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.px
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoViewRule

@@ -20,7 +20,7 @@ import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.widget.Text
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.widget.collection.LazyGrid
 
 class SpanCollectionKComponent : KComponent() {

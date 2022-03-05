@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
-import androidx.annotation.ColorInt
+import android.graphics.drawable.Drawable
+import android.widget.ImageView.ScaleType
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
+import com.facebook.litho.widget.Image
 
-/** Builder function for creating [SolidColorSpec] components. */
+/** Builder function for creating [ImageSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun ResourcesScope.SolidColor(@ColorInt color: Int, style: Style? = null): SolidColor =
-    SolidColor.create(context).color(color).kotlinStyle(style).build()
+inline fun ResourcesScope.Image(
+    drawable: Drawable,
+    style: Style? = null,
+    scaleType: ScaleType = ScaleType.FIT_CENTER
+): Image = Image.create(context).drawable(drawable).scaleType(scaleType).kotlinStyle(style).build()

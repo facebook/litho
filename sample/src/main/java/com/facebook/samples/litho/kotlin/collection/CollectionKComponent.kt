@@ -23,7 +23,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.widget.Text
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 
 class CollectionKComponent : KComponent() {

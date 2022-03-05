@@ -20,12 +20,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
-import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference

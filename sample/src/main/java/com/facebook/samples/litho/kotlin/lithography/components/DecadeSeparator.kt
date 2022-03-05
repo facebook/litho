@@ -26,10 +26,10 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.px
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
-import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Decade
 import com.facebook.yoga.YogaAlign.CENTER
 

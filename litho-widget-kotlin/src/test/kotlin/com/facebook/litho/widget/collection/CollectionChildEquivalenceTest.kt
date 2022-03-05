@@ -20,9 +20,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

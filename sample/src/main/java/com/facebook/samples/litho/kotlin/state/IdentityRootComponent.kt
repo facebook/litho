@@ -27,11 +27,11 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.dp
 import com.facebook.litho.key
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useRef
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.visibility.onVisible
-import com.facebook.litho.widget.Text
 
 class IdentityRootComponent : KComponent() {
   override fun ComponentScope.render(): Component {

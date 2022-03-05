@@ -19,9 +19,10 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.kotlin.widget.EmptyComponent
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.widget.EmptyComponent
-import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat

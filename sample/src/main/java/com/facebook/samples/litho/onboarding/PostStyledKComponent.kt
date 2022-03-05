@@ -31,8 +31,8 @@ import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
 import com.facebook.litho.flexbox.aspectRatio
-import com.facebook.litho.widget.Image
-import com.facebook.litho.widget.Text
+import com.facebook.litho.kotlin.widget.Image
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.samples.litho.onboarding.model.Post
 import com.facebook.yoga.YogaAlign
 

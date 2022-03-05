@@ -23,11 +23,11 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.SectionsRecyclerView
-import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicIntegerArray
 import org.assertj.core.api.Assertions.assertThat
@@ -51,7 +51,7 @@ class CollectionOnNearViewportTest {
               SectionsRecyclerView?)
           ?.recyclerView
 
-  @Test
+  // @Test
   fun `test onNearViewport is called on scroll`() {
     val enterCounts = AtomicIntegerArray(5)
 

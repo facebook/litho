@@ -24,10 +24,10 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.Text
 
 class PlaygroundKComponent : KComponent() {
   override fun ComponentScope.render(): Component? {

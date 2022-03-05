@@ -16,13 +16,13 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
-import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule

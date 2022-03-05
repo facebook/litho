@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -31,9 +31,9 @@ import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
-
-const val SHOULD_INCLUDE_FONT_PADDING = TextSpec.shouldIncludeFontPadding
-const val CLIP_TO_BOUNDS = TextSpec.clipToBounds
+import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextAlignment
+import com.facebook.litho.widget.VerticalGravity
 
 /**
  * Temporary builder function for creating [TextSpec] components. In the future it will either be
@@ -56,9 +56,9 @@ inline fun ResourcesScope.Text(
     lineSpacingMultiplier: Float = 1f,
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
-    includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
+    includeFontPadding: Boolean = false,
     accessibleClickableSpans: Boolean = false,
-    clipToBounds: Boolean = CLIP_TO_BOUNDS,
+    clipToBounds: Boolean = true,
     handle: Handle? = null,
     customEllipsisText: CharSequence? = null,
     @ColorInt backgroundColor: Int? = null,

@@ -23,10 +23,10 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.border
-import com.facebook.litho.widget.Border
-import com.facebook.litho.widget.BorderEdge
-import com.facebook.litho.widget.BorderEffect
-import com.facebook.litho.widget.Text
+import com.facebook.litho.kotlin.widget.Border
+import com.facebook.litho.kotlin.widget.BorderEdge
+import com.facebook.litho.kotlin.widget.BorderEffect
+import com.facebook.litho.kotlin.widget.Text
 
 class DashPathEffectBorder : KComponent() {
 

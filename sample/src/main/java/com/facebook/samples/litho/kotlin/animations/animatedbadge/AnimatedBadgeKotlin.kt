@@ -35,12 +35,12 @@ import com.facebook.litho.dp
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.key
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType

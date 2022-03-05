@@ -24,7 +24,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.widget.Text
+import com.facebook.litho.kotlin.widget.Text
 
 class FooterComponent(val text: String) : KComponent() {
   override fun ComponentScope.render() =

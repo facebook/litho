@@ -24,6 +24,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionTree
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestLithoView
@@ -31,7 +32,6 @@ import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.litho.widget.SmoothScrollAlignmentType
-import com.facebook.litho.widget.Text
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever

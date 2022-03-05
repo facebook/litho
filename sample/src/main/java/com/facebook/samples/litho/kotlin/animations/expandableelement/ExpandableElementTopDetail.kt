@@ -20,9 +20,9 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.flexbox.alignSelf
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
 import com.facebook.litho.transition.transitionKey
-import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.animations.expandableelement.TRANSITION_TOP_DETAIL
 import com.facebook.yoga.YogaAlign
 

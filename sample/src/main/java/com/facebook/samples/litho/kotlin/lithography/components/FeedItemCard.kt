@@ -22,7 +22,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.widget.Card
+import com.facebook.litho.kotlin.widget.Card
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
 class FeedItemCard(val artist: Artist) : KComponent() {

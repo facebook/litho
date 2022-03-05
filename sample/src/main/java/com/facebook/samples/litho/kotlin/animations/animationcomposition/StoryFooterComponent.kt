@@ -33,6 +33,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.transition.useTransition
@@ -40,7 +41,6 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.testKey
-import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho.kotlin.widget
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -29,6 +29,9 @@ import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
+import com.facebook.litho.widget.SelectionChangedEvent
+import com.facebook.litho.widget.TextChangedEvent
+import com.facebook.litho.widget.TextInput
 
 /** Builder function for creating [TextInputSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")

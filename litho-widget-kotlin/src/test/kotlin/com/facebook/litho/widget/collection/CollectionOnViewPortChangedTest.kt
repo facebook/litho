@@ -24,11 +24,11 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Style
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.TestLithoView
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.SectionsRecyclerView
-import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -99,9 +99,9 @@ class CollectionOnViewPortChangedTest {
     }
 
     assertThat(firstVisibleIndexValue.get()).isEqualTo(1)
-    assertThat(lastVisibleIndexValue.get()).isEqualTo(3)
+    assertThat(lastVisibleIndexValue.get()).isEqualTo(4)
     assertThat(totalCountValue.get()).isEqualTo(5)
     assertThat(firstFullyVisibleIndexValue.get()).isEqualTo(2)
-    assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(2)
+    assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(3)
   }
 }

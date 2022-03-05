@@ -19,6 +19,7 @@ package com.facebook.litho.widget.collection
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.kotlin.widget.EmptyComponent
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text

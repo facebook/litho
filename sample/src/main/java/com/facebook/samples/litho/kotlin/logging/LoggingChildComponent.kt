@@ -21,7 +21,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.getTreeProp
-import com.facebook.litho.widget.Text
+import com.facebook.litho.kotlin.widget.Text
 
 class LoggingChildComponent : KComponent() {
   override fun ComponentScope.render(): Component? {

@@ -24,8 +24,8 @@ import androidx.annotation.ColorInt
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useState
-import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyCollectionController
 import com.facebook.litho.widget.collection.LazyList
 
