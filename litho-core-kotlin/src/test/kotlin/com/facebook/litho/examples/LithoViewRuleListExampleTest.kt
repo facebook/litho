@@ -63,6 +63,11 @@ class LithoViewRuleListExampleTest {
 
     assertThat(listComponent.components[listComponent.lastVisibleIndex])
         .hasFieldOrPropertyWithValue("text", "child3")
+
+    assertThat(
+            listComponent.components.slice(
+                listComponent.firstVisibleIndex..listComponent.lastVisibleIndex))
+        .hasSize(3)
   }
 
   @Test

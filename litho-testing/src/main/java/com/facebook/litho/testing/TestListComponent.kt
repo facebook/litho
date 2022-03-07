@@ -66,4 +66,26 @@ class TestListComponent {
   /** Get the last Fully visible item index, returns -1 when there are no components */
   val lastFullyVisibleIndex: Int
     get() = recyclerBinder.findLastFullyVisibleItemPosition()
+
+  /** Get all visible items */
+  val visibleComponents: List<Component>
+    get() =
+        if (recyclerBinder.findFirstVisibleItemPosition() != RecyclerView.NO_POSITION) {
+          components.slice(
+              recyclerBinder.findFirstVisibleItemPosition()..recyclerBinder
+                      .findLastVisibleItemPosition())
+        } else {
+          listOf()
+        }
+
+  /** Get all fully visible items */
+  val fullyVisibleComponents: List<Component>
+    get() =
+        if (recyclerBinder.findFirstVisibleItemPosition() != RecyclerView.NO_POSITION) {
+          components.slice(
+              recyclerBinder.findFirstFullyVisibleItemPosition()..recyclerBinder
+                      .findLastFullyVisibleItemPosition())
+        } else {
+          listOf()
+        }
 }
