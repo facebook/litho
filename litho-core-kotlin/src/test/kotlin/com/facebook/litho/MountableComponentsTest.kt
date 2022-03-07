@@ -36,6 +36,7 @@ import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -172,6 +173,27 @@ class MountableComponentsTest {
     alphaDV.set(0.7f)
     assertThat(lithoViewRule.lithoView.alpha).isEqualTo(0.7f)
   }
+
+  @Test
+  fun `updating the state in mountable takes effect`() {
+    lateinit var stateRef: AtomicReference<String>
+
+    class TestComponent(val view: View) : MountableComponent() {
+      override fun ComponentScope.render(): ViewMountable {
+        val testState: State<String> = useState { "initial" }
+        stateRef = AtomicReference(testState.value)
+        return ViewMountable(view, updateState = { testState.update { s -> s + "_" + it } })
+      }
+    }
+
+    lithoViewRule.render { TestComponent(TextView(lithoViewRule.context.androidContext)) }
+
+    lithoViewRule.idle()
+
+    assertThat(stateRef.get())
+        .describedAs("String state is updated")
+        .isEqualTo("initial_createContent_mount")
+  }
 }
 
 class TestMountableComponent(
@@ -189,9 +211,11 @@ class TestMountableComponent(
 class ViewMountable(
     val view: View,
     private val steps: MutableList<LifecycleStep.StepInfo>? = null,
+    private val updateState: ((String) -> Unit)? = null
 ) : SimpleMountable<View>() {
 
   override fun createContent(context: Context): View {
+    updateState?.invoke("createContent")
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
     return view
   }
@@ -225,6 +249,7 @@ class ViewMountable(
   }
 
   override fun mount(c: Context?, content: View, layoutData: Any?) {
+    updateState?.invoke("mount")
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
     layoutData as ViewLayoutData
   }
