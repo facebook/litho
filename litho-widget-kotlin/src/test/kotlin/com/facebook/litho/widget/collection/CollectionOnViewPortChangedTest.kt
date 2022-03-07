@@ -99,9 +99,9 @@ class CollectionOnViewPortChangedTest {
     }
 
     assertThat(firstVisibleIndexValue.get()).isEqualTo(1)
-    assertThat(lastVisibleIndexValue.get()).isEqualTo(4)
+    assertThat(lastVisibleIndexValue.get()).isEqualTo(3)
     assertThat(totalCountValue.get()).isEqualTo(5)
     assertThat(firstFullyVisibleIndexValue.get()).isEqualTo(2)
-    assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(3)
+    assertThat(lastFullyVisibleIndexValue.get()).isEqualTo(2)
   }
 }

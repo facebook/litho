@@ -56,7 +56,7 @@ inline fun ResourcesScope.Text(
     lineSpacingMultiplier: Float = 1f,
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
-    includeFontPadding: Boolean = false,
+    includeFontPadding: Boolean = true,
     accessibleClickableSpans: Boolean = false,
     clipToBounds: Boolean = true,
     handle: Handle? = null,

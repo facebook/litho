@@ -51,7 +51,7 @@ class CollectionOnNearViewportTest {
               SectionsRecyclerView?)
           ?.recyclerView
 
-  // @Test
+  @Test
   fun `test onNearViewport is called on scroll`() {
     val enterCounts = AtomicIntegerArray(5)
 
