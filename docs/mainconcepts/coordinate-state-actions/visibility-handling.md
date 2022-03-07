@@ -23,7 +23,7 @@ The framework currently supports six types of Visibility callbacks:
 
 #### Delcaring Visibility Event Callbacks:
 
-Visibility callbacks are declared like all other events in Litho. Please see the documentation for [events](/docs/mainconcepts/coordinate-state-actions/events) to learn more.
+Visibility callbacks are declared like all other events in Litho. Please see the documentation for [events](/docs/codegen/events-for-specs) to learn more.
 
 #### Using Visibility Event handlers:
 

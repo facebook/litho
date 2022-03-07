@@ -1,6 +1,6 @@
 ---
-id: events
-title: Events Overview
+id: events-for-specs
+title: Events for Specs
 ---
 
 :::caution Content will be updated

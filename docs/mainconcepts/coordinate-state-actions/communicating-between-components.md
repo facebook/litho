@@ -7,7 +7,7 @@ import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
 
 ### Dispatching an Event from a Child to the Parent
 
-In the Spec API, communicating from a child to a parent is done through an `EventHandler`, which handles a custom event type. The `EventHandler` is defined in the parent component and passed as a Prop to the child component.  For more information on Spec events, see the document [Events Overview](/docs/mainconcepts/coordinate-state-actions/events).
+In the Spec API, communicating from a child to a parent is done through an `EventHandler`, which handles a custom event type. The `EventHandler` is defined in the parent component and passed as a Prop to the child component.  For more information on Spec events, see the document [Events Overview](/docs/codegen/events-for-specs).
 
 <FbInternalOnly>
 

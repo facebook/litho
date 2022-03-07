@@ -59,7 +59,7 @@ Next, provide a visual indicator to the user that a request is in progress by di
 
 To implement 'pull to refresh' behaviour, provide a lambda to `LazyList`'s `onPullToRefresh` parameter. This can then trigger your refresh logic, for events such as fetching new data.
 
-To dismiss the refreshing indicator use `Collection.clearRefreshing(context, collectionHandle)`. This requires a [`Handle`](../mainconcepts/coordinate-state-actions/trigger-events.md) to be specified on the `LazyList`:
+To dismiss the refreshing indicator use `Collection.clearRefreshing(context, collectionHandle)`. This requires a [`Handle`](/codegen/trigger-events.md) to be specified on the `LazyList`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/PullToRefreshCollectionKComponent.kt start=start_example end=end_example
 ```

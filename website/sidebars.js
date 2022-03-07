@@ -47,9 +47,7 @@ module.exports = {
         // TODO: remove/replace 'Coordinating State and Actions'
         'Coordinating State and Actions': [
           'mainconcepts/coordinate-state-actions/hoisting-state',
-          'mainconcepts/coordinate-state-actions/events',
           'mainconcepts/coordinate-state-actions/communicating-between-components',
-          'mainconcepts/coordinate-state-actions/trigger-events',
           'mainconcepts/coordinate-state-actions/componenttree',
           'mainconcepts/coordinate-state-actions/visibility-handling',
           'mainconcepts/coordinate-state-actions/keys-and-identity',
@@ -97,6 +95,8 @@ module.exports = {
         ],
       },
       'codegen/state-for-specs',
+      'codegen/events-for-specs',
+      'codegen/trigger-events',
     ],
     'Animations': [
       'animations/transition-basics',
