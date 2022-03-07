@@ -21,7 +21,6 @@ import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.Looper;
@@ -31,13 +30,10 @@ import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
-import com.facebook.litho.widget.MountSpecWithMountUnmountAssertion;
-import com.facebook.litho.widget.MountSpecWithMountUnmountAssertionSpec;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
-import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RunnableHandler;
@@ -539,68 +535,5 @@ public class MountSpecLifecycleTest {
     assertThat(info_child2.getSteps())
         .describedAs("Should not recreate initial state.")
         .doesNotContain(ON_CREATE_INITIAL_STATE);
-  }
-
-  /**
-   * This test case captures the scenario where unmount can get called on a component for which
-   * mount was never invoked. 1. A layout is mounted. 2. The next layout update does not cause a new
-   * mount pass. 3. When the next mount pass is triggered, an item is unmounted as it is out of the
-   * view port. 4. The unmount must be called on the old (currently) mounted component.
-   */
-  @Test
-  public void whenItemsAreUmounted_thenUnmountMustbeInvokedOnTheCurrentlyMountedComponent() {
-    final ComponentContext c = mLegacyLithoViewRule.getContext();
-    final Component initialComponent =
-        Column.create(c)
-            .heightPx(200)
-            .child(Text.create(c).text("1").heightPx(100))
-            .child(
-                MountSpecWithMountUnmountAssertion.create(c)
-                    .container(new MountSpecWithMountUnmountAssertionSpec.Container())
-                    .heightPx(100))
-            .build();
-
-    final ComponentTree initialComponentTree =
-        ComponentTree.create(c, initialComponent).useRenderUnitIdMap(true).build();
-
-    LithoView lithoView = new LithoView(c.getAndroidContext());
-
-    // Mount a layout with the component.
-    lithoView.setComponentTree(initialComponentTree);
-    lithoView.measure(exactly(100), exactly(200));
-    lithoView.layout(0, 0, 100, 200);
-
-    // Assert that the view is mounted
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-
-    Component newComponent =
-        Column.create(c)
-            .heightPx(200)
-            .child(Text.create(c).text("1").heightPx(100))
-            .child(
-                MountSpecWithMountUnmountAssertion.create(c)
-                    .container(new MountSpecWithMountUnmountAssertionSpec.Container())
-                    .heightPx(100)
-                    .build())
-            .build();
-
-    // Create a new component tree so that state is recreated
-    // but use the id maps, and component tree id from the initial
-    // tree so that new ids match the current one
-    final ComponentTree newComponentTree =
-        ComponentTree.create(c, newComponent)
-            .useRenderUnitIdMap(true)
-            .overrideRenderUnitIdMap(initialComponentTree)
-            .overrideComponentTreeId(initialComponentTree.mId)
-            .build();
-
-    lithoView.setComponentTree(newComponentTree);
-
-    // Mount a new layout, but with a shorter height, to make the item unmount
-    lithoView.measure(exactly(100), exactly(95));
-    lithoView.layout(0, 0, 100, 95);
-
-    // Assert that the items is unmounted.
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
   }
 }
