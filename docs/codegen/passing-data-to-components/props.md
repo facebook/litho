@@ -1,6 +1,6 @@
 ---
-id: props
-title: Props
+id: spec-props
+title: Props in Specs
 ---
 
 import Tabs from '@theme/Tabs';

@@ -42,11 +42,10 @@ module.exports = {
           'mainconcepts/use-error-boundary',
         ],
       },
-      'mainconcepts/uicomposition/flexbox-yoga',
+      'mainconcepts/flexbox-yoga',
       {
         // TODO: remove/replace 'Coordinating State and Actions'
         'Coordinating State and Actions': [
-          'mainconcepts/coordinate-state-actions/state-overview',
           'mainconcepts/coordinate-state-actions/hoisting-state',
           'mainconcepts/coordinate-state-actions/events',
           'mainconcepts/coordinate-state-actions/communicating-between-components',
@@ -89,14 +88,15 @@ module.exports = {
     }),
     // TODO: clean this section up, add intro page
     'Codegen APIs': [
-      'mainconcepts/uicomposition/layout-specs',
-      'mainconcepts/uicomposition/mount-specs',
+      'codegen/layout-specs',
+      'codegen/mount-specs',
       {
         'Passing Data To Components': [
-          'mainconcepts/passing-data-to-components/props',
-          'mainconcepts/passing-data-to-components/treeprops',
+          'codegen/passing-data-to-components/spec-props',
+          'codegen/passing-data-to-components/treeprops',
         ],
       },
+      'codegen/state-for-specs',
     ],
     'Animations': [
       'animations/transition-basics',

@@ -66,7 +66,7 @@ Before we start, let's add 2 simple classes to represent `User` and `Post` data 
 Now it's time for UI work!
 First you'll create a component for an Instagram post and that requires layouting 2 images
 and a text in a particular way. Layouts in Litho are defined via the Flexbox API. You can read more
-about different layouting options in [Layout with Flexbox](../mainconcepts/uicomposition/flexbox-yoga.mdx)
+about different layouting options in [Layout with Flexbox](/mainconcepts/flexbox-yoga.mdx)
 doc, but for now it's enough to know that the main Flexbox primitives are **Column** and **Row**,
 and they are used to arrange children vertically and horizontally, respectively.
 

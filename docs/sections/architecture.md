@@ -24,7 +24,7 @@ The framework can perform incremental and conditional updates on the structure o
 
 To update a section tree to reflect new props, create a section with the new prop values and call [SectionTree#setRoot()](pathname:///javadoc/com/facebook/litho/sections/SectionTree.html#setRoot-com.facebook.litho.sections.Section-). This is also how you set an initial root section on a tree since it's essentially diffing a new section hierarchy with an empty hierarchy.
 
-To update a section tree when a state value changes, perform a regular state update, as described in the [State Overview](../mainconcepts/coordinate-state-actions/state-overview.md) page of the Litho documentation.
+To update a section tree when a state value changes, perform a regular state update, as described in the [State for Specs](/codegen/state-for-specs.md) page of the Litho documentation.
 
 You may notice that the `setRoot()` and `updateState()` methods also have 'async' implementations, which are (`setRootAsync()` and `updateStateAsync()`) respectively.  The `*async()` methods will ensure that the resulting ChangeSet calculation is performed on a background thread.  Otherwise, the resulting ChangeSet calculation will be done synchronously on whatever thread `setRoot()` or `updateState()` was called.
 
@@ -37,8 +37,8 @@ You may notice that the `setRoot()` and `updateState()` methods also have 'async
 A tree is generated from a single root section by recursively calling `@OnCreateChildren` on group section specs until it reaches the leaf sections, diff section specs.  As it visits a new section, `SectionTree` will:
 
 * Create a new `SectionContext` scoped to this new section.
-* Check if there's a corresponding section in the current hierarchy, via [key](../mainconcepts/coordinate-state-actions/state-overview.md#keys-and-identifying-components)) and transfer any state and service values over to the new section.
-* Check if there's any pending state updates for the new section, via [key](../mainconcepts/coordinate-state-actions/state-overview.md#keys-and-identifying-components)) and perform the updates if they exist.
+* Check if there's a corresponding section in the current hierarchy, via [key](/codegen/state-for-specs.md#keys-and-identifying-components)) and transfer any state and service values over to the new section.
+* Check if there's any pending state updates for the new section, via [key](/codegen/state-for-specs.md#keys-and-identifying-components)) and perform the updates if they exist.
 * Create the new child sections by calling `SectionLifecycle#createChildren` then recursively visit those child sections.
 
 ### Generating a Changeset
