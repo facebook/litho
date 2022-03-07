@@ -3,7 +3,7 @@ id: props-vs-state
 title: Props vs. State
 ---
 
-Litho components have two types of data model: [Props](../mainconcepts/passing-data-to-components/props.md) and [State](../mainconcepts/coordinate-state-actions/hoisting-state.md). It's important to understand the difference between the two so you'll know when you need to use each of them.
+Litho components have two types of data model: [Props](/codegen/passing-data-to-components/props.md) and [State](../mainconcepts/coordinate-state-actions/hoisting-state.md). It's important to understand the difference between the two so you'll know when you need to use each of them.
 
 ## Props
 

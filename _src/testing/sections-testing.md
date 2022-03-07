@@ -121,7 +121,7 @@ Sometimes, a section's behaviour is based on both external props and internal st
 
 ## Testing Events
 
-Sections, which heavily uses the [event handling system](../mainconcepts/coordinate-state-actions/events.md), and the `SectionComponentTestHelper`, which has helper methods, both make testing events easier. Simply create an event handler using the scoped context and dispatch your event to execute the event handler:
+Sections, which heavily uses the [event handling system](/codegen/events-for-specs.md), and the `SectionComponentTestHelper`, which has helper methods, both make testing events easier. Simply create an event handler using the scoped context and dispatch your event to execute the event handler:
 
 ```java
 

@@ -3,7 +3,7 @@ id: hoisting-state
 title: Hoisting State
 ---
 
-Often, several components need to reflect the same changing value. Rather than a [state](docs/mainconcepts/coordinate-state-actions/state-overview) for each component, it is better to host a single state in their closest common ancestor.
+Often, several components need to reflect the same changing value. Rather than a [state](/docs/codegen/state-for-specs) for each component, it is better to host a single state in their closest common ancestor.
 
 ## Interface Scenario
 

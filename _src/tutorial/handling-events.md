@@ -7,4 +7,4 @@ title: Handling Events
 🚧   THIS PAGE IS UNDER CONSTRUCTION
 :::
 
-For now, see [Events Overview](../mainconcepts/coordinate-state-actions/events.md) for an overview of how to use events in Litho.
+For now, see [Events Overview](../codegen/events-for-specs.md) for an overview of how to use events in Litho.
