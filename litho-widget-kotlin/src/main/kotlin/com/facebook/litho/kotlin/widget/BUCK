@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
@@ -23,6 +24,7 @@ load(
 
 litho_android_library(
     name = "widget-kotlin",
+    feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     language = "KOTLIN",
