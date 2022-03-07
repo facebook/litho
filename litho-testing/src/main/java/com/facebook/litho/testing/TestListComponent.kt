@@ -50,4 +50,20 @@ class TestListComponent {
   /** All Components managed by the lazy collection */
   val components: List<Component>
     get() = (0 until itemCount).map { recyclerBinder.getRenderInfoAt(it).component }
+
+  /** Get the first visible item index, returns -1 when there are no components */
+  val firstVisibleIndex: Int
+    get() = recyclerBinder.findFirstVisibleItemPosition()
+
+  /** Get the first fully visible item index, returns -1 when there are no components */
+  val firstFullyVisibleIndex: Int
+    get() = recyclerBinder.findFirstFullyVisibleItemPosition()
+
+  /** Get the last visible item index, returns -1 when there are no components */
+  val lastVisibleIndex: Int
+    get() = recyclerBinder.findLastVisibleItemPosition()
+
+  /** Get the last Fully visible item index, returns -1 when there are no components */
+  val lastFullyVisibleIndex: Int
+    get() = recyclerBinder.findLastFullyVisibleItemPosition()
 }
