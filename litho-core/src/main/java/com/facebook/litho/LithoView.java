@@ -38,6 +38,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RootHost;
@@ -1426,10 +1427,17 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("LithoView.notifyVisibleBoundsChangedWithRect");
+    }
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else if (processVisibilityOutputs) {
       processVisibilityOutputs(visibleRect);
+    }
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -1447,10 +1455,17 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("LithoView.notifyVisibleBoundsChanged");
+    }
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.incrementalMountComponent();
     } else {
       processVisibilityOutputs();
+    }
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
     }
   }
 

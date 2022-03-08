@@ -2222,12 +2222,6 @@ class MountState implements MountDelegateTarget {
   private static void mountViewIncrementally(View view, boolean processVisibilityOutputs) {
     assertMainThread();
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("recursivelyNotifyVisibleBoundsChanged");
-    }
-
     if (view instanceof LithoView) {
       final LithoView lithoView = (LithoView) view;
       if (lithoView.isIncrementalMountEnabled()) {
@@ -2247,10 +2241,6 @@ class MountState implements MountDelegateTarget {
         final View childView = viewGroup.getChildAt(i);
         mountViewIncrementally(childView, processVisibilityOutputs);
       }
-    }
-
-    if (isTracing) {
-      RenderCoreSystrace.endSection();
     }
   }
 

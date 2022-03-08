@@ -370,15 +370,14 @@ public class IncrementalMountExtension
   private static void performIncrementalMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    if (state.mInput == null) {
+      return;
+    }
+
     final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
       RenderCoreSystrace.beginSection("performIncrementalMount");
-    }
-
-    final IncrementalMountExtensionState state = extensionState.getState();
-
-    if (state.mInput == null) {
-      return;
     }
 
     final List<IncrementalMountOutput> byTopBounds = state.mInput.getOutputsOrderedByTopBounds();
