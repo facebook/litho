@@ -57,7 +57,7 @@ LITHO_EDITOR_FLIPPER_TARGET = make_dep_path("litho-editor-flipper/src/main/java/
 # Kotlin targets
 LITHO_KOTLIN_TARGET = make_dep_path("litho-core-kotlin/src/main/kotlin/com/facebook/litho:litho-kotlin")
 
-LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/kotlin/widget:widget-kotlin")
+LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/kotlin/widget:widget")
 
 LITHO_SECTIONS_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/sections/widget:widget")
 
