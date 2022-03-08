@@ -29,6 +29,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.SparseArray;
 import com.facebook.litho.testing.LegacyLithoViewRule;
@@ -130,6 +131,8 @@ public class LithoNodeTest {
     toBeAppliedInfo.setViewTag(viewTag);
     toBeAppliedInfo.setViewTags(viewTags);
     toBeAppliedInfo.setShadowElevation(60);
+    toBeAppliedInfo.setAmbientShadowColor(Color.RED);
+    toBeAppliedInfo.setSpotShadowColor(Color.BLUE);
     toBeAppliedInfo.setClipToOutline(false);
     toBeAppliedInfo.setAccessibilityRole(AccessibilityRole.BUTTON);
     toBeAppliedInfo.setAccessibilityRoleDescription("Test Role Description");
@@ -161,6 +164,8 @@ public class LithoNodeTest {
     verify(nodeInfo).setViewTag(viewTag);
     verify(nodeInfo).setViewTags(viewTags);
     verify(nodeInfo).setShadowElevation(60);
+    verify(nodeInfo).setAmbientShadowColor(Color.RED);
+    verify(nodeInfo).setSpotShadowColor(Color.BLUE);
     verify(nodeInfo).setClipToOutline(false);
     verify(nodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
     verify(nodeInfo).setAccessibilityRoleDescription("Test Role Description");

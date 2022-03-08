@@ -16,8 +16,10 @@
 
 package com.facebook.litho;
 
+import android.graphics.Color;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -124,12 +126,16 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private static final int PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1 << 24;
   private static final int PFLAG_ROTATION_X_IS_SET = 1 << 25;
   private static final int PFLAG_ROTATION_Y_IS_SET = 1 << 26;
+  private static final int PFLAG_AMBIENT_SHADOW_COLOR_IS_SET = 1 << 27;
+  private static final int PFLAG_SPOT_SHADOW_COLOR_IS_SET = 1 << 28;
 
   private @Nullable CharSequence mContentDescription;
   private @Nullable Object mViewTag;
   private @Nullable String mTransitionName;
   private @Nullable SparseArray<Object> mViewTags;
   private float mShadowElevation;
+  private @ColorInt int mAmbientShadowColor = Color.BLACK;
+  private @ColorInt int mSpotShadowColor = Color.BLACK;
   private @Nullable ViewOutlineProvider mOutlineProvider;
   private boolean mClipToOutline;
   // Default value for ViewGroup
@@ -207,6 +213,24 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   public void setShadowElevation(float shadowElevation) {
     mPrivateFlags |= PFLAG_SHADOW_ELEVATION_IS_SET;
     mShadowElevation = shadowElevation;
+  }
+
+  public @ColorInt int getAmbientShadowColor() {
+    return mAmbientShadowColor;
+  }
+
+  public void setAmbientShadowColor(@ColorInt int color) {
+    mPrivateFlags |= PFLAG_AMBIENT_SHADOW_COLOR_IS_SET;
+    mAmbientShadowColor = color;
+  }
+
+  public @ColorInt int getSpotShadowColor() {
+    return mSpotShadowColor;
+  }
+
+  public void setSpotShadowColor(@ColorInt int color) {
+    mPrivateFlags |= PFLAG_SPOT_SHADOW_COLOR_IS_SET;
+    mSpotShadowColor = color;
   }
 
   public @Nullable ViewOutlineProvider getOutlineProvider() {
@@ -629,6 +653,12 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     }
     if ((mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
       target.setShadowElevation(mShadowElevation);
+    }
+    if ((mPrivateFlags & PFLAG_AMBIENT_SHADOW_COLOR_IS_SET) != 0) {
+      target.setAmbientShadowColor(mAmbientShadowColor);
+    }
+    if ((mPrivateFlags & PFLAG_SPOT_SHADOW_COLOR_IS_SET) != 0) {
+      target.setSpotShadowColor(mSpotShadowColor);
     }
     if ((mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
       target.setOutlineProvider(mOutlineProvider);

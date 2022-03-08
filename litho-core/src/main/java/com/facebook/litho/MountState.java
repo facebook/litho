@@ -53,6 +53,7 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -61,6 +62,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
@@ -1438,6 +1440,8 @@ class MountState implements MountDelegateTarget {
       setViewTags(view, nodeInfo.getViewTags());
 
       setShadowElevation(view, nodeInfo.getShadowElevation());
+      setAmbientShadowColor(view, nodeInfo.getAmbientShadowColor());
+      setSpotShadowColor(view, nodeInfo.getSpotShadowColor());
       setOutlineProvider(view, nodeInfo.getOutlineProvider());
       setClipToOutline(view, nodeInfo.getClipToOutline());
       setClipChildren(view, nodeInfo);
@@ -1546,6 +1550,8 @@ class MountState implements MountDelegateTarget {
       unsetViewTags(view, nodeInfo.getViewTags());
 
       unsetShadowElevation(view, nodeInfo.getShadowElevation());
+      unsetAmbientShadowColor(view, nodeInfo.getAmbientShadowColor());
+      unsetSpotShadowColor(view, nodeInfo.getSpotShadowColor());
       unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
       unsetClipToOutline(view, nodeInfo.getClipToOutline());
       unsetClipChildren(view, nodeInfo.getClipChildren());
@@ -1860,9 +1866,37 @@ class MountState implements MountDelegateTarget {
     }
   }
 
+  private static void setAmbientShadowColor(View view, @ColorInt int ambientShadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineAmbientShadowColor(ambientShadowColor);
+    }
+  }
+
+  private static void setSpotShadowColor(View view, @ColorInt int spotShadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setOutlineSpotShadowColor(spotShadowColor);
+    }
+  }
+
   private static void unsetShadowElevation(View view, float shadowElevation) {
     if (shadowElevation != 0) {
       ViewCompat.setElevation(view, 0);
+    }
+  }
+
+  private static void unsetAmbientShadowColor(View view, @ColorInt int ambientShadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ambientShadowColor != Color.BLACK) {
+      // Android documentation says black is the default:
+      // https://developer.android.com/reference/android/view/View#getOutlineAmbientShadowColor()
+      view.setOutlineAmbientShadowColor(Color.BLACK);
+    }
+  }
+
+  private static void unsetSpotShadowColor(View view, @ColorInt int spotShadowColor) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && spotShadowColor != Color.BLACK) {
+      // Android documentation says black is the default:
+      // https://developer.android.com/reference/android/view/View#getOutlineSpotShadowColor()
+      view.setOutlineSpotShadowColor(Color.BLACK);
     }
   }
 

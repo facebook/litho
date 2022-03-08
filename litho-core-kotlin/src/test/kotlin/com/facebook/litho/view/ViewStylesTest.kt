@@ -323,6 +323,28 @@ class ViewStylesTest {
     assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
 
+  @Test
+  fun shadow_whenSet_isRespected() {
+    class ShadowComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(
+            style =
+                Style.shadow(
+                    elevation = 16.px,
+                    outlineProvider = ViewOutlineProvider.BOUNDS,
+                    ambientShadowColor = Color.RED,
+                    spotShadowColor = Color.BLUE))
+      }
+    }
+
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ShadowComponent())?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.shadowElevation).isEqualTo(16.0f)
+    assertThat(nodeInfo?.outlineProvider).isEqualTo(ViewOutlineProvider.BOUNDS)
+    assertThat(nodeInfo?.ambientShadowColor).isEqualTo(Color.RED)
+    assertThat(nodeInfo?.spotShadowColor).isEqualTo(Color.BLUE)
+  }
+
   /** See comment on [elevation_whenSet_isRespected] above. */
   @Test
   fun outlineProvider_whenSet_isRespected() {

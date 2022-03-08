@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -445,6 +446,14 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
   public void shadowElevationPx(float shadowElevation) {
     getOrCreateNodeInfo().setShadowElevation(shadowElevation);
+  }
+
+  public void ambientShadowColor(@ColorInt int ambientShadowColor) {
+    getOrCreateNodeInfo().setAmbientShadowColor(ambientShadowColor);
+  }
+
+  public void spotShadowColor(@ColorInt int spotShadowColor) {
+    getOrCreateNodeInfo().setSpotShadowColor(spotShadowColor);
   }
 
   public void outlineProvider(@Nullable ViewOutlineProvider outlineProvider) {

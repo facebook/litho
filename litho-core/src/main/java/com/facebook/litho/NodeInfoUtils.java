@@ -146,6 +146,14 @@ public class NodeInfoUtils {
       return false;
     }
 
+    if (x.getAmbientShadowColor() != y.getAmbientShadowColor()) {
+      return false;
+    }
+
+    if (x.getSpotShadowColor() != y.getSpotShadowColor()) {
+      return false;
+    }
+
     if (!CommonUtils.isEquivalentTo(x.getTouchHandler(), y.getTouchHandler())) {
       return false;
     }

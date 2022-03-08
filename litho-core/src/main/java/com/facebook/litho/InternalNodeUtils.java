@@ -34,6 +34,7 @@ import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -554,6 +555,8 @@ public class InternalNodeUtils {
     final boolean hasViewTag = nodeInfo.getViewTag() != null;
     final boolean hasViewTags = nodeInfo.getViewTags() != null;
     final boolean hasShadowElevation = nodeInfo.getShadowElevation() != 0;
+    final boolean hasAmbientShadowColor = nodeInfo.getAmbientShadowColor() != Color.BLACK;
+    final boolean hasSpotShadowColor = nodeInfo.getSpotShadowColor() != Color.BLACK;
     final boolean hasOutlineProvider = nodeInfo.getOutlineProvider() != null;
     final boolean hasClipToOutline = nodeInfo.getClipToOutline();
     final boolean isFocusableSetTrue = nodeInfo.getFocusState() == FOCUS_SET_TRUE;
@@ -566,6 +569,8 @@ public class InternalNodeUtils {
         || hasViewTag
         || hasViewTags
         || hasShadowElevation
+        || hasAmbientShadowColor
+        || hasSpotShadowColor
         || hasOutlineProvider
         || hasClipToOutline
         || hasClipChildrenSet

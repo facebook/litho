@@ -17,6 +17,7 @@
 package com.facebook.litho.view
 
 import android.animation.StateListAnimator
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.SparseArray
@@ -433,3 +434,44 @@ inline fun Style.touchExpansion(
         bottom?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_BOTTOM, it) } +
         left?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_LEFT, it) } +
         right?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_RIGHT, it) }
+
+@PublishedApi
+internal data class ShadowStyleItem(
+    val elevation: Dimen,
+    val outlineProvider: ViewOutlineProvider,
+    @ColorInt val ambientShadowColor: Int,
+    @ColorInt val spotShadowColor: Int
+) : StyleItem {
+  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    val commonProps = component.getCommonPropsHolder()
+    commonProps.shadowElevationPx(elevation.toPixels(resourceResolver).toFloat())
+    commonProps.outlineProvider(outlineProvider)
+    commonProps.ambientShadowColor(ambientShadowColor)
+    commonProps.spotShadowColor(spotShadowColor)
+  }
+}
+
+/**
+ * Style for attaching a standard Material Design shadow to a component. Refer to
+ * https://material.io/design/environment/light-shadows.html for more information.
+ *
+ * - **elevation**: Sets the elevation of this component above the surface using
+ * https://developer.android.com/reference/android/view/View#setElevation(float). Larger elevation
+ * values result in larger shadows.
+ *
+ * - **outlineProvider**: Used to determine the shape of the shadow. If not specified,
+ * https://developer.android.com/reference/android/view/ViewOutlineProvider#BOUNDS will be used to
+ * target the component's bounds.
+ *
+ * - **ambientShadowColor**: Sets the color of the ambient shadow. Ignored on < API 28 devices. See
+ * https://developer.android.com/reference/android/view/View#setOutlineAmbientShadowColor(int)
+ *
+ * - **outlineShadowColor**: Sets the color of the spotlight shadow. Ignored on < API 28 devices.
+ * See https://developer.android.com/reference/android/view/View#setOutlineSpotShadowColor(int)
+ */
+inline fun Style.shadow(
+    elevation: Dimen,
+    outlineProvider: ViewOutlineProvider = ViewOutlineProvider.BOUNDS,
+    @ColorInt ambientShadowColor: Int = Color.BLACK,
+    @ColorInt spotShadowColor: Int = Color.BLACK
+): Style = this + ShadowStyleItem(elevation, outlineProvider, ambientShadowColor, spotShadowColor)
