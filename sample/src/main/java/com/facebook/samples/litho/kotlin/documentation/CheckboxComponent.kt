@@ -31,7 +31,7 @@ class CheckboxComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
     val isChecked = useState { false }
 
-    return Column(style = Style.onClick { isChecked.update(!isChecked.value) }) {
+    return Column(style = Style.onClick { isChecked.update { currValue -> !currValue } }) {
       child(
           Image(
               drawable =

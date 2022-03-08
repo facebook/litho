@@ -337,7 +337,7 @@ class LithoViewRuleExampleTest {
             style =
                 Style.width(100.px)
                     .height(100.px)
-                    .onClick { showText.update(!showText.value) }
+                    .onClick { showText.update { isTextShowing -> !isTextShowing } }
                     .contentDescription("row")) {
           if (showText.value) {
             child(Text(text = "Text"))

@@ -39,13 +39,13 @@ To update state, use the `update` method on the `State<T>` returned from `useSta
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
 ```
 
-### Lambda Variant
+### Value vs. Lambda Variants
 
 `update` and `updateSync` have two variants:
 1. **Value variant** which takes a determined value, e.g. `myState.update(1)`
 2. **Lambda variant** which takes a lambda receiving the old value which can be used to compute a new value, e.g. `myState.update { c -> c + 1 }`
 
-Use the lambda variant when there could be other enqueued updates that may not have been applied yet. For example, if your state update should increment a counter, using the function version of `update` with `count -> count + 1` will allow you to account for updates that are in flight but not yet applied (e.g. if the user has tapped a button triggering the update multiple times in succession).
+Use the lambda variant when you need to perform an update that depends on the old state value. For example, if your state update should increment a counter, using the function version of `update` with `count -> count + 1` will allow you to account for updates that are in flight but not yet applied (e.g. if the user has tapped a button triggering the update multiple times in succession).
 
 ## Using state in child components
 
