@@ -88,4 +88,7 @@ class TestListComponent {
         } else {
           listOf()
         }
+
+  /** Convenience function for getting the component at an index */
+  inline fun getItemAtIndex(index: Int): Component = components[index]
 }
