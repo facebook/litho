@@ -118,6 +118,7 @@ import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponen
 import com.facebook.samples.litho.onboarding.FirstComponentActivity
 import com.facebook.samples.litho.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.onboarding.PostStyledKComponent
+import com.facebook.samples.litho.onboarding.PostWithActionsKComponent
 import com.facebook.samples.litho.onboarding.model.OBI_WAN_POST
 
 class Demos {
@@ -479,8 +480,11 @@ class Demos {
                             SingleDemo(name = "3.1. More with Layout") { context ->
                               LayoutWithImageComponent.create(context).name("Linda").build()
                             },
-                            SingleDemo(name = "3.2. Flexbox Styling") { _ ->
+                            SingleDemo(name = "3.2. Flexbox Styling") {
                               PostStyledKComponent(post = OBI_WAN_POST)
+                            },
+                            SingleDemo(name = "4. Add State") {
+                              PostWithActionsKComponent(post = OBI_WAN_POST)
                             },
                         )))))
   }

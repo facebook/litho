@@ -27,7 +27,6 @@ module.exports = {
       'tutorial/project-setup',
       'tutorial/first-components',
       'tutorial/adding-state',
-      'tutorial/handling-events',
       'tutorial/building-lists',
     ],
     'Main Concepts': [
