@@ -186,6 +186,9 @@ inline fun Style.background(background: Drawable?): Style =
 inline fun Style.backgroundColor(@ColorInt backgroundColor: Int): Style =
     this + ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
 
+inline fun Style.backgroundColor(@ColorInt backgroundColor: Long): Style =
+    backgroundColor(backgroundColor.toInt())
+
 /**
  * Sets if the View this Component mounts to should be clickable. Setting this property will cause
  * the Component to be represented as a View at mount time if it wasn't going to already.

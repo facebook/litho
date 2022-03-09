@@ -67,11 +67,22 @@ class PostWithActionsKComponent(val post: Post) : KComponent() {
                       if (isLiked.value) R.drawable.ic_baseline_favorite_24
                       else R.drawable.ic_baseline_favorite_border_24),
               style =
-                  Style.width(32.dp).height(32.dp).margin(all = 12.dp).onClick {
+                  Style.width(32.dp).height(32.dp).margin(all = 6.dp).onClick {
                     isLiked.update { isLiked -> !isLiked }
                   })
           // end_image_button
           )
+      if (post.text != null) {
+        child(
+            Row(style = Style.margin(bottom = 4.dp)) {
+              child(
+                  Text(
+                      text = post.user.username,
+                      textStyle = Typeface.BOLD,
+                      style = Style.margin(horizontal = 4.dp)))
+              child(Text(text = post.text, style = Style.margin(horizontal = 4.dp)))
+            })
+      }
     }
   }
 }

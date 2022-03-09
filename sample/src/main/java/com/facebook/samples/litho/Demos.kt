@@ -119,7 +119,11 @@ import com.facebook.samples.litho.onboarding.FirstComponentActivity
 import com.facebook.samples.litho.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.onboarding.PostStyledKComponent
 import com.facebook.samples.litho.onboarding.PostWithActionsKComponent
+import com.facebook.samples.litho.onboarding.UserFeedKComponent
+import com.facebook.samples.litho.onboarding.UserFeedWithStoriesKComponent
+import com.facebook.samples.litho.onboarding.model.FEED
 import com.facebook.samples.litho.onboarding.model.OBI_WAN_POST
+import com.facebook.samples.litho.onboarding.model.USER_STORIES
 
 class Demos {
   companion object {
@@ -485,6 +489,11 @@ class Demos {
                             },
                             SingleDemo(name = "4. Add State") {
                               PostWithActionsKComponent(post = OBI_WAN_POST)
+                            },
+                            SingleDemo(name = "5. List") { UserFeedKComponent(posts = FEED) },
+                            SingleDemo(name = "5.1. List within Lists") {
+                              UserFeedWithStoriesKComponent(
+                                  posts = FEED, usersWithStories = USER_STORIES)
                             },
                         )))))
   }
