@@ -18,9 +18,11 @@ package com.facebook.litho.transition
 
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Transition
+import com.facebook.litho.annotations.Hook
 import com.facebook.rendercore.transitions.TransitionUtils
 
 /** Defines single or multiple [Transition] animations for the given component */
+@Hook
 fun ComponentScope.useTransition(transition: Transition?) {
   transition ?: return
   TransitionUtils.setOwnerKey(transition, context.globalKey)
