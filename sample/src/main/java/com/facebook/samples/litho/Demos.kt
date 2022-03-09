@@ -122,7 +122,7 @@ import com.facebook.samples.litho.onboarding.PostWithActionsKComponent
 import com.facebook.samples.litho.onboarding.UserFeedKComponent
 import com.facebook.samples.litho.onboarding.UserFeedWithStoriesKComponent
 import com.facebook.samples.litho.onboarding.model.FEED
-import com.facebook.samples.litho.onboarding.model.OBI_WAN_POST
+import com.facebook.samples.litho.onboarding.model.NEBULAS_POST
 import com.facebook.samples.litho.onboarding.model.USER_STORIES
 
 class Demos {
@@ -485,10 +485,10 @@ class Demos {
                               LayoutWithImageComponent.create(context).name("Linda").build()
                             },
                             SingleDemo(name = "3.2. Flexbox Styling") {
-                              PostStyledKComponent(post = OBI_WAN_POST)
+                              PostStyledKComponent(post = NEBULAS_POST)
                             },
                             SingleDemo(name = "4. Add State") {
-                              PostWithActionsKComponent(post = OBI_WAN_POST)
+                              PostWithActionsKComponent(post = NEBULAS_POST)
                             },
                             SingleDemo(name = "5. List") { UserFeedKComponent(posts = FEED) },
                             SingleDemo(name = "5.1. List within Lists") {
