@@ -115,7 +115,7 @@ import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
 import com.facebook.samples.litho.kotlin.triggers.TooltipTriggerExampleKComponent
-import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity
+import com.facebook.samples.litho.onboarding.FirstComponentActivity
 import com.facebook.samples.litho.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.onboarding.PostStyledKComponent
 import com.facebook.samples.litho.onboarding.model.OBI_WAN_POST
@@ -472,7 +472,7 @@ class Demos {
                                 name = "1. Hello World", klass = HelloWorldActivity::class.java),
                             SingleDemo(
                                 name = "2. First Litho Component",
-                                klass = FirstComponentSpecActivity::class.java),
+                                klass = FirstComponentActivity::class.java),
                             SingleDemo(name = "3. Introducing Layout") { context ->
                               IntroducingLayoutComponent.create(context).name("Linda").build()
                             },

@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.onboarding;
+package com.facebook.samples.litho.onboarding
 
-import android.os.Bundle;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.samples.litho.NavigatableDemoActivity;
+import android.os.Bundle
+import com.facebook.litho.LithoView
+import com.facebook.samples.litho.NavigatableDemoActivity
+import com.facebook.samples.litho.kotlin.documentation.HelloComponent
 
-public class FirstComponentSpecActivity extends NavigatableDemoActivity {
+class FirstComponentActivity : NavigatableDemoActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    ComponentContext c = new ComponentContext(this);
     // start_example
-    setContentView(LithoView.create(this, FirstComponent.create(c).name("Linda").build()));
+    setContentView(LithoView.create(this, HelloComponent(name = "Linda")))
     // end_example
   }
 }
