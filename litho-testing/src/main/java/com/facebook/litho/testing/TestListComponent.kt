@@ -22,6 +22,7 @@ import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
+import kotlin.reflect.KClass
 
 /**
  * A wrapper class that exposes methods specific to testing collection components.
@@ -91,4 +92,15 @@ class TestListComponent {
 
   /** Convenience function for getting the component at an index */
   inline fun getItemAtIndex(index: Int): Component = components[index]
+
+  /**
+   * Performs a shallow search to Find the first component, of the given type; in the
+   * LazyCollection.
+   */
+  inline fun findFirstComponent(clazz: Class<out Component>): Component? =
+      components.find { it::class.java == clazz }
+
+  /** @see findComponent */
+  inline fun findFirstComponent(clazz: KClass<out Component>): Component? =
+      findFirstComponent(clazz.java)
 }

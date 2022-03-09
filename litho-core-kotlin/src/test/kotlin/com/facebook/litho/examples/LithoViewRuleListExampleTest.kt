@@ -68,6 +68,9 @@ class LithoViewRuleListExampleTest {
             listComponent.components.slice(
                 listComponent.firstVisibleIndex..listComponent.lastVisibleIndex))
         .hasSize(3)
+
+    val component = listComponent.findFirstComponent(Text::class)
+    assertThat(component).hasFieldOrPropertyWithValue("text", "child1")
   }
 
   @Test
@@ -107,5 +110,11 @@ class LithoViewRuleListExampleTest {
     assertThat(testView.findAllComponents(Text::class))
         // this should return empty for now.
         .isEmpty()
+
+    val listComponent = testView.findCollectionComponent()
+    assertThat(listComponent).isNotNull()
+
+    val component = listComponent?.findFirstComponent(ItemComponent::class) ?: return
+    assertThat(component).hasFieldOrPropertyWithValue("model", items[0])
   }
 }
