@@ -39,6 +39,7 @@ import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
+import com.nhaarman.mockitokotlin2.mock
 import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
@@ -325,13 +326,15 @@ class ViewStylesTest {
 
   @Test
   fun shadow_whenSet_isRespected() {
+    val outlineProvider = mock<ViewOutlineProvider>()
+
     class ShadowComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Row(
             style =
                 Style.shadow(
                     elevation = 16.px,
-                    outlineProvider = ViewOutlineProvider.BOUNDS,
+                    outlineProvider = outlineProvider,
                     ambientShadowColor = Color.RED,
                     spotShadowColor = Color.BLUE))
       }
@@ -340,7 +343,7 @@ class ViewStylesTest {
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, ShadowComponent())?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.shadowElevation).isEqualTo(16.0f)
-    assertThat(nodeInfo?.outlineProvider).isEqualTo(ViewOutlineProvider.BOUNDS)
+    assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
     assertThat(nodeInfo?.ambientShadowColor).isEqualTo(Color.RED)
     assertThat(nodeInfo?.spotShadowColor).isEqualTo(Color.BLUE)
   }
