@@ -20,47 +20,16 @@ repositories {
 
 ## Add Litho core dependencies
 
-<Tabs
-  groupId="language"
-  defaultValue="java"
-  values={[
-    {label: 'Java', value: 'java'},
-    {label: 'Kotlin', value: 'kotlin'},
-  ]}>
-  <TabItem value="java">
-
 <VersionedCodeBlock language="groovy" code={`
 dependencies {
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-core-kotlin:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
-  annotationProcessor 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'
-  
-  // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'
-  
-  // Testing Litho
-  testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
-}
-`} />
-
-  </TabItem>
-  <TabItem value="kotlin">
-
-:::caution
-Kotlin support for Litho is experimental at this point.
-:::
-
-<VersionedCodeBlock language="groovy" code={`
-dependencies {
-  // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-widget-kotlin:{{site.lithoVersion}}'
   kapt 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'
-  
   // SoLoader
   implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'
-  
   // Testing Litho
   testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
 }
@@ -73,79 +42,11 @@ KAPT plugin at the top of your application's `build.gradle` file:
 apply plugin: 'kotlin-kapt'
 ```
 
-  </TabItem>
-</Tabs>
-
-## Add Sections dependencies
-
-Litho comes with an optional library called Sections for declaratively building lists. You can
-include Sections by adding the following additional dependencies to your `build.gradle` file:
-
-<Tabs
-  groupId="language"
-  defaultValue="java"
-  values={[
-    {label: 'Java', value: 'java'},
-    {label: 'Kotlin', value: 'kotlin'},
-  ]}>
-  <TabItem value="java">
-
-<VersionedCodeBlock language="groovy" code={`
-dependencies {
-  // Sections
-  implementation 'com.facebook.litho:litho-sections-core:{{site.lithoVersion}}'
-  implementation 'com.facebook.litho:litho-sections-widget:{{site.lithoVersion}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'
-  
-  annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.lithoVersion}}'
-}
-`} />
-
-  </TabItem>
-  <TabItem value="kotlin">
-
-<VersionedCodeBlock language="groovy" code={`
-dependencies {
-  // Sections
-  implementation 'com.facebook.litho:litho-sections-core:{{site.lithoVersion}}'
-  implementation 'com.facebook.litho:litho-sections-widget:{{site.lithoVersion}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'
-  
-  kapt 'com.facebook.litho:litho-sections-processor:{{site.lithoVersion}}'
-}
-`} />
-
-  </TabItem>
-</Tabs>
-
 ## Wire up native libs
 
 As a last step, you need to initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader)
 to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/).
 Your custom `Application` class is a good place to do this:
-
-<Tabs
-  groupId="language"
-  defaultValue="java"
-  values={[
-    {label: 'Java', value: 'java'},
-    {label: 'Kotlin', value: 'kotlin'},
-  ]}>
-  <TabItem value="java">
-
-```java title="MyApplication.java"
-public class MyApplication extends Application {
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, false);
-  }
-}
-```
-
-  </TabItem>
-  <TabItem value="kotlin">
 
 ```kotlin title="MyApplication.kt"
 class MyApplication: Application() {
@@ -156,8 +57,6 @@ class MyApplication: Application() {
   }
 }
 ```
-  </TabItem>
-</Tabs>
 
 # Testing your setup
 
@@ -169,68 +68,8 @@ Don't worry about all the unfamiliar classes and red `Text` – we will explain 
 step of this tutorial.
 :::
 
-<Tabs
-  groupId="language"
-  defaultValue="java"
-  values={[
-    {label: 'Java', value: 'java'},
-    {label: 'Kotlin', value: 'kotlin'},
-  ]}>
-  <TabItem value="java">
-
-```java title="MyActivity.java"
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.Text;
-
-public class MyActivity extends AppCompatActivity {
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    final ComponentContext c = new ComponentContext(this);
-
-    final LithoView lithoView = LithoView.create(
-    	  this /* context */,
-    	  Text.create(c)
-            .text("Hello, World!")
-            .textSizeDip(50f)
-            .build());
-
-    setContentView(lithoView);
-  }
-}
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/MyActivity.kt start=start_example end=end_example
 ```
-
-  </TabItem>
-  <TabItem value="kotlin">
-
-```kotlin title="MyActivity.kt"
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.LithoView
-import com.facebook.litho.widget.Text
-
-class MyActivity : AppCompatActivity() {
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    val c = ComponentContext(this)
-
-    val lithoView = LithoView.create(
-        this /* context */,
-        Text.create(c)
-            .text("Hello, World!")
-            .textSizeDip(50f)
-            .build())
-
-    setContentView(lithoView)
-  }
-}
-```
-  </TabItem>
-</Tabs>
 
 That's it, if you build and run the app you should see "Hello World!" displayed on the screen. Setup
 is complete, let's go to the next page to understand what we've just done.
