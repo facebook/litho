@@ -43,8 +43,6 @@ import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
 import com.facebook.yoga.YogaEdge
-import java.lang.Exception
-import java.lang.RuntimeException
 import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -706,7 +704,7 @@ class ComponentErrorBoundaryTest {
         val errorState = useState { listOf<Exception>() }
         stateRef = AtomicReference(errorState.value)
         useErrorBoundary { exception: Exception ->
-          errorState.update(errorState.value + listOf(exception))
+          errorState.update { prevErrors -> prevErrors + listOf(exception) }
           assertThat(exception.message).contains("onCreateLayout crash")
         }
         return if (errorState.value.isEmpty()) crashingComponent else Text("error caught")
@@ -733,7 +731,7 @@ class ComponentErrorBoundaryTest {
         val errorState = useState { listOf<Exception>() }
         stateRef = AtomicReference(errorState.value)
         useErrorBoundary { exception: Exception ->
-          errorState.update(errorState.value + listOf(exception))
+          errorState.update { prevErrors -> prevErrors + listOf(exception) }
           assertThat(exception.message).contains("onCreateLayoutWithSizeSpec crash")
         }
         return if (errorState.value.isEmpty()) crashingComponent else Text("error caught")
@@ -744,7 +742,9 @@ class ComponentErrorBoundaryTest {
     lithoViewRule.idle()
 
     val errorList = stateRef.get()
-    assertThat(errorList.size).isEqualTo(1)
-    assertThat(errorList.get(0).message).isEqualTo("onCreateLayoutWithSizeSpec crash")
+    assertThat(errorList.size).isEqualTo(2)
+    errorList.forEach { error ->
+      assertThat(error.message).isEqualTo("onCreateLayoutWithSizeSpec crash")
+    }
   }
 }

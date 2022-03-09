@@ -39,13 +39,19 @@ class CounterComponent : KComponent() {
           Text(
               text = "+",
               textSize = 30.dp,
-              style = Style.margin(all = 30.dp).onClick { counter.update(counter.value + 1) }))
+              style =
+                  Style.margin(all = 30.dp).onClick {
+                    counter.update { prevCount -> prevCount + 1 }
+                  }))
       child(Text(text = "${counter.value}", textSize = 30.dp, style = Style.margin(all = 30.dp)))
       child(
           Text(
               text = "-",
               textSize = 30.dp,
-              style = Style.margin(all = 30.dp).onClick { counter.update(counter.value - 1) }))
+              style =
+                  Style.margin(all = 30.dp).onClick {
+                    counter.update { prevCount -> prevCount - 1 }
+                  }))
     }
   }
 }

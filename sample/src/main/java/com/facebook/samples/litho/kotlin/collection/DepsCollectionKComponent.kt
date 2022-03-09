@@ -43,10 +43,18 @@ class DepsCollectionKComponent : KComponent() {
           Row {
             child(
                 Button("Toggle Color") {
-                  color.update(if (color.value == Color.RED) Color.BLUE else Color.RED)
+                  color.update { prevColor ->
+                    if (prevColor == Color.RED) Color.BLUE else Color.RED
+                  }
                 })
-            child(Button("Toggle Size") { size.update(if (size.value == 14) 28 else 14) })
-            child(Button("Toggle Alpha") { alpha.update(if (alpha.value == 0.5f) 1f else 0.5f) })
+            child(
+                Button("Toggle Size") {
+                  size.update { prevSize -> if (prevSize == 14) 28 else 14 }
+                })
+            child(
+                Button("Toggle Alpha") {
+                  alpha.update { prevAlpha -> if (prevAlpha == 0.5f) 1f else 0.5f }
+                })
           })
       child(
           LazyList {

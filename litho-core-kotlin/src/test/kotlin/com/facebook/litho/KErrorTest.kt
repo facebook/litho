@@ -53,7 +53,7 @@ class KErrorTest {
         stateRef = AtomicReference(errorState.value)
         useErrorBoundary { exception: Exception ->
           assertThat(exception.message).contains("crash from kotlin component")
-          errorState.update(errorState.value + listOf(exception))
+          errorState.update { prevErrors -> prevErrors + listOf(exception) }
         }
 
         return if (errorState.value.isEmpty()) CrashingKComponent() else Text("error caught")
@@ -112,7 +112,7 @@ class KErrorTest {
         stateRef = AtomicReference(errorState.value)
         useErrorBoundary { exception: Exception ->
           assertThat(exception.message).contains("crash from kotlin component 2 levels down")
-          errorState.update(errorState.value + listOf(exception))
+          errorState.update { prevErrors -> prevErrors + listOf(exception) }
         }
         return if (errorState.value.isEmpty()) IntermediaryKComponent() else Text("error caught")
       }
@@ -163,7 +163,7 @@ class KErrorTest {
         stateRef = AtomicReference(errorState.value)
         useErrorBoundary { exception: Exception ->
           assertThat(exception.message).contains("crash from kotlin component's state")
-          errorState.update(errorState.value + listOf(exception))
+          errorState.update { prevErrors -> prevErrors + listOf(exception) }
         }
 
         return if (errorState.value.isEmpty()) CrashingKComponent() else Text("error caught")

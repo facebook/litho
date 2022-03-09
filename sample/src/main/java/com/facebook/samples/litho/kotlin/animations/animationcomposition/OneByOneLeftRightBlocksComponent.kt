@@ -54,7 +54,7 @@ class OneByOneLeftRightBlocksComponent : KComponent() {
         Transition.create(Transition.TransitionKeyType.GLOBAL, *ALL_TRANSITION_KEYS)
             .animate(AnimatedProperties.X, AnimatedProperties.Y, AnimatedProperties.ALPHA))
 
-    return Column(style = Style.onClick { e -> state.update((state.value + 1) % 6) }) {
+    return Column(style = Style.onClick { state.update { prevValue -> (prevValue + 1) % 6 } }) {
       child(
           Column(alignItems = (if (redLeft) YogaAlign.FLEX_START else YogaAlign.FLEX_END)) {
             child(

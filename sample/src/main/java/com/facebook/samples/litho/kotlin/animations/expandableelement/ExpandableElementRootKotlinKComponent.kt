@@ -64,7 +64,7 @@ class ExpandableElementRootKotlinKComponent(private val initialMessages: List<Me
                               updatedMessageList.add(
                                   1,
                                   Message(true, "Just Added #${counter.value}", true, "Recently"))
-                              counter.update(counter.value + 1)
+                              counter.update { prevValue -> prevValue + 1 }
                               messages.update(updatedMessageList)
                             },
                     text = "INSERT",

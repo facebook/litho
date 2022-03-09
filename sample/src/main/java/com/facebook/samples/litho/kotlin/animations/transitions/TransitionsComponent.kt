@@ -58,7 +58,7 @@ class TransitionsComponent : KComponent() {
         style =
             Style.width(200.dp).alpha(alphaValue.value).onClick {
               toRight.update(!toRight.value)
-              alphaValue.update(if (alphaValue.value == 1f) 0.5f else 1f)
+              alphaValue.update { prevValue -> if (prevValue == 1f) 0.5f else 1f }
               shouldExpand.update(!shouldExpand.value)
             }) {
       child(
