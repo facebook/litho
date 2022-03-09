@@ -66,7 +66,7 @@ fun findDirectComponentInLithoView(lithoView: LithoView, clazz: KClass<out Compo
 /** Returns a component of the given class from the ComponentTree or null if not found */
 fun findComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
   val layoutRoot = getLayoutRoot(lithoView) ?: return null
-  return findComponentRecursively(clazz, layoutRoot)
+  return findComponentViaBreadthFirst(clazz, layoutRoot)
 }
 
 /** Returns a component of the given class from the ComponentTree or null if not found */
@@ -82,10 +82,8 @@ fun findAllComponentsInLithoView(
     lithoView: LithoView,
     vararg clazz: Class<out Component?>
 ): List<Component> {
-  val componentsList = mutableListOf<Component>()
-  val internalNode = getLayoutRoot(lithoView) ?: return componentsList
-  findComponentsRecursively(clazz, internalNode, componentsList)
-  return componentsList
+  val internalNode = getLayoutRoot(lithoView) ?: return emptyList()
+  return findAllComponentsViaBreadthFirstSearch(clazz, internalNode)
 }
 
 /**
@@ -96,12 +94,8 @@ fun findAllComponentsInLithoView(
     lithoView: LithoView,
     vararg clazz: KClass<out Component>
 ): List<Component> {
-  val javaClasses = mutableListOf<Class<out Component>>()
-  clazz.forEach { javaClasses.add(it.java) }
-  val componentsList = mutableListOf<Component>()
-  val layoutRoot = getLayoutRoot(lithoView) ?: return componentsList
-  findComponentsRecursively(javaClasses.toTypedArray(), layoutRoot, componentsList)
-  return componentsList
+  val javaClasses = Array(clazz.size) { i -> clazz[i].java }
+  return findAllComponentsInLithoView(lithoView, *javaClasses)
 }
 
 private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
@@ -113,60 +107,76 @@ private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
 }
 
 /**
- * Recursively goes through nodes in a component tree, returns a component of a given class or null
- * if not found
+ * Goes through nodes in a component tree via breadth first search. Returns a component of a given
+ * class or null if not found
  */
-private fun findComponentRecursively(
+private fun findComponentViaBreadthFirst(
     clazz: Class<out Component?>,
     layoutResult: LithoLayoutResult?
 ): Component? {
-  layoutResult ?: return null
-
-  val internalNode = layoutResult.node
-  val component =
-      internalNode.scopedComponentInfos.map { it.component }.firstOrNull { it.javaClass == clazz }
-  if (component != null) {
-    return component
-  }
-  if (layoutResult is NestedTreeHolderResult) {
-    return findComponentRecursively(clazz, layoutResult.nestedResult)
-  } else {
-    val childCount = internalNode.childCount
-    for (i in 0 until childCount) {
-      val childComponent = findComponentRecursively(clazz, layoutResult.getChildAt(i))
-      if (childComponent != null) {
-        return childComponent
-      }
+  componentBreadthFirstSearch(layoutResult) { scopedComponents ->
+    val foundComponent = scopedComponents.firstOrNull { it.javaClass == clazz }
+    if (foundComponent != null) {
+      return foundComponent
     }
   }
+
   return null
 }
+
 /**
- * Recursively goes through nodes in a component tree, and adds component of given class to the list
- * or empty list if not found
+ * Goes through nodes in a component tree via breadth first search. Returns all components that
+ * match the given classes or an empty list if none found
  */
-private fun findComponentsRecursively(
+private fun findAllComponentsViaBreadthFirstSearch(
     clazzArray: Array<out Class<out Component?>>,
     layoutResult: LithoLayoutResult?,
-    componentsList: MutableList<Component>
-) {
-  layoutResult ?: return
+): List<Component> {
+  val foundComponentsList = mutableListOf<Component>()
 
-  val internalNode = layoutResult.node
-  val components =
-      internalNode.scopedComponentInfos.map { it.component }.filter {
-        clazzArray.contains(it.javaClass)
-      }
-  if (components != null) {
-    componentsList.addAll(components)
+  componentBreadthFirstSearch(layoutResult) { scopedComponents ->
+    val foundComponents = scopedComponents.filter { it.javaClass in clazzArray }
+    foundComponentsList.addAll(foundComponents)
   }
 
-  if (layoutResult is NestedTreeHolderResult) {
-    findComponentsRecursively(clazzArray, layoutResult.nestedResult, componentsList)
-  } else {
-    val childCount = internalNode.childCount
-    for (i in 0 until childCount) {
-      findComponentsRecursively(clazzArray, layoutResult.getChildAt(i), componentsList)
+  return foundComponentsList
+}
+
+/**
+ * Internal function to handle BFS through a set of components.
+ *
+ * @param onHandleScopedComponents lambda which handles the scoped components of the particular
+ * layout. This enables the caller of the function to properly handle if any of those components
+ * match. (For example, if looking for a single component, you would want to return in the lambda if
+ * it matches. If looking for multiple, you would simply want to add all matching components to a
+ * list.)
+ */
+private inline fun componentBreadthFirstSearch(
+    startingLayoutResult: LithoLayoutResult?,
+    onHandleScopedComponents: (List<Component>) -> Unit
+) {
+  startingLayoutResult ?: return
+
+  val enqueuedLayouts = mutableSetOf<LithoLayoutResult>(startingLayoutResult)
+  val layoutsQueue = ArrayDeque(enqueuedLayouts)
+
+  while (layoutsQueue.isNotEmpty()) {
+    val currentLayoutResult = layoutsQueue.removeFirst()
+
+    val internalNode = currentLayoutResult.node
+    onHandleScopedComponents(internalNode.scopedComponentInfos.map { it.component })
+
+    if (currentLayoutResult is NestedTreeHolderResult) {
+      val nestedLayout =
+          currentLayoutResult.nestedResult?.takeUnless { it in enqueuedLayouts } ?: continue
+      layoutsQueue.add(nestedLayout)
+      continue
+    }
+
+    for (i in 0 until internalNode.childCount) {
+      val childLayout =
+          currentLayoutResult.getChildAt(i).takeUnless { it in enqueuedLayouts } ?: continue
+      layoutsQueue.add(childLayout)
     }
   }
 }
