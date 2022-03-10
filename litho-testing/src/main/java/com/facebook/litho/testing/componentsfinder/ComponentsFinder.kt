@@ -23,6 +23,25 @@ import com.facebook.litho.NestedTreeHolderResult
 import kotlin.reflect.KClass
 
 /**
+ * Returns the root component of the LithoView.
+ *
+ * example:
+ * ```
+ * class FBStory : KComponent() {
+ * override fun ComponentScope.render() {
+ * return Story()
+ * }
+ * ```
+ * `findRootComponentInLithoView` will only be able to return `FBStory` component, from a LithoView
+ * with FBStory as root. If you would like to be able to find the `Story` component, see
+ * [findDirectComponentInLithoView]
+ */
+fun getRootComponentInLithoView(lithoView: LithoView): Component? {
+  val internalNode = getLayoutRoot(lithoView)?.node ?: return null
+  return if (internalNode.scopedComponentInfos.isNotEmpty()) internalNode.headComponent else null
+}
+
+/**
  * Returns a component of the given class only if the component renders directly to the root
  * component of the LithoView
  *

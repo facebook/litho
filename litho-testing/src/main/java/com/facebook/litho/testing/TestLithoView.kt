@@ -31,6 +31,7 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
 import com.facebook.litho.componentsfinder.findDirectComponentInLithoView
+import com.facebook.litho.componentsfinder.getRootComponentInLithoView
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
@@ -91,6 +92,8 @@ internal constructor(
       }
       return _lithoView ?: throw AssertionError("Set to null by another thread")
     }
+  val rootComponent: Component?
+    get() = getRootComponentInLithoView(lithoView)
   val committedLayoutState: LayoutState?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     get() = componentTree.committedLayoutState

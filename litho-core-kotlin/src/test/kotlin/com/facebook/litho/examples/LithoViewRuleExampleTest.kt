@@ -313,10 +313,16 @@ class LithoViewRuleExampleTest {
     val rowWithChildren = RowWithChildren()
     val secondLayerDelegate = DelegateComponent(rowWithChildren)
     val firstLayerDelegate = DelegateComponent(secondLayerDelegate)
+    lateinit var rootComponent: Component
 
-    val testLithoView = lithoViewRule.render { HeadComponent(firstLayerDelegate) }
+    val testLithoView =
+        lithoViewRule.render { HeadComponent(firstLayerDelegate).also { rootComponent = it } }
 
     // Ensure that we find direct components from the head component to the tail component
+    assertThat(testLithoView.rootComponent).isSameAs(rootComponent)
+    assertThat(testLithoView.findDirectComponent(HeadComponent::class))
+        .isNotNull
+        .isSameAs(rootComponent)
     assertThat(testLithoView.findDirectComponent(DelegateComponent::class))
         .isNotNull
         .isSameAs(firstLayerDelegate)
