@@ -17,12 +17,15 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
+import com.facebook.litho.widget.NestedTreeComponentWithChildState
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRender
@@ -468,5 +471,30 @@ class StateUpdatesWithReconciliationTest() {
 
     assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 3")
     assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+  }
+
+  @Test
+  fun `test nested tree child state update`() {
+    val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
+    val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
+    class TestComponent() : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Column(style = Style.width(100.px).height(100.px)) {
+          child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
+          child(NestedTreeComponentWithChildState.create(context).caller(stateUpdater).build())
+        }
+      }
+    }
+
+    lithoViewRule.render { TestComponent() }
+
+    assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
+    lifecycleSteps.clear()
+
+    stateUpdater.increment()
+    assertThat(LifecycleStep.getSteps(lifecycleSteps))
+        .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
   }
 }
