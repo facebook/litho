@@ -231,11 +231,17 @@ class LithoViewRuleExampleTest {
 
   @Test
   fun `verify InnerComponent has given props not on a direct child asserting on LithoView`() {
+    class WrapperComponent(val delegate: Component, val tag: String = "") : KComponent() {
+      override fun ComponentScope.render(): Component = delegate
+    }
     class ParentTestComponent : KComponent() {
       override fun ComponentScope.render(): Component {
-        return Column { child(TestComponent()) }
+        return WrapperComponent(
+            delegate =
+                WrapperComponent(tag = "TAGGED", delegate = Column { child(TestComponent()) }))
       }
     }
+
     val testLithoView = lithoViewRule.render { ParentTestComponent() }
     assertThat(testLithoView).willRenderContent()
     // We want to catch that the component does not have props in direct component
@@ -259,6 +265,7 @@ class LithoViewRuleExampleTest {
         .isInstanceOf(AssertionError::class.java)
 
     assertThat(testLithoView)
+        .hasDirectMatchingComponent(WrapperComponent::class, WrapperComponent::tag to "TAGGED")
         .hasAnyMatchingComponent(
             InnerComponent::class,
             InnerComponent::value to "some_value",

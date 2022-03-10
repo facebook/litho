@@ -95,6 +95,23 @@ fun findComponentInLithoView(lithoView: LithoView, clazz: KClass<out Component>)
   return findComponentInLithoView(lithoView, clazz.java)
 }
 
+fun findAllDirectComponentsInLithoView(
+    lithoView: LithoView,
+    clazz: KClass<out Component>
+): List<Component> {
+  return findAllDirectComponentsInLithoView(lithoView, clazz.java)
+}
+
+fun findAllDirectComponentsInLithoView(
+    lithoView: LithoView,
+    clazz: Class<out Component>
+): List<Component> {
+  val internalNode = getLayoutRoot(lithoView)?.node ?: return emptyList()
+  return getOrderedScopedComponentInfos(internalNode).map { it.component }.filter {
+    it.javaClass == clazz
+  }
+}
+
 /**
  * Returns a list of all components of the given classes from the ComponentTree or an empty list if
  * not found
@@ -103,8 +120,8 @@ fun findAllComponentsInLithoView(
     lithoView: LithoView,
     vararg clazz: Class<out Component?>
 ): List<Component> {
-  val internalNode = getLayoutRoot(lithoView) ?: return emptyList()
-  return findAllComponentsViaBreadthFirstSearch(clazz, internalNode)
+  val layoutResult = getLayoutRoot(lithoView) ?: return emptyList()
+  return findAllComponentsViaBreadthFirstSearch(clazz, layoutResult)
 }
 
 /**
