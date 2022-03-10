@@ -50,7 +50,7 @@ import kotlin.reflect.KClass
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
   val internalNode = getLayoutRoot(lithoView)?.node ?: return null
-  return internalNode.scopedComponentInfos.map { it.component }.firstOrNull {
+  return internalNode.scopedComponentInfos.reversed().map { it.component }.firstOrNull {
     it.javaClass == clazz
   }
 }
@@ -164,7 +164,7 @@ private inline fun componentBreadthFirstSearch(
     val currentLayoutResult = layoutsQueue.removeFirst()
 
     val internalNode = currentLayoutResult.node
-    onHandleScopedComponents(internalNode.scopedComponentInfos.map { it.component })
+    onHandleScopedComponents(internalNode.scopedComponentInfos.reversed().map { it.component })
 
     if (currentLayoutResult is NestedTreeHolderResult) {
       val nestedLayout =

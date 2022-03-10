@@ -296,6 +296,48 @@ class LithoViewRuleExampleTest {
   }
 
   @Test
+  fun `verify order for finding components`() {
+    class HeadComponent(val childComponent: Component) : KComponent() {
+      override fun ComponentScope.render(): Component = childComponent
+    }
+    class DelegateComponent(val delegate: Component) : KComponent() {
+      override fun ComponentScope.render(): Component = delegate
+    }
+    class RowWithChildren : KComponent() {
+      override fun ComponentScope.render(): Component = Row {
+        child(Text(text = "Hello, I'm not a direct component"))
+        child(InnerComponent())
+      }
+    }
+
+    val rowWithChildren = RowWithChildren()
+    val secondLayerDelegate = DelegateComponent(rowWithChildren)
+    val firstLayerDelegate = DelegateComponent(secondLayerDelegate)
+
+    val testLithoView = lithoViewRule.render { HeadComponent(firstLayerDelegate) }
+
+    // Ensure that we find direct components from the head component to the tail component
+    assertThat(testLithoView.findDirectComponent(DelegateComponent::class))
+        .isNotNull
+        .isSameAs(firstLayerDelegate)
+    assertThat(testLithoView.findAllComponents(DelegateComponent::class))
+        .containsExactly(firstLayerDelegate, secondLayerDelegate)
+
+    // Ensure that direct component includes and stops at first flexbox
+    assertThat(testLithoView.findDirectComponent(RowWithChildren::class))
+        .isNotNull
+        .isSameAs(rowWithChildren)
+    assertThat(testLithoView.findDirectComponent(Row::class)).isNotNull
+    assertThat(testLithoView).hasVisibleText("Hello, I'm not a direct component")
+    assertThat(testLithoView.findDirectComponent(Text::class)).isNull()
+    assertThat(testLithoView.findDirectComponent(InnerComponent::class)).isNull()
+
+    // Ensure that we can find non-direct components
+    assertThat(testLithoView.findComponent(Text::class)).isNotNull
+    assertThat(testLithoView.findComponent(InnerComponent::class)).isNotNull
+  }
+
+  @Test
   fun `verify assertions on lithoview `() {
     // lithoview_assertion_start
     val testLithoView = lithoViewRule.render { TestComponent() }
