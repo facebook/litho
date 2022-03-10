@@ -47,6 +47,8 @@ public class LayoutStateContext {
 
   private boolean mIsLayoutStarted = false;
 
+  private @Nullable String mCurrentNestedTreeGlobalKey;
+
   private @Nullable PerfEvent mPerfEvent;
 
   @Deprecated
@@ -194,5 +196,17 @@ public class LayoutStateContext {
 
   public void setPerfEvent(@Nullable PerfEvent perfEvent) {
     mPerfEvent = perfEvent;
+  }
+
+  public @Nullable String getCurrentNestedTreeGlobalKey() {
+    return mCurrentNestedTreeGlobalKey;
+  }
+
+  public void setCurrentNestedTreeGlobalKey(String currentNestedTreeGlobalKey) {
+    mCurrentNestedTreeGlobalKey = currentNestedTreeGlobalKey;
+  }
+
+  public void resetCurrentNestedTreeGlobalKey() {
+    mCurrentNestedTreeGlobalKey = null;
   }
 }

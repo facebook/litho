@@ -22,6 +22,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -220,7 +221,9 @@ public class StateHandler {
       LithoStats.incrementComponentAppliedStateUpdateCountBy(stateUpdatesForKey.size());
 
       synchronized (this) {
-        mPendingStateUpdates.remove(key); // remove from pending
+        if (!ComponentsConfiguration.applyStateUpdateEarly) {
+          mPendingStateUpdates.remove(key); // remove from pending
+        }
         if (mPendingLazyStateUpdates != null) {
           mPendingLazyStateUpdates.remove(key); // remove from pending lazy
         }
@@ -230,6 +233,36 @@ public class StateHandler {
           maybeInitPendingStateUpdateTransitions();
           mPendingStateUpdateTransitions.put(key, transitionsFromStateUpdate);
         }
+      }
+    }
+  }
+
+  @ThreadSafe(enableChecks = false)
+  void applyStateUpdatesEarly(final InitialStateContainer initialStateContainer) {
+    maybeInitStateContainers();
+    maybeInitNeededStateContainers();
+
+    synchronized (this) {
+      if (mPendingStateUpdates != null) {
+        for (Map.Entry<String, List<StateUpdate>> entry : mPendingStateUpdates.entrySet()) {
+          final String key = entry.getKey();
+          StateContainer stateContainer = mStateContainers.get(key);
+          if (stateContainer == null) {
+            stateContainer = initialStateContainer.getInitialStateForComponent(key);
+          }
+
+          if (stateContainer == null) {
+            throw new IllegalStateException(
+                "StateContainer not found for component for which we have pending state update");
+          }
+
+          final StateContainer newStateContainer = stateContainer.clone();
+          mNeededStateContainers.add(key);
+          mStateContainers.put(key, newStateContainer);
+          applyStateUpdates(key, newStateContainer);
+        }
+
+        mPendingStateUpdates.clear();
       }
     }
   }
@@ -253,8 +286,25 @@ public class StateHandler {
 
     final StateContainer newStateContainer =
         createOrGetStateContainerForComponent(scopedContext, component, key);
-    addStateContainer(key, newStateContainer);
-    applyStateUpdates(key, newStateContainer);
+
+    // We want to add StateContainer in StateHandler for main tree but not for Nested Tree. Nested
+    // Tree's State Container will reside in InitialStateContainer. While accessing the
+    // StateContainers we will first check them in StateHandler and if not found then we fallback to
+    // InitialStateContainer.
+    // Note: This is intermediary, once we implement the final APIs to resolve all nested tree
+    // together earlier then we will not need to do this hack
+    if (!ComponentsConfiguration.applyStateUpdateEarly
+        || scopedContext.getLayoutStateContext().getCurrentNestedTreeGlobalKey() == null
+        || !key.startsWith(scopedContext.getLayoutStateContext().getCurrentNestedTreeGlobalKey())) {
+      // getCurrentNestedTreeGlobalKey() will return null, if we are processing maintree right now
+      // but will return the global key for root of nested tree if we are processing nested tree or
+      // it's children
+      addStateContainer(key, newStateContainer);
+    }
+
+    if (!ComponentsConfiguration.applyStateUpdateEarly) {
+      applyStateUpdates(key, newStateContainer);
+    }
   }
 
   public synchronized void addStateContainer(String key, StateContainer state) {

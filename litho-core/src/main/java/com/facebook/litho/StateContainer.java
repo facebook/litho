@@ -22,8 +22,18 @@ import com.facebook.infer.annotation.Nullsafe;
  * Implemented by the class used to store state within both Components and Sections to store state.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class StateContainer {
+public abstract class StateContainer implements Cloneable {
   public abstract void applyStateUpdate(StateUpdate stateUpdate);
+
+  @Override
+  protected StateContainer clone() {
+    try {
+      return (StateContainer) super.clone();
+    } catch (CloneNotSupportedException ex) {
+      // This should never happen
+      throw new RuntimeException(ex);
+    }
+  }
 
   public static final class StateUpdate {
     public final int type;

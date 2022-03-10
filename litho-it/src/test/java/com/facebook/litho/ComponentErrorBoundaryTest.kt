@@ -259,6 +259,9 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnUpdateStateCrashWithTestErrorBoundary() {
+    val defaultApplyStateUpdateEarly = ComponentsConfiguration.applyStateUpdateEarly
+    ComponentsConfiguration.applyStateUpdateEarly = false
+
     val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
@@ -277,10 +280,15 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0])
         .isInstanceOf(RuntimeException::class.java)
         .hasMessage("onUpdateState crash")
+
+    ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStateUpdateEarly
   }
 
   @Test
   fun testOnUpdateStateWithTransitionCrashWithTestErrorBoundary() {
+    val defaultApplyStatesUpdatesEarly = ComponentsConfiguration.applyStateUpdateEarly
+    ComponentsConfiguration.applyStateUpdateEarly = false
+
     val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
@@ -300,6 +308,8 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0])
         .isInstanceOf(RuntimeException::class.java)
         .hasMessage("onUpdateStateWithTransition crash")
+
+    ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStatesUpdatesEarly
   }
 
   @Test

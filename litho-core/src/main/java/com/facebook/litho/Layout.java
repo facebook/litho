@@ -141,6 +141,17 @@ class Layout {
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
+    try {
+      if (ComponentsConfiguration.applyStateUpdateEarly && c.getComponentTree() != null) {
+        layoutStateContext
+            .getStateHandler()
+            .applyStateUpdatesEarly(c.getComponentTree().getInitialStateContainer());
+      }
+    } catch (Exception ex) {
+      ComponentUtils.handleWithHierarchy(c, component, ex);
+      return new LayoutResultHolder(null);
+    }
+
     final @Nullable LithoNode node =
         render(
             layoutStateContext,
@@ -396,6 +407,8 @@ class Layout {
           layout = cachedLayout;
         } else {
           // Create a new layout.
+          layoutStateContext.setCurrentNestedTreeGlobalKey(globalKey);
+
           final @Nullable LithoNode newNode =
               create(
                   layoutStateContext,
@@ -406,6 +419,8 @@ class Layout {
                   true,
                   true,
                   globalKey);
+
+          layoutStateContext.resetCurrentNestedTreeGlobalKey();
 
           if (newNode != null) {
             holder.getNode().copyInto(newNode);
