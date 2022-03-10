@@ -17,6 +17,7 @@
 package com.facebook.litho.testing.assertj;
 
 import static com.facebook.litho.componentsfinder.ComponentsFinderKt.findAllComponentsInLithoView;
+import static com.facebook.litho.componentsfinder.ComponentsFinderKt.findDirectComponentInLithoView;
 import static com.facebook.litho.testing.assertj.ComponentConditions.typeIs;
 
 import android.graphics.Rect;
@@ -34,6 +35,7 @@ import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import kotlin.Pair;
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
@@ -42,6 +44,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.SoftAssertions;
 import org.hamcrest.Matcher;
 
 /**
@@ -236,6 +239,54 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   public LithoViewAssert hasViewTag(int tagId, Object tagValue) {
     assertThatViewTree().hasViewTag(tagId, tagValue);
 
+    return this;
+  }
+
+  /** Assert that the LithoView has a direct component of type clazz */
+  public LithoViewAssert containsDirectComponents(final KClass<? extends Component>... kClazzes) {
+    return containsDirectComponents(getJavaClasses(kClazzes));
+  }
+
+  /** Assert that the LithoView has a direct component of type clazz */
+  public LithoViewAssert containsDirectComponents(final Class<? extends Component>... clazzes) {
+    SoftAssertions softAssertions = new SoftAssertions();
+    for (final Class<? extends Component> clazz : clazzes) {
+      final @Nullable Component foundDirectComponent =
+          findDirectComponentInLithoView(actual, clazz);
+
+      softAssertions
+          .assertThat(foundDirectComponent)
+          .overridingErrorMessage(
+              "Expected to have direct component of type %s in LithoView, but did not find one",
+              clazzes)
+          .isNotNull();
+    }
+    softAssertions.assertAll();
+    return this;
+  }
+
+  /** Assert that the LithoView does not have a direct component of type clazz */
+  public LithoViewAssert doesNotContainDirectComponents(
+      final KClass<? extends Component>... kClazzes) {
+    return doesNotContainDirectComponents(getJavaClasses(kClazzes));
+  }
+
+  /** Assert that the LithoView does not have a direct component of type clazz */
+  public LithoViewAssert doesNotContainDirectComponents(
+      final Class<? extends Component>... clazzes) {
+    SoftAssertions softAssertions = new SoftAssertions();
+    for (final Class<? extends Component> clazz : clazzes) {
+      final @Nullable Component foundDirectComponent =
+          findDirectComponentInLithoView(actual, clazz);
+
+      softAssertions
+          .assertThat(foundDirectComponent)
+          .overridingErrorMessage(
+              "Expected to not have direct component of type %s in LithoView, but did not find one",
+              clazz)
+          .isNull();
+    }
+    softAssertions.assertAll();
     return this;
   }
 
@@ -437,7 +488,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   public <T1, T2> LithoViewAssert hasDirectMatchingComponent(
       KClass kClass, Pair<KProperty1<T2, T1>, T1>... propsValuePairs) {
 
-    Component component = ComponentsFinderKt.findDirectComponentInLithoView(actual, kClass);
+    Component component = findDirectComponentInLithoView(actual, kClass);
 
     Assertions.assertThat(component)
         .overridingErrorMessage(
@@ -497,7 +548,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   public <T2, T1> LithoViewAssert hasDirectMatchingComponentWithMatcher(
       KClass kClass, Pair<KProperty1<T2, T1>, Matcher<T1>>... propsMatcherPairs) {
 
-    Component component = ComponentsFinderKt.findDirectComponentInLithoView(actual, kClass);
+    Component component = findDirectComponentInLithoView(actual, kClass);
 
     Assertions.assertThat(component)
         .overridingErrorMessage(
@@ -593,5 +644,14 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     public String toString() {
       return shortName;
     }
+  }
+
+  private static Class<? extends Component>[] getJavaClasses(
+      final KClass<? extends Component>... kClazzes) {
+    final Class<? extends Component>[] jClazzes = new Class[kClazzes.length];
+    for (int i = 0; i < kClazzes.length; i++) {
+      jClazzes[i] = JvmClassMappingKt.getJavaClass(kClazzes[i]);
+    }
+    return jClazzes;
   }
 }

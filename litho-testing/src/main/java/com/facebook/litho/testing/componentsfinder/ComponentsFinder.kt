@@ -18,8 +18,10 @@ package com.facebook.litho.componentsfinder
 
 import com.facebook.litho.Component
 import com.facebook.litho.LithoLayoutResult
+import com.facebook.litho.LithoNode
 import com.facebook.litho.LithoView
 import com.facebook.litho.NestedTreeHolderResult
+import com.facebook.litho.ScopedComponentInfo
 import kotlin.reflect.KClass
 
 /**
@@ -69,7 +71,7 @@ fun getRootComponentInLithoView(lithoView: LithoView): Component? {
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
   val internalNode = getLayoutRoot(lithoView)?.node ?: return null
-  return internalNode.scopedComponentInfos.reversed().map { it.component }.firstOrNull {
+  return getOrderedScopedComponentInfos(internalNode).map { it.component }.firstOrNull {
     it.javaClass == clazz
   }
 }
@@ -183,7 +185,7 @@ private inline fun componentBreadthFirstSearch(
     val currentLayoutResult = layoutsQueue.removeFirst()
 
     val internalNode = currentLayoutResult.node
-    onHandleScopedComponents(internalNode.scopedComponentInfos.reversed().map { it.component })
+    onHandleScopedComponents(getOrderedScopedComponentInfos(internalNode).map { it.component })
 
     if (currentLayoutResult is NestedTreeHolderResult) {
       val nestedLayout =
@@ -198,4 +200,12 @@ private inline fun componentBreadthFirstSearch(
       layoutsQueue.add(childLayout)
     }
   }
+}
+
+/**
+ * @return list of the [ScopedComponentInfo]s, ordered from the head (closest to the root) to the
+ * tail.
+ */
+private fun getOrderedScopedComponentInfos(internalNode: LithoNode): List<ScopedComponentInfo> {
+  return internalNode.scopedComponentInfos.reversed()
 }

@@ -320,9 +320,8 @@ class LithoViewRuleExampleTest {
 
     // Ensure that we find direct components from the head component to the tail component
     assertThat(testLithoView.rootComponent).isSameAs(rootComponent)
-    assertThat(testLithoView.findDirectComponent(HeadComponent::class))
-        .isNotNull
-        .isSameAs(rootComponent)
+    assertThat(testLithoView)
+        .containsDirectComponents(HeadComponent::class, DelegateComponent::class)
     assertThat(testLithoView.findDirectComponent(DelegateComponent::class))
         .isNotNull
         .isSameAs(firstLayerDelegate)
@@ -330,13 +329,13 @@ class LithoViewRuleExampleTest {
         .containsExactly(firstLayerDelegate, secondLayerDelegate)
 
     // Ensure that direct component includes and stops at first flexbox
+    assertThat(testLithoView)
+        .containsDirectComponents(RowWithChildren::class, Row::class)
+        .doesNotContainDirectComponents(Text::class, InnerComponent::class)
     assertThat(testLithoView.findDirectComponent(RowWithChildren::class))
         .isNotNull
         .isSameAs(rowWithChildren)
-    assertThat(testLithoView.findDirectComponent(Row::class)).isNotNull
     assertThat(testLithoView).hasVisibleText("Hello, I'm not a direct component")
-    assertThat(testLithoView.findDirectComponent(Text::class)).isNull()
-    assertThat(testLithoView.findDirectComponent(InnerComponent::class)).isNull()
 
     // Ensure that we can find non-direct components
     assertThat(testLithoView.findComponent(Text::class)).isNotNull
