@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.view.View
 import android.widget.TextView
 import com.facebook.litho.animated.alpha
+import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.width
@@ -38,6 +39,8 @@ import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,6 +51,16 @@ import org.robolectric.annotation.LooperMode
 class MountableComponentsTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+
+  @Before
+  fun before() {
+    TempComponentsConfigurations.setDelegateToRenderCoreMount(true)
+  }
+
+  @After
+  fun after() {
+    TempComponentsConfigurations.restoreDelegateToRenderCoreMount()
+  }
 
   @Test
   fun `should render mountable component`() {

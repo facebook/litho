@@ -29,8 +29,9 @@ public class RenderCoreMountStateTestRunConfiguration implements LithoTestRunCon
     defaultDelegateToRenderCore = ComponentsConfiguration.delegateToRenderCoreMount;
     defaultEnsureParentMounted = ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
 
-    ComponentsConfiguration.delegateToRenderCoreMount = true;
-    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = true;
+    ComponentsConfiguration.delegateToRenderCoreMount = !defaultDelegateToRenderCore;
+    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState =
+        !defaultDelegateToRenderCore;
   }
 
   @Override
