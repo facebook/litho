@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
@@ -32,8 +33,11 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
 import com.facebook.litho.widget.EmptyComponent;
 import com.facebook.litho.widget.Image;
+import com.facebook.litho.widget.MountSpecWithMountUnmountAssertion;
+import com.facebook.litho.widget.MountSpecWithMountUnmountAssertionSpec;
 import com.facebook.litho.widget.Progress;
 import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderTree;
@@ -42,12 +46,14 @@ import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class MountStateTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  public final @Rule ExpectedException mExceptionRule = ExpectedException.none();
 
   private ComponentContext mContext;
 
@@ -320,5 +326,88 @@ public class MountStateTest {
 
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
     TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
+  }
+
+  /**
+   * This test case captures the scenario where unmount gets called on a component which was moved
+   * to a different location during prepare mount which causes the wrong item to be unmounted, which
+   * can lead to crashes. 1. A layout is mounted. 2. The next layout update cause an item to be
+   * moved to a different position, but at that position it gets unmounted because it is outside the
+   * visible rect. 3. This causes the wrong item to be unmounted. 4. This will also cause crashes.
+   */
+  @Test
+  public void whenItemsAreMovedThenUnmountedInTheNextMountLoop_shouldUnmountTheCorrectItem() {
+
+    // the test should throw an exception
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      mExceptionRule.expect(IllegalStateException.class);
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final Component initialComponent =
+        Column.create(c)
+            .heightPx(800)
+            .child(
+                Column.create(c)
+                    .wrapInView()
+                    .heightPx(800)
+                    .child(TextInput.create(c).key("#0").initialText("0").heightPx(100))
+                    .child(
+                        MountSpecWithMountUnmountAssertion.create(c)
+                            .key("test")
+                            .container(new MountSpecWithMountUnmountAssertionSpec.Container())
+                            .heightPx(100))
+                    .child(TextInput.create(c).key("#2").initialText("2").heightPx(100))
+                    .child(TextInput.create(c).key("#3").initialText("3").heightPx(100))
+                    .child(TextInput.create(c).key("#4").initialText("4").heightPx(100))
+                    .child(TextInput.create(c).key("#5").initialText("5").heightPx(100))
+                    .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)))
+            .build();
+
+    final ComponentTree initialComponentTree =
+        ComponentTree.create(c, initialComponent).useRenderUnitIdMap(true).build();
+
+    LithoView lithoView = new LithoView(c.getAndroidContext());
+
+    // Mount a layout with the component.
+    lithoView.setComponentTree(initialComponentTree);
+    lithoView.measure(exactly(100), exactly(800));
+    lithoView.layout(0, 0, 100, 800);
+
+    // Assert that the view is mounted
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(((ComponentHost) lithoView.getChildAt(0)).getChildCount()).isEqualTo(7);
+
+    Component newComponent =
+        Column.create(c)
+            .heightPx(800)
+            .child(
+                Column.create(c)
+                    .wrapInView()
+                    .heightPx(800)
+                    .child(TextInput.create(c).key("#0").initialText("0").heightPx(100))
+                    .child(Text.create(c).key("#1").text("1").heightPx(100))
+                    .child(TextInput.create(c).key("#2").initialText("2").heightPx(100))
+                    .child(TextInput.create(c).key("#3").initialText("3").heightPx(100))
+                    .child(TextInput.create(c).key("#4").initialText("4").heightPx(100))
+                    .child(
+                        MountSpecWithMountUnmountAssertion.create(c)
+                            .key("test")
+                            .container(new MountSpecWithMountUnmountAssertionSpec.Container())
+                            .heightPx(100))
+                    .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)))
+            .build();
+
+    lithoView.setComponent(newComponent);
+
+    // Mount a new layout, but with a shorter height, to make the item unmount
+    lithoView.measure(exactly(100), exactly(95));
+    lithoView.layout(0, 0, 100, 95); // crashes here
+
+    // Assert that the items is unmounted.
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(((ComponentHost) lithoView.getChildAt(0)).getChildCount()).isEqualTo(1);
+
+    lithoView.unmountAllItems();
   }
 }
