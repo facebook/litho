@@ -199,7 +199,17 @@ public class ComponentHost extends Host implements DisappearingHost {
   @Override
   public void unmount(MountItem item) {
     ensureMountItems();
-    final int index = mMountItems.keyAt(mMountItems.indexOfValue(item));
+    final int index;
+    final int indexOfValue = mMountItems.indexOfValue(item);
+
+    if (indexOfValue == -1) {
+      ensureScrapMountItemsArray();
+      final int indexOfValueInScrap = mScrapMountItemsArray.indexOfValue(item);
+      index = mScrapMountItemsArray.keyAt(indexOfValueInScrap);
+    } else {
+      index = mMountItems.keyAt(indexOfValue);
+    }
+
     unmount(index, item);
   }
 

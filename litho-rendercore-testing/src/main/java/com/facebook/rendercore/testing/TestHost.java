@@ -47,12 +47,6 @@ public class TestHost extends HostView {
   }
 
   @Override
-  public void unmount(MountItem mountItem) {
-    super.unmount(mountItem);
-    unbindOrder.add(TestHost.this);
-  }
-
-  @Override
   public void unmount(int index, MountItem mountItem) {
     super.unmount(index, mountItem);
     unbindOrder.add(TestHost.this);

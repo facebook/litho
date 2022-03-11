@@ -46,14 +46,12 @@ import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class MountStateTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
-  public final @Rule ExpectedException mExceptionRule = ExpectedException.none();
 
   private ComponentContext mContext;
 
@@ -333,16 +331,10 @@ public class MountStateTest {
    * to a different location during prepare mount which causes the wrong item to be unmounted, which
    * can lead to crashes. 1. A layout is mounted. 2. The next layout update cause an item to be
    * moved to a different position, but at that position it gets unmounted because it is outside the
-   * visible rect. 3. This causes the wrong item to be unmounted. 4. This will also cause crashes.
+   * visible rect. 3. This causes the wrong item to be unmounted.
    */
   @Test
   public void whenItemsAreMovedThenUnmountedInTheNextMountLoop_shouldUnmountTheCorrectItem() {
-
-    // the test should throw an exception
-    if (ComponentsConfiguration.delegateToRenderCoreMount) {
-      mExceptionRule.expect(IllegalStateException.class);
-    }
-
     final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component initialComponent =
         Column.create(c)
@@ -402,7 +394,7 @@ public class MountStateTest {
 
     // Mount a new layout, but with a shorter height, to make the item unmount
     lithoView.measure(exactly(100), exactly(95));
-    lithoView.layout(0, 0, 100, 95); // crashes here
+    lithoView.layout(0, 0, 100, 95);
 
     // Assert that the items is unmounted.
     assertThat(lithoView.getChildCount()).isEqualTo(1);

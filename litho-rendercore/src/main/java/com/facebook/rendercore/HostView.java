@@ -88,9 +88,15 @@ public class HostView extends Host {
   }
 
   private int findItemIndex(MountItem item) {
-    for (int i = 0; i < mMountItems.length; i++) {
-      if (mMountItems[i] == item) {
-        return i;
+    final int mountItemsIndex = findItemIndexInArray(item, mMountItems);
+    if (mountItemsIndex > -1) {
+      return mountItemsIndex;
+    }
+
+    if (mScrapMountItemsArray != null) {
+      final int scrapItemsIndex = findItemIndexInArray(item, mScrapMountItemsArray);
+      if (scrapItemsIndex > -1) {
+        return scrapItemsIndex;
       }
     }
 
@@ -98,6 +104,16 @@ public class HostView extends Host {
         "Mount item "
             + item
             + "Was selected for unmount but was not found in the list of mounted items");
+  }
+
+  private static int findItemIndexInArray(MountItem item, MountItem[] array) {
+    for (int i = 0; i < array.length; i++) {
+      if (array[i] == item) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 
   @Override

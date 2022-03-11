@@ -750,7 +750,7 @@ public class MountState implements MountDelegateTarget {
     if (node.getChildrenCount() > 0) {
 
       // unmount all children
-      for (int i = 0; i < node.getChildrenCount(); i++) {
+      for (int i = node.getChildrenCount() - 1; i >= 0; i--) {
         unmountItemRecursively(node.getChildAt(i).getRenderUnit().getId());
       }
 
@@ -780,7 +780,7 @@ public class MountState implements MountDelegateTarget {
       if (item.isBound()) {
         unbindRenderUnitFromContent(mMountDelegate, mContext, item);
       }
-      host.unmount(node.getPositionInParent(), item);
+      host.unmount(item);
 
       if (content instanceof View) {
         ((View) content).setPadding(0, 0, 0, 0);
