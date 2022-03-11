@@ -116,5 +116,8 @@ class LithoViewRuleListExampleTest {
 
     val component = listComponent?.findFirstComponent(ItemComponent::class) ?: return
     assertThat(component).hasFieldOrPropertyWithValue("model", items[0])
+
+    val foundComponents = listComponent.findComponents(ItemComponent::class)
+    assertThat(foundComponents).hasSize(4)
   }
 }

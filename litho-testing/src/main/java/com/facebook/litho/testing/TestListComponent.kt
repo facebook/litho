@@ -103,4 +103,17 @@ class TestListComponent {
   /** @see findComponent */
   inline fun findFirstComponent(clazz: KClass<out Component>): Component? =
       findFirstComponent(clazz.java)
+
+  /** Performs a shallow search for components, of the given type; from the LazyCollection. */
+  @PublishedApi
+  internal inline fun findComponents(classes: List<Class<out Component>>): List<Component> =
+      components.filter { classes.contains(it::class.java) }
+
+  /** @see findComponents */
+  inline fun findComponents(vararg clazz: Class<out Component>): List<Component> =
+      findComponents(clazz.toList())
+
+  /** @see findComponents */
+  inline fun findComponents(vararg clazz: KClass<out Component>): List<Component> =
+      findComponents(clazz.map { it.java })
 }
