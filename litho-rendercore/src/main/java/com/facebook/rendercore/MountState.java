@@ -573,7 +573,7 @@ public class MountState implements MountDelegateTarget {
     // but only from mIndexToMountedItemMap. If an host changes we're going to unmount it and
     // recursively
     // all its mounted children.
-    for (int i = 0; i < previousRenderTree.getMountableOutputCount(); i++) {
+    for (int i = 1; i < previousRenderTree.getMountableOutputCount(); i++) {
       final RenderUnit previousRenderUnit =
           previousRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
       final int newPosition = mRenderTree.getRenderTreeNodeIndex(previousRenderUnit.getId());
@@ -596,14 +596,9 @@ public class MountState implements MountDelegateTarget {
       if (newPosition == -1) {
         unmountItemRecursively(oldItem.getRenderTreeNode().getRenderUnit().getId());
       } else {
-        final long newHostMarker =
-            renderTreeNode.getParent() == null
-                ? 0L
-                : renderTreeNode.getParent().getRenderUnit().getId();
-        final Host newHost =
-            mIdToMountedItemMap.get(newHostMarker) == null
-                ? null
-                : (Host) mIdToMountedItemMap.get(newHostMarker).getContent();
+        final long newHostMarker = renderTreeNode.getParent().getRenderUnit().getId();
+        final @Nullable MountItem hostItem = mIdToMountedItemMap.get(newHostMarker);
+        final @Nullable Host newHost = hostItem != null ? (Host) hostItem.getContent() : null;
 
         if (oldItem.getHost() != newHost) {
           // If the id is the same but the parent host is different we simply unmount the item and
