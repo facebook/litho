@@ -284,16 +284,9 @@ public class MountState implements MountDelegateTarget {
       unregisterAllExtensions();
       return;
     }
-    // Let's unmount all the content from the Root host. Everything else will be recursively
-    // unmounted from there.
-    final RenderTreeNode rootRenderTreeNode = mRenderTree.getRoot();
 
-    for (int i = 0; i < rootRenderTreeNode.getChildrenCount(); i++) {
-      unmountItemRecursively(rootRenderTreeNode.getChildAt(i).getRenderUnit().getId());
-    }
-
-    // Let's unbind and unmount the root host.
-    unmountRootItem();
+    // unmount all the content from the Root node
+    unmountItemRecursively(ROOT_HOST_ID);
 
     unregisterAllExtensions();
 
@@ -748,16 +741,7 @@ public class MountState implements MountDelegateTarget {
     // When unmounting use the render unit from the MountItem
     final RenderTreeNode node = item.getRenderTreeNode();
     final RenderUnit unit = item.getRenderUnit();
-
-    // The root host item cannot be unmounted as it's a reference
-    // to the top-level Host, and it is not mounted in a host.
-    if (unit.getId() == ROOT_HOST_ID) {
-      unmountRootItem();
-      return;
-    }
-
     final Object content = item.getContent();
-
     final boolean hasUnmountDelegate =
         mUnmountDelegateExtension != null
             && mUnmountDelegateExtension.shouldDelegateUnmount(
@@ -783,7 +767,14 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
-    mIdToMountedItemMap.remove(unit.getId());
+    // The root host item cannot be unmounted as it's a reference
+    // to the top-level Host, and it is not mounted in a host.
+    if (unit.getId() == ROOT_HOST_ID) {
+      unmountRootItem();
+      return;
+    } else {
+      mIdToMountedItemMap.remove(unit.getId());
+    }
 
     final Host host = item.getHost();
 
