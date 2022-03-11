@@ -757,7 +757,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     final Object content = item.getContent();
-    mIdToMountedItemMap.remove(unit.getId());
 
     final boolean hasUnmountDelegate =
         mUnmountDelegateExtension != null
@@ -783,6 +782,8 @@ public class MountState implements MountDelegateTarget {
                 + " some items behind maybe because not tracked by its MountState");
       }
     }
+
+    mIdToMountedItemMap.remove(unit.getId());
 
     final Host host = item.getHost();
 
