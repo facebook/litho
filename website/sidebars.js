@@ -42,18 +42,11 @@ module.exports = {
         ],
       },
       'mainconcepts/flexbox-yoga',
-      {
-        // TODO: remove/replace 'Coordinating State and Actions'
-        'Coordinating State and Actions': [
-          'mainconcepts/coordinate-state-actions/hoisting-state',
-          'mainconcepts/coordinate-state-actions/communicating-between-components',
-          'mainconcepts/coordinate-state-actions/componenttree',
-          'mainconcepts/coordinate-state-actions/visibility-handling',
-          'mainconcepts/coordinate-state-actions/keys-and-identity',
-        ],
-      },
+      // TODO: Kotlin-ify,
+      'mainconcepts/coordinate-state-actions/keys-and-identity',
     ],
-    'Building lists': [
+    // TODO: Clean up/update for Collection
+    'Building Lists': [
       'sections/start',
       'sections/recycler-collection-component',
       'sections/best-practices',
@@ -65,24 +58,31 @@ module.exports = {
       'sections/diff-sections',
       'sections/architecture',
     ],
+    // TODO: Kotlin-ify this section
+    'Animations': [
+      'animations/transition-basics',
+      'animations/transition-types',
+      'animations/transition-all-layout',
+      'animations/transition-choreography',
+      'animations/transition-definitions',
+      'animations/transition-key-types',
+      'animations/dynamic-props',
+    ],
+    'Visibility': [
+      // TODO: Kotlin-ify
+      'mainconcepts/coordinate-state-actions/visibility-handling',
+    ],
+    'Accessibility': ['accessibility/accessibility-overview'],
     // TODO: revisit wording to make it clear it's not just the 'kotlin' testing API
     'Testing': [
       'kotlin/testing-getting-started',
       'kotlin/testing-assertions',
       'kotlin/testing-actions',
     ],
-    // TODO: de-dupe content with main concepts
-    ...fbInternalOnly({
-      'Migrating to the Kotlin API': [
-        'kotlin/kotlin-intro',
-        'kotlin/kotlin-api-basics',
-        'kotlin/hooks-for-spec-developers',
-        'kotlin/kotlin-flexbox-containers',
-        'kotlin/collections',
-        'kotlin/event-handling',
-        'kotlin/kotlin-api-cheatsheet',
-      ],
-    }),
+    'Widgets': [
+      'widgets/builtin-widgets',
+      ...fbInternalOnly(['fb/widgets/design-components']),
+    ],
     // TODO: clean this section up, add intro page
     'Codegen APIs': [
       'codegen/layout-specs',
@@ -97,20 +97,18 @@ module.exports = {
       'codegen/events-for-specs',
       'codegen/trigger-events',
     ],
-    'Animations': [
-      'animations/transition-basics',
-      'animations/transition-types',
-      'animations/transition-all-layout',
-      'animations/transition-choreography',
-      'animations/transition-definitions',
-      'animations/transition-key-types',
-      'animations/dynamic-props',
-    ],
-    'Widgets': [
-      'widgets/builtin-widgets',
-      ...fbInternalOnly(['fb/widgets/design-components']),
-    ],
-    'Accessibility': ['accessibility/accessibility-overview'],
+    // TODO: de-dupe content with main concepts
+    ...fbInternalOnly({
+      'Migrating to the Kotlin API': [
+        'kotlin/kotlin-intro',
+        'kotlin/kotlin-api-basics',
+        'kotlin/hooks-for-spec-developers',
+        'kotlin/kotlin-flexbox-containers',
+        'kotlin/collections',
+        'kotlin/event-handling',
+        'kotlin/kotlin-api-cheatsheet',
+      ],
+    }),
     // TODO: clean this section up, add intro page
     'Tooling': [
       {
@@ -129,6 +127,8 @@ module.exports = {
     'Best Practices': [
       'best-practices/immutability',
       'best-practices/props-vs-state',
+      'mainconcepts/coordinate-state-actions/hoisting-state',
+      'mainconcepts/coordinate-state-actions/communicating-between-components',
       'best-practices/coding-style',
     ],
     ...fbInternalOnly({
@@ -201,6 +201,7 @@ module.exports = {
           ],
           'Compatibility': ['styles'],
           'Advanced Guides': [
+            'mainconcepts/coordinate-state-actions/componenttree',
             'architecture-overview',
             'custom-layout',
             'onattached-ondetached',
