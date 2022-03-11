@@ -48,8 +48,36 @@ public class RenderTree {
     mResults = results;
 
     for (int i = 0; i < mFlatList.length; i++) {
+      assertNoDuplicateRenderUnits(i);
       mIdToIndexMap.put(mFlatList[i].getRenderUnit().getId(), i);
     }
+  }
+
+  /**
+   * Throws an exception if this RenderTree already has a RenderUnit with the same ID as the one at
+   * the given index.
+   */
+  private void assertNoDuplicateRenderUnits(int newNodeIndex) {
+    final RenderTreeNode newNode = mFlatList[newNodeIndex];
+    if (mIdToIndexMap.get(newNode.getRenderUnit().getId()) == null) {
+      return;
+    }
+
+    final int existingNodeIndex = mIdToIndexMap.get(newNode.getRenderUnit().getId());
+    final RenderTreeNode existingNode = mFlatList[existingNodeIndex];
+
+    throw new IllegalStateException(
+        String.format(
+            Locale.US,
+            "RenderTrees must not have RenderUnits with the same ID:\n"
+                + "Attempted to add item with existing ID at index %d: %s\n"
+                + "Existing item at index %d: %s\n"
+                + "Full RenderTree: %s",
+            newNodeIndex,
+            newNode.generateDebugString(null),
+            existingNodeIndex,
+            existingNode.generateDebugString(null),
+            generateDebugString()));
   }
 
   public int getWidth() {
