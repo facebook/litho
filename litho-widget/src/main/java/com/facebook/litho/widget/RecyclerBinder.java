@@ -1671,6 +1671,12 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
     synchronized (this) {
+      // TODO(t108535728): Temporarily ignoring this error to allow release of app
+      if (mComponentTreeHolders.isEmpty()) {
+        android.util.Log.e(TAG, "ERROR: Dropping list update to prevent crash!");
+        return;
+      }
+
       holder = mComponentTreeHolders.get(position);
       renderInfoWasView = holder.getRenderInfo().rendersView();
 
