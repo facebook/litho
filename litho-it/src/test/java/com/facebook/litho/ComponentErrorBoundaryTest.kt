@@ -259,9 +259,6 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnUpdateStateCrashWithTestErrorBoundary() {
-    val defaultApplyStateUpdateEarly = ComponentsConfiguration.applyStateUpdateEarly
-    ComponentsConfiguration.applyStateUpdateEarly = false
-
     val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
@@ -280,15 +277,32 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0])
         .isInstanceOf(RuntimeException::class.java)
         .hasMessage("onUpdateState crash")
+  }
 
-    ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStateUpdateEarly
+  @Test
+  fun testOnUpdateStateCrashWithTestErrorBoundaryInDeepHierarchy() {
+    val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
+    val crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
+            .crashFromStep(LifecycleStep.ON_UPDATE_STATE)
+            .caller(caller)
+            .build()
+    val errorOutput: List<Exception> = ArrayList()
+    val component =
+        TestErrorBoundary.create(lithoViewRule.context)
+            .errorOutput(errorOutput)
+            .child(Column.create(lithoViewRule.context).child(crashingComponent).build())
+            .build()
+    lithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    caller.updateStateSync()
+    assertThat(errorOutput).hasSize(1)
+    assertThat(errorOutput[0])
+        .isInstanceOf(RuntimeException::class.java)
+        .hasMessage("onUpdateState crash")
   }
 
   @Test
   fun testOnUpdateStateWithTransitionCrashWithTestErrorBoundary() {
-    val defaultApplyStatesUpdatesEarly = ComponentsConfiguration.applyStateUpdateEarly
-    ComponentsConfiguration.applyStateUpdateEarly = false
-
     val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
@@ -308,8 +322,29 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0])
         .isInstanceOf(RuntimeException::class.java)
         .hasMessage("onUpdateStateWithTransition crash")
+  }
 
-    ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStatesUpdatesEarly
+  @Test
+  fun testOnUpdateStateWithTransitionCrashWithTestErrorBoundaryInDeepHierarchy() {
+    val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
+    val crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
+            .crashFromStep(LifecycleStep.ON_UPDATE_STATE_WITH_TRANSITION)
+            .caller(caller)
+            .build()
+    val errorOutput: List<Exception> = ArrayList()
+    val component =
+        TestErrorBoundary.create(lithoViewRule.context)
+            .errorOutput(errorOutput)
+            .child(Column.create(lithoViewRule.context).child(crashingComponent).build())
+            .build()
+    lithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    caller.updateStateWithTransition()
+    backgroundLayoutLooperRule.runToEndOfTasksSync()
+    assertThat(errorOutput).hasSize(1)
+    assertThat(errorOutput[0])
+        .isInstanceOf(RuntimeException::class.java)
+        .hasMessage("onUpdateStateWithTransition crash")
   }
 
   @Test

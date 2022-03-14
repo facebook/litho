@@ -238,7 +238,11 @@ public class StateHandler {
   }
 
   @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesEarly(final InitialStateContainer initialStateContainer) {
+  void applyStateUpdatesEarly(
+      final InitialStateContainer initialStateContainer,
+      final ComponentContext context,
+      final Component component,
+      final @Nullable LithoNode prevTreeRootNode) {
     maybeInitStateContainers();
     maybeInitNeededStateContainers();
 
@@ -246,23 +250,50 @@ public class StateHandler {
       if (mPendingStateUpdates != null) {
         for (Map.Entry<String, List<StateUpdate>> entry : mPendingStateUpdates.entrySet()) {
           final String key = entry.getKey();
-          StateContainer stateContainer = mStateContainers.get(key);
-          if (stateContainer == null) {
-            stateContainer = initialStateContainer.getInitialStateForComponent(key);
-          }
+          try {
+            StateContainer stateContainer = mStateContainers.get(key);
+            if (stateContainer == null) {
+              stateContainer = initialStateContainer.getInitialStateForComponent(key);
+            }
 
-          if (stateContainer == null) {
-            throw new IllegalStateException(
-                "StateContainer not found for component for which we have pending state update");
-          }
+            if (stateContainer == null) {
+              throw new IllegalStateException(
+                  "StateContainer not found for component for which we have pending state update");
+            }
 
-          final StateContainer newStateContainer = stateContainer.clone();
-          mNeededStateContainers.add(key);
-          mStateContainers.put(key, newStateContainer);
-          applyStateUpdates(key, newStateContainer);
+            final StateContainer newStateContainer = stateContainer.clone();
+            mNeededStateContainers.add(key);
+            mStateContainers.put(key, newStateContainer);
+            applyStateUpdates(key, newStateContainer);
+          } catch (Exception ex) {
+            if (prevTreeRootNode != null) {
+              handleExceptionDuringApplyStateUpdate(key, prevTreeRootNode, ex);
+            } else {
+              ComponentUtils.handleWithHierarchy(context, component, ex);
+            }
+          }
         }
 
         mPendingStateUpdates.clear();
+      }
+    }
+  }
+
+  private static void handleExceptionDuringApplyStateUpdate(
+      final String key, final LithoNode current, final Exception exception) {
+    List<ScopedComponentInfo> scopedComponentInfos = current.getScopedComponentInfos();
+    for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
+      ComponentContext context = scopedComponentInfo.getContext();
+      if (context.getGlobalKey().equals(key)) {
+        ComponentUtils.handleWithHierarchy(context, scopedComponentInfo.getComponent(), exception);
+        break;
+      }
+    }
+
+    for (int index = 0; index < current.getChildCount(); ++index) {
+      LithoNode childLithoNode = current.getChildAt(index);
+      if (childLithoNode.getHeadComponentKey().startsWith(key)) {
+        handleExceptionDuringApplyStateUpdate(key, childLithoNode, exception);
       }
     }
   }

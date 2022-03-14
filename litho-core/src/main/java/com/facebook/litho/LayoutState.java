@@ -1204,7 +1204,8 @@ public class LayoutState
                     : null,
                 widthSpec,
                 heightSpec,
-                isReconcilable ? currentRoot : null,
+                isReconcilable,
+                currentRoot,
                 diffTreeRoot,
                 logLayoutState);
 

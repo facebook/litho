@@ -127,7 +127,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null);
+        layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null, null);
   }
 
   static LayoutResultHolder createAndMeasureComponent(
@@ -137,6 +137,7 @@ class Layout {
       final @Nullable String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
+      final boolean isReconcilable,
       final @Nullable LithoNode current,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
@@ -145,7 +146,8 @@ class Layout {
       if (ComponentsConfiguration.applyStateUpdateEarly && c.getComponentTree() != null) {
         layoutStateContext
             .getStateHandler()
-            .applyStateUpdatesEarly(c.getComponentTree().getInitialStateContainer());
+            .applyStateUpdatesEarly(
+                c.getComponentTree().getInitialStateContainer(), c, component, current);
       }
     } catch (Exception ex) {
       ComponentUtils.handleWithHierarchy(c, component, ex);
@@ -160,7 +162,7 @@ class Layout {
             globalKeyToReuse,
             widthSpec,
             heightSpec,
-            current,
+            isReconcilable ? current : null,
             layoutStatePerfEvent);
 
     if (node != null && layoutStateContext.isLayoutInterrupted()) {
