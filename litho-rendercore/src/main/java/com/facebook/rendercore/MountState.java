@@ -777,10 +777,11 @@ public class MountState implements MountDelegateTarget {
       mUnmountDelegateExtension.unmount(
           mMountDelegate.getUnmountDelegateExtensionState(), item, host);
     } else {
+      host.unmount(item);
+
       if (item.isBound()) {
         unbindRenderUnitFromContent(mMountDelegate, mContext, item);
       }
-      host.unmount(item);
 
       if (content instanceof View) {
         ((View) content).setPadding(0, 0, 0, 0);
