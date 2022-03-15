@@ -2419,6 +2419,10 @@ class MountState implements MountDelegateTarget {
         }
       }
 
+      if (isTracing) {
+        RenderCoreSystrace.beginSection(
+            "UnmountItem:remove: " + item.getRenderTreeNode().getRenderUnit().getDescription());
+      }
       if (mShouldUsePositionInParent) {
         final int index = item.getRenderTreeNode().getPositionInParent();
         unmount(host, index, content, item, output);
@@ -2431,6 +2435,9 @@ class MountState implements MountDelegateTarget {
             break;
           }
         }
+      }
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
       }
 
       unbindMountItem(item);

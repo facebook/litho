@@ -785,17 +785,36 @@ public class MountState implements MountDelegateTarget {
       mUnmountDelegateExtension.unmount(
           mMountDelegate.getUnmountDelegateExtensionState(), item, host);
     } else {
+
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("UnmountItem:remove: " + unit.getDescription());
+      }
       host.unmount(item);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
 
       if (item.isBound()) {
+        if (isTracing) {
+          RenderCoreSystrace.beginSection("UnmountItem:unbind: " + unit.getDescription());
+        }
         unbindRenderUnitFromContent(mMountDelegate, mContext, item);
+        if (isTracing) {
+          RenderCoreSystrace.endSection();
+        }
       }
 
       if (content instanceof View) {
         ((View) content).setPadding(0, 0, 0, 0);
       }
 
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("UnmountItem:unmount: " + unit.getDescription());
+      }
       unmountRenderUnitFromContent(mContext, node, unit, content, mMountDelegate);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
 
       item.releaseMountContent(mContext);
     }
