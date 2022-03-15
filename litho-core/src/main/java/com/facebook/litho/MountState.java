@@ -300,18 +300,17 @@ class MountState implements MountDelegateTarget {
     final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
 
-      if (mIsDirty && !shouldIncrementallyMount) {
-        // Equivalent to RCMS MountState.mount
+      // Equivalent to RCMS MountState.mount
+      if (!shouldIncrementallyMount) {
         RenderCoreSystrace.beginSection("MountState.mount");
-      } else {
-        // Trace special to LMS
-        RenderCoreSystrace.beginSection(
-            "LMS."
-                + (shouldIncrementallyMount ? "incrementalMount" : "mount")
-                + (mIsDirty ? "Dirty" : ""));
       }
 
-      ComponentsSystrace.beginSectionWithArgs("MountState.mount: " + componentTree.getSimpleName())
+      ComponentsSystrace.beginSectionWithArgs(
+              "LMS."
+                  + (shouldIncrementallyMount ? "incrementalMount" : "mount")
+                  + (mIsDirty ? "Dirty" : "")
+                  + ": "
+                  + componentTree.getSimpleName())
           .arg("treeId", layoutState.getComponentTreeId())
           .arg("component", componentTree.getSimpleName())
           .arg("logTag", componentTree.getContext().getLogTag())
@@ -414,7 +413,9 @@ class MountState implements MountDelegateTarget {
     }
 
     if (isTracing) {
-      RenderCoreSystrace.endSection();
+      if (!shouldIncrementallyMount) {
+        RenderCoreSystrace.endSection();
+      }
       ComponentsSystrace.endSection(); // beginSectionWithArgs
 
       RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
