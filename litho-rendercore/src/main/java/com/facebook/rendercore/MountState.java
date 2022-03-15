@@ -734,6 +734,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     // When unmounting use the render unit from the MountItem
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     final RenderTreeNode node = item.getRenderTreeNode();
     final RenderUnit unit = item.getRenderUnit();
     final Object content = item.getContent();
@@ -741,6 +742,10 @@ public class MountState implements MountDelegateTarget {
         mUnmountDelegateExtension != null
             && mUnmountDelegateExtension.shouldDelegateUnmount(
                 mMountDelegate.getUnmountDelegateExtensionState(), item);
+
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("UnmountItem: " + unit.getDescription());
+    }
 
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
@@ -766,6 +771,9 @@ public class MountState implements MountDelegateTarget {
     // to the top-level Host, and it is not mounted in a host.
     if (unit.getId() == ROOT_HOST_ID) {
       unmountRootItem();
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
       return;
     } else {
       mIdToMountedItemMap.remove(unit.getId());
@@ -790,6 +798,10 @@ public class MountState implements MountDelegateTarget {
       unmountRenderUnitFromContent(mContext, node, unit, content, mMountDelegate);
 
       item.releaseMountContent(mContext);
+    }
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
     }
   }
 

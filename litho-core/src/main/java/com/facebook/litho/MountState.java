@@ -2330,9 +2330,14 @@ class MountState implements MountDelegateTarget {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     final RenderTreeNode node = item.getRenderTreeNode();
     final RenderUnit<?> unit = node.getRenderUnit();
     final long id = unit.getId();
+
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("UnmountItem: " + unit.getDescription());
+    }
 
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
@@ -2340,6 +2345,9 @@ class MountState implements MountDelegateTarget {
       mDynamicPropsManager.onUnbindComponent(
           getLayoutOutput(node).getComponent(), mRootHostMountItem.getContent());
       maybeUnsetViewAttributes(item);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
       return;
     }
 
@@ -2432,6 +2440,10 @@ class MountState implements MountDelegateTarget {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
       mMountStats.unmountedNames.add(component.getSimpleName());
       mMountStats.unmountedCount++;
+    }
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
     }
   }
 
