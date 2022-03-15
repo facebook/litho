@@ -1111,7 +1111,7 @@ class MountState implements MountDelegateTarget {
     final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     if (isTracing) {
-      RenderCoreSystrace.beginSection("prepareMount");
+      RenderCoreSystrace.beginSection("MountState.prepareMount");
     }
 
     final PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
