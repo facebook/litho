@@ -285,10 +285,19 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("MountState.unmountAllItems");
+    }
+
     // unmount all the content from the Root node
     unmountItemRecursively(ROOT_HOST_ID);
 
     unregisterAllExtensions();
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
 
     mNeedsRemount = true;
   }

@@ -2292,6 +2292,11 @@ class MountState implements MountDelegateTarget {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("MountState.unmountAllItems");
+    }
+
     for (int i = mLayoutOutputsIds.length - 1; i >= 0; i--) {
       unmountItem(i, mHostsByMarker);
     }
@@ -2313,6 +2318,10 @@ class MountState implements MountDelegateTarget {
     }
 
     clearLastMountedTree();
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
