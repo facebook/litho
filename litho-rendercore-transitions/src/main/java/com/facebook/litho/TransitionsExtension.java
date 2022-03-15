@@ -32,7 +32,6 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -259,37 +258,6 @@ public class TransitionsExtension
       ExtensionState<TransitionsExtensionState> extensionState) {
     final TransitionsExtensionState state = extensionState.getState();
     state.mLastMountedTreeId = TransitionsExtensionState.UNSET;
-  }
-
-  @Override
-  public void onUnmountItem(
-      final ExtensionState<TransitionsExtensionState> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {
-
-    if (renderUnit.getId() == MountState.ROOT_HOST_ID) {
-      return;
-    }
-
-    final TransitionsExtensionState state = extensionState.getState();
-
-    // If this item is a host and contains disappearing items, we need to remove them.
-    if (content instanceof Host) {
-      removeDisappearingMountContentFromHost(extensionState, (Host) content);
-    }
-
-    final AnimatableItem animatableItem;
-
-    if (state.mInput != null) {
-      animatableItem = state.mInput.getAnimatableItem(renderUnit.getId());
-    } else {
-      animatableItem = null;
-    }
-    if (animatableItem != null && animatableItem.getTransitionId() != null) {
-      maybeRemoveAnimatingMountContent(
-          state, animatableItem.getTransitionId(), animatableItem.getOutputType());
-    }
   }
 
   @Override
@@ -952,19 +920,6 @@ public class TransitionsExtension
     RenderCoreSystrace.endSection();
   }
 
-  private static void removeDisappearingMountContentFromHost(
-      final ExtensionState<TransitionsExtensionState> extensionState, Host host) {
-    final TransitionsExtensionState state = extensionState.getState();
-    for (int i = 0, size = host.getMountItemCount(); i < size; i++) {
-      MountItem mountItem = host.getMountItemAt(i);
-      final AnimatableItem animatableItem =
-          state.mLockedDisappearingMountitems.get(mountItem.getRenderTreeNode().getRenderUnit());
-      if (animatableItem != null) {
-        state.mTransitionManager.setMountContent(animatableItem.getTransitionId(), null);
-      }
-    }
-  }
-
   private static void maybeRemoveAnimatingMountContent(
       final TransitionsExtensionState state, @Nullable TransitionId transitionId) {
     if (state.mTransitionManager == null || transitionId == null) {
@@ -972,15 +927,6 @@ public class TransitionsExtension
     }
 
     state.mTransitionManager.setMountContent(transitionId, null);
-  }
-
-  private static void maybeRemoveAnimatingMountContent(
-      final TransitionsExtensionState state, TransitionId transitionId, @OutputUnitType int type) {
-    if (state.mTransitionManager == null || transitionId == null) {
-      return;
-    }
-
-    state.mTransitionManager.removeMountContent(transitionId, type);
   }
 
   /**

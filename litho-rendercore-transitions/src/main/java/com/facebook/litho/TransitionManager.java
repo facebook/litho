@@ -334,27 +334,6 @@ public class TransitionManager {
     RenderCoreSystrace.endSection();
   }
 
-  void removeMountContent(TransitionId transitionId, @OutputUnitType int type) {
-    final AnimationState animationState = mAnimationStates.get(transitionId);
-    if (animationState == null) {
-      return;
-    }
-    final OutputUnitsAffinityGroup<Object> mountContentGroup = animationState.mountContentGroup;
-    if (mountContentGroup == null || mountContentGroup.get(type) == null) {
-      return;
-    }
-
-    OutputUnitsAffinityGroup<Object> updatedMountContentGroup;
-    if (mountContentGroup.size() > 1) {
-      updatedMountContentGroup = new OutputUnitsAffinityGroup<>(mountContentGroup);
-      updatedMountContentGroup.replace(type, null);
-    } else {
-      // The group is empty now, so just pass null
-      updatedMountContentGroup = null;
-    }
-    setMountContentInner(transitionId, animationState, updatedMountContentGroup);
-  }
-
   /**
    * Sets the mount content for a given key. This is used to initially set mount content, but also
    * to set content when content is incrementally mounted during an animation.
