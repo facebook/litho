@@ -266,8 +266,11 @@ public class TransitionsExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (extensionState.ownsReference(renderUnit.getId())
-        && extensionState.getState().mInput.renderUnitWithIdHostsRenderTrees(renderUnit.getId())) {
+    final @Nullable TransitionsExtensionInput input = extensionState.getState().mInput;
+    if (input != null
+        && input.isIncrementalMountEnabled()
+        && extensionState.ownsReference(renderUnit.getId())
+        && input.renderUnitWithIdHostsRenderTrees(renderUnit.getId())) {
       final View view = (View) content;
       recursivelyNotifyVisibleBoundsChanged(view);
     }

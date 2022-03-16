@@ -71,4 +71,6 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
 
   @Nullable
   List<Transition> getMountTimeTransitions();
+
+  boolean isIncrementalMountEnabled();
 }

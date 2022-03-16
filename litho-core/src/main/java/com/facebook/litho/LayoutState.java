@@ -2022,6 +2022,13 @@ public class LayoutState
   }
 
   @Override
+  public boolean isIncrementalMountEnabled() {
+    return mContext != null
+        && mContext.getComponentTree() != null
+        && mContext.getComponentTree().isIncrementalMountEnabled();
+  }
+
+  @Override
   @Nullable
   public TransitionId getRootTransitionId() {
     return mRootTransitionId;
