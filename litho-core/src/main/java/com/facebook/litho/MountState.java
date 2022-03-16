@@ -2471,15 +2471,30 @@ class MountState implements MountDelegateTarget {
     final Component component = layoutOutput.getComponent();
     final Object content = item.getContent();
     final ComponentContext context = getContextForComponent(item.getRenderTreeNode());
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     // Call the component's unmount() method.
+    RenderUnit unit = item.getRenderTreeNode().getRenderUnit();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("UnmountItem:unbind: " + unit.getDescription());
+    }
     if (item.isBound()) {
       unbindComponentFromContent(item, component, content);
+    }
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
+
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("UnmountItem:unmount: " + unit.getDescription());
     }
     maybeUnsetViewAttributes(item);
     // For RCMS: onUnmountItem
     final LithoLayoutData layoutData = (LithoLayoutData) item.getRenderTreeNode().getLayoutData();
     component.unmount(context, content, (InterStagePropsContainer) layoutData.mLayoutData);
+    if (isTracing) {
+      RenderCoreSystrace.endSection();
+    }
   }
 
   @Override
