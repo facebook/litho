@@ -1671,10 +1671,15 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
     synchronized (this) {
-      // TODO(t108535728): Temporarily ignoring this error to allow release of app
       if (mComponentTreeHolders.isEmpty()) {
-        android.util.Log.e(TAG, "ERROR: Dropping list update to prevent crash!");
-        return;
+        throw new RuntimeException(
+            "Trying to update an item while the list of components is empty (index="
+                + position
+                + ", size="
+                + mComponentTreeHolders.size()
+                + "). This likely means data passed to the section had duplicates or a mutable data model. Component involved in the error whose backing data model may have duplicates: "
+                + renderInfo.getName()
+                + ".");
       }
 
       holder = mComponentTreeHolders.get(position);
