@@ -256,7 +256,8 @@ public class MountDelegate {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void onBindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+  public void onBindItem(
+      final RenderUnit renderUnit, final Object content, final Object layoutData) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
@@ -266,7 +267,8 @@ public class MountDelegate {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void onUnbindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+  public void onUnbindItem(
+      final RenderUnit renderUnit, final Object content, final Object layoutData) {
     startNotifyVisibleBoundsChangedSection();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {

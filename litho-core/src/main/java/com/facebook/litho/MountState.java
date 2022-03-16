@@ -373,9 +373,6 @@ class MountState implements MountDelegateTarget {
 
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
-          if (isIncrementalMountEnabled) {
-            applyMountBinders(layoutOutput, getItemAt(i), i);
-          }
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
         } else if (isMounted) {
@@ -387,7 +384,13 @@ class MountState implements MountDelegateTarget {
             final long startTime = System.nanoTime();
             final boolean itemUpdated =
                 updateMountItemIfNeeded(
-                    node, currentMountItem, useUpdateValueFromLayoutOutput, componentTreeId, i);
+                    node,
+                    currentMountItem,
+                    useUpdateValueFromLayoutOutput,
+                    isIncrementalMountEnabled,
+                    processVisibilityOutputs,
+                    componentTreeId,
+                    i);
             if (mMountStats.isLoggingEnabled) {
               if (itemUpdated) {
                 mMountStats.updatedNames.add(component.getSimpleName());
@@ -397,12 +400,12 @@ class MountState implements MountDelegateTarget {
                 mMountStats.noOpCount++;
               }
             }
-          }
-
-          if (isIncrementalMountEnabled
-              && component.hasChildLithoViews()
-              && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
-            mountItemIncrementally(currentMountItem, processVisibilityOutputs);
+          } else {
+            if (isIncrementalMountEnabled
+                && component.hasChildLithoViews()
+                && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
+              mountItemIncrementally(currentMountItem, processVisibilityOutputs);
+            }
           }
         }
       }
@@ -518,6 +521,8 @@ class MountState implements MountDelegateTarget {
 
     final ComponentsLogger logger = componentTree.getContext().getLogger();
     final int componentTreeId = layoutState.getComponentTreeId();
+    final boolean isIncrementalMountEnabled =
+        mLithoView.getComponentTree().isIncrementalMountEnabled();
     if (componentTreeId != mLastMountedComponentTreeId) {
       // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
       // since things like transition animations aren't relevant.
@@ -565,7 +570,6 @@ class MountState implements MountDelegateTarget {
         }
       } else if (!isMounted) {
         mountLayoutOutput(i, renderTreeNode, layoutOutput, layoutState);
-        applyMountBinders(layoutOutput, getItemAt(i), i);
       } else {
         final boolean useUpdateValueFromLayoutOutput =
             mLastMountedLayoutState != null
@@ -577,6 +581,8 @@ class MountState implements MountDelegateTarget {
                 renderTreeNode,
                 currentMountItem,
                 useUpdateValueFromLayoutOutput,
+                isIncrementalMountEnabled,
+                true,
                 componentTreeId,
                 i);
 
@@ -589,8 +595,6 @@ class MountState implements MountDelegateTarget {
             mMountStats.noOpCount++;
           }
         }
-
-        applyBindBinders(currentMountItem);
       }
 
       if (isTracing) {
@@ -618,40 +622,6 @@ class MountState implements MountDelegateTarget {
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
-  }
-
-  private void applyMountBinders(LayoutOutput layoutOutput, MountItem mountItem, int position) {
-    if (mTransitionsExtension != null) {
-      mTransitionsExtension.onBoundsAppliedToItem(
-          mTransitionsExtensionState,
-          mountItem.getRenderTreeNode().getRenderUnit(),
-          mountItem.getContent(),
-          mountItem.getRenderTreeNode().getLayoutData());
-    } else if (mMountDelegate != null) {
-      mMountDelegate.onMountItem(
-          mountItem.getRenderTreeNode().getRenderUnit(),
-          mountItem.getContent(),
-          mountItem.getRenderTreeNode().getLayoutData());
-    }
-  }
-
-  private void applyBindBinders(MountItem mountItem) {
-    if (mMountDelegate == null) {
-      return;
-    }
-  }
-
-  private void applyUnbindBinders(LayoutOutput output, MountItem mountItem) {
-    if (mTransitionsExtension != null) {
-      mTransitionsExtension.onUnbindItem(
-          mTransitionsExtensionState,
-          mountItem.getRenderTreeNode().getRenderUnit(),
-          output,
-          mountItem.getRenderTreeNode().getLayoutData());
-    } else if (mMountDelegate != null) {
-      mMountDelegate.onUnmountItem(
-          mountItem.getRenderTreeNode().getRenderUnit(), output, mountItem.getContent());
-    }
   }
 
   private boolean isMountable(RenderTreeNode renderTreeNode, int position) {
@@ -906,6 +876,8 @@ class MountState implements MountDelegateTarget {
       RenderTreeNode node,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
+      boolean isIncrementalMountEnabled,
+      boolean processVisibilityOutputs,
       int componentTreeId,
       int index) {
 
@@ -974,6 +946,12 @@ class MountState implements MountDelegateTarget {
           itemComponent,
           currentContext,
           currentLayoutData);
+
+      // For RCMS the delegates is invoked here
+      // onUnbindItem
+      // onUnmountItem
+      // onMountItem
+      // onBindItem
     }
 
     if (shouldUpdateViewInfo) {
@@ -988,6 +966,12 @@ class MountState implements MountDelegateTarget {
     // the component has been updated or not since the mounted item might might have the same
     // size and content but a different position.
     updateBoundsForMountedLayoutOutput(node, nextLayoutOutput, currentMountItem);
+
+    if (isIncrementalMountEnabled
+        && layoutOutputComponent.hasChildLithoViews()
+        && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
+      mountItemIncrementally(currentMountItem, processVisibilityOutputs);
+    }
 
     if (currentMountItem.getContent() instanceof Drawable) {
       maybeSetDrawableState(
@@ -1309,6 +1293,7 @@ class MountState implements MountDelegateTarget {
     final ComponentContext context = getContextForComponent(node);
     final LithoLayoutData layoutData = (LithoLayoutData) node.getLayoutData();
     component.mount(context, content, (InterStagePropsContainer) layoutData.mLayoutData);
+    // For RCMS: onMountItem
 
     // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
     if (isHostSpec(component)) {
@@ -1337,6 +1322,9 @@ class MountState implements MountDelegateTarget {
     final Rect bounds = node.getBounds();
     applyBoundsToMountContent(
         item.getContent(), bounds.left, bounds.top, bounds.right, bounds.bottom, true /* force */);
+    if (mMountDelegate != null) {
+      mMountDelegate.onBoundsAppliedToItem(node, item.getContent());
+    }
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
@@ -2470,8 +2458,6 @@ class MountState implements MountDelegateTarget {
 
     unbindAndUnmountLifecycle(mountItem);
 
-    applyUnbindBinders(output, mountItem);
-
     try {
       getMountData(mountItem)
           .releaseMountContent(mContext.getAndroidContext(), mountItem, "unmountItem", this);
@@ -2491,6 +2477,7 @@ class MountState implements MountDelegateTarget {
       unbindComponentFromContent(item, component, content);
     }
     maybeUnsetViewAttributes(item);
+    // For RCMS: onUnmountItem
     final LithoLayoutData layoutData = (LithoLayoutData) item.getRenderTreeNode().getLayoutData();
     component.unmount(context, content, (InterStagePropsContainer) layoutData.mLayoutData);
   }
@@ -2914,6 +2901,7 @@ class MountState implements MountDelegateTarget {
         content,
         (InterStagePropsContainer) layoutData.mLayoutData);
     mDynamicPropsManager.onBindComponentToContent(component, context, content);
+    // For RCMS: onBindItem
     mountItem.setIsBound(true);
   }
 
@@ -2921,6 +2909,7 @@ class MountState implements MountDelegateTarget {
       MountItem mountItem, Component component, Object content) {
     mDynamicPropsManager.onUnbindComponent(component, content);
     RenderTreeNode node = mountItem.getRenderTreeNode();
+    // For RCMS: onUnbindItem
     component.unbind(
         getContextForComponent(node),
         content,
