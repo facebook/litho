@@ -1624,41 +1624,13 @@ class MountState implements MountDelegateTarget {
       return;
     }
 
-    ComponentClickListener listener = getComponentClickListener(view);
-
-    if (listener == null) {
-      listener = new ComponentClickListener();
-      setComponentClickListener(view, listener);
-    }
-
-    listener.setEventHandler(clickHandler);
+    view.setOnClickListener(new ComponentClickListener(clickHandler));
     view.setClickable(true);
   }
 
   private static void unsetClickHandler(View view) {
-    final ComponentClickListener listener = getComponentClickListener(view);
-
-    if (listener != null) {
-      listener.setEventHandler(null);
-    }
-  }
-
-  @Nullable
-  static ComponentClickListener getComponentClickListener(View v) {
-    if (v instanceof ComponentHost) {
-      return ((ComponentHost) v).getComponentClickListener();
-    } else {
-      return (ComponentClickListener) v.getTag(R.id.component_click_listener);
-    }
-  }
-
-  static void setComponentClickListener(View v, ComponentClickListener listener) {
-    if (v instanceof ComponentHost) {
-      ((ComponentHost) v).setComponentClickListener(listener);
-    } else {
-      v.setOnClickListener(listener);
-      v.setTag(R.id.component_click_listener, listener);
-    }
+    view.setOnClickListener(null);
+    view.setClickable(false);
   }
 
   /**

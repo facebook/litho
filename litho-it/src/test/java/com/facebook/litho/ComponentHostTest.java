@@ -480,19 +480,6 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testComponentClickListener() {
-    assertThat(mHost.getComponentClickListener()).isNull();
-
-    ComponentClickListener listener = new ComponentClickListener();
-    mHost.setComponentClickListener(listener);
-
-    assertThat(mHost.getComponentClickListener()).isEqualTo(listener);
-
-    mHost.setComponentClickListener(null);
-    assertThat(mHost.getComponentClickListener()).isNull();
-  }
-
-  @Test
   public void testComponentLongClickListener() {
     assertThat(mHost.getComponentLongClickListener()).isNull();
 

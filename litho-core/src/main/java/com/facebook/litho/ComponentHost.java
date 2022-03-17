@@ -94,7 +94,6 @@ public class ComponentHost extends Host implements DisappearingHost {
   @Nullable private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
   private boolean mIsComponentAccessibilityDelegateSet = false;
 
-  private ComponentClickListener mOnClickListener;
   private ComponentLongClickListener mOnLongClickListener;
   private ComponentFocusChangeListener mOnFocusChangeListener;
   private ComponentTouchListener mOnTouchListener;
@@ -557,22 +556,6 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   public void setViewTags(@Nullable SparseArray<Object> viewTags) {
     mViewTags = viewTags;
-  }
-
-  /**
-   * Sets a click listener on this host.
-   *
-   * @param listener The listener to set on this host.
-   */
-  void setComponentClickListener(ComponentClickListener listener) {
-    mOnClickListener = listener;
-    this.setOnClickListener(listener);
-  }
-
-  /** @return The previously set click listener */
-  @Nullable
-  ComponentClickListener getComponentClickListener() {
-    return mOnClickListener;
   }
 
   /**

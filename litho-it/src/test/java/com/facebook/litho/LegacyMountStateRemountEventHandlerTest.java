@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.MountState.getComponentClickListener;
 import static com.facebook.litho.MountState.getComponentFocusChangeListener;
 import static com.facebook.litho.MountState.getComponentLongClickListener;
 import static com.facebook.litho.MountState.getComponentTouchListener;
@@ -42,42 +41,6 @@ public class LegacyMountStateRemountEventHandlerTest {
   public void setup() {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mContext = new ComponentContext(getApplicationContext());
-  }
-
-  @Test
-  public void testReuseClickListenerOnSameView() {
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .clickHandler(c.newEventHandler(1))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c))
-                    .build();
-              }
-            });
-
-    final ComponentClickListener clickListener = getComponentClickListener(lithoView);
-    assertThat(clickListener).isNotNull();
-
-    lithoView
-        .getComponentTree()
-        .setRoot(
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .clickHandler(c.newEventHandler(1))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c))
-                    .build();
-              }
-            });
-
-    assertThat(clickListener == getComponentClickListener(lithoView)).isTrue();
   }
 
   @Test
@@ -204,7 +167,7 @@ public class LegacyMountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(getComponentClickListener(lithoView)).isNotNull();
+    assertThat(lithoView.isClickable()).isTrue();
 
     lithoView
         .getComponentTree()
@@ -219,9 +182,7 @@ public class LegacyMountStateRemountEventHandlerTest {
               }
             });
 
-    final ComponentClickListener listener = getComponentClickListener(lithoView);
-    assertThat(listener).isNotNull();
-    assertThat(listener.getEventHandler()).isNull();
+    assertThat(lithoView.isClickable()).isFalse();
   }
 
   @Test
@@ -327,42 +288,6 @@ public class LegacyMountStateRemountEventHandlerTest {
 
     final ComponentTouchListener listener = getComponentTouchListener(lithoView);
     assertThat(listener.getEventHandler()).isNull();
-  }
-
-  @Test
-  public void testSetClickHandler() {
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c))
-                    .build();
-              }
-            });
-
-    assertThat(getComponentClickListener(lithoView)).isNull();
-
-    lithoView
-        .getComponentTree()
-        .setRoot(
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .clickHandler(c.newEventHandler(1))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c))
-                    .build();
-              }
-            });
-
-    final ComponentClickListener listener = getComponentClickListener(lithoView);
-    assertThat(listener).isNotNull();
-    assertThat(listener.getEventHandler()).isNotNull();
   }
 
   @Test

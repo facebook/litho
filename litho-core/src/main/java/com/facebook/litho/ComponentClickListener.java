@@ -24,7 +24,11 @@ import androidx.annotation.Nullable;
 /** Click listener that triggers its underlying event handler. */
 class ComponentClickListener implements View.OnClickListener {
 
-  private @Nullable EventHandler<ClickEvent> mEventHandler;
+  private final @Nullable EventHandler<ClickEvent> mEventHandler;
+
+  public ComponentClickListener(@Nullable EventHandler<ClickEvent> eventHandler) {
+    mEventHandler = eventHandler;
+  }
 
   @Override
   public void onClick(View view) {
@@ -48,13 +52,5 @@ class ComponentClickListener implements View.OnClickListener {
         }
       }
     }
-  }
-
-  EventHandler<ClickEvent> getEventHandler() {
-    return mEventHandler;
-  }
-
-  void setEventHandler(@Nullable EventHandler<ClickEvent> eventHandler) {
-    mEventHandler = eventHandler;
   }
 }
