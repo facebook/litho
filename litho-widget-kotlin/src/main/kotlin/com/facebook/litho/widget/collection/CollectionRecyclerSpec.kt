@@ -25,13 +25,11 @@ import com.facebook.litho.EventHandler
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.StateValue
 import com.facebook.litho.TouchEvent
-import com.facebook.litho.annotations.FromTrigger
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnDetached
 import com.facebook.litho.annotations.OnEvent
-import com.facebook.litho.annotations.OnTrigger
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.ResType
@@ -39,13 +37,10 @@ import com.facebook.litho.annotations.State
 import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionTree
-import com.facebook.litho.sections.widget.ClearRefreshingEvent
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration
 import com.facebook.litho.sections.widget.RecyclerConfiguration
-import com.facebook.litho.sections.widget.ScrollEvent
 import com.facebook.litho.sections.widget.SectionBinderTarget
-import com.facebook.litho.sections.widget.SmoothScrollEvent
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView.TouchInterceptor
 import com.facebook.litho.widget.PTRRefreshEvent
@@ -53,7 +48,6 @@ import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecyclerViewLogger
-import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged
 
 @LayoutSpec(events = [PTRRefreshEvent::class])
@@ -223,31 +217,6 @@ object CollectionRecyclerSpec {
     }
     return true
   }
-
-  @JvmStatic
-  @OnTrigger(ScrollEvent::class)
-  fun onScroll(
-      c: ComponentContext,
-      @FromTrigger position: Int,
-      @State sectionTree: SectionTree
-  ): Unit = sectionTree.requestFocusOnRoot(position)
-
-  @JvmStatic
-  @OnTrigger(SmoothScrollEvent::class)
-  fun onSmoothScroll(
-      c: ComponentContext,
-      @FromTrigger index: Int,
-      @FromTrigger offset: Int,
-      @FromTrigger type: SmoothScrollAlignmentType?,
-      @State sectionTree: SectionTree
-  ): Unit = sectionTree.requestSmoothFocusOnRoot(index, offset, type)
-
-  @JvmStatic
-  @OnTrigger(ClearRefreshingEvent::class)
-  fun onClearRefreshing(
-      c: ComponentContext,
-      @State internalRecyclerEventsController: RecyclerEventsController
-  ): Unit = internalRecyclerEventsController.clearRefreshing()
 
   @JvmStatic
   @OnDetached
