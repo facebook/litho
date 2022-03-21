@@ -41,9 +41,9 @@ When an item's contents are updated, the change is automatically detected and an
 
 ## Pagination
 
-Lists of data are often retrieved from the server in pages; additional data is requested only if the user scrolls. `LazyCollection` has an API for working with paginated lists.
+Large lists of data are often retrieved from the server in pages; additional data is requested only if the user scrolls. `LazyCollection` has an API for working with paginated lists.
 
-First, use the `tailPagination` helper to create a pagination handler lambda and assign it to the LazyCollection's `pagination` parameter. The 'handler' is used for fetching the next page of data.
+First, create a `OnNearCallback` callback to request the next page and assign it to the `LazyCollection`'s `onNearEnd` parameter. This callback will be invoked when the `LazyCollection` is scrolled close to the end.
 
 Next, provide a visual indicator to the user that a request is in progress by directly adding a progress spinner as a child to the end of the LazyCollection. The following code provides an example:
 
