@@ -355,11 +355,14 @@ internal constructor(
     return viewTree.findChild(predicate)?.last()
   }
 
-  /** Returns the first [LazyCollection] from the ComponentTree or null, if one isn't not found */
-  fun findCollectionComponent(): TestListComponent? {
+  /**
+   * Finds the first [LazyCollection] from the ComponentTree and returns a [TestCollection]. null if
+   * one isn't not found
+   */
+  fun findCollectionComponent(): TestCollection? {
     val recycler = findComponent(Recycler::class.java) as Recycler ?: return null
 
-    return TestListComponent(recycler)
+    return TestCollection(recycler)
   }
 
   /**

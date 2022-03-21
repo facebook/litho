@@ -65,11 +65,11 @@ class LithoViewRuleListExampleTest {
         .hasFieldOrPropertyWithValue("text", "child3")
 
     assertThat(
-            listComponent.components.slice(
+            listComponent.items.slice(
                 listComponent.firstVisibleIndex..listComponent.lastVisibleIndex))
         .hasSize(3)
 
-    val component = listComponent.findFirstComponent(Text::class)
+    val component = listComponent.findFirstItem(Text::class)
     assertThat(component).hasFieldOrPropertyWithValue("text", "child1")
   }
 
@@ -114,10 +114,10 @@ class LithoViewRuleListExampleTest {
     val listComponent = testView.findCollectionComponent()
     assertThat(listComponent).isNotNull()
 
-    val component = listComponent?.findFirstComponent(ItemComponent::class) ?: return
+    val component = listComponent?.findFirstItem(ItemComponent::class) ?: return
     assertThat(component).hasFieldOrPropertyWithValue("model", items[0])
 
-    val foundComponents = listComponent.findComponents(ItemComponent::class)
+    val foundComponents = listComponent.findItems(ItemComponent::class)
     assertThat(foundComponents).hasSize(4)
   }
 }
