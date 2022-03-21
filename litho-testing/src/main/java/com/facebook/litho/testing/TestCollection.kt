@@ -41,16 +41,18 @@ class TestCollection {
   }
 
   /**
-   * Get the number of items in the recycler binder
-   *
-   * This is not the same as the number of items that are displayed.
+   * Get the number of items in the lazy collection. This is not the same as the number of items
+   * that are displayed.
    */
   val itemCount: Int
     get() = recyclerBinder.itemCount
 
-  /** All Components managed by the lazy collection */
-  val items: List<Component>
-    get() = (0 until itemCount).map { recyclerBinder.getRenderInfoAt(it).component }
+  /** All items in the lazy collection */
+  val items: List<TestCollectionItem>
+    get() =
+        (0 until itemCount).map {
+          TestCollectionItem(recyclerBinder.getComponentTreeHolderAt(it), it)
+        }
 
   /** Get the first visible item index, returns -1 when there are no components */
   val firstVisibleIndex: Int
@@ -69,7 +71,7 @@ class TestCollection {
     get() = recyclerBinder.findLastFullyVisibleItemPosition()
 
   /** Get all visible items */
-  val visibleItems: List<Component>
+  val visibleItems: List<TestCollectionItem>
     get() =
         if (recyclerBinder.findFirstVisibleItemPosition() != RecyclerView.NO_POSITION) {
           items.slice(
@@ -80,7 +82,7 @@ class TestCollection {
         }
 
   /** Get all fully visible items */
-  val fullyVisibleItems: List<Component>
+  val fullyVisibleItems: List<TestCollectionItem>
     get() =
         if (recyclerBinder.findFirstVisibleItemPosition() != RecyclerView.NO_POSITION) {
           items.slice(
@@ -90,29 +92,32 @@ class TestCollection {
           listOf()
         }
 
-  /** Convenience function for getting the component at an index */
-  inline fun getItemAtIndex(index: Int): Component = items[index]
+  /** Convenience function for getting the item at an index */
+  inline fun getItemAtIndex(index: Int): TestCollectionItem = items[index]
 
   /**
-   * Performs a shallow search to Find the first component, of the given type; in the
+   * Performs a shallow search to Find the first item, with the given component type; in the
    * LazyCollection.
    */
-  inline fun findFirstItem(clazz: Class<out Component>): Component? =
-      items.find { it::class.java == clazz }
+  inline fun findFirstItem(clazz: Class<out Component>): TestCollectionItem? =
+      items.find { it.component::class.java == clazz }
 
-  /** @see findComponent */
-  inline fun findFirstItem(clazz: KClass<out Component>): Component? = findFirstItem(clazz.java)
+  /** @see findFirstItem */
+  inline fun findFirstItem(clazz: KClass<out Component>): TestCollectionItem? =
+      findFirstItem(clazz.java)
 
-  /** Performs a shallow search for components, of the given type; from the LazyCollection. */
+  /**
+   * Performs a shallow search for items, with the given component type; from the LazyCollection.
+   */
   @PublishedApi
-  internal inline fun findItems(classes: List<Class<out Component>>): List<Component> =
-      items.filter { classes.contains(it::class.java) }
+  internal inline fun findItems(classes: List<Class<out Component>>): List<TestCollectionItem> =
+      items.filter { classes.contains(it.component::class.java) }
 
-  /** @see findComponents */
-  inline fun findItems(vararg clazz: Class<out Component>): List<Component> =
+  /** @see findItems */
+  inline fun findItems(vararg clazz: Class<out Component>): List<TestCollectionItem> =
       findItems(clazz.toList())
 
-  /** @see findComponents */
-  inline fun findItems(vararg clazz: KClass<out Component>): List<Component> =
+  /** @see findItems */
+  inline fun findItems(vararg clazz: KClass<out Component>): List<TestCollectionItem> =
       findItems(clazz.map { it.java })
 }
