@@ -1398,7 +1398,7 @@ public class LayoutState
         layoutState.mWidth = SizeSpec.getSize(widthSpec);
         break;
       case SizeSpec.AT_MOST:
-        layoutState.mWidth = Math.min(rootWidth, SizeSpec.getSize(widthSpec));
+        layoutState.mWidth = Math.max(0, Math.min(rootWidth, SizeSpec.getSize(widthSpec)));
         break;
       case SizeSpec.UNSPECIFIED:
         layoutState.mWidth = rootWidth;
@@ -1410,7 +1410,7 @@ public class LayoutState
         layoutState.mHeight = SizeSpec.getSize(heightSpec);
         break;
       case SizeSpec.AT_MOST:
-        layoutState.mHeight = Math.min(rootHeight, SizeSpec.getSize(heightSpec));
+        layoutState.mHeight = Math.max(0, Math.min(rootHeight, SizeSpec.getSize(heightSpec)));
         break;
       case SizeSpec.UNSPECIFIED:
         layoutState.mHeight = rootHeight;
