@@ -29,8 +29,8 @@ import com.facebook.litho.kotlin.widget.Progress
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useCached
 import com.facebook.litho.useState
-import com.facebook.litho.widget.collection.Collection.tailPagination
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.OnNearCallback
 import com.facebook.yoga.YogaAlign
 
 // start_example
@@ -41,8 +41,8 @@ class PaginationCollectionKComponent : KComponent() {
     val list = useState { paginatedData.next() }
 
     return LazyList(
-        pagination =
-            tailPagination(offsetBeforeTailFetch = 10) {
+        onNearEnd =
+            OnNearCallback(offset = 10) {
               paginatedData.fetchDelayed { newData -> list.update { it + newData } }
             },
     ) {

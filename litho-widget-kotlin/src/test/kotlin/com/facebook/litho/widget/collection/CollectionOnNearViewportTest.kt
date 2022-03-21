@@ -63,7 +63,7 @@ class CollectionOnNearViewportTest {
             (0..4).forEach {
               child(
                   id = it,
-                  onNearViewport = OnNearViewport { enterCounts[it]++ },
+                  onNearViewport = OnNearCallback { enterCounts[it]++ },
                   component = Text("$it"),
               )
             }
@@ -97,12 +97,12 @@ class CollectionOnNearViewportTest {
           ) {
             (0..3).forEach {
               child(
-                  onNearViewport = OnNearViewport { enterCounts[it]++ },
+                  onNearViewport = OnNearCallback { enterCounts[it]++ },
                   component = Text("$it"),
               )
             }
             child(
-                onNearViewport = OnNearViewport(tailOffset = 2) { enterCounts[4]++ },
+                onNearViewport = OnNearCallback(offset = 2) { enterCounts[4]++ },
                 component = Text("4"),
             )
           }
@@ -143,14 +143,14 @@ class CollectionOnNearViewportTest {
               Item.Item1 -> {
                 child(
                     id = Item.Item1,
-                    onNearViewport = OnNearViewport { item1EnterCount.getAndIncrement() },
+                    onNearViewport = OnNearCallback { item1EnterCount.getAndIncrement() },
                     component = Text("Item"),
                 )
               }
               Item.Item2 -> {
                 child(
                     id = Item.Item2,
-                    onNearViewport = OnNearViewport { item2EnterCount.getAndIncrement() },
+                    onNearViewport = OnNearCallback { item2EnterCount.getAndIncrement() },
                     component = Text("Item"),
                 )
               }

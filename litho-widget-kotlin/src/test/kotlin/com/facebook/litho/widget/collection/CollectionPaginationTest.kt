@@ -41,18 +41,14 @@ class CollectionPaginationTest {
 
   @Test
   fun `test Collection pagination callback receives correct updates`() {
-    val lastVisibleIndexValue = AtomicInteger()
-    val totalCountValue = AtomicInteger()
+    val onNearEndCallbackCount = AtomicInteger()
 
     class Test : KComponent() {
       override fun ComponentScope.render(): Component {
         val controller = LazyCollectionController()
         return LazyList(
             lazyCollectionController = controller,
-            pagination = { lastVisibleIndex: Int, totalCount: Int ->
-              lastVisibleIndexValue.set(lastVisibleIndex)
-              totalCountValue.set(totalCount)
-            },
+            onNearEnd = OnNearCallback { onNearEndCallbackCount.incrementAndGet() },
             style = Style.viewTag("collection_tag").onClick { controller.scrollToIndex(4) }) {
           (0..4).forEach { child(Text("Child $it")) }
         }
@@ -62,8 +58,7 @@ class CollectionPaginationTest {
     val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }
     lithoViewRule.idle()
 
-    assertThat(lastVisibleIndexValue.get()).isEqualTo(2)
-    assertThat(totalCountValue.get()).isEqualTo(5)
+    assertThat(onNearEndCallbackCount.get()).isEqualTo(0)
 
     lithoViewRule.act(testLithoView) { clickOnTag("collection_tag") }
 
@@ -71,7 +66,6 @@ class CollectionPaginationTest {
       Test()
     }
 
-    assertThat(lastVisibleIndexValue.get()).isEqualTo(4)
-    assertThat(totalCountValue.get()).isEqualTo(5)
+    assertThat(onNearEndCallbackCount.get()).isEqualTo(1)
   }
 }

@@ -16,22 +16,11 @@
 
 package com.facebook.litho.widget.collection
 
-object Collection {
-
-  /**
-   * Create a manager for tail pagination, i.e. fetch more data when a [Collection] is scrolled near
-   * to the end. Should be applied to [Collection]'s pagination prop.
-   * @param offsetBeforeTailFetch trigger a fetch at some offset before the end of the list
-   * @param fetchNextPage lambda to perform the data fetch
-   */
-  fun tailPagination(
-      offsetBeforeTailFetch: Int = 0,
-      fetchNextPage: () -> Unit
-  ): (Int, Int) -> Unit {
-    return { lastVisibleIndex: Int, totalCount: Int ->
-      if (lastVisibleIndex >= totalCount - 1 - offsetBeforeTailFetch) {
-        fetchNextPage()
-      }
-    }
-  }
-}
+/**
+ * A callback triggered when a [LazyCollection] is scrolled "near" to a specific position, as
+ * defined by being within [offset] items away.
+ *
+ * Intended for use with [LazyCollection]'s `onNearEnd` parameter, or
+ * [CollectionContainerScope.child]'s `onNearViewport` parameter.
+ */
+class OnNearCallback(val offset: Int = 0, val callback: () -> Unit)

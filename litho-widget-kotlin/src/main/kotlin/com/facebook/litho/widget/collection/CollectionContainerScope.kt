@@ -59,7 +59,7 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
 
     idToChild[child.id] = child
     val index = collectionChildrenBuilder.lastIndex
-    val effectiveIndex = index - child.onNearViewport.tailOffset
+    val effectiveIndex = index - child.onNearViewport.offset
     effectiveIndexToId.getOrPut(effectiveIndex) { mutableSetOf() }.add(child.id)
   }
 
@@ -80,7 +80,7 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
-      onNearViewport: OnNearViewport? = null,
+      onNearViewport: OnNearCallback? = null,
   ) {
     val resolvedId = getResolvedId(id, component)
     component ?: return
@@ -123,7 +123,7 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
-      onNearViewport: OnNearViewport? = null,
+      onNearViewport: OnNearCallback? = null,
       deps: Array<Any?>,
       componentFunction: () -> Component?,
   ) {
@@ -142,11 +142,3 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
     maybeRegisterForOnEnterOrNearCallbacks(child)
   }
 }
-
-/**
- * Specify a callback that can be applied to a [LazyCollection] child's `onNearOrEnteredViewPort`
- * parameter. The callback will be invoked when the child enters the screen, or is positioned less
- * than `tailOffset` items away from the end of the visible area.
- */
-@Suppress("KtDataClass")
-data class OnNearViewport(val tailOffset: Int = 0, val callback: () -> Unit)

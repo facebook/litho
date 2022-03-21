@@ -83,7 +83,7 @@ class LazyCollection(
     private val onDataBound: ((c: ComponentContext) -> Unit)? = null,
     handle: Handle? = null,
     private val onPullToRefresh: (() -> Unit)? = null,
-    private val pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
+    private val onNearEnd: OnNearCallback? = null,
     private val onScrollListener: RecyclerView.OnScrollListener? = null,
     private val onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     private val lazyCollectionController: LazyCollectionController? = null,
@@ -113,7 +113,11 @@ class LazyCollection(
               containerScope.idToChild,
               firstVisibleIndex,
               lastVisibleIndex)
-          pagination?.invoke(lastVisibleIndex, totalCount)
+          onNearEnd?.let {
+            if (lastVisibleIndex >= totalCount - 1 - it.offset) {
+              it.callback()
+            }
+          }
           onViewportChanged?.invoke(
               c,
               firstVisibleIndex,
