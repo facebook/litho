@@ -1273,7 +1273,6 @@ public class SectionTree {
 
             if (oldRoot != null) {
               unbindOldComponent(oldRoot);
-              oldRoot.release();
             }
 
             bindTriggerHandler(newRoot);

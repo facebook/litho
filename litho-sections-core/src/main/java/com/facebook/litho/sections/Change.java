@@ -55,14 +55,14 @@ public final class Change {
 
   private static final List<RenderInfo> EMPTY = new ArrayList<>();
 
-  private @Type int mType;
-  private int mIndex;
-  private int mToIndex;
-  private int mCount;
-  private RenderInfo mRenderInfo;
-  private List<RenderInfo> mRenderInfos;
-  private @Nullable List<?> mPrevData;
-  private @Nullable List<?> mNextData;
+  private final @Type int mType;
+  private final int mIndex;
+  private final int mToIndex;
+  private final int mCount;
+  private final RenderInfo mRenderInfo;
+  private final List<RenderInfo> mRenderInfos;
+  private final @Nullable List<?> mPrevData;
+  private final @Nullable List<?> mNextData;
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public Change(
@@ -92,12 +92,8 @@ public final class Change {
       }
     }
 
-    if (prevData != null) {
-      mPrevData = Collections.unmodifiableList(prevData);
-    }
-    if (nextData != null) {
-      mNextData = Collections.unmodifiableList(nextData);
-    }
+    mPrevData = prevData != null ? Collections.unmodifiableList(prevData) : null;
+    mNextData = nextData != null ? Collections.unmodifiableList(nextData) : null;
   }
 
   /**
@@ -111,19 +107,6 @@ public final class Change {
         change.mType,
         change.mIndex + offset,
         toIndex,
-        change.mCount,
-        change.mRenderInfo,
-        change.mRenderInfos,
-        change.mPrevData,
-        change.mNextData);
-  }
-
-  /** @return a new Change that is a copy of a given Change. */
-  static Change copy(Change change) {
-    return acquire(
-        change.mType,
-        change.mIndex,
-        change.mToIndex,
         change.mCount,
         change.mRenderInfo,
         change.mRenderInfos,
@@ -316,14 +299,6 @@ public final class Change {
       @Nullable List<?> prevData,
       @Nullable List<?> nextData) {
     return new Change(ct, index, toIndex, count, renderInfo, renderInfos, prevData, nextData);
-  }
-
-  // TODO t11953296
-  void release() {
-    mRenderInfo = null;
-    mRenderInfos = null;
-    mPrevData = null;
-    mNextData = null;
   }
 
   public static String changeTypeToString(@Type int type) {

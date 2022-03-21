@@ -371,11 +371,6 @@ public abstract class Section extends SectionLifecycle
     return null;
   }
 
-  /** Called when this {@link Section} is not in use anymore to release its resources. */
-  void release() {
-    // TODO release list into a pool t11953296
-  }
-
   void generateKeyAndSet(SectionContext c, String globalKey) {
     final Section parentScope = c.getSectionScope();
     final String uniqueGlobalKey =
@@ -415,7 +410,6 @@ public abstract class Section extends SectionLifecycle
 
   static Map<String, Pair<Section, Integer>> acquireChildrenMap(
       @Nullable Section currentComponent) {
-    // TODO use pools instead t11953296
     final HashMap<String, Pair<Section, Integer>> childrenMap = new HashMap<>();
     if (currentComponent == null) {
       return childrenMap;
@@ -433,10 +427,6 @@ public abstract class Section extends SectionLifecycle
     }
 
     return childrenMap;
-  }
-
-  static void releaseChildrenMap(Map<String, Pair<Section, Integer>> newChildren) {
-    // TODO use pools t11953296
   }
 
   @VisibleForTesting

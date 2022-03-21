@@ -224,7 +224,7 @@ public final class ChangeSet {
   /** @return an empty ChangeSet starting from count startCount. */
   static ChangeSet acquireChangeSet(
       int startCount, @Nullable Section section, boolean enableStats) {
-    final ChangeSet changeSet = acquire();
+    final ChangeSet changeSet = new ChangeSet();
     changeSet.mFinalCount = startCount;
     changeSet.mSection = section;
     changeSet.mChangeSetStats = enableStats ? new ChangeSetStats() : null;
@@ -262,7 +262,7 @@ public final class ChangeSet {
 
     if (first != null) {
       for (Change change : first.mChanges) {
-        mergedChanged.add(Change.copy(change));
+        mergedChanged.add(change);
       }
     }
 
@@ -276,22 +276,6 @@ public final class ChangeSet {
     mergedChangeSet.mChangeSetStats = ChangeSetStats.merge(firstStats, secondStats);
 
     return mergedChangeSet;
-  }
-
-  // TODO implement pools t11953296
-  private static ChangeSet acquire() {
-    return new ChangeSet();
-  }
-
-  // TODO implement pools t11953296
-  void release() {
-    for (Change change : mChanges) {
-      change.release();
-    }
-
-    mChanges.clear();
-    mChangeSetStats = null;
-    mFinalCount = 0;
   }
 
   /** Keep track of internal statistics useful for performance analyses. */

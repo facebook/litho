@@ -133,18 +133,6 @@ public class ChangeSetTest {
   }
 
   @Test
-  public void testRelease() {
-    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
-    changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
-    changeSet.addChange(Change.insert(1, ComponentRenderInfo.createEmpty()));
-    changeSet.addChange(Change.insert(2, ComponentRenderInfo.createEmpty()));
-
-    changeSet.release();
-    assertThat(changeSet.getCount()).isEqualTo(0);
-    assertThat(changeSet.getChangeCount()).isEqualTo(0);
-  }
-
-  @Test
   public void testAddChangeWithData() {
     final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
     final Object data1 = new Object();
