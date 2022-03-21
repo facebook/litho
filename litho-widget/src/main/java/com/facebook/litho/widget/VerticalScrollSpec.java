@@ -174,7 +174,7 @@ public class VerticalScrollSpec {
       case AT_MOST:
         // For at most we want the VerticalScroll to be as big as its content up to the maximum
         // height specified in the heightSpec
-        size.height = Math.min(SizeSpec.getSize(heightSpec), size.height);
+        size.height = Math.max(0, Math.min(SizeSpec.getSize(heightSpec), size.height));
         break;
     }
   }
