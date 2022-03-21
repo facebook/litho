@@ -158,6 +158,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   @Nullable private MountStartupLoggingInfo mMountStartupLoggingInfo;
   @Nullable private LithoHostListenerCoordinator mLithoHostListenerCoordinator;
 
+  public final int mViewAttributeFlags;
+
   /**
    * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
    * root.
@@ -288,6 +290,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+
+    mViewAttributeFlags = LithoMountData.getViewAttributeFlags(this);
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {

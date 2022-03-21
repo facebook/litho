@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
+
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderUnit;
@@ -76,7 +78,17 @@ public class LithoViewAttributesExtension
       final long id = lithoRenderUnit.getId();
 
       if (!state.hasDefaultViewAttributes(id)) {
-        state.setDefaultViewAttributes(id, LithoMountData.getViewAttributeFlags(content));
+
+        final int flags;
+
+        // Get the initial view attribute flags for the root LithoView.
+        if (renderUnit.getId() == ROOT_HOST_ID) {
+          flags = ((LithoView) content).mViewAttributeFlags;
+        } else {
+          flags = LithoMountData.getViewAttributeFlags(content);
+        }
+
+        state.setDefaultViewAttributes(id, flags);
       }
 
       MountState.setViewAttributes(content, output);
