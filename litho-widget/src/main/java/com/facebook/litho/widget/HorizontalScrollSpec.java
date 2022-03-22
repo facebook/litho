@@ -135,8 +135,8 @@ class HorizontalScrollSpec {
       @Prop Component contentProps,
       @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
-      @FromMeasure Integer measuredComponentWidth,
-      @FromMeasure Integer measuredComponentHeight,
+      @Nullable @FromMeasure Integer measuredComponentWidth,
+      @Nullable @FromMeasure Integer measuredComponentHeight,
       Output<Integer> componentWidth,
       Output<Integer> componentHeight,
       Output<YogaDirection> layoutDirection) {
@@ -186,8 +186,8 @@ class HorizontalScrollSpec {
       @Prop(optional = true) int overScrollMode,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
-      @FromBoundsDefined int componentWidth,
-      @FromBoundsDefined int componentHeight,
+      @Nullable @FromBoundsDefined Integer componentWidth,
+      @Nullable @FromBoundsDefined Integer componentHeight,
       @FromBoundsDefined final YogaDirection layoutDirection) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
@@ -197,8 +197,8 @@ class HorizontalScrollSpec {
         lastScrollPosition,
         onScrollChangeListener,
         scrollStateListener,
-        componentWidth,
-        componentHeight,
+        componentWidth != null ? componentWidth : 0,
+        componentHeight != null ? componentHeight : 0,
         incrementalMountEnabled);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
