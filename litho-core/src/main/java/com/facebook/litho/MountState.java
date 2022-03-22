@@ -1152,7 +1152,7 @@ class MountState implements MountDelegateTarget {
     // Traversing from the beginning since mLayoutOutputsIds unmounting won't remove entries there
     // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
     // all its mounted children.
-    for (int i = 0; i < mLayoutOutputsIds.length; i++) {
+    for (int i = 1; i < mLayoutOutputsIds.length; i++) {
       final int newPosition = newLayoutState.getPositionForId(mLayoutOutputsIds[i]);
       final @Nullable RenderTreeNode newRenderTreeNode =
           newPosition != -1 ? newLayoutState.getMountableOutputAt(newPosition) : null;
@@ -1172,8 +1172,7 @@ class MountState implements MountDelegateTarget {
         unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
-        final long newHostMarker =
-            i != 0 ? newRenderTreeNode.getParent().getRenderUnit().getId() : -1;
+        final long newHostMarker = newRenderTreeNode.getParent().getRenderUnit().getId();
 
         if (oldItem == null) {
           // This was previously unmounted.
