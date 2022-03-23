@@ -15,7 +15,7 @@ To familiarize yourself with the concept and rules for hooks, see the [Introduct
 
 Declare state with `useState`, passing an initial value. `useState` will always return a `State<T>` holding whatever the current value of that state is. On the first render, this is the initial value, however in subsequent renders it will include any updates that have been commited for that state variable.
 
-The code shows a simple example of a component which renders a counter that increments on click. `useState` is used to track the value of that counter over time:
+The following code shows an example of a component that renders a counter that increments when it is clicked. `useState` is used to track the value of that counter over time:
 
 ```kotlin {3,6}
 class CounterComponent : KComponent() {
@@ -31,25 +31,26 @@ class CounterComponent : KComponent() {
 ## Updating State
 
 :::note
-`update` causes the re-render to be **async by default**. If you need to perform a synchronous state update (i.e. one which will cause a re-render synchronously on the current thread), use `updateSync`.
+`update` causes the re-render to be **async by default**. If you need to perform a synchronous state update (that is, one which will cause a re-render synchronously on the current thread), use `updateSync`.
 :::
 
-To update state, use the `update` method on the `State<T>` returned from `useState`: this will trigger a render pass with the new state value.
+To update state, use the `update` method on the `State<T>` returned from `useState`: this will trigger a render pass with the new state value:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
 ```
 
-### Value vs. Lambda Variants
+### Value vs. Lambda variants
 
 `update` and `updateSync` have two variants:
-1. **Value variant** which takes a determined value, e.g. `myState.update(1)`
-2. **Lambda variant** which takes a lambda receiving the old value which can be used to compute a new value, e.g. `myState.update { c -> c + 1 }`
 
-Use the lambda variant when you need to perform an update that depends on the old state value. For example, if your state update should increment a counter, using the function version of `update` with `count -> count + 1` will allow you to account for updates that are in flight but not yet applied (e.g. if the user has tapped a button triggering the update multiple times in succession).
+1. **Value variant** - takes a determined value, such as `myState.update(1)`.
+2. **Lambda variant** - takes a lambda receiving the old value which can be used to compute a new value, such as `myState.update { c -> c + 1 }`.
+
+Use the lambda variant when you need to perform an update that depends on the old state value. For example, if your state update should increment a counter, using the function version of `update` with `count -> count + 1` will enable you to account for updates that are in flight but not yet applied (such as if the user has tapped a button triggering the update multiple times in succession).
 
 ## Using state in child components
 
-*Avoid passing a State directly to the child component*. Instead, pass a lambda to the child which it can invoke to notify the parent to update state.
+*Avoid passing a State directly to the child component*. Instead, pass a lambda to the child which it can invoke to notify the parent to update the state:
 
 ```kotlin {3,5} file=sample/src/main/java/com/facebook/samples/litho/kotlin/state/StateParentChildComponent.kt start=start_example_parent end=end_example_parent
 ```
