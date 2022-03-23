@@ -46,8 +46,6 @@ public class MountDelegate {
   private int mNotifyVisibleBoundsChangedNestCount = 0;
   private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
 
-  private final List<ExtensionState> mExtensionStatesToUpdate = new ArrayList<>();
-
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;
   }
@@ -278,82 +276,87 @@ public class MountDelegate {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void collateExtensionsToUpdate(
+  /**
+   * Collects all the {@link MountExtension} which need a callback to their mount and bind item
+   * methods for {@param nextRenderUnit}. This method returns the list of those extensions.
+   */
+  List<ExtensionState> collateExtensionsToUpdate(
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData) {
-    mExtensionStatesToUpdate.clear();
-
+    final List<ExtensionState> extensionStatesToUpdate = new ArrayList<>(mExtensionStates.size());
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       final ExtensionState state = mExtensionStates.get(i);
       if (state.shouldUpdateItem(
           previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
-        mExtensionStatesToUpdate.add(state);
+        extensionStatesToUpdate.add(state);
       }
     }
+
+    return extensionStatesToUpdate;
   }
 
-  void clearExtensionsToUpdate() {
-    mExtensionStatesToUpdate.clear();
-  }
-
-  void onUnbindItemWhichRequiresUpdate(
+  static void onUnbindItemWhichRequiresUpdate(
+      final List<ExtensionState> extensionStatesToUpdate,
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content) {
-    if (!mExtensionStatesToUpdate.isEmpty()) {
-      final int size = mExtensionStatesToUpdate.size();
+    if (!extensionStatesToUpdate.isEmpty()) {
+      final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
-        mExtensionStatesToUpdate
+        extensionStatesToUpdate
             .get(i)
             .onUnbindItem(previousRenderUnit, content, previousLayoutData);
       }
     }
   }
 
-  void onUnmountItemWhichRequiresUpdate(
+  static void onUnmountItemWhichRequiresUpdate(
+      final List<ExtensionState> extensionStatesToUpdate,
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content) {
-    if (!mExtensionStatesToUpdate.isEmpty()) {
-      final int size = mExtensionStatesToUpdate.size();
+    if (!extensionStatesToUpdate.isEmpty()) {
+      final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
-        mExtensionStatesToUpdate
+        extensionStatesToUpdate
             .get(i)
             .onUnmountItem(previousRenderUnit, content, previousLayoutData);
       }
     }
   }
 
-  void onMountItemWhichRequiresUpdate(
+  static void onMountItemWhichRequiresUpdate(
+      final List<ExtensionState> extensionStatesToUpdate,
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content) {
-    if (!mExtensionStatesToUpdate.isEmpty()) {
-      final int size = mExtensionStatesToUpdate.size();
+    if (!extensionStatesToUpdate.isEmpty()) {
+      final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
-        mExtensionStatesToUpdate.get(i).onMountItem(nextRenderUnit, content, nextLayoutData);
+        extensionStatesToUpdate.get(i).onMountItem(nextRenderUnit, content, nextLayoutData);
       }
     }
   }
 
-  void onBindItemWhichRequiresUpdate(
+  static void onBindItemWhichRequiresUpdate(
+      final List<ExtensionState> extensionStatesToUpdate,
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content) {
-    if (!mExtensionStatesToUpdate.isEmpty()) {
-      final int size = mExtensionStatesToUpdate.size();
+    if (!extensionStatesToUpdate.isEmpty()) {
+      final int size = extensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
-        mExtensionStatesToUpdate.get(i).onBindItem(nextRenderUnit, content, nextLayoutData);
+        extensionStatesToUpdate.get(i).onBindItem(nextRenderUnit, content, nextLayoutData);
       }
     }
   }

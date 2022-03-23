@@ -18,6 +18,7 @@ package com.facebook.rendercore;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.extensions.ExtensionState;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -312,16 +313,26 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
         mountUnmountExtensionsForBind,
         mountUnmountExtensionsForUnbind);
 
+    final List<ExtensionState> extensionStatesToUpdate;
+
     if (mountDelegate != null) {
-      mountDelegate.collateExtensionsToUpdate(
-          currentRenderUnit, currentLayoutData, this, newLayoutData);
+      extensionStatesToUpdate =
+          mountDelegate.collateExtensionsToUpdate(
+              currentRenderUnit, currentLayoutData, this, newLayoutData);
+    } else {
+      extensionStatesToUpdate = null;
     }
 
     // 2. unbind all attach binders which should update (only if currently attached).
     if (isAttached) {
       if (mountDelegate != null) {
         mountDelegate.onUnbindItemWhichRequiresUpdate(
-            currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+            extensionStatesToUpdate,
+            currentRenderUnit,
+            currentLayoutData,
+            this,
+            newLayoutData,
+            content);
       }
       for (int i = attachDetachExtensionsForUnbind.size() - 1; i >= 0; i--) {
         final Extension extension = attachDetachExtensionsForUnbind.get(i);
@@ -332,7 +343,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     // 3. unbind all mount binders which should update.
     if (mountDelegate != null) {
       mountDelegate.onUnmountItemWhichRequiresUpdate(
-          currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+          extensionStatesToUpdate,
+          currentRenderUnit,
+          currentLayoutData,
+          this,
+          newLayoutData,
+          content);
     }
     for (int i = mountUnmountExtensionsForUnbind.size() - 1; i >= 0; i--) {
       final Extension extension = mountUnmountExtensionsForUnbind.get(i);
@@ -345,7 +361,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     }
     if (mountDelegate != null) {
       mountDelegate.onMountItemWhichRequiresUpdate(
-          currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+          extensionStatesToUpdate,
+          currentRenderUnit,
+          currentLayoutData,
+          this,
+          newLayoutData,
+          content);
     }
 
     // 5. rebind all attach binder which did update.
@@ -354,9 +375,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     }
     if (mountDelegate != null) {
       mountDelegate.onBindItemWhichRequiresUpdate(
-          currentRenderUnit, currentLayoutData, this, newLayoutData, content);
-
-      mountDelegate.clearExtensionsToUpdate();
+          extensionStatesToUpdate,
+          currentRenderUnit,
+          currentLayoutData,
+          this,
+          newLayoutData,
+          content);
     }
   }
 
