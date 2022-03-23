@@ -21,17 +21,17 @@ import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 
-public class TestMountExtension extends MountExtension {
+public class TestMountExtension extends MountExtension<Object, Object> {
 
   private Object input;
 
   @Override
-  protected Object createState() {
+  protected Void createState() {
     return null;
   }
 
   @Override
-  public void beforeMount(ExtensionState state, Object o, @Nullable Rect localVisibleRect) {
+  public void beforeMount(ExtensionState<Object> state, Object o, @Nullable Rect localVisibleRect) {
     super.beforeMount(state, o, localVisibleRect);
     this.input = o;
   }

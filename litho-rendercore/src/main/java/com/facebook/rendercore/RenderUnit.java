@@ -282,6 +282,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
       RenderUnit<MOUNT_CONTENT> currentRenderUnit,
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
+      @Nullable MountDelegate mountDelegate,
       boolean isAttached) {
 
     final List<Extension> attachDetachExtensionsForBind =
@@ -311,8 +312,17 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
         mountUnmountExtensionsForBind,
         mountUnmountExtensionsForUnbind);
 
+    if (mountDelegate != null) {
+      mountDelegate.collateExtensionsToUpdate(
+          currentRenderUnit, currentLayoutData, this, newLayoutData);
+    }
+
     // 2. unbind all attach binders which should update (only if currently attached).
     if (isAttached) {
+      if (mountDelegate != null) {
+        mountDelegate.onUnbindItemWhichRequiresUpdate(
+            currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+      }
       for (int i = attachDetachExtensionsForUnbind.size() - 1; i >= 0; i--) {
         final Extension extension = attachDetachExtensionsForUnbind.get(i);
         extension.unbind(context, content, currentLayoutData);
@@ -320,6 +330,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     }
 
     // 3. unbind all mount binders which should update.
+    if (mountDelegate != null) {
+      mountDelegate.onUnmountItemWhichRequiresUpdate(
+          currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+    }
     for (int i = mountUnmountExtensionsForUnbind.size() - 1; i >= 0; i--) {
       final Extension extension = mountUnmountExtensionsForUnbind.get(i);
       extension.unbind(context, content, currentLayoutData);
@@ -329,10 +343,20 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     for (Extension extension : mountUnmountExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
+    if (mountDelegate != null) {
+      mountDelegate.onMountItemWhichRequiresUpdate(
+          currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+    }
 
     // 5. rebind all attach binder which did update.
     for (Extension extension : attachDetachExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
+    }
+    if (mountDelegate != null) {
+      mountDelegate.onBindItemWhichRequiresUpdate(
+          currentRenderUnit, currentLayoutData, this, newLayoutData, content);
+
+      mountDelegate.clearExtensionsToUpdate();
     }
   }
 

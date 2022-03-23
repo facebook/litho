@@ -984,6 +984,10 @@ public class MountState implements MountDelegateTarget {
 
     currentRenderUnit.onStartUpdateRenderUnit();
 
+    if (mountDelegate != null) {
+      mountDelegate.startNotifyVisibleBoundsChangedSection();
+    }
+
     if (currentRenderUnit != renderUnit) {
       if (isTracing) {
         RenderCoreSystrace.beginSection("UpdateItem: " + renderUnit.getDescription());
@@ -995,16 +999,11 @@ public class MountState implements MountDelegateTarget {
           currentRenderUnit,
           currentLayoutData,
           newLayoutData,
+          mountDelegate,
           currentMountItem.isBound());
     }
 
     currentMountItem.setIsBound(true);
-
-    if (mountDelegate != null) {
-      mountDelegate.startNotifyVisibleBoundsChangedSection();
-      mountDelegate.onUpdateItemsIfNeeded(
-          currentRenderUnit, currentLayoutData, renderUnit, newLayoutData, content);
-    }
 
     // Update the bounds of the mounted content. This needs to be done regardless of whether
     // the RenderUnit has been updated or not since the mounted item might might have the same

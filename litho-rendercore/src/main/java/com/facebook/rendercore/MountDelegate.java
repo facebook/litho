@@ -278,14 +278,11 @@ public class MountDelegate {
     endNotifyVisibleBoundsChangedSection();
   }
 
-  void onUpdateItemsIfNeeded(
+  void collateExtensionsToUpdate(
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
-      final @Nullable Object nextLayoutData,
-      final Object content) {
-    startNotifyVisibleBoundsChangedSection();
-
+      final @Nullable Object nextLayoutData) {
     mExtensionStatesToUpdate.clear();
 
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
@@ -295,38 +292,70 @@ public class MountDelegate {
         mExtensionStatesToUpdate.add(state);
       }
     }
+  }
 
+  void clearExtensionsToUpdate() {
+    mExtensionStatesToUpdate.clear();
+  }
+
+  void onUnbindItemWhichRequiresUpdate(
+      final @Nullable RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final @Nullable RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData,
+      final Object content) {
     if (!mExtensionStatesToUpdate.isEmpty()) {
       final int size = mExtensionStatesToUpdate.size();
-
-      // Unbind
       for (int i = 0; i < size; i++) {
         mExtensionStatesToUpdate
             .get(i)
             .onUnbindItem(previousRenderUnit, content, previousLayoutData);
       }
+    }
+  }
 
-      // Unmount
+  void onUnmountItemWhichRequiresUpdate(
+      final @Nullable RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final @Nullable RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData,
+      final Object content) {
+    if (!mExtensionStatesToUpdate.isEmpty()) {
+      final int size = mExtensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         mExtensionStatesToUpdate
             .get(i)
             .onUnmountItem(previousRenderUnit, content, previousLayoutData);
       }
+    }
+  }
 
-      // Mount
+  void onMountItemWhichRequiresUpdate(
+      final @Nullable RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final @Nullable RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData,
+      final Object content) {
+    if (!mExtensionStatesToUpdate.isEmpty()) {
+      final int size = mExtensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         mExtensionStatesToUpdate.get(i).onMountItem(nextRenderUnit, content, nextLayoutData);
       }
+    }
+  }
 
-      // Bind
+  void onBindItemWhichRequiresUpdate(
+      final @Nullable RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final @Nullable RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData,
+      final Object content) {
+    if (!mExtensionStatesToUpdate.isEmpty()) {
+      final int size = mExtensionStatesToUpdate.size();
       for (int i = 0; i < size; i++) {
         mExtensionStatesToUpdate.get(i).onBindItem(nextRenderUnit, content, nextLayoutData);
       }
-
-      mExtensionStatesToUpdate.clear();
     }
-
-    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onMountItem(
