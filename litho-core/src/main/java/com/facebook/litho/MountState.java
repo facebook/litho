@@ -2256,10 +2256,7 @@ class MountState implements MountDelegateTarget {
     if (isTracing) {
       RenderCoreSystrace.beginSection("MountState.unmountAllItems");
     }
-
-    for (int i = mLayoutOutputsIds.length - 1; i >= 0; i--) {
-      unmountItem(i, mHostsByMarker);
-    }
+    unmountItem(0, mHostsByMarker);
     mPreviousLocalVisibleRect.setEmpty();
     mNeedsRemount = true;
 
@@ -2308,20 +2305,6 @@ class MountState implements MountDelegateTarget {
       RenderCoreSystrace.beginSection("UnmountItem: " + unit.getDescription());
     }
 
-    // The root host item should never be unmounted as it's a reference
-    // to the top-level LithoView.
-    if (id == ROOT_HOST_ID) {
-      mDynamicPropsManager.onUnbindComponent(
-          getLayoutOutput(node).getComponent(), mRootHostMountItem.getContent());
-      maybeUnsetViewAttributes(item);
-      if (isTracing) {
-        RenderCoreSystrace.endSection();
-      }
-      return;
-    }
-
-    mIndexToItemMap.remove(id);
-
     final Object content = item.getContent();
 
     final boolean hasUnmountDelegate =
@@ -2353,6 +2336,18 @@ class MountState implements MountDelegateTarget {
             "Recursively unmounting items from a ComponentHost, left"
                 + " some items behind maybe because not tracked by its MountState");
       }
+    }
+
+    // The root host item should never be unmounted as it's a reference
+    // to the top-level LithoView.
+    if (id == ROOT_HOST_ID) {
+      unbindAndUnmountLifecycle(item);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
+      return;
+    } else {
+      mIndexToItemMap.remove(id);
     }
 
     final ComponentHost host = (ComponentHost) item.getHost();
