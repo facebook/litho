@@ -1371,8 +1371,8 @@ class MountState implements MountDelegateTarget {
 
     final int positionInParent = item.getRenderTreeNode().getPositionInParent();
 
-    mount(host, mShouldUsePositionInParent ? positionInParent : index, content, item, node);
     setViewAttributes(item);
+    mount(host, mShouldUsePositionInParent ? positionInParent : index, content, item, node);
 
     return item;
   }
