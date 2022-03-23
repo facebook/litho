@@ -7,22 +7,23 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-`useRef` is a hook that allows a component to maintain a mutable reference that doesn't trigger a re-render when updated. It returns an instance of `Ref` which has a single mutable `value` property which should only be read/written on the UI thread.
+`useRef` is a hook that allows a component to maintain a mutable reference that doesn't trigger a re-render when updated. It returns an instance of `Ref` which has a single mutable `value` property, which should only be read/written on the UI thread.
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
 
 ## Managing UI Thread State with `useRef`
 
 :::note
-**Ref.value should only be read/written from the main thread.** Since there is no guarantee that a Component's render function is executed on the main thread, it should not be accessed during the execution of render.
+**Ref.value should only be read/written from the main thread.** Since there is no guarantee that a component's render function is executed on the main thread, it should not be accessed during the execution of render.
 
 Some locations where it *is* safe to access and mutate `Ref.value`:
-- `onClick` and other View events
-- `onVisible` and other visibility events
-- `useEffect` and its cleanup lambda
+
+- `onClick` and other View events.
+- `onVisible` and other visibility events.
+- `useEffect` and its cleanup lambda.
 :::
 
-Appropriate usecases of `useRef` are best shown by example. Note that none of these examples read or write `useRef` off the main thread or during the execution of the main body of the Component's `render()` function.
+Appropriate use cases of `useRef` are best shown by example. Note that none of these examples read or write `useRef` off the main thread or during the execution of the main body of the component's `render()` function.
 
 ### Example: Logging Seen State
 
@@ -40,4 +41,4 @@ In the below code, an animator is started and stopped when the Component is atta
 
 ## Pairing with `useEffect`
 
-Pairing `useRef` with `useEffect` is a common pattern. See the code samples in the [useEffect](/mainconcepts/use-effect.mdx) docs for more examples and information about `useEffect`.
+Pairing `useRef` with `useEffect` is a common pattern. For more information on 'useEffect`, see the code samples in the [useEffect](/mainconcepts/use-effect.mdx) page.
