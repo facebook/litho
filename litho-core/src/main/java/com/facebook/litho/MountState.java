@@ -2333,11 +2333,10 @@ class MountState implements MountDelegateTarget {
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
     // sub tree, that will still have mounted items. (Different sequence number on LayoutOutput id)
-    if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
+    if (node.getChildrenCount() > 0) {
 
       final Host host = (Host) content;
-
-      for (int i = 0; i < node.getChildrenCount(); i++) {
+      for (int i = node.getChildrenCount() - 1; i >= 0; i--) {
         unmountItem(mIndexToItemMap.get(node.getChildAt(i).getRenderUnit().getId()), hostsByMarker);
       }
 
