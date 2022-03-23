@@ -1667,7 +1667,7 @@ public class RecyclerBinder
                 + mComponentTreeHolders.size()
                 + "). This likely means data passed to the section had duplicates or a mutable data model. Component involved in the error whose backing data model may have duplicates: "
                 + renderInfo.getName()
-                + ".");
+                + ". Read more here: https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception");
       }
 
       holder = mComponentTreeHolders.get(position);
