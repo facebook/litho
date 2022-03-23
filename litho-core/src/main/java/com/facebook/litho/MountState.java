@@ -2373,20 +2373,6 @@ class MountState implements MountDelegateTarget {
       mUnmountDelegateExtension.unmount(
           mMountDelegate.getUnmountDelegateExtensionState(), item, host);
     } else {
-      /*
-       * The mounted content might contain other LithoViews which are not reachable from
-       * this MountState. If that content contains other LithoViews, we need to unmount them as well,
-       * so that their contents are recycled and reused next time.
-       */
-      if (content instanceof HasLithoViewChildren) {
-        final ArrayList<LithoView> lithoViews = new ArrayList<>();
-        ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
-
-        for (int i = lithoViews.size() - 1; i >= 0; i--) {
-          final LithoView lithoView = lithoViews.get(i);
-          lithoView.unmountAllItems();
-        }
-      }
 
       if (isTracing) {
         RenderCoreSystrace.beginSection(
@@ -2459,6 +2445,22 @@ class MountState implements MountDelegateTarget {
     if (isTracing) {
       RenderCoreSystrace.beginSection("UnmountItem:unmount: " + unit.getDescription());
     }
+
+    /*
+     * The mounted content might contain other LithoViews which are not reachable from
+     * this MountState. If that content contains other LithoViews, we need to unmount them as well,
+     * so that their contents are recycled and reused next time.
+     */
+    if (content instanceof HasLithoViewChildren) {
+      final ArrayList<LithoView> lithoViews = new ArrayList<>();
+      ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
+
+      for (int i = lithoViews.size() - 1; i >= 0; i--) {
+        final LithoView lithoView = lithoViews.get(i);
+        lithoView.unmountAllItems();
+      }
+    }
+
     maybeUnsetViewAttributes(item);
     // For RCMS: onUnmountItem
     final LithoLayoutData layoutData = (LithoLayoutData) item.getRenderTreeNode().getLayoutData();
