@@ -10,43 +10,44 @@ keywords:
 
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-## What is a Component?
+## What is a component?
 
-**Components** are the fundamental building blocks of UI in Litho. They consist of a render function that can use the component's **props** and **state** to configure and return other components. The returned components are further resolved by recursively calling `render` on them until the process results in **primitives** like `Text` or `Image`, which can be positioned and materialized on the screen.
+**Components** are the fundamental building blocks of UIs in Litho. They consist of a render function that can use the component's **props** and **state** to configure and return other components. The returned components are further resolved by recursively calling `render` on them until the process results in **primitives** like `Text` or `Image`, which can be positioned and materialized on the screen.
+
+The following example shows a component that takes a name as a prop and renders a greeting with a `Text` component.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
 ```
 
-The above sample shows a simple example of this: a component that takes a name as a prop and renders a greeting with a `Text` component.
-
 :::info
-**What's the relationship between a Component and a View?**
+**What's the relationship between a component and a view?**
 
-In practice, a component is just a type and a bag of props and is cheap to instantiate. Instantiating a component does not instantiate a View. At **mount** time, only primitive components that mount Views or have View properties - like `viewTag` - will materialize Views in the final layout.
+In practice, a component is just a type and a bag of props and is cheap to instantiate. Instantiating a component does not instantiate a View. At **mount** time, only primitive components that mount Views or have View properties (such as `viewTag`) will materialize Views in the final layout.
 :::
 
 ## Declaring a Component
 
 A component is declared as a simple sub-class of `KComponent`, overriding a single function: `render`. You can declare the **props** a component takes as standard `val` properties; as is normal in Kotlin, these may be declared as optional by providing a default value.
 
-To instantiate an existing component, specify the props in the constructor of that component. By convention, we use named arguments for clarity even if the prop is required:
+To instantiate an existing component, specify the props in the constructor of that component. By convention, named arguments are used for clarity, even if the prop is required:
+
 ```kotlin
 Text(text = "Hello $name!")
 ```
 
-Note that KComponents are only supported in Kotlin - if you need to declare a component from Java, check out the [legacy Spec API](/codegen/layout-specs.mdx).
+Note that KComponents are only supported in Kotlin; if you need to declare a component from Java, look at the [legacy Spec API](/codegen/layout-specs.mdx).
 
-### Rules for Components
+### Rules for components
 
 For correctness, Litho components must follow two functional-programming rules:
 
-1. **Components must be immutable**: this means they only support `val` properties (no `var` properties!). Components are re-used across threads, so mutability can introduce subtle but aggravating correctness issues.
-2. **`render` must be a pure function without side-effects**: this means that if render is called with the same props and state, it should always return the same result without modifying other app state.
+1. **Components must be immutable** - they only support `val` properties (no `var` properties!). Components are re-used across threads, so mutability can introduce subtle but aggravating correctness issues.
+2. **`render` must be a pure function without side-effects** - if render is called with the same props and state, it should always return the same result without modifying other app state.
 
 ### Other ways to configure components
 
-If you follow these docs in order, we'll cover these in time - however if you want to skip ahead, here are some other ways you can affect your components rendering:
+Following are some other ways you can affect your component's rendering:
 
-- **[Common Props](../../mainconcepts/props/#common-props)**: Uses the `Style` object to configure built-in behavior on a component, like click handling and background color.
-- **[Tree Props](../../mainconcepts/props/#tree-props)**: Give a way to give access to contextual objects, like a theme or logging utility, to all components in a sub-tree without having to manually pass them.
-- **[State](/mainconcepts/use-state.mdx)**: Allows a component to persist private state across updates to the tree.
+- **[Common Props](../../mainconcepts/props/#common-props)** - uses the `Style` object to configure built-in behavior on a component, like click handling and background color.
+- **[Tree Props](../../mainconcepts/props/#tree-props)** - provides a way to give access to contextual objects, like a theme or logging utility, to all components in a sub-tree without having to manually pass them.
+- **[State](/mainconcepts/use-state.mdx)** - allows a component to persist private state across updates to the tree.
