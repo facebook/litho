@@ -1,4 +1,4 @@
----
+                                                                                                                   ---
 id: flexbox-yoga
 title: Layout System with Flexbox
 hide_table_of_contents: true
@@ -10,18 +10,18 @@ import TabItem from '@theme/TabItem';
 
 Litho uses the [Yoga](https://yogalayout.com/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/), to measure and layout on-screen components. If you have used Flexbox on the web before then this should be very familiar. If you are more familiar with how Android normally performs Layout then Flexbox will remind you of `LinearLayout`.
 
-## Flexbox Attributes
+## Flexbox attributes
 
-This section shows how various attributes of FlexBox are used for on-screen layout.
+This section shows how various attributes of Flexbox are used for on-screen layout.
 
-### Layout Direction
+### Layout direction
 
 Flexbox is a **one dimensional layout model**, which means all elements are placed along one line.
 This leads to the question, *"Should your elements be laid out horizontally, or vertically?"*.
 
 The primary axis of layout is called the **Main Axis**, and the direction perpendicular to it is called the **Cross Axis**. For example, if you wanted your children to be laid out left to right, then the Main Axis would be the horizontal axis, and the Cross Axis would be the vertical axis.
 
-Litho uses special container components to define direction of the layout:
+Litho uses special container components to define direction of the layout, as shown in the following table.
 
 | Component | Main Axis | Child Elements Layout | If Wrapping is Enabled |
 | :-- | :-- | :-- | :-- |
@@ -38,7 +38,7 @@ The above container components are illustrated in the following diagram.
 The `(reverse)` option is available through the `.reverse(boolean)` method on `Row`/`Column` objects.
 :::
 
-### Distribution Along the Main Axis
+### Distribution along the main axis
 
 If your container has more space than is necessary along the Main Axis then the way children are positioned across that axis needs to be considered.
 
@@ -47,17 +47,17 @@ The `justifyContent` method specifies how the child elements are distributed acr
 * `FLEX_START` *(default)* - position children at the start of the container, along the main axis.
 * `FLEX_END` - position children at the end of the container, along the main axis.
 * `CENTER` - position children in the centre of the container, along the main axis.
-* `SPACE_BETWEEN` - Distribute extra space evenly between children.
-* `SPACE_AROUND` - Distribute space evenly around each child. Note that adjacent children will have '2x' space between them (because each child has its own 'padding'.
-* `SPACE_EVENLY` - Distribute space evenly around all children.
+* `SPACE_BETWEEN` - distribute extra space evenly between children.
+* `SPACE_AROUND` - distribute space evenly around each child. Note that adjacent children will have '2x' space between them (because each child has its own 'padding').
+* `SPACE_EVENLY` - distribute space evenly around all children.
 
 The `YogaJustify` values are illustrated below.
 
 <img src={useBaseUrl('/images/litho-layout-justify-content.png')} alt='justify-content'/>
 
-### Distribution Along the Cross Axis
+### Distribution along the cross axis
 
-If the elements in your line have different heights then the way they are positioned along the line needs to be considered.
+If the elements in your line have different heights, then the way they are positioned along the line needs to be considered.
 
 The `alignItems` method specifies how the container's children are distributed across the Cross Axis. It takes a `YogaAlign` enum input, which has the following possible values:
 
@@ -71,7 +71,7 @@ The `YogaAlign` values are illustrated below.
 
 <img src={useBaseUrl('/images/litho-layout-align-items.png')} alt='align-items'/>
 
-### Wrapping to Multiple Lines
+### Wrapping to multiple lines
 
 In addition to the one-dimensional Flexbox laying out its children in one line, Flexboxes can also wrap their children onto multiple lines, much like text wraps. You specify wrapping behavior with the `Wrap` method, which takes a `YogaWrap` enum value that has the following possible values:
 
@@ -83,9 +83,9 @@ The `YogaWrap` values are illustrated below.
 
 <img src={useBaseUrl('/images/litho-layout-wrap.png')} alt='wrap'/>
 
-#### Line Distribution
+#### Line distribution
 
-If your container has extra space in the Cross Axis direction then the way lines are distributed in that space needs to be considered.
+If your container has extra space in the Cross Axis direction, then the way lines are distributed in that space needs to be considered.
 
 The `alignContent` method specifies how lines are distributed along the Cross Axis. It takes a `YogaAlign` enum value, which has the following possible values:
 
@@ -102,7 +102,7 @@ The `YogaAlign` values, for Lines, are illustrated below.
 
 For more information on specific Flexbox properties, refer to the [Yoga documentation](https://yogalayout.com/docs/) or explore any web resource on how Flexbox functions.
 
-## Yoga Playground
+## Yoga playground
 
 You can also use the [Yoga Playground](https://yogalayout.com/playground) to try different layout configurations and generate corresponding Litho code, as shown in the following screenshot.
 
@@ -112,7 +112,7 @@ You can also use the [Yoga Playground](https://yogalayout.com/playground) to try
 
 This section lists typical layout configurations in Android and how they translate to Litho with Yoga.
 
-### Vertically Stacked Items
+### Vertically stacked items
 
 The following table shows vertically stacked items for Android Views and Litho with Yoga.
 
@@ -155,7 +155,7 @@ Column.create(c)
 </td></tr>
 </table>
 
-### Two Items Equally Stretched Horizontally
+### Two items equally stretched horizontally
 
 To achieve an effect similar to a `LinearLayout` with weights, Flexbox provides a concept called `flexGrow(<weight>)`, as featured in the following table.
 
@@ -200,7 +200,7 @@ Row.create(c)
 </td></tr>
 </table>
 
-### Absolutely Positioned Items
+### Absolutely positioned items
 
 If you'd like to overlay one view on top of the other, similar to a `FrameLayout`, Flexbox can achieve that with `positionType(ABSOLUTE)`, as featured in the following table.
 
