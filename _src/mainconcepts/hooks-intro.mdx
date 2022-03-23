@@ -14,13 +14,14 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 Hooks are Litho's way to enable components to persist state across renders and register for lifecycle events while remaining immutable. Litho has a suite of built in hooks whose docs you'll find in this section.
 
 As a brief introduction, some of the most common ones you'll encounter are:
-- **[useState](/mainconcepts/use-state.mdx)**: keeps track of a variable across renders.
-- **[useEffect](/mainconcepts/use-effect.mdx)**: lets a component perform side effects when it's attached or detached from the tree.
-- **[useRef](/mainconcepts/use-ref.mdx)**: keeps track of a mutable reference across renders.
+
+- **[useState](/mainconcepts/use-state.mdx)** - keeps track of a variable across renders.
+- **[useEffect](/mainconcepts/use-effect.mdx)** - lets a component perform side effects when it's attached or detached from the tree.
+- **[useRef](/mainconcepts/use-ref.mdx)** - keeps track of a mutable reference across renders.
 
 ### Example: `useState`
 
-To demonstrate usage of hooks in practice, the component below implements a simple counter - whenever it's clicked it'll increment the number of clicks and re-render:
+To demonstrate usage of hooks in practice, the component below implements a simple counter; whenever it's clicked, it increments the number of clicks and re-renders:
 
 ```kotlin {3}
 class CounterComponent : KComponent() {
@@ -44,9 +45,9 @@ Hooks maintain state by using the identity of the current component along with t
 As such, there are **three hooks rules** that you need to remember:
 
  1. Hooks can only be called from `render()` or from another hook.
- 2. Hook cannot be called conditionally: that means they cannot be called from within conditionals (if/for/while/...), or called **after** an "early exit" check (such as `if (...) return null`).
+ 2. Hook cannot be called conditionally, which means they cannot be called from within conditionals (if/for/while/...), or called **after** an "early exit" check (such as `if (...) return null`).
  3. Hook names should start with `use`.
 
 The reasons for rules 1 and 2 are to preserve hook identity, as mentioned above. Rule 3 is just to make it easier to tell when a function has hook-like behavior.
 
-It may prove helpful to look at some more examples, starting with the most fundamental hook, [`useState`](/mainconcepts/use-state.mdx)!
+It may prove helpful to look at some more examples, starting with the most fundamental hook: [useState](/mainconcepts/use-state.mdx)!
