@@ -48,13 +48,16 @@ public class ChangeSetState {
 
   private static final List<Section> sEmptyList = new ArrayList<>();
 
-  private final Section mCurrentRoot;
-  private final Section mNewRoot;
+  private final @Nullable Section mCurrentRoot;
+  private final @Nullable Section mNewRoot;
   private final ChangeSet mChangeSet;
   private final List<Section> mRemovedComponents;
 
   private ChangeSetState(
-      Section currentRoot, Section newRoot, ChangeSet changeSet, List<Section> removedComponents) {
+      @Nullable Section currentRoot,
+      @Nullable Section newRoot,
+      ChangeSet changeSet,
+      List<Section> removedComponents) {
     mCurrentRoot = currentRoot;
     mNewRoot = newRoot;
     mChangeSet = changeSet;
@@ -70,7 +73,7 @@ public class ChangeSetState {
   static ChangeSetState generateChangeSet(
       SectionContext sectionContext,
       @Nullable Section currentRoot,
-      Section newRoot,
+      @Nullable Section newRoot,
       SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag,
       String currentPrefix,
@@ -163,7 +166,7 @@ public class ChangeSetState {
   private static ChangeSet generateChangeSetRecursive(
       SectionContext sectionContext,
       @Nullable Section currentRoot,
-      Section newRoot,
+      @Nullable Section newRoot,
       List<Section> removedComponents,
       SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag,
@@ -231,8 +234,7 @@ public class ChangeSetState {
       final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(
               currentRootIsNull ? 0 : currentRoot.getCount(), newRoot, enableStats);
-      final SectionContext newRootScopedContext =
-          newRoot == null ? null : newRoot.getScopedContext();
+      final SectionContext newRootScopedContext = newRoot.getScopedContext();
       final SectionContext currentRootScopedContext =
           currentRoot == null ? null : currentRoot.getScopedContext();
       lifecycle.generateChangeSet(
@@ -256,14 +258,19 @@ public class ChangeSetState {
     final Map<String, Pair<Section, Integer>> currentChildren = acquireChildrenMap(currentRoot);
     final Map<String, Pair<Section, Integer>> newChildren = acquireChildrenMap(newRoot);
 
-    List<Section> currentChildrenList;
-    if (currentRoot == null) {
+    final List<Section> currentChildrenList;
+    if (currentRoot == null || currentRoot.getChildren() == null) {
       currentChildrenList = sEmptyList;
     } else {
       currentChildrenList = new ArrayList<>(currentRoot.getChildren());
     }
 
-    final List<Section> newChildrenList = newRoot.getChildren();
+    final List<Section> newChildrenList;
+    if (newRoot.getChildren() == null) {
+      newChildrenList = sEmptyList;
+    } else {
+      newChildrenList = newRoot.getChildren();
+    }
 
     // Determine Move Changes.
     // Index of a section that was detected as moved.
@@ -428,7 +435,7 @@ public class ChangeSetState {
     return changeSets;
   }
 
-  private static final int getPreviousChildrenCount(List<Section> sections, String key) {
+  private static int getPreviousChildrenCount(List<Section> sections, String key) {
     int count = 0;
     for (Section s : sections) {
       if (s.getGlobalKey().equals(key)) {
@@ -441,7 +448,7 @@ public class ChangeSetState {
     return count;
   }
 
-  private static final String updatePrefix(@Nullable Section root, String prefix) {
+  private static String updatePrefix(@Nullable Section root, String prefix) {
     if (root != null && root.getParent() == null) {
       return root.getClass().getSimpleName();
     } else if (root != null) {
@@ -451,7 +458,7 @@ public class ChangeSetState {
   }
 
   private static void checkCount(
-      @Nullable Section currentRoot, Section newRoot, ChangeSetState changeSetState) {
+      @Nullable Section currentRoot, @Nullable Section newRoot, ChangeSetState changeSetState) {
     final boolean hasNegativeCount =
         (currentRoot != null && currentRoot.getCount() < 0)
             || (newRoot != null && newRoot.getCount() < 0);
@@ -461,7 +468,7 @@ public class ChangeSetState {
     }
 
     final StringBuilder message = new StringBuilder();
-    message.append("Changet count is below 0! ");
+    message.append("ChangeSet count is below 0! ");
 
     message.append("Current section: ");
     if (currentRoot == null) {
@@ -515,11 +522,13 @@ public class ChangeSetState {
   }
 
   /** @return the {@link Section} that was used as current root for this ChangeSet computation. */
+  @Nullable
   Section getCurrentRoot() {
     return mCurrentRoot;
   }
 
   /** @return the {@link Section} that was used as new root for this ChangeSet computation. */
+  @Nullable
   Section getNewRoot() {
     return mNewRoot;
   }

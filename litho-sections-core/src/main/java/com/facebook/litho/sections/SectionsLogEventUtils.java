@@ -52,7 +52,10 @@ public class SectionsLogEventUtils {
    */
   @Nullable
   public static PerfEvent getSectionsPerformanceEvent(
-      ComponentContext c, int eventId, @Nullable Section currentSection, Section nextSection) {
+      ComponentContext c,
+      int eventId,
+      @Nullable Section currentSection,
+      @Nullable Section nextSection) {
     final ComponentsLogger logger = c.getLogger();
 
     if (logger == null) {
