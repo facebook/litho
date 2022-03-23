@@ -24,10 +24,12 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -67,17 +69,64 @@ public class MountSpecWithMountUnmountAssertionSpec {
 
   @UiThread
   @OnMount
-  static void onMount(ComponentContext context, View view, @State Container holder) {
+  static void onMount(
+      final ComponentContext context,
+      final View view,
+      final @State Container holder,
+      final @Prop(optional = true) boolean hasTagSet) {
     holder.value = "mounted";
+    if (view.getParent() != null) {
+      throw new IllegalStateException("The view must be attached after mount is called");
+    }
+    if (hasTagSet && view.getTag() != null) {
+      throw new IllegalStateException("The tag must be set after mount is called.");
+    }
   }
 
   @UiThread
   @OnUnmount
-  static void onUnmount(ComponentContext context, View view, @State Container holder) {
+  static void onUnmount(
+      final ComponentContext context,
+      final View view,
+      final @State Container holder,
+      final @Prop(optional = true) boolean hasTagSet) {
     if (holder.value == null) {
       throw new IllegalStateException(
           "The value was never set in @onMount. Which means that @OnMount was not invoked "
               + "for this instance of the component or @OnUnmount was called without @OnMount.");
+    }
+    if (view.getParent() != null) {
+      throw new IllegalStateException("The view must be detached before unmount is called");
+    }
+    if (hasTagSet && view.getTag() != null) {
+      throw new IllegalStateException("The tag must be unset before unmount is called.");
+    }
+  }
+
+  @OnBind
+  static void onBind(
+      final ComponentContext c,
+      final View content,
+      final @Prop(optional = true) boolean hasTagSet) {
+    if (content.getParent() == null) {
+      throw new IllegalStateException("The view must be attached when bind is called");
+    }
+    if (hasTagSet && content.getTag() == null) {
+      throw new IllegalStateException("The tag must be set before bind is called.");
+    }
+  }
+
+  @UiThread
+  @OnUnbind
+  static void onUnbind(
+      final ComponentContext c,
+      final View content,
+      final @Prop(optional = true) boolean hasTagSet) {
+    if (content.getParent() != null) {
+      throw new IllegalStateException("The view must be detached when unbind is called");
+    }
+    if (hasTagSet && content.getTag() == null) {
+      throw new IllegalStateException("The tag must be set when unbind is called.");
     }
   }
 

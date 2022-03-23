@@ -603,4 +603,20 @@ public class MountSpecLifecycleTest {
     // Assert that the items is unmounted.
     assertThat(lithoView.getChildCount()).isEqualTo(0);
   }
+
+  @Test
+  public void mountTimeLifecycleMethodsShouldBeCalledInExpectedOrder() {
+    final Component root =
+        Column.create(mLegacyLithoViewRule.getContext())
+            .child(
+                MountSpecWithMountUnmountAssertion.create(mLegacyLithoViewRule.getContext())
+                    .viewTag("tag")
+                    .hasTagSet(true)
+                    .container(new MountSpecWithMountUnmountAssertionSpec.Container()))
+            .build();
+
+    mLegacyLithoViewRule.attachToWindow().setRoot(root).measure().layout();
+
+    mLegacyLithoViewRule.getLithoView().unmountAllItems();
+  }
 }

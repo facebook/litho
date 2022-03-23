@@ -921,16 +921,16 @@ class MountState implements MountDelegateTarget {
     final boolean shouldUpdateViewInfo =
         shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentLayoutOutput);
 
-    // 2. Reset all the properties like click handler, content description and tags related to
+    // 2. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
+    if (currentMountItem.isBound()) {
+      unbindComponentFromContent(currentMountItem, itemComponent, currentMountItem.getContent());
+    }
+
+    // 3. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
 
     if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
-    }
-
-    // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
-    if (currentMountItem.isBound()) {
-      unbindComponentFromContent(currentMountItem, itemComponent, currentMountItem.getContent());
     }
 
     // 4. Re initialize the MountItem internal state with the new attributes from LayoutOutput
