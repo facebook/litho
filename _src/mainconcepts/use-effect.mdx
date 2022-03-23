@@ -11,7 +11,7 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
 
-## Performing Side Effects
+## Performing side effects
 
 :::note
 `useEffect` lambdas and cleanup are both invoked on the main thread. This means it's safe to trigger animations or mutate the view hierarchy from it - however avoid expensive operations to keep your app responsive!
@@ -28,15 +28,15 @@ useEffect {
 
 Without any dependency args, these lambdas will be invoked **every time** a new layout is committed that includes this component, with the previous cleanup lambda invoked before the next effect lambda.
 
-Having `useEffect` execute on every new layout commit is sometimes what you want, but often it's more than necessary. You can have more fine-grained control of how often your effect and cleanup lambdas need to be executed using depency args as shown in the next section.
+You can have a more fine-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
 
-## Side Effects with Dependencies
+## Side effects with dependencies
 
 :::note
 Dependencies are checked for equivalence by calling `equals`. If any are not equal, the hook will be cleaned up and called again.
 :::
 
-In addition the effect lambda, `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
+In addition, the effect lambda, `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
 
 In the sample code below, when the first render is committed, Litho will invoke the `useEffect` lambda, subscribing to the current `userId`. On subsequent commits, **if `userId` or `store` changed**, Litho will invoke the cleanup callback to unsubscribe the existing subscription (if there is one) and then subscribe to the current `userId` and `store`.
 
@@ -69,11 +69,11 @@ useEffect {
 }
 ```
 
-### Unconditionally Triggering Side Effects
+### Unconditionally triggering side effects
 
 `useEffect` can be called without dependencies. In that case on each new commit, the cleanup for the previous `useEffect` call will be invoked, followed by the current useEffect call.
 
-### Listening to Prop/State Changes
+### Listening to prop/state changes
 
 An important functionality that `useEffect` adds is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever some prop changes:
 
