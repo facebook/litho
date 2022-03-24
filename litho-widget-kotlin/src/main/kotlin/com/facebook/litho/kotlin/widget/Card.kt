@@ -33,7 +33,7 @@ inline fun ResourcesScope.Card(
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
     cornerRadius: Dimen = 2.dp,
     elevation: Dimen = 2.dp,
-    @ColorInt clippingColor: Int = Color.WHITE,
+    @ColorInt clippingColor: Int = Integer.MIN_VALUE,
     @ColorInt shadowStartColor: Int = 0x37000000,
     @ColorInt shadowEndColor: Int = 0x03000000,
     shadowBottomOverride: Dimen? = null,
