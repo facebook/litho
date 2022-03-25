@@ -595,7 +595,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
     } else {
       if (mMountState.isDirty()) {
-        mMountState.collectAllTransitions(layoutState, componentTree);
+        mMountState.collectAllTransitions(layoutState);
       }
     }
   }

@@ -1296,7 +1296,7 @@ class MountState implements MountDelegateTarget {
     }
 
     // 4. Mount the content into the selected host.
-    final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
+    final MountItem item = mountContent(index, component, content, host, node);
     if (isTracing) {
       RenderCoreSystrace.endSection();
       RenderCoreSystrace.beginSection("MountItem:bind " + node.getRenderUnit().getDescription());
@@ -1346,12 +1346,7 @@ class MountState implements MountDelegateTarget {
   // The content might be null because it's the LayoutSpec for the root host
   // (the very first LayoutOutput).
   private MountItem mountContent(
-      int index,
-      Component component,
-      Object content,
-      ComponentHost host,
-      RenderTreeNode node,
-      LayoutOutput layoutOutput) {
+      int index, Component component, Object content, ComponentHost host, RenderTreeNode node) {
 
     final MountItem item = new MountItem(node, host, content);
     item.setMountData(new LithoMountData(content));
@@ -1367,26 +1362,17 @@ class MountState implements MountDelegateTarget {
     final int positionInParent = item.getRenderTreeNode().getPositionInParent();
 
     setViewAttributes(item);
-    mount(host, mShouldUsePositionInParent ? positionInParent : index, content, item, node);
+    mount(host, mShouldUsePositionInParent ? positionInParent : index, item, node);
 
     return item;
   }
 
   private static void mount(
-      final ComponentHost host,
-      final int index,
-      final Object content,
-      final MountItem item,
-      final RenderTreeNode node) {
+      final ComponentHost host, final int index, final MountItem item, final RenderTreeNode node) {
     host.mount(index, item, node.getBounds());
   }
 
-  private static void unmount(
-      final ComponentHost host,
-      final int index,
-      final Object content,
-      final MountItem item,
-      final LayoutOutput output) {
+  private static void unmount(final ComponentHost host, final int index, final MountItem item) {
     host.unmount(index, item);
   }
 
@@ -2369,13 +2355,13 @@ class MountState implements MountDelegateTarget {
       }
       if (mShouldUsePositionInParent) {
         final int index = item.getRenderTreeNode().getPositionInParent();
-        unmount(host, index, content, item, output);
+        unmount(host, index, item);
       } else {
 
         // Find the index in the layout state to unmount
         for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
           if (mLayoutOutputsIds[mountIndex] == id) {
-            unmount(host, mountIndex, content, item, output);
+            unmount(host, mountIndex, item);
             break;
           }
         }
@@ -2831,7 +2817,7 @@ class MountState implements MountDelegateTarget {
    *
    * @param layoutState that is going to be mounted.
    */
-  void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  void collectAllTransitions(LayoutState layoutState) {
     assertMainThread();
 
     if (mTransitionsExtension != null) {
