@@ -623,9 +623,7 @@ class MountState implements MountDelegateTarget {
       return true;
     }
 
-    final boolean isLockedForMount = mMountDelegate.maybeLockForMount(renderTreeNode, position);
-
-    return isLockedForMount;
+    return mMountDelegate.maybeLockForMount(renderTreeNode, position);
   }
 
   @Override
@@ -881,10 +879,6 @@ class MountState implements MountDelegateTarget {
     final LithoLayoutData nextLayoutData = (LithoLayoutData) node.getLayoutData();
     final LithoLayoutData currentLayoutData =
         (LithoLayoutData) currentMountItem.getRenderTreeNode().getLayoutData();
-
-    if (layoutOutputComponent == null) {
-      throw new RuntimeException("Trying to update a MountItem with a null Component.");
-    }
 
     if (isTracing) {
       RenderCoreSystrace.beginSection("UpdateItem: " + node.getRenderUnit().getDescription());
@@ -1255,9 +1249,6 @@ class MountState implements MountDelegateTarget {
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
     final Component component = layoutOutput.getComponent();
-    if (component == null) {
-      throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
-    }
 
     final Object content;
     if (component instanceof HostComponent) {
@@ -2374,10 +2365,7 @@ class MountState implements MountDelegateTarget {
 
   @Override
   public void unbindMountItem(MountItem mountItem) {
-    final LayoutOutput output = getLayoutOutput(mountItem);
-
     unbindAndUnmountLifecycle(mountItem);
-
     try {
       getMountData(mountItem)
           .releaseMountContent(mContext.getAndroidContext(), mountItem, "unmountItem", this);
@@ -2474,9 +2462,8 @@ class MountState implements MountDelegateTarget {
     return mountItem.getContent();
   }
 
-  @Nullable
   @Override
-  public Object getContentById(long id) {
+  public @Nullable Object getContentById(long id) {
     if (mIndexToItemMap == null) {
       return null;
     }
@@ -2492,7 +2479,7 @@ class MountState implements MountDelegateTarget {
 
   public void clearLastMountedTree() {
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.clearLastMountedTreeId(mTransitionsExtensionState);
+      TransitionsExtension.clearLastMountedTreeId(mTransitionsExtensionState);
     }
     mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   }
