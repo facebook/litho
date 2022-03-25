@@ -151,8 +151,6 @@ class MountState implements MountDelegateTarget {
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   private @Nullable LayoutState mLayoutState;
   private @Nullable LayoutState mLastMountedLayoutState;
-  private int mLastDisappearRangeStart = -1;
-  private int mLastDisappearRangeEnd = -1;
 
   private final MountItem mRootHostMountItem;
 
@@ -2191,11 +2189,7 @@ class MountState implements MountDelegateTarget {
         + index
         + ", id="
         + id
-        + ", disappearRange=["
-        + mLastDisappearRangeStart
-        + ","
-        + mLastDisappearRangeEnd
-        + "], contentType="
+        + ", contentType="
         + (item.getContent() != null ? item.getContent().getClass() : "<null_content>")
         + ", component="
         + getLayoutOutput(item).getComponent().getSimpleName()
