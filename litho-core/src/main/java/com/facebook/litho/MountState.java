@@ -112,7 +112,6 @@ class MountState implements MountDelegateTarget {
 
   private static final String INVALID_REENTRANT_MOUNTS = "MountState:InvalidReentrantMounts";
   private static final double NS_IN_MS = 1000000.0;
-  private static final Rect sTempRect = new Rect();
 
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
@@ -866,10 +865,6 @@ class MountState implements MountDelegateTarget {
 
   private void registerHost(long id, ComponentHost host) {
     mHostsByMarker.put(id, host);
-  }
-
-  private static int computeRectArea(Rect rect) {
-    return rect.isEmpty() ? 0 : (rect.width() * rect.height());
   }
 
   private boolean updateMountItemIfNeeded(
@@ -2519,10 +2514,6 @@ class MountState implements MountDelegateTarget {
     }
 
     return mountItem.getContent();
-  }
-
-  public androidx.collection.LongSparseArray<MountItem> getIndexToItemMap() {
-    return mIndexToItemMap;
   }
 
   public void clearLastMountedTree() {
