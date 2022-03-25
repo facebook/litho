@@ -313,7 +313,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
         mountUnmountExtensionsForBind,
         mountUnmountExtensionsForUnbind);
 
-    final List<ExtensionState> extensionStatesToUpdate;
+    final @Nullable List<ExtensionState> extensionStatesToUpdate;
 
     if (mountDelegate != null) {
       extensionStatesToUpdate =
@@ -325,7 +325,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
 
     // 2. unbind all attach binders which should update (only if currently attached).
     if (isAttached) {
-      if (mountDelegate != null) {
+      if (mountDelegate != null && extensionStatesToUpdate != null) {
         mountDelegate.onUnbindItemWhichRequiresUpdate(
             extensionStatesToUpdate,
             currentRenderUnit,
@@ -341,7 +341,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     }
 
     // 3. unbind all mount binders which should update.
-    if (mountDelegate != null) {
+    if (mountDelegate != null && extensionStatesToUpdate != null) {
       mountDelegate.onUnmountItemWhichRequiresUpdate(
           extensionStatesToUpdate,
           currentRenderUnit,
@@ -359,7 +359,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     for (Extension extension : mountUnmountExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
-    if (mountDelegate != null) {
+    if (mountDelegate != null && extensionStatesToUpdate != null) {
       mountDelegate.onMountItemWhichRequiresUpdate(
           extensionStatesToUpdate,
           currentRenderUnit,
@@ -373,7 +373,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvid
     for (Extension extension : attachDetachExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
-    if (mountDelegate != null) {
+    if (mountDelegate != null && extensionStatesToUpdate != null) {
       mountDelegate.onBindItemWhichRequiresUpdate(
           extensionStatesToUpdate,
           currentRenderUnit,

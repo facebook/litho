@@ -280,16 +280,20 @@ public class MountDelegate {
    * Collects all the {@link MountExtension} which need a callback to their mount and bind item
    * methods for {@param nextRenderUnit}. This method returns the list of those extensions.
    */
+  @Nullable
   List<ExtensionState> collateExtensionsToUpdate(
       final @Nullable RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData) {
-    final List<ExtensionState> extensionStatesToUpdate = new ArrayList<>(mExtensionStates.size());
+    List<ExtensionState> extensionStatesToUpdate = null;
     for (int i = 0, size = mExtensionStates.size(); i < size; i++) {
       final ExtensionState state = mExtensionStates.get(i);
       if (state.shouldUpdateItem(
           previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
+        if (extensionStatesToUpdate == null) {
+          extensionStatesToUpdate = new ArrayList<>(mExtensionStates.size());
+        }
         extensionStatesToUpdate.add(state);
       }
     }
