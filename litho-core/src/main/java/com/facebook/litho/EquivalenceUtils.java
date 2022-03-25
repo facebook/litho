@@ -26,7 +26,8 @@ public class EquivalenceUtils {
 
   /** Return true if two objects are equivalent. */
   @SuppressWarnings("unchecked")
-  public static boolean areObjectsEquivalent(@Nullable Object val1, @Nullable Object val2) {
+  public static boolean areObjectsEquivalent(
+      @Nullable Object val1, @Nullable Object val2, boolean shouldCompareCommonProps) {
     if (val1 == val2) {
       return true;
     }
@@ -38,6 +39,8 @@ public class EquivalenceUtils {
       return Float.compare((Float) val1, (Float) val2) == 0;
     } else if (val1 instanceof Double) {
       return Double.compare((Double) val1, (Double) val2) == 0;
+    } else if (val1 instanceof Component) {
+      return ((Component) val1).isEquivalentTo((Component) val2, shouldCompareCommonProps);
     } else if (val1 instanceof Equivalence) {
       return ((Equivalence) val1).isEquivalentTo(val2);
     } else if (val1.getClass().isArray()) {
@@ -60,7 +63,8 @@ public class EquivalenceUtils {
    * TODO(T69494307): Don't delete this method, it's going to replace {@code
    * ComponentUtils.areArraysEquals(Class<?>, Object, Object)}
    */
-  private static boolean areArraysEquivalent(Object val1, Object val2) {
+  private static boolean areArraysEquivalent(
+      Object val1, Object val2, boolean shouldCompareCommonProps) {
     if (val1 instanceof byte[]) {
       return Arrays.equals((byte[]) val1, (byte[]) val2);
     } else if (val1 instanceof short[]) {
@@ -86,7 +90,7 @@ public class EquivalenceUtils {
       }
 
       for (int i = 0, size = array1.length; i < size; i++) {
-        if (!areObjectsEquivalent(array1[i], array2[i])) {
+        if (!areObjectsEquivalent(array1[i], array2[i], shouldCompareCommonProps)) {
           return false;
         }
       }
@@ -98,7 +102,8 @@ public class EquivalenceUtils {
    * TODO(T69494307): Don't delete this method, it's going to replace {@code
    * ComponentUtils.areCollectionsEquals(Type, Collection, Collection)}
    */
-  private static boolean areCollectionsEquivalent(Collection collection1, Collection collection2) {
+  private static boolean areCollectionsEquivalent(
+      Collection collection1, Collection collection2, boolean shouldCompareCommonProps) {
     if (collection1.size() != collection2.size()) {
       return false;
     }
@@ -109,7 +114,7 @@ public class EquivalenceUtils {
     while (iterator1.hasNext()) {
       final Object elem1 = iterator1.next();
       final Object elem2 = iterator2.next();
-      if (!areObjectsEquivalent(elem1, elem2)) {
+      if (!areObjectsEquivalent(elem1, elem2, shouldCompareCommonProps)) {
         return false;
       }
     }

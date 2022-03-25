@@ -16,14 +16,18 @@
 
 package com.facebook.litho.widget.collection
 
+import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,12 +40,19 @@ class CollectionChildEquivalenceTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
+  private lateinit var lazyList: LazyCollection
+
+  @Before
+  fun before() {
+    with(ComponentScope(lithoViewRule.context)) { lazyList = LazyList {} as LazyCollection }
+  }
+
   @Test
   fun `test children with null fields are equivalent`() {
     val next = CollectionChild("", null)
     val previous = CollectionChild("", null)
 
-    assertThat(isChildEquivalent(previous, next)).isTrue
+    assertThat(lazyList.isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
@@ -49,7 +60,7 @@ class CollectionChildEquivalenceTest {
     val next = CollectionChild("", null, deps = arrayOf("A"))
     val previous = CollectionChild("", null, deps = arrayOf("A"))
 
-    assertThat(isChildEquivalent(previous, next)).isTrue
+    assertThat(lazyList.isChildEquivalent(previous, next)).isTrue
   }
 
   @Test
@@ -57,38 +68,124 @@ class CollectionChildEquivalenceTest {
     val next = CollectionChild("", null, deps = arrayOf("A"))
     val previous = CollectionChild("", null, deps = arrayOf("B"))
 
-    assertThat(isChildEquivalent(previous, next)).isFalse
+    assertThat(lazyList.isChildEquivalent(previous, next)).isFalse
   }
 
   @Test
-  fun `test isChildEquivalent checks props and common props`() {
+  fun `test isChildEquivalent checks props`() {
     with(ComponentScope(lithoViewRule.context)) {
       assertThat(
-              isChildEquivalent(
+              lazyList.isChildEquivalent(
                   CollectionChild("", Text("Test")),
                   CollectionChild("", Text("Test")),
               ))
           .isTrue
 
       assertThat(
-              isChildEquivalent(
+              lazyList.isChildEquivalent(
                   CollectionChild("", Text("Test")),
                   CollectionChild("", Text("Production")),
               ))
           .isFalse
+    }
+  }
 
+  @Test
+  fun `test isChildEquivalent checks nested props`() {
+    with(ComponentScope(lithoViewRule.context)) {
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild("", Row { child(Text("Test")) }),
+                  CollectionChild("", Row { child(Text("Test")) }),
+              ))
+          .isTrue
+
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild("", Row { child(Text("Test")) }),
+                  CollectionChild("", Row { child(Text("Production")) }),
+              ))
+          .isFalse
+    }
+  }
+
+  @Test
+  fun `test isChildEquivalent checks lambdas`() {
+    with(ComponentScope(lithoViewRule.context)) {
       val onClick = { _: ClickEvent -> }
       assertThat(
-              isChildEquivalent(
+              lazyList.isChildEquivalent(
                   CollectionChild("", Text("Test", style = Style.onClick(onClick))),
                   CollectionChild("", Text("Test", style = Style.onClick(onClick))),
               ))
           .isTrue
 
       assertThat(
-              isChildEquivalent(
+              lazyList.isChildEquivalent(
                   CollectionChild("", Text("", style = Style.onClick {})),
                   CollectionChild("", Text("", style = Style.onClick {})),
+              ))
+          .isFalse
+    }
+  }
+
+  @Test
+  fun `test isChildEquivalent checks nested lambdas`() {
+    with(ComponentScope(lithoViewRule.context)) {
+      val onClick = { _: ClickEvent -> }
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild("", Row { child(Text("Test", style = Style.onClick(onClick))) }),
+                  CollectionChild("", Row { child(Text("Test", style = Style.onClick(onClick))) }),
+              ))
+          .isTrue
+
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild("", Row { child(Text("Test", style = Style.onClick {})) }),
+                  CollectionChild("", Row { child(Text("Test", style = Style.onClick {})) }),
+              ))
+          .isFalse
+    }
+  }
+
+  @Test
+  fun `test isChildEquivalent checks common props`() {
+    with(ComponentScope(lithoViewRule.context)) {
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild("", Text("Test", style = Style.backgroundColor(Color.RED))),
+                  CollectionChild("", Text("Test", style = Style.backgroundColor(Color.RED))),
+              ))
+          .isTrue
+
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild("", Text("Test", style = Style.backgroundColor(Color.RED))),
+                  CollectionChild("", Text("Test", style = Style.backgroundColor(Color.BLUE))),
+              ))
+          .isFalse
+    }
+  }
+
+  @Test
+  fun `test isChildEquivalent checks nested common props`() {
+    with(ComponentScope(lithoViewRule.context)) {
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild(
+                      "", Row { child(Text("Test", style = Style.backgroundColor(Color.RED))) }),
+                  CollectionChild(
+                      "", Row { child(Text("Test", style = Style.backgroundColor(Color.RED))) }),
+              ))
+          .isTrue
+
+      assertThat(
+              lazyList.isChildEquivalent(
+                  CollectionChild(
+                      "", Row { child(Text("Test", style = Style.backgroundColor(Color.RED))) }),
+                  CollectionChild(
+                      "", Row { child(Text("Test", style = Style.backgroundColor(Color.BLUE))) }),
               ))
           .isFalse
     }

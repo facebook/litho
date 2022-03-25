@@ -61,7 +61,7 @@ public final class Wrapper extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentProps(Component other) {
+  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     if (this == other) {
       return true;
     }
@@ -72,7 +72,9 @@ public final class Wrapper extends SpecGeneratedComponent {
     if (this.getId() == wrapper.getId()) {
       return true;
     }
-    if (delegate != null ? !delegate.isEquivalentTo(wrapper.delegate) : wrapper.delegate != null) {
+    if (delegate != null
+        ? !delegate.isEquivalentTo(wrapper.delegate, shouldCompareCommonProps)
+        : wrapper.delegate != null) {
       return false;
     }
     return true;

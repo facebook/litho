@@ -439,7 +439,8 @@ public class ComponentBodyGeneratorTest {
                 .toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public boolean isEquivalentProps(com.facebook.litho.Component other) {\n"
+                + "public boolean isEquivalentProps(com.facebook.litho.Component other,\n"
+                + "    boolean shouldCompareCommonProps) {\n"
                 + "  if (this == other) {\n"
                 + "    return true;\n"
                 + "  }\n"

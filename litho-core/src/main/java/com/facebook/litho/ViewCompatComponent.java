@@ -61,7 +61,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  public boolean isEquivalentProps(Component other) {
+  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     return this == other;
   }
 

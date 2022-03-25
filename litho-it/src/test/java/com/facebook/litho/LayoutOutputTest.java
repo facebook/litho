@@ -39,7 +39,7 @@ public class LayoutOutputTest {
   private static class TestComponent extends Component {
 
     @Override
-    public boolean isEquivalentProps(Component other) {
+    public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
       return this == other;
     }
   }

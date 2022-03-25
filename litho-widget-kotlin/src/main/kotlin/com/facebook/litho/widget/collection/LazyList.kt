@@ -64,6 +64,7 @@ inline fun ResourcesScope.LazyList(
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
+    childEquivalenceIncludesCommonProps: Boolean = true,
     noinline init: CollectionContainerScope.() -> Unit
 ): Component =
     LazyCollection(
@@ -104,4 +105,5 @@ inline fun ResourcesScope.LazyList(
         onScrollListeners,
         lazyCollectionController,
         onDataRendered,
+        childEquivalenceIncludesCommonProps,
         init)

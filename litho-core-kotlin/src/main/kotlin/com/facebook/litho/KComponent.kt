@@ -45,7 +45,10 @@ abstract class KComponent : Component() {
    * Compare this component to a different one to check if they are equivalent. This is used to be
    * able to skip rendering a component again.
    */
-  final override fun isEquivalentProps(other: Component?): Boolean {
+  final override fun isEquivalentProps(
+      other: Component?,
+      shouldCompareCommonProps: Boolean
+  ): Boolean {
     if (this === other) {
       return true
     }
@@ -55,7 +58,7 @@ abstract class KComponent : Component() {
     if (id == other.id) {
       return true
     }
-    if (!hasEquivalentFields(other as KComponent)) {
+    if (!hasEquivalentFields(other as KComponent, shouldCompareCommonProps)) {
       return false
     }
 
@@ -63,7 +66,7 @@ abstract class KComponent : Component() {
   }
 
   /** Compare all private final fields in the components. */
-  private fun hasEquivalentFields(other: KComponent): Boolean {
+  private fun hasEquivalentFields(other: KComponent, shouldCompareCommonProps: Boolean): Boolean {
     for (field in javaClass.declaredFields) {
       val wasAccessible = field.isAccessible
       if (!wasAccessible) {
@@ -75,7 +78,7 @@ abstract class KComponent : Component() {
         field.isAccessible = false
       }
 
-      if (!EquivalenceUtils.areObjectsEquivalent(field1, field2)) {
+      if (!EquivalenceUtils.areObjectsEquivalent(field1, field2, shouldCompareCommonProps)) {
         return false
       }
     }

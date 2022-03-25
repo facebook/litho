@@ -264,9 +264,9 @@ public class ComponentsConfiguration {
 
   public static boolean applyStateUpdateEarly = false;
 
-  public static boolean shouldCompareCommonPropsInIsEquivalentTo = true;
+  public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 
-  public static boolean shouldCompareRootCommonPropsInSingleComponentSection = true;
+  public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;
 
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 

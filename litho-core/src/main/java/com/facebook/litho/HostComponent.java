@@ -111,7 +111,7 @@ class HostComponent extends Component {
   }
 
   @Override
-  public boolean isEquivalentProps(@Nullable Component other) {
+  public boolean isEquivalentProps(@Nullable Component other, boolean shouldCompareCommonProps) {
     return this == other;
   }
 

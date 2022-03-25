@@ -137,7 +137,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     }
 
     @Override
-    public boolean isEquivalentProps(Component other) {
+    public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
       return EmptyComponent.this == other
           || (other != null && EmptyComponent.this.getClass() == other.getClass());
     }

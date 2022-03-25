@@ -48,7 +48,7 @@ class StateUpdateTestComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  public boolean isEquivalentProps(Component other) {
+  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     return this == other;
   }
 

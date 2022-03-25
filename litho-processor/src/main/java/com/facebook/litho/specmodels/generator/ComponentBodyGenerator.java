@@ -601,6 +601,7 @@ public class ComponentBodyGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
             .addParameter(specModel.getComponentClass(), "other")
+            .addParameter(TypeName.BOOLEAN, "shouldCompareCommonProps")
             .beginControlFlow("if (this == other)")
             .addStatement("return true")
             .endControlFlow()

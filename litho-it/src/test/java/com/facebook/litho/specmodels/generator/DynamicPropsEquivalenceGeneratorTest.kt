@@ -66,7 +66,8 @@ class DynamicPropsEquivalenceGeneratorTest {
         .isEqualTo(
             """
             @java.lang.Override
-            public boolean isEquivalentProps(com.facebook.litho.Component other) {
+            public boolean isEquivalentProps(com.facebook.litho.Component other,
+                boolean shouldCompareCommonProps) {
               if (this == other) {
                 return true;
               }

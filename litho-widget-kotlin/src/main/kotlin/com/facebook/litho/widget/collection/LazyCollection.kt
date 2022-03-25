@@ -88,6 +88,7 @@ class LazyCollection(
     private val onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     private val lazyCollectionController: LazyCollectionController? = null,
     private val onDataRendered: OnDataRendered? = null,
+    private val childEquivalenceIncludesCommonProps: Boolean = true,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -194,6 +195,57 @@ class LazyCollection(
         .kotlinStyle(style)
         .build()
   }
+
+  private fun createDataDiffSection(
+      sectionContext: SectionContext,
+      children: List<CollectionChild>
+  ): Section {
+    return DataDiffSection.create<CollectionChild>(sectionContext)
+        .data(children)
+        .renderEventHandler(
+            eventHandlerWithReturn { renderEvent ->
+              val item = renderEvent.model
+              val component =
+                  item.component
+                      ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
+              ComponentRenderInfo.create()
+                  .apply {
+                    if (item.isSticky) {
+                      isSticky(item.isSticky)
+                    }
+                    if (item.isFullSpan) {
+                      isFullSpan(item.isFullSpan)
+                    }
+                    item.spanSize?.let { spanSize(it) }
+                    customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
+                  }
+                  .component(component)
+                  .build()
+            })
+        .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
+        .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isChildEquivalent))
+        .build()
+  }
+
+  private fun isSameID(event: OnCheckIsSameItemEvent<CollectionChild>): Boolean {
+    return event.previousItem.id == event.nextItem.id
+  }
+
+  private fun componentsEquivalent(first: Component?, second: Component?): Boolean {
+    if (first == null && second == null) return true
+    return first?.isEquivalentTo(second, childEquivalenceIncludesCommonProps) == true
+  }
+
+  private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionChild>): Boolean =
+      isChildEquivalent(event.previousItem, event.nextItem)
+
+  fun isChildEquivalent(previous: CollectionChild, next: CollectionChild): Boolean {
+    if (previous.deps != null || next.deps != null) {
+      return previous.deps?.contentDeepEquals(next.deps) == true
+    }
+
+    return componentsEquivalent(previous.component, next.component)
+  }
 }
 
 /**
@@ -223,55 +275,4 @@ private class ChildVisibilityTracker {
 
     previouslyVisibleIds = visibleIds
   }
-}
-
-private fun createDataDiffSection(
-    sectionContext: SectionContext,
-    children: List<CollectionChild>
-): Section {
-  return DataDiffSection.create<CollectionChild>(sectionContext)
-      .data(children)
-      .renderEventHandler(
-          eventHandlerWithReturn { renderEvent ->
-            val item = renderEvent.model
-            val component =
-                item.component
-                    ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
-            ComponentRenderInfo.create()
-                .apply {
-                  if (item.isSticky) {
-                    isSticky(item.isSticky)
-                  }
-                  if (item.isFullSpan) {
-                    isFullSpan(item.isFullSpan)
-                  }
-                  item.spanSize?.let { spanSize(it) }
-                  customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
-                }
-                .component(component)
-                .build()
-          })
-      .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
-      .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isChildEquivalent))
-      .build()
-}
-
-private fun isSameID(event: OnCheckIsSameItemEvent<CollectionChild>): Boolean {
-  return event.previousItem.id == event.nextItem.id
-}
-
-private fun componentsEquivalent(first: Component?, second: Component?): Boolean {
-  if (first == null && second == null) return true
-  return first?.isEquivalentTo(second) == true
-}
-
-private fun isChildEquivalent(event: OnCheckIsSameContentEvent<CollectionChild>): Boolean =
-    isChildEquivalent(event.previousItem, event.nextItem)
-
-fun isChildEquivalent(previous: CollectionChild, next: CollectionChild): Boolean {
-  if (previous.deps != null || next.deps != null) {
-    return previous.deps?.contentDeepEquals(next.deps) == true
-  }
-
-  return componentsEquivalent(previous.component, next.component)
 }

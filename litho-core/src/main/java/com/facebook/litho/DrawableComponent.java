@@ -95,7 +95,7 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  public boolean isEquivalentProps(@Nullable Component o) {
+  public boolean isEquivalentProps(@Nullable Component o, boolean shouldCompareCommonProps) {
     if (this == o) {
       return true;
     }

@@ -335,7 +335,7 @@ public abstract class Section extends SectionLifecycle
     return mSimpleName;
   }
 
-  protected boolean isEquivalentProps(Section other) {
+  protected boolean isEquivalentProps(Section other, boolean shouldCompareCommonProps) {
     return this.equals(other);
   }
 
@@ -351,7 +351,7 @@ public abstract class Section extends SectionLifecycle
    */
   @Override
   public boolean isEquivalentTo(Section other) {
-    return isEquivalentProps(other);
+    return isEquivalentProps(other, false);
   }
 
   @Nullable

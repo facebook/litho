@@ -63,6 +63,7 @@ inline fun ResourcesScope.LazyGrid(
     rangeRatio: Float? = null,
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
+    childEquivalenceIncludesCommonProps: Boolean = true,
     noinline init: CollectionContainerScope.() -> Unit
 ): Component =
     LazyCollection(
@@ -102,4 +103,5 @@ inline fun ResourcesScope.LazyGrid(
         onScrollListeners,
         lazyCollectionController,
         onDataRendered,
+        childEquivalenceIncludesCommonProps,
         init)

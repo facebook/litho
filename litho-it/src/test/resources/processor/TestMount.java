@@ -137,7 +137,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  public boolean isEquivalentProps(Component other) {
+  public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
     if (this == other) {
       return true;
     }
