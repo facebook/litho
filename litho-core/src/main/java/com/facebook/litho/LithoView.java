@@ -1713,12 +1713,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
               currentVisibleArea, isMountStateDirty());
         }
       } else {
-        mMountState.processVisibilityOutputs(
-            layoutState,
-            currentVisibleArea,
-            mPreviousMountVisibleRectBounds,
-            isMountStateDirty(),
-            null);
+        mMountState.processVisibilityOutputs(currentVisibleArea, isMountStateDirty());
       }
 
       mPreviousMountVisibleRectBounds.set(currentVisibleArea);

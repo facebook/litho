@@ -387,9 +387,7 @@ class MountState implements MountDelegateTarget {
                     currentMountItem,
                     useUpdateValueFromLayoutOutput,
                     isIncrementalMountEnabled,
-                    processVisibilityOutputs,
-                    componentTreeId,
-                    i);
+                    processVisibilityOutputs);
             if (mMountStats.isLoggingEnabled) {
               if (itemUpdated) {
                 mMountStats.updatedNames.add(component.getSimpleName());
@@ -432,8 +430,7 @@ class MountState implements MountDelegateTarget {
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
       }
-      processVisibilityOutputs(
-          layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
+      processVisibilityOutputs(localVisibleRect, mIsDirty);
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
       }
@@ -581,9 +578,7 @@ class MountState implements MountDelegateTarget {
                 currentMountItem,
                 useUpdateValueFromLayoutOutput,
                 isIncrementalMountEnabled,
-                true,
-                componentTreeId,
-                i);
+                true);
 
         if (mMountStats.isLoggingEnabled) {
           if (itemUpdated) {
@@ -712,12 +707,7 @@ class MountState implements MountDelegateTarget {
     logger.logPerfEvent(mountPerfEvent);
   }
 
-  void processVisibilityOutputs(
-      LayoutState layoutState,
-      @Nullable Rect localVisibleRect,
-      Rect previousLocalVisibleRect,
-      boolean isDirty,
-      @Nullable PerfEvent mountPerfEvent) {
+  void processVisibilityOutputs(@Nullable Rect localVisibleRect, boolean isDirty) {
     if (mVisibilityExtension == null) {
       return;
     }
@@ -872,9 +862,7 @@ class MountState implements MountDelegateTarget {
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
       boolean isIncrementalMountEnabled,
-      boolean processVisibilityOutputs,
-      int componentTreeId,
-      int index) {
+      boolean processVisibilityOutputs) {
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
 
