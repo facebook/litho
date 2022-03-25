@@ -1909,7 +1909,7 @@ class MountState implements MountDelegateTarget {
     ViewCompat.setTransitionName(view, transitionName);
   }
 
-  private static void setClickable(View view, @NodeInfo.FocusState int clickableState) {
+  private static void setClickable(View view, @NodeInfo.ClickableState int clickableState) {
     if (clickableState == NodeInfo.CLICKABLE_SET_TRUE) {
       view.setClickable(true);
     } else if (clickableState == NodeInfo.CLICKABLE_SET_FALSE) {
