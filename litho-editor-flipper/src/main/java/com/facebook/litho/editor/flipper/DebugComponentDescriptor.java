@@ -21,6 +21,8 @@ import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Enum;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Number;
 import static com.facebook.flipper.plugins.inspector.InspectorValue.Type.Picker;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -557,6 +559,23 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     final Rect contentBounds = node.getBoundsInLithoView();
     HighlightedOverlay.setHighlighted(lithoView, margin, padding, contentBounds, isAlignmentMode);
+  }
+
+  @Override
+  public @Nullable Bitmap getSnapshot(DebugComponent node, boolean includeChildren)
+      throws Exception {
+    final LithoView lithoView = node.getLithoView();
+    if (lithoView == null) {
+      return null;
+    }
+
+    final Rect contentBounds = node.getBoundsInLithoView();
+    Bitmap bitmap =
+        Bitmap.createBitmap(contentBounds.width(), contentBounds.height(), Bitmap.Config.ARGB_8888);
+
+    Canvas c = new Canvas(bitmap);
+    lithoView.draw(c);
+    return bitmap;
   }
 
   @Override

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor.flipper;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,6 +153,11 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
         descriptor.setHighlighted(child, selected, isAlignmentMode);
       }
     }
+  }
+
+  @Override
+  public @Nullable Bitmap getSnapshot(DebugSection node, boolean includeChildren) throws Exception {
+    return null;
   }
 
   // This is similar to the implementation in ViewDescriptor but doesn't

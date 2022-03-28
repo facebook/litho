@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor.flipper;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.flipper.core.FlipperDynamic;
@@ -166,6 +167,16 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerVie
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.setHighlighted(node, selected, isAlignmentMode);
+  }
+
+  @Override
+  public @Nullable Bitmap getSnapshot(LithoRecyclerView node, boolean includeChildren)
+      throws Exception {
+    final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
+    if (descriptor == null) {
+      return null;
+    }
+    return descriptor.getSnapshot(node, includeChildren);
   }
 
   @Override
