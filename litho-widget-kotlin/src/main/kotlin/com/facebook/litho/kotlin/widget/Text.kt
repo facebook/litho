@@ -54,6 +54,7 @@ inline fun ResourcesScope.Text(
     isSingleLine: Boolean = false,
     ellipsize: TextUtils.TruncateAt? = null,
     lineSpacingMultiplier: Float = 1f,
+    lineHeight: Dimen? = null,
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = true,
@@ -80,6 +81,7 @@ inline fun ResourcesScope.Text(
         .isSingleLine(isSingleLine)
         .minLines(minLines)
         .maxLines(maxLines)
+        .apply { lineHeight?.let { lineHeightPx(it.toPixels().toFloat()) } }
         .shouldIncludeFontPadding(includeFontPadding)
         .accessibleClickableSpans(accessibleClickableSpans)
         .clipToBounds(clipToBounds)
