@@ -231,8 +231,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   /**
    * Creates a new LithoView and sets a new ComponentTree on it. The ComponentTree is subscribed to
    * the given LithoLifecycleProvider instance.
-   *
-   * @return
    */
   public static LithoView create(
       ComponentContext context,
@@ -240,6 +238,22 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       @Nullable LithoLifecycleProvider lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
     lithoView.setComponentTree(ComponentTree.create(context, component, lifecycleProvider).build());
+    return lithoView;
+  }
+
+  /**
+   * Create a new {@link LithoView} instance and initialize it with a custom {@link ComponentTree}.
+   */
+  public static LithoView create(Context context, ComponentTree componentTree) {
+    return create(new ComponentContext(context), componentTree);
+  }
+
+  /**
+   * Create a new {@link LithoView} instance and initialize it with a custom {@link ComponentTree}.
+   */
+  public static LithoView create(ComponentContext context, ComponentTree componentTree) {
+    final LithoView lithoView = new LithoView(context);
+    lithoView.setComponentTree(componentTree);
     return lithoView;
   }
 
