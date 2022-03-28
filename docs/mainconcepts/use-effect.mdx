@@ -79,3 +79,11 @@ An important functionality that `useEffect` adds is the ability to trigger code 
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
 ```
+
+## Known Problems
+
+### `useEffect` in Components that can return null from `render`
+
+If you specify an effect via `useEffect` and then return null from `render` - or render to a child which returns null from render - the effect won't run.
+
+Until this is fixed, the workaround is to return an empty `Row()` from render instead of null.
