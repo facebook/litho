@@ -16,7 +16,12 @@
 
 package com.facebook.litho
 
-/** Experimental. Currently for Litho team internal use only. */
+/**
+ * <p>Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec
+ * APIs. All Kotlin mountable components must extend this class.</p>
+ *
+ * <p>Experimental. Currently for Litho team internal use only.</p>
+ */
 abstract class MountableComponent(open val style: Style? = null) : Component() {
 
   final override fun prepare(c: ComponentContext): PrepareResult {
@@ -26,6 +31,7 @@ abstract class MountableComponent(open val style: Style? = null) : Component() {
     return PrepareResult(mountable, componentScope.transitions, componentScope.useEffectEntries)
   }
 
+  /** This function must return [Mountable] which are immutable. */
   abstract fun ComponentScope.render(): Mountable<*>
 
   final override fun getMountType(): MountType = MountType.MOUNTABLE

@@ -19,13 +19,30 @@ package com.facebook.litho
 import android.content.Context
 import com.facebook.rendercore.RenderUnit
 
-/** Experimental. Currently for Litho team internal use only. */
+/**
+ * This is a simplified implementation of a [Mountable] which requires only one [Binder]. Must be
+ * immutable, and not cause side effects.
+ *
+ * <p>Experimental. Currently for Litho team internal use only.</p>
+ */
 abstract class SimpleMountable<ContentT> : Mountable<ContentT> {
 
+  /**
+   * Called just before mounting the content. Use it to set properties on the content. This method
+   * is always called from the main thread.
+   */
   abstract fun mount(c: Context?, content: ContentT, layoutData: Any?)
 
+  /**
+   * Called just after unmounting the content. Use it to unset properties on the content. This
+   * method is always called from the main thread.
+   */
   abstract fun unmount(c: Context?, content: ContentT, layoutData: Any?)
 
+  /**
+   * Called to check if properties need to be reset. This is expected to be done by invoking
+   * [unmount] and then [mount] if this function returns true.
+   */
   abstract fun shouldUpdate(
       currentMountable: SimpleMountable<ContentT>,
       newMountable: SimpleMountable<ContentT>,
