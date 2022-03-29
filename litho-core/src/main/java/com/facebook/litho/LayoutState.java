@@ -620,7 +620,7 @@ public class LayoutState
     // set on the LayoutResult if measure was not called for it. This
     // will ensure layout diffing works in subsequent layouts for these
     // results.
-    if (!result.wasMeasured()) {
+    if (ComponentsConfiguration.alwaysWriteDiffNodes && !result.wasMeasured()) {
       final int widthSpec = exactly(result.getWidth());
       final int heightSpec = exactly(result.getHeight());
       result.setLastWidthSpec(widthSpec);

@@ -622,6 +622,9 @@ public class MountSpecLifecycleTest {
 
   @Test
   public void lifecycle_onComponentWithExactSize_shouldStoreMeasurementsInDiffNode() {
+    final boolean original = ComponentsConfiguration.alwaysWriteDiffNodes;
+    ComponentsConfiguration.alwaysWriteDiffNodes = true;
+
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
 
     mLegacyLithoViewRule
@@ -642,5 +645,7 @@ public class MountSpecLifecycleTest {
     assertThat(node.getLastHeightSpec()).isEqualTo(exactly(600));
     assertThat(node.getLastMeasuredWidth()).isEqualTo(800);
     assertThat(node.getLastMeasuredHeight()).isEqualTo(600);
+
+    ComponentsConfiguration.alwaysWriteDiffNodes = original;
   }
 }
