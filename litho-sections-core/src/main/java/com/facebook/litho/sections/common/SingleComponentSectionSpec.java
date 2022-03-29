@@ -95,7 +95,7 @@ public class SingleComponentSectionSpec {
       isNextFullSpan = isFullSpan.getNext();
     }
 
-    if (prevComponent == null && nextComponent != null) {
+    if (prevComponent == null) {
       changeSet.insert(
           0,
           addCustomAttributes(
