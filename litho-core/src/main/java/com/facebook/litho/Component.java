@@ -171,7 +171,13 @@ public abstract class Component
 
   @Override
   public Object createPoolableContent(Context context) {
-    return createMountContent(context);
+    final Object content = createMountContent(context);
+    if (content == null) {
+      throw new RuntimeException(
+          "Component created null mount content, but mount content must never be null! Component: "
+              + getSimpleName());
+    }
+    return content;
   }
 
   @Override
