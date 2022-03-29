@@ -602,11 +602,13 @@ public class LayoutState
       return;
     }
 
+    final ScopedComponentInfo tail = node.getTailScopedComponentInfo();
+    final ComponentContext context = tail.getContext();
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
     final DiffNode diffNode;
 
     if (shouldGenerateDiffTree) {
-      diffNode = createDiffNode(result, node, parentDiffNode);
+      diffNode = createDiffNode(tail, parentDiffNode);
       if (parentDiffNode == null) {
         layoutState.mDiffTreeRoot = diffNode;
       }
@@ -674,8 +676,6 @@ public class LayoutState
       }
     }
 
-    final ComponentContext scopedContext = node.getTailComponentContext();
-
     // Generate the RenderTreeNode for the given node.
     final @Nullable RenderTreeNode contentRenderTreeNode =
         createContentRenderTreeNode(result, node, layoutState, parent);
@@ -696,10 +696,10 @@ public class LayoutState
       try {
         if (isMountSpec(component) && !isMountable(component)) {
           component.onBoundsDefined(
-              scopedContext, result, (InterStagePropsContainer) layoutData.mLayoutData);
+              context, result, (InterStagePropsContainer) layoutData.mLayoutData);
         }
       } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(scopedContext, component, e);
+        ComponentUtils.handleWithHierarchy(context, component, e);
       } finally {
         if (isTracing) {
           ComponentsSystrace.endSection();
@@ -725,7 +725,7 @@ public class LayoutState
     }
 
     // 4. Extract the Transitions.
-    if (Layout.areTransitionsEnabled(scopedContext)) {
+    if (Layout.areTransitionsEnabled(context)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -761,8 +761,7 @@ public class LayoutState
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = result.getChildCount(); i < size; i++) {
       final LithoLayoutResult child = result.getChildAt(i);
-      collectResults(
-          scopedContext, child, child.getNode(), layoutState, parent, diffNode, hierarchy);
+      collectResults(context, child, child.getNode(), layoutState, parent, diffNode, hierarchy);
     }
 
     layoutState.mCurrentX -= result.getX();
@@ -804,6 +803,14 @@ public class LayoutState
           diffNode.setForegroundOutput((LithoRenderUnit) foregroundRenderTreeNode.getRenderUnit());
         }
       }
+    }
+
+    if (diffNode != null) {
+      diffNode.setLastWidthSpec(result.getLastWidthSpec());
+      diffNode.setLastHeightSpec(result.getLastHeightSpec());
+      diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
+      diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
+      diffNode.setLayoutData(result.getLayoutData());
     }
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
@@ -1672,17 +1679,9 @@ public class LayoutState
     mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 
-  static DiffNode createDiffNode(
-      final LithoLayoutResult result, final LithoNode node, final @Nullable DiffNode parent) {
+  static DiffNode createDiffNode(final ScopedComponentInfo tail, final @Nullable DiffNode parent) {
     final DiffNode diffNode = new DefaultDiffNode();
-    final Component tail = node.getTailComponent();
-    final String key = node.getTailComponentKey();
-    diffNode.setLastWidthSpec(result.getLastWidthSpec());
-    diffNode.setLastHeightSpec(result.getLastHeightSpec());
-    diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
-    diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
-    diffNode.setComponent(tail, key, node.getTailScopedComponentInfo());
-    diffNode.setLayoutData(result.getLayoutData());
+    diffNode.setComponent(tail.getComponent(), tail.getContext().getGlobalKey(), tail);
     if (parent != null) {
       parent.addChild(diffNode);
     }
