@@ -616,6 +616,19 @@ public class LayoutState
       diffNode = null;
     }
 
+    // The last measured specs, and measurements need to be explicitly
+    // set on the LayoutResult if measure was not called for it. This
+    // will ensure layout diffing works in subsequent layouts for these
+    // results.
+    if (!result.wasMeasured()) {
+      final int widthSpec = exactly(result.getWidth());
+      final int heightSpec = exactly(result.getHeight());
+      result.setLastWidthSpec(widthSpec);
+      result.setLastHeightSpec(heightSpec);
+      result.setLastMeasuredWidth(result.getWidth());
+      result.setLastMeasuredHeight(result.getHeight());
+    }
+
     final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit();
     final boolean needsHostView = hostRenderUnit != null;
 

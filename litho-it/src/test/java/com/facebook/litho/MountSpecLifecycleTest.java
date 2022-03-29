@@ -619,4 +619,28 @@ public class MountSpecLifecycleTest {
 
     mLegacyLithoViewRule.getLithoView().unmountAllItems();
   }
+
+  @Test
+  public void lifecycle_onComponentWithExactSize_shouldStoreMeasurementsInDiffNode() {
+    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+
+    mLegacyLithoViewRule
+        .attachToWindow()
+        .setRoot(
+            MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
+                .lifecycleTracker(lifecycleTracker)
+                .widthPx(800)
+                .heightPx(600)
+                .build())
+        .measure()
+        .layout();
+
+    final DiffNode node = mLegacyLithoViewRule.getCommittedLayoutState().getDiffTree();
+
+    assertThat(node).isNotNull();
+    assertThat(node.getLastWidthSpec()).isEqualTo(exactly(800));
+    assertThat(node.getLastHeightSpec()).isEqualTo(exactly(600));
+    assertThat(node.getLastMeasuredWidth()).isEqualTo(800);
+    assertThat(node.getLastMeasuredHeight()).isEqualTo(600);
+  }
 }
