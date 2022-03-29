@@ -2025,7 +2025,8 @@ public class ComponentTree implements LithoLifecycleListener {
    *     table for initial states so that we can guarantee that onCreateInitialState doesn't get
    *     called multiple times for the same Component.
    */
-  InitialStateContainer getInitialStateContainer() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public InitialStateContainer getInitialStateContainer() {
     return mInitialStateContainer;
   }
 

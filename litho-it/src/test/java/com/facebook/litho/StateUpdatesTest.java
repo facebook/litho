@@ -150,6 +150,7 @@ public class StateUpdatesTest {
     assertThat(previousStateContainer).isNotNull();
     assertThat(previousStateContainer.mCount)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
+    assertThat(mComponentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
   }
 
   @Test

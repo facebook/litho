@@ -42,7 +42,8 @@ public class InitialStateContainer {
   // map as we can access it from multiple threads. The safety is given by the fact that we will
   // only get and set for a key while holding a lock for that specific key.
   @VisibleForTesting
-  final Map<String, StateContainer> mInitialStates = Collections.synchronizedMap(new HashMap<>());
+  public final Map<String, StateContainer> mInitialStates =
+      Collections.synchronizedMap(new HashMap<>());
 
   @GuardedBy("this")
   private final Map<String, Object> mCreateInitialStateLocks = new HashMap<>();
