@@ -42,8 +42,7 @@ public class InitialStateContainer {
   // map as we can access it from multiple threads. The safety is given by the fact that we will
   // only get and set for a key while holding a lock for that specific key.
   @VisibleForTesting
-  final Map<String, StateContainer> mInitialStates =
-      Collections.synchronizedMap(new HashMap<String, StateContainer>());
+  final Map<String, StateContainer> mInitialStates = Collections.synchronizedMap(new HashMap<>());
 
   @GuardedBy("this")
   private final Map<String, Object> mCreateInitialStateLocks = new HashMap<>();
@@ -124,7 +123,7 @@ public class InitialStateContainer {
     synchronized (stateLock) {
       hookStates = (KStateContainer) mInitialStates.get(key);
 
-      // sequences are guaranteed to be used in oreder. If the states list size is greater than
+      // sequences are guaranteed to be used in order. If the states list size is greater than
       // hookIndex we should be guaranteed to find the state
       if (hookStates != null && hookStates.mStates.size() > hookIndex) {
         return hookStates;
@@ -133,17 +132,20 @@ public class InitialStateContainer {
       final T initialState = initializer.init();
 
       // If the state needed to be initialised it should be guaranteed that it needs to be added at
-      // the end of the list. Let's create a new KStateContainer to guarantee immutability of state
+      // the end of the list. We create a new KStateContainer to guarantee immutability of state
       // containers.
       hookStates = KStateContainer.withNewState(hookStates, initialState);
 
       if (hookIndex >= hookStates.mStates.size()) {
         throw new IllegalStateException(
-            "Hook state initialisation for sequence "
+            "Unexpected useState hook sequence encountered: "
                 + hookIndex
-                + " But there were only "
+                + " (states size: "
                 + hookStates.mStates.size()
-                + " elements in the hook state container");
+                + "). This usually indicates that the useState hook is being called from within a "
+                + "conditional, loop, or after an early-exit condition. See "
+                + "https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks "
+                + "for more information on the Rules of Hooks.");
       }
       mInitialStates.put(key, hookStates);
     }
