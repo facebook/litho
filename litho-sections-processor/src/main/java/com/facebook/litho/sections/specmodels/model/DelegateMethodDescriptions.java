@@ -35,6 +35,7 @@ import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
+import com.facebook.litho.sections.annotations.OnVerifyChangeSet;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
@@ -187,6 +188,16 @@ public class DelegateMethodDescriptions {
                       .build()))
           .build();
 
+  private static final DelegateMethodDescription ON_VERIFY_CHANGE_SET =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(SectionClassNames.STRING)
+          .name("verifyChangeSet")
+          .definedParameterTypes(ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT))
+          .optionalParameterTypes(ImmutableList.of(PROP))
+          .build();
+
   private static final DelegateMethodDescription SHOULD_UPDATE =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
@@ -233,6 +244,7 @@ public class DelegateMethodDescriptions {
 
     diffSectionSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     diffSectionSpecDelegateMethodsMap.put(OnDiff.class, ON_DIFF);
+    diffSectionSpecDelegateMethodsMap.put(OnVerifyChangeSet.class, ON_VERIFY_CHANGE_SET);
     diffSectionSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
 
     DIFF_SECTION_SPEC_DELEGATE_METHODS_MAP =

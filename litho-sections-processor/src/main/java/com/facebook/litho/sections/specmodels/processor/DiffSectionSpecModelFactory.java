@@ -29,6 +29,7 @@ import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
+import com.facebook.litho.sections.annotations.OnVerifyChangeSet;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
 import com.facebook.litho.sections.specmodels.model.DefaultDiffSectionSpecGenerator;
 import com.facebook.litho.sections.specmodels.model.DiffSectionSpecModel;
@@ -89,6 +90,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateInitialState.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnDiff.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnVerifyChangeSet.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateService.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnBindService.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnUnbindService.class);
@@ -160,7 +162,8 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
             DELEGATE_METHOD_ANNOTATIONS,
             ImmutableList.of(),
             ImmutableList.of(),
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class, OnDiff.class),
+            ImmutableList.<Class<? extends Annotation>>of(
+                ShouldUpdate.class, OnDiff.class, OnVerifyChangeSet.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
             elements, element, ImmutableList.of(), ImmutableList.of(), messager, runMode),

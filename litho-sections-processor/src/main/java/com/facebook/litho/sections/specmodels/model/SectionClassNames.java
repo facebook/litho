@@ -41,4 +41,5 @@ public interface SectionClassNames {
       ClassName.bestGuess("com.facebook.litho.sections.annotations.DiffSectionSpec");
 
   ClassName CHANGE_CHANGES_INFO = ClassName.bestGuess("com.facebook.litho.sections.ChangesInfo");
+  ClassName STRING = ClassName.bestGuess("java.lang.String");
 }

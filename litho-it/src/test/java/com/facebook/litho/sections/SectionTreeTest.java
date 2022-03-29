@@ -21,6 +21,7 @@ import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -31,6 +32,8 @@ import com.facebook.litho.Component;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.sections.TestDataDiffSection;
+import com.facebook.litho.testing.sections.TestIndexOutOfBoundsExceptionTarget;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -46,6 +49,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -570,6 +574,32 @@ public class SectionTreeTest {
   }
 
   @Test
+  public void testDuplicateItemsUpdateWithIndexOutOfBoundsException() {
+    final TestIndexOutOfBoundsExceptionTarget testTarget =
+        new TestIndexOutOfBoundsExceptionTarget();
+    SectionTree tree = SectionTree.create(mSectionContext, testTarget).build();
+
+    final List<String> newData = generateDuplicatedData(50);
+    assertThatThrownBy(
+            new ThrowableAssert.ThrowingCallable() {
+              @Override
+              public void call() throws Exception {
+                tree.setRoot(
+                    TestDataDiffSection.create(mSectionContext)
+                        .data(newData)
+                        .alwaysDetectDuplicates(false)
+                        .build());
+              }
+            })
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageMatching(
+            "Index out of bounds while applying a new section. This indicates a bad diff was sent "
+                + "to the RecyclerBinder. See https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception "
+                + "for more information. Debug info: Duplicates are "
+                + "\\[type:\\w+ hash:\\w+ position:\\d+] and \\[type:\\w+ hash:\\w+ position:\\d+] in the \\[\\w+].");
+  }
+
+  @Test
   public void testUpdateStateAsyncButForceSyncUpdates() {
     final Section section =
         TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
@@ -1083,5 +1113,19 @@ public class SectionTreeTest {
 
     @Override
     public void changeConfig(DynamicConfig dynamicConfig) {}
+  }
+
+  private static List<String> generateData(int length) {
+    final List<String> data = new ArrayList<>(length);
+    for (int i = 0; i < length; i++) {
+      data.add(Integer.toString(i));
+    }
+    return data;
+  }
+
+  private static List<String> generateDuplicatedData(int length) {
+    final List<String> data = generateData(length - 1);
+    data.add(Integer.toString(0));
+    return data;
   }
 }

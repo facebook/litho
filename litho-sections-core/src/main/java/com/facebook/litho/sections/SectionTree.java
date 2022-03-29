@@ -162,7 +162,7 @@ public class SectionTree {
 
   private static final String EMPTY_STRING = "";
   private static final String INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE =
-      "Index out of bounds while applying a new section. This indicates a bad diff was sent to the RecyclerBinder. See https://bit.ly/39Oq0Hs for more information. Debug info: ";
+      "Index out of bounds while applying a new section. This indicates a bad diff was sent to the RecyclerBinder. See https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception for more information. Debug info: ";
 
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
@@ -259,8 +259,7 @@ public class SectionTree {
       try {
         applyNewChangeSet(source, attribution, prevTracingRunnable, changesetDebugInfo);
       } catch (IndexOutOfBoundsException e) {
-        throw new RuntimeException(
-            INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE + getDebugInfo(SectionTree.this) + e.getMessage(), e);
+        throw maybeWrapWithDuplicatesMetadata(SectionTree.this, mCurrentSection, e);
       }
     }
   }
@@ -1447,8 +1446,7 @@ public class SectionTree {
       try {
         applyChangeSetsToTargetUIThreadOnly(changesetDebugInfo);
       } catch (IndexOutOfBoundsException e) {
-        throw new RuntimeException(
-            INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE + getDebugInfo(this) + e.getMessage(), e);
+        throw maybeWrapWithDuplicatesMetadata(this, mCurrentSection, e);
       }
     } else {
       String tag = EMPTY_STRING;
@@ -1463,8 +1461,7 @@ public class SectionTree {
               try {
                 tree.applyChangeSetsToTargetUIThreadOnly(changesetDebugInfo);
               } catch (IndexOutOfBoundsException e) {
-                throw new RuntimeException(
-                    INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE + getDebugInfo(tree) + e.getMessage(), e);
+                throw maybeWrapWithDuplicatesMetadata(SectionTree.this, mCurrentSection, e);
               }
             }
           };
@@ -1475,6 +1472,48 @@ public class SectionTree {
         mMainThreadHandler.post(applyChangeSetsRunnable, tag);
       }
     }
+  }
+
+  private static RuntimeException maybeWrapWithDuplicatesMetadata(
+      SectionTree tree, @Nullable Section root, IndexOutOfBoundsException e) {
+    RuntimeException result = tryWrapWithDuplicatesMetadata(null, root, e);
+    if (result != e) {
+      return result;
+    }
+    // return the fallback exception if no duplicates were found
+    return new RuntimeException(
+        INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE + getDebugInfo(tree) + e.getMessage(), e);
+  }
+
+  /**
+   * We are going to traverse the whole SectionTree to find which Section contains the duplicate
+   * items and wrap useful meta info to the exception.
+   */
+  private static RuntimeException tryWrapWithDuplicatesMetadata(
+      @Nullable Section parentSection, @Nullable Section section, IndexOutOfBoundsException e) {
+    if (section != null) {
+      String info = section.verifyChangeSet(section.getScopedContext());
+      if (info != null) {
+        String sectionName =
+            parentSection != null ? parentSection.getSimpleName() : section.getSimpleName();
+        String sectionDebugInfo =
+            INDEX_OUT_OF_BOUNDS_DEBUG_MESSAGE + info + " in the [" + sectionName + "].";
+        RuntimeException exception = new RuntimeException(sectionDebugInfo, e);
+        // erase the trace of wrapper exception
+        exception.setStackTrace(new StackTraceElement[0]);
+        return exception;
+      }
+      List<Section> children = section.getChildren();
+      if (children != null) {
+        for (Section child : children) {
+          RuntimeException result = tryWrapWithDuplicatesMetadata(section, child, e);
+          if (result != e) {
+            return result;
+          }
+        }
+      }
+    }
+    return e;
   }
 
   @ThreadConfined(ThreadConfined.ANY)

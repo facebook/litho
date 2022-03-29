@@ -39,6 +39,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.sections.annotations.OnVerifyChangeSet;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
@@ -143,9 +144,8 @@ public class DataDiffSectionSpec<T> {
             ? null
             : LogTreePopulator.populatePerfEventFromLogger(
                 c, logger, logger.newPerformanceEvent(c, EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
-
     if (nextData != null && isDetectDuplicatesEnabled(alwaysDetectDuplicates)) {
-      detectDuplicates(c, nextData, callback);
+      detectDuplicates(nextData, callback);
     }
     if (isTracing) {
       ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
@@ -168,26 +168,53 @@ public class DataDiffSectionSpec<T> {
     updatesCallback.applyChangeset(c);
   }
 
-  private static <T> void detectDuplicates(
-      SectionContext c, List<? extends T> data, Callback<T> callback) {
-    for (ListIterator<? extends T> it = data.listIterator(); it.hasNext(); ) {
+  @OnVerifyChangeSet
+  @Nullable
+  public static <T> String verifyChangeSet(SectionContext context, @Prop List<? extends T> data) {
+    final List<? extends T> nextData = data;
+    if (nextData != null) {
+      final Callback<T> callback = new Callback<>(context, null, nextData);
+      return detectDuplicates(nextData, callback);
+    }
+    return null;
+  }
+
+  @Nullable
+  public static <T> String detectDuplicates(List<? extends T> data, Callback<T> callback) {
+    int idx = 0;
+    for (ListIterator<? extends T> it = data.listIterator(); it.hasNext(); idx++) {
       int nextIdx = it.nextIndex() + 1;
       T item = it.next();
-      for (ListIterator<? extends T> jt = data.listIterator(nextIdx); jt.hasNext(); ) {
+      for (ListIterator<? extends T> jt = data.listIterator(nextIdx); jt.hasNext(); nextIdx++) {
         T other = jt.next();
         if (callback.areItemsTheSame(item, other)) {
+          String type = (item != null ? item.getClass().getSimpleName() : "NULL");
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR,
               "sections_duplicate_item",
               DUPLICATES_EXIST_MSG
                   + ", type: "
-                  + item.getClass().getSimpleName()
+                  + type
                   + ", hash: "
                   + System.identityHashCode(item));
-          return; /* we don't need to know how many, just that there is at least one duplicate */
+          /* we don't need to know how many, just that there is at least one duplicate */
+          return "Duplicates are [type:"
+              + type
+              + " hash:"
+              + System.identityHashCode(item)
+              + " position:"
+              + idx
+              + "] and [type:"
+              + type
+              + " hash:"
+              + System.identityHashCode(other)
+              + " position:"
+              + nextIdx
+              + "]";
         }
       }
     }
+    return null;
   }
 
   /**
@@ -349,14 +376,16 @@ public class DataDiffSectionSpec<T> {
   @VisibleForTesting
   static class Callback<T> extends DiffUtil.Callback {
 
-    private final List<? extends T> mPreviousData;
-    private final List<? extends T> mNextData;
+    private final @Nullable List<? extends T> mPreviousData;
+    private final @Nullable List<? extends T> mNextData;
     private final SectionContext mSectionContext;
     private final EventHandler<OnCheckIsSameItemEvent<T>> mIsSameItemEventHandler;
     private final EventHandler<OnCheckIsSameContentEvent<T>> mIsSameContentEventHandler;
 
     Callback(
-        SectionContext sectionContext, List<? extends T> previousData, List<? extends T> nextData) {
+        SectionContext sectionContext,
+        @Nullable List<? extends T> previousData,
+        @Nullable List<? extends T> nextData) {
       mSectionContext = sectionContext;
       mIsSameItemEventHandler = DataDiffSection.getOnCheckIsSameItemEventHandler(mSectionContext);
       mIsSameContentEventHandler =
@@ -378,6 +407,9 @@ public class DataDiffSectionSpec<T> {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+      if (mPreviousData == null || mNextData == null) {
+        return false;
+      }
       final T previous = mPreviousData.get(oldItemPosition);
       final T next = mNextData.get(newItemPosition);
 
@@ -399,6 +431,9 @@ public class DataDiffSectionSpec<T> {
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+      if (mPreviousData == null || mNextData == null) {
+        return false;
+      }
       final T previous = mPreviousData.get(oldItemPosition);
       final T next = mNextData.get(newItemPosition);
 

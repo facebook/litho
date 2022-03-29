@@ -204,6 +204,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return false;
   }
 
+  @Nullable
+  protected String verifyChangeSet(SectionContext context) {
+    return null;
+  }
+
   protected static <E> EventHandler<E> newEventHandler(
       final Class<? extends Section> reference,
       final String className,

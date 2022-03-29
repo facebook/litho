@@ -26,6 +26,7 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.OnCheckIsSameItemEvent;
 import com.facebook.litho.sections.common.RenderEvent;
+import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
@@ -42,6 +43,7 @@ class TestDataDiffSectionSpec {
       @Prop(optional = true) boolean skipCheckIsSameHandler) {
     if (skipCheckIsSameHandler) {
       return Children.create()
+          .child(SingleComponentSection.create(c).component(Text.create(c).text("header").build()))
           .child(
               DataDiffSection.<String>create(c)
                   .data(data)
@@ -50,6 +52,7 @@ class TestDataDiffSectionSpec {
           .build();
     }
     return Children.create()
+        .child(SingleComponentSection.create(c).component(Text.create(c).text("header").build()))
         .child(
             DataDiffSection.<String>create(c)
                 .data(data)
