@@ -141,6 +141,22 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun flexBasisPercent_whenSet_becomesChildWidth() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(100.px)) {
+            child(Row(style = Style.flex(basisPercent = 50f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 200, 100)
+              child<ComponentHost> { bounds(0, 0, 100, 100) }
+            })
+  }
+
+  @Test
   fun flexGrow_whenSet_childTakesWholeSpace() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())

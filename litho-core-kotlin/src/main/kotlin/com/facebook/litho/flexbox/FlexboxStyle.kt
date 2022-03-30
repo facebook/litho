@@ -50,6 +50,7 @@ internal enum class FlexboxFloatField {
   FLEX,
   FLEX_GROW,
   FLEX_SHRINK,
+  FLEX_BASIS_PERCENT,
   ASPECT_RATIO,
 }
 
@@ -94,6 +95,7 @@ internal class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : 
       FlexboxFloatField.FLEX -> commonProps.flex(value)
       FlexboxFloatField.FLEX_GROW -> commonProps.flexGrow(value)
       FlexboxFloatField.FLEX_SHRINK -> commonProps.flexShrink(value)
+      FlexboxFloatField.FLEX_BASIS_PERCENT -> commonProps.flexBasisPercent(value)
       FlexboxFloatField.ASPECT_RATIO -> commonProps.aspectRatio(value)
     }.exhaustive
   }
@@ -130,17 +132,26 @@ internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: 
  * **flex-basis**: Defines the default size of the component before extra space is distributed. If
  * omitted, the measured size of the content (or the width/height styles) will be used instead.
  *
+ * **flex-basis-percent**: see **flex-basis**. Defines the default size as a percentage of its
+ * parent's size. Values should be from 0 to 100.
+ *
  * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
  * properties.
  * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  *
- * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null
+ * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null, flex-basis-percent = null
  */
-inline fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null): Style =
+inline fun Style.flex(
+    grow: Float? = null,
+    shrink: Float? = null,
+    basis: Dimen? = null,
+    basisPercent: Float? = null
+): Style =
     this +
         grow?.let { FloatStyleItem(FlexboxFloatField.FLEX_GROW, it) } +
         shrink?.let { FloatStyleItem(FlexboxFloatField.FLEX_SHRINK, it) } +
-        basis?.let { FlexboxDimenStyleItem(FlexboxDimenField.FLEX_BASIS, it) }
+        basis?.let { FlexboxDimenStyleItem(FlexboxDimenField.FLEX_BASIS, it) } +
+        basisPercent?.let { FloatStyleItem(FlexboxFloatField.FLEX_BASIS_PERCENT, it) }
 
 /**
  * Defines how a child should be aligned with a Row or Column, overriding the parent's align-items
