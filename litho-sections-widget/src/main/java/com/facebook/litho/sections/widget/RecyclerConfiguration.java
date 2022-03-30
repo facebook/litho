@@ -38,6 +38,8 @@ public interface RecyclerConfiguration {
 
     Builder reverseLayout(boolean reverseLayout);
 
+    Builder stackFromEnd(boolean stackFromEnd);
+
     RecyclerConfiguration build();
   }
 
@@ -52,6 +54,8 @@ public interface RecyclerConfiguration {
   int getOrientation();
 
   boolean getReverseLayout();
+
+  boolean getStackFromEnd();
 
   LayoutInfo getLayoutInfo(ComponentContext c);
 

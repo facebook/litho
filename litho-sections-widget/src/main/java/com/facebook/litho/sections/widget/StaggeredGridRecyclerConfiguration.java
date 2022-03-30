@@ -39,6 +39,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   private final int mNumSpans;
   private final int mOrientation;
   private final boolean mReverseLayout;
+  private final boolean mStackFromEnd;
   private final int mGapStrategy;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final StaggeredGridLayoutInfoFactory mLayoutInfoFactory;
@@ -54,6 +55,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     return new StaggeredGridRecyclerConfiguration(
         numSpans,
         StaggeredGridLayoutManager.VERTICAL,
+        false,
         false,
         StaggeredGridLayoutManager.GAP_HANDLING_NONE,
         recyclerBinderConfiguration,
@@ -83,6 +85,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         numSpans,
         orientation,
         reverseLayout,
+        false,
         StaggeredGridLayoutManager.GAP_HANDLING_NONE,
         recyclerBinderConfiguration,
         Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY);
@@ -94,12 +97,14 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
       int numSpans,
       int orientation,
       boolean reverseLayout,
+      boolean stackFromEnd,
       int gapStrategy,
       RecyclerBinderConfiguration recyclerBinderConfiguration,
       StaggeredGridLayoutInfoFactory layoutInfoFactory) {
     mNumSpans = numSpans;
     mOrientation = orientation;
     mReverseLayout = reverseLayout;
+    mStackFromEnd = stackFromEnd;
     mGapStrategy = gapStrategy;
     mRecyclerBinderConfiguration =
         recyclerBinderConfiguration == null
@@ -135,6 +140,11 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   }
 
   @Override
+  public boolean getStackFromEnd() {
+    return mStackFromEnd;
+  }
+
+  @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
     return mLayoutInfoFactory.createStaggeredGridLayoutInfo(
         mNumSpans, mOrientation, mReverseLayout, mGapStrategy);
@@ -163,6 +173,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     private int mNumSpans = 2;
     private int mOrientation = StaggeredGridLayoutManager.VERTICAL;
     private boolean mReverseLayout = false;
+    private boolean mStackFromEnd = false;
     private int mGapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
@@ -174,6 +185,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
       this.mNumSpans = configuration.mNumSpans;
       this.mOrientation = configuration.mOrientation;
       this.mReverseLayout = configuration.mReverseLayout;
+      this.mStackFromEnd = configuration.mStackFromEnd;
       this.mGapStrategy = configuration.mGapStrategy;
       this.mRecyclerBinderConfiguration = configuration.mRecyclerBinderConfiguration;
       this.mLayoutInfoFactory = configuration.mLayoutInfoFactory;
@@ -199,6 +211,12 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     @Override
     public Builder reverseLayout(boolean reverseLayout) {
       mReverseLayout = reverseLayout;
+      return this;
+    }
+
+    @Override
+    public Builder stackFromEnd(boolean stackFromEnd) {
+      mStackFromEnd = stackFromEnd;
       return this;
     }
 
@@ -234,6 +252,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
           mNumSpans,
           mOrientation,
           mReverseLayout,
+          mStackFromEnd,
           mGapStrategy,
           mRecyclerBinderConfiguration,
           mLayoutInfoFactory);

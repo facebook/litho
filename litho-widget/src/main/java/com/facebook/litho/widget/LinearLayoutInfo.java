@@ -49,8 +49,19 @@ public class LinearLayoutInfo implements LayoutInfo {
     this(context.getAndroidContext(), orientation, reverseLayout);
   }
 
+  public LinearLayoutInfo(
+      ComponentContext context, int orientation, boolean reverseLayout, boolean stackFromEnd) {
+    this(context.getAndroidContext(), orientation, reverseLayout, stackFromEnd);
+  }
+
   public LinearLayoutInfo(Context context, int orientation, boolean reverseLayout) {
-    mLinearLayoutManager = new InternalLinearLayoutManager(context, orientation, reverseLayout);
+    this(context, orientation, reverseLayout, false);
+  }
+
+  public LinearLayoutInfo(
+      Context context, int orientation, boolean reverseLayout, boolean stackFromEnd) {
+    mLinearLayoutManager =
+        new InternalLinearLayoutManager(context, orientation, reverseLayout, stackFromEnd);
     mLinearLayoutManager.setMeasurementCacheEnabled(false);
   }
 
@@ -161,8 +172,10 @@ public class LinearLayoutInfo implements LayoutInfo {
 
   private static class InternalLinearLayoutManager extends LinearLayoutManager {
 
-    InternalLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+    InternalLinearLayoutManager(
+        Context context, int orientation, boolean reverseLayout, boolean stackFromEnd) {
       super(context, orientation, reverseLayout);
+      setStackFromEnd(stackFromEnd);
     }
 
     @Override

@@ -25,5 +25,6 @@ public interface LinearLayoutInfoFactory {
    * @return a new {@link LinearLayoutInfo} that will be used to compute the layouts of the children
    *     of the {@link ListRecyclerConfiguration}.
    */
-  LinearLayoutInfo createLinearLayoutInfo(Context context, int orientation, boolean reverseLayout);
+  LinearLayoutInfo createLinearLayoutInfo(
+      Context context, int orientation, boolean reverseLayout, boolean stackFromEnd);
 }

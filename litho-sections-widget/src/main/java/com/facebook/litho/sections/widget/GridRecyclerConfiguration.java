@@ -44,6 +44,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private final int mNumColumns;
   private final @SnapMode int mSnapMode;
   private final boolean mReverseLayout;
+  private final boolean mStackFromEnd;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final GridLayoutInfoFactory mGridLayoutInfoFactory;
   private final boolean mAllowMeasureOverride;
@@ -101,6 +102,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         orientation,
         numColumns,
         reverseLayout,
+        false,
         recyclerBinderConfiguration,
         allowMeasureOverride,
         Builder.GRID_LAYOUT_INFO_FACTORY,
@@ -113,6 +115,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       int orientation,
       int numColumns,
       boolean reverseLayout,
+      boolean stackFromEnd,
       RecyclerBinderConfiguration recyclerBinderConfiguration,
       boolean allowMeasureOverride,
       @Nullable GridLayoutInfoFactory gridLayoutInfoFactory,
@@ -120,6 +123,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     mOrientation = orientation;
     mNumColumns = numColumns;
     mReverseLayout = reverseLayout;
+    mStackFromEnd = stackFromEnd;
     mRecyclerBinderConfiguration =
         recyclerBinderConfiguration == null
             ? Builder.RECYCLER_BINDER_CONFIGURATION
@@ -158,6 +162,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
+  public boolean getStackFromEnd() {
+    return mStackFromEnd;
+  }
+
+  @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
     return mGridLayoutInfoFactory.createGridLayoutInfo(
         c.getAndroidContext(), mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);
@@ -190,6 +199,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private int mOrientation = LinearLayoutManager.VERTICAL;
     private int mNumColumns = 2;
     private boolean mReverseLayout = false;
+    private boolean mStackFromEnd = false;
     private boolean mAllowMeasureOverride = false;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
@@ -204,6 +214,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       this.mOrientation = gridRecyclerConfiguration.mOrientation;
       this.mNumColumns = gridRecyclerConfiguration.mNumColumns;
       this.mReverseLayout = gridRecyclerConfiguration.mReverseLayout;
+      this.mStackFromEnd = gridRecyclerConfiguration.mStackFromEnd;
       this.mAllowMeasureOverride = gridRecyclerConfiguration.mAllowMeasureOverride;
       this.mRecyclerBinderConfiguration = gridRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mGridLayoutInfoFactory = gridRecyclerConfiguration.mGridLayoutInfoFactory;
@@ -246,6 +257,12 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     }
 
     @Override
+    public Builder stackFromEnd(boolean stackFromEnd) {
+      mStackFromEnd = stackFromEnd;
+      return this;
+    }
+
+    @Override
     public Builder recyclerBinderConfiguration(
         RecyclerBinderConfiguration recyclerBinderConfiguration) {
       mRecyclerBinderConfiguration = recyclerBinderConfiguration;
@@ -284,6 +301,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
               mOrientation,
               mNumColumns,
               mReverseLayout,
+              mStackFromEnd,
               mRecyclerBinderConfiguration,
               mAllowMeasureOverride,
               mGridLayoutInfoFactory,

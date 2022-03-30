@@ -57,7 +57,10 @@ public class ViewPagerComponentSpec<T> {
                 new LinearLayoutInfoFactory() {
                   @Override
                   public LinearLayoutInfo createLinearLayoutInfo(
-                      Context context, int orientation, boolean reverseLayout) {
+                      Context context,
+                      int orientation,
+                      boolean reverseLayout,
+                      boolean stackFromEnd) {
                     return new ViewPagerLinearLayoutInfo(context, orientation, reverseLayout);
                   }
                 })

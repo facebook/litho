@@ -43,6 +43,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     implements RecyclerConfiguration {
   private final int mOrientation;
   private final boolean mReverseLayout;
+  private final boolean mStackFromEnd;
   private final @SnapMode int mSnapMode;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final LinearLayoutInfoFactory mLinearLayoutInfoFactory;
@@ -64,6 +65,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       RecyclerBinderConfiguration recyclerBinderConfiguration) {
     return new ListRecyclerConfiguration(
         LinearLayoutManager.VERTICAL,
+        false,
         false,
         SNAP_NONE,
         recyclerBinderConfiguration,
@@ -98,6 +100,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     this(
         orientation,
         reverseLayout,
+        false,
         snapMode,
         recyclerBinderConfiguration,
         Builder.LINEAR_LAYOUT_INFO_FACTORY);
@@ -108,6 +111,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   public ListRecyclerConfiguration(
       int orientation,
       boolean reverseLayout,
+      boolean stackFromEnd,
       @SnapMode int snapMode,
       @Nullable RecyclerBinderConfiguration recyclerBinderConfiguration,
       @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory) {
@@ -118,6 +122,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     }
     mOrientation = orientation;
     mReverseLayout = reverseLayout;
+    mStackFromEnd = stackFromEnd;
     mSnapMode = snapMode;
     mRecyclerBinderConfiguration =
         recyclerBinderConfiguration == null
@@ -156,9 +161,14 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
+  public boolean getStackFromEnd() {
+    return mStackFromEnd;
+  }
+
+  @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
     return mLinearLayoutInfoFactory.createLinearLayoutInfo(
-        c.getAndroidContext(), mOrientation, mReverseLayout);
+        c.getAndroidContext(), mOrientation, mReverseLayout, mStackFromEnd);
   }
 
   @Override
@@ -169,8 +179,8 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private static class DefaultLinearLayoutInfoFactory implements LinearLayoutInfoFactory {
     @Override
     public LinearLayoutInfo createLinearLayoutInfo(
-        Context c, int orientation, boolean reverseLayout) {
-      return new LinearLayoutInfo(c, orientation, reverseLayout);
+        Context c, int orientation, boolean reverseLayout, boolean stackFromEnd) {
+      return new LinearLayoutInfo(c, orientation, reverseLayout, stackFromEnd);
     }
   }
 
@@ -182,6 +192,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
     private int mOrientation = LinearLayoutManager.VERTICAL;
     private boolean mReverseLayout = false;
+    private boolean mStackFromEnd = false;
     @SnapMode private int mSnapMode = SNAP_NONE;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
@@ -194,6 +205,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     Builder(ListRecyclerConfiguration listRecyclerConfiguration) {
       this.mOrientation = listRecyclerConfiguration.mOrientation;
       this.mReverseLayout = listRecyclerConfiguration.mReverseLayout;
+      this.mStackFromEnd = listRecyclerConfiguration.mStackFromEnd;
       this.mSnapMode = listRecyclerConfiguration.mSnapMode;
       this.mRecyclerBinderConfiguration = listRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mLinearLayoutInfoFactory = listRecyclerConfiguration.mLinearLayoutInfoFactory;
@@ -210,6 +222,12 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     @Override
     public Builder reverseLayout(boolean reverseLayout) {
       mReverseLayout = reverseLayout;
+      return this;
+    }
+
+    @Override
+    public Builder stackFromEnd(boolean stackFromEnd) {
+      mStackFromEnd = stackFromEnd;
       return this;
     }
 
@@ -259,6 +277,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
           new ListRecyclerConfiguration(
               mOrientation,
               mReverseLayout,
+              mStackFromEnd,
               mSnapMode,
               mRecyclerBinderConfiguration,
               mLinearLayoutInfoFactory);
