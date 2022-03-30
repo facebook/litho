@@ -19,29 +19,20 @@ package com.facebook.litho.stateupdates;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.StateValue;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateInitialState;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.OnUpdateState;
-import com.facebook.litho.annotations.State;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 
 @LayoutSpec
-public class ComponentWithCounterStateLayoutSpec {
+public class ComponentWithCounterStateNestedGrandParentSpec {
 
-  @OnCreateInitialState
-  static void OnCreateInitialState(ComponentContext c, StateValue<Integer> count) {
-    count.set(0);
-  }
-
-  @OnCreateLayout
-  public static Component onCreateLayout(ComponentContext c, @State Integer count) {
-    return Column.create(c).child(Text.create(c).text("Count: " + count)).build();
-  }
-
-  @OnUpdateState
-  static void incrementCount(StateValue<Integer> count) {
-    count.set(count.get() + 1);
+  @OnCreateLayoutWithSizeSpec
+  static Component onCreateLayoutWithSizeSpec(ComponentContext c, int widthSpec, int heightSpec) {
+    return Column.create(c)
+        .child(
+            ComponentWithCounterStateNestedParent.create(c)
+                .widthPx(SizeSpec.getSize(widthSpec))
+                .heightPx(SizeSpec.getSize(heightSpec)))
+        .build();
   }
 }
