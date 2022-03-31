@@ -45,6 +45,54 @@ abstract class MountableComponent(open val style: Style? = null) : Component() {
     return true
   }
 
+  /**
+   * Compare this component to a different one to check if they are equivalent. This is used to be
+   * able to skip rendering a component again.
+   */
+  final override fun isEquivalentProps(
+      other: Component?,
+      shouldCompareCommonProps: Boolean,
+  ): Boolean {
+    if (this === other) {
+      return true
+    }
+    if (other == null || javaClass != other.javaClass) {
+      return false
+    }
+    if (id == other.id) {
+      return true
+    }
+    if (!hasEquivalentFields(other as MountableComponent, shouldCompareCommonProps)) {
+      return false
+    }
+
+    return true
+  }
+
+  /** Compare all private final fields in the components. */
+  private fun hasEquivalentFields(
+      other: MountableComponent,
+      shouldCompareCommonProps: Boolean,
+  ): Boolean {
+    for (field in javaClass.declaredFields) {
+      val wasAccessible = field.isAccessible
+      if (!wasAccessible) {
+        field.isAccessible = true
+      }
+      val field1 = field.get(this)
+      val field2 = field.get(other)
+      if (!wasAccessible) {
+        field.isAccessible = false
+      }
+
+      if (!EquivalenceUtils.areObjectsEquivalent(field1, field2, shouldCompareCommonProps)) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
   final override fun acceptTriggerEventImpl(
