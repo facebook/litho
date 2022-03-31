@@ -3,11 +3,9 @@ id: events-for-specs
 title: Events for Specs
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-:::
+The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention, Event class names are suffixed with *Event*.
 
-The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention we suffix Event class names with *Event*. Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
+Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
 
 ```java
 @Event
@@ -16,7 +14,7 @@ public class ColorChangedEvent {
 }
 ```
 
-In this example we will assume we have a component called `ColorComponent`. To indicate that a `ColorComponent` can dispatch a `ColorChangedEvent` our `ColorComponentSpec` must be annotated with that information. This is done with the `events` parameter of the `@MountSpec` and `@LayoutSpec` annotations. A component may be annotated to dispatch multiple events.
+In the following sample, it's assumed there is a component called `ColorComponent`. To indicate that a `ColorComponent` can dispatch a `ColorChangedEvent`, the `ColorComponentSpec` must be annotated with that information. This is done with the `events` parameter of the `@MountSpec` and `@LayoutSpec` annotations. A component may be annotated to dispatch multiple events.
 
 ```java
 @LayoutSpec(events = { ColorChangedEvent.class })
@@ -52,7 +50,7 @@ You can create `EventHandler` instances by using your generated component's corr
 
 You define the event callback using the `@OnEvent` annotation. `@OnEvent` takes one argument: the event class. The first parameter of a method annotated with `@OnEvent` has to be a ComponentContext that the framework will populate for you.
 
-For example, here's how a component would define a handler for the `ColorChangedEvent` declared above:
+For example, the following code shows how a component would define a handler for the `ColorChangedEvent` declared above:
 
 ```java
 @LayoutSpec
@@ -84,7 +82,7 @@ class MyComponentSpec {
 }
 ```
 
-Using the `@Param` annotation on one or more of the parameters of the callback method you can define dynamic event parameters. This is useful if you would like to define a callback for a certain type of event e.g. `onAvatarClicked()` but would like to know what avatar was clicked. The avatar parameter in this case would be passed to the event handler factory method.
+Using the `@Param` annotation on one or more of the parameters of the callback method, you can define dynamic event parameters. This is useful if you'd like to define a callback for a certain type of event (such as `onAvatarClicked()`) but would like to know what avatar was clicked. The avatar parameter in this case would be passed to the event handler factory method.
 
 As you can see, `@OnEvent` callbacks have access to all component props just like the other spec methods.
 
