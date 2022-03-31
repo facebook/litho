@@ -1597,8 +1597,12 @@ public class ComponentTree implements LithoLifecycleListener {
               + "State updates were dispatched over 50 times during the current layout. "
               + "This happens most commonly when state updates are dispatched unconditionally from "
               + "the render method.";
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.FATAL, STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD, message);
+      if (ComponentsConfiguration.isDebugModeEnabled) {
+        throw new RuntimeException(message);
+      } else {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.FATAL, STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD, message);
+      }
     }
   }
 
