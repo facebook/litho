@@ -384,7 +384,7 @@ public class ComponentContext implements Cloneable {
     mComponentTree.updateHookStateAsync(
         globalKey,
         updateBlock,
-        scope != null ? scope.getSimpleName() : "hook",
+        scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
         isCreateLayoutInProgress());
   }
 

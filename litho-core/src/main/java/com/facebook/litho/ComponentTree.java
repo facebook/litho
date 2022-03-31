@@ -1559,7 +1559,7 @@ public class ComponentTree implements LithoLifecycleListener {
       rootTreeProps = TreeProps.copy(mRootTreeProps);
 
       if (isCreateLayoutInProgress) {
-        logStateUpdatesFromCreateLayout();
+        logStateUpdatesFromCreateLayout(attribution);
       }
     }
 
@@ -1584,14 +1584,21 @@ public class ComponentTree implements LithoLifecycleListener {
    * infinite loop because state updates again create the layout. To prevent this we keep a track of
    * how many times consequently state updates was invoked from within layout creation. If this
    * crosses the threshold a runtime exception is thrown.
+   *
+   * @param attribution
    */
   @GuardedBy("this")
-  private void logStateUpdatesFromCreateLayout() {
+  private void logStateUpdatesFromCreateLayout(@Nullable String attribution) {
     if (++mStateUpdatesFromCreateLayoutCount == STATE_UPDATES_IN_LOOP_THRESHOLD) {
+      String message =
+          "State update loop during layout detected. Most recent attribution: "
+              + attribution
+              + ".\n"
+              + "State updates were dispatched over 50 times during the current layout. "
+              + "This happens most commonly when state updates are dispatched unconditionally from "
+              + "the render method.";
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.FATAL,
-          STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD,
-          "State Updates when create layout in progress exceeds threshold");
+          ComponentsReporter.LogLevel.FATAL, STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD, message);
     }
   }
 
