@@ -96,7 +96,7 @@ public interface Mountable<ContentT> {
    */
   @Nullable
   Object measure(
-      final Context context,
+      final ComponentContext context,
       final int widthSpec,
       final int heightSpec,
       final Size size,

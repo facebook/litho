@@ -19,6 +19,7 @@ package com.facebook.litho.kotlin.widget
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
@@ -64,7 +65,7 @@ class ImageMountable(
   }
 
   override fun measure(
-      context: Context,
+      context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
       size: Size,

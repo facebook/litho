@@ -434,7 +434,7 @@ open class ViewMountable(
   }
 
   override fun measure(
-      context: Context,
+      context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
       size: Size,
