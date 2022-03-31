@@ -316,19 +316,17 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     result.setDiffNode(diff);
 
     if (!Layout.shouldComponentUpdate(this, diff)) {
-      if (component != null) {
-        final ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
-        final ScopedComponentInfo diffNodeScopedComponentInfo =
-            Preconditions.checkNotNull(diff.getScopedComponentInfo());
+      final ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
+      final ScopedComponentInfo diffNodeScopedComponentInfo =
+          Preconditions.checkNotNull(diff.getScopedComponentInfo());
 
-        component.copyInterStageImpl(
-            (InterStagePropsContainer) result.getLayoutData(),
-            (InterStagePropsContainer) diff.getLayoutData());
+      component.copyInterStageImpl(
+          (InterStagePropsContainer) result.getLayoutData(),
+          (InterStagePropsContainer) diff.getLayoutData());
 
-        component.copyPrepareInterStageImpl(
-            scopedComponentInfo.getPrepareInterStagePropsContainer(),
-            diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer());
-      }
+      component.copyPrepareInterStageImpl(
+          scopedComponentInfo.getPrepareInterStagePropsContainer(),
+          diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer());
 
       result.setCachedMeasuresValid(true);
     }
