@@ -15,11 +15,8 @@ With Incremental Mount enabled (which it is by default), the `LithoView` will on
 
 ![Incremental Mount Diagram](/images/incremental-mount.png)
 
-When using a prebuilt collection component such as `RecyclerCollectionComponent` or a [Lazy Collection](../kotlin/collections.mdx), the framework will seamlessly perform Incremental Mount.
-## Manual Incremental Mount
-
+When using a prebuilt collection component such as `RecyclerCollectionComponent` or a [Lazy Collection](../kotlin/lazycollections/lazycollections.mdx), the framework will seamlessly perform Incremental Mount.
 When not using a prebuilt collection component (such as [Recycler](pathname:///javadoc/com/facebook/litho/widget/Recycler.html)), or when manually resizing a `LithoView`'s container, you can still integrate Incremental Mount in your existing UI implementation.
-To integrate Incremental Mount, you must explicitly notify the LithoView that its visible bounds have changed. Use the following call:
 
 ```java
 myLithoView.notifyVisibleBoundsChanged();
