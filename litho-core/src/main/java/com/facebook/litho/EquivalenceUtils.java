@@ -25,6 +25,18 @@ import java.util.Iterator;
 
 public class EquivalenceUtils {
 
+  /**
+   * Checks if to objects are equivalent if they implement {@link Equivalence} or compares the
+   * objects field by field.
+   */
+  public static <T> boolean isEqualOrEquivalentTo(@Nullable T a, @Nullable T b) {
+    if (a instanceof Equivalence && b instanceof Equivalence) {
+      return CommonUtils.isEquivalentTo((Equivalence) a, (Equivalence) b);
+    } else {
+      return hasEquivalentFields(a, b, false);
+    }
+  }
+
   /** Compare all private final fields in an object */
   @SuppressWarnings("unchecked")
   public static boolean hasEquivalentFields(Object a, Object b) {

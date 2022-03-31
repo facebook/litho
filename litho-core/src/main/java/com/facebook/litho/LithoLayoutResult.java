@@ -392,6 +392,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mLayoutData;
   }
 
+  public void setLayoutData(@Nullable Object layoutData) {
+    mLayoutData = layoutData;
+  }
+
   @Override
   public int getChildrenCount() {
     return mChildren.size();
@@ -519,7 +523,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
       size.width = (int) diffNode.getLastMeasuredWidth();
       size.height = (int) diffNode.getLastMeasuredHeight();
-      mLayoutData = diffNode.getLayoutData();
 
       // Measure the component
     } else {

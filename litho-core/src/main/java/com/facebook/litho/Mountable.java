@@ -40,6 +40,8 @@ import java.util.List;
  *       when they are reused from the content pool.
  * </ul>
  *
+ * <b>Tip: Implement {@link Equivalence} to improve performance.
+ *
  * @param <ContentT> The type of the content.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -78,6 +80,12 @@ public interface Mountable<ContentT> {
    *
    * <p>If measure is called again in the same layout pass, then {@param previousLayoutData} will be
    * the layout data returned by the previous measure call.
+   *
+   * <p>As a performance optimisation the framework will skip this method if this Mountable is equal
+   * to the previous Mountable, and if the size specs are compatible. In order to do this the
+   * framework will check if every field of the Mountable is equal using reflection. It is highly
+   * recommended to implement {@link Equivalence} to avoid using the reflection based equivalence
+   * check.
    *
    * <ul>
    *   <li>Must not cause side effects.

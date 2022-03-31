@@ -315,7 +315,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     result.setDiffNode(diff);
 
-    if (!Layout.shouldComponentUpdate(this, diff)) {
+    if (mMountable != null
+        && diff.getMountable() != null
+        && EquivalenceUtils.isEqualOrEquivalentTo(mMountable, diff.getMountable())) {
+
+      result.setLayoutData(diff.getLayoutData());
+      result.setCachedMeasuresValid(true);
+
+    } else if (!Layout.shouldComponentUpdate(this, diff)) {
       final ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
       final ScopedComponentInfo diffNodeScopedComponentInfo =
           Preconditions.checkNotNull(diff.getScopedComponentInfo());

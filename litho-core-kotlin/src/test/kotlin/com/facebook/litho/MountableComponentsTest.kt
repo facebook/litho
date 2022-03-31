@@ -26,6 +26,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
+import com.facebook.litho.flexbox.flex
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -195,7 +196,7 @@ class MountableComponentsTest {
       override fun ComponentScope.render(): ViewMountable {
         val testState: State<String> = useState { "initial" }
         stateRef = AtomicReference(testState.value)
-        return ViewMountable(view, updateState = { testState.update { s -> s + "_" + it } })
+        return ViewMountable(view = view, updateState = { testState.update { s -> s + "_" + it } })
       }
     }
 
@@ -207,24 +208,223 @@ class MountableComponentsTest {
         .describedAs("String state is updated")
         .isEqualTo("initial_createContent_mount")
   }
+
+  @Test
+  fun `should not remeasure same mountable if size specs match`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val component =
+        TestMountableComponent(
+            view = view,
+            steps = steps,
+            style = Style.width(100.px).height(100.px),
+        )
+
+    lithoViewRule.render { Column.create(c).child(component).build() }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+
+    lithoViewRule.render { Column.create(c).child(component).build() }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT)
+  }
+
+  @Test
+  fun `should not remeasure same mountable if size specs match with non exact size`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val component =
+        TestMountableComponent(
+            view = view,
+            steps = steps,
+            style = Style.width(100.px).flex(grow = 1f),
+        )
+
+    lithoViewRule.render { Column.create(c).child(component).build() }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+
+    lithoViewRule.render { Column.create(c).child(component).build() }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT)
+  }
+
+  @Test
+  fun `should remeasure mountable if properties have changed`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+
+    lithoViewRule.render {
+      Column.create(c)
+          .child(
+              TestMountableComponent(
+                  identity = 0,
+                  view = view,
+                  steps = steps,
+                  style = Style.width(100.px).flex(grow = 1f),
+              ))
+          .build()
+    }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+
+    lithoViewRule.render {
+      Column.create(c)
+          .child(
+              TestMountableComponent(
+                  identity = 1,
+                  view = view,
+                  steps = steps,
+                  style = Style.width(100.px).flex(grow = 1f),
+              ))
+          .build()
+    }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT)
+  }
+
+  @Test
+  fun `should not remeasure comparable mountable if the equivalence passes`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+
+    lithoViewRule.render {
+      Column.create(c)
+          .child(
+              TestMountableComponent(
+                  identity = 0,
+                  view = view,
+                  steps = steps,
+                  style = Style.width(100.px).flex(grow = 1f),
+                  shouldUseComparableMountable = true,
+              ))
+          .build()
+    }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+
+    lithoViewRule.render {
+      Column.create(c)
+          .child(
+              TestMountableComponent(
+                  identity = 0, // ensures that equivalence call is true
+                  view = TextView(c.androidContext), // ensure that field field equals fails
+                  steps = steps,
+                  style = Style.width(100.px).flex(grow = 1f),
+                  shouldUseComparableMountable = true,
+              ))
+          .build()
+    }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT)
+  }
+
+  @Test
+  fun `should remeasure mountable if size specs change`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val component = TestMountableComponent(identity = 0, view = view, steps = steps)
+
+    lithoViewRule.setSizePx(800, 600).render { component }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+
+    lithoViewRule.setSizePx(1920, 1080).render { component }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT)
+  }
 }
 
 class TestMountableComponent(
     val view: View,
-    private val steps: MutableList<LifecycleStep.StepInfo>? = null,
+    val steps: MutableList<LifecycleStep.StepInfo>? = null,
+    val identity: Int = 0,
+    val shouldUseComparableMountable: Boolean = false,
     override val style: Style? = null
-) : MountableComponent() {
+) : MountableComponent(style = style) {
 
   override fun ComponentScope.render(): ViewMountable {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
-    return ViewMountable(view, steps)
+    return if (shouldUseComparableMountable) {
+      ComparableViewMountable(identity, view, steps)
+    } else {
+      ViewMountable(identity, view, steps)
+    }
   }
 }
 
-class ViewMountable(
-    val view: View,
-    private val steps: MutableList<LifecycleStep.StepInfo>? = null,
-    private val updateState: ((String) -> Unit)? = null
+open class ViewMountable(
+    open val id: Int = 0,
+    open val view: View,
+    open val steps: MutableList<LifecycleStep.StepInfo>? = null,
+    open val updateState: ((String) -> Unit)? = null,
 ) : SimpleMountable<View>() {
 
   override fun createContent(context: Context): View {
@@ -285,6 +485,18 @@ class ViewMountable(
   }
 
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
+}
+
+class ComparableViewMountable(
+    override val id: Int = 0,
+    override val view: View,
+    override val steps: MutableList<LifecycleStep.StepInfo>? = null,
+    override val updateState: ((String) -> Unit)? = null
+) : ViewMountable(id, view, steps, updateState), Equivalence<ViewMountable> {
+
+  override fun isEquivalentTo(other: ViewMountable?): Boolean {
+    return id == other?.id
+  }
 }
 
 class ViewLayoutData(val width: Int, val height: Int)
