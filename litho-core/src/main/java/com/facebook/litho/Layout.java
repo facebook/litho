@@ -22,6 +22,7 @@ import static com.facebook.litho.Component.hasCachedLayout;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
 
@@ -719,6 +720,11 @@ class Layout {
 
     final Component component = layoutNode.getTailComponent();
     final ComponentContext scopedContext = layoutNode.getTailComponentContext();
+
+    // return true for mountables to exit early
+    if (isMountable(component)) {
+      return true;
+    }
 
     try {
       return component.shouldComponentUpdate(
