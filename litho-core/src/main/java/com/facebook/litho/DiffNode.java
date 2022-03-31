@@ -119,4 +119,9 @@ public interface DiffNode extends Cloneable {
   LithoRenderUnit getHostOutput();
 
   void setHostOutput(@Nullable LithoRenderUnit host);
+
+  @Nullable
+  Mountable<?> getMountable();
+
+  void setMountable(@Nullable Mountable<?> mountable);
 }

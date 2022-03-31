@@ -30,6 +30,7 @@ public class DefaultDiffNode implements DiffNode {
   private @Nullable LithoRenderUnit mHost;
   private @Nullable VisibilityOutput mVisibilityOutput;
   private @Nullable Component mComponent;
+  private @Nullable Mountable<?> mMountable;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
@@ -65,6 +66,16 @@ public class DefaultDiffNode implements DiffNode {
   @Override
   public @Nullable ScopedComponentInfo getScopedComponentInfo() {
     return mScopedComponentInfo;
+  }
+
+  @Override
+  public @Nullable Mountable<?> getMountable() {
+    return mMountable;
+  }
+
+  @Override
+  public void setMountable(@Nullable Mountable<?> mountable) {
+    mMountable = mountable;
   }
 
   @Override

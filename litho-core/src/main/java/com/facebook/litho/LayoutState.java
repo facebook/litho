@@ -824,6 +824,7 @@ public class LayoutState
       diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
       diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
       diffNode.setLayoutData(result.getLayoutData());
+      diffNode.setMountable(result.getNode().getMountable());
     }
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
