@@ -33,42 +33,62 @@ import com.facebook.litho.widget.collection.LazyList
 import com.facebook.litho.widget.collection.OnNearCallback
 import com.facebook.yoga.YogaAlign
 
-// start_example
 class PaginationCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component {
-    val paginatedData = useCached { PaginatedDataSource(pageSize = 40) }
+    val paginatedData = useCached {
+      PagedDataWithDelay(data = (0..100).map { Item(it, "$it") }, pageSize = 40)
+    }
     val list = useState { paginatedData.next() }
-
-    return LazyList(
-        onNearEnd =
-            OnNearCallback(offset = 10) {
+    return PagedExample(
+        PaginatedList(
+            list = list.value,
+            fetchNextPage = {
               paginatedData.fetchDelayed { newData -> list.update { it + newData } }
             },
-    ) {
-      list.value.forEach { child(id = it, component = Text("$it")) }
-
-      if (paginatedData.hasNext) {
-        child(
-            Column(alignItems = YogaAlign.CENTER) {
-              child(component = Progress(style = Style.height(50.dp).height(50.dp)))
-            })
-      }
-    }
+            hasNextPage = paginatedData.hasNext))
   }
+}
+
+class PaginatedList<T>(val list: List<T>, val fetchNextPage: () -> Unit, val hasNextPage: Boolean)
+
+class Item(val id: Int, val text: String)
+
+// start_example
+class PagedExample(private val pagedList: PaginatedList<Item>) : KComponent() {
+  override fun ComponentScope.render(): Component =
+      LazyList(
+          onNearEnd = OnNearCallback { if (pagedList.hasNextPage) pagedList.fetchNextPage() },
+      ) {
+        // Add the retrieved items
+        pagedList.list.forEach { item -> child(id = item.id, component = Text(item.text)) }
+
+        // Optionally add a progress spinner
+        if (pagedList.hasNextPage) {
+          child(ProgressSpinner())
+        }
+      }
 }
 // end_example
 
-// A paginated datasource with a simulated network delay
-class PaginatedDataSource(pageSize: Int) {
-  private val data = (0..150).chunked(pageSize).iterator()
+// A progress spinner centered in a Column
+class ProgressSpinner : KComponent() {
+  override fun ComponentScope.render(): Component =
+      Column(alignItems = YogaAlign.CENTER) {
+        child(component = Progress(style = Style.height(50.dp).height(50.dp)))
+      }
+}
+
+// A paged datasource with a simulated network delay
+class PagedDataWithDelay<T>(data: List<T>, pageSize: Int) {
+  private val pagedData = data.chunked(pageSize).iterator()
   private var isFetching = false
   val hasNext
-    get() = data.hasNext()
+    get() = pagedData.hasNext()
 
-  fun next(): List<Int> = data.next()
+  fun next(): List<T> = pagedData.next()
 
-  fun fetchDelayed(callback: (newData: List<Int>) -> Unit) {
+  fun fetchDelayed(callback: (newData: List<T>) -> Unit) {
     if (isFetching || !hasNext) return
     isFetching = true
     Handler(Looper.getMainLooper())
