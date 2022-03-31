@@ -45,8 +45,8 @@ module.exports = {
       // TODO: Kotlin-ify,
       'mainconcepts/coordinate-state-actions/keys-and-identity',
     ],
-    // TODO: Clean up/update for Collection
-    'Building Lists': [
+     // TODO: Clean up/update for Collection
+    'Building lists': [
       'sections/start',
       'sections/recycler-collection-component',
       'sections/best-practices',
@@ -83,6 +83,9 @@ module.exports = {
       'widgets/builtin-widgets',
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
+    'Adopting Litho': [
+        'kotlin/migration-strategies',
+      ],
     // TODO: clean this section up, add intro page
     'Codegen APIs': [
       'codegen/layout-specs',
