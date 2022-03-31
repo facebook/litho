@@ -117,6 +117,7 @@ module.exports = {
            'kotlin/lazycollections/lazycollections-layout',
            'kotlin/lazycollections/lazycollections-interactions',
            'kotlin/lazycollections/lazycollections-sections-migration',
+           ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
           ],
         },
       ],
