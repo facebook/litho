@@ -1,0 +1,44 @@
+---
+id: custom-view-compat
+title: Compatibility with Custom Views
+---
+
+In this page, you'll learn how to migrate custom Views to Litho Components when the existing widgets cannot be composed to achieve the UI you want.
+
+Some cases when you might need this include:
+
+* Custom design systems with specialised widgets or measuring logic.
+* Displaying Video, for which Litho doesn't provide a widget.
+* Migrating a surface to Litho incrementally, when you need to maintain a hybrid View-Component UI.
+
+## Views to Components
+
+Follow the [Codegen Mount Specs guide](/codegen/mount-specs.md) to learn how you can bridge a custom View or Drawable to a Component.
+
+:::note
+Bridging Views into Components is currently only supported through the Codegen MountSpec API.
+:::
+
+You can compose MountSpec Components like you would compose any other KComponents, but they are instantiated using the Codegen Components Builder pattern.
+Consider the following MountSpec Component:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/viewcompat/CircularImageSpec.kt start=start_example end=end_example
+```
+
+You can create an instance of `CircularImage` in the `render()` method of a KComponent using its Builder:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/viewcompat/RootComponentUsingBuilder.kt start=start_use_mount_spec end=end_use_mount_spec
+```
+
+## Codegen component wrappers
+
+A common pattern for using Codegen MountSpec Components in KComponents is to wrap them in a ResourcesScope extension function and call that instead of the Builder to create the Component.
+
+This gives uniformity to your KComponent code, as well as allowing you to seamlessly convert the Codegen MountSpec Components to a Kotlin DSL API when it becomes available without updating the existing usages.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/viewcompat/KotlinWrappers.kt start=start_kwrapper end=end_kwrapper
+```
+
+After creating the wrapper, you can use a `CircularImage` Component like this:
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/viewcompat/RootComponentUsingWrapper.kt start=start_use_mount_spec end=end_use_mount_spec
+```

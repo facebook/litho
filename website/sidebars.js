@@ -85,6 +85,7 @@ module.exports = {
     ],
     'Adopting Litho': [
         'kotlin/migration-strategies',
+        'kotlin/custom-view-compat',
       ],
     // TODO: clean this section up, add intro page
     'Codegen APIs': [
