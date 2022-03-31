@@ -18,11 +18,53 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
 public class EquivalenceUtils {
+
+  /** Compare all private final fields in an object */
+  @SuppressWarnings("unchecked")
+  public static boolean hasEquivalentFields(Object a, Object b) {
+    return hasEquivalentFields(a, b, true);
+  }
+
+  /** Compare all private final fields in an object */
+  @SuppressWarnings("unchecked")
+  public static boolean hasEquivalentFields(Object a, Object b, boolean shouldCompareCommonProps) {
+    if (a == b) {
+      return true;
+    }
+    if (a.getClass() != b.getClass()) {
+      return false;
+    }
+
+    for (Field field : a.getClass().getDeclaredFields()) {
+      final Object val1;
+      final Object val2;
+      try {
+        final boolean wasAccessible = field.isAccessible();
+        if (!wasAccessible) {
+          field.setAccessible(true);
+        }
+        val1 = field.get(a);
+        val2 = field.get(b);
+        if (!wasAccessible) {
+          field.setAccessible(false);
+        }
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException("Unable to get fields by reflection.", e);
+      }
+
+      if (!EquivalenceUtils.areObjectsEquivalent(val1, val2, shouldCompareCommonProps)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   /** Return true if two objects are equivalent. */
   @SuppressWarnings("unchecked")

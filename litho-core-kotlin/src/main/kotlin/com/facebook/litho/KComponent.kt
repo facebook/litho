@@ -58,29 +58,8 @@ abstract class KComponent : Component() {
     if (id == other.id) {
       return true
     }
-    if (!hasEquivalentFields(other as KComponent, shouldCompareCommonProps)) {
+    if (!EquivalenceUtils.hasEquivalentFields(this, other, shouldCompareCommonProps)) {
       return false
-    }
-
-    return true
-  }
-
-  /** Compare all private final fields in the components. */
-  private fun hasEquivalentFields(other: KComponent, shouldCompareCommonProps: Boolean): Boolean {
-    for (field in javaClass.declaredFields) {
-      val wasAccessible = field.isAccessible
-      if (!wasAccessible) {
-        field.isAccessible = true
-      }
-      val field1 = field.get(this)
-      val field2 = field.get(other)
-      if (!wasAccessible) {
-        field.isAccessible = false
-      }
-
-      if (!EquivalenceUtils.areObjectsEquivalent(field1, field2, shouldCompareCommonProps)) {
-        return false
-      }
     }
 
     return true
