@@ -10,16 +10,17 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 ## Rows and Columns, Revisited
 
-As in the Spec API, `Row` and `Column` are the primary layout containers used in the KComponent API. If you need a refresher on them, check out the main [layout docs](/docs/mainconcepts/flexbox-yoga).
+As in the Spec API, `Row` and `Column` (see the image, below) are the primary layout containers used in the KComponent API. If you need a refresher on them, take a look a the [Layout System with Flexbox](/docs/mainconcepts/flexbox-yoga) page.
 
 <img src={useBaseUrl('/images/litho-layout-row-column-simple.png')} />
 
-### Differences from the Spec API
+### Differences between the KComponent API and the Spec API
 
 If you're used to the Spec way of writing containers, there are a few important differences when using `Row` and `Column` in the KComponent API:
-1. **Props of Rows and Columns**: Props that configure the `Row`/`Column` itself, like `alignItems` or `justifyContent`, now appear as props directly on the container Component. In this way, there is no difference from setting props on any other component.
-2. **Common Props**: Props that configure a particular child's positioning within the context of a `Row`/`Column`, like `alignSelf` or `flex`, now appear with other [common props](/docs/kotlin/kotlin-api-basics#common-props) on the `Style` passed to that child. You can think of this as akin to `LayoutParams` in vanilla Android - they must be able to go on any component and are read by the parent.
-3. **Children**: Children are added within a trailing lambda using the `child()` call.
+
+1. **Props of Rows and Columns** - props that configure the `Row`/`Column` itself, like `alignItems` or `justifyContent`, now appear as props directly on the container Component. In this way, there is no difference from setting props on any other component.
+2. **Common Props** - props that configure a particular child's positioning within the context of a `Row`/`Column`, like `alignSelf` or `flex`, now appear with other [common props](/docs/kotlin/kotlin-api-basics#common-props) on the `Style` passed to that child. You can think of this as akin to `LayoutParams` in vanilla Android - they must be able to go on any component and are read by the parent.
+3. **Children** - children are added within a trailing lambda using the `child()` call.
 
 You can see this in practice in the following code:
 
@@ -32,21 +33,20 @@ You can see this in practice in the following code:
 
 ## Migrating from the Spec API
 
-:::note
-#### Why are Layout Props Defined in Two Different Ways Now?
+:::note Why are Layout Props Now Defined in Two Different Ways?
 
-Without code-generated builders, we've had to make a distinction between props of the container itself and common props that can be set on children of the container.
+Without code-generated builders, Bloks had to make a distinction between props of the container itself and common props that can be set on children of the container.
 
 For example, `alignItems` configures the default alignment for children in this container and is only valid on a flexbox container. It's set like a normal component prop on `Row`/`Column`.
 
 On the other hand, `alignSelf` can be respected on any child of a container, whether it's a Text, a Switch, or some custom Component: it's therefore exposed as a common prop via `Style`.
 
-The benefit of this is that we can now statically verify all required props are set instead of verifying at runtime (as well as not rely on codegen!).
+The benefit of this is that you can now statically verify all required props are set instead of verifying at runtime (as well as not rely on Codegen!).
 :::
 
 ### Flexbox Properties Cheatsheet
 
-Following is a table to help you tell, at a glance, whether to set a layout property directly on the `Row`/`Column` or on `Style`:
+The following table helps you to identify, at a glance, whether to set a layout property directly on the `Row`/`Column` or on `Style`:
 
 | Flexbox Property | Configures a Specific Child? | Example KComponent Usage |
 | -- | -- | -- |
@@ -64,7 +64,9 @@ Following is a table to help you tell, at a glance, whether to set a layout prop
 | `width` | Yes | `Style.width(50.dp)` |
 | `wrap` | No | `Row(wrap = YogaWrap.NO_WRAP)` |
 
-Notice that a property is set via `Style` if and only if it configures a specific child!
+:::note
+A property is set via `Style` if and only if it configures a specific child!
+:::
 
 ### Example Migration
 
