@@ -31,13 +31,13 @@ abstract class SimpleMountable<ContentT> : Mountable<ContentT> {
    * Called just before mounting the content. Use it to set properties on the content. This method
    * is always called from the main thread.
    */
-  abstract fun mount(c: Context?, content: ContentT, layoutData: Any?)
+  abstract fun mount(c: Context, content: ContentT, layoutData: Any?)
 
   /**
    * Called just after unmounting the content. Use it to unset properties on the content. This
    * method is always called from the main thread.
    */
-  abstract fun unmount(c: Context?, content: ContentT, layoutData: Any?)
+  abstract fun unmount(c: Context, content: ContentT, layoutData: Any?)
 
   /**
    * Called to check if properties need to be reset. This is expected to be done by invoking
@@ -73,7 +73,7 @@ private val BINDER_LIST: List<RenderUnit.Binder<*, *>> =
           }
 
           override fun bind(
-              context: Context?,
+              context: Context,
               content: Any,
               mountable: SimpleMountable<Any>,
               layoutData: Any?

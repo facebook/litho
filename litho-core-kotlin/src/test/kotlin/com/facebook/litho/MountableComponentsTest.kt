@@ -461,13 +461,13 @@ open class ViewMountable(
     return ViewLayoutData(width, height)
   }
 
-  override fun mount(c: Context?, content: View, layoutData: Any?) {
+  override fun mount(c: Context, content: View, layoutData: Any?) {
     updateState?.invoke("mount")
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
     layoutData as ViewLayoutData
   }
 
-  override fun unmount(c: Context?, content: View, layoutData: Any?) {
+  override fun unmount(c: Context, content: View, layoutData: Any?) {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
     layoutData as ViewLayoutData
   }

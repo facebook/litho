@@ -118,13 +118,13 @@ class ImageMountable(
         matrix)
   }
 
-  override fun mount(c: Context?, content: MatrixDrawable<Drawable>, layoutData: Any?) {
+  override fun mount(c: Context, content: MatrixDrawable<Drawable>, layoutData: Any?) {
     layoutData as ImageLayoutData
     content.mount(drawable, layoutData.matrix)
     content.bind(layoutData.width, layoutData.height)
   }
 
-  override fun unmount(c: Context?, content: MatrixDrawable<Drawable>, layoutData: Any?) {
+  override fun unmount(c: Context, content: MatrixDrawable<Drawable>, layoutData: Any?) {
     content.unmount()
   }
 
