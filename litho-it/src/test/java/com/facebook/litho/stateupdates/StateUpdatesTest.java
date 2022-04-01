@@ -26,9 +26,12 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.LithoLayoutResult;
+import com.facebook.litho.LithoNode;
 import com.facebook.litho.NestedTreeHolderResult;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.Whitebox;
@@ -48,6 +51,8 @@ public class StateUpdatesTest {
   private int mHeightSpec;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
 
   @Before
   public void setup() {
@@ -85,18 +90,11 @@ public class StateUpdatesTest {
         Column.create(mContext).child(ComponentWithCounterStateLayout.create(mContext)).build();
     final TestLithoView testLithoView = createTestLithoView(component);
     final ComponentTree componentTree = testLithoView.getComponentTree();
-    final String globalKey =
-        testLithoView.getCurrentRootNode().getNode().getChildAt(0).getGlobalKeyAt(1);
+    final ComponentContext context =
+        testLithoView.getCurrentRootNode().getNode().getChildAt(0).getComponentContextAt(1);
 
-    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainer =
-        getStateHandleStateContainer(componentTree, globalKey);
-    ComponentWithCounterStateLayoutStateContainer initialStateStateContainer =
-        getInitialStateContainer(componentTree, globalKey);
-
-    assertThat(stateHandlerStateContainer).isNotNull();
-    assertThat(stateHandlerStateContainer.count).isEqualTo(0);
+    assertThatStateContainerIsInStateHandler(componentTree, context, 0);
     assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-    assertThat(initialStateStateContainer).isNull();
   }
 
   @Test
@@ -107,28 +105,18 @@ public class StateUpdatesTest {
             .build();
     final TestLithoView testLithoView = createTestLithoView(component);
     final ComponentTree componentTree = testLithoView.getComponentTree();
-    final String globalKey =
+    final ComponentContext context =
         ((NestedTreeHolderResult) testLithoView.getCurrentRootNode().getChildAt(0))
             .getNestedResult()
             .getNode()
             .getChildAt(0)
-            .getGlobalKeyAt(1);
-
-    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainer =
-        getStateHandleStateContainer(componentTree, globalKey);
-    ComponentWithCounterStateLayoutStateContainer initialStateStateContainer =
-        getInitialStateContainer(componentTree, globalKey);
+            .getComponentContextAt(1);
 
     if (ComponentsConfiguration.applyStateUpdateEarly) {
-      assertThat(stateHandlerStateContainer).isNull();
-      assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isFalse();
-      assertThat(initialStateStateContainer).isNotNull();
-      assertThat(initialStateStateContainer.count).isEqualTo(0);
+      assertThatStateContainerIsInInitialStateContainer(componentTree, context, 0);
     } else {
-      assertThat(stateHandlerStateContainer).isNotNull();
-      assertThat(stateHandlerStateContainer.count).isEqualTo(0);
+      assertThatStateContainerIsInStateHandler(componentTree, context, 0);
       assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-      assertThat(initialStateStateContainer).isNull();
     }
   }
 
@@ -140,7 +128,7 @@ public class StateUpdatesTest {
             .build();
     final TestLithoView testLithoView = createTestLithoView(component);
     final ComponentTree componentTree = testLithoView.getComponentTree();
-    final String globalKey =
+    final ComponentContext context =
         ((NestedTreeHolderResult)
                 ((NestedTreeHolderResult) testLithoView.getCurrentRootNode().getChildAt(0))
                     .getNestedResult()
@@ -148,23 +136,13 @@ public class StateUpdatesTest {
             .getNestedResult()
             .getChildAt(0)
             .getNode()
-            .getGlobalKeyAt(1);
-
-    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainer =
-        getStateHandleStateContainer(componentTree, globalKey);
-    ComponentWithCounterStateLayoutStateContainer initialStateStateContainer =
-        getInitialStateContainer(componentTree, globalKey);
+            .getComponentContextAt(1);
 
     if (ComponentsConfiguration.applyStateUpdateEarly) {
-      assertThat(stateHandlerStateContainer).isNull();
-      assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isFalse();
-      assertThat(initialStateStateContainer).isNotNull();
-      assertThat(initialStateStateContainer.count).isEqualTo(0);
+      assertThatStateContainerIsInInitialStateContainer(componentTree, context, 0);
     } else {
-      assertThat(stateHandlerStateContainer).isNotNull();
-      assertThat(stateHandlerStateContainer.count).isEqualTo(0);
+      assertThatStateContainerIsInStateHandler(componentTree, context, 0);
       assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-      assertThat(initialStateStateContainer).isNull();
     }
   }
 
@@ -179,11 +157,8 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainer =
-        getStateHandleStateContainer(componentTree, componentContext.getGlobalKey());
-
-    assertThat(stateHandlerStateContainer).isNotNull();
-    assertThat(stateHandlerStateContainer.count).isEqualTo(1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
+    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
   }
 
   @Test
@@ -203,15 +178,8 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainer =
-        getStateHandleStateContainer(componentTree, componentContext.getGlobalKey());
-    ComponentWithCounterStateLayoutStateContainer initialStateStateContainer =
-        getInitialStateContainer(componentTree, componentContext.getGlobalKey());
-
-    assertThat(stateHandlerStateContainer).isNotNull();
-    assertThat(stateHandlerStateContainer.count).isEqualTo(1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
     assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-    assertThat(initialStateStateContainer).isNull();
   }
 
   @Test
@@ -234,14 +202,133 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainer =
-        getStateHandleStateContainer(componentTree, componentContext.getGlobalKey());
-    ComponentWithCounterStateLayoutStateContainer initialStateStateContainer =
-        getInitialStateContainer(componentTree, componentContext.getGlobalKey());
-
-    assertThat(stateHandlerStateContainer).isNotNull();
-    assertThat(stateHandlerStateContainer.count).isEqualTo(1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
     assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-    assertThat(initialStateStateContainer).isNull();
+  }
+
+  @Test
+  public void testKeepUpdatedStateValueAfterMultipleStateUpdatesInSiblingsDeepHierarchy() {
+    final Component component =
+        Column.create(mContext)
+            .child(ComponentWithCounterStateLayout.create(mContext))
+            .child(ComponentWithCounterStateLayout.create(mContext))
+            .child(ComponentWithCounterStateLayout.create(mContext))
+            .build();
+    final TestLithoView testLithoView = createTestLithoView(component);
+    final ComponentTree componentTree = testLithoView.getComponentTree();
+    final ComponentContext componentContextChild1 =
+        testLithoView.getCurrentRootNode().getNode().getChildAt(0).getComponentContextAt(1);
+    final ComponentContext componentContextChild2 =
+        testLithoView.getCurrentRootNode().getNode().getChildAt(1).getComponentContextAt(1);
+    final ComponentContext componentContextChild3 =
+        testLithoView.getCurrentRootNode().getNode().getChildAt(2).getComponentContextAt(1);
+
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContextChild1);
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContextChild2);
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild3, 0);
+  }
+
+  @Test
+  public void testKeepUpdatedStateValueAfterMultipleStateUpdatesInSiblingsNestedTree() {
+    final Component component =
+        Column.create(mContext).child(NestedParentWithMultipleStateChild.create(mContext)).build();
+    final TestLithoView testLithoView = createTestLithoView(component);
+    final ComponentTree componentTree = testLithoView.getComponentTree();
+    final LithoNode lithoNode =
+        ((NestedTreeHolderResult) testLithoView.getCurrentRootNode().getChildAt(0))
+            .getNestedResult()
+            .getNode();
+
+    final ComponentContext componentContextChild1 =
+        lithoNode.getChildAt(0).getComponentContextAt(1);
+    final ComponentContext componentContextChild2 =
+        lithoNode.getChildAt(1).getComponentContextAt(1);
+    final ComponentContext componentContextChild3 =
+        lithoNode.getChildAt(2).getComponentContextAt(1);
+
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContextChild1);
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContextChild2);
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 1);
+
+    if (ComponentsConfiguration.applyStateUpdateEarly) {
+      assertThatStateContainerIsInInitialStateContainer(componentTree, componentContextChild3, 0);
+    } else {
+      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild3, 0);
+    }
+  }
+
+  @Test
+  public void
+      testKeepUpdatedStateValueAfterMultipleStateUpdatesInSiblingsNestedTreeWithNestedChild() {
+    final Component component =
+        Column.create(mContext)
+            .child(NestedGrandParentWithMultipleStateChild.create(mContext))
+            .build();
+    final TestLithoView testLithoView = createTestLithoView(component);
+    final ComponentTree componentTree = testLithoView.getComponentTree();
+    final LithoLayoutResult layoutResult =
+        ((NestedTreeHolderResult)
+                ((NestedTreeHolderResult) testLithoView.getCurrentRootNode().getChildAt(0))
+                    .getNestedResult()
+                    .getChildAt(0))
+            .getNestedResult();
+
+    final ComponentContext componentContextChild1 =
+        layoutResult.getChildAt(0).getNode().getComponentContextAt(1);
+
+    final ComponentContext componentContextChild2 =
+        layoutResult.getChildAt(1).getNode().getComponentContextAt(1);
+
+    final ComponentContext componentContextChild3 =
+        layoutResult.getChildAt(2).getNode().getComponentContextAt(1);
+
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContextChild1);
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContextChild2);
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 1);
+
+    if (ComponentsConfiguration.applyStateUpdateEarly) {
+      assertThatStateContainerIsInInitialStateContainer(componentTree, componentContextChild3, 0);
+    } else {
+      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild3, 0);
+    }
+  }
+
+  private void assertThatStateContainerIsInStateHandler(
+      ComponentTree componentTree, ComponentContext context, int expectedStateValue) {
+    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainerChild1 =
+        getStateHandleStateContainer(componentTree, context.getGlobalKey());
+    ComponentWithCounterStateLayoutStateContainer initialStateStateContainerChild1 =
+        getInitialStateContainer(componentTree, context.getGlobalKey());
+
+    assertThat(stateHandlerStateContainerChild1).isNotNull();
+    assertThat(stateHandlerStateContainerChild1.count).isEqualTo(expectedStateValue);
+    assertThat(initialStateStateContainerChild1).isNull();
+  }
+
+  private void assertThatStateContainerIsInInitialStateContainer(
+      ComponentTree componentTree, ComponentContext context, int expectedStateValue) {
+    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isFalse();
+
+    ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainerChild3 =
+        getStateHandleStateContainer(componentTree, context.getGlobalKey());
+    ComponentWithCounterStateLayoutStateContainer initialStateStateContainerChild3 =
+        getInitialStateContainer(componentTree, context.getGlobalKey());
+
+    assertThat(stateHandlerStateContainerChild3).isNull();
+    assertThat(initialStateStateContainerChild3).isNotNull();
+    assertThat(initialStateStateContainerChild3.count).isEqualTo(expectedStateValue);
   }
 }
