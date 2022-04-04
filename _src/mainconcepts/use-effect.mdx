@@ -14,10 +14,10 @@ To familiarize yourself with the concept and rules for hooks, see the [Introduct
 ## Performing side effects
 
 :::note
-`useEffect` lambdas and cleanup are both invoked on the main thread. This means it's safe to trigger animations or mutate the view hierarchy from it - however avoid expensive operations to keep your app responsive!
+`useEffect` lambdas and cleanup are both invoked on the main thread. This means it's safe to trigger animations or mutate the view hierarchy from it. However, it's recommended to avoid expensive operations in order to keep your app responsive!
 :::
 
-`useEffect` accepts an *effect lambda* to invoke when the component is attached to the tree. Besides performing a side-effect, like subscribing to a data store, the effect lambda should also return a *cleanup lambda* which will be invoked when the component no longer exists in the tree.
+`useEffect` accepts an *effect lambda* to invoke when the component is attached to the tree. Besides performing a side-effect, like subscribing to a data store, the effect lambda should also return a *cleanup lambda*, which is invoked when the component no longer exists in the tree.
 
 ```kotlin
 useEffect {
@@ -26,19 +26,19 @@ useEffect {
 }
 ```
 
-Without any dependency args, these lambdas will be invoked **every time** a new layout is committed that includes this component, with the previous cleanup lambda invoked before the next effect lambda.
+Without any dependency args, these lambdas are invoked **every time** a new layout is committed that includes this component, with the previous cleanup lambda invoked before the next effect lambda.
 
-You can have a more fine-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
+You can have a finer-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
 
-## Side effects with dependencies
+## Side Effects with Dependencies
 
 :::note
 Dependencies are checked for equivalence by calling `equals`. If any are not equal, the hook will be cleaned up and called again.
 :::
 
-In addition, the effect lambda, `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
+In addition, the effect lambda, `useEffect` also accepts a var-arg list of *dependencies*. These dependencies are the props and/or state which affect the side effect performed. When dependencies are supplied, the effect lambda (along with the previous cleanup lambda, if applicable) will only be invoked on initial attach and any commit in which any of those dependencies have changed.
 
-In the sample code below, when the first render is committed, Litho will invoke the `useEffect` lambda, subscribing to the current `userId`. On subsequent commits, **if `userId` or `store` changed**, Litho will invoke the cleanup callback to unsubscribe the existing subscription (if there is one) and then subscribe to the current `userId` and `store`.
+In the sample code below, when the first render is committed, Litho will invoke the `useEffect` lambda, subscribing to the current `userId`. On subsequent commits, **if `userId` or `store` changed**, Litho invokes the cleanup callback to unsubscribe the existing subscription (if there is one) and then subscribe to the current `userId` and `store`.
 
 ```kotlin
 class UserStatusComponent(private val userId: Int, private val store: StatusStore) : KComponent() {
@@ -60,7 +60,7 @@ In general, your dependencies should include **all** the props/state read by you
 
 ### Cleanup
 
-The return value of the lambda passed to `useEffect` is a cleanup method. In it, you should perform any cleanup necessary to undo and side-effects done in the main body of that `useEffect` call, for example canceling a subscription to a data store, or canceling an animation. If you don't have any cleanup you need to do, you can return `null` instead, i.e.:
+The return value of the lambda passed to `useEffect` is a cleanup method. In it, you should perform any cleanup necessary to undo side-effects from the main body of that `useEffect` call. For example, canceling a subscription to a data store, or canceling an animation. If you don't have any cleanup you need to do, you can return `null` instead:
 
 ```kotlin
 useEffect {
@@ -69,21 +69,21 @@ useEffect {
 }
 ```
 
-### Unconditionally triggering side effects
+### Unconditionally Triggering Side Effects
 
-`useEffect` can be called without dependencies. In that case on each new commit, the cleanup for the previous `useEffect` call will be invoked, followed by the current useEffect call.
+`useEffect` can be called without dependencies. In such a case, on each new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current useEffect call.
 
-### Listening to prop/state changes
+### Listening to Prop/State Changes
 
-An important functionality that `useEffect` adds is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever some prop changes:
+An important functionality that `useEffect` adds is the ability to trigger code when props/state change. As an example, this could be used to trigger an animation as a side-effect whenever some prop changes:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
 ```
 
 ## Known Problems
 
-### `useEffect` in Components that can return null from `render`
+### `useEffect` in Components That Can Return Null from `render`
 
-If you specify an effect via `useEffect` and then return null from `render` - or render to a child which returns null from render - the effect won't run.
+If you specify an effect via `useEffect` and then return null from `render`, or render to a child, which returns null from render, then the effect won't run.
 
 Until this is fixed, the workaround is to return an empty `Row()` from render instead of null.
