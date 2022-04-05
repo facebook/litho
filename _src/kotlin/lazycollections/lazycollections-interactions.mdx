@@ -5,7 +5,7 @@ title: Interactions
 
 ## Scrolling the Lazy Collection
 
-Scrolling the lazy collection by a given distance or to a child with a given index/id, is a two-step process:
+Scrolling the lazy collection by a given distance, or to a child with a given index/id, is a two-step process:
 
 1. Create a `LazyCollectionController` and attach it to the lazy collection via the `lazyCollectionController` parameter. Note that it should be defined in a `useState` hook.
 2. Use one of the `LazyCollectionController`’s scroll functions.
@@ -15,13 +15,14 @@ Scrolling the lazy collection by a given distance or to a child with a given ind
 
 ## Responding to Scroll Events
 
-An [`OnNearCallback`](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/OnNearCallback.kt) can be applied to the lazy collection's `onNearEnd` parameter, or a child's `onNearViewport` parameter. For example `onNearEnd = OnNearCallback(offset = 10) { /* callback */ }`.
+An [OnNearCallback](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/OnNearCallback.kt) can be applied to the lazy collection's `onNearEnd` parameter, or a child's `onNearViewport` parameter. For example, `onNearEnd = OnNearCallback(offset = 10) { /* callback */ }`.
 
-* `onNearEnd` will be invoked when the lazy colleciton is scrolled to the last position, or is scrolled within `offset` items away.
-* `onNearViewport` will be invoked when the child enters the viewport, or is `offset` items away.
+* `onNearEnd` is invoked when the lazy collection is scrolled to the last position or is scrolled within `offset` items away.
+* `onNearViewport` is invoked when the child enters the viewport or is `offset` items away.
 
 :::note
-For more complex scroll handling (e.g. for animations) you can access the `RecyclerView` directly via a `LazyCollectionController` and use a `RecyclerView.OnScrollListener` to recieve callbacks during scroll:
+For more complex scroll handling (such as for animations), you can access the `RecyclerView` directly via a `LazyCollectionController` and use a `RecyclerView.OnScrollListener` to receive callbacks during scroll:
+
 1. Create a `LazyCollectionController` and attach it to the lazy collection via the `lazyCollectionController` parameter. Note that it should be defined in a `useState` hook.
 2. Access the `RecyclerView` via `LazyCollectionController.recyclerView`
 3. Add a custom `OnScrollListener` using `RecyclerView.addOnScrollListener(..)`
@@ -29,7 +30,7 @@ For more complex scroll handling (e.g. for animations) you can access the `Recyc
 
 ## Paging
 
-Lists of data are often retrieved from the server in pages; additional data is requested only if the user scrolls. To achieve this behaviour add a callback to the lazy collection’s `onNearEnd` parameter that fetches more data. This will be triggered when the lazy collection is scrolled near to the end. Optionally add a request indicator to the bottom of the list.
+Lists of data are often retrieved from the server in pages; additional data is requested only if the user scrolls. To achieve this behaviour, add a callback to the lazy collection’s `onNearEnd` parameter that fetches more data. This will be triggered when the lazy collection is scrolled near to the end. Optionally, add a request indicator to the bottom of the list.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/PaginationCollectionKComponent.kt start=start_example end=end_example
 ```
@@ -39,6 +40,7 @@ Lists of data are often retrieved from the server in pages; additional data is r
 To implement 'pull to refresh' behaviour, provide a callback to the lazy collection's `onPullToRefresh` parameter. This callback will be responsible for fetching fresh data.
 
 To dismiss the refreshing indicator:
+
 1. Create a `LazyCollectionController` and attach it to the lazy collection via the `lazyCollectionController` parameter. Note that it should be defined in a `useState` hook.
 2. Call `LazyCollectionController.clearRefreshing()`.
 
