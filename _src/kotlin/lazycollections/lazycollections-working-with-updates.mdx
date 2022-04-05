@@ -4,8 +4,9 @@ title: Working with Updates
 ---
 
 A lazy collection is updated by changing the changing the prop/state values from which it is generated. To ensure correctness and performance you must:
-1. [Provide ids](#child-identity) for any children that can be updated
-2. Make sure props of children don't unnecessarily change, leading to [unnecessary layouts](#avoiding-unecessary-layouts)
+
+1. [Provide ids](#child-identity) for any children that can be updated.
+2. Make sure props of children don't unnecessarily change, leading to [unnecessary layouts](#avoiding-unecessary-layouts).
 
 ## Child Identity
 
@@ -22,16 +23,19 @@ By default, an 'id' is generated for each child based on its position and type. 
 
 ## Avoiding Unnecessary Layouts
 
-During a list update, if a child with the same `id` is found in the old and new lists then the lazy collection will automatically detect if the content has changed. If an update has not occurred we can re-use the subtree as-is, otherwise we'll re-render that child.
+During a list update, if a child with the same `id` is found in the old and new lists then the lazy collection automatically detects if the content has changed. If an update has not occurred, the subtree will be re-used as-is, otherwise it is re-created.
 
-Content changes are detected by checking the equality of the component's props. **If any component prop does not implement an `equals()` then it cannot be reused**. It is common for classes to not implement `equals()` e.g. Drawables, Lambdas and data models. A little bit more work is required to avoid unnecessary layouts when these are used.
+Content changes are detected by checking the equality of the component's props. **If any component prop does not implement an `equals()` then it cannot be reused**. It is common for classes to not implement `equals()` such as Drawables, Lambdas, and data models. A little bit more work is required to avoid unnecessary layouts when these are used.
+
 :::info
-**The behaviour will be functionally correct by default.** If you use props that do not provide an `equals()` the UI will still use the most up-to-date prop and state values. However there will be unecessary layouts which will impact performance.
+**The behaviour will be functionally correct by default.** If you use props that do not provide an `equals()` the UI will still use the most up-to-date prop and state values. However, there will be unnecessary layouts which will impact performance.
 :::
 
 ### Using Classes Without `equals()` as Props
 
-If a component accepts a prop that does not implement an `equals()` then it will never be reused. Consider the following example:
+If a component accepts a prop that does not implement an `equals()` then it will never be reused.
+
+Consider the following example:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_name_list_unnecessary_update end=end_name_list_unnecessary_update
 ```
@@ -40,20 +44,20 @@ In the above example, `NameComponent` will be laid out on any update because it 
 
 Unnecessary layouts can be avoided using two methods:
 
-1. Add an `equals()` to the `Name` class e.g. by making it a `data` class. This approach will not be possible if you're using a an object provided by a framework you don't control.
+1. Add an `equals()` to the `Name` class, such as by making it a `data` class. This approach will not be possible if you're using an object provided by a framework you don't control.
 2. Manually specify the dependencies that, if changed, should trigger an update.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_name_list_fixed end=end_name_list_fixed
 ```
 
-By manually specifying the dependencies `NameComponent` will only be laid out once, and re-used whenever the Example is updated.
+By manually specifying the dependencies, `NameComponent` is only be laid out once and re-used whenever the Example is updated.
 
 Consider the following example, which uses an Android `Drawable`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_drawable_unnecessary_update end=end_drawable_unnecessary_update
 ```
 
-In this example, the Text component will be unnecessarily laid out on every update to Example because ColorDrawable does not implement an `equals()`.
+In the above example, the Text component will be unnecessarily laid out on every update to Example because ColorDrawable does not implement an `equals()`.
 
 Here, Unnecessary layouts can be avoided using two techniques:
 
@@ -69,7 +73,7 @@ Lambdas do not provide an `equals()`, for example, `{} == {}` is `false`. This m
 
 Furthermore, lambdas capture values when they are created. For example, in the folling lambda, `{ val time = Calendar.getInstance().time }`, the value `time` will contain the time the lambda was created not the time when it was invoked. This means it is not possible to prevent updates using `deps` as the lambda needs to be regenerated to capture the latest state and prop values.
 
-To use a lambda in a Lazy Collection wrap it in a `useCallback` hook.  This provides equality across layouts, allowing the component to be reused, and the lambda is guaranteed to use the latest prop and state values
+To use a lambda in a Lazy Collection, wrap it in a `useCallback` hook.  This provides equality across layouts, allowing the component to be reused, and the lambda is guaranteed to use the latest prop and state values
 
 Consider the following example where a lambda is passed to a component:
 
@@ -86,4 +90,4 @@ Consider another example, this time displaying a shopping list:
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_shopping_list_example end=end_shopping_list_example
 ```
 
-Each shopping list item requires a lambda to toggle a checkmark. If an unwrapped lambda was used then no component would ever be reused as lambda does not provide an `equals()`. Instead, wrap the lambda in a `useCallback` hook. This provides equality across renders, and ensure that changes are applied to the latest version of the `checkedItems` state.
+Each shopping list item requires a lambda to toggle a checkmark. If an unwrapped lambda was used, then no component would ever be reused as lambda does not provide an `equals()`. Instead, wrap the lambda in a `useCallback` hook. This provides equality across renders and ensure that changes are applied to the latest version of the `checkedItems` state.
