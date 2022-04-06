@@ -46,7 +46,9 @@ To update state, use the `update` method on the `State<T>` returned from `useSta
 1. **Value variant** - takes a determined value, such as `myState.update(1)`.
 2. **Lambda variant** - takes a lambda receiving the old value which can be used to compute a new value, such as `myState.update { c -> c + 1 }`.
 
-Use the lambda variant when you need to perform an update that depends on the old state value. For example, if your state update should increment a counter, using the function version of `update` with `count -> count + 1` will enable you to account for updates that are in flight but not yet applied (such as if the user has tapped a button triggering the update multiple times in succession).
+**The basic rule of thumb is: use the lambda variant when you need to perform an update that depends on the old state value.** This is because `value` on `State` is a snapshot of that state for the current render and may not reflect any renders that have occurred since (or are currently occuring on other threads).
+
+For example, if your state update increments a counter, then using the function version of `update` with `count -> count + 1` enables you to account for updates that are in flight but not yet applied (such as if the user has tapped a button triggering the update multiple times in succession).
 
 ## Using state in child components
 
