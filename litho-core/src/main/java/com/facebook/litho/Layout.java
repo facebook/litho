@@ -48,7 +48,29 @@ class Layout {
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
-  static @Nullable LithoNode render(
+  static @Nullable ResolvedTree resolveTree(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component,
+      final @Nullable String globalKeyToReuse,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable LithoNode current,
+      final @Nullable PerfEvent layoutStatePerfEvent) {
+    final @Nullable LithoNode node =
+        resolve(
+            layoutStateContext,
+            c,
+            component,
+            globalKeyToReuse,
+            widthSpec,
+            heightSpec,
+            current,
+            layoutStatePerfEvent);
+    return node == null ? null : new ResolvedTree(node);
+  }
+
+  static @Nullable LithoNode resolve(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
@@ -131,6 +153,56 @@ class Layout {
         layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null, null);
   }
 
+  static @Nullable ResolvedTree createResolvedTree(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component,
+      final @Nullable String globalKeyToReuse,
+      final int widthSpec,
+      final int heightSpec,
+      final boolean isReconcilable,
+      final @Nullable LithoNode current,
+      final @Nullable PerfEvent layoutStatePerfEvent) {
+    try {
+      applyStateUpdateEarly(layoutStateContext, c, component, current);
+    } catch (Exception ex) {
+      ComponentUtils.handleWithHierarchy(c, component, ex);
+      return null;
+    }
+
+    return resolveTree(
+        layoutStateContext,
+        c,
+        component,
+        globalKeyToReuse,
+        widthSpec,
+        heightSpec,
+        isReconcilable ? current : null,
+        layoutStatePerfEvent);
+  }
+
+  static LayoutResultHolder measureTree(
+      final LayoutStateContext layoutStateContext,
+      final @Nullable LithoNode node,
+      final ComponentContext c,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable DiffNode diff,
+      final @Nullable PerfEvent layoutStatePerfEvent) {
+    if (node == null) {
+      return new LayoutResultHolder(null);
+    }
+
+    if (layoutStateContext.isLayoutInterrupted()) {
+      return LayoutResultHolder.interrupted(node);
+    }
+
+    final @Nullable LithoLayoutResult result =
+        layout(layoutStateContext, c, node, widthSpec, heightSpec, diff, layoutStatePerfEvent);
+
+    return new LayoutResultHolder(result);
+  }
+
   static LayoutResultHolder createAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -144,19 +216,14 @@ class Layout {
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
     try {
-      if (ComponentsConfiguration.applyStateUpdateEarly && c.getComponentTree() != null) {
-        layoutStateContext
-            .getStateHandler()
-            .applyStateUpdatesEarly(
-                c.getComponentTree().getInitialStateContainer(), c, component, current);
-      }
+      applyStateUpdateEarly(layoutStateContext, c, component, current);
     } catch (Exception ex) {
       ComponentUtils.handleWithHierarchy(c, component, ex);
       return new LayoutResultHolder(null);
     }
 
-    final @Nullable LithoNode node =
-        render(
+    final LithoNode node =
+        resolve(
             layoutStateContext,
             c,
             component,
@@ -166,14 +233,21 @@ class Layout {
             isReconcilable ? current : null,
             layoutStatePerfEvent);
 
-    if (node != null && layoutStateContext.isLayoutInterrupted()) {
-      return LayoutResultHolder.interrupted(node);
+    return measureTree(
+        layoutStateContext, node, c, widthSpec, heightSpec, diff, layoutStatePerfEvent);
+  }
+
+  private static void applyStateUpdateEarly(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component,
+      final @Nullable LithoNode current) {
+    if (ComponentsConfiguration.applyStateUpdateEarly && c.getComponentTree() != null) {
+      layoutStateContext
+          .getStateHandler()
+          .applyStateUpdatesEarly(
+              c.getComponentTree().getInitialStateContainer(), c, component, current);
     }
-
-    final @Nullable LithoLayoutResult result =
-        layout(layoutStateContext, c, node, widthSpec, heightSpec, diff, layoutStatePerfEvent);
-
-    return new LayoutResultHolder(result);
   }
 
   public @Nullable static LithoNode create(
