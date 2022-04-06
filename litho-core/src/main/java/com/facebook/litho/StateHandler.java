@@ -79,11 +79,29 @@ public class StateHandler {
   private List<Pair<String, HookUpdater>> mPendingHookUpdates;
   private List<Pair<String, HookUpdater>> mAppliedHookUpdates;
 
+  private @Nullable InitialStateContainer mInitialStateContainer;
+
+  @VisibleForTesting
   public StateHandler() {
-    this(null);
+    this(null, null);
   }
 
+  @VisibleForTesting
   public StateHandler(final @Nullable StateHandler stateHandler) {
+    this(stateHandler, null);
+  }
+
+  StateHandler(final @Nullable ComponentTree componentTree) {
+    this(null, componentTree == null ? null : componentTree.getInitialStateContainer());
+  }
+
+  public StateHandler(
+      final @Nullable StateHandler stateHandler,
+      final @Nullable InitialStateContainer initialStateContainer) {
+    if (ComponentsConfiguration.applyStateUpdateEarly) {
+      mInitialStateContainer = initialStateContainer;
+    }
+
     if (stateHandler == null) {
       return;
     }
@@ -99,16 +117,21 @@ public class StateHandler {
     }
   }
 
-  public static StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
-    return new StateHandler(stateHandler);
+  public static StateHandler createNewInstance(
+      @Nullable StateHandler stateHandler, @Nullable InitialStateContainer initialStateContainer) {
+    return new StateHandler(stateHandler, initialStateContainer);
   }
 
   public static StateHandler createShallowCopyForLazyStateUpdates(final StateHandler stateHandler) {
-    final StateHandler copy = new StateHandler();
+    final StateHandler copy = new StateHandler(null, stateHandler.mInitialStateContainer);
     synchronized (stateHandler) {
       copy.copyPendingLazyStateUpdates(stateHandler.mPendingLazyStateUpdates);
     }
     return copy;
+  }
+
+  public @Nullable InitialStateContainer getInitialStateContainer() {
+    return mInitialStateContainer;
   }
 
   public synchronized boolean isEmpty() {

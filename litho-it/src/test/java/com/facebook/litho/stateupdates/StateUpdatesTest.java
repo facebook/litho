@@ -19,12 +19,15 @@ package com.facebook.litho.stateupdates;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.stateupdates.ComponentWithCounterStateLayout.ComponentWithCounterStateLayoutStateContainer;
 import static com.facebook.litho.stateupdates.ComponentWithStateAndChildWithState.ComponentWithStateAndChildWithStateStateContainer;
 import static com.facebook.litho.stateupdates.ComponentWithStateAndChildWithStateNestedGrandParent.ComponentWithStateAndChildWithStateNestedGrandParentStateContainer;
 import static com.facebook.litho.stateupdates.ComponentWithStateAndChildWithStateNestedParent.ComponentWithStateAndChildWithStateNestedParentStateContainer;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import android.os.HandlerThread;
+import android.os.Looper;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -448,6 +451,59 @@ public class StateUpdatesTest {
     }
   }
 
+  @Test
+  public void testNestedTreeStateContainersPreservedCorrectly() {
+    final Component component =
+        Column.create(mContext)
+            .child(ComponentWithCounterStateNestedParent.create(mContext))
+            .build();
+
+    final Looper looper = getLooper();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).layoutThreadLooper(looper).build();
+
+    TestLithoView testLithoView =
+        mLithoViewRule
+            .createTestLithoView(null, componentTree)
+            .setSizeSpecs(mWidthSpec, mHeightSpec)
+            .attachToWindow()
+            .measure()
+            .layout();
+
+    final ComponentContext componentContext =
+        ((NestedTreeHolderResult) testLithoView.getCurrentRootNode().getChildAt(0))
+            .getNestedResult()
+            .getNode()
+            .getChildAt(0)
+            .getComponentContextAt(1);
+
+    if (ComponentsConfiguration.applyStateUpdateEarly) {
+      assertThatStateContainerIsInInitialStateContainer(componentTree, componentContext, 0);
+    } else {
+      assertThatStateContainerIsInStateHandler(componentTree, componentContext, 0);
+    }
+
+    ComponentWithCounterStateLayout.incrementCountAsync(componentContext);
+
+    // Simulate Activity destroyed so that we have pending state update which should be restored
+    // correctly when we acquire state handler and again process the pending state update.
+    looper.quit();
+    final StateHandler stateHandler = componentTree.acquireStateHandler();
+    componentTree = ComponentTree.create(mContext, component).stateHandler(stateHandler).build();
+
+    mLithoViewRule
+        .createTestLithoView(null, componentTree)
+        .setSizeSpecs(mWidthSpec, mHeightSpec)
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
+    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+  }
+
   private void assertThatNestedGrandParentStateContainerIsInStateHandler(
       ComponentTree componentTree, ComponentContext context, int expectedStateValue) {
     ComponentWithStateAndChildWithStateNestedGrandParentStateContainer
@@ -510,5 +566,12 @@ public class StateUpdatesTest {
     assertThat(stateHandlerStateContainerChild3).isNull();
     assertThat(initialStateStateContainerChild3).isNotNull();
     assertThat(initialStateStateContainerChild3.count).isEqualTo(expectedStateValue);
+  }
+
+  private Looper getLooper() {
+    final HandlerThread defaultThread =
+        new HandlerThread("testThread", DEFAULT_BACKGROUND_THREAD_PRIORITY);
+    defaultThread.start();
+    return defaultThread.getLooper();
   }
 }
