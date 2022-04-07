@@ -16,7 +16,7 @@ Using the Sections framework begins with creating a [SectionTree](pathname:///ja
 
 SectionTrees must be created with a `Target` implementation. The [Target](pathname:///javadoc/com/facebook/litho/sections/SectionTree.Target.html) interface is the API between `SectionTree` and the UI.
 
-After computing a ChangeSet from a section hierarchy, a `SectionTree` instance will relay the changes to its `Target`. You can create a `Target' for whatever custom UI you want, but the Sections framework has already implemented some `Targets` for you. [SectionBinderTarget](pathname:///javadoc/com/facebook/litho/sections/widget/SectionBinderTarget.html) is a `Target` implementation that relays changes to a `RecyclerBinder` for rendering.
+After computing a ChangeSet from a section hierarchy, a `SectionTree` instance will relay the changes to its `Target`. You can create a `Target` for whatever custom UI you want, but the Sections framework has already implemented some `Targets` for you. [SectionBinderTarget](pathname:///javadoc/com/facebook/litho/sections/widget/SectionBinderTarget.html) is a `Target` implementation that relays changes to a `RecyclerBinder` for rendering.
 
 ## Updating the SectionTree
 

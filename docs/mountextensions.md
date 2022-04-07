@@ -141,7 +141,7 @@ Some Mount Extensions also need to process information when the host only change
 In that case, the host performs the following sequence:
 
 
-```
+```java
 for (MountExtension mountExtension: enabledExtensions) {
   mountExtension.onVisibleBoundsChanged(currentVisibleArea);
 }

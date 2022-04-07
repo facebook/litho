@@ -17,7 +17,7 @@ ComponentTree.create(
         componentContext,
         RootComponent.create(componentContext).build())
           .stateHandler(mStateHandlerViewModel.getStateHandler())
-          .build()
+          .build();
 ```
 
 :::warning

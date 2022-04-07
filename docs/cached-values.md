@@ -9,7 +9,7 @@ The API is made up of two annotations: `@CachedValue` and `@OnCalculateCachedVal
 
 `@OnCalculateCachedValue` is used to calculate the cached value. It has a method `name()` which is used to identify which cached value the method is calculating. Cached values can only depend upon props and state - any other parameters are not allowed.
 
-```
+```java
 @OnCreateLayout
 static Component onCreateLayout(
     ComponentContext c,

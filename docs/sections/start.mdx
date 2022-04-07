@@ -76,7 +76,7 @@ The minimal information that you must pass to a `DataDiffSection` is the list of
 ```java
 DataDiffSection.<MyModel>create(c)
     .data(ImmutableList.of(new MyModel(1), new MyModel(2), new MyModel(3)))
-    .renderEventHandler(MyGroupSection.onRenderEdge(c))
+    .renderEventHandler(MyGroupSection.onRenderEdge(c));
 ```
 
 `DataDiffSection` is designed to efficiently render the parts of a surface that handle large flows of data. When an item at a certain position needs to be displayed on screen, the framework will check whether the model received in the new list of data changed since the last time it was rendered.
