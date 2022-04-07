@@ -4,13 +4,14 @@ title: Sections Migration Guide
 ---
 
 This page provides guidance for migrating an existing list rendered with Sections to [lazy collections](lazycollections.mdx). This will involve:
-1. Replacing the component that renders the section tree with a lazy collection component
-2. Adding each component from the section tree as a child of the lazy collection
-3. Migrating any event handlers or state
+
+1. Replacing the component that renders the section tree with a lazy collection component.
+2. Adding each component from the section tree as a child of the lazy collection.
+3. Migrating any event handlers or state.
 
 ## Replace the `RecyclerCollectionComponent`
 
-Sections are typically rendered by a `RecyclerCollectionComponent`.
+Sections are typically rendered by a `RecyclerCollectionComponent`:
 
 ```kotlin
 val component = RecyclerCollectionComponent.create(c)
@@ -38,6 +39,7 @@ Next, you need to migrate the content from the Section into the lazy collection,
 A `GroupSectionSpec` includes an `onCreateChildren` function that creates a list of `SingleComponentSection` and `DataDiffSection` children.
 
 The first step is to migrate each `SingleComponentSection`. The following `GroupSectionSpec` renders two components as `SingleComponentSection`s:
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleGroupSectionSpec.kt start=start_example end=end_example
 ```
 
@@ -50,13 +52,13 @@ Next, consider a list rendered with a `DataDiffSection`
 
 ## Migrating `DataDiffSection`
 
-A `DataDiffSection` defines how a list should be rendered. They are can be defined as a child in a `GroupSectionSpec` or directly on a `RecyclerCollectionComponent`. They require the following event handlers:
+A `DataDiffSection` defines how a list should be rendered. They can be defined as a child in a `GroupSectionSpec`, or directly on a `RecyclerCollectionComponent`, and require the following event handlers:
 
-* `renderEventHandler` - render a list item
-* `onCheckIsSameItemEventHandler`  - Used to determine if items have the same identity
-* `onCheckIsSameContentEventHandler` - Used to determine if items have updated content
+* `renderEventHandler` - render a list item.
+* `onCheckIsSameItemEventHandler`  - Used to determine if items have the same identity.
+* `onCheckIsSameContentEventHandler` - Used to determine if items have updated content.
 
-Consider the following `GroupSectionSpec` that contains a `DataDiffSection` to render a list of the follwing type:
+Consider the following `GroupSectionSpec` that contains a `DataDiffSection` to render a list of the following type:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/ListSectionSpec.kt start=start_data_type end=end_data_type
 ```
@@ -64,23 +66,23 @@ Consider the following `GroupSectionSpec` that contains a `DataDiffSection` to r
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/ListSectionSpec.kt start=start_example end=end_example
 ```
 
-A component for each list item should be added the the lazy collection as a child. The component can be copied from the RenderEvent’s `ComponentRenderInfo` `component` parameter.
+A component for each list item should be added the lazy collection as a child. The component can be copied from the RenderEvent’s `ComponentRenderInfo` `component` parameter.
 
-The child `id` parameter should be a unique and consistent across renders, and will likely be the value that is compared in `onCheckIsSameItem`. See the [guidelines for child ids](lazycollections-working-with-updates.mdx#child-identity).
+The child `id` parameter should be a unique and consistent across renders and will likely be the value that is compared in `onCheckIsSameItem`. See the [guidelines for child ids](lazycollections-working-with-updates.mdx#child-identity).
 
-It is not necessary to migrate the checks from `onCheckIsSameContent` as the lazy collection will automatically compare the child component props. However additional steps may be required to eliminate unecessary layouts if child takes props that do not provide an `equals()`. See [Avoiding Unnecessay Layouts](lazycollections-working-with-updates.mdx##avoiding-unecessary-layouts).
+It is not necessary to migrate the checks from `onCheckIsSameContent` as the lazy collection will automatically compare the child component props. However, additional steps may be required to eliminate unnecessary layouts if child takes props that do not provide an `equals()`. For more information, see the [Avoiding Unnecessary Layouts](lazycollections-working-with-updates.mdx##avoiding-unecessary-layouts) page.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_list end=end_list
 ```
 
 ## Migrating Event Handlers
 
-Event handlers that are defined as `@OnEvent` function (e.g. visibility or click handeling) can be passed as lambdas to the appropriate Style function. Note that using lambdas as props could cause [unnecessary updates](lazycollections-working-with-updates.mdx#using-lambdas-as-props), so they should be wrapped in a `useCallback` hook.
+Event handlers that are defined as `@OnEvent` function (such as visibility or click handling) can be passed as lambdas to the appropriate Style function. Note that using lambdas as props could cause [unnecessary updates](lazycollections-working-with-updates.mdx#using-lambdas-as-props), so they should be wrapped in a `useCallback` hook.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/EventHandlerSectionSpec.kt start=start_example end=end_example
 ```
 
-Migrating the above Section to a lazy collections yields:
+Migrating the above Section to a lazy collection's yields:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_event_handler end=end_event_handler
 ```
@@ -95,4 +97,3 @@ Migrating the above Section to a lazy collections yields:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_state end=end_state
 ```
-
