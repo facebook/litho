@@ -23,7 +23,7 @@ Updating the UI by passing new props is commonly used in cases when the update h
 Let's see what this looks in practice. In the codelab example, we'll use a Text component that displays a string passed in through the `labelText` prop.
 Think of this string as data coming from the server, which the Text component has no control over - it simply displays the input string.
 
-```java
+```kotlin
 @LayoutSpec
 object RootComponentSpec {
 
@@ -39,7 +39,7 @@ To render this component we create a LithoView in our activity and pass it as ro
 We also hold on to this LithoView, so when we want to update the UI we don't create and attach a new LithoView, we simply set a new root on the view we already have.
 The first time we set the root to the LithoView, the framework will calculate layout synchronously on the UI thread, so that the UI is ready to be displayed as fast as possible.
 
-```java
+```kotlin
 val lithoView = LithoView.create(
       this,
       RootComponent.create(componentContext)
@@ -55,7 +55,7 @@ setContentView(
 In the example we start a timer which periodically changes the string on the label (in practice, this could mean starting a network request and waiting for the response).
 To update the string on the label, we create a new RootComponent with the update value for `labelText` prop and set it as the new root of our LithoView.
 
-```java
+```kotlin
 val timer = object: CountDownTimer(30000, 1000) {
   override fun onTick(millisUntilFinished: Long) {
     lithoView.setComponentAsync(
@@ -91,7 +91,7 @@ This is problematic because it makes our toggle component not reusable - every t
 Luckily, the framework exposes an API which maintains component encapsulation and hides all this nastiness away: component [state](/docs/codegen/state-for-specs).
 Components can maintain internal state data and trigger updates when necessary. The state data is private to the component and cannot be accessed by any other component in the hierarchy.
 
-```
+```kotlin
 @LayoutSpec
 object RootComponentSpec {
 

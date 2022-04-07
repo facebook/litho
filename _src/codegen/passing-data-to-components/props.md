@@ -79,7 +79,7 @@ The annotation processor creates a `Builder` class for your Component automatica
 You pass down values for these props by calling the appropriate methods on the generated Component Builder:
 
 ```java
-FirstComponent.create(c).name("Linda").build()
+FirstComponent.create(c).name("Linda").build();
 ```
   </TabItem>
 </Tabs>

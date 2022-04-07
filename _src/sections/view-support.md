@@ -66,7 +66,7 @@ private static SimpleViewBinder VIEW_BINDER =
         public void bind(MyView view) {
         // this call is equivalent to onBindViewHolder()
         }
-    }
+    };
 ```
 
 Views created by the same `ViewCreator` instance will be recycled in the same pool in `RecyclerView`. You can create a static instance of `ViewCreator` for different view types, which you will use in the sections, then pass a static instance to the `ViewRenderInfo.Builder#viewCreator()` method to ensure efficient recycling. You can use the `model` or the `index` parameters in the `RenderEvent` handler to decide amongst multiple view types and return the appropriate `ViewCreator` instance:
@@ -107,5 +107,5 @@ static RenderInfo onRenderEvent(
                     }
                 })
             .build();
-  }
+}
 ```

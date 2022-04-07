@@ -28,7 +28,7 @@ final Component component =
         .textSizeRes(R.dimen.my_text_size)
         .textColorRes(R.color.my_text_color)
         .textAlignment(Layout.Alignment.ALIGN_CENTER)
-        .build()
+        .build();
  ```
 
 ## TextInput
@@ -57,7 +57,7 @@ Component component =
         .inputFilter(lenFilter)
         .backgroundColor(Color.TRANSPARENT)
         .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
-        .build()
+        .build();
  ```
 
 
@@ -76,7 +76,7 @@ Component component =
     Image.create(c)
         .drawableRes(R.drawable.my_drawable)
         .scaleType(ImageView.ScaleType.CENTER_CROP)
-        .build()
+        .build();
 ```
 ## Card
 
@@ -95,7 +95,7 @@ Component component =
         .content(myContentComponent)
         .clippingColorRes(R.color.my_clipping_color)
         .cornerRadiusDip(8)
-        .build()
+        .build();
 ```
 
 ## SolidColor
@@ -113,7 +113,7 @@ Component component =
     SolidColor.create(c)
         .color(Color.RED)
         .alpha(0.5)
-        .build()
+        .build();
 ```
 
 ## Progress
@@ -129,7 +129,7 @@ Renders an infinitely spinning progress bar backed by the Android's `ProgressBar
 Component component =
 	  Progress.create(c)
         .indeterminateDrawableRes(R.drawable.my_loading_spinner)
-        .build()
+        .build();
 ```
 
 
@@ -149,7 +149,7 @@ Component component =
 	  Spinner.create(c)
         .options(myOptions)
         .selectedOption(myOptions.get(0))
-        .build()
+        .build();
 ```
 
 ## VerticalScroll
@@ -168,7 +168,7 @@ Component component =
         .childComponent(myComponentToScroll)
         .verticalFadingEdgeEnabled(true)
         .fadingEdgeLengthDip(FADING_EDGE_LENGTH_DP)
-        .build()
+        .build();
 ```
 
 ## HorizontalScroll
@@ -185,7 +185,7 @@ Component that wraps another component, allowing it to be horizontally scrollabl
 Component component =
 	  HorizontalScroll.create(c)
         .contentProps(myComponentToScroll)
-        .build()
+        .build();
 ```
 
 ## Recycler

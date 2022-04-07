@@ -17,7 +17,7 @@ Setting a content description on any component is as simple as:
 Image.create(c)
     .imageRes(R.drawable.some_image)
     .contentDescription("This is an image")
-    .build())
+    .build();
 ```
 
 The content description set here has the same semantics as when it is set on an Android view.
@@ -91,7 +91,7 @@ static void onInitializeAccessibilityNodeInfoEvent(
 ```java
 Text.create(c)
     .text(title)
-    .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfoEvent(c))
+    .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfoEvent(c));
 ```
 
 One of the best features of `AccessibilityDelegate`s in general is their reusability even across different types of `View`s. This can also be achieved within Litho by creating a wrapper spec that takes in a component and adds the desired event handlers. For example, let's say we want to have a Component that appends "please" to every `AccessibilityEvent` that it announces.
@@ -149,5 +149,5 @@ Making any component an Accessibility Header is as simple as:
 Row.create(c)
     .contentDescription("This is an accessibility heading")
     .accessibilityHeading(true)
-    .build()
+    .build();
 ```

@@ -206,7 +206,7 @@ Initially, item at position 0 is selected:
 SelectedItemRootComponent.create(mComponentContext)
     .dataModels(mDataModels)
     .selectedItem(0)
-    .build()
+    .build();
 ```
 
 Then after a while, new data is available and item at position 1 needs to be selected:
@@ -215,7 +215,7 @@ Then after a while, new data is available and item at position 1 needs to be sel
 SelectedItemRootComponent.create(mComponentContext)
     .dataModels(mDataModels)
     .selectedItem(1)
-    .build()
+    .build();
 ```
 
 However, it looks like nothing is changing: the item at position 0 is still selected and item at position 1 is still unselected.

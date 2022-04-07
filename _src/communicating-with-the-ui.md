@@ -180,8 +180,7 @@ class YourSectionSpec {
           ChildSection
             .create(c)
             .loadingEventHandler(YourSection.onLoadingEvent(c)))
-        .build()
-    }
+        .build();
   }
 
   @OnEvent(LoadingEvent.class)

@@ -24,7 +24,7 @@ Row.create(c)
       .widthDip(YogaEdge.ALL, 5)
       .color(YogaEdge.ALL, 0xfff36b7f)
       .build())
-  .build()
+  .build();
 ```
 
 Or that you'd like to specify specific widths for a specific edge:
@@ -42,7 +42,7 @@ Row.create(c)
       .widthDip(YogaEdge.LEFT, 5)
       .color(YogaEdge.LEFT, 0xfff36b7f)
       .build())
-  .build()
+  .build();
 ```
 
 Maybe you just want something different per edge:
@@ -63,7 +63,7 @@ Row.create(c)
       .widthDip(YogaEdge.BOTTOM, 20)
       .color(YogaEdge.ALL, 0xfff36b7f)
       .build())
-  .build()
+  .build();
 ```
 
 ## Border Colors
