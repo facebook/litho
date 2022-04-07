@@ -25,6 +25,7 @@ import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.ChangesInfo
@@ -89,6 +90,7 @@ class LazyCollection(
     private val lazyCollectionController: LazyCollectionController? = null,
     private val onDataRendered: OnDataRendered? = null,
     private val childEquivalenceIncludesCommonProps: Boolean = true,
+    private val overlayRenderCount: Boolean = false,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -219,7 +221,10 @@ class LazyCollection(
                     item.spanSize?.let { spanSize(it) }
                     customAttribute(RecyclerBinder.ID_CUSTOM_ATTR_KEY, item.id)
                   }
-                  .component(component)
+                  .component(
+                      if (ComponentsConfiguration.isDebugModeEnabled && overlayRenderCount)
+                          component.overlayRenderCount
+                      else component)
                   .build()
             })
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))

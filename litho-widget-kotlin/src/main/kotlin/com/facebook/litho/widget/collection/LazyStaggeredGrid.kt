@@ -66,6 +66,7 @@ inline fun ResourcesScope.LazyStaggeredGrid(
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
     childEquivalenceIncludesCommonProps: Boolean = true,
+    overlayRenderCount: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
 ): Component =
     LazyCollection(
@@ -106,4 +107,5 @@ inline fun ResourcesScope.LazyStaggeredGrid(
         lazyCollectionController,
         onDataRendered,
         childEquivalenceIncludesCommonProps,
+        overlayRenderCount,
         init)

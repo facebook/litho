@@ -65,6 +65,7 @@ inline fun ResourcesScope.LazyList(
     useBackgroundChangeSets: Boolean = false,
     isReconciliationEnabled: Boolean = false,
     childEquivalenceIncludesCommonProps: Boolean = true,
+    overlayRenderCount: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
 ): Component =
     LazyCollection(
@@ -106,4 +107,5 @@ inline fun ResourcesScope.LazyList(
         lazyCollectionController,
         onDataRendered,
         childEquivalenceIncludesCommonProps,
+        overlayRenderCount,
         init)
