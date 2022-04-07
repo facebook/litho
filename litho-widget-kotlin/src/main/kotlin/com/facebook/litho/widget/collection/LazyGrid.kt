@@ -65,6 +65,7 @@ inline fun ResourcesScope.LazyGrid(
     isReconciliationEnabled: Boolean = false,
     childEquivalenceIncludesCommonProps: Boolean = true,
     overlayRenderCount: Boolean = false,
+    alwaysDetectDuplicates: Boolean = false,
     noinline init: CollectionContainerScope.() -> Unit
 ): Component =
     LazyCollection(
@@ -106,4 +107,5 @@ inline fun ResourcesScope.LazyGrid(
         onDataRendered,
         childEquivalenceIncludesCommonProps,
         overlayRenderCount,
+        alwaysDetectDuplicates,
         init)

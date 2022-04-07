@@ -91,6 +91,7 @@ class LazyCollection(
     private val onDataRendered: OnDataRendered? = null,
     private val childEquivalenceIncludesCommonProps: Boolean = true,
     private val overlayRenderCount: Boolean = false,
+    private val alwaysDetectDuplicates: Boolean = false,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -161,7 +162,10 @@ class LazyCollection(
             .childrenBuilder(
                 Children.create()
                     .child(
-                        createDataDiffSection(sectionContext, containerScope.collectionChildren)))
+                        createDataDiffSection(
+                            sectionContext,
+                            containerScope.collectionChildren,
+                            alwaysDetectDuplicates)))
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
@@ -200,9 +204,11 @@ class LazyCollection(
 
   private fun createDataDiffSection(
       sectionContext: SectionContext,
-      children: List<CollectionChild>
+      children: List<CollectionChild>,
+      alwaysDetectDuplicates: Boolean,
   ): Section {
     return DataDiffSection.create<CollectionChild>(sectionContext)
+        .alwaysDetectDuplicates(alwaysDetectDuplicates)
         .data(children)
         .renderEventHandler(
             eventHandlerWithReturn { renderEvent ->
