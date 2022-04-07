@@ -5,19 +5,19 @@ title: Layout and Styling
 
 ## Spacing
 
-To add spacing around and between items you can use `LinearSpacing`. This will create an `ItemDecorator` that will be applied to the underlying `RecyclerView`. It automatically takes care of edge cases including: equality checks (to avoid [unnecessary layouts](lazycollections-working-with-updates.mdx#avoiding-unnecessary-layouts)), as well as orientation and layout direction handling.
+To add spacing around and between items you can use `LinearSpacing`. This will create an `ItemDecorator` that will be applied to the underlying `RecyclerView`. It automatically takes care of edge cases including equality checks (to avoid [unnecessary layouts](lazycollections-working-with-updates.mdx#avoiding-unnecessary-layouts)), orientation, and layout direction handling.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_linear_spacing_example end=end_linear_spacing_example
 ```
 
 ## Horizontal Lists
 
-To. make a lazy collection horizontal set the parameter `orientation = RecyclerView.HORIZONTAL`. By default you will also need to specify a height e.g. `style = Style.height(100.dp)`.
+To make a lazy collection horizontal, set the parameter `orientation = RecyclerView.HORIZONTAL`. By default, you will also need to specify a height, such as `style = Style.height(100.dp)`, as follows:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_fixed_height_hscroll_example end=end_fixed_height_hscroll_example
 ```
 
-To automatically set the height you can set the parameter `crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild` to use the height of the first child. Or, set `crossAxisWrapMode = CrossAxisWrapMode.Dynamic` to match the largest item in the list.
+To automatically set the height, you can set the parameter `crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild` to use the height of the first child. Alternatively, set `crossAxisWrapMode = CrossAxisWrapMode.Dynamic` to match the largest item in the list.
 
 :::caution
 `CrossAxisWrapMode.Dynamic` requires measuring all the components in the list. This is inefficient and should be avoided if possible.
@@ -28,12 +28,12 @@ To automatically set the height you can set the parameter `crossAxisWrapMode = C
 Lazy collections are available as follows:
 
 * [LazyList](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyList.kt) - arranged as a sequential list.
-* [LazyGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyGrid.kt) - arranged as a grid with a number of columns specified by the `columns` parameter.
+* [LazyGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyGrid.kt) - arranged as a grid with the number of columns specified by the `columns` parameter.
 * [LazyStaggeredGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyStaggeredGrid.kt) - arranged into columns where children are inserted into the first column that has space.
 
 ## Sticky Headers
 
-To make a child "sticky" specify the parameter `isSticky = true`. This will cause the child to stick to the top of the Lazy Collection rather than being scrolled out of the viewport.
+To make a child 'sticky', specify the parameter `isSticky = true`. This will cause the child to stick to the top of the Lazy Collection rather than being scrolled out of the viewport.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_sticky_header_example end=end_sticky_header_example
 ```
