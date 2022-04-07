@@ -3,7 +3,9 @@ id: debugging-tips
 title: Debugging Tips
 ---
 
-# Flipper
+## Flipper
+
+Flipper is an extensible mobile app degbugger that is a platform for debugging iOS, Android, and React Native apps.  Flipper is the default debugging tool for the Litho team. For more information, see the [Flipper](https://www.fbflipper.com/) website.
 
 ## Layout Inspector Plugin
 
