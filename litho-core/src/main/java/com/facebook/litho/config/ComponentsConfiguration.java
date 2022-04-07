@@ -272,6 +272,8 @@ public class ComponentsConfiguration {
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;
 
+  public static boolean shouldCollectLogsInRecyclerBinder = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
