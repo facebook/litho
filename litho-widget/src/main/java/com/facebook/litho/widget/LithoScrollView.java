@@ -28,8 +28,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoMetadataExceptionWrapper;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.VerticalScrollSpec.OnInterceptTouchListener;
-import com.facebook.litho.widget.VerticalScrollSpec.ScrollPosition;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import java.util.List;
@@ -156,10 +154,10 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     lithoViews.add(mLithoView);
   }
 
-  void mount(
+  public void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
-      @Nullable ScrollStateListener scrollStateListener,
+      ScrollStateListener scrollStateListener,
       boolean isIncrementalMountEnabled) {
     mLithoView.setComponentTree(contentComponentTree);
 
@@ -188,7 +186,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     }
   }
 
-  void unmount() {
+  public void unmount() {
     mLithoView.setComponentTree(null, false);
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
@@ -196,5 +194,21 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     if (mScrollStateDetector != null) {
       mScrollStateDetector.setListener(null);
     }
+  }
+
+  public static class ScrollPosition {
+    public int y;
+
+    public ScrollPosition() {
+      this(0);
+    }
+
+    public ScrollPosition(int initialScrollOffsetPixels) {
+      y = initialScrollOffsetPixels;
+    }
+  }
+
+  public interface OnInterceptTouchListener {
+    boolean onInterceptTouch(NestedScrollView nestedScrollView, MotionEvent event);
   }
 }

@@ -27,7 +27,7 @@ public class VerticalScrollEventsController {
 
   @Nullable private LithoScrollView mScrollView;
 
-  void setScrollView(@Nullable LithoScrollView scrollView) {
+  public void setScrollView(@Nullable LithoScrollView scrollView) {
     mScrollView = scrollView;
   }
 
