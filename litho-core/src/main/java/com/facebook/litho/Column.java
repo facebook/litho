@@ -190,6 +190,11 @@ public final class Column extends Component {
     return mCustomSimpleName != null ? mCustomSimpleName : "Column";
   }
 
+  @Override
+  protected boolean usesLocalStateContainer() {
+    return true;
+  }
+
   public static class Builder extends Component.ContainerBuilder<Builder> {
     Column mColumn;
 

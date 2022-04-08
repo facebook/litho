@@ -188,6 +188,11 @@ public final class Row extends Component {
     return mCustomSimpleName != null ? mCustomSimpleName : "Row";
   }
 
+  @Override
+  protected boolean usesLocalStateContainer() {
+    return true;
+  }
+
   public static class Builder extends Component.ContainerBuilder<Builder> {
     Row mRow;
 
