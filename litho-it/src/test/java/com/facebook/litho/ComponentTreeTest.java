@@ -2043,6 +2043,18 @@ public class ComponentTreeTest {
     componentTree.setRootAndSizeSpecSync(mComponent, mWidthSpec, mHeightSpec);
   }
 
+  @Test
+  public void testComponentIdIsUniqueAfterShallowCopy() {
+    final Component firstComponent = Column.create(mContext).build();
+    final Component copyFirstComponent = firstComponent.makeShallowCopyWithNewId();
+
+    final Component secondComponent = Column.create(mContext).build();
+
+    assertThat(secondComponent.getId()).isNotEqualTo(copyFirstComponent.getId());
+    assertThat(secondComponent.getId()).isNotEqualTo(firstComponent.getId());
+    assertThat(firstComponent.getId()).isNotEqualTo(secondComponent.getId());
+  }
+
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {
     try {
       boolean hasCssSpec;

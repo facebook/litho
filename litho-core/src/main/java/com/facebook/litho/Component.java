@@ -1273,7 +1273,7 @@ public abstract class Component
 
   final Component makeShallowCopyWithNewId() {
     final Component component = makeShallowCopy();
-    component.mId = sIdGenerator.incrementAndGet();
+    component.mId = sIdGenerator.getAndIncrement();
     return component;
   }
 
