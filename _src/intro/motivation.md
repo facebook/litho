@@ -3,10 +3,6 @@ id: motivation
 title: "Motivation"
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-:::
-
 Building a list interface on Android is fairly simple. Just create a layout for
 the items, hook it up to a *RecyclerView* adapter, and you're done. Most apps
 are a bit more complicated than that, though.

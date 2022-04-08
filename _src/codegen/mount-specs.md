@@ -3,10 +3,6 @@ id: mount-specs
 title: "Mount Specs"
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-:::
-
 A *mount spec* defines a component that can render views or drawables.
 
 Mount specs should only be created when you need to integrate your own views/drawables with Litho. *Mount* here refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
