@@ -3,6 +3,10 @@ id: spec-props
 title: Props in Specs
 ---
 
+:::note
+This page covers the old Java Spec API. If you aren't using the Spec API, please refer to [Common Props](mainconcepts/props.mdx/#common-props).
+:::
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
