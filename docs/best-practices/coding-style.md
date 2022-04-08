@@ -3,10 +3,6 @@ id: coding-style
 title: Coding Style
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-:::
-
 #### Guidelines:
 
  * Name your specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.

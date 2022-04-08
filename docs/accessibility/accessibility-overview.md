@@ -3,10 +3,6 @@ id: accessibility-overview
 title: Overview
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-:::
-
 ## Content Description
 
 All components support content description by default. This means all layout builders have a prop of type `CharSequence` named `contentDescription` .

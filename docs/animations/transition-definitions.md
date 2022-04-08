@@ -3,12 +3,6 @@ id: transition-definitions
 title: 'Advanced: More ways to define transitions'
 ---
 
-:::caution Content will be updated
-This page was moved from the old website without any change and might be updated
-
-T81099238
-:::
-
 ### @State Arguments
 
 Litho allows `@OnCreateTransition` methods to take `@State` arguments if the Transition definition should take value of the state into account.
