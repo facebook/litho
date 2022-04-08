@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,5 +34,6 @@ public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
         TimeUnit.SECONDS,
         new LinkedBlockingQueue<Runnable>(),
         new LayoutThreadFactory(priority));
+    this.allowCoreThreadTimeOut(ComponentsConfiguration.shouldAllowCoreThreadTimeout);
   }
 }

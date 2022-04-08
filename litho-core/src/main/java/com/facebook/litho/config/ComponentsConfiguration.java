@@ -276,6 +276,9 @@ public class ComponentsConfiguration {
 
   public static boolean useCorrectedReverseLayoutTraversal = false;
 
+  /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
+  public static boolean shouldAllowCoreThreadTimeout = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
