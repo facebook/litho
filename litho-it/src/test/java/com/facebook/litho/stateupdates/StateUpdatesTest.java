@@ -32,6 +32,7 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoLayoutResult;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.NestedTreeHolderResult;
@@ -42,6 +43,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -502,6 +504,46 @@ public class StateUpdatesTest {
 
     assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
     assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+  }
+
+  @Test
+  public void testCrashOnUpdateState() {
+    AtomicInteger numOfTimesOnErrorWasCalled = new AtomicInteger(0);
+
+    final ErrorEventHandler errorEventHandler =
+        new ErrorEventHandler() {
+          @Override
+          public void onError(ComponentTree ct, Exception e) {
+            numOfTimesOnErrorWasCalled.getAndIncrement();
+            if (numOfTimesOnErrorWasCalled.get() > 1) {
+              throw new RuntimeException("onError should be called only once");
+            }
+            ct.setRoot(Column.create(mContext).build());
+          }
+        };
+
+    final Component component =
+        Column.create(mContext)
+            .child(ComponentWithStateCrashOnUpdateState.create(mContext))
+            .build();
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).errorHandler(errorEventHandler).build();
+
+    final TestLithoView testLithoView =
+        mLithoViewRule
+            .createTestLithoView(null, componentTree)
+            .setSizeSpecs(mWidthSpec, mHeightSpec)
+            .attachToWindow()
+            .measure()
+            .layout();
+
+    final ComponentContext componentContext =
+        testLithoView.getCurrentRootNode().getNode().getChildAt(0).getComponentContextAt(1);
+
+    ComponentWithStateCrashOnUpdateState.incrementCountSync(componentContext);
+
+    assertThat(numOfTimesOnErrorWasCalled.get()).isEqualTo(1);
   }
 
   private void assertThatNestedGrandParentStateContainerIsInStateHandler(

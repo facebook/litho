@@ -289,6 +289,16 @@ public class StateHandler {
             mStateContainers.put(key, newStateContainer);
             applyStateUpdates(key, newStateContainer);
           } catch (Exception ex) {
+
+            // Remove pending state update from ComponentTree's state handler since we don't want to
+            // process this pending state update again. If we don't remove it and someone is using
+            // setRoot in onError api then we can end up in an infinite loop
+            final @Nullable StateHandler stateHandler =
+                context.getComponentTree().getStateHandler();
+            if (stateHandler != null) {
+              stateHandler.removePendingStateUpdate(key);
+            }
+
             if (prevTreeRootNode != null) {
               handleExceptionDuringApplyStateUpdate(key, prevTreeRootNode, ex);
             } else {
@@ -300,6 +310,10 @@ public class StateHandler {
         mPendingStateUpdates.clear();
       }
     }
+  }
+
+  private synchronized void removePendingStateUpdate(String key) {
+    mPendingStateUpdates.remove(key);
   }
 
   private static void handleExceptionDuringApplyStateUpdate(
