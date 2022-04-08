@@ -73,6 +73,7 @@
     <activity android:name=".java.editor.SimpleEditorExampleActivity" />
     <activity android:name=".onboarding.HelloWorldActivity" />
     <activity android:name=".onboarding.FirstComponentSpecActivity" />
+    <activity android:name=".onboarding.FirstComponentActivity" />
 
     <activity android:name=".kotlin.lithography.LithographyKotlinActivity" />
     <activity android:name=".kotlin.errors.ErrorHandlingKotlinActivity" />
