@@ -26,6 +26,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
+import com.facebook.litho.Dimen
 import com.facebook.litho.Mountable
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.SimpleMountable
@@ -33,6 +34,7 @@ import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.Wrapper
+import com.facebook.litho.px
 import com.facebook.litho.useState
 import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.R
@@ -42,47 +44,49 @@ import com.facebook.rendercore.RenderUnit
 import kotlin.math.max
 import kotlin.math.min
 
-class VerticalScroll(
-    val component: Component,
+class VerticalScrollComponent(
     val scrollbarEnabled: Boolean = false,
     val nestedScrollingEnabled: Boolean = false,
     val verticalFadingEdgeEnabled: Boolean = false,
-    val fillViewPort: Boolean = false,
+    val fillViewport: Boolean = false,
     val scrollbarFadingEnabled: Boolean = true,
     val incrementalMountEnabled: Boolean = false,
     val overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     val fadingEdgeLength: Int = 0,
-    val initialScrollOffsetPixels: Int = 0,
+    val initialScrollPosition: Dimen = 0.px,
     val eventsController: VerticalScrollEventsController? = null,
-    val onScrollChangeListener: NestedScrollView.OnScrollChangeListener? = null,
-    val scrollStateListener: ScrollStateListener? = null,
-    val onInterceptTouchListener: ((NestedScrollView?, MotionEvent?) -> Boolean)? = null,
+    val onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
+    val onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
+    val onScrollStateChange: ((View, Int) -> Unit)? = null,
     style: Style? = null,
+    val child: () -> Component,
 ) : MountableComponent(style) {
   override fun ComponentScope.render(): Mountable<*> {
 
-    val scrollPosition = useState { LithoScrollView.ScrollPosition(initialScrollOffsetPixels) }
+    val scrollPosition = useState {
+      LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
+    }
 
     val componentTree = useState {
-      ComponentTree.createNestedComponentTree(context, component)
+      ComponentTree.createNestedComponentTree(context, child())
           .incrementalMount(incrementalMountEnabled)
           .build()
     }
 
     return VerticalScrollMountable(
-        component,
+        child(),
         scrollbarEnabled,
         nestedScrollingEnabled,
         verticalFadingEdgeEnabled,
-        fillViewPort,
+        fillViewport,
         scrollbarFadingEnabled,
         incrementalMountEnabled,
         overScrollMode,
         fadingEdgeLength,
         eventsController,
-        onScrollChangeListener,
-        scrollStateListener,
-        onInterceptTouchListener,
+        onScrollChange,
+        onScrollStateChange,
+        onInterceptTouch,
         scrollPosition.value,
         componentTree.value,
     )
@@ -100,9 +104,9 @@ internal class VerticalScrollMountable(
     val overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
     val fadingEdgeLength: Int = 0,
     val eventsController: VerticalScrollEventsController? = null,
-    val onScrollChangeListener: NestedScrollView.OnScrollChangeListener? = null,
+    val onScrollChangeListener: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     val scrollStateListener: ScrollStateListener? = null,
-    val onInterceptTouchListener: ((NestedScrollView?, MotionEvent?) -> Boolean)? = null,
+    val onInterceptTouchListener: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     val scrollPosition: LithoScrollView.ScrollPosition,
     val componentTree: ComponentTree,
 ) : SimpleMountable<LithoScrollView>() {
@@ -192,8 +196,19 @@ internal class VerticalScrollMountable(
     } else {
       content.isVerticalScrollBarEnabled = scrollbarEnabled
     }
-    content.setOnScrollChangeListener(onScrollChangeListener)
-    content.setOnScrollChangeListener(onScrollChangeListener)
+
+    onScrollChangeListener?.let {
+      content.setOnScrollChangeListener(
+          NestedScrollView.OnScrollChangeListener {
+              nestedScrollView: NestedScrollView,
+              _: Int,
+              scrollY: Int,
+              _: Int,
+              oldScrollY: Int ->
+            onScrollChangeListener.invoke(nestedScrollView, scrollY, oldScrollY)
+          })
+    }
+
     content.setOnInterceptTouchListener(onInterceptTouchListener)
     content.overScrollMode = overScrollMode
 

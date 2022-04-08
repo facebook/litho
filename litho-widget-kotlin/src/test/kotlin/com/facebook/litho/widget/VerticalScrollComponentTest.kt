@@ -44,19 +44,19 @@ class VerticalScrollComponentTest {
   fun `VerticalScroll Component should render`() {
     lithoViewRule
         .render {
-          VerticalScroll(
-              component =
-                  ImageComponent(
-                      drawable = ColorDrawable(Color.RED),
-                      style = Style.width(100.px).height(500.px),
-                  ),
+          VerticalScrollComponent(
               style = Style.width(100.px).height(100.px),
-          )
+          ) {
+            ImageComponent(
+                drawable = ColorDrawable(Color.RED),
+                style = Style.width(100.px).height(500.px),
+            )
+          }
         }
         .apply {
 
           // should find an VerticalScroll Component in the tree
-          findComponent(VerticalScroll::class)
+          findComponent(VerticalScrollComponent::class)
 
           // should mount an VerticalScroll Component
           assertThat(lithoView.mountItemCount).isEqualTo(1)
@@ -83,67 +83,58 @@ class VerticalScrollComponentTest {
   @Test
   fun `same instance should be equivalent`() {
     val component =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = ColorDrawable(Color.RED),
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(100.px).height(100.px),
-        )
+        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
+          ImageComponent(
+              drawable = ColorDrawable(Color.RED),
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
     assertThat(component.isEquivalentTo(component)).isTrue
     assertThat(component.isEquivalentTo(component, true)).isTrue
   }
 
+  /** TODO(T116546567): Ensure that lambdas can be compared in component isEquivalentTo */
   @Test
-  fun `components with same prop values should be equivalent`() {
+  fun `components with same prop values should be equivalent, but wont be because of the lambda`() {
     val color = ColorDrawable(Color.RED)
     val a =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = color,
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(100.px).height(100.px),
-        )
+        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
+          ImageComponent(
+              drawable = color,
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
     val b =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = color,
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(100.px).height(100.px),
-        )
+        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
+          ImageComponent(
+              drawable = color,
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
-    assertThat(a.isEquivalentTo(b)).isTrue
-    assertThat(a.isEquivalentTo(b, true)).isTrue
+    assertThat(a.isEquivalentTo(b)).isFalse
+    assertThat(a.isEquivalentTo(b, true)).isFalse
   }
 
   @Test
   fun `components with different prop values should not be equivalent`() {
     val a =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = ColorDrawable(Color.RED), // red here
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(100.px).height(100.px),
-        )
+        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
+          ImageComponent(
+              drawable = ColorDrawable(Color.RED), // red here
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
     val b =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = ColorDrawable(Color.BLUE), // blue here
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(100.px).height(100.px),
-        )
+        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
+          ImageComponent(
+              drawable = ColorDrawable(Color.BLUE), // blue here
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
     assertThat(a.isEquivalentTo(b)).isFalse
     assertThat(a.isEquivalentTo(b, true)).isFalse
@@ -153,24 +144,20 @@ class VerticalScrollComponentTest {
   fun `components with different style values should not be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = color,
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(100.px).height(100.px), // 100 here
-        )
+        VerticalScrollComponent(style = Style.width(100.px).height(100.px) /* 100 here */) {
+          ImageComponent(
+              drawable = color,
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
     val b =
-        VerticalScroll(
-            component =
-                ImageComponent(
-                    drawable = color,
-                    style = Style.width(100.px).height(500.px),
-                ),
-            style = Style.width(200.px).height(200.px), // 200 here
-        )
+        VerticalScrollComponent(style = Style.width(200.px).height(200.px) /* 200 here */) {
+          ImageComponent(
+              drawable = color,
+              style = Style.width(100.px).height(500.px),
+          )
+        }
 
     assertThat(a.isEquivalentTo(b, true)).isFalse
   }
