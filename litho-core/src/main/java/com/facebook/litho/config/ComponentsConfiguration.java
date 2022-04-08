@@ -274,6 +274,8 @@ public class ComponentsConfiguration {
 
   public static boolean shouldCollectLogsInRecyclerBinder = false;
 
+  public static boolean useCorrectedReverseLayoutTraversal = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
