@@ -27,7 +27,7 @@ import com.facebook.rendercore.MountItemsPool
  *
  * <p>Experimental. Currently for Litho team internal use only.</p>
  */
-abstract class MountableComponent(open val style: Style? = null) : Component() {
+abstract class MountableComponent(internal val style: Style? = null) : Component() {
 
   final override fun prepare(c: ComponentContext): PrepareResult {
     val componentScope = ComponentScope(c)
@@ -63,6 +63,11 @@ abstract class MountableComponent(open val style: Style? = null) : Component() {
       return true
     }
     if (!EquivalenceUtils.hasEquivalentFields(this, other, shouldCompareCommonProps)) {
+      return false
+    }
+
+    if (shouldCompareCommonProps &&
+        !EquivalenceUtils.hasEquivalentFields(this.style, (other as MountableComponent).style)) {
       return false
     }
 

@@ -400,6 +400,64 @@ class MountableComponentsTest {
             LifecycleStep.ON_UNMOUNT,
             LifecycleStep.ON_MOUNT)
   }
+
+  @Test
+  fun `same instance should be equivalent`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val component = TestMountableComponent(identity = 0, view = view, steps = steps)
+
+    assertThat(component.isEquivalentTo(component)).isTrue
+    assertThat(component.isEquivalentTo(component, true)).isTrue
+  }
+
+  @Test
+  fun `components with same prop values should be equivalent`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val a = TestMountableComponent(identity = 0, view = view, steps = steps)
+    val b = TestMountableComponent(identity = 0, view = view, steps = steps)
+    assertThat(a.isEquivalentTo(b)).isTrue
+    assertThat(a.isEquivalentTo(b, true)).isTrue
+  }
+
+  @Test
+  fun `components with different prop values should not be equivalent`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val a = TestMountableComponent(identity = 0, view = view, steps = steps)
+    val b = TestMountableComponent(identity = 1, view = view, steps = steps)
+
+    assertThat(a.isEquivalentTo(b)).isFalse
+    assertThat(a.isEquivalentTo(b, true)).isFalse
+  }
+
+  @Test
+  fun `components with different style values should not be equivalent`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+    val a =
+        TestMountableComponent(
+            identity = 0,
+            view = view,
+            steps = steps,
+            style = Style.width(100.px).height(100.px), /* 100 here */
+        )
+
+    val b =
+        TestMountableComponent(
+            identity = 0,
+            view = view,
+            steps = steps,
+            style = Style.width(200.px).height(200.px), /* 200 here */
+        )
+
+    assertThat(a.isEquivalentTo(b, true)).isFalse
+  }
 }
 
 class TestMountableComponent(
@@ -407,7 +465,7 @@ class TestMountableComponent(
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
     val shouldUseComparableMountable: Boolean = false,
-    override val style: Style? = null
+    style: Style? = null
 ) : MountableComponent(style = style) {
 
   override fun ComponentScope.render(): ViewMountable {

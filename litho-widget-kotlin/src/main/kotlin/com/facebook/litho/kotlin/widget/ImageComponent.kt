@@ -45,7 +45,7 @@ import com.facebook.rendercore.RenderUnit
 class ImageComponent(
     val drawable: Drawable,
     val scaleType: ScaleType = ScaleType.FIT_XY,
-    override val style: Style?,
+    style: Style? = null,
 ) : MountableComponent(style) {
 
   override fun ComponentScope.render(): ImageMountable = ImageMountable(drawable, scaleType)
