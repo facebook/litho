@@ -3,6 +3,10 @@ id: state-for-specs
 title: State in Specs
 ---
 
+:::note
+This page covers the old Java Spec API. If you aren't using the Spec API, please refer to [Introduction to Hooks](mainconcepts/hooks-intro.mdx).
+:::
+
 This page introduces the concept of state in a component written using the Java Spec API, namely a `@LayoutSpec` or `@MountSpec`.
 
 A component can have two types of data:
