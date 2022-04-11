@@ -279,6 +279,8 @@ public class ComponentsConfiguration {
   /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
   public static boolean shouldAllowCoreThreadTimeout = false;
 
+  public static boolean crashIfExceedingStateUpdateThreshold = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
