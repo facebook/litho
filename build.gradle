@@ -57,6 +57,7 @@ subprojects {
             if (offlineDepsDir != null) {
                 systemProperty 'robolectric.dependency.dir', "${rootDir}/$offlineDepsDir"
             }
+            systemProperty 'robolectric.looperMode', "LEGACY"
         }
     }
 }
