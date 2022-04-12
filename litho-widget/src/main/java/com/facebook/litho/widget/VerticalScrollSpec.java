@@ -175,6 +175,9 @@ public class VerticalScrollSpec {
         size.height = Math.max(0, Math.min(SizeSpec.getSize(heightSpec), size.height));
         break;
     }
+
+    // Ensure that width is not less than 0
+    size.width = Math.max(0, size.width);
   }
 
   @OnCreateMountContent

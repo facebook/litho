@@ -169,6 +169,9 @@ internal class VerticalScrollMountable(
       SizeSpec.AT_MOST -> size.height = max(0, min(height, size.height))
     }
 
+    // Ensure that width is not less than 0
+    size.width = max(0, size.width)
+
     return VerticalScrollLayoutData(size.width, size.height)
   }
 
