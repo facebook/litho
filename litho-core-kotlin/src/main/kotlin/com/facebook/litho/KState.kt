@@ -146,4 +146,27 @@ internal constructor(
       }
     }
   }
+
+  /**
+   * We consider two state objects equal if they 1) belong to the same ComponentTree, 2) have the
+   * same global key and hook index, and 3) have the same value (according to its own .equals check)
+   */
+  override fun equals(other: Any?): Boolean {
+    if (this === other) {
+      return true
+    }
+
+    if (other !is State<*>) {
+      return false
+    }
+
+    return context.componentTree === other.context.componentTree &&
+        context.globalKey == other.context.globalKey &&
+        hookStateIndex == other.hookStateIndex &&
+        value == other.value
+  }
+
+  override fun hashCode(): Int {
+    return context.globalKey.hashCode() * 17 + (value?.hashCode() ?: 0) * 11 + hookStateIndex
+  }
 }
