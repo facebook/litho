@@ -55,8 +55,7 @@ public class LayoutStateContext {
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(
-            layoutState, new StateHandler(c.getComponentTree()), c.getComponentTree(), null, null);
+        new LayoutStateContext(layoutState, new StateHandler(), c.getComponentTree(), null, null);
     layoutState.setLayoutStateContextForTest(layoutStateContext);
     return layoutStateContext;
   }
@@ -73,7 +72,7 @@ public class LayoutStateContext {
   @Deprecated
   public LayoutStateContext(
       final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, new StateHandler(componentTree), componentTree, null, null);
+    this(layoutState, new StateHandler(), componentTree, null, null);
   }
 
   LayoutStateContext(

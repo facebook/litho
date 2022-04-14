@@ -221,13 +221,7 @@ public class LayoutState
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
-    this(
-        context,
-        Column.create(context).build(),
-        new StateHandler(context.getComponentTree()),
-        null,
-        null,
-        null);
+    this(context, Column.create(context).build(), new StateHandler(), null, null, null);
   }
 
   LayoutState(
@@ -1101,7 +1095,7 @@ public class LayoutState
         c,
         component,
         null,
-        new StateHandler(c.getComponentTree()),
+        new StateHandler(),
         componentTreeId,
         widthSpec,
         heightSpec,

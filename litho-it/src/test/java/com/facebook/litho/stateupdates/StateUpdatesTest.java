@@ -36,12 +36,14 @@ import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoLayoutResult;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.NestedTreeHolderResult;
+import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
@@ -544,6 +546,177 @@ public class StateUpdatesTest {
     ComponentWithStateCrashOnUpdateState.incrementCountSync(componentContext);
 
     assertThat(numOfTimesOnErrorWasCalled.get()).isEqualTo(1);
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureDoNotCacheResult() {
+    testStateUpdateComponentMeasure(false);
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureCacheResult() {
+    testStateUpdateComponentMeasure(true);
+  }
+
+  /**
+   * We are using a component hierarchy which calls {@link Component#measure(ComponentContext, int,
+   * int, Size, boolean)} in onCreateLayout. The component being measured is simple component with
+   * state.
+   *
+   * <p>We want to verify if StateUpdate happens on a component then it should get updated
+   * correctly.
+   *
+   * @param shouldCacheResult whether to cache the result measured or not
+   */
+  private void testStateUpdateComponentMeasure(boolean shouldCacheResult) {
+    ComponentWithCounterStateLayoutSpec.Caller stateUpdater =
+        new ComponentWithCounterStateLayoutSpec.Caller();
+
+    Component component =
+        Column.create(mContext)
+            .child(
+                ComponentWithMeasureCall.create(mContext)
+                    .component(
+                        ComponentWithCounterStateLayout.create(mContext).caller(stateUpdater))
+                    .shouldCacheResult(shouldCacheResult))
+            .build();
+
+    TestLithoView testLithoView = createTestLithoView(component);
+
+    stateUpdater.increment();
+
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 1");
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureNestedTreeDoNotCacheResult() {
+    testStateUpdateComponentMeasureNestedTree(false);
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureNestedTreeCacheResult() {
+    testStateUpdateComponentMeasureNestedTree(true);
+  }
+
+  /**
+   * We are using a component hierarchy which calls {@link Component#measure(ComponentContext, int,
+   * int, Size, boolean)} in onCreateLayout. The component being measured is NestedTree and has a
+   * child component with state.
+   *
+   * <p>We want to verify if StateUpdate happens on a component (NestedTree -> component) then it
+   * should get updated correctly.
+   *
+   * @param shouldCacheResult whether to cache the result measured or not
+   */
+  private void testStateUpdateComponentMeasureNestedTree(boolean shouldCacheResult) {
+    ComponentWithCounterStateLayoutSpec.Caller stateUpdater =
+        new ComponentWithCounterStateLayoutSpec.Caller();
+
+    Component component =
+        Column.create(mContext)
+            .child(
+                ComponentWithMeasureCall.create(mContext)
+                    .component(
+                        ComponentWithCounterStateNestedParent.create(mContext).caller(stateUpdater))
+                    .shouldCacheResult(shouldCacheResult))
+            .build();
+
+    final TestLithoView testLithoView = createTestLithoView(component);
+
+    stateUpdater.increment();
+
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 1");
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureNestedTreeWithNestedChildDoNotCacheResult() {
+    testStateUpdateComponentMeasureNestedTreeWithNestedChild(false);
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureNestedTreeWithNestedChildCacheResult() {
+    testStateUpdateComponentMeasureNestedTreeWithNestedChild(true);
+  }
+
+  /**
+   * We are using a component hierarchy which calls {@link Component#measure(ComponentContext, int,
+   * int, Size, boolean)} in onCreateLayout. The component being measured is NestedTree ->
+   * NestedTree -> component with state
+   *
+   * <p>We want to verify if StateUpdate happens on a component (NestedTree -> NestedTree ->
+   * component) then it should get updated corectly
+   *
+   * <p>In this test, component is passed as a child of Column.
+   *
+   * @param shouldCacheResult whether to cache the result measured or not
+   */
+  private void testStateUpdateComponentMeasureNestedTreeWithNestedChild(boolean shouldCacheResult) {
+    ComponentWithCounterStateLayoutSpec.Caller stateUpdater =
+        new ComponentWithCounterStateLayoutSpec.Caller();
+
+    Component component =
+        Column.create(mContext)
+            .child(
+                ComponentWithMeasureCall.create(mContext)
+                    .component(
+                        Column.create(mContext)
+                            .child(
+                                ComponentWithCounterStateNestedGrandParent.create(mContext)
+                                    .caller(stateUpdater)))
+                    .shouldCacheResult(shouldCacheResult))
+            .build();
+
+    final TestLithoView testLithoView = createTestLithoView(component);
+
+    stateUpdater.increment();
+
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 1");
+  }
+
+  @Test
+  public void
+      testStateUpdateComponentMeasureNestedTreeWithNestedChildWithoutColumnDoNotCacheResult() {
+    testStateUpdateComponentMeasureNestedTreeWithNestedChildWithoutColumn(false);
+  }
+
+  @Test
+  public void testStateUpdateComponentMeasureNestedTreeWithNestedChildWithoutColumnCacheResult() {
+    testStateUpdateComponentMeasureNestedTreeWithNestedChildWithoutColumn(true);
+  }
+
+  /**
+   * We are using a component hierarchy which calls {@link Component#measure(ComponentContext, int,
+   * int, Size, boolean)} in onCreateLayout. The component being measured is NestedTree ->
+   * NestedTree -> component with state.
+   *
+   * <p>We want to verify if StateUpdate happens on a component (NestedTree -> NestedTree ->
+   * component) then it should get updated correctly.
+   *
+   * <p>In this test, component is passed as it is to be measured i.e not a child of Column or any
+   * other component
+   *
+   * @param shouldCacheResult whether to cache the result measured or not
+   */
+  private void testStateUpdateComponentMeasureNestedTreeWithNestedChildWithoutColumn(
+      boolean shouldCacheResult) {
+    ComponentWithCounterStateLayoutSpec.Caller stateUpdater =
+        new ComponentWithCounterStateLayoutSpec.Caller();
+
+    Component component =
+        Column.create(mContext)
+            .child(
+                ComponentWithMeasureCall.create(mContext)
+                    .component(
+                        ComponentWithCounterStateNestedGrandParent.create(mContext)
+                            .caller(stateUpdater))
+                    .shouldCacheResult(shouldCacheResult))
+            .build();
+
+    final TestLithoView testLithoView = createTestLithoView(component);
+
+    stateUpdater.increment();
+
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 1");
   }
 
   private void assertThatNestedGrandParentStateContainerIsInStateHandler(

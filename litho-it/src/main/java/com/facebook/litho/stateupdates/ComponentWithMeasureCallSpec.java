@@ -16,29 +16,28 @@
 
 package com.facebook.litho.stateupdates;
 
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 
 @LayoutSpec
-public class ComponentWithCounterStateNestedParentSpec {
+public class ComponentWithMeasureCallSpec {
 
-  @OnCreateLayoutWithSizeSpec
-  static Component onCreateLayoutWithSizeSpec(
-      ComponentContext c,
-      int widthSpec,
-      int heightSpec,
-      @Prop(optional = true) ComponentWithCounterStateLayoutSpec.Caller caller) {
-    return Column.create(c)
-        .child(
-            ComponentWithCounterStateLayout.create(c)
-                .caller(caller)
-                .widthPx(SizeSpec.getSize(widthSpec))
-                .heightPx(SizeSpec.getSize(heightSpec)))
-        .build();
+  @OnCreateLayout
+  public static Component onCreateLayout(
+      ComponentContext c, @Prop Component component, @Prop boolean shouldCacheResult) {
+
+    component.measure(
+        c,
+        SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY),
+        new Size(),
+        shouldCacheResult);
+
+    return component;
   }
 }

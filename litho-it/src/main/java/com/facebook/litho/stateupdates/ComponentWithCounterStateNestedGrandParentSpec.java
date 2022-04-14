@@ -22,15 +22,21 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.annotations.Prop;
 
 @LayoutSpec
 public class ComponentWithCounterStateNestedGrandParentSpec {
 
   @OnCreateLayoutWithSizeSpec
-  static Component onCreateLayoutWithSizeSpec(ComponentContext c, int widthSpec, int heightSpec) {
+  static Component onCreateLayoutWithSizeSpec(
+      ComponentContext c,
+      int widthSpec,
+      int heightSpec,
+      @Prop(optional = true) ComponentWithCounterStateLayoutSpec.Caller caller) {
     return Column.create(c)
         .child(
             ComponentWithCounterStateNestedParent.create(c)
+                .caller(caller)
                 .widthPx(SizeSpec.getSize(widthSpec))
                 .heightPx(SizeSpec.getSize(heightSpec)))
         .build();

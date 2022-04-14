@@ -24,24 +24,48 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 
 @LayoutSpec
 public class ComponentWithCounterStateLayoutSpec {
 
+  public static final int INITIAL_COUNT_VALUE = 0;
+
   @OnCreateInitialState
   static void OnCreateInitialState(ComponentContext c, StateValue<Integer> count) {
-    count.set(0);
+    count.set(INITIAL_COUNT_VALUE);
   }
 
   @OnCreateLayout
-  public static Component onCreateLayout(ComponentContext c, @State Integer count) {
+  public static Component onCreateLayout(
+      ComponentContext c, @Prop(optional = true) Caller caller, @State Integer count) {
+    if (caller != null) {
+      caller.set(c);
+    }
     return Column.create(c).child(Text.create(c).text("Count: " + count)).build();
   }
 
   @OnUpdateState
   static void incrementCount(StateValue<Integer> count) {
     count.set(count.get() + 1);
+  }
+
+  public static class Caller {
+
+    private ComponentContext c;
+
+    private void set(ComponentContext c) {
+      this.c = c;
+    }
+
+    public void increment() {
+      ComponentWithCounterStateLayout.incrementCountSync(c);
+    }
+
+    public void incrementAsync() {
+      ComponentWithCounterStateLayout.incrementCountAsync(c);
+    }
   }
 }

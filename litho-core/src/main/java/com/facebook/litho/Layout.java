@@ -243,10 +243,7 @@ class Layout {
       final Component component,
       final @Nullable LithoNode current) {
     if (ComponentsConfiguration.applyStateUpdateEarly && c.getComponentTree() != null) {
-      layoutStateContext
-          .getStateHandler()
-          .applyStateUpdatesEarly(
-              c.getComponentTree().getInitialStateContainer(), c, component, current);
+      layoutStateContext.getStateHandler().applyStateUpdatesEarly(c, component, current);
     }
   }
 

@@ -71,8 +71,7 @@ public final class DebugComponentTimeMachine {
       return false;
     }
 
-    final StateHandler frozenStateHandler =
-        new StateHandler(stateHandler, componentTree.getInitialStateContainer());
+    final StateHandler frozenStateHandler = new StateHandler(stateHandler);
     componentTree.appendTimeline(
         root, rootGlobalKey, frozenStateHandler, props, source, attribution);
 

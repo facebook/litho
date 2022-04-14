@@ -136,7 +136,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
-  private InitialStateContainer mInitialStateContainer = new InitialStateContainer();
   private final RenderUnitIdMap mRenderUnitIdMap;
   private boolean mInAttach = false;
 
@@ -439,15 +438,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
-        builderStateHandler == null
-            ? StateHandler.createNewInstance(null, mInitialStateContainer)
-            : builderStateHandler;
-
-    final InitialStateContainer initialStateContainer =
-        builderStateHandler != null ? builderStateHandler.getInitialStateContainer() : null;
-    if (initialStateContainer != null) {
-      mInitialStateContainer = initialStateContainer;
-    }
+        builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -1892,7 +1883,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * @return a copy of the state handler instance held by ComponentTree.
    */
   public synchronized StateHandler acquireStateHandler() {
-    return StateHandler.createNewInstance(mStateHandler, mInitialStateContainer);
+    return StateHandler.createNewInstance(mStateHandler);
   }
 
   public static @Nullable LithoLifecycleProvider getLifecycleProvider(ComponentContext context) {
@@ -2047,7 +2038,7 @@ public class ComponentTree implements LithoLifecycleListener {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public InitialStateContainer getInitialStateContainer() {
-    return mInitialStateContainer;
+    return mStateHandler.getInitialStateContainer();
   }
 
   /**
@@ -2401,8 +2392,8 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
 
-      if (layoutStateStateHandler != null) {
-        mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
+      if (mStateHandler != null && layoutStateStateHandler != null) {
+        mStateHandler.getInitialStateContainer().unregisterStateHandler(layoutStateStateHandler);
       }
 
       // Resetting the count after layout calculation is complete and it was triggered from within
@@ -2921,13 +2912,12 @@ public class ComponentTree implements LithoLifecycleListener {
 
       final StateHandler stateHandler;
       synchronized (ComponentTree.this) {
-        stateHandler =
-            StateHandler.createNewInstance(
-                ComponentTree.this.mStateHandler, ComponentTree.this.mInitialStateContainer);
+        stateHandler = StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
         previousLayoutState = mCommittedLayoutState;
         contextWithStateHandler = new ComponentContext(context, treeProps, null);
-        mInitialStateContainer.registerStateHandler(stateHandler);
+
+        stateHandler.getInitialStateContainer().registerStateHandler(stateHandler);
       }
 
       return LayoutState.calculate(
