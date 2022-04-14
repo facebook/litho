@@ -3146,7 +3146,10 @@ public class RecyclerBinder
   }
 
   @UiThread
-  private synchronized int getPositionForId(Object id) {
+  private synchronized int getPositionForId(final Object id) {
+    if (id == null) {
+      return -1;
+    }
     for (int i = 0; i < mComponentTreeHolders.size(); i++) {
       final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(i);
 
@@ -3156,7 +3159,7 @@ public class RecyclerBinder
       }
       @Nullable final Object childId = renderInfo.getCustomAttribute(ID_CUSTOM_ATTR_KEY);
 
-      if (childId == id) {
+      if (id.equals(childId)) {
         return i;
       }
     }
