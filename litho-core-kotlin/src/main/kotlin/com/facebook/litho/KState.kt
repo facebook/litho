@@ -38,7 +38,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   if (kState == null || kState.mStates.size <= hookIndex) {
     // The initial state was not computed yet. let's create it and put it in the state
     val state =
-        context.componentTree.initialStateContainer.createOrGetInitialHookState(
+        stateHandler.initialStateContainer.createOrGetInitialHookState(
             globalKey, hookIndex, initializer)
     stateHandler.stateContainers[globalKey] = state
 
