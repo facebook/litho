@@ -1,14 +1,18 @@
 # Changelog
 
-## Version 0.41.2-SNAPSHOT
+## Version 0.41.2
 
-_release-date_
+_2022-04-19_
 
  * Refactor: Rename `setRootAndSizeSpec` to `setRootAndSizeSpecSync` in `ComponentTree`.
  * New: Foreground color is supported as a common `DynamicValue`.
  * **Breaking:** Fix: More fully support `@PropDefault` annotations in Kotlin Specs.  (Results in `@field:PropDefault` failing at compilation time.  Use [fastmod](https://github.com/facebookincubator/fastmod) on existing codebase with the command: `fastmod '@field:PropDefault' '@PropDefault' --dir .`)
+ * **Breaking:** `InternalNode` renamed to `LithoNode`, and elevated to a concrete class. Deletes `DefaultInternalNode`.
+ * **Breaking:** `NodeInfo` is now a concrete class; deleted `DefaultNodeInfo`.
+ * Experimental Kotlin Mountable Component API added.
+ * Refactored RenderCore MountState extensions call order.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.1...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.1...v0.41.2).
 
 
 ## Version 0.41.1
