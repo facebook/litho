@@ -47,7 +47,7 @@ public class ComponentKeyUtils {
     return sb.toString();
   }
 
-  static String getKeyWithSeparator(String parentGlobalKey, String key) {
+  public static String getKeyWithSeparator(String parentGlobalKey, String key) {
     int parentLength = parentGlobalKey.length();
     int keyLength = key.length();
     return new StringBuilder(parentLength + keyLength + 1)
@@ -80,7 +80,7 @@ public class ComponentKeyUtils {
    * @param childComponent child component with the parent context
    * @return a unique global key for this component relative to its siblings.
    */
-  static String generateGlobalKey(
+  public static String generateGlobalKey(
       final ComponentContext parentContext,
       final @Nullable Component parentComponent,
       final Component childComponent) {
