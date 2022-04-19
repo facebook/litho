@@ -150,7 +150,7 @@ public class StateUpdatesTest {
     assertThat(previousStateContainer).isNotNull();
     assertThat(previousStateContainer.mCount)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
-    assertThat(mComponentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getStateHandler().getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
   }
 
   @Test
@@ -392,8 +392,9 @@ public class StateUpdatesTest {
       e.printStackTrace();
     }
 
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-    assertThat(componentTree.getInitialStateContainer().mPendingStateHandlers.isEmpty()).isTrue();
+    assertThat(getStateHandler().getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getStateHandler().getInitialStateContainer().mPendingStateHandlers.isEmpty())
+        .isTrue();
     assertThat(stateUpdateCalled.intValue()).isEqualTo(1);
     assertThat(stateValue.intValue()).isEqualTo(secondStateValue.intValue());
     assertThat(stateValue.intValue()).isEqualTo(10);

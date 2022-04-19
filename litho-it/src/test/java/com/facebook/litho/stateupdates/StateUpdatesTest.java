@@ -37,6 +37,7 @@ import com.facebook.litho.LithoLayoutResult;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.NestedTreeHolderResult;
 import com.facebook.litho.Size;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
@@ -45,6 +46,7 @@ import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,7 +91,13 @@ public class StateUpdatesTest {
 
   private <T> T getInitialStateContainer(
       final ComponentTree componentTree, final String globalKey) {
-    return (T) componentTree.getInitialStateContainer().mInitialStates.get(globalKey);
+    final StateHandler stateHandler = Whitebox.getInternalState(componentTree, "mStateHandler");
+    return (T) stateHandler.getInitialStateContainer().mInitialStates.get(globalKey);
+  }
+
+  private Map<String, StateContainer> getInitialStates(final ComponentTree componentTree) {
+    final StateHandler stateHandler = Whitebox.getInternalState(componentTree, "mStateHandler");
+    return stateHandler.getInitialStateContainer().mInitialStates;
   }
 
   @Test
@@ -102,7 +110,7 @@ public class StateUpdatesTest {
         testLithoView.getCurrentRootNode().getNode().getChildAt(0).getComponentContextAt(1);
 
     assertThatStateContainerIsInStateHandler(componentTree, context, 0);
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
   @Test
@@ -124,7 +132,7 @@ public class StateUpdatesTest {
       assertThatStateContainerIsInInitialStateContainer(componentTree, context, 0);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, context, 0);
-      assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+      assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
     }
   }
 
@@ -150,7 +158,7 @@ public class StateUpdatesTest {
       assertThatStateContainerIsInInitialStateContainer(componentTree, context, 0);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, context, 0);
-      assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+      assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
     }
   }
 
@@ -166,7 +174,7 @@ public class StateUpdatesTest {
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
     assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
   @Test
@@ -187,7 +195,7 @@ public class StateUpdatesTest {
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
     assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
   @Test
@@ -211,7 +219,7 @@ public class StateUpdatesTest {
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
     assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
   @Test
@@ -505,7 +513,7 @@ public class StateUpdatesTest {
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
     assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
   @Test
@@ -771,7 +779,7 @@ public class StateUpdatesTest {
 
   private void assertThatStateContainerIsInInitialStateContainer(
       ComponentTree componentTree, ComponentContext context, int expectedStateValue) {
-    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isFalse();
+    assertThat(getInitialStates(componentTree).isEmpty()).isFalse();
 
     ComponentWithCounterStateLayoutStateContainer stateHandlerStateContainerChild3 =
         getStateHandleStateContainer(componentTree, context.getGlobalKey());

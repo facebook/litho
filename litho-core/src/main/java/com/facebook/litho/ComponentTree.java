@@ -2032,16 +2032,6 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /**
-   * @return the InitialStateContainer associated with this tree. This is basically a look-aside
-   *     table for initial states so that we can guarantee that onCreateInitialState doesn't get
-   *     called multiple times for the same Component.
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public InitialStateContainer getInitialStateContainer() {
-    return mStateHandler.getInitialStateContainer();
-  }
-
-  /**
    * This internal version of {@link #setRootAndSizeSpecInternal(Component, int, int, boolean, Size,
    * int, String, TreeProps)} wraps the provided root in a wrapper component first. Ensure to only
    * call this for entry calls to setRoot, i.e. non-recurring calls as you will otherwise continue
