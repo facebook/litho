@@ -65,7 +65,7 @@ public class TextMeasurementUtils {
 
   public static class TextLayoutContext {
     public Layout layout;
-    CharSequence processedText;
+    public CharSequence processedText;
     public float textLayoutTranslationX;
     public float textLayoutTranslationY;
     ClickableSpan[] clickableSpans;
