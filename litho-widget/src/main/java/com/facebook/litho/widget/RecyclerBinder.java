@@ -3660,14 +3660,24 @@ public class RecyclerBinder
     }
   }
 
-  private static class BaseViewHolder extends RecyclerView.ViewHolder {
+  /** Default implementation of RecyclerBinderViewHolder */
+  private static class BaseViewHolder extends RecyclerBinderViewHolder {
 
     private final boolean isLithoViewType;
-    @Nullable private ViewBinder viewBinder;
+    private @Nullable ViewBinder viewBinder;
 
-    public BaseViewHolder(View view, boolean isLithoViewType) {
-      super(view);
+    public BaseViewHolder(View itemView, boolean isLithoViewType) {
+      super(itemView);
       this.isLithoViewType = isLithoViewType;
+    }
+
+    @Override
+    @Nullable
+    public LithoView getLithoView() {
+      if (isLithoViewType) {
+        return (LithoView) itemView;
+      }
+      return null;
     }
   }
 
@@ -3722,7 +3732,7 @@ public class RecyclerBinder
 
       final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
       if (renderInfo.rendersComponent()) {
-        final LithoView lithoView = (LithoView) holder.itemView;
+        final LithoView lithoView = holder.getLithoView();
         lithoView.setInvalidStateLogParamsList(mInvalidStateLogParamsList);
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
