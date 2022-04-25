@@ -43,12 +43,14 @@ abstract class SimpleMountable<ContentT> : Mountable<ContentT> {
    * Called to check if properties need to be reset. This is expected to be done by invoking
    * [unmount] and then [mount] if this function returns true.
    */
-  abstract fun shouldUpdate(
+  open fun shouldUpdate(
       currentMountable: SimpleMountable<ContentT>,
       newMountable: SimpleMountable<ContentT>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
-  ): Boolean
+  ): Boolean =
+      EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable) &&
+          currentLayoutData === nextLayoutData
 
   override fun getBinders(): List<RenderUnit.Binder<*, ContentT>> =
       BINDER_LIST as List<RenderUnit.Binder<*, ContentT>>
