@@ -3679,6 +3679,20 @@ public class RecyclerBinder
       }
       return null;
     }
+
+    @Override
+    public void setLithoViewLayoutParams(
+        LithoView lithoView,
+        int width,
+        int height,
+        int widthSpec,
+        int heightSpec,
+        boolean isFullSpan) {
+      final RecyclerViewLayoutManagerOverrideParams layoutParams =
+          new RecyclerViewLayoutManagerOverrideParams(
+              width, height, widthSpec, heightSpec, isFullSpan);
+      lithoView.setLayoutParams(layoutParams);
+    }
   }
 
   private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder>
@@ -3781,11 +3795,13 @@ public class RecyclerBinder
           height = MATCH_PARENT;
         }
 
-        final RecyclerViewLayoutManagerOverrideParams layoutParams =
-            new RecyclerViewLayoutManagerOverrideParams(
-                width, height, childrenWidthSpec, childrenHeightSpec, renderInfo.isFullSpan());
-
-        lithoView.setLayoutParams(layoutParams);
+        holder.setLithoViewLayoutParams(
+            lithoView,
+            width,
+            height,
+            childrenWidthSpec,
+            childrenHeightSpec,
+            renderInfo.isFullSpan());
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
 
         if (componentTreeHolder.getRenderInfo().getRenderCompleteEventHandler() != null

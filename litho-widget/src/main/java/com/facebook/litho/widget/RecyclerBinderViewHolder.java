@@ -33,4 +33,16 @@ public abstract class RecyclerBinderViewHolder extends RecyclerView.ViewHolder {
   /** Return the LithoView, which will be used to bind Components. */
   @Nullable
   public abstract LithoView getLithoView();
+
+  /**
+   * Overwrite the LayoutPrams of the LithoView, which is an optional step if there is no need to do
+   * so.
+   */
+  public abstract void setLithoViewLayoutParams(
+      LithoView lithoView,
+      int width,
+      int height,
+      int widthSpec,
+      int heightSpec,
+      boolean isFullSpan);
 }
