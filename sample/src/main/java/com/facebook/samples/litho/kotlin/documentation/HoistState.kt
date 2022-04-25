@@ -94,9 +94,11 @@ class DoubleInput(val double: Double, private val onReturn: ((Double) -> Unit)? 
                 EditorInfo.TYPE_NUMBER_FLAG_DECIMAL)
         .editorActionEventHandler(
             eventHandlerWithReturn {
-              it.view.text.toString().toDoubleOrNull()?.takeIf { it != double }?.let {
-                onReturn?.invoke(it)
-              }
+              it.view.text
+                  .toString()
+                  .toDoubleOrNull()
+                  ?.takeIf { it != double }
+                  ?.let { onReturn?.invoke(it) }
               true
             })
         .flexGrow(1f)

@@ -36,8 +36,8 @@ class ThreadLooperController {
   fun init() {
     layoutLooper =
         Shadows.shadowOf(
-            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper") as
-                Looper)
+            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
+                as Looper)
     messageQueue = ArrayBlockingQueue(100)
     val layoutLooperThread = LayoutLooperThread(layoutLooper, messageQueue)
     layoutLooperThread.start()

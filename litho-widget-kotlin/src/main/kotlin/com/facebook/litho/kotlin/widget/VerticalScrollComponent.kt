@@ -114,8 +114,8 @@ internal class VerticalScrollMountable(
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
 
   override fun createContent(context: Context): LithoScrollView =
-      LayoutInflater.from(context).inflate(R.layout.litho_scroll_view, null, false) as
-          LithoScrollView
+      LayoutInflater.from(context).inflate(R.layout.litho_scroll_view, null, false)
+          as LithoScrollView
 
   override fun measure(
       context: ComponentContext,

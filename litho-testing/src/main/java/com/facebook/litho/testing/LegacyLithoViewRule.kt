@@ -520,7 +520,8 @@ constructor(
         widthSpec: Int,
         heightSpec: Int
     ): LithoLayoutResult? {
-      return rule.attachToWindow()
+      return rule
+          .attachToWindow()
           .setRootAndSizeSpecSync(component, widthSpec, heightSpec)
           .measure()
           .layout()

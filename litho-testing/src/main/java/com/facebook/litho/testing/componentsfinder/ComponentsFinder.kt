@@ -71,9 +71,9 @@ fun getRootComponentInLithoView(lithoView: LithoView): Component? {
  */
 fun findDirectComponentInLithoView(lithoView: LithoView, clazz: Class<out Component?>): Component? {
   val internalNode = getLayoutRoot(lithoView)?.node ?: return null
-  return getOrderedScopedComponentInfos(internalNode).map { it.component }.firstOrNull {
-    it.javaClass == clazz
-  }
+  return getOrderedScopedComponentInfos(internalNode)
+      .map { it.component }
+      .firstOrNull { it.javaClass == clazz }
 }
 
 /**
@@ -107,9 +107,9 @@ fun findAllDirectComponentsInLithoView(
     clazz: Class<out Component>
 ): List<Component> {
   val internalNode = getLayoutRoot(lithoView)?.node ?: return emptyList()
-  return getOrderedScopedComponentInfos(internalNode).map { it.component }.filter {
-    it.javaClass == clazz
-  }
+  return getOrderedScopedComponentInfos(internalNode)
+      .map { it.component }
+      .filter { it.javaClass == clazz }
 }
 
 /**

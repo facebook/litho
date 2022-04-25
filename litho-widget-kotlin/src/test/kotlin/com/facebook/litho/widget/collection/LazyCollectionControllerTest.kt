@@ -51,8 +51,8 @@ class LazyCollectionControllerTest {
       testLithoView: TestLithoView,
       lazyCollectionTag: String
   ): RecyclerView? =
-      ((testLithoView.findViewWithTagOrNull(lazyCollectionTag) as LithoView?)?.getChildAt(0) as
-              SectionsRecyclerView?)
+      ((testLithoView.findViewWithTagOrNull(lazyCollectionTag) as LithoView?)?.getChildAt(0)
+              as SectionsRecyclerView?)
           ?.recyclerView
 
   fun `test lazyCollectionController recyclerView reference is updated`() {

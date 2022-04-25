@@ -46,8 +46,7 @@ class SelectionCollectionKComponent : KComponent() {
 
     val selectItemClickCallback = useCallback { item: String ->
       selected.update(
-          selected
-              .value
+          selected.value
               .toMutableSet()
               .apply { if (isSelected(item)) remove(item) else add(item) }
               .toSet())
