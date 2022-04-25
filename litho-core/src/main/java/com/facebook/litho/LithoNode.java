@@ -317,7 +317,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     if (mMountable != null
         && diff.getMountable() != null
-        && EquivalenceUtils.isEqualOrEquivalentTo(mMountable, diff.getMountable())) {
+        && mMountable.isEquivalentTo(diff.getMountable())) {
 
       result.setLayoutData(diff.getLayoutData());
       result.setCachedMeasuresValid(true);

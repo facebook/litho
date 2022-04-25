@@ -40,12 +40,12 @@ import java.util.List;
  *       when they are reused from the content pool.
  * </ul>
  *
- * <b>Tip: Implement {@link Equivalence} to improve performance.
+ * <b>Tip: Override {@link #isEquivalentTo(Mountable)} to improve performance.
  *
  * @param <ContentT> The type of the content.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public interface Mountable<ContentT> {
+public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
 
   /**
    * Specifies if the content type is {@link View} or a {@link Drawable}.
@@ -83,9 +83,8 @@ public interface Mountable<ContentT> {
    *
    * <p>As a performance optimisation the framework will skip this method if this Mountable is equal
    * to the previous Mountable, and if the size specs are compatible. In order to do this the
-   * framework will check if every field of the Mountable is equal using reflection. It is highly
-   * recommended to implement {@link Equivalence} to avoid using the reflection based equivalence
-   * check.
+   * framework will check if every field of the Mountable is equal using reflection. Override {@link
+   * #isEquivalentTo(Mountable)} to change the implementation.
    *
    * <ul>
    *   <li>Must not cause side effects.
@@ -105,4 +104,9 @@ public interface Mountable<ContentT> {
   /** A list of {@link Binder} to set and unset properties on the content. */
   @Nullable
   List<Binder<?, ContentT>> getBinders();
+
+  @Override
+  default boolean isEquivalentTo(Mountable<?> other) {
+    return EquivalenceUtils.hasEquivalentFields(this, other);
+  }
 }

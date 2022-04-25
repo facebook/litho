@@ -550,10 +550,10 @@ class ComparableViewMountable(
     override val view: View,
     override val steps: MutableList<LifecycleStep.StepInfo>? = null,
     override val updateState: ((String) -> Unit)? = null
-) : ViewMountable(id, view, steps, updateState), Equivalence<ViewMountable> {
+) : ViewMountable(id, view, steps, updateState) {
 
-  override fun isEquivalentTo(other: ViewMountable?): Boolean {
-    return id == other?.id
+  override fun isEquivalentTo(other: Mountable<*>): Boolean {
+    return id == (other as ViewMountable).id
   }
 }
 
