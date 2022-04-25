@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import org.gradle.internal.jvm.Jvm
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -28,16 +26,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                // We transitively depend on auto-value which we don't want to
-                // use as annotation processor at this time, so we can safely
-                // disable this warning.
-                includeCompileClasspath false
-                arguments = ['com.facebook.litho.testing': 'true']
-            }
-        }
     }
 
     testOptions {
@@ -88,6 +76,17 @@ android {
 
     sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
     sourceSets.test.java.srcDir project(':litho-sections-processor').file("src/test/java")
+
+    // TODO(T118124522): Kotlin spec component not compiling in litho-it using gradle
+    def filesToExclude = [
+            '**/*KotlinSpecPropDefaultsTest.kt',
+            '**/*DynamicPropsEquivalenceGeneratorTest.kt'
+    ]
+
+    tasks.withType(org.gradle.api.tasks.SourceTask.class).configureEach {
+        it.exclude(filesToExclude)
+    }
+    sourceSets.test.kotlin.exclude(filesToExclude)
 }
 
 dependencies {
@@ -101,8 +100,11 @@ dependencies {
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib
+    implementation files('../lib/tools.jar')
+    implementation files('../lib/rt.jar')
 
     compileOnly project(':litho-sections-annotations')
+    annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
 
     // Test project dependencies
@@ -116,6 +118,8 @@ dependencies {
     testImplementation project(':litho-sections-widget')
     testImplementation project(':litho-intellij-plugin')
     testImplementation project(':test-specs')
+    testImplementation files('../lib/tools.jar')
+    testImplementation files('../lib/rt.jar')
 
     // Testing deps
     testCompileOnly deps.jsr305
@@ -130,8 +134,6 @@ dependencies {
     testImplementation deps.supportRecyclerView
     testImplementation deps.supportTestCore
     testImplementation deps.khronos
-    testImplementation files(Jvm.current().getToolsJar())
-    testImplementation files(Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')
 }
 
 gradle.projectsEvaluated {

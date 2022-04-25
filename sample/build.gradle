@@ -56,8 +56,8 @@ dependencies {
     kapt project(':litho-processor')
     kapt project(':litho-sections-processor')
 
-// First-party
-implementation deps.soloader
+    // First-party
+    implementation deps.soloader
     implementation deps.flipper
     implementation deps.flipperLithoPlugin
     implementation deps.fresco

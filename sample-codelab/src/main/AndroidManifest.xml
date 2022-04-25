@@ -15,55 +15,62 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.facebook.samples.lithocodelab" >
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.facebook.samples.lithocodelab"
+    >
 
-    <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:name="com.facebook.samples.lithocodelab.LithoLabApplication"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-        android:allowBackup="false"
-        android:icon="@android:mipmap/sym_def_app_icon"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:label="LithoLab: Begin"
-            android:name="com.facebook.samples.lithocodelab.LithoLabActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:label="LithoLab: Middle"
-            android:name="com.facebook.samples.lithocodelab.middle.LithoLabMiddleActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:label="LithoLab: End"
-            android:name="com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:label="LithoLab: Examples"
-            android:name="com.facebook.samples.lithocodelab.examples.ExamplesLithoLabActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+  <application
+      android:name="com.facebook.samples.lithocodelab.LithoLabApplication"
+      android:allowBackup="false"
+      android:icon="@android:mipmap/sym_def_app_icon"
+      android:supportsRtl="true"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+      tools:ignore="GoogleAppIndexingWarning"
+      >
+    <activity
+        android:name="com.facebook.samples.lithocodelab.LithoLabActivity"
+        android:exported="true"
+        android:label="LithoLab: Begin"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity
+        android:name="com.facebook.samples.lithocodelab.middle.LithoLabMiddleActivity"
+        android:exported="true"
+        android:label="LithoLab: Middle"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity
+        android:name="com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity"
+        android:exported="true"
+        android:label="LithoLab: End"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity
+        android:name="com.facebook.samples.lithocodelab.examples.ExamplesLithoLabActivity"
+        android:exported="true"
+        android:label="LithoLab: Examples"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
 
 </manifest>

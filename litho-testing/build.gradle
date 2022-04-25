@@ -27,14 +27,6 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-        javaCompileOptions {
-            annotationProcessorOptions {
-                // We transitively depend on auto-value which we don't want to
-                // use as annotation processor at this time, so we can safely
-                // disable this warning.
-                includeCompileClasspath false
-            }
-        }
     }
 
     sourceSets {

@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.widget.TextView
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.animated.alpha
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.core.height
@@ -29,7 +30,6 @@ import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.match
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -48,7 +48,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(LithoTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class MountableComponentsTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

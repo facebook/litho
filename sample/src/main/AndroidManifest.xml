@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) Meta Platforms, Inc. and affiliates.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,71 +15,149 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.facebook.samples.litho">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.facebook.samples.litho">
 
-  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <application
+        android:name=".LithoSampleApplication"
+        android:allowBackup="false"
+        android:debuggable="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/NoTitleBarWhiteBG"
+        tools:ignore="HardcodedDebugMode">
+        <activity
+            android:name=".SampleRootActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DemoListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ComponentDemoActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.lithography.LithographyActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.errors.ErrorHandlingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.hscroll.HorizontalScrollWithSnapActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.expandableelement.ExpandableElementActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.animationcookbook.AnimationCookBookActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.transitions.TransitionsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.animationcallbacks.AnimationCallbacksActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.sharedelements.DetailActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.sharedelements.SharedElementsFragmentActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.dynamicprops.DynamicPropsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.fastscroll.FastScrollHandleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.changesetdebug.StateResettingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.changesetdebug.ItemsRerenderingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.changesetdebug.PropUpdatingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.changesetdebug.ScrollingToBottomActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.communicating.CommunicatingFromParentToChild"
+            android:exported="true" />
+        <activity
+            android:name=".java.communicating.CommunicatingFromChildToParent"
+            android:exported="true" />
+        <activity
+            android:name=".java.communicating.CommunicatingBetweenSiblings"
+            android:exported="true" />
+        <activity
+            android:name=".java.identity.ComponentIdentityActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.incrementalmount.IncrementalMountWithCustomViewContainerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.stateupdates.StateUpdateFromOutsideTreeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.triggers.CustomEventTriggerExampleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.triggers.TooltipTriggerExampleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.lifecycle.LifecycleDelegateActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.lifecycle.ViewPagerLifecycleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.lifecycle.LifecycleFragmentActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.animations.sharedelements.SharedDetailActivityElementsFragmentActivity"
+            android:exported="true" />
+        <activity
+            android:name=".java.editor.SimpleEditorExampleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".onboarding.HelloWorldActivity"
+            android:exported="true" />
+        <activity
+            android:name=".onboarding.FirstComponentSpecActivity"
+            android:exported="true" />
+        <activity
+            android:name=".onboarding.FirstComponentActivity"
+            android:exported="true" />
 
-  <uses-sdk android:targetSdkVersion="28"/>
+        <activity
+            android:name=".kotlin.lithography.LithographyKotlinActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.errors.ErrorHandlingKotlinActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.animations.animatedcounter.AnimatedCounterActivity"
+            android:exported="true" />
+        <activity
+            android:name=".kotlin.logging.LoggingActivity"
+            android:exported="true" />
 
-  <application
-      android:name=".LithoSampleApplication"
-      android:label="@string/app_name"
-      android:icon="@drawable/ic_launcher"
-      android:allowBackup="false"
-      android:debuggable="true"
-      android:supportsRtl="true"
-      android:theme="@style/NoTitleBarWhiteBG"
-      tools:ignore="HardcodedDebugMode">
-    <activity android:name=".SampleRootActivity">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
-    <activity android:name=".DemoListActivity" />
-    <activity android:name=".ComponentDemoActivity" />
-    <activity android:name=".java.lithography.LithographyActivity" />
-    <activity android:name=".java.errors.ErrorHandlingActivity" />
-    <activity android:name=".java.hscroll.HorizontalScrollWithSnapActivity" />
-    <activity android:name=".java.animations.expandableelement.ExpandableElementActivity" />
-    <activity android:name=".java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity" />
-    <activity android:name=".java.animations.animationcookbook.AnimationCookBookActivity" />
-    <activity android:name=".java.animations.transitions.TransitionsActivity" />
-    <activity android:name=".java.animations.animationcallbacks.AnimationCallbacksActivity" />
-    <activity android:name=".java.animations.sharedelements.DetailActivity" />
-    <activity android:name=".java.animations.sharedelements.SharedElementsFragmentActivity" />
-    <activity android:name=".java.dynamicprops.DynamicPropsActivity"/>
-    <activity android:name=".java.fastscroll.FastScrollHandleActivity"/>
-    <activity android:name=".java.changesetdebug.StateResettingActivity"/>
-    <activity android:name=".java.changesetdebug.ItemsRerenderingActivity"/>
-    <activity android:name=".java.changesetdebug.PropUpdatingActivity"/>
-    <activity android:name=".java.changesetdebug.ScrollingToBottomActivity" />
-    <activity android:name=".java.communicating.CommunicatingFromParentToChild" />
-    <activity android:name=".java.communicating.CommunicatingFromChildToParent" />
-    <activity android:name=".java.communicating.CommunicatingBetweenSiblings" />
-    <activity android:name=".java.identity.ComponentIdentityActivity" />
-    <activity android:name=".java.incrementalmount.IncrementalMountWithCustomViewContainerActivity" />
-    <activity android:name=".java.stateupdates.StateUpdateFromOutsideTreeActivity" />
-    <activity android:name=".java.triggers.CustomEventTriggerExampleActivity" />
-    <activity android:name=".java.triggers.TooltipTriggerExampleActivity" />
-    <activity android:name=".java.lifecycle.LifecycleDelegateActivity" />
-    <activity android:name=".java.lifecycle.ViewPagerLifecycleActivity" />
-    <activity android:name=".java.lifecycle.LifecycleFragmentActivity" />
-    <activity android:name=".java.animations.sharedelements.SharedDetailActivityElementsFragmentActivity" />
-    <activity android:name=".java.editor.SimpleEditorExampleActivity" />
-    <activity android:name=".onboarding.HelloWorldActivity" />
-    <activity android:name=".onboarding.FirstComponentSpecActivity" />
-    <activity android:name=".onboarding.FirstComponentActivity" />
+    </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <activity android:name=".kotlin.lithography.LithographyKotlinActivity" />
-    <activity android:name=".kotlin.errors.ErrorHandlingKotlinActivity" />
-    <activity android:name=".kotlin.animations.animatedcounter.AnimatedCounterActivity" />
-    <activity android:name=".kotlin.logging.LoggingActivity" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-  </application>
+    <uses-sdk android:targetSdkVersion="28" />
 
 
 </manifest>

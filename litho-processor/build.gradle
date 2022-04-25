@@ -27,7 +27,7 @@ dependencies {
     implementation project(':litho-annotations')
     implementation deps.jsr305
 
-    compileOnly files(Jvm.current().getToolsJar())
+    compileOnly files('../lib/tools.jar')
 
     // Processor
     implementation deps.javapoet

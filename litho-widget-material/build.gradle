@@ -20,6 +20,10 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
+    buildFeatures {
+        buildConfig = false
+    }
+
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }

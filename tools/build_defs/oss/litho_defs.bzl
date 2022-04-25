@@ -315,7 +315,7 @@ def litho_android_test_library(**kwargs):
         **kwargs
     )
 
-def fb_xplat_cxx_library(*args, **kwargs):
+def fb_xplat_android_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""
 
     # T41117446 Remove after AndroidX conversion is done.
@@ -386,7 +386,7 @@ def define_yogajni_targets():
         visibility = LITHO_VISIBILITY,
     )
 
-    fb_xplat_cxx_library(
+    fb_xplat_android_cxx_library(
         name = "jni",
         srcs = native.glob(["src/main/cpp/jni/*.cpp"]),
         header_namespace = "",
@@ -420,7 +420,7 @@ def define_cpp_yoga_targets():
         header_only = True,
         visibility = LITHO_VISIBILITY,
     )
-    fb_xplat_cxx_library(
+    fb_xplat_android_cxx_library(
         name = "yoga",
         srcs = native.glob(["yoga/**/*.cpp"]),
         header_namespace = "",
