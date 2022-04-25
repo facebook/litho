@@ -142,15 +142,11 @@ The following table shows vertically stacked items for Android Views and Litho w
 ```
 </td><td>
 
-```java
-Column.create(c)
-    .child(
-        Text.create(c)
-            .text("Text 1"))
-    .child(
-        Text.create(c)
-            .text("Text 2"))
-    .build();
+```kotlin
+Column {
+  child(Text(text = "Text 1"))
+  child(Text(text = "Text 2"))
+}
 ```
 </td></tr>
 </table>
@@ -185,17 +181,11 @@ To achieve an effect similar to a `LinearLayout` with weights, Flexbox provides 
 ```
 </td><td>
 
-```java
-Row.create(c)
-    .child(
-        SolidColor.create(c)
-            .color(RED)
-            .flexGrow(1))
-    .child(
-        SolidColor.create(c)
-            .color(BLUE)
-            .flexGrow(1))
-    .build();
+```kotlin
+Row {
+  child(Image(style = Style.flex(grow = 1f), drawable = ColorDrawable(Color.RED)))
+  child(Image(style = Style.flex(grow = 1f), drawable = ColorDrawable(Color.BLUE)))
+}
 ```
 </td></tr>
 </table>
@@ -227,18 +217,15 @@ If you'd like to overlay one view on top of the other, similar to a `FrameLayout
 ```
 </td><td>
 
-```java
-Column.create(c)
-    .child(
-        Image.create(c)
-            .drawableRes(R.drawable.some_big_image)
-            .widthDip(100)
-            .heightDip(100))
-    .child(
-        Text.create(c)
-            .text("Overlaid text")
-            .positionType(ABSOLUTE))
-    .build();
+```kotlin
+Column {
+  child(Image(
+    style = Style.width(100.dp).height(100.dp),
+    drawable = drawableRes(R.drawable.some_big_image)))
+  child(Text(
+    style = Style.positionType(YogaPositionType.ABSOLUTE),
+    text = "Overlaid text"))
+}
 ```
 </td></tr>
 </table>
