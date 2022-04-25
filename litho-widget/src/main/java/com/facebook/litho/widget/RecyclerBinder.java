@@ -308,6 +308,7 @@ public class RecyclerBinder
   private String mStartupLoggerAttribution = "";
   private final boolean[] mFirstMountLogged = new boolean[1];
   private final boolean[] mLastMountLogged = new boolean[1];
+  private final RecyclerBinderAdapterDelegate mRecyclerBinderAdapterDelegate;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -482,6 +483,7 @@ public class RecyclerBinder
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
     private boolean enableOperationLog = false;
+    private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -677,6 +679,12 @@ public class RecyclerBinder
     @VisibleForTesting
     Builder overrideInternalAdapter(RecyclerView.Adapter overrideInternalAdapter) {
       this.overrideInternalAdapter = overrideInternalAdapter;
+      return this;
+    }
+
+    /** Set a delegation to customize the adapter behaviour. */
+    public Builder setAdapterDelegate(@Nullable RecyclerBinderAdapterDelegate delegate) {
+      adapterDelegate = delegate;
       return this;
     }
 
@@ -918,6 +926,10 @@ public class RecyclerBinder
 
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
     mEnableStableIds = builder.enableStableIds;
+    mRecyclerBinderAdapterDelegate =
+        builder.adapterDelegate != null
+            ? builder.adapterDelegate
+            : new DefaultRecyclerBinderAdapterDelegate();
     mInternalAdapter =
         builder.overrideInternalAdapter != null
             ? builder.overrideInternalAdapter
@@ -3695,12 +3707,8 @@ public class RecyclerBinder
     }
   }
 
-  private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder>
-      implements RecyclerBinderAdapter {
-
-    InternalAdapter() {
-      setHasStableIds(mEnableStableIds);
-    }
+  private class DefaultRecyclerBinderAdapterDelegate
+      implements RecyclerBinderAdapterDelegate<BaseViewHolder> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -3725,6 +3733,39 @@ public class RecyclerBinder
       }
     }
 
+    @Override
+    public void onBindViewHolder(
+        BaseViewHolder viewHolder,
+        int position,
+        @Nullable ComponentTree componentTree,
+        RenderInfo renderInfo) {
+      if (!viewHolder.isLithoViewType) {
+        final ViewBinder viewBinder = renderInfo.getViewBinder();
+        viewHolder.viewBinder = viewBinder;
+        viewBinder.bind(viewHolder.itemView);
+      }
+    }
+
+    @Override
+    public void onViewRecycled(BaseViewHolder viewHolder) {
+      if (!viewHolder.isLithoViewType) {
+        if (viewHolder.viewBinder != null) {
+          viewHolder.viewBinder.unbind(viewHolder.itemView);
+          viewHolder.viewBinder = null;
+        }
+      }
+    }
+
+    @Override
+    public boolean hasStableIds() {
+      return mEnableStableIds;
+    }
+
+    @Override
+    public long getItemId(int position) {
+      return mComponentTreeHolders.get(position).getId();
+    }
+
     private @Nullable String getClassNameForDebug(Class c) {
       Class<?> enclosingClass = c.getEnclosingClass();
       if (enclosingClass == null) {
@@ -3732,10 +3773,23 @@ public class RecyclerBinder
       }
       return enclosingClass.getCanonicalName();
     }
+  }
+
+  private class InternalAdapter extends RecyclerView.Adapter<RecyclerBinderViewHolder>
+      implements RecyclerBinderAdapter {
+
+    InternalAdapter() {
+      setHasStableIds(mRecyclerBinderAdapterDelegate.hasStableIds());
+    }
+
+    @Override
+    public RecyclerBinderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return mRecyclerBinderAdapterDelegate.onCreateViewHolder(parent, viewType);
+    }
 
     @Override
     @GuardedBy("RecyclerBinder.this")
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerBinderViewHolder holder, int position) {
       final boolean loggingForStartup =
           LithoStartupLogger.isEnabled(mStartupLogger) && !mStartupLoggerAttribution.isEmpty();
       final int normalizedPosition = getNormalizedPosition(position);
@@ -3829,11 +3883,9 @@ public class RecyclerBinder
         } else {
           lithoView.resetMountStartupLoggingInfo();
         }
-      } else {
-        final ViewBinder viewBinder = renderInfo.getViewBinder();
-        holder.viewBinder = viewBinder;
-        viewBinder.bind(holder.itemView);
       }
+      mRecyclerBinderAdapterDelegate.onBindViewHolder(
+          holder, normalizedPosition, componentTreeHolder.getComponentTree(), renderInfo);
 
       if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
         RenderInfoDebugInfoRegistry.setRenderInfoToViewMapping(
@@ -3867,25 +3919,20 @@ public class RecyclerBinder
     }
 
     @Override
-    public void onViewRecycled(BaseViewHolder holder) {
-      if (holder.isLithoViewType) {
-        final LithoView lithoView = (LithoView) holder.itemView;
+    public void onViewRecycled(RecyclerBinderViewHolder holder) {
+      mRecyclerBinderAdapterDelegate.onViewRecycled(holder);
+      final LithoView lithoView = (LithoView) holder.getLithoView();
+      if (lithoView != null) {
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
         lithoView.resetMountStartupLoggingInfo();
-      } else {
-        final ViewBinder viewBinder = holder.viewBinder;
-        if (viewBinder != null) {
-          viewBinder.unbind(holder.itemView);
-          holder.viewBinder = null;
-        }
       }
     }
 
     @Override
     public long getItemId(int position) {
-      return mComponentTreeHolders.get(position).getId();
+      return mRecyclerBinderAdapterDelegate.getItemId(position);
     }
 
     @Override
