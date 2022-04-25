@@ -20,10 +20,10 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.MountableComponent
+import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
@@ -48,7 +48,8 @@ class ImageComponent(
     style: Style? = null,
 ) : MountableComponent(style) {
 
-  override fun ComponentScope.render(): ImageMountable = ImageMountable(drawable, scaleType)
+  override fun MountableComponentScope.render(): ImageMountable =
+      ImageMountable(drawable, scaleType)
 }
 
 /**

@@ -30,14 +30,18 @@ import com.facebook.rendercore.MountItemsPool
 abstract class MountableComponent(internal val style: Style? = null) : Component() {
 
   final override fun prepare(c: ComponentContext): PrepareResult {
-    val componentScope = ComponentScope(c)
-    val mountable = componentScope.render()
+    val mountableComponentScope = MountableComponentScope(c)
+    val mountable = mountableComponentScope.render()
     style?.applyToComponent(c.resourceResolver, this)
-    return PrepareResult(mountable, componentScope.transitions, componentScope.useEffectEntries)
+    return PrepareResult(
+        mountable,
+        mountableComponentScope.transitions,
+        mountableComponentScope.useEffectEntries,
+        mountableComponentScope.controllers)
   }
 
   /** This function must return [Mountable] which are immutable. */
-  abstract fun ComponentScope.render(): Mountable<*>
+  abstract fun MountableComponentScope.render(): Mountable<*>
 
   final override fun getMountType(): MountType = MountType.MOUNTABLE
 

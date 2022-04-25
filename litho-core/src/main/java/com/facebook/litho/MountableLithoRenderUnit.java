@@ -32,18 +32,26 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final long id,
       final LayoutOutput output,
       final Mountable mountable,
-      final @Nullable ComponentContext context) {
+      final @Nullable ComponentContext context,
+      final @Nullable List<Controller<?>> controllers) {
     super(id, output, mountable.getRenderType(), context);
     this.mMountable = mountable;
 
-    addMountUnmountExtentions(mMountable);
+    addMountUnmountExtentions(mMountable, controllers);
   }
 
-  private void addMountUnmountExtentions(Mountable mountable) {
+  private void addMountUnmountExtentions(
+      final Mountable mountable, final @Nullable List<Controller<?>> controllers) {
     List<Binder> binders = mountable.getBinders();
     if (binders != null) {
       for (Binder binder : binders) {
         addMountUnmountExtensions(extension(mMountable, binder));
+      }
+    }
+
+    if (controllers != null) {
+      for (Controller controller : controllers) {
+        addMountUnmountExtensions(extension(mMountable, controller));
       }
     }
   }
@@ -57,12 +65,13 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final int flags,
       final int importantForAccessibility,
       final @LayoutOutput.UpdateState int updateState,
-      final Mountable mountable) {
+      final Mountable mountable,
+      final @Nullable List<Controller<?>> controllers) {
     final LayoutOutput output =
         new LayoutOutput(
             component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
 
-    return new MountableLithoRenderUnit(id, output, mountable, context);
+    return new MountableLithoRenderUnit(id, output, mountable, context, controllers);
   }
 
   @Override

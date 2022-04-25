@@ -31,13 +31,16 @@ public class PrepareResult {
   public final @Nullable Mountable<?> mountable;
   public final @Nullable List<Transition> transitions;
   public final @Nullable List<Attachable> useEffectEntries;
+  public final @Nullable List<Controller<?>> controllers;
 
   public PrepareResult(
       @Nullable Mountable<?> mountable,
       @Nullable List<Transition> transitions,
-      @Nullable List<Attachable> useEffectEntries) {
+      @Nullable List<Attachable> useEffectEntries,
+      @Nullable List<Controller<?>> controllers) {
     this.mountable = mountable;
     this.transitions = transitions;
     this.useEffectEntries = useEffectEntries;
+    this.controllers = controllers;
   }
 }

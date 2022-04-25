@@ -193,7 +193,7 @@ class MountableComponentsTest {
     lateinit var stateRef: AtomicReference<String>
 
     class TestComponent(val view: View) : MountableComponent() {
-      override fun ComponentScope.render(): ViewMountable {
+      override fun MountableComponentScope.render(): ViewMountable {
         val testState: State<String> = useState { "initial" }
         stateRef = AtomicReference(testState.value)
         return ViewMountable(view = view, updateState = { testState.update { s -> s + "_" + it } })
@@ -468,7 +468,7 @@ class TestMountableComponent(
     style: Style? = null
 ) : MountableComponent(style = style) {
 
-  override fun ComponentScope.render(): ViewMountable {
+  override fun MountableComponentScope.render(): ViewMountable {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
     return if (shouldUseComparableMountable) {
       ComparableViewMountable(identity, view, steps)
