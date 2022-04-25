@@ -96,6 +96,7 @@ dependencies {
     implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
+    implementation project(':litho-testing')
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
@@ -106,7 +107,6 @@ dependencies {
 
     // Test project dependencies
     testCompileOnly project(':litho-sections-annotations')
-    testImplementation project(':litho-testing')
     testImplementation project(':litho-rendercore-testing')
     testImplementation project(':litho-widget')
     testImplementation project(':litho-widget-kotlin')
