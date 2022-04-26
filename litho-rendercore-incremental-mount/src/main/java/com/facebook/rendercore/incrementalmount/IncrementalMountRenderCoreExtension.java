@@ -225,7 +225,8 @@ public class IncrementalMountRenderCoreExtension
       host = results.getIncrementalMountOutputForId(parent.getRenderUnit().getId());
 
       final Rect rect = new Rect(x, y, x + bounds.width(), y + bounds.height());
-      results.addOutput(new IncrementalMountOutput(id, position, rect, host));
+      // TODO(T115614172): implement excludeFromIncrementalMount for RenderCore
+      results.addOutput(new IncrementalMountOutput(id, position, rect, false, host));
       if (provider.hasRenderTreeHosts(result)) {
         results.addRenderTreeHostId(id);
       }

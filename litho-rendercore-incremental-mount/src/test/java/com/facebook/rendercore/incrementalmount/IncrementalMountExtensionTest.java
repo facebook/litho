@@ -453,31 +453,31 @@ public class IncrementalMountExtensionTest {
         mountState.registerMountExtension(extension);
 
     final IncrementalMountOutput rootHost =
-        new IncrementalMountOutput(0, 0, new Rect(0, 100, 100, 200), null);
+        new IncrementalMountOutput(0, 0, new Rect(0, 100, 100, 200), false, null);
     final TestHostRenderUnit hostRenderUnit = new TestHostRenderUnit(0);
     final RenderTreeNode hostRenderTreeNode =
         new RenderTreeNode(null, hostRenderUnit, null, rootHost.getBounds(), null, 0);
 
     final IncrementalMountOutput host1 =
-        new IncrementalMountOutput(1, 1, new Rect(0, 100, 50, 200), rootHost);
+        new IncrementalMountOutput(1, 1, new Rect(0, 100, 50, 200), false, rootHost);
     final TestHostRenderUnit host1RenderUnit = new TestHostRenderUnit(1);
     final RenderTreeNode host1RTN =
         new RenderTreeNode(hostRenderTreeNode, host1RenderUnit, null, host1.getBounds(), null, 0);
 
     final IncrementalMountOutput child1 =
-        new IncrementalMountOutput(2, 2, new Rect(0, 85, 50, 190), host1);
+        new IncrementalMountOutput(2, 2, new Rect(0, 85, 50, 190), false, host1);
     final TestRenderUnit child1RenderUnit = new TestRenderUnit(2);
     final RenderTreeNode child11RTN =
         new RenderTreeNode(host1RTN, child1RenderUnit, null, child1.getBounds(), null, 0);
 
     final IncrementalMountOutput host2 =
-        new IncrementalMountOutput(3, 3, new Rect(50, 100, 50, 200), rootHost);
+        new IncrementalMountOutput(3, 3, new Rect(50, 100, 50, 200), false, rootHost);
     final TestHostRenderUnit host2RenderUnit = new TestHostRenderUnit(3);
     final RenderTreeNode host2RTN =
         new RenderTreeNode(hostRenderTreeNode, host2RenderUnit, null, host2.getBounds(), null, 1);
 
     final IncrementalMountOutput child2 =
-        new IncrementalMountOutput(4, 4, new Rect(50, 100, 50, 200), host2);
+        new IncrementalMountOutput(4, 4, new Rect(50, 100, 50, 200), false, host2);
     final TestRenderUnit child2RenderUnit = new TestRenderUnit(4);
     final RenderTreeNode child2RTN =
         new RenderTreeNode(host2RTN, child2RenderUnit, null, child2.getBounds(), null, 0);
@@ -513,31 +513,31 @@ public class IncrementalMountExtensionTest {
         mountState.registerMountExtension(extension);
 
     final IncrementalMountOutput rootHost =
-        new IncrementalMountOutput(0, 0, new Rect(0, 100, 100, 200), null);
+        new IncrementalMountOutput(0, 0, new Rect(0, 100, 100, 200), false, null);
     final TestHostRenderUnit hostRenderUnit = new TestHostRenderUnit(0);
     final RenderTreeNode hostRenderTreeNode =
         new RenderTreeNode(null, hostRenderUnit, null, rootHost.getBounds(), null, 0);
 
     final IncrementalMountOutput host1 =
-        new IncrementalMountOutput(1, 1, new Rect(0, 100, 50, 200), rootHost);
+        new IncrementalMountOutput(1, 1, new Rect(0, 100, 50, 200), false, rootHost);
     final TestHostRenderUnit host1RenderUnit = new TestHostRenderUnit(1);
     final RenderTreeNode host1RTN =
         new RenderTreeNode(hostRenderTreeNode, host1RenderUnit, null, host1.getBounds(), null, 0);
 
     final IncrementalMountOutput child1 =
-        new IncrementalMountOutput(2, 2, new Rect(0, 85, 50, 190), host1);
+        new IncrementalMountOutput(2, 2, new Rect(0, 85, 50, 190), false, host1);
     final TestRenderUnit child1RenderUnit = new TestRenderUnit(2);
     final RenderTreeNode child11RTN =
         new RenderTreeNode(host1RTN, child1RenderUnit, null, child1.getBounds(), null, 0);
 
     final IncrementalMountOutput host2 =
-        new IncrementalMountOutput(3, 3, new Rect(50, 100, 50, 200), rootHost);
+        new IncrementalMountOutput(3, 3, new Rect(50, 100, 50, 200), false, rootHost);
     final TestHostRenderUnit host2RenderUnit = new TestHostRenderUnit(3);
     final RenderTreeNode host2RTN =
         new RenderTreeNode(hostRenderTreeNode, host2RenderUnit, null, host2.getBounds(), null, 1);
 
     final IncrementalMountOutput child2 =
-        new IncrementalMountOutput(4, 4, new Rect(50, 100, 50, 200), host2);
+        new IncrementalMountOutput(4, 4, new Rect(50, 100, 50, 200), false, host2);
     final TestRenderUnit child2RenderUnit = new TestRenderUnit(4);
     final RenderTreeNode child2RTN =
         new RenderTreeNode(host2RTN, child2RenderUnit, null, child2.getBounds(), null, 0);
@@ -565,14 +565,14 @@ public class IncrementalMountExtensionTest {
     assertThat(extensionState.ownsReference(2)).isTrue();
 
     final IncrementalMountOutput host1_reparented =
-        new IncrementalMountOutput(1, 1, new Rect(0, 100, 50, 200), host2);
+        new IncrementalMountOutput(1, 1, new Rect(0, 100, 50, 200), false, host2);
     final TestHostRenderUnit host1RenderUnit_reparented = new TestHostRenderUnit(1);
     final RenderTreeNode host1RTN_reparented =
         new RenderTreeNode(
             host2RTN, host1RenderUnit_reparented, null, host1_reparented.getBounds(), null, 1);
 
     final IncrementalMountOutput child1_reparented =
-        new IncrementalMountOutput(2, 2, new Rect(0, 85, 50, 190), host1_reparented);
+        new IncrementalMountOutput(2, 2, new Rect(0, 85, 50, 190), false, host1_reparented);
     final TestRenderUnit child1RenderUnit_reparented = new TestRenderUnit(2);
     final RenderTreeNode child11RTN_reparented =
         new RenderTreeNode(

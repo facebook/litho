@@ -26,16 +26,19 @@ public class IncrementalMountOutput {
   private final Rect bounds;
   private final long id;
   private final @Nullable IncrementalMountOutput host;
+  private boolean excludeFromIncrementalMount;
 
   public IncrementalMountOutput(
       final long id,
       final int index,
       final Rect bounds,
+      final boolean excludeFromIncrementalMount,
       final @Nullable IncrementalMountOutput host) {
     this.id = id;
     this.index = index;
     this.bounds = new Rect(bounds);
     this.host = host;
+    this.excludeFromIncrementalMount = excludeFromIncrementalMount;
     // TODO: invert API to add child to a host rather than passing the host to the child.
     if (host != null) {
       ensureHostBounds(this, host);
@@ -62,6 +65,10 @@ public class IncrementalMountOutput {
     return host;
   }
 
+  public boolean excludeFromIncrementalMount() {
+    return excludeFromIncrementalMount;
+  }
+
   /** Ensure the host IncrementalMountOuput's bounds are containing the bounds of this item. */
   private static void ensureHostBounds(
       final IncrementalMountOutput child, final @Nullable IncrementalMountOutput host) {
@@ -72,6 +79,10 @@ public class IncrementalMountOutput {
     final Rect childBounds = child.getBounds();
     final Rect hostBounds = host.getBounds();
     boolean needsUpdate = false;
+
+    if (child.excludeFromIncrementalMount) {
+      host.excludeFromIncrementalMount = true;
+    }
 
     if (childBounds.top < hostBounds.top) {
       maybeCacheOriginalBounds(host);

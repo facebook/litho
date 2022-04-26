@@ -424,6 +424,14 @@ public abstract class Component
     return false;
   }
 
+  /**
+   * @return Boolean indicating whether the component skips Incremental Mount. If this is true then
+   *     the Component is not going to be Incremental Mounted.
+   */
+  protected boolean excludeFromIncrementalMount() {
+    return false;
+  }
+
   protected void createInitialState(ComponentContext c) {}
 
   protected void dispatchOnEnteredRange(ComponentContext c, String name) {

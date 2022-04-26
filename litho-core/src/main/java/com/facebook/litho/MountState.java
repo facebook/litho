@@ -359,15 +359,19 @@ class MountState implements MountDelegateTarget {
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final Component component = layoutOutput.getComponent();
         final MountItem currentMountItem = getItemAt(i);
+        final IncrementalMountOutput incrementalMountOutput =
+            layoutState.getIncrementalMountOutputForId(node.getRenderUnit().getId());
         final boolean isMounted = currentMountItem != null;
         final boolean isRoot = currentMountItem != null && currentMountItem == rootMountItem;
+        final boolean isExcludingFromIncrementalMount =
+            incrementalMountOutput != null && incrementalMountOutput.excludeFromIncrementalMount();
         final boolean isMountable =
             !isIncrementalMountEnabled
                 || isMountedHostWithChildContent(currentMountItem)
                 || Rect.intersects(localVisibleRect, node.getAbsoluteBounds(absoluteBounds))
                 || isAnimationLocked(node)
-                || isRoot;
-
+                || isRoot
+                || isExcludingFromIncrementalMount;
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
         } else if (!isMountable && isMounted) {
@@ -2554,11 +2558,12 @@ class MountState implements MountDelegateTarget {
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top
               >= layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
-        final RenderTreeNode node =
-            layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
+
+        IncrementalMountOutput output = layoutOutputBottoms.get(mPreviousBottomsIndex);
+        final RenderTreeNode node = layoutState.getRenderTreeNode(output);
         final long id = node.getRenderUnit().getId();
         final int layoutOutputIndex = layoutState.getPositionForId(id);
-        if (!isAnimationLocked(node)) {
+        if (!isAnimationLocked(node) && !output.excludeFromIncrementalMount()) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
         }
         mPreviousBottomsIndex++;
@@ -2608,11 +2613,12 @@ class MountState implements MountDelegateTarget {
           && localVisibleRect.bottom
               < layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
-        final RenderTreeNode node =
-            layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
+
+        IncrementalMountOutput output = layoutOutputTops.get(mPreviousTopsIndex);
+        final RenderTreeNode node = layoutState.getRenderTreeNode(output);
         final long id = node.getRenderUnit().getId();
         final int layoutOutputIndex = layoutState.getPositionForId(id);
-        if (!isAnimationLocked(node)) {
+        if (!isAnimationLocked(node) && !output.excludeFromIncrementalMount()) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
         }
       }

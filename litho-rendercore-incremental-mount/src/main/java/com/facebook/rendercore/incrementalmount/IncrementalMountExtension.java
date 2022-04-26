@@ -348,10 +348,12 @@ public class IncrementalMountExtension
     // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
     // override that if the item is outside the visible bounds.
     // TODO (T64830748): extract animations logic out of this.
+
     final boolean isMountable =
         isMountedHostWithChildContent(content)
             || Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
-            || isRootItem(id);
+            || isRootItem(id)
+            || incrementalMountOutput.excludeFromIncrementalMount();
     final boolean hasAcquiredMountRef = extensionState.ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
       extensionState.acquireMountReference(incrementalMountOutput.getId(), isMounting);
@@ -398,7 +400,7 @@ public class IncrementalMountExtension
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex);
         final long id = node.getId();
 
-        if (extensionState.ownsReference(id)) {
+        if (extensionState.ownsReference(id) && !node.excludeFromIncrementalMount()) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;
@@ -463,7 +465,7 @@ public class IncrementalMountExtension
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex - 1);
         final long id = node.getId();
 
-        if (extensionState.ownsReference(id)) {
+        if (extensionState.ownsReference(id) && !node.excludeFromIncrementalMount()) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;

@@ -439,6 +439,11 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
+  protected boolean excludeFromIncrementalMount() {
+    return true;
+  }
+
+  @Override
   protected boolean canPreallocate() {
     return true;
   }

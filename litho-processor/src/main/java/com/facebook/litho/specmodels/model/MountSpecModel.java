@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
+  private final boolean mExcludeFromIncrementalMount;
   private final boolean mHasChildLithosViews;
   private final int mPoolSize;
   private final boolean mCanPreallocate;
@@ -59,6 +60,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       boolean isPublic,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
+      boolean excludeFromIncrementalMount,
       boolean hasChildLithosViews,
       int poolSize,
       boolean canPreallocate,
@@ -96,6 +98,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .bindDynamicValueMethods(bindDynamicValueMethods)
             .build();
     mIsPureRender = isPureRender;
+    mExcludeFromIncrementalMount = excludeFromIncrementalMount;
     mHasChildLithosViews = hasChildLithosViews;
     mPoolSize = poolSize;
     mCanPreallocate = canPreallocate;
@@ -358,6 +361,10 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mIsPureRender;
   }
 
+  public boolean excludeFromIncrementalMount() {
+    return mExcludeFromIncrementalMount;
+  }
+
   public boolean canMountIncrementally() {
     return mHasChildLithosViews;
   }
@@ -394,6 +401,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         + mHasChildLithosViews
         + ", mPoolSize="
         + mPoolSize
+        + ", mExcludeFromIncrementalMount="
+        + mExcludeFromIncrementalMount
         + ", mCanPreallocate="
         + mCanPreallocate
         + ", mMountType="

@@ -1977,6 +1977,7 @@ public class LayoutState
             node.getRenderUnit().getId(),
             position,
             absoluteBounds,
+            layoutOutput.getComponent().excludeFromIncrementalMount(),
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);

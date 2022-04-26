@@ -64,6 +64,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.MeasureComparisonUtils;
+import com.facebook.litho.MountHelper;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
@@ -3858,6 +3859,17 @@ public class RecyclerBinder
             renderInfo.isFullSpan());
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
 
+        if (isPrefetchEnabled()) {
+          MountHelper.requestMount(
+              componentTreeHolder.getComponentTree(),
+              new Rect(
+                  0,
+                  0,
+                  View.MeasureSpec.getSize(childrenWidthSpec),
+                  View.MeasureSpec.getSize(childrenHeightSpec)),
+              false);
+        }
+
         if (componentTreeHolder.getRenderInfo().getRenderCompleteEventHandler() != null
             && componentTreeHolder.getRenderState() == RENDER_UNINITIALIZED) {
           lithoView.setOnPostDrawListener(
@@ -3948,6 +3960,11 @@ public class RecyclerBinder
     @Override
     public RenderInfo getRenderInfoAt(int position) {
       return mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
+    }
+
+    /** Indicating whether the pre-fetching is enabled. */
+    private boolean isPrefetchEnabled() {
+      return mLayoutInfo.getLayoutManager().isItemPrefetchEnabled();
     }
   }
 

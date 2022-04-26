@@ -66,6 +66,21 @@ public class MountSpecGenerator {
         .build();
   }
 
+  public static TypeSpecDataHolder generateExcludeFromIncrementalMount(MountSpecModel specModel) {
+    TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    if (specModel.excludeFromIncrementalMount()) {
+      dataHolder.addMethod(
+          MethodSpec.methodBuilder("excludeFromIncrementalMount")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PROTECTED)
+              .returns(TypeName.BOOLEAN)
+              .addStatement("return true")
+              .build());
+    }
+
+    return dataHolder.build();
+  }
+
   public static TypeSpecDataHolder generateCanPreallocate(MountSpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
         .addMethod(
