@@ -625,7 +625,15 @@ class Layout {
       final int heightSpec,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent logLayoutState) {
-    if (root == null) {
+
+    if (layoutStateContext.isLayoutReleased()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          "ReleasedLayoutResumed",
+          layoutStateContext.getLifecycleDebugString());
+    }
+
+    if (root == null || layoutStateContext.isLayoutReleased()) {
       return null;
     }
 

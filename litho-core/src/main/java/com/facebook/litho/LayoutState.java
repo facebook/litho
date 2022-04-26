@@ -1363,9 +1363,13 @@ public class LayoutState
       // If we already have a LayoutState but the InternalNode is only partially resolved,
       // resume resolving the InternalNode and measure it.
 
+      final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
+
+      layoutStateContext.markLayoutResumed();
+
       final LithoLayoutResult result =
           Layout.resumeCreateAndMeasureComponent(
-              layoutState.getLayoutStateContext(),
+              layoutStateContext,
               c,
               Preconditions.checkNotNull(layoutState.mPartiallyResolvedRoot),
               widthSpec,

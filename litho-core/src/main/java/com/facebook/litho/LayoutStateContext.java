@@ -22,6 +22,8 @@ import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +52,10 @@ public class LayoutStateContext {
   private @Nullable String mCurrentNestedTreeGlobalKey;
 
   private @Nullable PerfEvent mPerfEvent;
+
+  private final String mThreadCreatedOn;
+  private List<String> mThreadReleasedOn = new LinkedList<>();
+  private List<String> mThreadResumedOn = new LinkedList<>();
 
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
@@ -86,6 +92,7 @@ public class LayoutStateContext {
     mComponentTree = componentTree;
     mCurrentDiffTree = currentDiffTree;
     mStateHandler = stateHandler;
+    mThreadCreatedOn = Thread.currentThread().getName();
   }
 
   @Nullable
@@ -120,6 +127,7 @@ public class LayoutStateContext {
     mCurrentDiffTree = null;
     mComponentIdToWillRenderLayout = null;
     mPerfEvent = null;
+    mThreadReleasedOn.add(Thread.currentThread().getName());
   }
 
   /** Returns the LayoutState instance or null if the layout state has been released. */
@@ -208,5 +216,33 @@ public class LayoutStateContext {
 
   public void resetCurrentNestedTreeGlobalKey() {
     mCurrentNestedTreeGlobalKey = null;
+  }
+
+  public void markLayoutResumed() {
+    mThreadResumedOn.add(Thread.currentThread().getName());
+  }
+
+  public String getLifecycleDebugString() {
+    StringBuilder builder = new StringBuilder();
+
+    builder
+        .append("LayoutStateContext was created on: ")
+        .append(mThreadCreatedOn)
+        .append("\n")
+        .append("LayoutStateContext was released on: [");
+
+    for (String thread : mThreadReleasedOn) {
+      builder.append(thread).append(" ,");
+    }
+
+    builder.append("]").append("LayoutStateContext was resumed on: [");
+
+    for (String thread : mThreadResumedOn) {
+      builder.append(thread).append(" ,");
+    }
+
+    builder.append("]");
+
+    return builder.toString();
   }
 }
