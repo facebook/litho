@@ -59,6 +59,7 @@ import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -290,7 +291,19 @@ public class LayoutState
     }
 
     if (isMountable(node.getTailComponent()) && !result.wasMeasured()) {
-      result.measure(exactly(result.getWidth()), exactly(result.getHeight()));
+      final int width =
+          result.getWidth()
+              - result.getPaddingRight()
+              - result.getPaddingLeft()
+              - result.getLayoutBorder(YogaEdge.RIGHT)
+              - result.getLayoutBorder(YogaEdge.LEFT);
+      final int height =
+          result.getHeight()
+              - result.getPaddingTop()
+              - result.getPaddingBottom()
+              - result.getLayoutBorder(YogaEdge.TOP)
+              - result.getLayoutBorder(YogaEdge.BOTTOM);
+      result.measure(exactly(width), exactly(height));
     }
 
     final @Nullable Object layoutData = result.getLayoutData();
@@ -385,11 +398,20 @@ public class LayoutState
     int r = l + result.getWidth();
     int b = t + result.getHeight();
 
-    if (!isMountableView(unit) && useNodePadding) {
-      l += result.getPaddingLeft();
-      t += result.getPaddingTop();
-      r -= result.getPaddingRight();
-      b -= result.getPaddingBottom();
+    if (useNodePadding) {
+      if (isMountable(unit.output.getComponent())) {
+        if (!isMountableView(unit)) {
+          l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
+          t += result.getPaddingTop() + result.getLayoutBorder(YogaEdge.TOP);
+          r -= (result.getPaddingRight() + result.getLayoutBorder(YogaEdge.RIGHT));
+          b -= (result.getPaddingBottom() + result.getLayoutBorder(YogaEdge.BOTTOM));
+        }
+      } else if (!isMountableView(unit)) {
+        l += result.getPaddingLeft();
+        t += result.getPaddingTop();
+        r -= result.getPaddingRight();
+        b -= result.getPaddingBottom();
+      }
     }
 
     final Rect bounds = new Rect(l, t, r, b);
