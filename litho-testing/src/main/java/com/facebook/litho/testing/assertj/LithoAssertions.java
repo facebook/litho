@@ -16,13 +16,18 @@
 
 package com.facebook.litho.testing.assertj;
 
+import static com.facebook.litho.testing.assertj.ErrorMessage.getCompareComponentsErrorMessage;
+
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestLithoView;
 import java.util.List;
 import kotlin.Pair;
 import kotlin.reflect.KProperty1;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
@@ -69,6 +74,28 @@ public class LithoAssertions {
       for (Pair<KProperty1<T2, T1>, Matcher<T1>> pair : propsMatcherPairs) {
         MatcherAssert.assertThat(pair.getFirst().get((T2) actual), pair.getSecond());
       }
+      return this;
+    }
+
+    /**
+     * Assert that given {@Link Component} is equivalent to the provided one. This is the same check
+     * that will decide if we should skip rerendering of the component again.
+     */
+    public LithoComponentAssert isEquivalentTo(@Nullable Component other) {
+      isEquivalentTo(other, ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo);
+      return this;
+    }
+
+    /**
+     * Assert that given {@Link Component} is the same as the provided one including its props. This
+     * is the same check that will decide if we should skip remeasuring (if the default should
+     * update is not overridden) of the component again.
+     */
+    public LithoComponentAssert isEquivalentTo(
+        @Nullable Component other, boolean shouldCompareCommonProps) {
+      Assertions.assertThat(actual.isEquivalentTo(other, shouldCompareCommonProps))
+          .overridingErrorMessage(getCompareComponentsErrorMessage(actual, other))
+          .isTrue();
       return this;
     }
   }
