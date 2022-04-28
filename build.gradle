@@ -44,7 +44,7 @@ subprojects {
 
     afterEvaluate {
         tasks.withType(Test) {
-            it.dependsOn checkYogaLibs
+            it.dependsOn copyYogaLibs
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
             environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
@@ -145,16 +145,12 @@ task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
     include '*.dylib'
     include '*.dll'
     into "$buildDir/jniLibs"
+    doLast {
+        def to_contents = "find ${rootDir}/build/jniLibs".execute().text.trim()
+        System.out.println("destination: ${to_contents}")
+    }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-task checkYogaLibs {
-    it.dependsOn copyYogaLibs
-    def from_contents = 'find buck-out/gen/lib/yogajni/jni#default,shared/'.execute().text.trim()
-    System.out.println("source: ${from_contents}")
-    def to_contents = "find ${rootDir}/build/jniLibs".execute().text.trim()
-    System.out.println("destination: ${to_contents}")
 }

@@ -26,4 +26,8 @@ task buckBuild(type: Exec) {
     environment BUCKVERSION: System.getenv('BUCKVERSION') ?: 'last'
     def buckPath = System.getenv('BUCK_PATH') ?: 'buck'
     commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
+    doLast {
+        def from_contents = 'find buck-out/gen/lib/yogajni/jni#default,shared/'.execute().text.trim()
+        System.out.println("source: ${from_contents}")
+    }
 }
