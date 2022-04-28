@@ -1413,17 +1413,13 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
-    StateHandler stateHandler;
-    synchronized (this) {
-      if (mRoot == null || mStateHandler == null) {
-        return;
-      }
-
-      stateHandler = StateHandler.createShallowCopyForLazyStateUpdates(mStateHandler);
+  synchronized void applyLazyStateUpdatesForContainer(
+      String componentKey, StateContainer container) {
+    if (mRoot == null || mStateHandler == null) {
+      return;
     }
 
-    stateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
+    mStateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
   }
 
   void updateStateSync(

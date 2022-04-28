@@ -109,14 +109,6 @@ public class StateHandler {
     return new StateHandler(stateHandler);
   }
 
-  public static StateHandler createShallowCopyForLazyStateUpdates(final StateHandler stateHandler) {
-    final StateHandler copy = new StateHandler();
-    synchronized (stateHandler) {
-      copy.copyPendingLazyStateUpdates(stateHandler.mPendingLazyStateUpdates);
-    }
-    return copy;
-  }
-
   public InitialStateContainer getInitialStateContainer() {
     return mInitialStateContainer;
   }

@@ -178,6 +178,46 @@ public class StateUpdatesTest {
   }
 
   @Test
+  public void testKeepUpdatedStateValueLazyStateUpdateDeepHierarchy() {
+    ComponentWithCounterLazyStateLayoutSpec.Caller stateUpdater =
+        new ComponentWithCounterLazyStateLayoutSpec.Caller();
+
+    final Component component =
+        Column.create(mContext)
+            .child(
+                ComponentWithCounterLazyStateLayout.create(mContext)
+                    .caller(stateUpdater)
+                    .listener(
+                        new TestEventListener() {
+                          @Override
+                          void onTestEventCalled(int actualCount, int expectedValue) {
+                            assertThat(actualCount).isEqualTo(expectedValue);
+                          }
+                        }))
+            .build();
+    final TestLithoView testLithoView = createTestLithoView(component);
+
+    // Lazy State Update
+    stateUpdater.lazyUpdate(2);
+
+    // Layout should not be triggered by lazy state update and text counter should still be 0
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 0");
+
+    // Dispatch a test event to check whether we get the right state value in event or not
+    stateUpdater.dispatchTestEvent(new TestEvent(2));
+
+    // Normal State Update which triggers the layout
+    stateUpdater.increment();
+
+    // Layout should be triggered by state update and text counter should be 3 now (Lazy State
+    // Update updated it to 2 then we did increment with normal state update)
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 3");
+
+    // Dispatch a test event to check whether we get the right state value in event or not
+    stateUpdater.dispatchTestEvent(new TestEvent(3));
+  }
+
+  @Test
   public void testKeepUpdatedStateValueNestedTree() {
     final Component component =
         Column.create(mContext)
