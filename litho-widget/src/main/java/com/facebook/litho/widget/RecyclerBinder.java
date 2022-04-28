@@ -985,11 +985,7 @@ public class RecyclerBinder
 
     mWrapContent = builder.wrapContent;
     mCanMeasure = builder.canMeasure;
-    if (ComponentsConfiguration.useCorrectedReverseLayoutTraversal) {
-      mTraverseLayoutBackwards = getStackFromEnd();
-    } else {
-      mTraverseLayoutBackwards = getStackFromEnd() ^ getReverseLayout();
-    }
+    mTraverseLayoutBackwards = getStackFromEnd();
 
     if (builder.recyclerRangeTraverser != null) {
       mRangeTraverser = builder.recyclerRangeTraverser;

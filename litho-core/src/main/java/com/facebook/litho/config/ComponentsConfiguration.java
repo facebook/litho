@@ -274,8 +274,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldCollectLogsInRecyclerBinder = false;
 
-  public static boolean useCorrectedReverseLayoutTraversal = false;
-
   /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
   public static boolean shouldAllowCoreThreadTimeout = false;
 
