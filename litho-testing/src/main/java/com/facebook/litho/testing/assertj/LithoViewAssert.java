@@ -197,7 +197,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   /** Inverse of {@link #hasVisibleTextMatching(String)}. */
   public LithoViewAssert doesNotHaveVisibleTextMatching(String pattern) {
-    assertThatViewTree().hasVisibleTextMatching(pattern);
+    assertThatViewTree().doesNotHaveVisibleTextMatching(pattern);
 
     return this;
   }
