@@ -300,7 +300,7 @@ public class StateHandler {
 
     for (int index = 0; index < current.getChildCount(); ++index) {
       LithoNode childLithoNode = current.getChildAt(index);
-      if (childLithoNode.getHeadComponentKey().startsWith(key)) {
+      if (key.startsWith(childLithoNode.getHeadComponentKey())) {
         handleExceptionDuringApplyStateUpdate(key, childLithoNode, exception);
       }
     }

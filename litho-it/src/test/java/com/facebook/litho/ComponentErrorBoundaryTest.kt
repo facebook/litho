@@ -40,6 +40,7 @@ import com.facebook.litho.widget.OnErrorNotPresentChild
 import com.facebook.litho.widget.OnErrorPassUpChildTester
 import com.facebook.litho.widget.OnErrorPassUpParentTester
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
+import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodParent
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
 import com.facebook.yoga.YogaEdge
@@ -292,6 +293,28 @@ class ComponentErrorBoundaryTest {
         TestErrorBoundary.create(lithoViewRule.context)
             .errorOutput(errorOutput)
             .child(Column.create(lithoViewRule.context).child(crashingComponent).build())
+            .build()
+    lithoViewRule.setRoot(component).attachToWindow().measure().layout()
+    caller.updateStateSync()
+    assertThat(errorOutput).hasSize(1)
+    assertThat(errorOutput[0])
+        .isInstanceOf(RuntimeException::class.java)
+        .hasMessage("onUpdateState crash")
+  }
+
+  @Test
+  fun testOnUpdateStateCrashWithTestErrorBoundaryInDeepHierarchyOther() {
+    val caller = TestCrashFromEachLayoutLifecycleMethodSpec.Caller()
+    val errorOutput: List<Exception> = ArrayList()
+    val component =
+        TestErrorBoundary.create(lithoViewRule.context)
+            .errorOutput(errorOutput)
+            .child(
+                Column.create(lithoViewRule.context)
+                    .child(
+                        TestCrashFromEachLayoutLifecycleMethodParent.create(lithoViewRule.context)
+                            .caller(caller))
+                    .build())
             .build()
     lithoViewRule.setRoot(component).attachToWindow().measure().layout()
     caller.updateStateSync()
