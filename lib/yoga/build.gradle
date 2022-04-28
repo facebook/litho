@@ -27,8 +27,11 @@ task buckBuild(type: Exec) {
     def buckPath = System.getenv('BUCK_PATH') ?: 'buck'
     commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
     doLast {
+        System.out.println("Exit value: ${executionResult.get().exitValue}")
         def from_contents = 'find buck-out/gen/lib/yogajni/jni#default,shared/'.execute().text.trim()
         System.out.println("source:\n ${from_contents}")
+        def pwd = 'pwd'.execute().text().trim()
+        System.out.println("all:\n ${pwd}")
         def all_contents = 'find buck-out/'.execute().text.trim()
         System.out.println("all:\n ${all_contents}")
     }
