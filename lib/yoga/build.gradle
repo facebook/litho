@@ -22,20 +22,31 @@ dependencies {
 // locally for unit tests. We're reusing the buck builds for now and hopefully
 // someone (maybe you!) will fix this and get CMake to help us out.
 task buckBuild(type: Exec) {
+
     workingDir rootDir
     environment BUCKVERSION: System.getenv('BUCKVERSION') ?: 'last'
     def buckPath = System.getenv('BUCK_PATH') ?: 'buck'
     commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
-    doLast {
-        System.out.println("Exit value: ${executionResult.get().exitValue}")
-        def pwd = 'pwd'.execute().text.trim()
-        System.out.println("pwd: ${pwd}")
+    standardOutput = new ByteArrayOutputStream()
+    errorOutput = new ByteArrayOutputStream()
 
-        def all_contents = 'ls'.execute().text.trim()
-        System.out.println("all:\n ${all_contents}")
+    System.out.println("rootDir: ${rootDir} buckPath: ${buckPath}")
+
+    doLast {
+
+        System.out.println("STD_OUT:\n${standardOutput.toString()}")
+        System.out.println("ERROR_OUT:\n${errorOutput.toString()}")
+
+        System.out.println("Exit value: ${executionResult.get().exitValue}")
+
+        def pwd = 'pwd'.execute().text.trim()
+        System.out.println("\npwd: ${pwd}")
+
+        def inner_contents = 'ls lib/yoga/'.execute().text.trim()
+        System.out.println("\nall:\n${inner_contents}")
 
         def from_contents = 'find buck-out/gen/lib/yogajni/jni#default,shared/'.execute().text.trim()
-        System.out.println("source:\n ${from_contents}")
+        System.out.println("source:\n${from_contents}")
 
 
     }
