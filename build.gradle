@@ -43,7 +43,7 @@ subprojects {
     }
 
     afterEvaluate {
-        tasks.withType(com.android.build.gradle.tasks.factory.AndroidUnitTest) {
+        tasks.withType(Test) {
             it.dependsOn copyYogaLibs
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
