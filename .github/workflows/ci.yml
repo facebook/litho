@@ -18,7 +18,7 @@ jobs:
 
       - name: Fetch buck
         run: |
-          (mkdir buck && \
+          (rm -rf buck && mkdir buck && \
           wget https://jitpack.io/com/github/facebook/buck/v2021.01.12.01/buck-v2021.01.12.01-java11.pex && \
           mv buck-v2021.01.12.01-java11.pex buck/buck && \
           chmod +x buck/buck && \
