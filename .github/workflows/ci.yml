@@ -18,10 +18,11 @@ jobs:
 
       - name: Fetch buck
         run: |
-          (test -d buck && echo "Buck retrived from cache. Skipping download") || \
           (mkdir buck && \
-          wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex > buck/buck && \
-          chmod +x buck/buck)
+          wget https://jitpack.io/com/github/facebook/buck/v2021.01.12.01/buck-v2021.01.12.01-java11.pex && \
+          mv buck-v2021.01.12.01-java11.pex buck/buck && \
+          chmod +x buck/buck && \
+          ls -l buck)
 
   tests:
     needs: [get-buck]
