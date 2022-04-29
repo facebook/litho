@@ -146,8 +146,8 @@ task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
     include '*.dll'
     into "$buildDir/jniLibs"
     doLast {
-        def to_contents = "find ${rootDir}/build/jniLibs".execute().text.trim()
-        System.out.println("destination: ${to_contents}")
+        def yoga_deps = "find ${rootDir}/build/jniLibs".execute().text.trim()
+        System.out.println("[Yoga Buck Build]: copied files:\n${yoga_deps}")
     }
 }
 
