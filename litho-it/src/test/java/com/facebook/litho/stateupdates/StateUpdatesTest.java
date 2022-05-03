@@ -767,6 +767,36 @@ public class StateUpdatesTest {
     LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 1");
   }
 
+  @Test
+  public void testStateUpdateComponentAfterComponentIsRemovedFromHierarchy() {
+    ComponentWithConditionalChildLayoutSpec.Caller stateUpdater =
+        new ComponentWithConditionalChildLayoutSpec.Caller();
+
+    ComponentWithCounterStateLayoutSpec.Caller childStateUpdater =
+        new ComponentWithCounterStateLayoutSpec.Caller();
+
+    Component component =
+        Column.create(mContext)
+            .child(
+                ComponentWithConditionalChildLayout.create(mContext)
+                    .caller(stateUpdater)
+                    .childCaller(childStateUpdater))
+            .build();
+
+    TestLithoView testLithoView = createTestLithoView(component);
+
+    childStateUpdater.increment();
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Count: 1");
+
+    stateUpdater.hideChildComponent();
+
+    childStateUpdater.increment();
+
+    LithoViewAssert.assertThat(testLithoView.getLithoView()).hasVisibleText("Empty");
+    LithoViewAssert.assertThat(testLithoView.getLithoView())
+        .doesNotHaveVisibleTextContaining("Count:");
+  }
+
   private void assertThatNestedGrandParentStateContainerIsInStateHandler(
       ComponentTree componentTree, ComponentContext context, int expectedStateValue) {
     ComponentWithStateAndChildWithStateNestedGrandParentStateContainer

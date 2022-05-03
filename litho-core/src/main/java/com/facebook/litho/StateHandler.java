@@ -81,6 +81,11 @@ public class StateHandler {
 
   private final InitialStateContainer mInitialStateContainer;
 
+  private @Nullable HashSet<String> mStateContainerNotFoundForKeys;
+
+  static final String ERROR_STATE_CONTAINER_NOT_FOUND_APPLY_STATE_UPDATE_EARLY =
+      "StateHandler:StateContainerNotFoundApplyStateUpdateEarly";
+
   @VisibleForTesting
   public StateHandler() {
     this(null);
@@ -251,8 +256,11 @@ public class StateHandler {
             }
 
             if (stateContainer == null) {
-              throw new IllegalStateException(
-                  "StateContainer not found for component for which we have pending state update");
+              if (mStateContainerNotFoundForKeys == null) {
+                mStateContainerNotFoundForKeys = new HashSet<>();
+              }
+              mStateContainerNotFoundForKeys.add(key);
+              continue;
             }
 
             final StateContainer newStateContainer = stateContainer.clone();
@@ -280,6 +288,21 @@ public class StateHandler {
 
         mPendingStateUpdates.clear();
       }
+    }
+  }
+
+  public void thowSoftErrorIfStateContainerWasNotFound(String key, Component component) {
+    if (!ComponentsConfiguration.applyStateUpdateEarly) {
+      return;
+    }
+
+    if (mStateContainerNotFoundForKeys != null && mStateContainerNotFoundForKeys.contains(key)) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          ERROR_STATE_CONTAINER_NOT_FOUND_APPLY_STATE_UPDATE_EARLY
+              + ":"
+              + component.getSimpleName(),
+          "StateContainer not found for component for which we have pending state update");
     }
   }
 
@@ -343,6 +366,12 @@ public class StateHandler {
 
     if (!ComponentsConfiguration.applyStateUpdateEarly) {
       applyStateUpdates(key, newStateContainer);
+    } else {
+      // We maintain a HashSet of global keys for which we could not find the StateContainer while
+      // applying state updates early.
+      // Here, we are checking if component for that global key was part of component tree then
+      // throwing exception.
+      thowSoftErrorIfStateContainerWasNotFound(key, component);
     }
   }
 
@@ -388,6 +417,10 @@ public class StateHandler {
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
     commitHookState(stateHandler);
+
+    if (mStateContainerNotFoundForKeys != null) {
+      mStateContainerNotFoundForKeys.clear();
+    }
   }
 
   synchronized Set<String> getKeysForPendingUpdates() {
