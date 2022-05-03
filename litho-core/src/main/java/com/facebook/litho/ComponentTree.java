@@ -2059,30 +2059,6 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   private void setRootAndSizeSpecInternal(
-      Component root,
-      int widthSpec,
-      int heightSpec,
-      boolean isAsync,
-      @Nullable Size output,
-      @CalculateLayoutSource int source,
-      int externalRootVersion,
-      String extraAttribution,
-      @Nullable TreeProps treeProps) {
-    setRootAndSizeSpecInternal(
-        root,
-        widthSpec,
-        heightSpec,
-        isAsync,
-        output,
-        source,
-        externalRootVersion,
-        extraAttribution,
-        treeProps,
-        false,
-        false);
-  }
-
-  private void setRootAndSizeSpecInternal(
       @Nullable Component root,
       int widthSpec,
       int heightSpec,
