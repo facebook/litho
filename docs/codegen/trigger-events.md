@@ -3,7 +3,7 @@ id: trigger-events
 title: Triggering events with Handles
 ---
 
-You can trigger Events on components using a `Handle`. A `Handle` is a unique identifier that can be shared can with other components by passing it as a `@Prop`. Use `new Handle()` to create a new `Handle` and assign it to a component using the `.handle(..)` method in the component's builder.
+You can trigger Events on components using a `Handle`. A `Handle` is a unique identifier that can be shared with other components by passing it as a `@Prop`. Use `new Handle()` to create a new `Handle` and assign it to a component using the `.handle(..)` method in the component's builder.
 
 In the following LayoutSpec we apply a `Handle` (passed in as a @Prop) to a `TextInput` component.
 ```java
