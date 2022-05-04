@@ -62,14 +62,20 @@ class ThreadLooperController {
     semaphore.acquire()
   }
 
-  /** Runs one task on the background thread, blocking until it completes. */
+  /**
+   * Runs one task on the background thread, blocking until it completes successfully or throws an
+   * exception.
+   */
   fun runOneTaskSync() {
     val semaphore = TimeOutSemaphore(0)
     messageQueue.add(Message(MessageType.DRAIN_ONE, semaphore))
     semaphore.acquire()
   }
 
-  /** Runs through all tasks on the background thread, blocking until it completes. */
+  /**
+   * Runs through all tasks on the background thread, blocking until it completes successfully or
+   * throws an exception.
+   */
   fun runToEndOfTasksSync() {
     val semaphore = TimeOutSemaphore(0)
     messageQueue.add(Message(MessageType.DRAIN_ALL, semaphore))
@@ -91,6 +97,7 @@ enum class MessageType {
 
 class Message constructor(val messageType: MessageType, val semaphore: TimeOutSemaphore)
 
+@SuppressWarnings("CatchGeneralException")
 private class LayoutLooperThread(layoutLooper: ShadowLooper, messages: BlockingQueue<Message>) :
     Thread(
         Runnable {
@@ -102,19 +109,24 @@ private class LayoutLooperThread(layoutLooper: ShadowLooper, messages: BlockingQ
                 } catch (e: InterruptedException) {
                   throw RuntimeException(e)
                 }
-            when (message.messageType) {
-              MessageType.DRAIN_ONE -> {
-                layoutLooper.runOneTask()
-                message.semaphore.release()
+            try {
+              when (message.messageType) {
+                MessageType.DRAIN_ONE -> {
+                  layoutLooper.runOneTask()
+                  message.semaphore.release()
+                }
+                MessageType.DRAIN_ALL -> {
+                  layoutLooper.runToEndOfTasks()
+                  message.semaphore.release()
+                }
+                MessageType.QUIT -> {
+                  keepGoing = false
+                  message.semaphore.release()
+                }
               }
-              MessageType.DRAIN_ALL -> {
-                layoutLooper.runToEndOfTasks()
-                message.semaphore.release()
-              }
-              MessageType.QUIT -> {
-                keepGoing = false
-                message.semaphore.release()
-              }
+            } catch (e: Exception) {
+              message.semaphore.setException(e)
+              message.semaphore.release()
             }
           }
         })
