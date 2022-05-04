@@ -44,7 +44,7 @@ import com.facebook.rendercore.RenderUnit
 import kotlin.math.max
 import kotlin.math.min
 
-class VerticalScrollComponent(
+class ExperimentalVerticalScroll(
     val scrollbarEnabled: Boolean = false,
     val nestedScrollingEnabled: Boolean = false,
     val verticalFadingEdgeEnabled: Boolean = false,

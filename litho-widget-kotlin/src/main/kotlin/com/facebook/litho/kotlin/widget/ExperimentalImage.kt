@@ -42,7 +42,7 @@ import com.facebook.rendercore.RenderUnit
  * @param drawable The [Drawable] to render.
  * @param scaleType The [ScaleType] to scale or transform the [drawable].
  */
-class ImageComponent(
+class ExperimentalImage(
     val drawable: Drawable,
     val scaleType: ScaleType = ScaleType.FIT_XY,
     style: Style? = null,
@@ -53,7 +53,7 @@ class ImageComponent(
 }
 
 /**
- * The [SimpleMountable] used by the [ImageComponent]. It uses a [MatrixDrawable], and
+ * The [SimpleMountable] used by the [ExperimentalImage]. It uses a [MatrixDrawable], and
  * [DrawableMatrix] to correctly render the actual [drawable] inside it.
  */
 class ImageMountable(

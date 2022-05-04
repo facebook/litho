@@ -31,31 +31,30 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
-/** Tests for [ImageComponent] */
+/** Tests for [ExperimentalImage] */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(AndroidJUnit4::class)
-class ImageComponentTest {
+class ExperimentalImageTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
-  fun `ImageComponent should render`() {
+  fun `ExperimentalImage should render`() {
     lithoViewRule
         .render {
-          ImageComponent(
+          ExperimentalImage(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(100.px),
           )
         }
         .apply {
+          // should find an ExperimentalImage in the tree
+          findComponent(ExperimentalImage::class)
 
-          // should find an ImageComponent in the tree
-          findComponent(ImageComponent::class)
-
-          // should mount an ImageComponent
+          // should mount an ExperimentalImage
           assertThat(lithoView.mountItemCount).isEqualTo(1)
 
-          // content of ImageComponent should be a MatrixDrawable
+          // content of ExperimentalImage should be a MatrixDrawable
           val content = lithoView.getMountItemAt(0).content as MatrixDrawable<*>
           assertThat(content.bounds.width()).isEqualTo(100)
           assertThat(content.bounds.height()).isEqualTo(100)

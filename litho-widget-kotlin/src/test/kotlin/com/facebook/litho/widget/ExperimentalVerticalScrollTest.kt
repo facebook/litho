@@ -26,17 +26,19 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.widget.LithoScrollView
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
-/** Tests for [ImageComponent] */
+/** Tests for [ExperimentalVerticalScroll] */
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(AndroidJUnit4::class)
-class VerticalScrollComponentTest {
+class ExperimentalVerticalScrollTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
@@ -44,10 +46,10 @@ class VerticalScrollComponentTest {
   fun `VerticalScroll Component should render`() {
     lithoViewRule
         .render {
-          VerticalScrollComponent(
+          ExperimentalVerticalScroll(
               style = Style.width(100.px).height(100.px),
           ) {
-            ImageComponent(
+            ExperimentalImage(
                 drawable = ColorDrawable(Color.RED),
                 style = Style.width(100.px).height(500.px),
             )
@@ -56,7 +58,7 @@ class VerticalScrollComponentTest {
         .apply {
 
           // should find an VerticalScroll Component in the tree
-          findComponent(VerticalScrollComponent::class)
+          findComponent(ExperimentalVerticalScroll::class)
 
           // should mount an VerticalScroll Component
           assertThat(lithoView.mountItemCount).isEqualTo(1)
@@ -83,15 +85,15 @@ class VerticalScrollComponentTest {
   @Test
   fun `same instance should be equivalent`() {
     val component =
-        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
+          ExperimentalImage(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(500.px),
           )
         }
 
-    assertThat(component.isEquivalentTo(component)).isTrue
-    assertThat(component.isEquivalentTo(component, true)).isTrue
+    assertThat(component).isEquivalentTo(component)
+    assertThat(component).isEquivalentTo(component, true)
   }
 
   /** TODO(T116546567): Ensure that lambdas can be compared in component isEquivalentTo */
@@ -99,66 +101,68 @@ class VerticalScrollComponentTest {
   fun `components with same prop values should be equivalent, but wont be because of the lambda`() {
     val color = ColorDrawable(Color.RED)
     val a =
-        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
         }
 
     val b =
-        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
         }
 
-    assertThat(a.isEquivalentTo(b)).isFalse
-    assertThat(a.isEquivalentTo(b, true)).isFalse
+    assertThatThrownBy { assertThat(a).isEquivalentTo(b) }.isInstanceOf(AssertionError::class.java)
+    assertThatThrownBy { assertThat(a).isEquivalentTo(b, true) }
+        .isInstanceOf(AssertionError::class.java)
   }
 
   @Test
   fun `components with different prop values should not be equivalent`() {
     val a =
-        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
+          ExperimentalImage(
               drawable = ColorDrawable(Color.RED), // red here
               style = Style.width(100.px).height(500.px),
           )
         }
 
     val b =
-        VerticalScrollComponent(style = Style.width(100.px).height(100.px)) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
+          ExperimentalImage(
               drawable = ColorDrawable(Color.BLUE), // blue here
               style = Style.width(100.px).height(500.px),
           )
         }
 
-    assertThat(a.isEquivalentTo(b)).isFalse
-    assertThat(a.isEquivalentTo(b, true)).isFalse
+    assertThatThrownBy { assertThat(a).isEquivalentTo(b) }.isInstanceOf(AssertionError::class.java)
+    assertThatThrownBy { assertThat(a).isEquivalentTo(b, true) }
+        .isInstanceOf(AssertionError::class.java)
   }
 
   @Test
   fun `components with different style values should not be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
-        VerticalScrollComponent(style = Style.width(100.px).height(100.px) /* 100 here */) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px) /* 100 here */) {
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
         }
 
     val b =
-        VerticalScrollComponent(style = Style.width(200.px).height(200.px) /* 200 here */) {
-          ImageComponent(
+        ExperimentalVerticalScroll(style = Style.width(200.px).height(200.px) /* 200 here */) {
+          ExperimentalImage(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
         }
 
-    assertThat(a.isEquivalentTo(b, true)).isFalse
+    assertThatThrownBy { assertThat(a).isEquivalentTo(b) }.isInstanceOf(AssertionError::class.java)
   }
 }
