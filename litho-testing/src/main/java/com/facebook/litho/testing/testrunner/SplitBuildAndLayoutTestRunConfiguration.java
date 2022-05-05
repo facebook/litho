@@ -25,16 +25,19 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
       ComponentsConfiguration.applyStateUpdateEarly;
   private final boolean defaultIsBuildAndLayoutSplitEnabled =
       ComponentsConfiguration.isBuildAndLayoutSplitEnabled;
+  private final boolean defaultUseResolvedTree = ComponentsConfiguration.useResolvedTree;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
     ComponentsConfiguration.isBuildAndLayoutSplitEnabled = true;
     ComponentsConfiguration.applyStateUpdateEarly = true;
+    ComponentsConfiguration.useResolvedTree = true;
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
     ComponentsConfiguration.isBuildAndLayoutSplitEnabled = defaultIsBuildAndLayoutSplitEnabled;
     ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStateUpdateEarly;
+    ComponentsConfiguration.useResolvedTree = defaultUseResolvedTree;
   }
 }
