@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +68,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
    *     configurations.
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getExtraRunConfigurations() {
-    return Arrays.asList(
-        RenderCoreMountStateTestRunConfiguration.class,
-        LithoViewSelfManageTestRunConfiguration.class);
+    return Collections.emptyList();
   }
 
   @Override
