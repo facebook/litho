@@ -173,6 +173,7 @@ public class DataFlowGraph {
 
     final ArraySet<ValueNode> leafNodes = new ArraySet<>();
     final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
+    final ArrayDeque<ValueNode> nodesToProcess = new ArrayDeque<>();
 
     for (final GraphBinding binding : mBindings) {
       final ArrayList<ValueNode> nodes = binding.getAllNodes();
@@ -180,7 +181,10 @@ public class DataFlowGraph {
         final ValueNode node = nodes.get(j);
         final int outputCount = node.getOutputCount();
         if (outputCount == 0) {
-          leafNodes.add(node);
+          if (!leafNodes.contains(node)) {
+            nodesToProcess.add(node);
+            leafNodes.add(node);
+          }
         } else {
           nodesToOutputsLeft.put(node, outputCount);
         }
@@ -191,9 +195,6 @@ public class DataFlowGraph {
       throw new DetectedCycleException(
           "Graph has nodes, but they represent a cycle with no leaf nodes!");
     }
-
-    final ArrayDeque<ValueNode> nodesToProcess = new ArrayDeque<>();
-    nodesToProcess.addAll(leafNodes);
 
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
