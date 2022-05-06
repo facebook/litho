@@ -229,6 +229,10 @@ public class TransitionManager {
       @Nullable Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> currentTransitionIds,
       @Nullable Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> nextTransitionIds,
       Transition rootTransition) {
+    if (mDebugTag != null) {
+      Log.d(mDebugTag, "=== SetupTransitions ===");
+    }
+
     RenderCoreSystrace.beginSection("TransitionManager.setupTransition");
 
     for (AnimationState animationState : mAnimationStates.values()) {
@@ -682,7 +686,7 @@ public class TransitionManager {
     }
 
     if (mDebugTag != null) {
-      Log.d(mDebugTag, " - created animation");
+      Log.d(mDebugTag, " - created animation (start=" + startValue + ", end=" + endValue + ")");
     }
 
     final AnimationBinding animation = transition.createAnimation(propertyHandle, endValue);
