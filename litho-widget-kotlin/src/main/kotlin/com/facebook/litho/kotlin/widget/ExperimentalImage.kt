@@ -44,12 +44,12 @@ import com.facebook.rendercore.RenderUnit
  */
 class ExperimentalImage(
     val drawable: Drawable,
-    val scaleType: ScaleType = ScaleType.FIT_XY,
+    val scaleType: ScaleType? = ScaleType.FIT_XY,
     style: Style? = null,
 ) : MountableComponent(style) {
 
   override fun MountableComponentScope.render(): ImageMountable =
-      ImageMountable(drawable, scaleType)
+      ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY)
 }
 
 /**
