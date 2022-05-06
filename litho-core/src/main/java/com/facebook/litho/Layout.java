@@ -157,6 +157,16 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
+      final int widthSpec,
+      final int heightSpec) {
+    return createResolvedTree(
+        layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null);
+  }
+
+  static @Nullable ResolvedTree createResolvedTree(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component,
       final @Nullable String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,

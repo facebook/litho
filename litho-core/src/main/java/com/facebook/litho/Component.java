@@ -1062,13 +1062,39 @@ public abstract class Component
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       layoutState.clearCachedLayout(this);
 
-      final LayoutResultHolder container =
-          Layout.createAndMeasureComponent(
-              Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
-              c,
-              this,
-              widthSpec,
-              heightSpec);
+      final LayoutResultHolder container;
+
+      if (ComponentsConfiguration.useResolvedTree) {
+
+        final @Nullable ResolvedTree resolvedTree =
+            Layout.createResolvedTree(
+                Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
+                c,
+                this,
+                widthSpec,
+                heightSpec);
+
+        final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+
+        container =
+            Layout.measureTree(
+                Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
+                node,
+                c,
+                widthSpec,
+                heightSpec,
+                null,
+                null);
+      } else {
+        container =
+            Layout.createAndMeasureComponent(
+                Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
+                c,
+                this,
+                widthSpec,
+                heightSpec);
+      }
+
       if (container.wasLayoutInterrupted()) {
         return;
       }
