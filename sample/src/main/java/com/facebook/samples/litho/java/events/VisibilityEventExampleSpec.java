@@ -49,6 +49,8 @@ class VisibilityEventExampleSpec {
                 .focusedHandler(VisibilityEventExample.onComponentFocused(c, "someStringParam"))
                 .fullImpressionHandler(VisibilityEventExample.onComponentFullImpression(c)))
         .visibilityChangedHandler(VisibilityEventExample.onComponentVisibilityChanged(c))
+        .visibleHeightRatio(0.1f) // fire only when at least 10% of the heighta is visible
+        .visibleHeightRatio(0.1f) // fire only when at least 10% of the width is visible
         .build();
   }
 

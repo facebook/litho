@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
@@ -35,13 +36,12 @@ import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.R;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LifecycleFragment extends Fragment {
+public class LifecycleFragment extends Fragment implements View.OnClickListener {
 
   private static final AtomicInteger mId = new AtomicInteger(0);
   private LithoView mLithoView;
   private ConsoleView mConsoleView;
-  private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
-      new LithoLifecycleProviderDelegate();
+
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
   private final DelegateListener mDelegateListener =
       new DelegateListener() {
@@ -59,26 +59,35 @@ public class LifecycleFragment extends Fragment {
         public void setRootComponent(boolean isSync) {}
       };
 
+  // start_example_lifecycleprovider
+  private final LithoLifecycleProviderDelegate mDelegate = new LithoLifecycleProviderDelegate();
+
+  @Override
+  public void onClick(View view) {
+
+    // Replaces the current fragment with a new fragment
+    replaceFragment();
+
+    // inform the LithoView
+    mDelegate.moveToLifecycle(LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
+  }
+
   @Override
   public View onCreateView(
       LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
     ViewGroup parent =
         (ViewGroup)
             inflater.inflate(R.layout.activity_fragment_transactions_lifecycle, container, false);
     final ComponentContext c = new ComponentContext(requireContext());
+
     mLithoView =
         LithoView.create(
             c,
-            Column.create(c)
-                .child(
-                    LifecycleDelegateComponent.create(c)
-                        .id(String.valueOf(mId.getAndIncrement()))
-                        .delegateListener((mDelegateListener))
-                        .consoleDelegateListener(mConsoleDelegateListener)
-                        .build())
-                .build(),
-            mLithoLifecycleProviderDelegate);
+            getComponent(c),
+            mDelegate /* The LithoLifecycleProvider delegate for this LithoView */);
+
+    // end_example_lifecycleprovider
+
     final LinearLayout.LayoutParams params1 =
         new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;
@@ -89,27 +98,33 @@ public class LifecycleFragment extends Fragment {
     return parent;
   }
 
+  private Component getComponent(ComponentContext c) {
+    return Column.create(c)
+        .child(
+            LifecycleDelegateComponent.create(c)
+                .id(String.valueOf(mId.getAndIncrement()))
+                .delegateListener((mDelegateListener))
+                .consoleDelegateListener(mConsoleDelegateListener)
+                .build())
+        .build();
+  }
+
   @Override
   public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     Button fragmentButton = view.findViewById(R.id.new_fragment_button);
     fragmentButton.setText("New Fragment");
-    fragmentButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View view) {
-            LifecycleFragment lifecycleFragment = new LifecycleFragment();
-            FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_view, lifecycleFragment, null)
-                .addToBackStack(null)
-                .commit();
-            mLithoLifecycleProviderDelegate.moveToLifecycle(
-                LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
-          }
-        });
-
+    fragmentButton.setOnClickListener(this);
     ViewGroup fragmentLithoView = view.findViewById(R.id.fragment_litho_view);
     fragmentLithoView.addView(mLithoView);
+  }
+
+  private void replaceFragment() {
+    LifecycleFragment lifecycleFragment = new LifecycleFragment();
+    FragmentManager fragmentManager = getParentFragmentManager();
+    fragmentManager
+        .beginTransaction()
+        .replace(R.id.fragment_view, lifecycleFragment, null)
+        .addToBackStack(null)
+        .commit();
   }
 }

@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
@@ -42,8 +43,7 @@ public class ScreenSlidePageFragment extends Fragment {
   private ConsoleView mConsoleView;
   private boolean wasVisible = false;
   private int mPosition = 0;
-  private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
-      new LithoLifecycleProviderDelegate();
+
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
   private final DelegateListener mDelegateListener =
       new DelegateListener() {
@@ -61,21 +61,24 @@ public class ScreenSlidePageFragment extends Fragment {
         public void setRootComponent(boolean isSync) {}
       };
 
-  public static ScreenSlidePageFragment newInstance(int position) {
-    ScreenSlidePageFragment fragment = new ScreenSlidePageFragment();
-    Bundle args = new Bundle();
-    args.putInt("position", position);
-    fragment.setArguments(args);
-    fragment.setPosition(position);
-    return fragment;
-  }
+  // start_example_lifecycleprovider
+  private final LithoLifecycleProviderDelegate mDelegate = new LithoLifecycleProviderDelegate();
 
-  private void setPosition(int position) {
-    mPosition = position;
-  }
+  @Override
+  public void setUserVisibleHint(boolean isVisibleToUser) {
+    super.setUserVisibleHint(isVisibleToUser);
 
-  public ScreenSlidePageFragment() {
-    super(R.layout.screen_slide_fragment);
+    if (wasVisible == isVisibleToUser) {
+      return;
+    }
+    if (isVisibleToUser) {
+      wasVisible = true;
+      mDelegate.moveToLifecycle(LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
+
+    } else {
+      wasVisible = false;
+      mDelegate.moveToLifecycle(LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
+    }
   }
 
   @Override
@@ -83,21 +86,15 @@ public class ScreenSlidePageFragment extends Fragment {
       LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     ViewGroup parent =
         (ViewGroup) inflater.inflate(R.layout.screen_slide_fragment, container, false);
-
     final ComponentContext c = new ComponentContext(requireContext());
+
     mLithoView =
         LithoView.create(
             c,
-            Column.create(c)
-                .child(Text.create(c).text(String.valueOf(mPosition)).alignSelf(YogaAlign.CENTER))
-                .child(
-                    LifecycleDelegateComponent.create(c)
-                        .id(String.valueOf(mId.getAndIncrement()))
-                        .delegateListener((mDelegateListener))
-                        .consoleDelegateListener(mConsoleDelegateListener)
-                        .build())
-                .build(),
-            mLithoLifecycleProviderDelegate);
+            getComponent(c),
+            mDelegate /* The LithoLifecycleProvider delegate for this LithoView */);
+
+    // end_example_lifecycleprovider
 
     final LinearLayout.LayoutParams params1 =
         new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
@@ -115,22 +112,32 @@ public class ScreenSlidePageFragment extends Fragment {
     return parent;
   }
 
-  @Override
-  public void setUserVisibleHint(boolean isVisibleToUser) {
-    super.setUserVisibleHint(isVisibleToUser);
+  private Component getComponent(final ComponentContext c) {
+    return Column.create(c)
+        .child(Text.create(c).text(String.valueOf(mPosition)).alignSelf(YogaAlign.CENTER))
+        .child(
+            LifecycleDelegateComponent.create(c)
+                .id(String.valueOf(mId.getAndIncrement()))
+                .delegateListener((mDelegateListener))
+                .consoleDelegateListener(mConsoleDelegateListener)
+                .build())
+        .build();
+  }
 
-    if (wasVisible == isVisibleToUser) {
-      return;
-    }
-    if (isVisibleToUser) {
-      wasVisible = true;
-      mLithoLifecycleProviderDelegate.moveToLifecycle(
-          LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
+  public static ScreenSlidePageFragment newInstance(int position) {
+    ScreenSlidePageFragment fragment = new ScreenSlidePageFragment();
+    Bundle args = new Bundle();
+    args.putInt("position", position);
+    fragment.setArguments(args);
+    fragment.setPosition(position);
+    return fragment;
+  }
 
-    } else {
-      wasVisible = false;
-      mLithoLifecycleProviderDelegate.moveToLifecycle(
-          LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
-    }
+  private void setPosition(int position) {
+    mPosition = position;
+  }
+
+  public ScreenSlidePageFragment() {
+    super(R.layout.screen_slide_fragment);
   }
 }

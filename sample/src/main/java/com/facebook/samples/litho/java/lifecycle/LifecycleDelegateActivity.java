@@ -76,6 +76,8 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
     final LinearLayout parent = new LinearLayout(this);
     parent.setOrientation(LinearLayout.VERTICAL);
     parent.setLayoutParams(new LayoutParams(MATCH_PARENT, MATCH_PARENT));
+
+    // start_example_lifecycleprovider
     final AOSPLithoLifecycleProvider lifecycleProvider = new AOSPLithoLifecycleProvider(this);
     final ComponentContext componentContext = new ComponentContext(this);
     mLithoView =
@@ -86,7 +88,9 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
                 .delegateListener(mDelegateListener)
                 .consoleDelegateListener(mConsoleDelegateListener)
                 .build(),
-            lifecycleProvider);
+            lifecycleProvider /* The LithoLifecycleProvider for this LithoView */);
+    // end_example_lifecycleprovider
+
     final LayoutParams params1 = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;
     mLithoView.setLayoutParams(params1);
