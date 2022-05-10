@@ -20,7 +20,7 @@ const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 module.exports = {
   mainSidebar: {
     // TODO: update content
-    'What is Litho?': ['intro/motivation', 'intro/built-with-litho'],
+    'What is Litho?': ['intro/motivation'],
     'Tutorial': [
       'tutorial/overview',
       // TODO: add kotlin dep
