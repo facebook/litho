@@ -38,6 +38,7 @@ module.exports = {
           'mainconcepts/use-state',
           'mainconcepts/use-effect',
           'mainconcepts/use-ref',
+          'mainconcepts/use-cached',
           'mainconcepts/use-error-boundary',
         ],
       },
