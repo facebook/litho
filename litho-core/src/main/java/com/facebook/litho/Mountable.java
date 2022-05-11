@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RenderUnit.Binder;
 import java.util.List;
@@ -108,5 +109,16 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
   @Override
   default boolean isEquivalentTo(Mountable<?> other) {
     return EquivalenceUtils.hasEquivalentFields(this, other);
+  }
+
+  /** This API informs the framework about the size of the content pool. The default is 3. */
+  default int getPoolSize() {
+    return 3;
+  }
+
+  /** Creates the content pool the framework should use for this Mountable. */
+  default MountItemsPool.ItemPool<ContentT> onCreateMountContentPool() {
+    return new DefaultMountContentPool(
+        "<cls>" + getClass().getName() + "</cls>", getPoolSize(), true);
   }
 }
