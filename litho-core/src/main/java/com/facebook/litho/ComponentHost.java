@@ -97,7 +97,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   private ComponentLongClickListener mOnLongClickListener;
   private ComponentFocusChangeListener mOnFocusChangeListener;
   private ComponentTouchListener mOnTouchListener;
-  private EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
+  private @Nullable EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
   @Nullable ExceptionLogMessageProvider mExceptionLogMessageProvider;
@@ -605,7 +605,8 @@ public class ComponentHost extends Host implements DisappearingHost {
    *
    * @param interceptTouchEventHandler the handler to be set on this host.
    */
-  void setInterceptTouchEventHandler(EventHandler<InterceptTouchEvent> interceptTouchEventHandler) {
+  void setInterceptTouchEventHandler(
+      @Nullable EventHandler<InterceptTouchEvent> interceptTouchEventHandler) {
     mOnInterceptTouchEventHandler = interceptTouchEventHandler;
   }
 

@@ -18,9 +18,9 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.MountState.getComponentFocusChangeListener;
-import static com.facebook.litho.MountState.getComponentLongClickListener;
-import static com.facebook.litho.MountState.getComponentTouchListener;
+import static com.facebook.litho.LithoViewAttributesExtension.getComponentFocusChangeListener;
+import static com.facebook.litho.LithoViewAttributesExtension.getComponentLongClickListener;
+import static com.facebook.litho.LithoViewAttributesExtension.getComponentTouchListener;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Assertions.assertThat;
 
