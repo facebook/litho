@@ -1644,6 +1644,10 @@ public class LayoutState
 
   @ThreadSafe(enableChecks = false)
   void preAllocateMountContent(boolean shouldPreallocatePerMountSpec) {
+    if (!shouldPreallocatePerMountSpec) {
+      return;
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
@@ -1655,7 +1659,11 @@ public class LayoutState
         final LayoutOutput output = LayoutOutput.getLayoutOutput(treeNode);
         final Component component = output.getComponent();
 
-        if (shouldPreallocatePerMountSpec && !component.canPreallocate()) {
+        if (!(component.canPreallocate()
+            || (treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
+                && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
+                    .getMountable()
+                    .canPreallocate()))) {
           continue;
         }
 

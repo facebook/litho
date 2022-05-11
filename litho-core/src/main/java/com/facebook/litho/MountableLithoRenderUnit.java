@@ -95,4 +95,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
     // TODO: have a similar API for Mountable.
     return output.getComponent().getSimpleName();
   }
+
+  public Mountable<?> getMountable() {
+    return mMountable;
+  }
 }

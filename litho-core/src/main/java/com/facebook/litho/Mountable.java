@@ -111,6 +111,17 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
     return EquivalenceUtils.hasEquivalentFields(this, other);
   }
 
+  /**
+   * This API informs the framework to fill the content pool for this Mountable ahead of time. The
+   * default value is {@code false}, i.e. content is not pre-allocated. Pre-allocation of the
+   * content can improve performance in some circumstances where creating the content is expensive.
+   *
+   * @return {@code true} to preallocate the content, otherwise {@code false}
+   */
+  default boolean canPreallocate() {
+    return false;
+  }
+
   /** This API informs the framework about the size of the content pool. The default is 3. */
   default int getPoolSize() {
     return 3;
