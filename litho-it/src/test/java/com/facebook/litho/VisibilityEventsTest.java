@@ -2064,10 +2064,6 @@ public class VisibilityEventsTest {
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
-      return ((MountState) mLithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
-    }
-
     LithoHostListenerCoordinator lithoHostListenerCoordinator =
         Whitebox.getInternalState(mLithoView, "mLithoHostListenerCoordinator");
     ExtensionState<VisibilityMountExtension.VisibilityMountExtensionState> extensionState =

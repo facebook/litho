@@ -1669,10 +1669,6 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap(LithoView lithoView) {
-    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
-      return ((MountState) lithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
-    }
-
     LithoHostListenerCoordinator lithoHostListenerCoordinator =
         Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
     ExtensionState<VisibilityMountExtension.VisibilityMountExtensionState> extensionState =
