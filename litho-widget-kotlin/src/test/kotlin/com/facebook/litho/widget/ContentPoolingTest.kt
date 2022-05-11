@@ -93,4 +93,28 @@ class ContentPoolingTest {
           .isGreaterThan(0)
     }
   }
+
+  @Test
+  fun `should use pool size from mountable`() {
+
+    // Mount 40 Image components, and then unmount them all
+    lithoViewRule
+        .render {
+          Column {
+            for (i in 1..40) {
+              child(
+                  ExperimentalImage(
+                      drawable = ColorDrawable(Color.RED),
+                      style = Style.width(100.px).height(100.px),
+                  ))
+            }
+          }
+        }
+        .lithoView.unmountAllItems()
+
+    assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(1)
+
+    val pool = MountItemsPool.getMountItemPools()[0] as RecyclePool<*>
+    assertThat(pool.currentSize).isEqualTo(30)
+  }
 }

@@ -142,6 +142,8 @@ class ImageMountable(
   }
 
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
+
+  override fun getPoolSize(): Int = 30
 }
 
 /** The layout data required by the [ImageMountable] to mount, and bind the drawable in the host. */
