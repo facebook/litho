@@ -22,6 +22,7 @@ import android.widget.ImageView.ScaleType
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
+import com.facebook.litho.Mountable
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.SimpleMountable
@@ -48,7 +49,7 @@ class ExperimentalImage(
     style: Style? = null,
 ) : MountableComponent(style) {
 
-  override fun MountableComponentScope.render(): ImageMountable =
+  override fun MountableComponentScope.render(): Mountable<*> =
       ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY)
 }
 
@@ -56,7 +57,7 @@ class ExperimentalImage(
  * The [SimpleMountable] used by the [ExperimentalImage]. It uses a [MatrixDrawable], and
  * [DrawableMatrix] to correctly render the actual [drawable] inside it.
  */
-class ImageMountable(
+internal class ImageMountable(
     val drawable: Drawable,
     val scaleType: ScaleType,
 ) : SimpleMountable<MatrixDrawable<Drawable>>() {
