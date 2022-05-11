@@ -167,7 +167,7 @@ class ViewNodeInfo {
    * @param other the other ViewNodeInfo
    * @return {@code true} iff this NodeInfo is equal to the {@param other}.
    */
-  public boolean isEquivalentTo(ViewNodeInfo other) {
+  public boolean isEquivalentTo(@Nullable ViewNodeInfo other) {
     if (this == other) {
       return true;
     }

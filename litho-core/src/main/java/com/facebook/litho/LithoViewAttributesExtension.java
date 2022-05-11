@@ -151,7 +151,7 @@ public class LithoViewAttributesExtension
                 (MountSpecLithoRenderUnit) nextLithoRenderUnit,
                 previousLayoutData,
                 nextLayoutData))
-        || MountState.shouldUpdateViewInfo(
+        || shouldUpdateViewInfo(
             nextLithoRenderUnit.getLayoutOutput(), prevLithoRenderUnit.getLayoutOutput());
   }
 
@@ -909,5 +909,22 @@ public class LithoViewAttributesExtension
     if (type != LayerType.LAYER_TYPE_NOT_SET) {
       view.setLayerType(type, null);
     }
+  }
+
+  static boolean shouldUpdateViewInfo(
+      final LayoutOutput nextLayoutOutput, final LayoutOutput currentLayoutOutput) {
+
+    final ViewNodeInfo nextViewNodeInfo = nextLayoutOutput.getViewNodeInfo();
+    final ViewNodeInfo currentViewNodeInfo = currentLayoutOutput.getViewNodeInfo();
+    if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
+        || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
+
+      return true;
+    }
+
+    final NodeInfo nextNodeInfo = nextLayoutOutput.getNodeInfo();
+    final NodeInfo currentNodeInfo = currentLayoutOutput.getNodeInfo();
+    return (currentNodeInfo == null && nextNodeInfo != null)
+        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
   }
 }

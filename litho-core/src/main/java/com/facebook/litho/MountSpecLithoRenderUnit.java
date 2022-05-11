@@ -25,7 +25,9 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderUnit;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
@@ -118,7 +120,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
     final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
 
     final boolean result =
-        MountState.shouldUpdateMountItem(
+        shouldUpdateMountItem(
             next.output,
             (LithoLayoutData) nextData,
             nextContext,
@@ -226,5 +228,69 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
     return output.getComponent().getMountType() == Component.MountType.DRAWABLE
         ? RenderUnit.RenderType.DRAWABLE
         : RenderUnit.RenderType.VIEW;
+  }
+
+  static boolean shouldUpdateMountItem(
+      final LayoutOutput nextLayoutOutput,
+      final @Nullable LithoLayoutData nextLayoutData,
+      final @Nullable ComponentContext nextContext,
+      final LayoutOutput currentLayoutOutput,
+      final @Nullable LithoLayoutData currentLayoutData,
+      final @Nullable ComponentContext currentContext,
+      final boolean useUpdateValueFromLayoutOutput) {
+    @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
+    final Component currentComponent = currentLayoutOutput.getComponent();
+    final Component nextComponent = nextLayoutOutput.getComponent();
+
+    // If the two components have different sizes and the mounted content depends on the size we
+    // just return true immediately.
+    if (nextComponent.isMountSizeDependent()
+        && !sameSize(
+            Preconditions.checkNotNull(nextLayoutData),
+            Preconditions.checkNotNull(currentLayoutData))) {
+      return true;
+    }
+
+    if (useUpdateValueFromLayoutOutput) {
+      if (updateState == LayoutOutput.STATE_UPDATED) {
+
+        // Check for incompatible ReferenceLifecycle.
+        return currentComponent instanceof DrawableComponent
+            && nextComponent instanceof DrawableComponent
+            && shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
+      } else if (updateState == LayoutOutput.STATE_DIRTY) {
+        return true;
+      }
+    }
+
+    return shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
+  }
+
+  private static boolean shouldUpdate(
+      Component currentComponent,
+      ComponentContext currentScopedContext,
+      Component nextComponent,
+      ComponentContext nextScopedContext) {
+
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+
+    try {
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("MountState.shouldUpdate");
+      }
+      return currentComponent.shouldComponentUpdate(
+          currentScopedContext, currentComponent, nextScopedContext, nextComponent);
+    } catch (Exception e) {
+      ComponentUtils.handle(nextScopedContext, e);
+      return true;
+    } finally {
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
+    }
+  }
+
+  static boolean sameSize(final LithoLayoutData next, final LithoLayoutData current) {
+    return next.width == current.width && next.height == current.height;
   }
 }

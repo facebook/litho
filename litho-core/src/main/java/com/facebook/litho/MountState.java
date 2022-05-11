@@ -52,7 +52,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
@@ -727,7 +726,7 @@ class MountState implements MountDelegateTarget {
 
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdate =
-        shouldUpdateMountItem(
+        MountSpecLithoRenderUnit.shouldUpdateMountItem(
             nextLayoutOutput,
             nextLayoutData,
             nextContext,
@@ -737,7 +736,9 @@ class MountState implements MountDelegateTarget {
             useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdateViewInfo =
-        shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentLayoutOutput);
+        shouldUpdate
+            || LithoViewAttributesExtension.shouldUpdateViewInfo(
+                nextLayoutOutput, currentLayoutOutput);
 
     // 2. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
     if (currentMountItem.isBound()) {
@@ -805,87 +806,6 @@ class MountState implements MountDelegateTarget {
     }
 
     return shouldUpdate;
-  }
-
-  static boolean shouldUpdateViewInfo(
-      final LayoutOutput nextLayoutOutput, final LayoutOutput currentLayoutOutput) {
-
-    final ViewNodeInfo nextViewNodeInfo = nextLayoutOutput.getViewNodeInfo();
-    final ViewNodeInfo currentViewNodeInfo = currentLayoutOutput.getViewNodeInfo();
-    if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
-        || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
-
-      return true;
-    }
-
-    final NodeInfo nextNodeInfo = nextLayoutOutput.getNodeInfo();
-    final NodeInfo currentNodeInfo = currentLayoutOutput.getNodeInfo();
-    return (currentNodeInfo == null && nextNodeInfo != null)
-        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
-  }
-
-  static boolean shouldUpdateMountItem(
-      final LayoutOutput nextLayoutOutput,
-      final @Nullable LithoLayoutData nextLayoutData,
-      final @Nullable ComponentContext nextContext,
-      final LayoutOutput currentLayoutOutput,
-      final @Nullable LithoLayoutData currentLayoutData,
-      final @Nullable ComponentContext currentContext,
-      final boolean useUpdateValueFromLayoutOutput) {
-    @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
-    final Component currentComponent = currentLayoutOutput.getComponent();
-    final Component nextComponent = nextLayoutOutput.getComponent();
-
-    // If the two components have different sizes and the mounted content depends on the size we
-    // just return true immediately.
-    if (nextComponent.isMountSizeDependent()
-        && !sameSize(
-            Preconditions.checkNotNull(nextLayoutData),
-            Preconditions.checkNotNull(currentLayoutData))) {
-      return true;
-    }
-
-    if (useUpdateValueFromLayoutOutput) {
-      if (updateState == LayoutOutput.STATE_UPDATED) {
-
-        // Check for incompatible ReferenceLifecycle.
-        return currentComponent instanceof DrawableComponent
-            && nextComponent instanceof DrawableComponent
-            && shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
-      } else if (updateState == LayoutOutput.STATE_DIRTY) {
-        return true;
-      }
-    }
-
-    return shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
-  }
-
-  private static boolean shouldUpdate(
-      Component currentComponent,
-      ComponentContext currentScopedContext,
-      Component nextComponent,
-      ComponentContext nextScopedContext) {
-
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-
-    try {
-      if (isTracing) {
-        RenderCoreSystrace.beginSection("MountState.shouldUpdate");
-      }
-      return currentComponent.shouldComponentUpdate(
-          currentScopedContext, currentComponent, nextScopedContext, nextComponent);
-    } catch (Exception e) {
-      ComponentUtils.handle(nextScopedContext, e);
-      return true;
-    } finally {
-      if (isTracing) {
-        RenderCoreSystrace.endSection();
-      }
-    }
-  }
-
-  static boolean sameSize(final LithoLayoutData next, final LithoLayoutData current) {
-    return next.width == current.width && next.height == current.height;
   }
 
   private static void updateBoundsForMountedLayoutOutput(
