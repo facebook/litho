@@ -1302,7 +1302,7 @@ public class LayoutState
         root =
             Layout.measure(
                 layoutStateContext,
-                c,
+                c.getAndroidContext(),
                 layoutCreatedInWillRender,
                 widthSpec,
                 heightSpec,

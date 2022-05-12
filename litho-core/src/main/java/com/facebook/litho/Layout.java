@@ -134,7 +134,9 @@ class Layout {
     }
 
     final @Nullable LithoLayoutResult result =
-        node != null ? measure(layoutStateContext, c, node, widthSpec, heightSpec, diff) : null;
+        node != null
+            ? measure(layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec, diff)
+            : null;
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -554,7 +556,12 @@ class Layout {
 
     // 4.b Measure the tree
     return measure(
-        layoutStateContext, parentContext, newNode, widthSpec, heightSpec, holder.getDiffNode());
+        layoutStateContext,
+        parentContext.getAndroidContext(),
+        newNode,
+        widthSpec,
+        heightSpec,
+        holder.getDiffNode());
   }
 
   static @Nullable LithoLayoutResult measure(
@@ -638,7 +645,7 @@ class Layout {
 
   static LithoLayoutResult measure(
       final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
+      final Context androidContext,
       final LithoNode root,
       final int widthSpec,
       final int heightSpec,
@@ -651,7 +658,7 @@ class Layout {
 
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
-            c.getAndroidContext(), new LithoRenderContext(layoutStateContext, diff), 0, null, null);
+            androidContext, new LithoRenderContext(layoutStateContext, diff), 0, null, null);
 
     LithoLayoutResult result = root.calculateLayout(context, widthSpec, heightSpec);
 
@@ -695,7 +702,7 @@ class Layout {
     }
 
     final LithoLayoutResult result =
-        measure(layoutStateContext, c, root, widthSpec, heightSpec, diff);
+        measure(layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, diff);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
@@ -732,7 +739,7 @@ class Layout {
       final int heightSpec) {
     return measure(
         layoutStateContext,
-        layout.getContext(),
+        layout.getContext().getAndroidContext(),
         layout.getNode(),
         widthSpec,
         heightSpec,
