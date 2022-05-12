@@ -455,6 +455,88 @@ class Layout {
     return node;
   }
 
+  private static @Nullable LithoLayoutResult measureNestedTree(
+      final LayoutStateContext layoutStateContext,
+      ComponentContext parentContext,
+      final NestedTreeHolderResult holder,
+      final int widthSpec,
+      final int heightSpec) {
+
+    // 1. Check if current layout result is compatible with size spec and can be reused or not
+    final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
+    final LithoNode node = holder.getNode();
+    final Component component = node.getTailComponent();
+
+    if (currentLayout != null
+        && hasCompatibleSizeSpec(
+            currentLayout.getLastWidthSpec(),
+            currentLayout.getLastHeightSpec(),
+            widthSpec,
+            heightSpec,
+            currentLayout.getLastMeasuredWidth(),
+            currentLayout.getLastMeasuredHeight())) {
+      return currentLayout;
+    }
+
+    // 2. Check if cached layout result is compatible and can be reused or not.
+    final @Nullable LithoLayoutResult cachedLayout =
+        consumeCachedLayout(layoutStateContext, component, holder, widthSpec, heightSpec);
+
+    if (cachedLayout != null) {
+      return cachedLayout;
+    }
+
+    // 3. If component is not using OnCreateLayoutWithSizeSpec, we don't have to resolve it again
+    // and we can simply re-measure the tree. This is for cases where component was measured with
+    // Component.measure API but we could not find the cached layout result or cached layout result
+    // was not compatible with given size spec.
+    if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
+      return remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec);
+    }
+
+    // 4. If current layout result is not available or component uses OnCreateLayoutWithSizeSpec
+    // then resolve the tree and measure it. At this point we know that current layout result and
+    // cached layout result are not available or are not compatible with given size spec.
+    final String globalKey = node.getTailComponentKey();
+
+    // 4.a Create a new layout
+    // This step will eventually go away in the desired end state as we will have LithoNode
+    // resolved for nested tree in the beginning with different size specs.
+
+    layoutStateContext.setCurrentNestedTreeGlobalKey(globalKey);
+
+    final @Nullable LithoNode newNode =
+        create(
+            layoutStateContext,
+            parentContext,
+            widthSpec,
+            heightSpec,
+            component,
+            true,
+            true,
+            globalKey);
+
+    layoutStateContext.resetCurrentNestedTreeGlobalKey();
+
+    if (newNode == null) {
+      return null;
+    }
+
+    holder.getNode().copyInto(newNode);
+
+    // If the resolved tree inherits the layout direction, then set it now.
+    if (newNode.isLayoutDirectionInherit()) {
+      newNode.layoutDirection(holder.getResolvedLayoutDirection());
+    }
+
+    // Set the DiffNode for the nested tree's result to consume during measurement.
+    layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
+
+    // 4.b Measure the tree
+    return measure(
+        layoutStateContext, parentContext, newNode, widthSpec, heightSpec, holder.getDiffNode());
+  }
+
   static @Nullable LithoLayoutResult create(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
@@ -462,88 +544,21 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
 
-    final LithoNode node = holder.getNode();
-    final Component component = node.getTailComponent();
-    final String globalKey = node.getTailComponentKey();
+    final LithoLayoutResult layout =
+        measureNestedTree(layoutStateContext, parentContext, holder, widthSpec, heightSpec);
+
     final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
 
-    // The resolved layout to return.
-    final LithoLayoutResult layout;
+    if (layout != null && layout != currentLayout) {
+      // If layout created is not same as previous layout then set last width / heihgt, measdured
+      // width and height specs
+      layout.setLastWidthSpec(widthSpec);
+      layout.setLastHeightSpec(heightSpec);
+      layout.setLastMeasuredHeight(layout.getHeight());
+      layout.setLastMeasuredWidth(layout.getWidth());
 
-    if (currentLayout == null
-        || !hasCompatibleSizeSpec(
-            currentLayout.getLastWidthSpec(),
-            currentLayout.getLastHeightSpec(),
-            widthSpec,
-            heightSpec,
-            currentLayout.getLastMeasuredWidth(),
-            currentLayout.getLastMeasuredHeight())) {
-
-      if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
-        layout = remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec);
-      } else {
-
-        // Check if cached layout can be used.
-        final @Nullable LithoLayoutResult cachedLayout =
-            consumeCachedLayout(layoutStateContext, component, holder, widthSpec, heightSpec);
-
-        if (cachedLayout != null) {
-          // Use the cached layout.
-          layout = cachedLayout;
-        } else {
-          // Create a new layout.
-          layoutStateContext.setCurrentNestedTreeGlobalKey(globalKey);
-
-          final @Nullable LithoNode newNode =
-              create(
-                  layoutStateContext,
-                  parentContext,
-                  widthSpec,
-                  heightSpec,
-                  component,
-                  true,
-                  true,
-                  globalKey);
-
-          layoutStateContext.resetCurrentNestedTreeGlobalKey();
-
-          if (newNode != null) {
-            holder.getNode().copyInto(newNode);
-
-            // If the resolved tree inherits the layout direction, then set it now.
-            if (newNode.isLayoutDirectionInherit()) {
-              newNode.layoutDirection(holder.getResolvedLayoutDirection());
-            }
-
-            // Set the DiffNode for the nested tree's result to consume during measurement.
-            layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
-
-            layout =
-                measure(
-                    layoutStateContext,
-                    parentContext,
-                    newNode,
-                    widthSpec,
-                    heightSpec,
-                    holder.getDiffNode());
-          } else {
-            layout = null;
-          }
-        }
-      }
-
-      if (layout != null) {
-        layout.setLastWidthSpec(widthSpec);
-        layout.setLastHeightSpec(heightSpec);
-        layout.setLastMeasuredHeight(layout.getHeight());
-        layout.setLastMeasuredWidth(layout.getWidth());
-      }
-
+      // Set new created LayoutResult for future access
       holder.setNestedResult(layout);
-    } else {
-
-      // Use the previous layout.
-      layout = currentLayout;
     }
 
     return layout;
