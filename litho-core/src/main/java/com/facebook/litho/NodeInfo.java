@@ -29,7 +29,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * NodeInfo holds information that are set to the {@link LithoNode} and needs to be used while
- * mounting a {@link com.facebook.rendercore.MountItem} in {@link MountState}.
+ * mounting.
  */
 @ThreadConfined(ThreadConfined.ANY)
 public class NodeInfo implements Equivalence<NodeInfo> {

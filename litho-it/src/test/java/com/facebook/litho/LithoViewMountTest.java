@@ -32,6 +32,7 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
+import com.facebook.rendercore.MountState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.os.Handler;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import java.util.Arrays;
 import java.util.HashSet;

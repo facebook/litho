@@ -47,6 +47,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.transitions.DisappearingHost;
 import java.util.ArrayList;
 import java.util.Collections;

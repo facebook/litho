@@ -28,10 +28,7 @@ import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The output of a layout pass for a given {@link Component}. It's used by {@link MountState} to
- * mount a component.
- */
+/** The output of a layout pass for a given {@link Component}. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class LayoutOutput implements Cloneable {
   public static final int STATE_UNKNOWN = 0;

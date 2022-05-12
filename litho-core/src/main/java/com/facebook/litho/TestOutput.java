@@ -20,8 +20,8 @@ import android.graphics.Rect;
 
 /**
  * Stores information about a {@link Component} which is only available when tests are run.
- * TestOutputs are calculated in {@link LayoutState} and transformed into {@link TestItem}s in
- * {@link MountState}.
+ * TestOutputs are calculated in {@link LayoutState} and transformed into {@link TestItem}s while
+ * mouting.
  */
 class TestOutput {
   private String mTestKey;

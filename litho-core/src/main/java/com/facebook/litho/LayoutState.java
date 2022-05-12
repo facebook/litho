@@ -50,6 +50,7 @@ import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;

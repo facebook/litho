@@ -20,16 +20,12 @@ import android.animation.StateListAnimator;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import androidx.annotation.DrawableRes;
 import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 
-/**
- * Additional information passed between {@link LayoutState} and {@link MountState} used on a {@link
- * View}.
- */
+/** Additional information used to set properties on Views during mounting. */
 class ViewNodeInfo {
 
   private @Nullable Drawable mBackground;
