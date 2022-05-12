@@ -38,6 +38,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
@@ -64,7 +65,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private static final String TAG = LithoView.class.getSimpleName();
 
   private boolean mIsMountStateDirty;
-  private final MountDelegateTarget mMountDelegateTarget;
+  private final MountState mMountState;
   private boolean mHasVisibilityHint;
   private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
@@ -283,13 +284,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mIsLithoViewSelfManagingViewPortChanges =
         ComponentsConfiguration.lithoViewSelfManageViewPortChanges;
 
-    com.facebook.rendercore.MountState renderCoreMountState =
-        new com.facebook.rendercore.MountState(this);
-
-    renderCoreMountState.setEnsureParentMounted(
+    mMountState = new MountState(this);
+    mMountState.setEnsureParentMounted(
         ComponentsConfiguration.ensureParentMountedInRenderCoreMountState);
-
-    mMountDelegateTarget = renderCoreMountState;
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
@@ -421,7 +418,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     if (mIsAttached) {
       mIsAttached = false;
 
-      mMountDelegateTarget.detach();
+      mMountState.detach();
 
       if (mComponentTree != null) {
         mComponentTree.detach();
@@ -796,7 +793,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void setupMountExtensions() {
     if (mLithoHostListenerCoordinator == null) {
-      mLithoHostListenerCoordinator = new LithoHostListenerCoordinator(mMountDelegateTarget);
+      mLithoHostListenerCoordinator = new LithoHostListenerCoordinator(mMountState);
 
       mLithoHostListenerCoordinator.enableNestedLithoViewsExtension();
       mLithoHostListenerCoordinator.enableTransitions();
@@ -905,7 +902,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   public void rebind() {
-    mMountDelegateTarget.attach();
+    mMountState.attach();
   }
 
   /**
@@ -913,7 +910,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * view is about to be recycled or moved off-screen.
    */
   public void unbind() {
-    mMountDelegateTarget.detach();
+    mMountState.detach();
   }
 
   /**
@@ -1546,14 +1543,14 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       LayoutState layoutState, @Nullable Rect currentVisibleArea) {
     final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
     if (currentVisibleArea != null && !needsMount) {
-      mMountDelegateTarget.getMountDelegate().notifyVisibleBoundsChanged(currentVisibleArea);
+      mMountState.getMountDelegate().notifyVisibleBoundsChanged(currentVisibleArea);
     } else {
       // Generate the renderTree here so that any operations
       // that occur in toRenderTree() happen prior to "beforeMount".
       final RenderTree renderTree = layoutState.toRenderTree();
       setupMountExtensions();
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
-      mMountDelegateTarget.mount(renderTree);
+      mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
     }
   }
@@ -1596,7 +1593,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @VisibleForTesting
   public List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
-    return getChildLithoViewsFromCurrentlyMountedItems(mMountDelegateTarget);
+    return getChildLithoViewsFromCurrentlyMountedItems(mMountState);
   }
 
   private static List<LithoView> getChildLithoViewsFromCurrentlyMountedItems(
@@ -1615,10 +1612,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void dispatchVisibilityEvent(
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
-    final MountDelegateTarget target = mMountDelegateTarget;
     final Object content =
         visibilityOutput.hasMountableContent
-            ? target.getContentById(visibilityOutput.mRenderUnitId)
+            ? mMountState.getContentById(visibilityOutput.mRenderUnitId)
             : null;
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {
@@ -1690,7 +1686,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   /** Deprecated: Consider subscribing the LithoView to a LithoLifecycleOwner instead. */
   @Deprecated
   public void unmountAllItems() {
-    mMountDelegateTarget.unmountAllItems();
+    mMountState.unmountAllItems();
     mLithoHostListenerCoordinator = null;
     mPreviousMountVisibleRectBounds.setEmpty();
   }
@@ -1709,13 +1705,13 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   boolean mountStateNeedsRemount() {
-    return mMountDelegateTarget.needsRemount();
+    return mMountState.needsRemount();
   }
 
   @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public MountDelegateTarget getMountDelegateTarget() {
-    return mMountDelegateTarget;
+    return mMountState;
   }
 
   @Nullable
