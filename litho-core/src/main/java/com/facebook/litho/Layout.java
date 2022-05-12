@@ -537,7 +537,7 @@ class Layout {
         layoutStateContext, parentContext, newNode, widthSpec, heightSpec, holder.getDiffNode());
   }
 
-  static @Nullable LithoLayoutResult create(
+  static @Nullable LithoLayoutResult measure(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
       final NestedTreeHolderResult holder,

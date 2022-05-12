@@ -591,7 +591,7 @@ public class LayoutState
       }
 
       LithoLayoutResult nestedTree =
-          Layout.create(
+          Layout.measure(
               layoutStateContext,
               Preconditions.checkNotNull(immediateParentContext),
               (NestedTreeHolderResult) result,
