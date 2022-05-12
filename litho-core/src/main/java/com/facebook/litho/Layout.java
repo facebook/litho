@@ -455,6 +455,33 @@ class Layout {
     return node;
   }
 
+  static @Nullable LithoNode resolveNestedTreeAndAddToCache(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext parentContext,
+      final Component component,
+      final String globalKey,
+      final int widthSpec,
+      final int heightSpec) {
+
+    layoutStateContext.setCurrentNestedTreeGlobalKey(globalKey);
+
+    // Create a new layout.
+    final @Nullable LithoNode newNode =
+        create(
+            layoutStateContext,
+            parentContext,
+            widthSpec,
+            heightSpec,
+            component,
+            true,
+            true,
+            globalKey);
+
+    layoutStateContext.resetCurrentNestedTreeGlobalKey();
+
+    return newNode;
+  }
+
   private static @Nullable LithoLayoutResult measureNestedTree(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
@@ -502,21 +529,14 @@ class Layout {
     // 4.a Create a new layout
     // This step will eventually go away in the desired end state as we will have LithoNode
     // resolved for nested tree in the beginning with different size specs.
-
-    layoutStateContext.setCurrentNestedTreeGlobalKey(globalKey);
-
     final @Nullable LithoNode newNode =
-        create(
+        resolveNestedTreeAndAddToCache(
             layoutStateContext,
             parentContext,
-            widthSpec,
-            heightSpec,
             component,
-            true,
-            true,
-            globalKey);
-
-    layoutStateContext.resetCurrentNestedTreeGlobalKey();
+            node.getTailComponentKey(),
+            widthSpec,
+            heightSpec);
 
     if (newNode == null) {
       return null;
