@@ -1001,7 +1001,7 @@ public class ComponentTree implements LithoLifecycleListener {
     assertMainThread();
 
     if (mIncrementalMountHelper != null && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
-      mIncrementalMountHelper.onDetach();
+      mIncrementalMountHelper.onDetach(mLithoView);
     }
 
     synchronized (this) {
