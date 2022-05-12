@@ -88,8 +88,8 @@ module.exports = {
         'kotlin/migration-strategies',
         'kotlin/custom-view-compat',
       ],
-    // TODO: clean this section up, add intro page
     'Codegen APIs': [
+      'codegen/overview',
       'codegen/layout-specs',
       'codegen/mount-specs',
       {
@@ -101,6 +101,7 @@ module.exports = {
       'codegen/state-for-specs',
       'codegen/events-for-specs',
       'codegen/trigger-events',
+      'codegen/code-generation',
     ],
     // TODO: de-dupe content with main concepts
     ...fbInternalOnly({
