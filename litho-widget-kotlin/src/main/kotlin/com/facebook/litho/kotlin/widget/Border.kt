@@ -70,8 +70,8 @@ inline fun ResourcesScope.Border(
         .apply {
           edgeAll?.let { it.apply(YogaEdge.ALL, this, resourceResolver) }
 
-          edgeHorizontal?.let { it.apply(YogaEdge.VERTICAL, this, resourceResolver) }
-          edgeVertical?.let { it.apply(YogaEdge.HORIZONTAL, this, resourceResolver) }
+          edgeHorizontal?.let { it.apply(YogaEdge.HORIZONTAL, this, resourceResolver) }
+          edgeVertical?.let { it.apply(YogaEdge.VERTICAL, this, resourceResolver) }
           edgeStart?.let { it.apply(YogaEdge.START, this, resourceResolver) }
           edgeEnd?.let { it.apply(YogaEdge.END, this, resourceResolver) }
 
