@@ -30,7 +30,6 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,30 +59,6 @@ public class MountStateLoggingTest {
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
-  }
-
-  @Test
-  public void testLogWhenTracing() {
-    final TestComponent child1 = create(mContext).build();
-    final TestComponent child2 = create(mContext).build();
-    mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
-                .build();
-          }
-        });
-
-    List<String> mountedNames = new ArrayList<>();
-    List<String> unmountedNames = new ArrayList<>();
-    mountedNames.add("TestViewComponent");
-    mountedNames.add("TestViewComponent");
-
-    verifyLoggingAndResetLogger(2, 0, mountedNames, unmountedNames);
   }
 
   @Test
