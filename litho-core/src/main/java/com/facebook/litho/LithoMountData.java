@@ -16,17 +16,8 @@
 
 package com.facebook.litho;
 
-import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
-
-import android.content.Context;
-import android.graphics.Rect;
 import android.view.View;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.MountItemsPool;
-import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.yoga.YogaDirection;
 
 /** This class hosts any extra mount data related to MountItem. */
 public class LithoMountData {
@@ -88,61 +79,6 @@ public class LithoMountData {
     }
   }
 
-  void releaseMountContent(
-      final Context context,
-      final MountItem item,
-      final String releaseCause,
-      final MountState mountState) {
-    final RenderTreeNode node = item.getRenderTreeNode();
-    final LayoutOutput output = getLayoutOutput(node);
-    final Component component = output.getComponent();
-    if (mIsReleased) {
-      final String componentName = component.getSimpleName();
-      throw new ReleasingReleasedMountContentException(
-          "Releasing released mount content! component: "
-              + componentName
-              + ", previousReleaseCause: "
-              + mReleaseCause);
-    }
-    if (component instanceof HostComponent) {
-      mountState.releaseHostComponentContent(context, (HostComponent) component, item.getContent());
-    } else {
-      MountItemsPool.release(context, component, item.getContent());
-    }
-    mIsReleased = true;
-    mReleaseCause = releaseCause;
-  }
-
-  /** This mountItem represents the top-level root host (LithoView) which is always mounted. */
-  static MountItem createRootHostMountItem(LithoView lithoView) {
-    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
-    viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-    final LithoRenderUnit unit =
-        MountSpecLithoRenderUnit.create(
-            ROOT_HOST_ID,
-            HostComponent.create(),
-            null,
-            null,
-            viewNodeInfo,
-            0,
-            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            LayoutOutput.STATE_DIRTY);
-
-    final Rect bounds = lithoView.getPreviousMountBounds();
-
-    MountItem item =
-        new MountItem(
-            RenderTreeNodeUtils.create(
-                unit,
-                bounds,
-                new LithoLayoutData(bounds.width(), bounds.height(), 0, 0, null),
-                null),
-            lithoView,
-            lithoView);
-    item.setMountData(new LithoMountData(lithoView));
-    return item;
-  }
-
   static LithoMountData getMountData(MountItem item) {
     Object data = item.getMountData();
     if (!(data instanceof LithoMountData)) {
@@ -193,12 +129,5 @@ public class LithoMountData {
     }
 
     return flags;
-  }
-
-  public static class ReleasingReleasedMountContentException extends RuntimeException {
-
-    public ReleasingReleasedMountContentException(String message) {
-      super(message);
-    }
   }
 }
