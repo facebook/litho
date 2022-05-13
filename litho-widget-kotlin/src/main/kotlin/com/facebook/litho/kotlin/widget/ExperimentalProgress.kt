@@ -39,7 +39,7 @@ import com.facebook.rendercore.RenderUnit
  * @param indeterminateDrawable Drawable to be shown to show progress.
  * @param color Tint color for the drawable.
  */
-class ProgressExperimental(
+class ExperimentalProgress(
     private val color: Int? = null,
     private val indeterminateDrawable: Drawable? = null,
     style: Style? = null
@@ -91,7 +91,7 @@ internal class ProgressMountable(
     if (color != Color.TRANSPARENT && content.indeterminateDrawable != null) {
       content.indeterminateDrawable.mutate().clearColorFilter()
     }
-    content.setIndeterminateDrawable(null)
+    content.indeterminateDrawable = null
   }
 
   override fun shouldUpdate(
