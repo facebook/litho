@@ -183,6 +183,11 @@ class BatchedTarget implements SectionTree.Target {
     mTarget.changeConfig(dynamicConfig);
   }
 
+  @Override
+  public void addOp(Object... params) {
+    mTarget.addOp(params);
+  }
+
   private void maybeLogRequestFocusWithOffset(int index, int offset) {
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
       mSectionsDebugLogger.logRequestFocusWithOffset(

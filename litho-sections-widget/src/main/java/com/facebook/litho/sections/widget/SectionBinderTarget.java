@@ -215,6 +215,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
+  public void addOp(Object... params) {
+    mRecyclerBinder.addOp(params);
+  }
+
+  @Override
   public void detach() {
     mRecyclerBinder.detach();
   }

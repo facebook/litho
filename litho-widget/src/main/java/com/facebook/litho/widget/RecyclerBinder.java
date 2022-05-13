@@ -207,7 +207,7 @@ public class RecyclerBinder
   private final boolean mPreallocatePerMountSpec;
   private final ArrayList<String> mCTOps = new ArrayList<>();
 
-  private synchronized void addOp(Object... params) {
+  public synchronized void addOp(Object... params) {
     if (!mEnableOperationLog || !ComponentsConfiguration.shouldCollectLogsInRecyclerBinder) {
       return;
     }
