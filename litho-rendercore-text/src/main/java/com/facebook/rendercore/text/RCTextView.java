@@ -470,7 +470,7 @@ public class RCTextView extends View {
 
       mLayout.getSelectionPath(start, selectionPathEnd, sTempPath);
       sTempPath.computeBounds(sTempRectF, /* unused */ true);
-
+      sTempRectF.offset(mLayoutTranslationX, mLayoutTranslationY);
       sTempRectF.round(sTempRect);
 
       node.setBoundsInParent(sTempRect);
