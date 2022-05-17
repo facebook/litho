@@ -60,6 +60,7 @@ internal enum class ObjectField {
   WRAP_IN_VIEW,
   VIEW_TAG,
   VIEW_TAGS,
+  ENABLED,
 }
 
 /** Enums for [FloatStyleItem]. */
@@ -117,6 +118,7 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
       ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
       ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
+      ObjectField.ENABLED -> commonProps.enabled(value as Boolean)
     }.exhaustive
   }
 }
@@ -197,6 +199,15 @@ inline fun Style.backgroundColor(@ColorInt backgroundColor: Long): Style =
  */
 inline fun Style.clickable(isClickable: Boolean): Style =
     this + ObjectStyleItem(ObjectField.CLICKABLE, isClickable)
+
+/**
+ * Sets if the View this Component mounts to should be enabled. Setting this property will cause the
+ * Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setClickable]
+ */
+inline fun Style.enabled(isEnabled: Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ENABLED, isEnabled)
 
 /**
  * Setting this to false allows child views of this view to draw outside its bounds, overriding the
