@@ -279,6 +279,8 @@ public class ComponentsConfiguration {
 
   public static boolean crashIfExceedingStateUpdateThreshold = false;
 
+  public static boolean ensureComponentHostInvalidates = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

@@ -724,6 +724,9 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     if (mInLayout) {
       super.addViewInLayout(view, -1, view.getLayoutParams(), true);
+      if (ComponentsConfiguration.ensureComponentHostInvalidates) {
+        invalidate();
+      }
     } else {
       super.addView(view, -1, view.getLayoutParams());
     }
