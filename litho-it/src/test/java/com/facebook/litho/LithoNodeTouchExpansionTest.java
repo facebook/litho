@@ -65,7 +65,7 @@ public class LithoNodeTouchExpansionTest {
     final RenderState.LayoutContext<LithoRenderContext> context =
         new RenderState.LayoutContext<>(
             mContext.getAndroidContext(),
-            new LithoRenderContext(mLayoutStateContext, null),
+            new LithoRenderContext(mLayoutStateContext),
             0,
             null,
             null);

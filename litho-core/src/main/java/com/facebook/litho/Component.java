@@ -1083,7 +1083,6 @@ public abstract class Component
                 c,
                 widthSpec,
                 heightSpec,
-                null,
                 null);
       } else {
         container =

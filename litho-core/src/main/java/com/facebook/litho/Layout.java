@@ -127,7 +127,6 @@ class Layout {
       final @Nullable LithoNode node,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("start_measure");
@@ -135,7 +134,7 @@ class Layout {
 
     final @Nullable LithoLayoutResult result =
         node != null
-            ? measure(layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec, diff)
+            ? measure(layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec)
             : null;
 
     if (layoutStatePerfEvent != null) {
@@ -152,7 +151,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null, null);
+        layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null);
   }
 
   static @Nullable ResolvedTree createResolvedTree(
@@ -199,7 +198,6 @@ class Layout {
       final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
     if (node == null) {
       return new LayoutResultHolder(null);
@@ -210,7 +208,7 @@ class Layout {
     }
 
     final @Nullable LithoLayoutResult result =
-        layout(layoutStateContext, c, node, widthSpec, heightSpec, diff, layoutStatePerfEvent);
+        layout(layoutStateContext, c, node, widthSpec, heightSpec, layoutStatePerfEvent);
 
     return new LayoutResultHolder(result);
   }
@@ -224,7 +222,6 @@ class Layout {
       final int heightSpec,
       final boolean isReconcilable,
       final @Nullable LithoNode current,
-      final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
     try {
@@ -245,8 +242,7 @@ class Layout {
             isReconcilable ? current : null,
             layoutStatePerfEvent);
 
-    return measureTree(
-        layoutStateContext, node, c, widthSpec, heightSpec, diff, layoutStatePerfEvent);
+    return measureTree(layoutStateContext, node, c, widthSpec, heightSpec, layoutStatePerfEvent);
   }
 
   private static void applyStateUpdateEarly(
@@ -556,12 +552,7 @@ class Layout {
 
     // 4.b Measure the tree
     return measure(
-        layoutStateContext,
-        parentContext.getAndroidContext(),
-        newNode,
-        widthSpec,
-        heightSpec,
-        holder.getDiffNode());
+        layoutStateContext, parentContext.getAndroidContext(), newNode, widthSpec, heightSpec);
   }
 
   static @Nullable LithoLayoutResult measure(
@@ -648,8 +639,7 @@ class Layout {
       final Context androidContext,
       final LithoNode root,
       final int widthSpec,
-      final int heightSpec,
-      final @Nullable DiffNode diff) {
+      final int heightSpec) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -658,7 +648,7 @@ class Layout {
 
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
-            androidContext, new LithoRenderContext(layoutStateContext, diff), 0, null, null);
+            androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
 
     LithoLayoutResult result = root.calculateLayout(context, widthSpec, heightSpec);
 
@@ -675,7 +665,6 @@ class Layout {
       final @Nullable LithoNode root,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable DiffNode diff,
       final @Nullable PerfEvent logLayoutState) {
 
     if (layoutStateContext.isLayoutReleased()) {
@@ -702,7 +691,7 @@ class Layout {
     }
 
     final LithoLayoutResult result =
-        measure(layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, diff);
+        measure(layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
@@ -742,8 +731,7 @@ class Layout {
         layout.getContext().getAndroidContext(),
         layout.getNode(),
         widthSpec,
-        heightSpec,
-        layout.getDiffNode());
+        heightSpec);
   }
 
   @Nullable

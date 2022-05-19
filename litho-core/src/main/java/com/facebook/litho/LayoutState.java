@@ -1264,7 +1264,7 @@ public class LayoutState
           final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
           holder =
               Layout.measureTree(
-                  layoutStateContext, node, c, widthSpec, heightSpec, diffTreeRoot, logLayoutState);
+                  layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
         } else {
           holder =
               Layout.createAndMeasureComponent(
@@ -1278,7 +1278,6 @@ public class LayoutState
                   heightSpec,
                   isReconcilable,
                   currentRoot,
-                  diffTreeRoot,
                   logLayoutState);
         }
 
@@ -1305,8 +1304,7 @@ public class LayoutState
                 c.getAndroidContext(),
                 layoutCreatedInWillRender,
                 widthSpec,
-                heightSpec,
-                diffTreeRoot);
+                heightSpec);
       }
 
       final @Nullable LithoNode node = root != null ? root.getNode() : null;
@@ -1404,7 +1402,6 @@ public class LayoutState
               Preconditions.checkNotNull(layoutState.mPartiallyResolvedRoot),
               widthSpec,
               heightSpec,
-              layoutState.mDiffTreeRoot,
               logLayoutState);
 
       if (result != null) {
