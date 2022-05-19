@@ -402,6 +402,91 @@ class MountableComponentsTest {
   }
 
   @Test
+  fun `controller should set and get props on the content`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val controller = ViewController()
+    val root =
+        TestMountableComponent(
+            identity = 0,
+            view = TextView(c.androidContext),
+            steps = steps,
+            controller = controller,
+            shouldUseComparableMountable = true,
+            style = Style.width(100.px).height(100.px))
+
+    lithoViewRule.render { root }
+
+    controller.setTag("tag")
+
+    val view = lithoViewRule.findViewWithTag("tag")
+
+    assertThat(view.tag).isEqualTo("tag")
+    assertThat(controller.getTag()).isEqualTo("tag")
+  }
+
+  @Test
+  fun `controller should unbind after unmount`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val controller = ViewController()
+    val root =
+        TestMountableComponent(
+            identity = 0,
+            view = TextView(c.androidContext),
+            steps = steps,
+            controller = controller,
+            shouldUseComparableMountable = true,
+            style = Style.width(100.px).height(100.px))
+
+    lithoViewRule.render { root }
+
+    controller.setTag("tag")
+
+    lithoViewRule.lithoView.setComponentTree(null, true)
+
+    assertThat(controller.getTag()).isNull()
+  }
+
+  @Test
+  fun `new controller should replace old controller`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val controller1 = ViewController()
+    val root1 =
+        TestMountableComponent(
+            identity = 0,
+            view = TextView(c.androidContext),
+            steps = steps,
+            controller = controller1,
+            shouldUseComparableMountable = true,
+            style = Style.width(100.px).height(100.px))
+
+    lithoViewRule.render { root1 }
+
+    controller1.setTag("tag1")
+    assertThat(controller1.getTag()).isEqualTo("tag1")
+
+    val controller2 = ViewController()
+    val root2 =
+        TestMountableComponent(
+            identity = 0,
+            view = TextView(c.androidContext),
+            steps = steps,
+            controller = controller2,
+            shouldUseComparableMountable = true,
+            style = Style.width(100.px).height(100.px))
+
+    lithoViewRule.render { root2 }
+
+    controller1.setTag("random")
+    assertThat(controller1.getTag()).isNull()
+
+    controller2.setTag("tag2")
+    assertThat(controller2.getTag()).isEqualTo("tag2")
+  }
+
+  @Test
   fun `same instance should be equivalent`() {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
@@ -464,12 +549,17 @@ class TestMountableComponent(
     val view: View,
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
+    val controller: ViewController? = null,
     val shouldUseComparableMountable: Boolean = false,
     style: Style? = null
 ) : MountableComponent(style = style) {
 
   override fun MountableComponentScope.render(): ViewMountable {
+
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
+
+    controller?.let { registerController(controller) }
+
     return if (shouldUseComparableMountable) {
       ComparableViewMountable(identity, view, steps)
     } else {
@@ -558,3 +648,14 @@ class ComparableViewMountable(
 }
 
 class ViewLayoutData(val width: Int, val height: Int)
+
+class ViewController : Controller<View>() {
+
+  fun getTag(): Any? {
+    return content?.tag
+  }
+
+  fun setTag(tag: Any?) {
+    content?.tag = tag
+  }
+}

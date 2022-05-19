@@ -41,7 +41,7 @@ public abstract class Controller<ContentT>
       final Mountable<ContentT> newMountable,
       final @Nullable Object currentLayoutData,
       final @Nullable Object nextLayoutData) {
-    return false;
+    return true;
   }
 
   @Override
