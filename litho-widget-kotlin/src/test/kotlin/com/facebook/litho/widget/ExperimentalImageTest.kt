@@ -18,13 +18,24 @@ package com.facebook.litho.kotlin.widget
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.AccessibilityRole
+import com.facebook.litho.EventHandler
 import com.facebook.litho.MatrixDrawable
+import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.Style
+import com.facebook.litho.accessibility.ImportantForAccessibility
+import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.accessibility.accessibilityRoleDescription
+import com.facebook.litho.accessibility.contentDescription
+import com.facebook.litho.accessibility.importantForAccessibility
+import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -63,5 +74,43 @@ class ExperimentalImageTest {
           val drawable = content.mountedDrawable
           assertThat(drawable).isInstanceOf(ColorDrawable::class.java)
         }
+  }
+
+  @Test
+  fun `when a11y props are set on style it should set them on the rendered content`() {
+
+    val eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent> = mock()
+
+    val node =
+        lithoViewRule
+            .render {
+              ExperimentalImage(
+                  drawable = ColorDrawable(Color.RED),
+                  style =
+                      Style.width(100.px)
+                          .height(100.px)
+                          .accessibilityRole(AccessibilityRole.IMAGE)
+                          .accessibilityRoleDescription("Accessibility Test")
+                          .contentDescription("Accessibility Test")
+                          .importantForAccessibility(ImportantForAccessibility.YES)
+                          .onInitializeAccessibilityNodeInfo { eventHandler },
+              )
+            }
+            .apply {
+              // should find an ExperimentalImage in the tree
+              findComponent(ExperimentalImage::class)
+
+              // verify a11y properties are correctly set on the View
+              assertThat(lithoView.contentDescription).isEqualTo("Accessibility Test")
+              assertThat(lithoView.importantForAccessibility)
+                  .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
+            }
+            .currentRootNode
+            ?.node
+
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE)
+    assertThat(nodeInfo?.accessibilityRoleDescription).isEqualTo("Accessibility Test")
+    assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
 }
