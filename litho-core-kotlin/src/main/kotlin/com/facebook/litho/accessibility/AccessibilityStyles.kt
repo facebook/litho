@@ -20,7 +20,12 @@ import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Component
 import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
+import com.facebook.litho.OnPopulateAccessibilityEventEvent
+import com.facebook.litho.OnRequestSendAccessibilityEventEvent
+import com.facebook.litho.PerformAccessibilityActionEvent
 import com.facebook.litho.ResourceResolver
+import com.facebook.litho.SendAccessibilityEventEvent
+import com.facebook.litho.SendAccessibilityEventUncheckedEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO
@@ -41,6 +46,11 @@ internal enum class AccessibilityField {
   IMPORTANT_FOR_ACCESSIBILITY,
   ON_INITIALIZE_ACCESSIBILITY_EVENT,
   ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
+  ON_POPULATE_ACCESSIBILITY_EVENT,
+  ON_REQUEST_SEND_ACCESSIBILITY_EVENT,
+  PERFORM_ACCESSIBILITY_ACTION,
+  SEND_ACCESSIBILITY_EVENT,
+  SEND_ACCESSIBILITY_EVENT_UNCHECKED,
 }
 
 @PublishedApi
@@ -63,6 +73,21 @@ internal data class AccessibilityStyleItem(val field: AccessibilityField, val va
       AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO ->
           commonProps.onInitializeAccessibilityNodeInfoHandler(
               eventHandler(value as (OnInitializeAccessibilityNodeInfoEvent) -> Unit))
+      AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT ->
+          commonProps.onPopulateAccessibilityEventHandler(
+              eventHandler(value as (OnPopulateAccessibilityEventEvent) -> Unit))
+      AccessibilityField.ON_REQUEST_SEND_ACCESSIBILITY_EVENT ->
+          commonProps.onRequestSendAccessibilityEventHandler(
+              eventHandler(value as (OnRequestSendAccessibilityEventEvent) -> Unit))
+      AccessibilityField.PERFORM_ACCESSIBILITY_ACTION ->
+          commonProps.performAccessibilityActionHandler(
+              eventHandler(value as (PerformAccessibilityActionEvent) -> Unit))
+      AccessibilityField.SEND_ACCESSIBILITY_EVENT ->
+          commonProps.sendAccessibilityEventHandler(
+              eventHandler(value as (SendAccessibilityEventEvent) -> Unit))
+      AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED ->
+          commonProps.sendAccessibilityEventUncheckedHandler(
+              eventHandler(value as (SendAccessibilityEventUncheckedEvent) -> Unit))
     }.exhaustive
   }
 }
@@ -127,13 +152,79 @@ inline fun Style.importantForAccessibility(
  *
  * See [android.view.View.AccessibilityDelegateCompat#onInitializeAccessibilityEvent].
  */
-fun Style.onInitializeAccessibilityEvent(
-    onInitializeAccessibilityEventHandler: (OnInitializeAccessibilityEventEvent) -> Unit
-) =
+inline fun Style.onInitializeAccessibilityEvent(
+    noinline onInitializeAccessibilityEventHandler: (OnInitializeAccessibilityEventEvent) -> Unit
+): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_EVENT,
             onInitializeAccessibilityEventHandler)
+
+/**
+ * Gives a chance to the host View to populate the accessibility event with its text content.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#onPopulateAccessibilityEvent].
+ */
+inline fun Style.onPopulateAccessibilityEvent(
+    noinline onPopulateAccessibilityEventHandler: (OnPopulateAccessibilityEventEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT, onPopulateAccessibilityEventHandler)
+
+/**
+ * Called when a child of the host View has requested sending an [AccessibilityEvent] and gives an
+ * opportunity to the parent (the host) to augment the event.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#onRequestSendAccessibilityEvent].
+ */
+inline fun Style.onRequestSendAccessibilityEvent(
+    noinline onRequestSendAccessibilityEventHandler: (OnRequestSendAccessibilityEventEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_REQUEST_SEND_ACCESSIBILITY_EVENT,
+            onRequestSendAccessibilityEventHandler)
+
+/**
+ * Performs the specified accessibility action on the view.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#performAccessibilityAction].
+ */
+inline fun Style.performAccessibilityAction(
+    noinline performAccessibilityActionHandler: (PerformAccessibilityActionEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.PERFORM_ACCESSIBILITY_ACTION, performAccessibilityActionHandler)
+
+/**
+ * Sends an accessibility event of the given type. If accessibility is not enabled this method has
+ * no effect.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#sendAccessibilityEvent].
+ */
+inline fun Style.sendAccessibilityEvent(
+    noinline sendAccessibilityEventHandler: (SendAccessibilityEventEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.SEND_ACCESSIBILITY_EVENT, sendAccessibilityEventHandler)
+
+/**
+ * Sends an accessibility event. This method behaves exactly as sendAccessibilityEvent() but takes
+ * as an argument an empty [AccessibilityEvent] and does not perform a check whether accessibility
+ * is enabled.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#sendAccessibilityEventUnchecked].
+ */
+inline fun Style.sendAccessibilityEventUnchecked(
+    noinline sendAccessibilityEventUncheckedHandler: (SendAccessibilityEventUncheckedEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED,
+            sendAccessibilityEventUncheckedHandler)
 
 /**
  * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.
