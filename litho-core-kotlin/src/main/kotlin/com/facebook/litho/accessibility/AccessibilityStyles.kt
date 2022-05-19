@@ -18,6 +18,7 @@ package com.facebook.litho.accessibility
 
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Component
+import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
@@ -38,6 +39,7 @@ internal enum class AccessibilityField {
   ACCESSIBILITY_ROLE_DESCRIPTION,
   CONTENT_DESCRIPTION,
   IMPORTANT_FOR_ACCESSIBILITY,
+  ON_INITIALIZE_ACCESSIBILITY_EVENT,
   ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
 }
 
@@ -55,6 +57,9 @@ internal data class AccessibilityStyleItem(val field: AccessibilityField, val va
           commonProps.contentDescription(value as CharSequence)
       AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY ->
           commonProps.importantForAccessibility(value as Int)
+      AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_EVENT ->
+          commonProps.onInitializeAccessibilityEventHandler(
+              eventHandler(value as (OnInitializeAccessibilityEventEvent) -> Unit))
       AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO ->
           commonProps.onInitializeAccessibilityNodeInfoHandler(
               eventHandler(value as (OnInitializeAccessibilityNodeInfoEvent) -> Unit))
@@ -115,6 +120,20 @@ inline fun Style.importantForAccessibility(
     this +
         AccessibilityStyleItem(
             AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility.asInt)
+
+/**
+ * Initializes an [AccessibilityEvent] with information about the the host View which dispatched the
+ * event.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#onInitializeAccessibilityEvent].
+ */
+fun Style.onInitializeAccessibilityEvent(
+    onInitializeAccessibilityEventHandler: (OnInitializeAccessibilityEventEvent) -> Unit
+) =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_EVENT,
+            onInitializeAccessibilityEventHandler)
 
 /**
  * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.

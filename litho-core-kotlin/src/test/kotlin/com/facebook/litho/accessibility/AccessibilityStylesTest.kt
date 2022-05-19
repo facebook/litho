@@ -22,6 +22,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.EventHandler
 import com.facebook.litho.KComponent
+import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -117,6 +118,34 @@ class AccessibilityStylesTest {
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
+  }
+
+  /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
+  @Test
+  fun onInitializeAccessibilityEvent_whenNotSet_isNotSetOnView() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.width(200.px))
+      }
+    }
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onInitializeAccessibilityEventHandler).isNull()
+  }
+
+  /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
+  @Test
+  fun onInitializeAccessibilityEvent_whenSet_isSetOnView() {
+    val eventHandler: EventHandler<OnInitializeAccessibilityEventEvent> = mock()
+
+    class TestComponentWithHandler : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.onInitializeAccessibilityEvent { eventHandler })
+      }
+    }
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onInitializeAccessibilityEventHandler).isNotNull
   }
 
   @Test
