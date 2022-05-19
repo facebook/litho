@@ -18,6 +18,8 @@ package com.facebook.litho
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -81,7 +83,7 @@ class MountableComponentsTest {
                 Wrapper.create(c)
                     .widthPx(100)
                     .heightPx(100)
-                    .delegate(TestMountableComponent(TextView(c.androidContext), steps))
+                    .delegate(TestViewMountableComponent(TextView(c.androidContext), steps))
                     .paddingPx(YogaEdge.ALL, 20)
                     .backgroundColor(Color.LTGRAY)
                     .border(
@@ -106,7 +108,7 @@ class MountableComponentsTest {
   @Test
   fun `width, height, focusable, viewTag styles respected when set`() {
     val testComponent =
-        TestMountableComponent(
+        TestViewMountableComponent(
             TextView(lithoViewRule.context.androidContext),
             style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"))
 
@@ -127,7 +129,7 @@ class MountableComponentsTest {
     val wasClicked = AtomicBoolean(false)
 
     val testComponent =
-        TestMountableComponent(
+        TestViewMountableComponent(
             TextView(lithoViewRule.context.androidContext),
             style =
                 Style.width(667.px).height(668.px).focusable(true).viewTag("click_me").onClick {
@@ -146,7 +148,7 @@ class MountableComponentsTest {
     val eventFired = AtomicBoolean(false)
 
     val testComponent =
-        TestMountableComponent(
+        TestViewMountableComponent(
             TextView(lithoViewRule.context.androidContext),
             style =
                 Style.width(667.px).height(668.px).focusable(true).viewTag("click_me").onVisible {
@@ -161,7 +163,7 @@ class MountableComponentsTest {
   @Test
   fun `widthPercent and heightPercent is respected when set`() {
     val testComponent =
-        TestMountableComponent(
+        TestViewMountableComponent(
             TextView(lithoViewRule.context.androidContext),
             style = Style.heightPercent(50f).widthPercent(50f))
 
@@ -181,7 +183,7 @@ class MountableComponentsTest {
     val alphaDV: DynamicValue<Float> = DynamicValue<Float>(alpha)
 
     val testComponent =
-        TestMountableComponent(
+        TestViewMountableComponent(
             TextView(lithoViewRule.context.androidContext),
             style = Style.width(100.px).height(100.px).alpha(alphaDV))
 
@@ -223,7 +225,7 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
     val component =
-        TestMountableComponent(
+        TestViewMountableComponent(
             view = view,
             steps = steps,
             style = Style.width(100.px).height(100.px),
@@ -256,7 +258,7 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
     val component =
-        TestMountableComponent(
+        TestViewMountableComponent(
             view = view,
             steps = steps,
             style = Style.width(100.px).flex(grow = 1f),
@@ -292,7 +294,7 @@ class MountableComponentsTest {
     lithoViewRule.render {
       Column.create(c)
           .child(
-              TestMountableComponent(
+              TestViewMountableComponent(
                   identity = 0,
                   view = view,
                   steps = steps,
@@ -313,7 +315,7 @@ class MountableComponentsTest {
     lithoViewRule.render {
       Column.create(c)
           .child(
-              TestMountableComponent(
+              TestViewMountableComponent(
                   identity = 1,
                   view = view,
                   steps = steps,
@@ -340,7 +342,7 @@ class MountableComponentsTest {
     lithoViewRule.render {
       Column.create(c)
           .child(
-              TestMountableComponent(
+              TestViewMountableComponent(
                   identity = 0,
                   view = view,
                   steps = steps,
@@ -362,7 +364,7 @@ class MountableComponentsTest {
     lithoViewRule.render {
       Column.create(c)
           .child(
-              TestMountableComponent(
+              TestViewMountableComponent(
                   identity = 0, // ensures that equivalence call is true
                   view = TextView(c.androidContext), // ensure that field field equals fails
                   steps = steps,
@@ -385,7 +387,7 @@ class MountableComponentsTest {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val component = TestMountableComponent(identity = 0, view = view, steps = steps)
+    val component = TestViewMountableComponent(identity = 0, view = view, steps = steps)
 
     lithoViewRule.setSizePx(800, 600).render { component }
 
@@ -415,7 +417,7 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val controller = ViewController()
     val root =
-        TestMountableComponent(
+        TestViewMountableComponent(
             identity = 0,
             view = TextView(c.androidContext),
             steps = steps,
@@ -439,7 +441,7 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val controller = ViewController()
     val root =
-        TestMountableComponent(
+        TestViewMountableComponent(
             identity = 0,
             view = TextView(c.androidContext),
             steps = steps,
@@ -462,7 +464,7 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val controller1 = ViewController()
     val root1 =
-        TestMountableComponent(
+        TestViewMountableComponent(
             identity = 0,
             view = TextView(c.androidContext),
             steps = steps,
@@ -477,7 +479,7 @@ class MountableComponentsTest {
 
     val controller2 = ViewController()
     val root2 =
-        TestMountableComponent(
+        TestViewMountableComponent(
             identity = 0,
             view = TextView(c.androidContext),
             steps = steps,
@@ -499,7 +501,7 @@ class MountableComponentsTest {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val component = TestMountableComponent(identity = 0, view = view, steps = steps)
+    val component = TestViewMountableComponent(identity = 0, view = view, steps = steps)
 
     assertThat(component.isEquivalentTo(component)).isTrue
     assertThat(component.isEquivalentTo(component, true)).isTrue
@@ -510,8 +512,8 @@ class MountableComponentsTest {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val a = TestMountableComponent(identity = 0, view = view, steps = steps)
-    val b = TestMountableComponent(identity = 0, view = view, steps = steps)
+    val a = TestViewMountableComponent(identity = 0, view = view, steps = steps)
+    val b = TestViewMountableComponent(identity = 0, view = view, steps = steps)
     assertThat(a.isEquivalentTo(b)).isTrue
     assertThat(a.isEquivalentTo(b, true)).isTrue
   }
@@ -521,8 +523,8 @@ class MountableComponentsTest {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
-    val a = TestMountableComponent(identity = 0, view = view, steps = steps)
-    val b = TestMountableComponent(identity = 1, view = view, steps = steps)
+    val a = TestViewMountableComponent(identity = 0, view = view, steps = steps)
+    val b = TestViewMountableComponent(identity = 1, view = view, steps = steps)
 
     assertThat(a.isEquivalentTo(b)).isFalse
     assertThat(a.isEquivalentTo(b, true)).isFalse
@@ -534,7 +536,7 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
     val a =
-        TestMountableComponent(
+        TestViewMountableComponent(
             identity = 0,
             view = view,
             steps = steps,
@@ -542,7 +544,7 @@ class MountableComponentsTest {
         )
 
     val b =
-        TestMountableComponent(
+        TestViewMountableComponent(
             identity = 0,
             view = view,
             steps = steps,
@@ -557,7 +559,7 @@ class MountableComponentsTest {
     val eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent> = mock()
 
     val component =
-        TestMountableComponent(
+        TestViewMountableComponent(
             EditText(lithoViewRule.context.androidContext),
             style =
                 Style.accessibilityRole(AccessibilityRole.EDIT_TEXT)
@@ -577,9 +579,32 @@ class MountableComponentsTest {
         .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
+
+  @Test
+  fun `TestDrawableMountableComponent has IMAGE accessibility role by default but overriding it works`() {
+    val component1 =
+        TestDrawableMountableComponent(
+            drawable = ColorDrawable(Color.RED), style = Style.width(100.px).height(100.px))
+
+    val node1 = LegacyLithoViewRule.getRootLayout(lithoViewRule, component1)?.node
+    val nodeInfo1 = node1?.nodeInfo
+    assertThat(nodeInfo1?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE)
+
+    val component2 =
+        TestDrawableMountableComponent(
+            drawable = ColorDrawable(Color.RED),
+            style =
+                Style.width(100.px)
+                    .height(100.px)
+                    .accessibilityRole(AccessibilityRole.IMAGE_BUTTON))
+
+    val node2 = LegacyLithoViewRule.getRootLayout(lithoViewRule, component2)?.node
+    val nodeInfo2 = node2?.nodeInfo
+    assertThat(nodeInfo2?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE_BUTTON)
+  }
 }
 
-class TestMountableComponent(
+class TestViewMountableComponent(
     val view: View,
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
@@ -621,7 +646,7 @@ open class ViewMountable(
       heightSpec: Int,
       size: Size,
       previousLayoutData: Any?,
-  ): ViewLayoutData {
+  ): TestLayoutData {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
     val width =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
@@ -640,18 +665,18 @@ open class ViewMountable(
     size.width = width
     size.height = height
 
-    return ViewLayoutData(width, height)
+    return TestLayoutData(width, height)
   }
 
   override fun mount(c: Context, content: View, layoutData: Any?) {
     updateState?.invoke("mount")
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
-    layoutData as ViewLayoutData
+    layoutData as TestLayoutData
   }
 
   override fun unmount(c: Context, content: View, layoutData: Any?) {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
-    layoutData as ViewLayoutData
+    layoutData as TestLayoutData
   }
 
   override fun shouldUpdate(
@@ -681,7 +706,70 @@ class ComparableViewMountable(
   }
 }
 
-class ViewLayoutData(val width: Int, val height: Int)
+class TestDrawableMountableComponent(val drawable: Drawable, style: Style? = null) :
+    MountableComponent(style = Style.accessibilityRole(AccessibilityRole.IMAGE) + style) {
+
+  override fun MountableComponentScope.render(): DrawableMountable = DrawableMountable(drawable)
+}
+
+class DrawableMountable(
+    val drawable: Drawable,
+) : SimpleMountable<Drawable>() {
+
+  override fun createContent(context: Context): Drawable {
+    return drawable
+  }
+
+  override fun measure(
+      context: ComponentContext,
+      widthSpec: Int,
+      heightSpec: Int,
+      size: Size,
+      previousLayoutData: Any?,
+  ): TestLayoutData {
+    val width =
+        if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
+          SizeSpec.getSize(widthSpec)
+        } else {
+          100
+        }
+
+    val height =
+        if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY) {
+          SizeSpec.getSize(heightSpec)
+        } else {
+          100
+        }
+
+    size.width = width
+    size.height = height
+
+    return TestLayoutData(width, height)
+  }
+
+  override fun mount(c: Context, content: Drawable, layoutData: Any?) {
+    layoutData as TestLayoutData
+  }
+
+  override fun unmount(c: Context, content: Drawable, layoutData: Any?) {
+    layoutData as TestLayoutData
+  }
+
+  override fun shouldUpdate(
+      currentMountable: SimpleMountable<Drawable>,
+      newMountable: SimpleMountable<Drawable>,
+      currentLayoutData: Any?,
+      nextLayoutData: Any?
+  ): Boolean {
+    currentMountable as DrawableMountable
+    newMountable as DrawableMountable
+    return true
+  }
+
+  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
+}
+
+class TestLayoutData(val width: Int, val height: Int)
 
 class ViewController : Controller<View>() {
 
