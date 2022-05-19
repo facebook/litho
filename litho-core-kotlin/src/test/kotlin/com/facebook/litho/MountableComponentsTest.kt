@@ -19,8 +19,15 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.Color
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.accessibility.ImportantForAccessibility
+import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.accessibility.accessibilityRoleDescription
+import com.facebook.litho.accessibility.contentDescription
+import com.facebook.litho.accessibility.importantForAccessibility
+import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.animated.alpha
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.core.height
@@ -37,6 +44,7 @@ import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
+import com.nhaarman.mockitokotlin2.mock
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -542,6 +550,32 @@ class MountableComponentsTest {
         )
 
     assertThat(a.isEquivalentTo(b, true)).isFalse
+  }
+
+  @Test
+  fun `when a11y props are set on style it should set them on the rendered content`() {
+    val eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent> = mock()
+
+    val component =
+        TestMountableComponent(
+            EditText(lithoViewRule.context.androidContext),
+            style =
+                Style.accessibilityRole(AccessibilityRole.EDIT_TEXT)
+                    .accessibilityRoleDescription("Accessibility Test")
+                    .contentDescription("Accessibility Test")
+                    .importantForAccessibility(ImportantForAccessibility.YES)
+                    .onInitializeAccessibilityNodeInfo { eventHandler })
+
+    // verify that info is set on the LithoView where possible, otherwise on LithoNode
+    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, component)?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.accessibilityRole).isEqualTo(AccessibilityRole.EDIT_TEXT)
+    assertThat(nodeInfo?.accessibilityRoleDescription).isEqualTo("Accessibility Test")
+    assertThat(lithoViewRule.lithoView.getChildAt(0).contentDescription)
+        .isEqualTo("Accessibility Test")
+    assertThat(lithoViewRule.lithoView.getChildAt(0).importantForAccessibility)
+        .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
+    assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
 }
 
