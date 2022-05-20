@@ -37,7 +37,7 @@ import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.match
 import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
@@ -61,7 +61,7 @@ import org.robolectric.annotation.LooperMode
 @RunWith(AndroidJUnit4::class)
 class MountableComponentsTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Before
   fun before() {
@@ -93,8 +93,8 @@ class MountableComponentsTest {
                             .build()))
             .build()
 
-    lithoViewRule.render { root }
-    lithoViewRule.lithoView.unmountAllItems()
+    val testView = lithoViewRule.render { root }
+    testView.lithoView.unmountAllItems()
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -112,16 +112,16 @@ class MountableComponentsTest {
             TextView(lithoViewRule.context.androidContext),
             style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"))
 
-    lithoViewRule.render { testComponent }
+    val testView = lithoViewRule.render { testComponent }
 
-    assertThat(lithoViewRule.lithoView.childCount).isEqualTo(1)
-    val testView = lithoViewRule.lithoView.getChildAt(0)
+    assertThat(testView.lithoView.childCount).isEqualTo(1)
+    val realTestView = testView.lithoView.getChildAt(0)
 
-    ViewAssertions.assertThat(testView).matches(match<TextView> { bounds(0, 0, 667, 668) })
+    ViewAssertions.assertThat(realTestView).matches(match<TextView> { bounds(0, 0, 667, 668) })
 
-    assertThat(testView.isFocusable).isTrue()
+    assertThat(realTestView.isFocusable).isTrue()
 
-    lithoViewRule.findViewWithTag("test_view_tag")
+    testView.findViewWithTag("test_view_tag")
   }
 
   @Test
@@ -136,10 +136,10 @@ class MountableComponentsTest {
                   wasClicked.set(true)
                 })
 
-    lithoViewRule.render { testComponent }
+    val testView = lithoViewRule.render { testComponent }
 
     assertThat(wasClicked.get()).isFalse()
-    lithoViewRule.findViewWithTag("click_me").performClick()
+    testView.findViewWithTag("click_me").performClick()
     assertThat(wasClicked.get()).isTrue()
   }
 
@@ -167,14 +167,15 @@ class MountableComponentsTest {
             TextView(lithoViewRule.context.androidContext),
             style = Style.heightPercent(50f).widthPercent(50f))
 
-    lithoViewRule.render {
-      Row(style = Style.width(100.px).height(100.px)) { child(testComponent) }
-    }
+    val testView =
+        lithoViewRule.render {
+          Row(style = Style.width(100.px).height(100.px)) { child(testComponent) }
+        }
 
-    assertThat(lithoViewRule.lithoView.childCount).isEqualTo(1)
-    val testView = lithoViewRule.lithoView.getChildAt(0)
+    assertThat(testView.lithoView.childCount).isEqualTo(1)
+    val realTestView = testView.lithoView.getChildAt(0)
 
-    ViewAssertions.assertThat(testView).matches(match<TextView> { bounds(0, 0, 50, 50) })
+    ViewAssertions.assertThat(realTestView).matches(match<TextView> { bounds(0, 0, 50, 50) })
   }
 
   @Test
@@ -187,15 +188,15 @@ class MountableComponentsTest {
             TextView(lithoViewRule.context.androidContext),
             style = Style.width(100.px).height(100.px).alpha(alphaDV))
 
-    lithoViewRule.render { testComponent }
+    val testView = lithoViewRule.render { testComponent }
 
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(alpha)
+    assertThat(testView.lithoView.alpha).isEqualTo(alpha)
 
     alphaDV.set(1f)
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(1f)
+    assertThat(testView.lithoView.alpha).isEqualTo(1f)
 
     alphaDV.set(0.7f)
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(0.7f)
+    assertThat(testView.lithoView.alpha).isEqualTo(0.7f)
   }
 
   @Test
@@ -231,7 +232,7 @@ class MountableComponentsTest {
             style = Style.width(100.px).height(100.px),
         )
 
-    lithoViewRule.render { Column.create(c).child(component).build() }
+    val testView = lithoViewRule.render { Column.create(c).child(component).build() }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -242,7 +243,9 @@ class MountableComponentsTest {
 
     steps.clear()
 
-    lithoViewRule.render { Column.create(c).child(component).build() }
+    lithoViewRule.render(lithoView = testView.lithoView) {
+      Column.create(c).child(component).build()
+    }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -264,7 +267,7 @@ class MountableComponentsTest {
             style = Style.width(100.px).flex(grow = 1f),
         )
 
-    lithoViewRule.render { Column.create(c).child(component).build() }
+    val testView = lithoViewRule.render { Column.create(c).child(component).build() }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -275,7 +278,9 @@ class MountableComponentsTest {
 
     steps.clear()
 
-    lithoViewRule.render { Column.create(c).child(component).build() }
+    lithoViewRule.render(lithoView = testView.lithoView) {
+      Column.create(c).child(component).build()
+    }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -291,17 +296,18 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
 
-    lithoViewRule.render {
-      Column.create(c)
-          .child(
-              TestViewMountableComponent(
-                  identity = 0,
-                  view = view,
-                  steps = steps,
-                  style = Style.width(100.px).flex(grow = 1f),
-              ))
-          .build()
-    }
+    val testView =
+        lithoViewRule.render {
+          Column.create(c)
+              .child(
+                  TestViewMountableComponent(
+                      identity = 0,
+                      view = view,
+                      steps = steps,
+                      style = Style.width(100.px).flex(grow = 1f),
+                  ))
+              .build()
+        }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -312,7 +318,7 @@ class MountableComponentsTest {
 
     steps.clear()
 
-    lithoViewRule.render {
+    lithoViewRule.render(lithoView = testView.lithoView) {
       Column.create(c)
           .child(
               TestViewMountableComponent(
@@ -339,18 +345,19 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
     val view = TextView(c.androidContext)
 
-    lithoViewRule.render {
-      Column.create(c)
-          .child(
-              TestViewMountableComponent(
-                  identity = 0,
-                  view = view,
-                  steps = steps,
-                  style = Style.width(100.px).flex(grow = 1f),
-                  shouldUseComparableMountable = true,
-              ))
-          .build()
-    }
+    val testView =
+        lithoViewRule.render {
+          Column.create(c)
+              .child(
+                  TestViewMountableComponent(
+                      identity = 0,
+                      view = view,
+                      steps = steps,
+                      style = Style.width(100.px).flex(grow = 1f),
+                      shouldUseComparableMountable = true,
+                  ))
+              .build()
+        }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -361,7 +368,7 @@ class MountableComponentsTest {
 
     steps.clear()
 
-    lithoViewRule.render {
+    lithoViewRule.render(lithoView = testView.lithoView) {
       Column.create(c)
           .child(
               TestViewMountableComponent(
@@ -389,7 +396,7 @@ class MountableComponentsTest {
     val view = TextView(c.androidContext)
     val component = TestViewMountableComponent(identity = 0, view = view, steps = steps)
 
-    lithoViewRule.setSizePx(800, 600).render { component }
+    val testView = lithoViewRule.render(widthPx = 800, heightPx = 600) { component }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -400,7 +407,9 @@ class MountableComponentsTest {
 
     steps.clear()
 
-    lithoViewRule.setSizePx(1920, 1080).render { component }
+    lithoViewRule.render(lithoView = testView.lithoView, widthPx = 1920, heightPx = 1080) {
+      component
+    }
 
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(
@@ -425,11 +434,11 @@ class MountableComponentsTest {
             shouldUseComparableMountable = true,
             style = Style.width(100.px).height(100.px))
 
-    lithoViewRule.render { root }
+    val testView = lithoViewRule.render { root }
 
     controller.setTag("tag")
 
-    val view = lithoViewRule.findViewWithTag("tag")
+    val view = testView.findViewWithTag("tag")
 
     assertThat(view.tag).isEqualTo("tag")
     assertThat(controller.getTag()).isEqualTo("tag")
@@ -449,11 +458,11 @@ class MountableComponentsTest {
             shouldUseComparableMountable = true,
             style = Style.width(100.px).height(100.px))
 
-    lithoViewRule.render { root }
+    val testView = lithoViewRule.render { root }
 
     controller.setTag("tag")
 
-    lithoViewRule.lithoView.setComponentTree(null, true)
+    testView.lithoView.setComponentTree(null, true)
 
     assertThat(controller.getTag()).isNull()
   }
@@ -472,7 +481,7 @@ class MountableComponentsTest {
             shouldUseComparableMountable = true,
             style = Style.width(100.px).height(100.px))
 
-    lithoViewRule.render { root1 }
+    val testView = lithoViewRule.render { root1 }
 
     controller1.setTag("tag1")
     assertThat(controller1.getTag()).isEqualTo("tag1")
@@ -487,7 +496,7 @@ class MountableComponentsTest {
             shouldUseComparableMountable = true,
             style = Style.width(100.px).height(100.px))
 
-    lithoViewRule.render { root2 }
+    lithoViewRule.render(lithoView = testView.lithoView) { root2 }
 
     controller1.setTag("random")
     assertThat(controller1.getTag()).isNull()
@@ -569,13 +578,13 @@ class MountableComponentsTest {
                     .onInitializeAccessibilityNodeInfo { eventHandler })
 
     // verify that info is set on the LithoView where possible, otherwise on LithoNode
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, component)?.node
+    val testView = lithoViewRule.render { component }
+    val node = testView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.accessibilityRole).isEqualTo(AccessibilityRole.EDIT_TEXT)
     assertThat(nodeInfo?.accessibilityRoleDescription).isEqualTo("Accessibility Test")
-    assertThat(lithoViewRule.lithoView.getChildAt(0).contentDescription)
-        .isEqualTo("Accessibility Test")
-    assertThat(lithoViewRule.lithoView.getChildAt(0).importantForAccessibility)
+    assertThat(testView.lithoView.getChildAt(0).contentDescription).isEqualTo("Accessibility Test")
+    assertThat(testView.lithoView.getChildAt(0).importantForAccessibility)
         .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
@@ -586,7 +595,8 @@ class MountableComponentsTest {
         TestDrawableMountableComponent(
             drawable = ColorDrawable(Color.RED), style = Style.width(100.px).height(100.px))
 
-    val node1 = LegacyLithoViewRule.getRootLayout(lithoViewRule, component1)?.node
+    val testView1 = lithoViewRule.render { component1 }
+    val node1 = testView1.currentRootNode?.node
     val nodeInfo1 = node1?.nodeInfo
     assertThat(nodeInfo1?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE)
 
@@ -598,7 +608,8 @@ class MountableComponentsTest {
                     .height(100.px)
                     .accessibilityRole(AccessibilityRole.IMAGE_BUTTON))
 
-    val node2 = LegacyLithoViewRule.getRootLayout(lithoViewRule, component2)?.node
+    val testView2 = lithoViewRule.render { component2 }
+    val node2 = testView2.currentRootNode?.node
     val nodeInfo2 = node2?.nodeInfo
     assertThat(nodeInfo2?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE_BUTTON)
   }
