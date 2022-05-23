@@ -46,12 +46,14 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.core.util.ObjectsCompat;
+import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -917,6 +919,10 @@ class TextInputSpec {
     if (view != null) {
       if (view.requestFocus()) {
         view.setSoftInputVisibility(true);
+        // Force request of accessibility focus because in some cases if something else is
+        // requesting accessibility focus, it can lead to race condition with taking the focus from
+        // view.requestFocus and input will not be highlighted by TalkBack
+        view.performAccessibilityFocus();
       }
     }
   }
@@ -1235,6 +1241,15 @@ class TextInputSpec {
       } else {
         imm.hideSoftInputFromWindow(getWindowToken(), 0);
         mIsSoftInputRequested = false;
+      }
+    }
+
+    void performAccessibilityFocus() {
+      try {
+        ViewCompat.performAccessibilityAction(
+            this, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+      } catch (NullPointerException npe) {
+        // do nothing
       }
     }
 
