@@ -3,6 +3,12 @@ id: lazycollections-sections-migration
 title: Sections Migration Guide
 ---
 
+Lazy Collections offer a cleaner api for building scrolling lists. Advantages over Sections include:
+* No code generation.
+* Simple inline declaration (similar to a Row/Column).
+* List items have direct access to the containing components props and state.
+* Automatic diffing of content updates.
+
 This page provides guidance for migrating an existing list rendered with Sections to [lazy collections](lazycollections.mdx). This will involve:
 
 1. Replacing the component that renders the section tree with a lazy collection component.
