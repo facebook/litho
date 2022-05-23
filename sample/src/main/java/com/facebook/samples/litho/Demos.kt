@@ -108,6 +108,9 @@ import com.facebook.samples.litho.kotlin.collection.StaggeredGridCollectionExamp
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.TabsCollectionKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
+import com.facebook.samples.litho.kotlin.gettingstarted.BasicList
+import com.facebook.samples.litho.kotlin.gettingstarted.ClickableText
+import com.facebook.samples.litho.kotlin.gettingstartedsolution.VerticalSpeller
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
@@ -187,6 +190,14 @@ class Demos {
                                 name = "[KComponent] Animated Dynamic Props",
                                 component = AnimateDynamicPropsKComponent()),
                         )),
+                    DemoGrouping(
+                        name = "Getting started",
+                        listOf(
+                            SingleDemo(name = "Clickable Text", component = ClickableText("Litho")),
+                            SingleDemo(name = "Basic List", component = BasicList()),
+                            SingleDemo(
+                                name = "Vertical Speller (Solution)",
+                                component = VerticalSpeller("I❤️Litho")))),
                     DemoGrouping(
                         name = "Collections",
                         listOf(
