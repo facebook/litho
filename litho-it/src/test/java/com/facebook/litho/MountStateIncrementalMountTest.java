@@ -108,82 +108,7 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
-  public void testExcludeFromIncrementalMountWithoutRenderCore() {
-    final Component child = create(mContext).widthPx(100).heightPx(100).build();
-    final LifecycleTracker skipIMTracker = new LifecycleTracker();
-    final Component excludeIMComponent =
-        MountSpecExcludeFromIncrementalMount.create(mContext)
-            .lifecycleTracker(skipIMTracker)
-            .widthPx(100)
-            .heightPx(100)
-            .build();
-    final LifecycleTracker notSkipIMTracker = new LifecycleTracker();
-    final Component doesNotExcludeIMComponent =
-        MountSpecLifecycleTester.create(mContext)
-            .lifecycleTracker(notSkipIMTracker)
-            .widthPx(100)
-            .heightPx(100)
-            .build();
-
-    final Component root =
-        Column.create(mContext)
-            .widthPercent(100)
-            .heightPercent(100)
-            .child(
-                Column.create(mContext)
-                    .child(child)
-                    .child(doesNotExcludeIMComponent)
-                    .child(excludeIMComponent))
-            .build();
-
-    LithoView lithoView = new LithoView(mContext, false);
-    mLegacyLithoViewRule
-        .useLithoView(lithoView)
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(500))
-        .measure()
-        .layout();
-
-    lithoView.getComponentTree().mountComponent(new Rect(0, 400, 100, 500), false);
-    assertThat(notSkipIMTracker.isMounted())
-        .describedAs(
-            "component without excludeFromIncrementalMount doesn't get mounted when out of visible rect")
-        .isFalse();
-    assertThat(skipIMTracker.isMounted())
-        .describedAs(
-            "component with excludeFromIncrementalMount do get mounted when out of visible rect and parent component is not mounted as well")
-        .isTrue();
-
-    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 300), false);
-    assertThat(notSkipIMTracker.isMounted())
-        .describedAs(
-            "component without excludeFromIncrementalMount get mounted when in visible rect")
-        .isTrue();
-    assertThat(skipIMTracker.isMounted())
-        .describedAs(
-            "component with excludeFromIncrementalMount get mounted when in of visible rect")
-        .isTrue();
-
-    lithoView.getComponentTree().mountComponent(new Rect(0, 400, 50, 450), false);
-    assertThat(notSkipIMTracker.isMounted())
-        .describedAs(
-            "component without excludeFromIncrementalMount get unmounted when out of visible rect")
-        .isFalse();
-    assertThat(skipIMTracker.isMounted())
-        .describedAs(
-            "component with excludeFromIncrementalMount doesn't get unmounted when out of visible rect")
-        .isTrue();
-
-    lithoView.getComponentTree().mountComponent(new Rect(0, 400, 50, 450), false);
-    assertThat(skipIMTracker.isMounted())
-        .describedAs(
-            "component with excludeFromIncrementalMount doesn't get unmounted while doing IncrementalMount")
-        .isTrue();
-  }
-
-  @Test
-  public void testExcludeFromIncrementalMountWithRenderCore() {
+  public void testExcludeFromIncrementalMount() {
 
     final Component child = create(mContext).widthPx(100).heightPx(100).build();
     final LifecycleTracker skipIMTracker = new LifecycleTracker();
@@ -224,37 +149,36 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 400, 100, 500), false);
     assertThat(notSkipIMTracker.isMounted())
         .describedAs(
-            "component without excludeFromIncrementalMount doesn't get mounted when out of visible rect")
+            "Component without excludeFromIncrementalMount doesn't get mounted when out of visible rect")
         .isFalse();
     assertThat(skipIMTracker.isMounted())
         .describedAs(
-            "component with excludeFromIncrementalMount do get mounted when out of visible rect and parent component is not mounted as well")
+            "Component with excludeFromIncrementalMount do get mounted when out of visible rect")
         .isTrue();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 300), false);
     assertThat(notSkipIMTracker.isMounted())
         .describedAs(
-            "component without excludeFromIncrementalMount get mounted when in visible rect")
+            "Component without excludeFromIncrementalMount get mounted when in visible rect")
         .isTrue();
     assertThat(skipIMTracker.isMounted())
-        .describedAs(
-            "component with excludeFromIncrementalMount get mounted when in of visible rect")
+        .describedAs("Component with excludeFromIncrementalMount get mounted when in visible rect")
         .isTrue();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 400, 50, 450), false);
     assertThat(notSkipIMTracker.isMounted())
         .describedAs(
-            "component without excludeFromIncrementalMount get unmounted when out of visible rect")
+            "Component without excludeFromIncrementalMount get unmounted when out of visible rect")
         .isFalse();
     assertThat(skipIMTracker.isMounted())
         .describedAs(
-            "component with excludeFromIncrementalMount doesn't get unmounted when out of visible rect")
+            "Component with excludeFromIncrementalMount doesn't get unmounted when out of visible rect")
         .isTrue();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 400, 50, 450), false);
     assertThat(skipIMTracker.isMounted())
         .describedAs(
-            "component with excludeFromIncrementalMount doesn't get unmounted while doing IncrementalMount")
+            "Component with excludeFromIncrementalMount doesn't get unmounted while doing IncrementalMount")
         .isTrue();
   }
 
