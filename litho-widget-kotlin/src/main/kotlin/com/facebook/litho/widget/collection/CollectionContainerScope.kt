@@ -125,13 +125,13 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
       spanSize: Int? = null,
       onNearViewport: OnNearCallback? = null,
       deps: Array<Any?>,
-      componentFunction: () -> Component?,
+      componentFunction: ComponentCreationScope.() -> Component?,
   ) {
     val child =
         CollectionChild(
             getResolvedId(id),
             null,
-            componentFunction,
+            { ComponentCreationScope(context).componentFunction() },
             isSticky,
             isFullSpan,
             spanSize,
