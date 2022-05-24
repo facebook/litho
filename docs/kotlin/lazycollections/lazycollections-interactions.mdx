@@ -28,6 +28,11 @@ For more complex scroll handling (such as for animations), you can access the `R
 3. Add a custom `OnScrollListener` using `RecyclerView.addOnScrollListener(..)`
 :::
 
+:::note
+It is currently unsafe to trigger a scroll event inside a `useEffect` callback as it will be invoked before the lazy collection's contents have been mounted.
+To trigger a scroll immediately on entering a screen, use the `LazyCollection`'s `onDataBound` callback.
+:::
+
 ## Paging
 
 Lists of data are often retrieved from the server in pages; additional data is requested only if the user scrolls. To achieve this behaviour, add a callback to the lazy collection’s `onNearEnd` parameter that fetches more data. This will be triggered when the lazy collection is scrolled near to the end. Optionally, add a request indicator to the bottom of the list.
