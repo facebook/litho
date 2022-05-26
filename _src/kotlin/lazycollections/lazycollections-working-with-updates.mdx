@@ -10,16 +10,28 @@ A lazy collection is updated by changing the changing the prop/state values from
 
 ## Child Identity
 
-When the data backing a lazy collection is updated, children may have been added, removed, changed position, or had their content updated. The lazy collection will determine what has changed and apply the minimal changeset. This is done by comparing items from the old and new lists using the `id` parameter specified on the children.
+Each child in a lazy collection has an id. The id is either assigned by the developer, or if no id is provided an id is generated using the component's type an position.
 
-By default, an 'id' is generated for each child based on its position and type. This is only sufficient for simple static lists. If the list is expected to be updated, you should provide an id that is consistent across renders.
+The id is used to determine how a collection has changed after an update. Children may have been added, removed, changed position, or had their content updated. As an id is unique to a child it is used to match children across changes, so we can create a minimal changeset and apply content update animations etc.
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_id_example end=end_id_example
+If no `id` parameter is provided then an id is generated based on the child's position and type. This is only sufficient for static content.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_static_id_example end=end_static_id_example
+```
+
+If the list contents can be updated, you must provide unique ids that are consistent across renders.
+
+In the following example there are two `Text` components, and one is added conditionally based on `shouldShowGreeting`. If we used generated ids the first child would always be assigned id "Text:0", so the id would be inconsistent across renders.Android We can fix this by manually assigning an id.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_child_id_example end=end_child_id_example
+```
+
+Content backed by lists should be added using the `children(..)` function. Specify an `id` lambda that generates an id for each item. Note that it is unacceptable to generate ids using a simple incrementing variable as items may change positions. Instead, use an id from the data model.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_children_id_example end=end_children_id_example
 ```
 
 **An `id` must be unique and immutable.** Breaking this contract may lead to occasional `IndexOutOfBoundsException` exceptions during layout.
-
-**You should always provide an `id` when adding items in a loop.** Using the loop index is unacceptable as items may change positions. Instead, use an id from the data model.
 
 ## Avoiding Unnecessary Layouts
 
