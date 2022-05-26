@@ -37,7 +37,7 @@ class SelectionCollectionKComponent : KComponent() {
 
   private val items = listOf("O-Ren Ishii", "Vernita Green", "Budd", "Elle Driver", "Bill")
 
-  override fun ComponentScope.render(): Component? {
+  override fun ComponentScope.render(): Component {
     val selected = useState { setOf<String>() }
 
     fun isSelected(itemIndex: String): Boolean = selected.value.contains(itemIndex)
@@ -63,11 +63,9 @@ class SelectionCollectionKComponent : KComponent() {
             item = "Select All", selected = isAllSelected, onRowClick = selectAllClickCallback)
       }
 
-      items.forEach { name ->
-        val selected = isSelected(name)
-        child(id = name, deps = arrayOf(selected)) {
-          Selectable(item = name, selected = selected, onRowClick = selectItemClickCallback)
-        }
+      children(items = items, id = { it }) {
+        val selected = isSelected(it)
+        Selectable(item = it, selected = selected, onRowClick = selectItemClickCallback)
       }
 
       child(

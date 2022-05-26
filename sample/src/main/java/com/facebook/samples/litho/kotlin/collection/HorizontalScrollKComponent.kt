@@ -54,7 +54,7 @@ class FixedHeightHScroll : KComponent() {
           orientation = RecyclerView.HORIZONTAL,
           itemDecoration = LinearSpacing(all = 10.dp),
           style = Style.height(100.dp),
-      ) { (0..10).forEach { child(id = it, component = ListItem("$it")) } }
+      ) { children(items = (0..10), id = { it }) { ListItem("$it") } }
 }
 // end_example
 
@@ -65,7 +65,7 @@ class WrapFirstItemHeightHScroll : KComponent() {
           orientation = RecyclerView.HORIZONTAL,
           crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild,
           itemDecoration = LinearSpacing(all = 10.dp),
-      ) { (0..10).forEach { child(id = it, component = ListItem("$it")) } }
+      ) { children(items = (0..10), id = { it }) { ListItem("$it") } }
 }
 
 class WrapDynamicHScroll : KComponent() {
@@ -76,14 +76,11 @@ class WrapDynamicHScroll : KComponent() {
           crossAxisWrapMode = CrossAxisWrapMode.Dynamic,
           itemDecoration = LinearSpacing(all = 10.dp),
       ) {
-        (0..10).forEach {
-          child(
-              id = it,
-              component =
-                  ListItem(
-                      text = "$it",
-                      style = Style.padding(horizontal = 30.dp, vertical = (it * 5).dp),
-                  ))
+        children(items = (0..10), id = { it }) {
+          ListItem(
+              text = "$it",
+              style = Style.padding(horizontal = 30.dp, vertical = (it * 5).dp),
+          )
         }
       }
 }

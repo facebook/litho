@@ -46,9 +46,7 @@ class Model(val id: String, val field1: String, val field2: String)
 class ListMigration(private val data: List<Model>) : KComponent() {
   override fun ComponentScope.render(): Component = LazyList {
     // Add DataDiffSection contents as children with ids
-    data.forEach { model ->
-      child(id = model.id, component = Text("${model.field1} ${model.field2}"))
-    }
+    children(items = data, id = { it.id }) { Text("${it.field1} ${it.field2}") }
   }
 }
 // end_list

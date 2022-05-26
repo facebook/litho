@@ -49,7 +49,7 @@ class ModularCollectionKComponent : KComponent() {
             "${if (nestedContentVisible.value) "-" else "+"} Body",
             style = Style.onClick { nestedContentVisible.update(!nestedContentVisible.value) }))
     if (nestedContentVisible.value) {
-      (0..3).forEach { child(id = it, component = Text("  Nested Body Item $it")) }
+      children(items = listOf(0, 1, 2, 3), id = { it }) { Text("  Nested Body Item $it") }
     }
   }
 

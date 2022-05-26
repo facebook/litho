@@ -32,13 +32,32 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.collection.LazyList
 
 class ListWithIds(private val friends: List<Person>) : KComponent() {
-  override fun ComponentScope.render(): Component = LazyList {
-    friends.forEach { friend ->
-      // start_id_example
-      child(id = friend.id, component = Text(friend.name))
-      // end_id_example
+  override fun ComponentScope.render(): Component {
+
+    val topFriend = friends[0]
+    val shouldShowGreeting = useState { false }
+
+    return LazyList {
+      // start_static_id_example
+      child(Header()) // generated id is "Header:0"
+      // end_static_id_example
+
+      // start_child_id_example
+      if (shouldShowGreeting.value) {
+        child(id = "greeting", component = Text("Greetings!"))
+      }
+      child(id = "title", component = Text("Title"))
+      // end_child_id_example
+
+      // start_children_id_example
+      children(items = friends, id = { it.id }) { Text(it.name) }
+      // end_children_id_example
     }
   }
+}
+
+class Header : KComponent() {
+  override fun ComponentScope.render(): Component = Text("Header")
 }
 
 // start_name_list_unnecessary_update
@@ -128,9 +147,9 @@ class ShoppingList : KComponent() {
     }
 
     return LazyList {
-      shoppingList.forEach {
+      children(items = shoppingList, id = { it }) {
         val isChecked = checkedItems.value.contains(it)
-        child(id = it, component = ShoppingListItem(it, isChecked, toggleChecked))
+        ShoppingListItem(it, isChecked, toggleChecked)
       }
     }
   }

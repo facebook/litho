@@ -52,7 +52,7 @@ class ScrollToCollectionKComponent : KComponent() {
               lazyCollectionController = controller,
               style = Style.flex(grow = 1f),
           ) {
-            (0..99).forEach { child(id = it, component = Text("$it ")) }
+            children(items = (0..99), id = { it }) { Text("$it ") }
             child(id = "End", component = Text("End"))
           })
     }

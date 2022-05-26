@@ -48,13 +48,14 @@ class MultiListCollectionKComponent : KComponent() {
               child(
                   id = TOP_FRIENDS_TAG + "title",
                   component = Text("Top Friends", textStyle = Typeface.BOLD))
-              topFriends.forEach { child(id = TOP_FRIENDS_TAG + it, component = Text(friends[it])) }
+
+              children(items = topFriends, id = { TOP_FRIENDS_TAG + it }) { Text(friends[it]) }
             }
 
             child(
                 id = ALL_FRIENDS_TAG + "title",
                 component = Text("All Friends", textStyle = Typeface.BOLD))
-            allFriends.forEach { child(id = ALL_FRIENDS_TAG + it, component = Text(friends[it])) }
+            children(items = allFriends, id = { ALL_FRIENDS_TAG + it }) { Text(friends[it]) }
           })
     }
   }

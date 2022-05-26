@@ -27,12 +27,12 @@ class StickyHeaderCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component = LazyList {
     child(isSticky = true, component = Text("Sticky Title 1", backgroundColor = Color.WHITE))
-    (0..20).forEach { child(id = it, component = Text("$it")) }
+    children(items = (0..20), id = { it }) { Text("$it") }
     child(isSticky = true, component = Text("Sticky Title 2", backgroundColor = Color.WHITE))
-    (21..40).forEach { child(id = it, component = Text("$it")) }
+    children(items = (21..40), id = { it }) { Text("$it") }
     child(isSticky = false, component = Text("Not sticky Title 3", backgroundColor = Color.WHITE))
-    (41..60).forEach { child(id = it, component = Text("$it")) }
+    children(items = (41..60), id = { it }) { Text("$it") }
     child(isSticky = true, component = Text("Sticky Title 4", backgroundColor = Color.WHITE))
-    (61..80).forEach { child(id = it, component = Text("$it")) }
+    children(items = (61..80), id = { it }) { Text("$it") }
   }
 }

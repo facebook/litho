@@ -151,7 +151,7 @@ class CollectionContainerScope(override val context: ComponentContext) : Resourc
    * @param componentFunction A function that generates a [Component] from a data model
    */
   fun <T> children(
-      items: List<T>,
+      items: Iterable<T>,
       id: (T) -> Any,
       componentFunction: ComponentCreationScope.(T) -> Component?,
   ) {

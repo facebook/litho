@@ -56,7 +56,7 @@ class StickyHeader(val names: List<String>) : KComponent() {
     return LazyList {
       namesGroupedByFirstLetter.forEach { (firstLetter, names) ->
         child(id = firstLetter, isSticky = true, component = Text("$firstLetter"))
-        names.forEach { name -> child(id = name, component = Text(name)) }
+        children(items = names, id = { it }) { Text(it) }
       }
     }
   }

@@ -37,7 +37,7 @@ class ScrollingExample() : KComponent() {
     return LazyList(
         lazyCollectionController = controller,
     ) {
-      (0..20).forEach { child(id = it, component = Text("$it")) }
+      children(items = (0..20), id = { it }) { Text("$it") }
       child(id = "End", component = Text("End"))
     }
   }

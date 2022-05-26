@@ -38,7 +38,7 @@ class StaggeredGridCollectionExample : KComponent() {
   private val baseHeightDp = 25.dp
 
   override fun ComponentScope.render(): Component =
-      LazyStaggeredGrid(spans = 3) { (0..30).forEach { child(id = it, component = item(it)) } }
+      LazyStaggeredGrid(spans = 3) { children(items = (0..30), id = { it }) { item(it) } }
 
   private fun colorForIndex(index: Int): Int = colors[index % 4]
 

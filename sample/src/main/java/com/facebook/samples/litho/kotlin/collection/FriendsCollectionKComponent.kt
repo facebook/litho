@@ -53,7 +53,7 @@ class FriendsCollectionKComponent : KComponent() {
 // start_lazy_list_example
 class FriendLazyList(private val friends: List<Person>) : KComponent() {
   override fun ComponentScope.render(): Component = LazyList {
-    friends.forEach { friend -> child(id = friend.id, component = Text(friend.name)) }
+    children(friends, id = { it.id }) { Text(it.name) }
   }
 }
 // end_lazy_list_example

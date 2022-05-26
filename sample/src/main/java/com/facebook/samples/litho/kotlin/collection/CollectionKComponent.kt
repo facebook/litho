@@ -33,7 +33,7 @@ class CollectionKComponent : KComponent() {
   override fun ComponentScope.render(): Component =
       LazyList(style = Style.flex(grow = 1f)) {
         child(Text(text = "Header"))
-        friends.forEach { child(id = it, component = Text(it)) }
+        children(items = friends, id = { it }) { Text(it) }
         child(Text(text = "Footer"))
       }
 }

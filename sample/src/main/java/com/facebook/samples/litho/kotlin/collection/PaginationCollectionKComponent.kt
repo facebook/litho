@@ -61,7 +61,7 @@ class PagedExample(private val pagedList: PaginatedList<Item>) : KComponent() {
           onNearEnd = OnNearCallback { if (pagedList.hasNextPage) pagedList.fetchNextPage() },
       ) {
         // Add the retrieved items
-        pagedList.list.forEach { item -> child(id = item.id, component = Text(item.text)) }
+        children(items = pagedList.list, id = { it.id }) { Text(it.text) }
 
         // Optionally add a progress spinner
         if (pagedList.hasNextPage) {

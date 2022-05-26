@@ -29,4 +29,4 @@ Lazy collections are available as follows:
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_lazy_list_example end=end_lazy_list_example
 ```
 
-The above example creates a `LazyList` and adds a child `Text` component for each list item. It doesn't require all children to be laid out to start showing content on screen. Notice that the code is similar to creating a `Column`. The main difference being that we can optionally specify an `id` parameter on each child, which is required for [applying updates correctly](lazycollections-working-with-updates.mdx).
+The above example creates a `LazyList` and adds a child `Text` component for each list item. It doesn't require all children to be laid out to start showing content on screen. The main difference from adding children to a Column is that we must specify an `id` parameter on each child, which is required for [applying updates correctly](lazycollections-working-with-updates.mdx).
