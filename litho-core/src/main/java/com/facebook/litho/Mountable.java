@@ -32,7 +32,7 @@ import java.util.List;
  * width and height specs. A {@link Mountable} can also specify a collection of Binders to set and
  * unset properties on the content.
  *
- * <p>This interface is abstraction of [RenderUnit].
+ * <p>This abstract class is abstraction of {@link RenderUnit}.
  *
  * <ul>
  *   <li>A {@link Mountable} must only create one type of content.
@@ -46,7 +46,9 @@ import java.util.List;
  * @param <ContentT> The type of the content.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
+public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
+
+  private @Nullable List<Binder<?, ContentT>> mBinders = null;
 
   /**
    * Specifies if the content type is {@link View} or a {@link Drawable}.
@@ -59,7 +61,7 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
    *
    * @return Returns {@link RenderUnit.RenderType#VIEW} or {@link RenderUnit.RenderType#DRAWABLE}.
    */
-  RenderUnit.RenderType getRenderType();
+  protected abstract RenderUnit.RenderType getRenderType();
 
   /**
    * Creates new mountable content when called.
@@ -72,7 +74,7 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
    * @param context The Android context.
    * @return A new mountable content.
    */
-  ContentT createContent(Context context);
+  protected abstract ContentT createContent(Context context);
 
   /**
    * Given a {@param widthSpec} and {@param heightSpec} set the width and height this Mountable will
@@ -94,8 +96,7 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
    *   <li>Can be called from any thread.
    * </ul>
    */
-  @Nullable
-  Object measure(
+  protected abstract @Nullable Object measure(
       final ComponentContext context,
       final int widthSpec,
       final int heightSpec,
@@ -103,11 +104,12 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
       final @Nullable Object previousLayoutData);
 
   /** A list of {@link Binder} to set and unset properties on the content. */
-  @Nullable
-  List<Binder<?, ContentT>> getBinders();
+  protected @Nullable List<Binder<?, ContentT>> getBinders() {
+    return mBinders;
+  }
 
   @Override
-  default boolean isEquivalentTo(Mountable<?> other) {
+  public boolean isEquivalentTo(Mountable<?> other) {
     return EquivalenceUtils.hasEquivalentFields(this, other);
   }
 
@@ -118,17 +120,17 @@ public interface Mountable<ContentT> extends Equivalence<Mountable<?>> {
    *
    * @return {@code true} to preallocate the content, otherwise {@code false}
    */
-  default boolean canPreallocate() {
+  protected boolean canPreallocate() {
     return false;
   }
 
   /** This API informs the framework about the size of the content pool. The default is 3. */
-  default int getPoolSize() {
+  protected int getPoolSize() {
     return 3;
   }
 
   /** Creates the content pool the framework should use for this Mountable. */
-  default MountItemsPool.ItemPool<ContentT> onCreateMountContentPool() {
+  protected MountItemsPool.ItemPool<ContentT> onCreateMountContentPool() {
     return new DefaultMountContentPool(
         "<cls>" + getClass().getName() + "</cls>", getPoolSize(), true);
   }

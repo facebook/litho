@@ -25,7 +25,7 @@ import com.facebook.rendercore.RenderUnit
  *
  * <p>Experimental. Currently for Litho team internal use only.</p>
  */
-abstract class SimpleMountable<ContentT> : Mountable<ContentT> {
+abstract class SimpleMountable<ContentT> : Mountable<ContentT>() {
 
   /**
    * Called just before mounting the content. Use it to set properties on the content. This method
