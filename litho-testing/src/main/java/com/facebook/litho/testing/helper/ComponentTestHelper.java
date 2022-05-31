@@ -470,6 +470,18 @@ public final class ComponentTestHelper {
     view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
   }
 
+  /**
+   * Measure and layout a component view.
+   *
+   * @param view The component view to measure and layout
+   * @param width
+   * @param height
+   */
+  public static void measureAndLayout(View view, int width, int height) {
+    view.measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, EXACTLY));
+    view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+  }
+
   private static ComponentContext getContext(Component.Builder builder) {
     return Whitebox.getInternalState(builder, "mContext");
   }
