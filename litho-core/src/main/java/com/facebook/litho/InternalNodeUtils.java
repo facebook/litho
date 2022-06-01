@@ -398,8 +398,7 @@ public class InternalNodeUtils {
           flags,
           importantForAccessibility,
           updateState,
-          mountable,
-          node.getControllers());
+          mountable);
     }
 
     return MountSpecLithoRenderUnit.create(

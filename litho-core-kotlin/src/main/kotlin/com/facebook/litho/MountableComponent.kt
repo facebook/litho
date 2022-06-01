@@ -34,10 +34,7 @@ abstract class MountableComponent(internal val style: Style? = null) : Component
     val mountable = mountableComponentScope.render()
     style?.applyToComponent(c.resourceResolver, this)
     return PrepareResult(
-        mountable,
-        mountableComponentScope.transitions,
-        mountableComponentScope.useEffectEntries,
-        mountableComponentScope.controllers)
+        mountable, mountableComponentScope.transitions, mountableComponentScope.useEffectEntries)
   }
 
   /** This function must return [Mountable] which are immutable. */

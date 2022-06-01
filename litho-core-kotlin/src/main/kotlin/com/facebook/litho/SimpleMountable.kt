@@ -52,8 +52,11 @@ abstract class SimpleMountable<ContentT> : Mountable<ContentT>() {
       EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable) &&
           currentLayoutData === nextLayoutData
 
-  override fun getBinders(): List<RenderUnit.Binder<*, ContentT>> =
-      BINDER_LIST as List<RenderUnit.Binder<*, ContentT>>
+  final override fun getBinders(): List<RenderUnit.Binder<*, ContentT>> {
+    val binders = super.getBinders()
+    return binders?.apply { add(BINDER_LIST[0] as RenderUnit.Binder<*, ContentT>) }
+        ?: BINDER_LIST as List<RenderUnit.Binder<*, ContentT>>
+  }
 }
 
 private val BINDER_LIST: List<RenderUnit.Binder<*, *>> =

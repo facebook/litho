@@ -348,7 +348,6 @@ class Layout {
         PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
         if (prepareResult != null) {
           node.setMountable(prepareResult.mountable);
-          node.setControllers(prepareResult.controllers);
         }
       }
 

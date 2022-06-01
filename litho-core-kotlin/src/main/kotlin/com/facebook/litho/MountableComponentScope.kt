@@ -18,9 +18,8 @@ package com.facebook.litho
 
 /**
  * The implicit receiver for [MountableComponent.render] call. This class exposes the
- * [ComponentScope] abilities and allows to register a Controller through
- * [MountableComponentScope.registerController] call
+ * [ComponentScope] abilities.
  */
 class MountableComponentScope(context: ComponentContext) : ComponentScope(context) {
-  internal var controllers: MutableList<Controller<*>>? = null
+  // TODO(mkarpinski): add Style support here
 }

@@ -24,6 +24,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RenderUnit.Binder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +50,7 @@ import java.util.List;
 public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
 
   private @Nullable List<Binder<?, ContentT>> mBinders = null;
+  private @Nullable Controller<ContentT> mController = null;
 
   /**
    * Specifies if the content type is {@link View} or a {@link Drawable}.
@@ -106,6 +108,31 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
   /** A list of {@link Binder} to set and unset properties on the content. */
   protected @Nullable List<Binder<?, ContentT>> getBinders() {
     return mBinders;
+  }
+
+  /**
+   * Registers a {@link Controller} for this {@link Mountable}.
+   *
+   * @throws RuntimeException if a {@link Controller} was has already been registered for this
+   *     {@link Mountable}.
+   */
+  protected final void registerController(Controller<ContentT> controller) {
+    if (mController != null) {
+      throw new RuntimeException(
+          "A controller is already registered for this Mountable. Mountable.registerContoller() should be called at most once.");
+    }
+    mController = controller;
+
+    if (mBinders == null) {
+      mBinders = new ArrayList<>(2);
+    }
+    mBinders.add(controller);
+  }
+
+  /** A {@link Controller} registered for this Mountable. */
+  @Nullable
+  protected final Controller<ContentT> getController() {
+    return mController;
   }
 
   @Override

@@ -47,6 +47,7 @@ import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import com.nhaarman.mockitokotlin2.mock
+import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -54,6 +55,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
@@ -62,6 +64,7 @@ import org.robolectric.annotation.LooperMode
 class MountableComponentsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
+  @Rule @JvmField val expectedException = ExpectedException.none()
 
   @Before
   fun before() {
@@ -506,6 +509,34 @@ class MountableComponentsTest {
   }
 
   @Test
+  fun `registerController should throw if controller already registered`() {
+    expectedException.expect(RuntimeException::class.java)
+    expectedException.expectMessage("A controller is already registered for this Mountable")
+
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val controller1 = ViewController()
+    val controller2 = ViewController()
+    val root =
+        TestViewMountableComponent(
+            identity = 0,
+            view = TextView(c.androidContext),
+            steps = steps,
+            controller = controller1,
+            controller2 = controller2,
+            shouldUseComparableMountable = true,
+            style = Style.width(100.px).height(100.px))
+
+    lithoViewRule.render { root }
+
+    controller1.setTag("tag1")
+    assertThat(controller1.getTag()).isNull()
+
+    controller2.setTag("tag2")
+    assertThat(controller2.getTag()).isEqualTo("tag2")
+  }
+
+  @Test
   fun `same instance should be equivalent`() {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
@@ -620,6 +651,7 @@ class TestViewMountableComponent(
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
     val controller: ViewController? = null,
+    val controller2: ViewController? = null,
     val shouldUseComparableMountable: Boolean = false,
     style: Style? = null
 ) : MountableComponent(style = style) {
@@ -628,12 +660,11 @@ class TestViewMountableComponent(
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
-    controller?.let { registerController(controller) }
-
     return if (shouldUseComparableMountable) {
-      ComparableViewMountable(identity, view, steps)
+      ComparableViewMountable(
+          identity, view, steps, controller = controller, controller2 = controller2)
     } else {
-      ViewMountable(identity, view, steps)
+      ViewMountable(identity, view, steps, controller = controller)
     }
   }
 }
@@ -643,7 +674,13 @@ open class ViewMountable(
     open val view: View,
     open val steps: MutableList<LifecycleStep.StepInfo>? = null,
     open val updateState: ((String) -> Unit)? = null,
+    open val controller: ViewController? = null,
+    open val controller2: ViewController? = null,
 ) : SimpleMountable<View>() {
+
+  init {
+    controller?.let { registerController(controller as Controller<View>) }
+  }
 
   override fun createContent(context: Context): View {
     updateState?.invoke("createContent")
@@ -709,8 +746,15 @@ class ComparableViewMountable(
     override val id: Int = 0,
     override val view: View,
     override val steps: MutableList<LifecycleStep.StepInfo>? = null,
-    override val updateState: ((String) -> Unit)? = null
+    override val updateState: ((String) -> Unit)? = null,
+    override val controller: ViewController? = null,
+    override val controller2: ViewController? = null,
 ) : ViewMountable(id, view, steps, updateState) {
+
+  init {
+    controller?.let { registerController(controller as Controller<View>) }
+    controller2?.let { registerController(controller2 as Controller<View>) }
+  }
 
   override fun isEquivalentTo(other: Mountable<*>): Boolean {
     return id == (other as ViewMountable).id

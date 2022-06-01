@@ -178,7 +178,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected long mPrivateFlags;
 
   private @Nullable Mountable<?> mMountable;
-  private @Nullable List<Controller<?>> mControllers;
 
   protected LithoNode(ComponentContext componentContext) {
     mContext = componentContext.getAndroidContext();
@@ -189,16 +188,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return mMountable;
   }
 
-  public @Nullable List<Controller<?>> getControllers() {
-    return mControllers;
-  }
-
   public void setMountable(@Nullable Mountable<?> mountable) {
     mMountable = mountable;
-  }
-
-  public void setControllers(@Nullable List<Controller<?>> controllers) {
-    mControllers = controllers;
   }
 
   public void addChildAt(LithoNode child, int index) {
