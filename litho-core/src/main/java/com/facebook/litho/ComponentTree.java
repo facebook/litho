@@ -786,13 +786,20 @@ public class ComponentTree implements LithoLifecycleListener {
     final Rect currentVisibleArea = new Rect();
 
     if (mLithoView.getCorrectedLocalVisibleRect(currentVisibleArea)
+        || hasComponentsExcludedFromIncrementalMount(mMainThreadLayoutState)
         // It might not be yet visible but animating from 0 height/width in which case we still
-        // need
-        // to mount them to trigger animation.
+        // need to mount them to trigger animation.
         || animatingRootBoundsFromZero(currentVisibleArea)) {
       mountComponent(currentVisibleArea, true);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
+  }
+
+  // Check if we should ignore the result of visible rect checking and continue doing
+  // IncrementalMount.
+  private static boolean hasComponentsExcludedFromIncrementalMount(
+      @Nullable LayoutState layoutState) {
+    return layoutState != null && layoutState.hasComponentsExcludedFromIncrementalMount();
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {

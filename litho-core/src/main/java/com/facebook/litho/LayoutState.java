@@ -209,6 +209,9 @@ public class LayoutState
 
   private @Nullable List<Attachable> mAttachables;
 
+  // If there is any component marked with 'ExcludeFromIncrementalMountComponent'
+  private boolean mHasComponentsExcludedFromIncrementalMount;
+
   final boolean mShouldAddHostViewForRootComponent =
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
@@ -980,6 +983,11 @@ public class LayoutState
   @Nullable
   List<Attachable> getAttachables() {
     return mAttachables;
+  }
+
+  /** @return true, means there are components marked as 'ExcludeFromIncrementalMount'. */
+  boolean hasComponentsExcludedFromIncrementalMount() {
+    return mHasComponentsExcludedFromIncrementalMount;
   }
 
   private static RenderTreeNode addDrawableRenderTreeNode(
@@ -2033,6 +2041,10 @@ public class LayoutState
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
+
+    if (layoutOutput.getComponent().excludeFromIncrementalMount()) {
+      layoutState.mHasComponentsExcludedFromIncrementalMount = true;
+    }
 
     final long id = node.getRenderUnit().getId();
     layoutState.mMountableOutputs.add(node);

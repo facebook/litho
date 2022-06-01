@@ -108,6 +108,85 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
+  public void testIncrementalMountForOffscreenComponents() {
+
+    // ┌─────────────┬────────┐
+    // │Visible Rect │        │
+    // ├─────────────┘        │
+    // │ ┌────────────┬─────┐ │
+    // │ │ Component1 │     │ │
+    // │ ├────────────┘     │ │
+    // │ │                  │ │
+    // │ └──────────────────┘ │
+    // └──────────────────────┘
+    //   ┌────────────┬─────┐
+    //   │ Component2 │     │
+    //   ├────────────┘     │
+    //   │                  │
+    //   └──────────────────┘
+    //   ┌────────────┬─────┐
+    //   │ Component3 │     │
+    //   ├────────────┘     │
+    //   │                  │
+    //   └──────────────────┘
+
+    // Component1 without `excludeFromIncrementalMount`
+    final LifecycleTracker tracker1 = new LifecycleTracker();
+    final Component component1 =
+        MountSpecLifecycleTester.create(mContext)
+            .lifecycleTracker(tracker1)
+            .widthPx(100)
+            .heightPx(100)
+            .build();
+
+    // Component2 marked with `excludeFromIncrementalMount`
+    final LifecycleTracker tracker2 = new LifecycleTracker();
+    final Component component2 =
+        MountSpecExcludeFromIncrementalMount.create(mContext)
+            .lifecycleTracker(tracker2)
+            .widthPx(100)
+            .heightPx(100)
+            .build();
+
+    // Component3 without `excludeFromIncrementalMount`
+    final LifecycleTracker tracker3 = new LifecycleTracker();
+    final Component component3 =
+        MountSpecLifecycleTester.create(mContext)
+            .lifecycleTracker(tracker3)
+            .widthPx(100)
+            .heightPx(100)
+            .build();
+
+    final Component root =
+        Column.create(mContext)
+            .widthPercent(100)
+            .heightPercent(300)
+            .child(component1)
+            .child(component2)
+            .child(component3)
+            .build();
+
+    mLegacyLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(exactly(100), exactly(100))
+        .measure();
+    LithoView lithoView = mLegacyLithoViewRule.getLithoView();
+
+    lithoView.layout(0, 0, 100, 100);
+    assertThat(tracker1.isMounted())
+        .describedAs("Onscreen component WITHOUT excludeFromIncrementalMount should be mounted")
+        .isTrue();
+    assertThat(tracker2.isMounted())
+        .describedAs("Offscreen component WITH excludeFromIncrementalMount should be mounted")
+        .isTrue();
+    assertThat(tracker3.isMounted())
+        .describedAs(
+            "Offscreen component WITHOUT excludeFromIncrementalMount should Not be mounted")
+        .isFalse();
+  }
+
+  @Test
   public void testExcludeFromIncrementalMount() {
 
     final Component child = create(mContext).widthPx(100).heightPx(100).build();
