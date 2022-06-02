@@ -327,6 +327,12 @@ public class ComponentsConfiguration {
     return mShouldReuseOutputs;
   }
 
+  /**
+   * Defines whether or not we should use orchestrate the focus requests in the SectionTree, so as
+   * to avoid race conditions in the scroll/focus requests.
+   */
+  public static boolean isPendingFocusEnabled = false;
+
   public static ComponentsConfiguration.Builder create() {
     return create(defaultComponentsConfiguration);
   }

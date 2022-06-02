@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.sections.TestDataDiffSection;
@@ -72,6 +73,7 @@ public class SectionTreeTest {
     mChangeSetThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(SectionTree.class, "getDefaultChangeSetThreadLooper"));
+    ComponentsConfiguration.isPendingFocusEnabled = false;
   }
 
   @After
@@ -79,6 +81,7 @@ public class SectionTreeTest {
     // If a test fails, make sure the shadow looper gets cleared out anyway so it doesn't impact
     // other tests.
     mChangeSetThreadShadowLooper.runToEndOfTasks();
+    ComponentsConfiguration.isPendingFocusEnabled = false;
   }
 
   @Test
@@ -691,6 +694,43 @@ public class SectionTreeTest {
 
     tree.requestFocus(leaf4, 2);
     assertThat(8).isEqualTo(changeSetHandler.getFocusedTo());
+  }
+
+  @Test
+  public void testPendingFocusRequestPersistsBetweenSectionChanges() throws InterruptedException {
+    ComponentsConfiguration.isPendingFocusEnabled = true;
+
+    final TestTarget changeSetHandler = new TestTarget();
+
+    final Section section1 =
+        TestDataDiffSection.create(mSectionContext)
+            .data(Arrays.asList("item-1", "item-2", "item-3"))
+            .build();
+
+    final Section section2 =
+        TestDataDiffSection.create(mSectionContext)
+            .data(Arrays.asList("item-0", "item-1", "item-2", "item-3"))
+            .build();
+
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
+
+    tree.setRoot(section1);
+
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    new Thread(
+            () -> {
+              tree.requestFocusOnRoot(2, 0);
+              latch.countDown();
+            })
+        .start();
+
+    assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
+
+    tree.setRoot(section2);
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(3).isEqualTo(changeSetHandler.getFocusedTo());
   }
 
   @Test(expected = IllegalStateException.class)
