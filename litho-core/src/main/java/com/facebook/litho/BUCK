@@ -58,6 +58,7 @@ litho_android_library(
     visibility = LITHO_VISIBILITY,
     deps = [
         "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+        "//third-party/kotlin:kotlin-stdlib",
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_PERFBOOST_TARGET,
         LITHO_RES_TARGET,

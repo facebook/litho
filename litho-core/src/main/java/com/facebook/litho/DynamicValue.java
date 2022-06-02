@@ -82,6 +82,11 @@ public class DynamicValue<T> {
     mListeners.remove(listener);
   }
 
+  /** Retrieves the amount of listeners attached to this [DynamicValue]. */
+  int getNumberOfListeners() {
+    return mListeners.size();
+  }
+
   /** Interface definition for a callback to be invoked when value changes. */
   interface OnValueChangeListener<T> {
     /**

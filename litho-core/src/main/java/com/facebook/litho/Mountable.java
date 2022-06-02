@@ -26,6 +26,8 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RenderUnit.Binder;
 import java.util.ArrayList;
 import java.util.List;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 /**
  * This represents the rendering primitive. Every {@link Mountable} must define what content it
@@ -123,10 +125,7 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
     }
     mController = controller;
 
-    if (mBinders == null) {
-      mBinders = new ArrayList<>(2);
-    }
-    mBinders.add(controller);
+    addBinder(controller);
   }
 
   /** A {@link Controller} registered for this Mountable. */
@@ -160,5 +159,72 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
   protected MountItemsPool.ItemPool<ContentT> onCreateMountContentPool() {
     return new DefaultMountContentPool(
         "<cls>" + getClass().getName() + "</cls>", getPoolSize(), true);
+  }
+
+  /**
+   * Registers a {@link DynamicValue} with this {@link Mountable}.
+   *
+   * <p>The {@param valueSetter} lambda is invoked every time a new value is set on the {@param
+   * dynamicValue}.
+   *
+   * <p>The {@param valueSetter} lambda is also invoked when the content is unbound to set the
+   * {@param defaultValue}.
+   */
+  protected final <T> void subscribeToMountDynamicValue(
+      DynamicValue<T> dynamicValue, T defaultValue, Function2<ContentT, T, Unit> valueSetter) {
+    addBinder(new DynamicPropsBinder<>(dynamicValue, defaultValue, valueSetter));
+  }
+
+  private void addBinder(Binder<?, ContentT> binder) {
+    if (mBinders == null) {
+      mBinders = new ArrayList<>(2);
+    }
+    mBinders.add(binder);
+  }
+
+  private static final class DynamicPropsBinder<ContentT, T> extends Controller<ContentT>
+      implements DynamicValue.OnValueChangeListener<T> {
+
+    private final DynamicValue<T> mDynamicValue;
+    private final T mDefaultValue;
+    private final Function2<ContentT, T, Unit> mValueSetter;
+
+    public DynamicPropsBinder(
+        DynamicValue<T> dynamicValue, T defaultValue, Function2<ContentT, T, Unit> valueSetter) {
+      mDynamicValue = dynamicValue;
+      mDefaultValue = defaultValue;
+      mValueSetter = valueSetter;
+    }
+
+    @Override
+    public void onValueChange(DynamicValue<T> value) {
+      ContentT content = getContent();
+      if (content != null) {
+        ThreadUtils.assertMainThread();
+        mValueSetter.invoke(content, value.get());
+      }
+    }
+
+    @Override
+    public void bind(
+        Context context,
+        ContentT content,
+        Mountable<ContentT> mountable,
+        @Nullable Object layoutData) {
+      super.bind(context, content, mountable, layoutData);
+      mDynamicValue.attachListener(this);
+      mValueSetter.invoke(content, mDynamicValue.get());
+    }
+
+    @Override
+    public void unbind(
+        Context context,
+        ContentT content,
+        Mountable<ContentT> mountable,
+        @Nullable Object layoutData) {
+      super.unbind(context, content, mountable, layoutData);
+      mValueSetter.invoke(content, mDefaultValue);
+      mDynamicValue.detach(this);
+    }
   }
 }
