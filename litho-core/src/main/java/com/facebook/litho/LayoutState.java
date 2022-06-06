@@ -218,8 +218,6 @@ public class LayoutState
   final boolean mShouldDisableDrawableOutputs =
       mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableBgFgOutputs;
 
-  final boolean mDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-
   final Map<String, Object> mLayoutData = new HashMap<>();
 
   // TODO(t66287929): Remove mIsCommitted from LayoutState by matching RenderState logic around
