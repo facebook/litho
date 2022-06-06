@@ -206,7 +206,7 @@ public class RecyclerBinder
   private final boolean mPreallocatePerMountSpec;
   private final ArrayList<String> mCTOps = new ArrayList<>();
 
-  public synchronized void addOp(Object... params) {
+  public void addOp(Object... params) {
     if (!mEnableOperationLog || !ComponentsConfiguration.shouldCollectLogsInRecyclerBinder) {
       return;
     }
@@ -215,7 +215,9 @@ public class RecyclerBinder
       builder.append(element);
     }
     builder.append(" (").append(Thread.currentThread().getName()).append(")");
-    mCTOps.add(builder.toString());
+    synchronized (this) {
+      mCTOps.add(builder.toString());
+    }
   }
 
   private String getOpString() {
