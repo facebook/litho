@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.ON_MOUNT
 import com.facebook.litho.LifecycleStep.ON_UNMOUNT
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DynamicComponentGroupSection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
@@ -244,8 +243,7 @@ class IncrementalMountTest {
     // Ensure mount is called once
     // When using Litho's inc-mount, the exiting item will be mounted twice due to an issue with
     // the calculation there. Inc-mount-ext does not have this issue.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
-        .isEqualTo(if (ComponentsConfiguration.delegateToRenderCoreMount) 1 else 2) // TODO
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(1)
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0)
@@ -268,8 +266,7 @@ class IncrementalMountTest {
     // Ensure mount is called once
     // When using Litho's inc-mount, the item we previously expected to exit is still there, so
     // we don't expect a mount to occur.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
-        .isEqualTo(if (ComponentsConfiguration.delegateToRenderCoreMount) 1 else 0) // TODO
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(1)
 
     // child2 & 3 of all items should not change.
     assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0)
