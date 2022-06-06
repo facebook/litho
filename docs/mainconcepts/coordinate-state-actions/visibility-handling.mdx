@@ -137,7 +137,7 @@ Use `AOSPLithoLifecycleProvider` when you want to associate a LithoView's visibi
 lifecycle of a Fragment, Activity or custom LifecycleOwner, where **Resumed** means the LithoView is
 on screen and **Paused** means the LithoView is hidden.
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleDelegateActivity.java start=start_example_lifecycleprovider end=end_example_lifecycleprovider
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleDelegateActivity.kt start=start_example_lifecycleprovider end=end_example_lifecycleprovider
 ```
 
 ### Handling custom state changes
@@ -157,12 +157,12 @@ a generic `LithoLifecycleProvider` implementation, to change state when appropri
 
 #### ViewPager example
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/ScreenSlidePageFragment.java start=start_example_lifecycleprovider end=end_example_lifecycleprovider
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/ScreenSlidePageFragment.kt start=start_example_lifecycleprovider end=end_example_lifecycleprovider
 ```
 
 #### Fragment Transaction example
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleFragment.java start=start_example_lifecycleprovider end=end_example_lifecycleprovider
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/java/lifecycle/LifecycleFragment.kt start=start_example_lifecycleprovider end=end_example_lifecycleprovider
 ```
 
 ### Nested Component Trees
