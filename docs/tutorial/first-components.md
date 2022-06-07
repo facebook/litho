@@ -2,7 +2,7 @@
 id: first-components
 title: Components and Props
 ---
-
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -74,6 +74,10 @@ let's apply some flexbox styles:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostStyledKComponent.kt start=start_example end=end_example
 ```
+
+Your component should look like the following image.
+
+<img src={useBaseUrl("/images/simple_component_tutorial.png")} width="200px" className="white-background"/>
 
 ### Key Points:
 
