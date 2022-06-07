@@ -333,6 +333,12 @@ public class ComponentsConfiguration {
    */
   public static boolean isPendingFocusEnabled = false;
 
+  /**
+   * Defines whether or not we should report focus requests which happen on threads different than
+   * the Main Thread.
+   */
+  public static boolean isNonMainThreadFocusRequestLoggingEnabled = false;
+
   public static ComponentsConfiguration.Builder create() {
     return create(defaultComponentsConfiguration);
   }

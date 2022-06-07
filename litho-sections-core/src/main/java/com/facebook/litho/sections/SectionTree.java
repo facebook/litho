@@ -187,6 +187,7 @@ public class SectionTree {
 
   private final @Nullable PendingFocusOrchestrator mPendingFocusOrchestrator;
   private final boolean mIsPendingFocusEnabled;
+  private final boolean mIsNonMainThreadFocusRequestLoggingEnabled;
 
   private LoadEventsHandler mLoadEventsHandler;
 
@@ -358,6 +359,9 @@ public class SectionTree {
     mUseBackgroundChangeSets = mTarget.supportsBackgroundChangeSets();
     mFocusDispatcher = new FocusDispatcher(mTarget);
     mIsPendingFocusEnabled = ComponentsConfiguration.isPendingFocusEnabled;
+    mIsNonMainThreadFocusRequestLoggingEnabled =
+        ComponentsConfiguration.isNonMainThreadFocusRequestLoggingEnabled;
+
     mPendingFocusOrchestrator =
         mIsPendingFocusEnabled ? new PendingFocusOrchestrator(mFocusDispatcher) : null;
     mContext = SectionContext.withSectionTree(builder.mContext, this);
@@ -846,6 +850,8 @@ public class SectionTree {
   }
 
   void requestFocusEnd(final String sectionKey) {
+    logFocusRequestIfNotMainThread();
+
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
         final SectionLocationInfo locationInfo = findSectionForKey(sectionKey);
@@ -869,6 +875,8 @@ public class SectionTree {
   }
 
   private void requestFocus(final String sectionKey, final int index) {
+    logFocusRequestIfNotMainThread();
+
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
         final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
@@ -903,6 +911,8 @@ public class SectionTree {
   }
 
   void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
+    logFocusRequestIfNotMainThread();
+
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
         final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
@@ -930,6 +940,8 @@ public class SectionTree {
   }
 
   void requestFocusWithOffset(final String sectionKey, final Object id, final int offset) {
+    logFocusRequestIfNotMainThread();
+
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
         mPendingFocusOrchestrator.registerPendingFocus(id, offset, null);
@@ -971,6 +983,8 @@ public class SectionTree {
       final int index,
       final int offset,
       final SmoothScrollAlignmentType type) {
+    logFocusRequestIfNotMainThread();
+
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
         final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
@@ -1001,6 +1015,8 @@ public class SectionTree {
       final Object id,
       final int offset,
       final SmoothScrollAlignmentType type) {
+    logFocusRequestIfNotMainThread();
+
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
         mPendingFocusOrchestrator.registerPendingFocus(id, offset, type);
@@ -1702,6 +1718,16 @@ public class SectionTree {
     if (mFocusDispatcher.isLoadingCompleted()) {
       mFocusDispatcher.waitForDataBound(false);
       mFocusDispatcher.maybeDispatchFocusRequests();
+    }
+  }
+
+  private void logFocusRequestIfNotMainThread() {
+    if (mIsNonMainThreadFocusRequestLoggingEnabled && !ThreadUtils.isMainThread()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.FATAL,
+          "SectionTree:FocusRequestNotInMainThread",
+          "The focus request is being called from non-UI thread: "
+              + Thread.currentThread().getName());
     }
   }
 
