@@ -44,6 +44,43 @@ import com.facebook.rendercore.RenderUnit
 import kotlin.math.max
 import kotlin.math.min
 
+fun ExperimentalVerticalScroll(
+    scrollbarEnabled: Boolean = false,
+    nestedScrollingEnabled: Boolean = false,
+    verticalFadingEdgeEnabled: Boolean = false,
+    fillViewport: Boolean = false,
+    scrollbarFadingEnabled: Boolean = true,
+    incrementalMountEnabled: Boolean = false,
+    overScrollMode: Int = View.OVER_SCROLL_IF_CONTENT_SCROLLS,
+    fadingEdgeLength: Int = 0,
+    initialScrollPosition: Dimen = 0.px,
+    eventsController: VerticalScrollEventsController? = null,
+    onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
+    onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
+    onScrollStateChange: ((View, Int) -> Unit)? = null,
+    style: Style? = null,
+    child: () -> Component,
+): Component {
+
+  return ExperimentalVerticalScroll(
+      scrollbarEnabled,
+      nestedScrollingEnabled,
+      verticalFadingEdgeEnabled,
+      fillViewport,
+      scrollbarFadingEnabled,
+      incrementalMountEnabled,
+      overScrollMode,
+      fadingEdgeLength,
+      initialScrollPosition,
+      eventsController,
+      onScrollChange,
+      onInterceptTouch,
+      onScrollStateChange,
+      child(),
+      style,
+  )
+}
+
 class ExperimentalVerticalScroll(
     val scrollbarEnabled: Boolean = false,
     val nestedScrollingEnabled: Boolean = false,
@@ -58,8 +95,8 @@ class ExperimentalVerticalScroll(
     val onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     val onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     val onScrollStateChange: ((View, Int) -> Unit)? = null,
+    val child: Component,
     style: Style? = null,
-    val child: () -> Component,
 ) : MountableComponent(style) {
   override fun MountableComponentScope.render(): Mountable<*> {
 
@@ -68,13 +105,13 @@ class ExperimentalVerticalScroll(
     }
 
     val componentTree = useState {
-      ComponentTree.createNestedComponentTree(context, child())
+      ComponentTree.createNestedComponentTree(context, child)
           .incrementalMount(incrementalMountEnabled)
           .build()
     }
 
     return VerticalScrollMountable(
-        child(),
+        child,
         scrollbarEnabled,
         nestedScrollingEnabled,
         verticalFadingEdgeEnabled,

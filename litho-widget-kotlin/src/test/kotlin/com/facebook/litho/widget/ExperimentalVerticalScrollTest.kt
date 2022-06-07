@@ -96,9 +96,8 @@ class ExperimentalVerticalScrollTest {
     assertThat(component).isEquivalentTo(component, true)
   }
 
-  /** TODO(T116546567): Ensure that lambdas can be compared in component isEquivalentTo */
   @Test
-  fun `components with same prop values should be equivalent, but wont be because of the lambda`() {
+  fun `components with same prop values should be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
         ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
@@ -116,9 +115,8 @@ class ExperimentalVerticalScrollTest {
           )
         }
 
-    assertThatThrownBy { assertThat(a).isEquivalentTo(b) }.isInstanceOf(AssertionError::class.java)
-    assertThatThrownBy { assertThat(a).isEquivalentTo(b, true) }
-        .isInstanceOf(AssertionError::class.java)
+    assertThat(a).isEquivalentTo(b)
+    assertThat(a).isEquivalentTo(b, true)
   }
 
   @Test
@@ -163,6 +161,7 @@ class ExperimentalVerticalScrollTest {
           )
         }
 
-    assertThatThrownBy { assertThat(a).isEquivalentTo(b) }.isInstanceOf(AssertionError::class.java)
+    assertThatThrownBy { assertThat(a).isEquivalentTo(b, true) }
+        .isInstanceOf(AssertionError::class.java)
   }
 }
