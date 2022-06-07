@@ -63,7 +63,8 @@ class LazyCollectionControllerTest {
         return LazyList(
             lazyCollectionController = lazyCollectionController,
             style = Style.viewTag("collection_tag"),
-        ) {}
+        ) {
+        }
       }
     }
 
@@ -161,7 +162,9 @@ class LazyCollectionControllerTest {
           LazyList(
               lazyCollectionController = lazyCollectionController,
               style = Style.viewTag("collection_tag"),
-          ) { (0..10).forEach { child(id = it, component = Text("$it", Style.viewTag("$it"))) } }
+          ) {
+            (0..10).forEach { child(id = it, component = Text("$it", Style.viewTag("$it"))) }
+          }
     }
 
     val testLithoView = lithoViewRule.render(widthPx = 100, heightPx = 100) { Test() }

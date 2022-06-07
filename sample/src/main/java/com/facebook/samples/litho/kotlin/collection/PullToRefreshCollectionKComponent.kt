@@ -41,7 +41,9 @@ class PullToRefreshCollectionKComponent : KComponent() {
           deck.update { it.shuffled() }
           lazyCollectionController.clearRefreshing()
         },
-    ) { children(items = deck.value, id = { it.index }) { Text(it.styledText) } }
+    ) {
+      children(items = deck.value, id = { it.index }) { Text(it.styledText) }
+    }
   }
 }
 // end_example

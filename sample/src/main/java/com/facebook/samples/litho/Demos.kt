@@ -276,7 +276,9 @@ class Demos {
                         listOf(
                             SingleDemo(
                                 name = "Animations Composition",
-                            ) { context -> ComposedAnimationsComponent.create(context).build() },
+                            ) { context ->
+                              ComposedAnimationsComponent.create(context).build()
+                            },
                             SingleDemo(
                                 name = "Expandable Element", ExpandableElementActivity::class.java),
                             SingleDemo(name = "Animated Badge") { context ->

@@ -110,7 +110,8 @@ class ContentPoolingTest {
             }
           }
         }
-        .lithoView.unmountAllItems()
+        .lithoView
+        .unmountAllItems()
 
     assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(1)
 

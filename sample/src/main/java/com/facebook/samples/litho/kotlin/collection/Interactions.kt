@@ -58,7 +58,8 @@ class PullToRefreshExample(
           refresh()
           controller.clearRefreshing()
         },
-    ) { /* Add children */}
+    ) { /* Add children */
+    }
   }
 }
 // end_pull_to_refresh_example
