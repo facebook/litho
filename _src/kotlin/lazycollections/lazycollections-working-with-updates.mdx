@@ -12,7 +12,7 @@ A lazy collection is updated by changing the changing the prop/state values from
 
 Each child in a lazy collection has an id. The id is either assigned by the developer, or if no id is provided an id is generated using the component's type an position.
 
-The id is used to determine how a collection has changed after an update. Children may have been added, removed, changed position, or had their content updated. As an id is unique to a child it is used to match children across changes, so we can create a minimal changeset and apply content update animations etc.
+The `id` is used to determine how a collection changed after an update: children may have been added, removed, changed position, or had their content updated. Since an `id` is unique to a child, it is used to match children across changes to create minimal changeset and apply content update animations, and so on.
 
 If no `id` parameter is provided then an id is generated based on the child's position and type. This is only sufficient for static content.
 
@@ -21,7 +21,7 @@ If no `id` parameter is provided then an id is generated based on the child's po
 
 If the list contents can be updated, you must provide unique ids that are consistent across renders.
 
-In the following example there are two `Text` components, and one is added conditionally based on `shouldShowGreeting`. If we used generated ids the first child would always be assigned id "Text:0", so the id would be inconsistent across renders.Android We can fix this by manually assigning an id.
+In the following example, there are two `Text` components, one is added conditionally based on `shouldShowGreeting`. If generated ids are used, the first child is always assigned the id "Text:0", so the id would be inconsistent across renders. On Android, you can fix this by manually assigning an `id`.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_child_id_example end=end_child_id_example
 ```
