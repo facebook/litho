@@ -27,6 +27,8 @@ COMMON_DEPS = [
 litho_android_library(
     name = "assertj",
     is_androidx = True,
+    language = "KOTLIN",
+    pure_kotlin = False,
     visibility = [
         "PUBLIC",
     ],

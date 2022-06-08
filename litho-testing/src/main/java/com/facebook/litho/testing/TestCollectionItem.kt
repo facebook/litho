@@ -35,6 +35,7 @@ import com.facebook.litho.widget.RecyclerBinder
  * @property spanSize Number of columns the component spans in a grid
  */
 class TestCollectionItem(
+    private val testCollection: TestCollection,
     private val componentTreeHolder: ComponentTreeHolder,
     val index: Int,
 ) {
@@ -49,6 +50,12 @@ class TestCollectionItem(
 
   val component
     get() = renderInfo.component
+
+  val isVisible
+    get() = index in with(testCollection) { firstVisibleIndex..lastVisibleIndex }
+
+  val isFullyVisible
+    get() = index in with(testCollection) { firstFullyVisibleIndex..lastFullyVisibleIndex }
 
   val isSticky
     get() = renderInfo.isSticky

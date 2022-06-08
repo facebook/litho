@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.TestCollection;
 import com.facebook.litho.testing.TestLithoView;
 import java.util.List;
 import kotlin.Pair;
@@ -46,6 +47,10 @@ public class LithoAssertions {
 
   public static LithoViewAssert assertThat(TestLithoView testLithoView) {
     return LithoViewAssert.assertThat(testLithoView.getLithoView());
+  }
+
+  public static TestCollectionAssert assertThat(TestCollection collection) {
+    return TestCollectionAssert.Companion.assertThat(collection);
   }
 
   public static ListAssert<Component> assertThat(List<Component> componentsList) {

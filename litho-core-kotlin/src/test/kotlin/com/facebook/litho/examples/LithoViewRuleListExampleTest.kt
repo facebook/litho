@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
@@ -121,5 +122,40 @@ class LithoViewRuleListExampleTest {
 
     val foundComponents = listComponent.findItems(ItemComponent::class)
     assertThat(foundComponents).hasSize(4)
+  }
+
+  @Test
+  fun `test chained assertions`() {
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component = LazyList {
+        children(items = (0..4), id = { it }) { Text("$it") }
+      }
+    }
+
+    val testView =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+
+    val listComponent = testView.findCollectionComponent()
+    assertThat(listComponent).isNotNull
+    listComponent ?: return
+
+    val testComponentScope = ComponentScope(context = lithoViewRule.context)
+    val zeroTextComponent = with(testComponentScope) { Text("0") }
+    val fourTextComponent = with(testComponentScope) { Text("4") }
+    val helloTextComponent = with(testComponentScope) { Text("Hello") }
+    val fullComponentList =
+        with(testComponentScope) { arrayOf(Text("0"), Text("1"), Text("2"), Text("3")) }
+
+    LithoAssertions.assertThat(listComponent)
+        .onFirstChild { it.isVisible }
+        .onLastChild { it.component.isEquivalentTo(fourTextComponent) }
+        .onChild(withIndex = 2) { it.isVisible }
+        .onChild(withId = 3) { !it.isFullyVisible }
+        .onChildren { it.size == 5 }
+        .onChildren(matching = { it.isSticky }) { it.isEmpty() }
+        .containsComponents(zeroTextComponent)
+        .doesNotContainComponents(helloTextComponent)
+        .containsExactlyComponents(*fullComponentList)
   }
 }

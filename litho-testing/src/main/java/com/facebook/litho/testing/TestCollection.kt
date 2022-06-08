@@ -51,7 +51,7 @@ class TestCollection {
   val items: List<TestCollectionItem>
     get() =
         (0 until itemCount).map {
-          TestCollectionItem(recyclerBinder.getComponentTreeHolderAt(it), it)
+          TestCollectionItem(this, recyclerBinder.getComponentTreeHolderAt(it), it)
         }
 
   /** Get the first visible item index, returns -1 when there are no components */
