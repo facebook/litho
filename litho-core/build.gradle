@@ -15,7 +15,6 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 project.group = GROUP
 version = VERSION_NAME

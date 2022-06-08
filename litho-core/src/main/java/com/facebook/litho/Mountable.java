@@ -26,8 +26,6 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RenderUnit.Binder;
 import java.util.ArrayList;
 import java.util.List;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
 
 /**
  * This represents the rendering primitive. Every {@link Mountable} must define what content it
@@ -171,7 +169,9 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    * {@param defaultValue}.
    */
   protected final <T> void subscribeToMountDynamicValue(
-      DynamicValue<T> dynamicValue, T defaultValue, Function2<ContentT, T, Unit> valueSetter) {
+      DynamicValue<T> dynamicValue,
+      @Nullable T defaultValue,
+      ValueSetter<ContentT, T> valueSetter) {
     addBinder(new DynamicPropsBinder<>(dynamicValue, defaultValue, valueSetter));
   }
 
@@ -186,11 +186,13 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
       implements DynamicValue.OnValueChangeListener<T> {
 
     private final DynamicValue<T> mDynamicValue;
-    private final T mDefaultValue;
-    private final Function2<ContentT, T, Unit> mValueSetter;
+    private final @Nullable T mDefaultValue;
+    private final ValueSetter<ContentT, T> mValueSetter;
 
     public DynamicPropsBinder(
-        DynamicValue<T> dynamicValue, T defaultValue, Function2<ContentT, T, Unit> valueSetter) {
+        DynamicValue<T> dynamicValue,
+        @Nullable T defaultValue,
+        ValueSetter<ContentT, T> valueSetter) {
       mDynamicValue = dynamicValue;
       mDefaultValue = defaultValue;
       mValueSetter = valueSetter;
@@ -226,5 +228,9 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
       mValueSetter.invoke(content, mDefaultValue);
       mDynamicValue.detach(this);
     }
+  }
+
+  public interface ValueSetter<Content, Type> {
+    void invoke(Content content, @Nullable Type value);
   }
 }

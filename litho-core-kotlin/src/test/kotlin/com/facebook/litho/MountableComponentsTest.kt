@@ -832,7 +832,7 @@ open class ViewMountable(
   init {
     controller?.let { registerController(controller as Controller<View>) }
     dynamicTag?.let {
-      subscribeToMountDynamicValue(dynamicTag, defaultTagValue as Any) { content, value ->
+      subscribeToMountDynamicValue(dynamicTag, defaultTagValue) { content, value ->
         content.tag = value
       }
     }
