@@ -297,7 +297,7 @@ abstract class MountableComponent(internal val style: Style? = null) : Component
     return super.isRecyclingDisabled()
   }
 
-  final override fun createRecyclingPool(): MountItemsPool.ItemPool<*>? {
+  final override fun createRecyclingPool(): MountItemsPool.ItemPool? {
     return super.createRecyclingPool()
   }
 

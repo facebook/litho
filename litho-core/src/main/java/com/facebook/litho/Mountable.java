@@ -154,7 +154,7 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
   }
 
   /** Creates the content pool the framework should use for this Mountable. */
-  protected MountItemsPool.ItemPool<ContentT> onCreateMountContentPool() {
+  protected MountItemsPool.ItemPool onCreateMountContentPool() {
     return new DefaultMountContentPool(
         "<cls>" + getClass().getName() + "</cls>", getPoolSize(), true);
   }

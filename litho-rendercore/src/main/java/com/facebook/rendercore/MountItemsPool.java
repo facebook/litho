@@ -357,12 +357,8 @@ public class MountItemsPool {
     return currentContext == baseContext;
   }
 
-  /**
-   * Content item pools that RenderCore uses to recycle content (such as Views)
-   *
-   * @param <T> the type of content that the pool holds
-   */
-  public interface ItemPool<T> {
+  /** Content item pools that RenderCore uses to recycle content (such as Views) */
+  public interface ItemPool {
     /**
      * Acquire a pooled content item from the pool
      *
@@ -370,14 +366,14 @@ public class MountItemsPool {
      * @param renderUnit the RenderUnit for the item
      * @return a pooled content item
      */
-    T acquire(Context c, PoolableContentProvider poolableMountContent);
+    Object acquire(Context c, PoolableContentProvider poolableMountContent);
 
     /**
      * Called when an item is released and can return to the pool
      *
      * @param item the item to release to the pool
      */
-    void release(T item);
+    void release(Object item);
 
     /**
      * Called early in the lifecycle to allow the pool implementation to preallocate items in the
@@ -391,12 +387,12 @@ public class MountItemsPool {
 
   static class DefaultItemPool implements ItemPool {
 
-    private final Pools.SimplePool mPool;
+    private final Pools.SimplePool<Object> mPool;
     private final Object mLifecycle;
 
     public DefaultItemPool(Object lifecycle, int size) {
       mLifecycle = lifecycle;
-      mPool = new Pools.SimplePool(size);
+      mPool = new Pools.SimplePool<Object>(size);
     }
 
     @Override

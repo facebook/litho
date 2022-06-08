@@ -39,5 +39,5 @@ public interface PoolableContentProvider {
    * Creates an ItemPool for this mountable content. Returning null will generate a default pool.
    */
   @Nullable
-  MountItemsPool.ItemPool<?> createRecyclingPool();
+  MountItemsPool.ItemPool createRecyclingPool();
 }

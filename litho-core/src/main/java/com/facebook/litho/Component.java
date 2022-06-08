@@ -192,7 +192,7 @@ public abstract class Component
 
   @Nullable
   @Override
-  public MountItemsPool.ItemPool<?> createRecyclingPool() {
+  public MountItemsPool.ItemPool createRecyclingPool() {
     return onCreateMountContentPool();
   }
 
