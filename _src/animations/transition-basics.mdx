@@ -17,9 +17,9 @@ It's important to avoid accessing the underlying view to add animations as these
 Transitions can be used to animate view properties when they change between layouts, which is due to a state update or new props from the parent.
 When changes to a tree occur due to a new state, these changes happen immediately.
 
-The following code and animation show a simple Component that renders a yellow square then aligns it to either the right or left edge of screen based on value of the `@State boolean toRight`:
+The following code and animation show a simple Component that renders a yellow square then aligns it to either the right or left edge of screen based on value of `toRight`:
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=start end=no_animation
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=layout_start end=layout_end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -34,10 +34,10 @@ The following section shows how to replace this 'jump' with a transition animati
 
 To add bounds animations to all transitioning components between tree changes, use the following:
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=no_animation end=end
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=transition_start end=transition_end
 ```
 
-Returning [`Transition.allLayout()`](https://staticdocs.thefacebook.com/litho/javadoc/com/facebook/litho/Transition.html#allLayout--) creates a Transition that automatically animates any changes to position, width, or height, as shown in the following animation.
+[`Transition.allLayout()`](https://staticdocs.thefacebook.com/litho/javadoc/com/facebook/litho/Transition.html#allLayout--) creates a transition that automatically animates any changes to position, width, or height, as shown in the following animation.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics2.webm")}></source>
@@ -53,35 +53,30 @@ This method only works when changing the bounds of a component.  It does not wor
 
 For greater control over the transitions, you can use the following APIs:
 
-* **`@OnCreateTransition`** method - you need to add a method annotated with `@OnCreateTransition` to your Spec, which is used to define the transition animations. It should return a [Transition](pathname:///javadoc/com/facebook/litho/Transition.html) where its first argument should always be of type `ComponentContext`. As with other lifecycle methods in a Spec, it could also have `@Prop` and  `StateValue`-type arguments.
+* **`useTransition`** - a hook that is used to define the transition animations. It accepts a [Transition](pathname:///javadoc/com/facebook/litho/Transition.html) as its parameter.
 * **`Transition`** - a description of the Component/Property (mandatory) and how (optional) you want to animate it. Instead of using a Constructor to create `Transition` instances, you'll use one of the provided `Builder`s.
 * **`transitionKey`** - an identifier that you'd normally assign to a `Component` that you want to animate.  The key is then used when defining `Transition`.
 * **`AnimatedProperties`** - used to target the property of a `Component` that should be animated when its value changes.
 
 The following sample shows the APIs in use:
 
-```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/AlphaTransitionComponentSpec.java start=start end=end
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/AlphaTransitionComponent.kt start=component_start end=component_end
 ```
 
-In the above code:
+The above code features the following:
+* `transitionKey`- assigned to the component using the `Style.transitionKey` method.
+* `Transition` - created using [Transition.create()](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and specifies the property of the component using the [.animate()](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method, which takes an [AnimatedProperty](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html). Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), which means multiple `Transition`s may be expressed as follows:
 
-* On *line 16*, a `transitionKey` is assigned to the component using the [Component.Builder#transitionKey](pathname:///javadoc/com/facebook/litho/Component.Builder.html#transitionKey-java.lang.String-) method.
-2. In *lines 22-24*, a `Transition` is created using [Transition.create()](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and then specifies the property of the component using the [.animate()](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method, which takes an [AnimatedProperty](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html).
+```kotlin
+private const val SQUARE_KEY: String = "square"
+private const val OVAL_KEY: String = "oval"
+private const val ANOTHER_SHAPE: String = "another_shape"
 
-Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), which means multiple `Transition`s may be expressed as follows:
+// ...
+useTransition(
+        Transition.create(SQUARE_KEY, OVAL_KEY, ANOTHER_SHAPE)
+            .animate(AnimatedProperties.X, AnimatedProperties.Y))
 
-```java
-private static final String SQUARE_KEY = "square";
-private static final String OVAL_KEY = "oval";
-private static final String ANOTHER_SHAPE = "another_shape";
-
-...
-
-@OnCreateTransition
-static Transition onCreateTransition(ComponentContext c) {
-    return Transition.create(SQUARE_KEY, OVAL_KEY, ANOTHER_SHAPE)
-        .animate(AnimatedProperties.X, AnimatedProperties.Y);
-}
 ```
 
 The following animation shows the AlphaTransitionComponentSpec in action.
