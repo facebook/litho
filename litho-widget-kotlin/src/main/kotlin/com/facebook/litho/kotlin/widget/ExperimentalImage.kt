@@ -20,11 +20,11 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
-import com.facebook.litho.Mountable
 import com.facebook.litho.MountableComponent
-import com.facebook.litho.MountableComponentScope
+import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
@@ -46,11 +46,11 @@ import com.facebook.rendercore.RenderUnit
 class ExperimentalImage(
     val drawable: Drawable,
     val scaleType: ScaleType? = ScaleType.FIT_XY,
-    style: Style? = null,
-) : MountableComponent(style) {
+    val style: Style? = null,
+) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): Mountable<*> =
-      ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY)
+  override fun ComponentScope.render(): MountableWithStyle =
+      MountableWithStyle(ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY), style)
 }
 
 /**

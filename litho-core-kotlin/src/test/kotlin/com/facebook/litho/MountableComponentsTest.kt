@@ -207,10 +207,12 @@ class MountableComponentsTest {
     lateinit var stateRef: AtomicReference<String>
 
     class TestComponent(val view: View) : MountableComponent() {
-      override fun MountableComponentScope.render(): ViewMountable {
+      override fun ComponentScope.render(): MountableWithStyle {
         val testState: State<String> = useState { "initial" }
         stateRef = AtomicReference(testState.value)
-        return ViewMountable(view = view, updateState = { testState.update { s -> s + "_" + it } })
+        return MountableWithStyle(
+            ViewMountable(view = view, updateState = { testState.update { s -> s + "_" + it } }),
+            style = null)
       }
     }
 
@@ -802,19 +804,21 @@ class TestViewMountableComponent(
     val controller2: ViewController? = null,
     val shouldUseComparableMountable: Boolean = false,
     val dynamicTag: DynamicValue<Any?>? = null,
-    style: Style? = null
-) : MountableComponent(style = style) {
+    val style: Style? = null
+) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): ViewMountable {
+  override fun ComponentScope.render(): MountableWithStyle {
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
-    return if (shouldUseComparableMountable) {
-      ComparableViewMountable(
-          identity, view, steps, controller = controller, controller2 = controller2)
-    } else {
-      ViewMountable(identity, view, steps, controller = controller, dynamicTag = dynamicTag)
-    }
+    return MountableWithStyle(
+        if (shouldUseComparableMountable) {
+          ComparableViewMountable(
+              identity, view, steps, controller = controller, controller2 = controller2)
+        } else {
+          ViewMountable(identity, view, steps, controller = controller, dynamicTag = dynamicTag)
+        },
+        style)
   }
 }
 
@@ -917,10 +921,13 @@ class ComparableViewMountable(
   }
 }
 
-class TestDrawableMountableComponent(val drawable: Drawable, style: Style? = null) :
-    MountableComponent(style = Style.accessibilityRole(AccessibilityRole.IMAGE) + style) {
+class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? = null) :
+    MountableComponent() {
 
-  override fun MountableComponentScope.render(): DrawableMountable = DrawableMountable(drawable)
+  override fun ComponentScope.render(): MountableWithStyle {
+    return MountableWithStyle(
+        DrawableMountable(drawable), Style.accessibilityRole(AccessibilityRole.IMAGE) + style)
+  }
 }
 
 class DrawableMountable(

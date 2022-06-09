@@ -24,11 +24,11 @@ import android.view.View
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.Dimen
-import com.facebook.litho.Mountable
 import com.facebook.litho.MountableComponent
-import com.facebook.litho.MountableComponentScope
+import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
@@ -96,9 +96,10 @@ class ExperimentalVerticalScroll(
     val onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     val onScrollStateChange: ((View, Int) -> Unit)? = null,
     val child: Component,
-    style: Style? = null,
-) : MountableComponent(style) {
-  override fun MountableComponentScope.render(): Mountable<*> {
+    val style: Style? = null,
+) : MountableComponent() {
+
+  override fun ComponentScope.render(): MountableWithStyle {
 
     val scrollPosition = useState {
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
@@ -110,23 +111,25 @@ class ExperimentalVerticalScroll(
           .build()
     }
 
-    return VerticalScrollMountable(
-        child,
-        scrollbarEnabled,
-        nestedScrollingEnabled,
-        verticalFadingEdgeEnabled,
-        fillViewport,
-        scrollbarFadingEnabled,
-        incrementalMountEnabled,
-        overScrollMode,
-        fadingEdgeLength,
-        eventsController,
-        onScrollChange,
-        onScrollStateChange,
-        onInterceptTouch,
-        scrollPosition.value,
-        componentTree.value,
-    )
+    return MountableWithStyle(
+        VerticalScrollMountable(
+            child,
+            scrollbarEnabled,
+            nestedScrollingEnabled,
+            verticalFadingEdgeEnabled,
+            fillViewport,
+            scrollbarFadingEnabled,
+            incrementalMountEnabled,
+            overScrollMode,
+            fadingEdgeLength,
+            eventsController,
+            onScrollChange,
+            onScrollStateChange,
+            onInterceptTouch,
+            scrollPosition.value,
+            componentTree.value,
+        ),
+        style)
   }
 }
 

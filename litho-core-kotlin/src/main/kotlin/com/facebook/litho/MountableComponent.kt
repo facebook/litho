@@ -27,18 +27,23 @@ import com.facebook.rendercore.MountItemsPool
  *
  * <p>Experimental. Currently for Litho team internal use only.</p>
  */
-abstract class MountableComponent(internal val style: Style? = null) : Component() {
+abstract class MountableComponent() : Component() {
 
   final override fun prepare(c: ComponentContext): PrepareResult {
-    val mountableComponentScope = MountableComponentScope(c)
-    val mountable = mountableComponentScope.render()
-    style?.applyToComponent(c.resourceResolver, this)
+    val mountableComponentScope = ComponentScope(c)
+    val mountableWithStyle = mountableComponentScope.render()
+    // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
+    // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
+    mountableWithStyle.style?.applyToComponent(c.resourceResolver, this)
+
     return PrepareResult(
-        mountable, mountableComponentScope.transitions, mountableComponentScope.useEffectEntries)
+        mountableWithStyle.mountable,
+        mountableComponentScope.transitions,
+        mountableComponentScope.useEffectEntries)
   }
 
   /** This function must return [Mountable] which are immutable. */
-  abstract fun MountableComponentScope.render(): Mountable<*>
+  abstract fun ComponentScope.render(): MountableWithStyle
 
   final override fun getMountType(): MountType = MountType.MOUNTABLE
 
@@ -64,11 +69,6 @@ abstract class MountableComponent(internal val style: Style? = null) : Component
       return true
     }
     if (!EquivalenceUtils.hasEquivalentFields(this, other, shouldCompareCommonProps)) {
-      return false
-    }
-
-    if (shouldCompareCommonProps &&
-        !EquivalenceUtils.hasEquivalentFields(this.style, (other as MountableComponent).style)) {
       return false
     }
 
@@ -312,3 +312,8 @@ abstract class MountableComponent(internal val style: Style? = null) : Component
     return super.isEqualivalentTreeProps(current, next)
   }
 }
+
+/**
+ * A class that holds a [Mountable] and [Style] that should be applied to the [MountableComponent].
+ */
+data class MountableWithStyle(val mountable: Mountable<*>, val style: Style?)
