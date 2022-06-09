@@ -277,6 +277,8 @@ public class ComponentsConfiguration {
   /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
   public static boolean shouldAllowCoreThreadTimeout = false;
 
+  public static long layoutThreadKeepAliveTimeMs = 1000;
+
   public static boolean crashIfExceedingStateUpdateThreshold = false;
 
   public static boolean ensureComponentHostInvalidates = false;

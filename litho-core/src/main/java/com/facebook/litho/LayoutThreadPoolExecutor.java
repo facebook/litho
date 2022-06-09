@@ -30,8 +30,8 @@ public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
     super(
         corePoolSize,
         maxPoolSize,
-        1,
-        TimeUnit.SECONDS,
+        ComponentsConfiguration.layoutThreadKeepAliveTimeMs,
+        TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<Runnable>(),
         new LayoutThreadFactory(priority));
     this.allowCoreThreadTimeOut(ComponentsConfiguration.shouldAllowCoreThreadTimeout);
