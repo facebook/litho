@@ -24,6 +24,7 @@ import android.text.TextUtils
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
+import androidx.core.text.TextDirectionHeuristicCompat
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.ResourcesScope
@@ -64,6 +65,7 @@ inline fun ResourcesScope.Text(
     customEllipsisText: CharSequence? = null,
     @ColorInt backgroundColor: Int? = null,
     @ColorInt highlightColor: Int? = null,
+    textDirection: TextDirectionHeuristicCompat? = null,
     @AttrRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0,
 ): Text =
@@ -90,5 +92,6 @@ inline fun ResourcesScope.Text(
         .handle(handle)
         .apply { backgroundColor?.let { backgroundColor(backgroundColor) } }
         .apply { highlightColor?.let { highlightColor(it) } }
+        .textDirection(textDirection)
         .kotlinStyle(style)
         .build()
