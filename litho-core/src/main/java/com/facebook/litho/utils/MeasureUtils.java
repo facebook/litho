@@ -72,9 +72,9 @@ public final class MeasureUtils {
   }
 
   /**
-   * Set the {@param outputSize} to respect both Specs and try to keep both width and height equal.
-   * This will only not guarantee equal width and height if thes Specs use modes and sizes which
-   * prevent it.
+   * Set the {@param outputSize} to respect both size specs and try to keep both width and height
+   * equal. This will only not guarantee equal width and height if these specs use modes and sizes
+   * which prevent it.
    */
   public static void measureWithEqualDimens(int widthSpec, int heightSpec, Size outputSize) {
     final int widthMode = SizeSpec.getMode(widthSpec);
