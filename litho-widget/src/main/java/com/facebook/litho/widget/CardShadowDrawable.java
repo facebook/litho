@@ -192,7 +192,7 @@ public class CardShadowDrawable extends Drawable {
     drawShadowEdges(canvas, bounds);
   }
 
-  void setShadowStartColor(int shadowStartColor) {
+  public void setShadowStartColor(int shadowStartColor) {
     if (mShadowStartColor == shadowStartColor) {
       return;
     }
@@ -203,7 +203,7 @@ public class CardShadowDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setShadowEndColor(int shadowEndColor) {
+  public void setShadowEndColor(int shadowEndColor) {
     if (mShadowEndColor == shadowEndColor) {
       return;
     }
@@ -214,7 +214,7 @@ public class CardShadowDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setCornerRadius(float radius) {
+  public void setCornerRadius(float radius) {
     radius = (int) (radius + .5f);
     if (mCornerRadius == radius) {
       return;
@@ -226,7 +226,7 @@ public class CardShadowDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setShadowSize(float shadowSize) {
+  public void setShadowSize(float shadowSize) {
     if (shadowSize < 0) {
       throw new IllegalArgumentException("invalid shadow size");
     }
@@ -242,7 +242,7 @@ public class CardShadowDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setShadowDx(float shadowDx) {
+  public void setShadowDx(float shadowDx) {
     if (shadowDx == mShadowDx) {
       return;
     }
@@ -253,7 +253,7 @@ public class CardShadowDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setShadowDy(float shadowDy) {
+  public void setShadowDy(float shadowDy) {
     if (shadowDy == mShadowDy) {
       return;
     }
@@ -264,19 +264,19 @@ public class CardShadowDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setHideTopShadow(boolean hideTopShadow) {
+  public void setHideTopShadow(boolean hideTopShadow) {
     mHideTopShadow = hideTopShadow;
   }
 
-  void setHideBottomShadow(boolean hideBottomShadow) {
+  public void setHideBottomShadow(boolean hideBottomShadow) {
     mHideBottomShadow = hideBottomShadow;
   }
 
-  void setShadowLeftSizeOverride(float shadowLeftSize) {
+  public void setShadowLeftSizeOverride(float shadowLeftSize) {
     mShadowLeftSizeOverride = shadowLeftSize;
   }
 
-  void setShadowRightSizeOverride(float shadowRightSizeOverride) {
+  public void setShadowRightSizeOverride(float shadowRightSizeOverride) {
     mShadowRightSizeOverride = shadowRightSizeOverride;
   }
 
