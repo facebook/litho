@@ -32,6 +32,7 @@ import android.text.style.MetricAffectingSpan;
 import android.util.SparseIntArray;
 import android.view.View;
 import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicsCompat;
@@ -66,6 +67,7 @@ public class TextMeasurementUtils {
   public static class TextLayoutContext {
     public Layout layout;
     public CharSequence processedText;
+    @Nullable public String accessibilityLabel;
     public float textLayoutTranslationX;
     public float textLayoutTranslationY;
     ClickableSpan[] clickableSpans;

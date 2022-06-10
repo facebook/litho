@@ -46,13 +46,24 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.text.accessibility.RCAccessibleClickableSpan;
 import java.util.List;
 
 /** A pared-down TextView that only displays text. */
 @DoNotStrip
 public class RCTextView extends View {
 
-  private static final String ACCESSIBILITY_BUTTON_CLASS = "android.widget.Button";
+  private static final String ACCESSIBILITY_ROLE_BUTTON = "Button";
+  private static final String ACCESSIBILITY_ROLE_IMAGE = "Image";
+  private static final String ACCESSIBILITY_ROLE_IMAGE_BUTTON = "Image Button";
+  private static final String ACCESSIBILITY_ROLE_HEADER = "Header";
+  private static final String ACCESSIBILITY_ROLE_SELECTED_BUTTON = "Selected Button";
+  private static final String ACCESSIBILITY_ROLE_TAB_WIDGET = "Tab Bar";
+  private static final String ACCESSIBILITY_ROLE_LINK = "Link";
+
+  private static final String ACCESSIBILITY_CLASS_BUTTON = "android.widget.Button";
+  private static final String ACCESSIBILITY_CLASS_IMAGE = "android.widget.ImageView";
+  private static final String ACCESSIBILITY_CLASS_TAB_WIDGET = "android.widget.TabWidget";
   private CharSequence mText;
   private ClickableSpan[] mClickableSpans;
   private Layout mLayout;
@@ -481,7 +492,50 @@ public class RCTextView extends View {
       node.setVisibleToUser(true);
       node.setText(spanned.subSequence(start, end));
       // This is needed to get the swipe action
-      node.setClassName(ACCESSIBILITY_BUTTON_CLASS);
+      node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
+
+      if (span instanceof RCAccessibleClickableSpan) {
+        populateNodeAccessibilityInfo((RCAccessibleClickableSpan) span, node);
+      }
+    }
+
+    private void populateNodeAccessibilityInfo(
+        RCAccessibleClickableSpan span, AccessibilityNodeInfoCompat node) {
+      final String label = span.getAccessibilityLabel();
+      final String role = span.getAccessibilityRole();
+
+      if (label != null) {
+        node.setContentDescription(label);
+      }
+
+      if (role != null) {
+        switch (role) {
+          case ACCESSIBILITY_ROLE_BUTTON:
+          case ACCESSIBILITY_ROLE_IMAGE_BUTTON:
+            node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
+            break;
+          case ACCESSIBILITY_ROLE_HEADER:
+            node.setHeading(true);
+            break;
+          case ACCESSIBILITY_ROLE_SELECTED_BUTTON:
+            node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
+            node.setSelected(true);
+            break;
+          case ACCESSIBILITY_ROLE_IMAGE:
+            node.setClassName(ACCESSIBILITY_CLASS_IMAGE);
+            node.removeAction(AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SELECT);
+            break;
+          case ACCESSIBILITY_ROLE_TAB_WIDGET:
+            node.setClassName(ACCESSIBILITY_CLASS_TAB_WIDGET);
+            break;
+          case ACCESSIBILITY_ROLE_LINK:
+            node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
+            // TODO T79642729: this needs to be translated. This will be commented unti the task
+            // is fixed.
+            // info.setRoleDescription(ACCESSIBILITY_ROLE_LINK);
+            break;
+        }
+      }
     }
 
     @Override
