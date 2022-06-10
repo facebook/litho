@@ -30,7 +30,7 @@ import android.graphics.drawable.Drawable;
 
 public class CardShadowDrawable extends Drawable {
 
-  static final float UNDEFINED = -1;
+  public static final float UNDEFINED = -1;
 
   private int mShadowStartColor;
   private int mShadowEndColor;
@@ -57,7 +57,7 @@ public class CardShadowDrawable extends Drawable {
 
   private boolean mDirty = true;
 
-  CardShadowDrawable() {
+  public CardShadowDrawable() {
     mCornerShadowLeftPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     mCornerShadowLeftPaint.setStyle(Paint.Style.FILL);
 

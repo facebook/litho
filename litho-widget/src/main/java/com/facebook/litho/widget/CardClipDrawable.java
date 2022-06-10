@@ -25,23 +25,23 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
-class CardClipDrawable extends Drawable {
+public class CardClipDrawable extends Drawable {
+
+  public static final int NONE = 0;
+  public static final int TOP_LEFT = 1 << 0;
+  public static final int TOP_RIGHT = 1 << 1;
+  public static final int BOTTOM_LEFT = 1 << 2;
+  public static final int BOTTOM_RIGHT = 1 << 3;
 
   private final Paint mCornerPaint;
   private final Path mCornerPath = new Path();
-
-  static final int NONE = 0;
-  static final int TOP_LEFT = 1 << 0;
-  static final int TOP_RIGHT = 1 << 1;
-  static final int BOTTOM_LEFT = 1 << 2;
-  static final int BOTTOM_RIGHT = 1 << 3;
 
   private int mDisableClipCorners = NONE;
 
   private float mCornerRadius;
   private boolean mDirty = true;
 
-  CardClipDrawable() {
+  public CardClipDrawable() {
     mCornerPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
   }
 
@@ -60,7 +60,7 @@ class CardClipDrawable extends Drawable {
     return PixelFormat.TRANSLUCENT;
   }
 
-  void setDisableClip(int edge) {
+  public void setDisableClip(int edge) {
     if ((mDisableClipCorners & edge) != 0) {
       return;
     }
@@ -110,7 +110,7 @@ class CardClipDrawable extends Drawable {
     }
   }
 
-  void setClippingColor(int clippingColor) {
+  public void setClippingColor(int clippingColor) {
     if (mCornerPaint.getColor() == clippingColor) {
       return;
     }
@@ -120,7 +120,7 @@ class CardClipDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setCornerRadius(float radius) {
+  public void setCornerRadius(float radius) {
     radius = (int) (radius + .5f);
     if (mCornerRadius == radius) {
       return;
