@@ -41,17 +41,17 @@ class CollectionIdTest {
 
   private fun textComponent(): Component = Text.create(lithoViewRule.context).text("Hello").build()
 
-  private fun CollectionContainerScope.getIds(): List<Any?> = collectionChildren.map { it.id }
+  private fun LazyCollectionChildren.getIds(): List<Any?> = collectionChildren.map { it.id }
 
   @Test
   fun `test generated ids are unique`() {
     val ids =
-        CollectionContainerScope(lithoViewRule.context)
+        LazyCollectionChildren()
             .apply {
-              child(null)
-              child(emptyComponent())
-              child(id = null, component = emptyComponent())
-              child(deps = arrayOf()) { emptyComponent() }
+              add(null)
+              add(emptyComponent())
+              add(id = null, component = emptyComponent())
+              add(deps = arrayOf()) { emptyComponent() }
             }
             .getIds()
 
@@ -61,22 +61,22 @@ class CollectionIdTest {
   @Test
   fun `test generated ids are stable across recreations`() {
     val ids1 =
-        CollectionContainerScope(lithoViewRule.context)
+        LazyCollectionChildren()
             .apply {
-              child(null)
-              child(emptyComponent())
-              child(id = null, component = emptyComponent())
-              child(deps = arrayOf()) { emptyComponent() }
+              add(null)
+              add(emptyComponent())
+              add(id = null, component = emptyComponent())
+              add(deps = arrayOf()) { emptyComponent() }
             }
             .getIds()
 
     val ids2 =
-        CollectionContainerScope(lithoViewRule.context)
+        LazyCollectionChildren()
             .apply {
-              child(null)
-              child(emptyComponent())
-              child(id = null, component = emptyComponent())
-              child(deps = arrayOf()) { emptyComponent() }
+              add(null)
+              add(emptyComponent())
+              add(id = null, component = emptyComponent())
+              add(deps = arrayOf()) { emptyComponent() }
             }
             .getIds()
 
@@ -86,22 +86,22 @@ class CollectionIdTest {
   @Test
   fun `test generated ids for same component type are stable`() {
     val ids1 =
-        CollectionContainerScope(lithoViewRule.context)
+        LazyCollectionChildren()
             .apply {
-              child(textComponent())
-              child(textComponent())
+              add(textComponent())
+              add(textComponent())
             }
             .getIds()
 
     val ids2 =
-        CollectionContainerScope(lithoViewRule.context)
+        LazyCollectionChildren()
             .apply {
-              child(textComponent())
+              add(textComponent())
               // Insert new content. Should not affect ids of existing children
-              child(emptyComponent())
-              child(id = 1, component = textComponent())
+              add(emptyComponent())
+              add(id = 1, component = textComponent())
               // End new content.
-              child(textComponent())
+              add(textComponent())
             }
             .getIds()
 

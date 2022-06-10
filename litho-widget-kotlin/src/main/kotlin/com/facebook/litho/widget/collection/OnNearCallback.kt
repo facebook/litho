@@ -20,7 +20,7 @@ package com.facebook.litho.widget.collection
  * A callback triggered when a [LazyCollection] is scrolled "near" to a specific position, as
  * defined by being within [offset] items away.
  *
- * Intended for use with [LazyCollection]'s `onNearEnd` parameter, or
- * [CollectionContainerScope.child]'s `onNearViewport` parameter.
+ * Intended for use with [LazyCollection]'s `onNearEnd` parameter, or child's `onNearViewport`
+ * parameter.
  */
 class OnNearCallback(val offset: Int = 0, val callback: () -> Unit)

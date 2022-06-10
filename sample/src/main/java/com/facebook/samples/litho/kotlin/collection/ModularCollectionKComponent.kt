@@ -24,8 +24,8 @@ import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.collection.CollectionContainerScope
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.litho.widget.collection.LazyListScope
 
 class ModularCollectionKComponent : KComponent() {
 
@@ -39,11 +39,11 @@ class ModularCollectionKComponent : KComponent() {
     }
   }
 
-  private fun CollectionContainerScope.addHeader() {
+  private fun LazyListScope.addHeader() {
     child(isSticky = true, component = Text("Header"))
   }
 
-  private fun CollectionContainerScope.addBody(nestedContentVisible: State<Boolean>) {
+  private fun LazyListScope.addBody(nestedContentVisible: State<Boolean>) {
     child(
         Text(
             "${if (nestedContentVisible.value) "-" else "+"} Body",
@@ -53,7 +53,7 @@ class ModularCollectionKComponent : KComponent() {
     }
   }
 
-  private fun CollectionContainerScope.addFooter() {
+  private fun LazyListScope.addFooter() {
     child(Text("Footer"))
   }
 }

@@ -92,7 +92,7 @@ class LazyCollection(
     private val childEquivalenceIncludesCommonProps: Boolean = true,
     private val overlayRenderCount: Boolean = false,
     private val alwaysDetectDuplicates: Boolean = false,
-    private val init: CollectionContainerScope.() -> Unit
+    private val lazyCollectionChildren: LazyCollectionChildren
 ) : KComponent() {
 
   // There's a conflict with Component.handle, so use a different name
@@ -100,8 +100,6 @@ class LazyCollection(
 
   override fun ComponentScope.render(): Component {
     val sectionContext = SectionContext(context)
-    val containerScope = CollectionContainerScope(context).apply { init() }
-
     val childTracker = useState { ChildVisibilityTracker() }.value
 
     val combinedOnViewportChanged: OnViewportChanged =
@@ -113,8 +111,8 @@ class LazyCollection(
             firstFullyVisibleIndex,
             lastFullyVisibleIndex ->
           childTracker.onScrollOrUpdated(
-              containerScope.effectiveIndexToId,
-              containerScope.idToChild,
+              lazyCollectionChildren.effectiveIndexToId,
+              lazyCollectionChildren.idToChild,
               firstVisibleIndex,
               lastVisibleIndex)
           onNearEnd?.let {
@@ -142,8 +140,8 @@ class LazyCollection(
             changesInfo: ChangesInfo,
             globalOffset: Int ->
           childTracker.onScrollOrUpdated(
-              containerScope.effectiveIndexToId,
-              containerScope.idToChild,
+              lazyCollectionChildren.effectiveIndexToId,
+              lazyCollectionChildren.idToChild,
               firstVisibleIndex,
               lastVisibleIndex)
           onDataRendered?.invoke(
@@ -164,7 +162,7 @@ class LazyCollection(
                     .child(
                         createDataDiffSection(
                             sectionContext,
-                            containerScope.collectionChildren,
+                            lazyCollectionChildren.collectionChildren,
                             alwaysDetectDuplicates)))
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
