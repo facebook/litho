@@ -36,6 +36,7 @@ import androidx.core.util.Pair;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.PerfEvent;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,8 +202,17 @@ public class ChangeSetState {
     final String updateCurrentPrefix = updatePrefix(currentRoot, currentPrefix);
     final String updateNewPrefix = updatePrefix(newRoot, newPrefix);
 
+    // Check the count of children to prevent from developers updating section based on
+    // some variables other than props and state, which could lead us to generate a bad diff
+    // later because a section is considered unchanged if the old one and the new one have
+    // the same props and state.
+    final boolean isChildrenOfSectionConsistent =
+        !ComponentsConfiguration.shouldCheckConsistencyOfChildren
+            || (!currentRootIsNull && (currentRoot.getCount() == newRoot.getCount()));
     // Components both exist and don't need to update.
-    if (!currentRootIsNull && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
+    if (isChildrenOfSectionConsistent
+        && !currentRootIsNull
+        && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
       final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
       newRoot.setCount(changeSet.getCount());
