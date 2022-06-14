@@ -7,10 +7,11 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-The **Litho Testing API** is presented through the `LithoViewRule` class. It allows you to:
-- make assertions against the component hierarchy,
-- mark assertions against the view hierarchy,
-- and gives access to utility functions to interact with the view hierarchy, e.g. by clicking
+The **Litho Testing API** is presented through the `LithoViewRule` class, it enables the following:
+
+- Make assertions against the component hierarchy.
+- Mark assertions against the view hierarchy.
+- Gives access to utility functions to interact with the view hierarchy, such as by clicking.
 
 `LithoViewRule` uses `Junit TestRule` which provides a flexible mechanism to execute code before and after a test method, as a result of which, we are able to prepare the environment and then clean it up after test, so you don't have to worry about it.
 
@@ -39,6 +40,3 @@ Then, within a test, you will generally render your component with the help of t
 ```
 
 In the next Sections we will describe how to use well known `Assertions` and how to interact with your `Components`.
-
-
-

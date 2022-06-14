@@ -1,6 +1,6 @@
 ---
 id: working-ranges
-title: 'Advanced: Prefetch and pagination'
+title: 'Advanced: Prefetch and Pagination'
 ---
 
 The Working Ranges API provides the means to perform complex operations such as data prefetching and cache warming.
@@ -19,6 +19,7 @@ To use the Working Range API, you first need to define your own WorkingRange cla
 ```java
 public class AtLeastPartiallyVisibleRange implements WorkingRange { ... }
 ```
+
 This interface provides two main functions: [shouldEnterRange](#using-the-shouldenterrange-function) and [shouldExitRange](#using-the-shouldexitrange-function).
 
 For both functions, the parameter `position` is the position of the item in the list. The `firstVisibleIndex` / `lastVisibleIndex` / `firstFullyVisibleIndex` / `lastFullyVisibleIndex` parameters are for the current visible range of the viewport.
@@ -39,6 +40,7 @@ public boolean shouldEnterRange(
     && position <= lastVisibleIndex;
 }
 ```
+
 ### Using the shouldExitRange Function
 
 `shouldExitRange` is used to check if the item is **outside of a user-defined range**. The following example checks if that means the position is not visible, not even partially:

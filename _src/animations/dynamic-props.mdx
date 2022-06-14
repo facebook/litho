@@ -39,6 +39,7 @@ For Spec components these props can be set in the builder:
 ```kotlin
 MyComponent.create(c).alpha(dynamicAlpha).build()
 ```
+
 For `KComponent`s they should be applied as a Style item:
 
 ```kotlin
@@ -47,7 +48,7 @@ MyKComponent(style = Style.alpha(dynamicAlpha))
 
 The `DynamicValue` can be updated by calling its [`set()`](pathname:///javadoc/com/facebook/litho/DynamicValue.html#set-T-) function.
 
-The following code sample shows a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to DynamicValue's which are updated by two SeekBars.
+The following code sample shows a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to the DynamicValue's, which are updated by two SeekBars.
 
 <Tabs
   groupId="state"
@@ -66,6 +67,7 @@ The following code sample shows a `Component` that renders a square in the middl
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CommonDynamicPropsComponentSpec.kt  start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
@@ -118,6 +120,7 @@ Next, consider a slider to set the time on the clock face.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CustomDynamicPropsComponentSpec.kt  start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
@@ -150,6 +153,7 @@ Dynamic Props values can be used with Android Animators to create custom animati
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AnimateDynamicPropsComponentSpec.kt  start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
