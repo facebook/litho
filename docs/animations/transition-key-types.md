@@ -1,6 +1,6 @@
 ---
 id: transition-key-types
-title: 'Advanced: Transitions key scoping'
+title: 'Advanced: Transitions Key Scoping'
 ---
 
 Within the other pages of the 'Animations' section, you'll see that a common approach is used when defining transitions: assigning transition keys and creating transitions, all within a single `ComponentSpec`. There are situations where this approach is not suitable, that is, the transition key is assigned within one `ComponentSpec` while the transitions themselves are defined in another.

@@ -18,7 +18,6 @@ The tutorial's content is divided into the following sections:
 
 You don’t have to complete all of the sections at once to get the value out of this tutorial. Try to get as far as you can, even if it’s just one or two sections.
 
-
-**Note:** Before you dive into the tutorial, we highly recommend you watch this short video on how Litho functions and how a Litho component gets turned into a View on the screen:
+**Note:** Before you dive into the tutorial, it's highly recommended you watch this short video on how Litho functions and how a Litho component gets turned into a View on the screen:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/t9wTHnCx5RM" title="Litho Lessons: Component to Screen" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
