@@ -3,14 +3,16 @@ id: lazycollections-working-with-updates
 title: Working with Updates
 ---
 
-A lazy collection is updated by changing the changing the prop/state values from which it is generated. To ensure correctness and performance you must:
+A lazy collection is updated by changing the prop/state values from which it is generated.
+
+To ensure correctness and performance you must:
 
 1. [Provide ids](#child-identity) for any children that can be updated.
 2. Make sure props of children don't unnecessarily change, leading to [unnecessary layouts](#avoiding-unecessary-layouts).
 
 ## Child Identity
 
-Each child in a lazy collection has an id. The id is either assigned by the developer, or if no id is provided an id is generated using the component's type an position.
+Each child in a lazy collection has an id. The id is either assigned by the Developer, or, if no id is provided, then it is generated using the component's type and position.
 
 The `id` is used to determine how a collection changed after an update: children may have been added, removed, changed position, or had their content updated. Since an `id` is unique to a child, it is used to match children across changes to create minimal changeset and apply content update animations, and so on.
 
@@ -21,12 +23,16 @@ If no `id` parameter is provided then an id is generated based on the child's po
 
 If the list contents can be updated, you must provide unique ids that are consistent across renders.
 
-In the following example, there are two `Text` components, one is added conditionally based on `shouldShowGreeting`. If generated ids are used, the first child is always assigned the id "Text:0", so the id would be inconsistent across renders. On Android, you can fix this by manually assigning an `id`.
+In the following example, there are two `Text` components, one is added conditionally based on `shouldShowGreeting`, the other is unconditional. If generated ids are used, the first child is always assigned the id "Text:0", so the id would be inconsistent across renders. On Android, you can fix this by manually assigning an `id`.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_child_id_example end=end_child_id_example
 ```
 
-Content backed by lists should be added using the `children(..)` function. Specify an `id` lambda that generates an id for each item. Note that it is unacceptable to generate ids using a simple incrementing variable as items may change positions. Instead, use an id from the data model.
+Content backed by lists should be added using the `children(..)` function: specify an `id` lambda that generates an id for each item.
+
+:::caution
+It is unacceptable to generate ids using a simple incrementing variable as items may change positions. Instead, use an id from the data model.
+:::
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_children_id_example end=end_children_id_example
 ```
@@ -62,16 +68,16 @@ Unnecessary layouts can be avoided using two methods:
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_name_list_fixed end=end_name_list_fixed
 ```
 
-By manually specifying the dependencies, `NameComponent` is only be laid out once and re-used whenever the Example is updated.
+By manually specifying the dependencies, `NameComponent` is only laid out once and re-used whenever the 'example' is updated.
 
 Consider the following example, which uses an Android `Drawable`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_drawable_unnecessary_update end=end_drawable_unnecessary_update
 ```
 
-In the above example, the Text component will be unnecessarily laid out on every update to Example because ColorDrawable does not implement an `equals()`.
+In the above example, the Text component will be unnecessarily laid out on every `render()` call because ColorDrawable does not implement an `equals()`.
 
-Here, Unnecessary layouts can be avoided using two techniques:
+Here, unnecessary layouts can be avoided using two techniques:
 
 1. Use a drawable that implements equality such as Litho’s ComparableColorDrawable.
 2. Manually specify the dependencies that, if changed, will trigger an update.
@@ -83,7 +89,7 @@ Here, Unnecessary layouts can be avoided using two techniques:
 
 Lambdas do not provide an `equals()`, for example, `{} == {}` is `false`. This means that using a lambda as a prop may cause unnecessary layouts.
 
-Furthermore, lambdas capture values when they are created. For example, in the folling lambda, `{ val time = Calendar.getInstance().time }`, the value `time` will contain the time the lambda was created not the time when it was invoked. This means it is not possible to prevent updates using `deps` as the lambda needs to be regenerated to capture the latest state and prop values.
+Furthermore, lambdas capture values when they are created. For example, in the following lambda, `{ val time = Calendar.getInstance().time }`, the value `time` will contain the time the lambda was created not the time when it was invoked. This means it is not possible to prevent updates using `deps` as the lambda needs to be regenerated to capture the latest state and prop values.
 
 To use a lambda in a Lazy Collection, wrap it in a `useCallback` hook.  This provides equality across layouts, allowing the component to be reused, and the lambda is guaranteed to use the latest prop and state values
 
