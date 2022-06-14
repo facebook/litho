@@ -53,7 +53,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
   }
 
   @Override
-  protected void measureInternal(int widthSpec, int heightSpec, Size size) {
+  protected MeasureResult measureInternal(int widthSpec, int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final LayoutState layoutState = mLayoutContext.getLayoutState();
     final Component component = mNode.getTailComponent();
@@ -84,8 +84,11 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
       final @Nullable LithoLayoutResult nestedTree =
           Layout.measure(mLayoutContext, parentContext, this, widthSpec, heightSpec);
 
-      size.width = nestedTree != null ? nestedTree.getWidth() : 0;
-      size.height = nestedTree != null ? nestedTree.getHeight() : 0;
+      if (nestedTree != null) {
+        return new MeasureResult(nestedTree.getWidth(), nestedTree.getHeight());
+      } else {
+        return new MeasureResult(0, 0);
+      }
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();

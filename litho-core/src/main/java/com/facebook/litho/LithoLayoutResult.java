@@ -31,7 +31,6 @@ import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.List;
@@ -441,10 +440,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mLastMeasuredWidth != DiffNode.UNSPECIFIED;
   }
 
-  long measure(final int widthSpec, final int heightSpec) {
+  MeasureResult measure(final int widthSpec, final int heightSpec) {
 
     if (mLayoutContext.isLayoutReleased()) {
-      return 0;
+      return new MeasureResult(0, 0);
     }
 
     final Component component = mNode.getTailComponent();
@@ -458,12 +457,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           .flush();
     }
 
-    final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
+    MeasureResult size;
 
     try {
-
-      measureInternal(widthSpec, heightSpec, size);
-
+      size = measureInternal(widthSpec, heightSpec);
       if (size.width < 0 || size.height < 0) {
         throw new IllegalStateException(
             "MeasureOutput not set, Component is: "
@@ -477,38 +474,36 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
                 + " Measured Height: "
                 + size.height);
       }
-
-      if (getDiffNode() != null) {
-        getDiffNode().setLastWidthSpec(widthSpec);
-        getDiffNode().setLastHeightSpec(heightSpec);
-        getDiffNode().setLastMeasuredWidth(size.width);
-        getDiffNode().setLastMeasuredHeight(size.height);
-      }
-
-      return YogaMeasureOutput.make(size.width, size.height);
-
     } catch (Exception e) {
-      size.width = 0;
-      size.height = 0;
+
+      // Handle then exception
       ComponentUtils.handle(mNode.getTailComponentContext(), e);
 
       // If the exception is handled then return 0 size to continue layout.
-      return YogaMeasureOutput.make(0, 0);
-    } finally {
-
-      // Record the last measured width, and height spec
-      setLastMeasuredWidth(size.width);
-      setLastMeasuredHeight(size.height);
-      setLastWidthSpec(widthSpec);
-      setLastHeightSpec(heightSpec);
-
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
+      size = new MeasureResult(0, 0);
     }
+
+    // Record the last measured width, and height spec
+    setLastMeasuredWidth(size.width);
+    setLastMeasuredHeight(size.height);
+    setLastWidthSpec(widthSpec);
+    setLastHeightSpec(heightSpec);
+
+    if (getDiffNode() != null) {
+      getDiffNode().setLastWidthSpec(widthSpec);
+      getDiffNode().setLastHeightSpec(heightSpec);
+      getDiffNode().setLastMeasuredWidth(size.width);
+      getDiffNode().setLastMeasuredHeight(size.height);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
+    return size;
   }
 
-  protected void measureInternal(final int widthSpec, final int heightSpec, final Size size) {
+  protected MeasureResult measureInternal(final int widthSpec, final int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final LithoNode node = mNode;
     final Component component = node.getTailComponent();
@@ -521,8 +516,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         && diffNode.getLastHeightSpec() == heightSpec
         && !component.shouldAlwaysRemeasure()) {
 
-      size.width = (int) diffNode.getLastMeasuredWidth();
-      size.height = (int) diffNode.getLastMeasuredHeight();
+      return new MeasureResult(
+          (int) diffNode.getLastMeasuredWidth(), (int) diffNode.getLastMeasuredHeight());
 
       // Measure the component
     } else {
@@ -533,12 +528,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
         if (mountable != null) {
-          MeasureResult measureResult =
-              mountable.measure(getContext(), widthSpec, heightSpec, mLayoutData);
-          mLayoutData = measureResult.layoutData;
-          size.width = measureResult.width;
-          size.height = measureResult.height;
+          MeasureResult size = mountable.measure(getContext(), widthSpec, heightSpec, mLayoutData);
+          mLayoutData = size.layoutData;
+          return new MeasureResult(size.width, size.height);
         } else {
+          final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
           component.onMeasure(
               componentScopedContext,
               this,
@@ -546,6 +540,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
               heightSpec,
               size,
               (InterStagePropsContainer) getLayoutData());
+
+          return new MeasureResult(size.width, size.height);
         }
 
       } finally {

@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.annotation.SuppressLint;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 
 public class LithoYogaMeasureFunction implements YogaMeasureFunction {
@@ -35,6 +36,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final int widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
     final int heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
-    return result.measure(widthSpec, heightSpec);
+    final MeasureResult size = result.measure(widthSpec, heightSpec);
+    return YogaMeasureOutput.make(size.width, size.height);
   }
 }
