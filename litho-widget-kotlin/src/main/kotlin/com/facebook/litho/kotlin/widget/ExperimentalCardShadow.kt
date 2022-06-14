@@ -19,12 +19,11 @@ package main.kotlin.com.facebook.litho.kotlin.widget
 import android.content.Context
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
-import com.facebook.litho.Size
 import com.facebook.litho.Style
-import com.facebook.litho.utils.MeasureUtils
 import com.facebook.litho.widget.CardShadowDrawable
 import com.facebook.rendercore.RenderUnit
 
@@ -112,11 +111,8 @@ internal class CardShadowMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?
-  ) {
-    MeasureUtils.measureWithEqualDimens(widthSpec, heightSpec, size)
-  }
+  ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
 
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
 }

@@ -852,9 +852,8 @@ open class ViewMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?,
-  ): TestLayoutData {
+  ): MeasureResult {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
     val width =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
@@ -870,10 +869,7 @@ open class ViewMountable(
           100
         }
 
-    size.width = width
-    size.height = height
-
-    return TestLayoutData(width, height)
+    return MeasureResult(width, height, TestLayoutData(width, height))
   }
 
   override fun mount(c: Context, content: View, layoutData: Any?) {
@@ -942,9 +938,8 @@ class DrawableMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?,
-  ): TestLayoutData {
+  ): MeasureResult {
     val width =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
           SizeSpec.getSize(widthSpec)
@@ -959,10 +954,7 @@ class DrawableMountable(
           100
         }
 
-    size.width = width
-    size.height = height
-
-    return TestLayoutData(width, height)
+    return MeasureResult(width, height, TestLayoutData(width, height))
   }
 
   override fun mount(c: Context, content: Drawable, layoutData: Any?) {

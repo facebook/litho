@@ -22,14 +22,13 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
-import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.theming.getTheme
-import com.facebook.litho.utils.MeasureUtils
 import com.facebook.litho.widget.ProgressView
 import com.facebook.rendercore.RenderUnit
 
@@ -67,15 +66,13 @@ internal class ProgressMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?
-  ) {
-    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
+  ): MeasureResult {
+    return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-      size.width = defaultSize
-      size.height = defaultSize
+      MeasureResult(defaultSize, defaultSize)
     } else {
-      MeasureUtils.measureWithEqualDimens(widthSpec, heightSpec, size)
+      MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
     }
   }
 

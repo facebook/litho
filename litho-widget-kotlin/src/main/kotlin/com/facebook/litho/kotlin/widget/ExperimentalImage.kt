@@ -23,10 +23,10 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
+import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
-import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.Style
@@ -70,9 +70,8 @@ internal class ImageMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?
-  ): ImageLayoutData {
+  ): MeasureResult {
 
     val width =
         if (SizeSpec.getMode(widthSpec) == EXACTLY ||
@@ -106,18 +105,16 @@ internal class ImageMountable(
           )
         }
 
-    MeasureUtils.measureWithAspectRatio(
+    return MeasureUtils.measureResultUsingAspectRatio(
         widthSpec,
         heightSpec,
         drawable.intrinsicWidth,
         drawable.intrinsicHeight,
         (drawable.intrinsicWidth / drawable.intrinsicHeight).toFloat(),
-        size)
-
-    return ImageLayoutData(
-        if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else (width),
-        if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else (height),
-        matrix)
+        ImageLayoutData(
+            if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else (width),
+            if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else (height),
+            matrix))
   }
 
   override fun mount(c: Context, content: MatrixDrawable<Drawable>, layoutData: Any?) {

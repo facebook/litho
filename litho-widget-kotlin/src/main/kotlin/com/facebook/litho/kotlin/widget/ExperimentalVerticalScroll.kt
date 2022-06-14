@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.Dimen
+import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
@@ -161,9 +162,8 @@ internal class VerticalScrollMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?,
-  ): VerticalScrollLayoutData {
+  ): MeasureResult {
 
     val widthMode = SizeSpec.getMode(widthSpec)
     val width = max(0, SizeSpec.getSize(widthSpec))
@@ -178,9 +178,12 @@ internal class VerticalScrollMountable(
       previousLayoutData as VerticalScrollLayoutData
       if (previousLayoutData.measuredWidth == width &&
           (!fillViewport || previousLayoutData.measuredHeight == height)) {
-        size.width = previousLayoutData.measuredWidth
-        size.height = previousLayoutData.measuredHeight
-        return previousLayoutData
+
+        return MeasureResult(
+            previousLayoutData.measuredWidth,
+            previousLayoutData.measuredHeight,
+            previousLayoutData,
+        )
       }
     }
 
@@ -191,6 +194,8 @@ internal class VerticalScrollMountable(
         } else {
           component
         }
+
+    val size = Size()
 
     componentTree.setRootAndSizeSpecSync(
         actualComponent,
@@ -212,7 +217,7 @@ internal class VerticalScrollMountable(
     // Ensure that width is not less than 0
     size.width = max(0, size.width)
 
-    return VerticalScrollLayoutData(size.width, size.height)
+    return MeasureResult(size.width, size.height, VerticalScrollLayoutData(size.width, size.height))
   }
 
   override fun mount(c: Context, content: LithoScrollView, layoutData: Any?) {

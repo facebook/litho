@@ -24,7 +24,9 @@ import static com.facebook.litho.SizeSpec.getSize;
 
 import android.util.Log;
 import android.view.View.MeasureSpec;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.MeasureResult;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -158,6 +160,31 @@ public final class MeasureUtils {
     }
 
     measureWithAspectRatio(widthSpec, heightSpec, aspectRatio, outputSize);
+  }
+
+  /**
+   * Measure according to an aspect ratio an width and height constraints. This version of
+   * measureWithAspectRatio will respect the intrinsic size of the component being measured.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   * @param intrinsicWidth A pixel value for the intrinsic width of the measured component
+   * @param intrinsicHeight A pixel value for the intrinsic height of the measured component
+   * @param aspectRatio The aspect ration size against
+   */
+  public static MeasureResult measureResultUsingAspectRatio(
+      final int widthSpec,
+      final int heightSpec,
+      final int intrinsicWidth,
+      final int intrinsicHeight,
+      final float aspectRatio,
+      final @Nullable Object layoutData) {
+
+    Size size = new Size();
+    measureWithAspectRatio(
+        widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size);
+
+    return new MeasureResult(size.width, size.height, layoutData);
   }
 
   /**

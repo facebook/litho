@@ -20,12 +20,11 @@ import android.content.Context
 import android.graphics.Color
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
-import com.facebook.litho.Size
 import com.facebook.litho.Style
-import com.facebook.litho.utils.MeasureUtils
 import com.facebook.litho.widget.CardClipDrawable
 import com.facebook.litho.widget.CardClipDrawable.BOTTOM_LEFT
 import com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT
@@ -82,11 +81,8 @@ internal class CardClipMountable(
       context: ComponentContext,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size,
       previousLayoutData: Any?
-  ) {
-    MeasureUtils.measureWithEqualDimens(widthSpec, heightSpec, size)
-  }
+  ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
 
   override fun mount(c: Context, content: CardClipDrawable, layoutData: Any?) {
     clippingColor?.let { content.setClippingColor(clippingColor) }

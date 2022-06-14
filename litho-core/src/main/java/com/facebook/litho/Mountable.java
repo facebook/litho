@@ -97,12 +97,13 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    *   <li>Can be called more that once.
    *   <li>Can be called from any thread.
    * </ul>
+   *
+   * @return a {@link MeasureResult} with the width, height, and optional layout data.
    */
-  protected abstract @Nullable Object measure(
+  protected abstract MeasureResult measure(
       final ComponentContext context,
       final int widthSpec,
       final int heightSpec,
-      final Size size,
       final @Nullable Object previousLayoutData);
 
   /** A list of {@link Binder} to set and unset properties on the content. */
