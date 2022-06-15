@@ -3,17 +3,18 @@ id: lazycollections-sections-migration
 title: Sections Migration Guide
 ---
 
-Lazy Collections offer a cleaner api for building scrolling lists. Advantages over Sections include:
-* No code generation.
-* Simple inline declaration (similar to a Row/Column).
-* List items have direct access to the containing components props and state.
-* Automatic diffing of content updates.
-
 This page provides guidance for migrating an existing list rendered with Sections to [lazy collections](lazycollections.mdx). This will involve:
 
 1. Replacing the component that renders the section tree with a lazy collection component.
 2. Adding each component from the section tree as a child of the lazy collection.
 3. Migrating any event handlers or state.
+
+Lazy Collections offer a cleaner API for building scrolling lists. Advantages over Sections include:
+
+* No code generation.
+* Simple inline declaration (similar to a Row/Column).
+* List items have direct access to the containing components props and state.
+* Automatic diffing of content updates.
 
 ## Replace the `RecyclerCollectionComponent`
 
@@ -36,7 +37,6 @@ val component = LazyList {
 :::info
 Lazy collections can only be used inside `KComponent`s. If you are migrating a Spec component then first convert it to a `KComponent` or implement the lazy collection inside a `KComponent` container.
 :::
-
 
 Next, you need to migrate the content from the Section into the lazy collection, as detailed below.
 
@@ -92,6 +92,7 @@ Migrating the above Section to a lazy collection's yields:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_event_handler end=end_event_handler
 ```
+
 ## Migrating Section State
 
 State managed by a `Section` should be moved into the component that manages the lazy collection. You may consider defining your lazy collection inside a dedicated `KComponent` so that it can maintain its own state.
