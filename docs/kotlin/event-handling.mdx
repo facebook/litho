@@ -7,18 +7,18 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
+There are three places where using Event Handlers changes in the Kotlin API:
 
-There are three places where using Event Handlers changes in Kotlin API:
-1. **Events in Common Props**, where `clickHandlers` are being replaced by `lambdas`
-2. **Custom Events in Specs** that accepts EventHandlers, where you should use either `eventHandler`/`eventHandlerWithReturn`
-3. **Accepting EventHandlers**, where custom `Event` classes are being replaced by `lambdas` passed as a props.
-
+1. **Events in Common Props** - `clickHandlers` are being replaced by `lambdas`.
+2. **Custom Events in Specs** - accepts EventHandlers, where you should use either `eventHandler`/`eventHandlerWithReturn`.
+3. **Accepting EventHandlers** - custom `Event` classes are being replaced by `lambdas` passed as props.
+.
 
 ## Supplying Event Handlers
 
 ### Events in Common Props
 
-Events that were exposed in common props in the Java Spec API, i.e. `clickHandler`, they are now exposed on `Style`. These Style properties accept [lambdas](https://kotlinlang.org/docs/lambdas.html) instead of a reference to a generated `EventHandler`.
+Events that were exposed in common props in the Java Spec API (such as `clickHandler`) are now exposed on `Style`. Style properties accept [lambdas](https://kotlinlang.org/docs/lambdas.html) instead of a reference to a generated `EventHandler`.
 
 <Tabs
   groupId="event-handling"
@@ -37,14 +37,14 @@ Events that were exposed in common props in the Java Spec API, i.e. `clickHandle
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/events/EventComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
 
-
 ### Custom Events in Specs
 
-When using pre-existing Spec Components or Sections that accept custom events (e.g. RenderEvent in DataDiffSection), you'll still need to pass in an `EventHandler` for compatibility. You should use either `eventHandler`/`eventHandlerWithReturn`, depending on whether the code handling the event needs to return a value. Both of these functions accept a lambda which will be invoked when the event happens.
+When using pre-existing Spec Components or Sections that accept custom events (such as RenderEvent in DataDiffSection), you'll still need to pass in an `EventHandler` for compatibility. You should use either `eventHandler` or `eventHandlerWithReturn`, depending on whether the code handling the event needs to return a value. Both of these functions accept a lambda, which is invoked when the event happens.
 
 <Tabs
   groupId="event-handling"
@@ -63,13 +63,15 @@ When using pre-existing Spec Components or Sections that accept custom events (e
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/events/SectionComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
 
 ## Accepting Event Handlers
 
-In the Java Spec API, you could declare your Spec accepted custom event handlers by creating an Event class, and then either providing a value to the `events` param in the `@LayoutSpec` annotation, or accept an `EventHandler` as a prop, as detailed [here](/codegen/events-for-specs.md). In the Kotlin API, you can simply accept a lambda as a prop to be invoked when the event happens.
+In the Java Spec API, you could declare your Spec accepted custom event handlers by creating an Event class, and then either providing a value to the `events` param in the `@LayoutSpec` annotation, or accept an `EventHandler` as a prop, as detailed in the [Events for Specs](/codegen/events-for-specs.md) page. In the Kotlin API, you can simply accept a lambda as a prop to be invoked when the event happens:
+
 <Tabs
   groupId="event-handling"
   defaultValue="kotlin"
@@ -87,6 +89,7 @@ In the Java Spec API, you could declare your Spec accepted custom event handlers
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/events/ClickEventComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
