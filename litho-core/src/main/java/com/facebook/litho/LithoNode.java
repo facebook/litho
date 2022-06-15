@@ -61,6 +61,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
@@ -418,28 +419,28 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       throw new IllegalStateException("Cannot calculate a layout without a layout state.");
     }
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     applyOverridesRecursive(c.getRenderContext().mLayoutStateContext, this);
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("freeze:" + getHeadComponent().getSimpleName());
+      RenderCoreSystrace.beginSection("freeze:" + getHeadComponent().getSimpleName());
     }
 
     freezeRecursive(this, null);
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
+      RenderCoreSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
     }
 
     final YogaNode root = buildYogaTree(c.getRenderContext(), this, null);
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     if (isLayoutDirectionInherit() && isLayoutDirectionRTL(mContext)) {
@@ -462,13 +463,13 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
             : SizeSpec.getSize(heightSpec);
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("yogaCalculateLayout:" + getHeadComponent().getSimpleName());
+      RenderCoreSystrace.beginSection("yogaCalculateLayout:" + getHeadComponent().getSimpleName());
     }
 
     root.calculateLayout(width, height);
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     return (LithoLayoutResult) root.getData();
@@ -1297,9 +1298,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       final Component next,
       final Set<String> keys) {
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("reconcile:" + next.getSimpleName());
+      RenderCoreSystrace.beginSection("reconcile:" + next.getSimpleName());
     }
 
     // 2. Shallow copy this layout.
@@ -1333,7 +1334,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     return layout;
