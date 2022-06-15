@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaFlexDirection;
@@ -289,9 +290,9 @@ class Layout {
       final boolean reuseGlobalKey,
       final @Nullable String globalKeyToReuse) {
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+      RenderCoreSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
     final LithoNode node;
@@ -388,12 +389,12 @@ class Layout {
       return null;
     } finally {
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
+      RenderCoreSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
     }
 
     // 8. Set the measure function
@@ -446,7 +447,7 @@ class Layout {
     scopedComponentInfo.addWorkingRangeToNode(node);
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     return node;
@@ -640,9 +641,9 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("measureTree:" + root.getHeadComponent().getSimpleName());
+      RenderCoreSystrace.beginSection("measureTree:" + root.getHeadComponent().getSimpleName());
     }
 
     final LayoutContext<LithoRenderContext> context =
@@ -652,7 +653,7 @@ class Layout {
     LithoLayoutResult result = root.calculateLayout(context, widthSpec, heightSpec);
 
     if (isTracing) {
-      ComponentsSystrace.endSection(/* measureTree */ );
+      RenderCoreSystrace.endSection(/* measureTree */ );
     }
 
     return result;
@@ -677,10 +678,10 @@ class Layout {
       return null;
     }
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("resume:" + root.getHeadComponent().getSimpleName());
+      RenderCoreSystrace.beginSection("resume:" + root.getHeadComponent().getSimpleName());
     }
 
     resume(layoutStateContext, root);
@@ -697,7 +698,7 @@ class Layout {
     }
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     return result;
