@@ -12,7 +12,7 @@ A simple, but non-scalable method to render a list of components is to use a `Co
 
 The above example creates a `Column` and adds child `Text` component for each friend. It's made scrollable by wrapping it in a `VerticalScroll`.
 
-*** This approach is inefficient and inflexible when dealing with many items, or when the items are expected to be updated. ***
+**This approach is inefficient and inflexible when dealing with many items or when the items are expected to be updated.**
 
 Consider if there were 100 friends. During the layout of the `Column` you would also layout 100 `Text` components, despite only a few being visible on the screen. If one of the names was updated or changed position, a layout of all 100 `Text` components would be triggered and the change would be applied without an animation.
 

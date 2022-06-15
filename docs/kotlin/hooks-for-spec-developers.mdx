@@ -8,18 +8,14 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-**This page covers how to convert existing code from lifecycle methods in the Java Specs API to hooks in the Kotlin API.** Please refer to this **[page](mainconcepts/hooks-intro.mdx)** for the main Hooks docs.
+This page covers how to convert existing code from lifecycle methods in the Java Specs API to hooks in the Kotlin API. To familiarize yourself with the concept and rules for Hooks, see the [Introduction to Hooks](/mainconcepts/hooks-intro.mdx) page.
 :::
 
 One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
 
-To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](/mainconcepts/hooks-intro.mdx) page.
-
-This page covers some of the main hooks and how they compare to their Spec API equivalents.
-
 ## [`useState`](/mainconcepts/use-state.mdx)
 
-`useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The code below shows a comparison of Spec API and Kotlin API code for the same component:
+`useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The following code shows a comparison of Spec API and Kotlin API code for the same component:
 
 <Tabs
   groupId="state"
@@ -38,6 +34,7 @@ This page covers some of the main hooks and how they compare to their Spec API e
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/CheckboxComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
@@ -108,6 +105,7 @@ A KComponent becomes an error boundary when it declares a `useErrorBoundary` hoo
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/errors/ErrorBoundarySpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
@@ -135,6 +133,7 @@ Check out the main [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx) fo
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/onboarding/AlphaTransitionComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>

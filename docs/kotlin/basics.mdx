@@ -12,15 +12,15 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-**This page covers how to convert existing Component with `@LayoutSpecs` to Kotlin `KComponent`.** Please refer to this **[page](tutorial/first-components.md)** for the main Components and Props docs.
+This page covers how to convert existing Component with `@LayoutSpecs` to Kotlin `KComponent`.
+For information regarding the main Components and Props, refer the [Components and Props Tutorial](../tutorial/first-components.md).
 :::
-
 
 ## Basics
 
-The most fundamental change in the Litho Kotlin API is that we no longer use code generation. This means you don't need to mark your Components as `@LayoutSpecs` or declare any other annotations in the class -- don't forget to leave off the 'Spec' at the end of the Component name as well!
+The most fundamental change in the Litho Kotlin API is that code generation is no longer used. This means you don't need to mark your Components as `@LayoutSpecs` or declare any other annotations in the class. Remember to leave off the 'Spec' at the end of the Component name as well!
 
-The static method marked with `@OnCreateLayout` is replaced with a `render` function override which returns what your component should render.
+The static method marked with `@OnCreateLayout` is replaced with a `render` function override, which returns what your component should render.
 
 ```kotlin
 import com.facebook.litho.Component
@@ -37,6 +37,7 @@ class TestComponent : KComponent() {
 ## Props
 
 Props are now just `val` properties on your component:
+
 <Tabs
   groupId="basic"
   defaultValue="kotlin_basic"
@@ -54,11 +55,13 @@ Props are now just `val` properties on your component:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 
 </Tabs>
 
 Specify props to components you create as named arguments:
+
 ```kotlin
 Text(text = "Hello $name!")
 ```
@@ -69,11 +72,11 @@ Text(text = "Hello $name!")
 **Definition**: A *Style* object is an immutable, linked-list of properties to apply to a Component.
 :::
 
-Common props, e.g. `margin`, `clickHandler`, or `alpha`, are now set using **Style**.
+Common props, such as `margin`, `clickHandler`, and `alpha`, are now set using **Style**.
 
-In the Java Spec API, these common props could be applied to any Component on their builder. However in the Kotlin API, a Component must declare it accepts a `Style` as a prop. It can then pass that `Style` object to one of the Components it renders to.
+In the Java Spec API, these common props could be applied to any Component on their builder. However, in the Kotlin API, a Component must declare it accepts a `Style` as a prop. It can then pass that `Style` object to one of the Components it renders to.
 
-This is easiest to show by example. The following Java and Kotlin code is functionally equivalent, and result in `OuterTextComponent` resolving to a `Text` component which has alpha, padding, and margin set on it:
+The following Java and Kotlin code is functionally equivalent and results in `OuterTextComponent` resolving to a `Text` component which has alpha, padding, and a margin set on it:
 
 <Tabs
   groupId="children_style"
@@ -92,15 +95,22 @@ This is easiest to show by example. The following Java and Kotlin code is functi
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/documentation/OuterTextComponentSpec.java start=start_combine_style_outer_example end=end_combine_style_outer_example
 ```
+
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/documentation/InnerTextComponentSpec.java start=start_combine_style_inner_example end=end_combine_style_inner_example
 ```
+
   </TabItem>
 
 </Tabs>
 
-If it isn't obvious that these are equivalent, it helps to understand that in the spec API, a series of `@LayoutSpec` components resolve to a single "node" ending with either a Row/Column or a `@MountSpec` component. All components resolving to this node share a single set of common props. See the beginning of [this short video](https://www.youtube.com/watch?v=t9wTHnCx5RM) for an illustration of this process.
+If it isn't obvious that these are equivalent, it helps to understand that in the spec API, a series of `@LayoutSpec` components resolve to a single 'node' ending with either a Row/Column or a `@MountSpec` component. All components resolving to this node share a single set of common props.
 
-Note that this API also gives flexibility to accept multiple Style objects to apply to different children since all common props are passed down explicitly!
+For an illustration of this process, see the 6-minute YouTube video [Litho Lessons: Component to Screen](https://www.youtube.com/watch?v=t9wTHnCx5RM).
+
+:::note
+This API also gives flexibility to accept multiple Style objects to apply to different children since all common props are passed down explicitly!
+:::
+
 ### Java - Kotlin Compatibility
 
 If you need to pass down a `Style` from a Java class to a Kotlin `KComponent`, use `StyleCompat`:
@@ -108,7 +118,7 @@ If you need to pass down a `Style` from a Java class to a Kotlin `KComponent`, u
 ```java file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/OuterStyleComponentSpec.java start=start_combine_style_outer_example end=end_combine_style_outer_example
 ```
 
-For the other way around (passing `style` from Kotlin code to a Java `Component Spec`) you can use `.kotlinStyle()`, which is equivalent to setting all the common props the Style defines.
+For the other way around (passing `style` from Kotlin code to a Java `Component Spec`) you can use `.kotlinStyle()`, which is equivalent to setting all the common props the Style defines:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/ChildStylesExample.kt start=start_combine_java_kotlin_style_example end=end_combine_java_kotlin_style_example
 ```
@@ -138,21 +148,24 @@ val combinedStyle = alphaStyle + Style.padding(all = 8.dp).alpha(.5f)
 
 For reference, in the Java Spec API, if a parent component and a child component set the same common prop, the parent's definition wins. The equivalent in the Kotlin API is to have the parent style on the right-hand side of the `+` operator.
 
-
 ## TreeProps
 
-A TreeProp is a special type of prop which transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass val properties to every component in your hierarchy.
+A TreeProp is a special type of prop that's transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass val properties to every component in your hierarchy.
 
 ### Declaring a TreeProp
-In order to declare a TreeProp you need to use `TreePropProvider`
+
+In order to declare a TreeProp you need to use `TreePropProvider`:
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsExampleComponent.kt start=declaring_tree_prop_start end=declaring_tree_prop_end
 ```
+
 :::note
 You can only declare one TreeProp for any one given type. If a child of ParentComponent also defines a TreeProp of the given type, it will override the value of that TreeProp for all its children (but not for itself).
 :::
 
 ### Using a TreeProp
-The child component can access the TreeProp value through a `ComponentScope.getTreeProp<>()` method that has the same type which was declared in the parents `TreePropProvider` call.
+
+The child component can access the TreeProp value through a `ComponentScope.getTreeProp<>()` method that has the same type which was declared in the parents `TreePropProvider` call:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/treeprops/TreePropsChildComponent.kt start=using_tree_prop_start end=using_tree_prop_end
 ```
@@ -162,13 +175,20 @@ The child component can access the TreeProp value through a `ComponentScope.getT
 A Handle is a unique identifier that can be used to trigger events (though triggers themselves are not yet supported in the Kotlin API).
 
 ### Creating a Handle
-In order to create a Handle, you need to use `Handle()` and save it as either a `CachedValue` or `State`.
+
+In order to create a Handle, you need to use `Handle()` and save it as either a `CachedValue` or `State`:
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/triggers/TooltipTriggerExampleKComponent.kt start=creating_handle_start end=creating_handle_end
 ```
 
 ### Using a Handle
-To add a Handle to a component, you need to wrap the component in a `handle` function. This sets the handle on the given component.  With a direct reference to the handle, you can now use it to trigger events for that component.
+
+To add a Handle to a component, you need to wrap the component in a `handle` function. This sets the handle on the given component.
+
+With a direct reference to the handle, you can now use it to trigger events for that component:
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/triggers/TooltipTriggerExampleKComponent.kt start=using_handle_start end=using_handle_end
 ```
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/triggers/TooltipTriggerExampleKComponent.kt start=showing_tooltip_start end=showing_tooltip_end
 ```
