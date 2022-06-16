@@ -7,10 +7,11 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-To add Litho to your project you'll need to configure it with correct settings and dependencies.
+This page provides a set of steps that help you establish the necessary settings and dependencies required to add Litho to your project.
 
-We publish Litho artifacts to Bintray's JCenter and first you need to make sure you have the JCenter
-repository in your root `build.gradle` file:
+## 1. JCenter repository
+
+Litho artifacts are published to Bintray's JCenter. So, you'll need to make sure you have the JCenter repository in your root `build.gradle` file:
 
 ```groovy title="build.gradle"
 repositories {
@@ -18,7 +19,7 @@ repositories {
 }
 ```
 
-## Add Litho core dependencies
+## 2. Add Litho core dependencies
 
 <VersionedCodeBlock language="groovy" code={`
 dependencies {
@@ -35,17 +36,16 @@ dependencies {
 }
 `} />
 
-Don't forget that in order to use dependencies with annotation processors, you need to apply Kotlin
-KAPT plugin at the top of your application's `build.gradle` file:
+In oder to use dependencies with annotation processors, you need to apply the Kotlin KAPT plugin at the top of your application's `build.gradle` file:
 
 ```groovy
 apply plugin: 'kotlin-kapt'
 ```
 
-## Wire up native libs
+## 3. Wire up native libs
 
-As a last step, you need to initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader)
-to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/).
+As a last step, you need to initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/).
+
 Your custom `Application` class is a good place to do this:
 
 ```kotlin title="MyApplication.kt"
@@ -58,18 +58,15 @@ class MyApplication: Application() {
 }
 ```
 
-# Testing your setup
+## Testing your setup
 
-Now you can test this config by adding a simple UI created with Litho - a built-in `Text` widget
-that displays "Hello World!" text - to an activity.
-
-:::note
-Don't worry about all the unfamiliar classes and red `Text` – we will explain everything in the next
-step of this tutorial.
-:::
+Having set up the project, you can test the config by adding a simple UI created with Litho. The simple UI is a built-in `Text` widget that displays the "Hello World!" text to an activity:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/MyActivity.kt start=start_example end=end_example
 ```
 
-That's it, if you build and run the app you should see "Hello World!" displayed on the screen. Setup
-is complete, let's go to the next page to understand what we've just done.
+That's it, if you build and run the app you should see "Hello World!" displayed on the screen.
+
+:::note
+Unfamiliar classes and items in red `Text` are covered in [Components and Props](first-components.md), the next section of the tutorial.
+:::
