@@ -349,20 +349,7 @@ public class StateHandler {
     final StateContainer newStateContainer =
         createOrGetStateContainerForComponent(scopedContext, component, key);
 
-    // We want to add StateContainer in StateHandler for main tree but not for Nested Tree. Nested
-    // Tree's State Container will reside in InitialStateContainer. While accessing the
-    // StateContainers we will first check them in StateHandler and if not found then we fallback to
-    // InitialStateContainer.
-    // Note: This is intermediary, once we implement the final APIs to resolve all nested tree
-    // together earlier then we will not need to do this hack
-    if (!ComponentsConfiguration.applyStateUpdateEarly
-        || scopedContext.getLayoutStateContext().getCurrentNestedTreeGlobalKey() == null
-        || !key.startsWith(scopedContext.getLayoutStateContext().getCurrentNestedTreeGlobalKey())) {
-      // getCurrentNestedTreeGlobalKey() will return null, if we are processing maintree right now
-      // but will return the global key for root of nested tree if we are processing nested tree or
-      // it's children
-      addStateContainer(key, newStateContainer);
-    }
+    addStateContainer(key, newStateContainer);
 
     if (!ComponentsConfiguration.applyStateUpdateEarly) {
       applyStateUpdates(key, newStateContainer);

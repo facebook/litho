@@ -461,8 +461,6 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
 
-    layoutStateContext.setCurrentNestedTreeGlobalKey(globalKey);
-
     // Create a new layout.
     final @Nullable LithoNode newNode =
         create(
@@ -474,8 +472,6 @@ class Layout {
             true,
             true,
             globalKey);
-
-    layoutStateContext.resetCurrentNestedTreeGlobalKey();
 
     return newNode;
   }
