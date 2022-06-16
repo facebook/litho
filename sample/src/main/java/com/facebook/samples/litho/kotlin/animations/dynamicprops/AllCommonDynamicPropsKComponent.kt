@@ -17,15 +17,15 @@
 package com.facebook.samples.litho.kotlin.animations.dynamicprops
 
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.animated.alpha
-import com.facebook.litho.animated.backgroundColor
+import com.facebook.litho.animated.background
 import com.facebook.litho.animated.elevation
-import com.facebook.litho.animated.foregroundColor
 import com.facebook.litho.animated.rotation
 import com.facebook.litho.animated.scaleX
 import com.facebook.litho.animated.scaleY
@@ -47,7 +47,7 @@ class AllCommonDynamicPropsKComponent : KComponent() {
     val rotation = useBinding(0f)
     val elevation = useBinding(1f)
 
-    val bgColor = useBinding(Color.RED)
+    val background = useBinding(ColorDrawable(Color.RED))
     val fgColor = useBinding(Color.GREEN)
 
     val square =
@@ -55,8 +55,8 @@ class AllCommonDynamicPropsKComponent : KComponent() {
             style =
                 Style.width(100.dp)
                     .height(100.dp)
-                    .foregroundColor(fgColor)
-                    .backgroundColor(bgColor)
+                    // .foregroundColor(fgColor)
+                    .background(background)
                     .alignSelf(YogaAlign.CENTER)
                     .scaleX(scale)
                     .scaleY(scale)
@@ -85,9 +85,10 @@ class AllCommonDynamicPropsKComponent : KComponent() {
       child(
           SeekBar(
               initialValue = 0f,
-              label = "background Color",
+              label = "background",
               onProgressChanged = {
-                bgColor.set(Color.HSVToColor(floatArrayOf(evaluate(it, 0f, 360f), 1f, 1f)))
+                background.set(
+                    ColorDrawable(Color.HSVToColor(floatArrayOf(evaluate(it, 0f, 360f), 1f, 1f))))
               }))
       child(
           SeekBar(

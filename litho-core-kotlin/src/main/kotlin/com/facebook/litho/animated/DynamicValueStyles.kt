@@ -16,9 +16,11 @@
 
 package com.facebook.litho.animated
 
+import android.graphics.drawable.Drawable
 import com.facebook.litho.Component
 import com.facebook.litho.DynamicPropsManager.KEY_ALPHA
 import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR
+import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE
 import com.facebook.litho.DynamicPropsManager.KEY_ELEVATION
 import com.facebook.litho.DynamicPropsManager.KEY_FOREGROUND_COLOR
 import com.facebook.litho.DynamicPropsManager.KEY_ROTATION
@@ -37,7 +39,8 @@ import com.facebook.litho.getOrCreateCommonDynamicPropsHolder
 @PublishedApi
 internal enum class DynamicField {
   ALPHA,
-  BACKGROUND,
+  BACKGROUND_COLOR,
+  BACKGROUND_DRAWABLE,
   ELEVATION,
   FOREGROUND,
   ROTATION,
@@ -57,7 +60,8 @@ internal data class DynamicStyleItem(val field: DynamicField, val value: Dynamic
     val dynamicProps = component.getOrCreateCommonDynamicPropsHolder()
     when (field) {
       DynamicField.ALPHA -> dynamicProps.put(KEY_ALPHA, value)
-      DynamicField.BACKGROUND -> dynamicProps.put(KEY_BACKGROUND_COLOR, value)
+      DynamicField.BACKGROUND_COLOR -> dynamicProps.put(KEY_BACKGROUND_COLOR, value)
+      DynamicField.BACKGROUND_DRAWABLE -> dynamicProps.put(KEY_BACKGROUND_DRAWABLE, value)
       DynamicField.ELEVATION -> dynamicProps.put(KEY_ELEVATION, value)
       DynamicField.FOREGROUND -> dynamicProps.put(KEY_FOREGROUND_COLOR, value)
       DynamicField.ROTATION -> dynamicProps.put(KEY_ROTATION, value)
@@ -72,8 +76,11 @@ internal data class DynamicStyleItem(val field: DynamicField, val value: Dynamic
 inline fun Style.alpha(alpha: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ALPHA, alpha)
 
+inline fun Style.background(background: DynamicValue<out Drawable>): Style =
+    this + DynamicStyleItem(DynamicField.BACKGROUND_DRAWABLE, background)
+
 inline fun Style.backgroundColor(background: DynamicValue<Int>): Style =
-    this + DynamicStyleItem(DynamicField.BACKGROUND, background)
+    this + DynamicStyleItem(DynamicField.BACKGROUND_COLOR, background)
 
 inline fun Style.foregroundColor(foreground: DynamicValue<Int>): Style =
     this + DynamicStyleItem(DynamicField.FOREGROUND, foreground)
