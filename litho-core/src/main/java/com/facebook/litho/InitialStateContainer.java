@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,20 +164,7 @@ public class InitialStateContainer {
       // This is safe as we have a guarantee that by this point there is no layout happening
       // and therefore we can not be executing createOrGetInitialStateForComponent or
       // createOrGetInitialHookState from any thread.
-      if (ComponentsConfiguration.applyStateUpdateEarly) {
-        if (stateHandler.mNeededStateContainers != null) {
-          // InitialStateContainer should keep the State Containers for nested tree, therefore here
-          // we are making sure we are only removing State Containers which are maintained by State
-          // Handler i.e State Containers for main tree.
-          // Note: This is intermediary, once we implement the final APIs to resolve all nested tree
-          // together earlier then we will not need to do this hack
-          for (String key : stateHandler.mNeededStateContainers) {
-            mInitialStates.remove(key);
-          }
-        }
-      } else {
-        mInitialStates.clear();
-      }
+      mInitialStates.clear();
     }
   }
 }
