@@ -5,15 +5,16 @@ title: Flipper Plugins
 
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-When you create or debug standard Android Views, you can use Layout Preview and Layout Inspector tools from Android Studio. But since Litho operates with different UI primitives like Components and Sections those standard tools are not very useful for our  case.
+When you create or debug standard Android Views, you can use the 'Layout Preview' and the 'Layout Inspector' tools from Android Studio. However, since Litho operates with different UI primitives, such as 'Components' and 'Sections', those standard tools are not very useful in such cases.
 
-Luckily, we have [Flipper](https://fbflipper.com) – an extensible mobile app debugger whose Layout Inspector plugin gives you an ability to tweak and inspect your UI in runtime and supports Litho. You'll be able to access full UI hierarchy, inspect Litho Components as well as Views, and even change values for View attributes or Component props in a currently running app without rebuilding it.
+Luckily, there is [Flipper](https://fbflipper.com), an extensible mobile app debugger whose Layout Inspector plugin gives you an ability to tweak and inspect your UI in runtime and supports Litho. You'll be able to access full UI hierarchy, inspect Litho Components as well as Views, and even change values for View attributes or Component props in a currently running app without rebuilding it.
+The following screenshot shows the Flipper plugin in action.
 
 ![Flipper Layout plugin](/images/flipper-layout-plugin.png)
 
-## Adding Flipper & Layout plugin to your Project
+## Adding Flipper & Layout plugins to your project
 
-To add Flipper and Litho plugins to you app you need to do the [following steps](https://fbflipper.com/docs/setup/layout-plugin):
+To add Flipper and Litho plugins to you app, you need to take the following steps:
 
 <VersionedCodeBlock language="groovy" code={`
 dependencies {
@@ -22,7 +23,7 @@ dependencies {
 }
 `} />
 
-And init `FlipperClient` with Inspector plugin which is typically done in your custom `Application` class:
+Init `FlipperClient` with the Inspector plugin, which is typically done in the custom `Application` class:
 
 ```java
 final FlipperClient client = AndroidFlipperClient.getInstance(mApplicationContext);
@@ -32,15 +33,15 @@ client.addPlugin(new InspectorFlipperPlugin(mApplicationContext, descriptorMappi
 client.start();
 ```
 
-You can read more about Layout Inspector on [Flipper website](https://fbflipper.com/docs/features/layout-plugin).
+You can read more about the Layout Inspector in the [Layout Plugin Setup](https://fbflipper.com/docs/setup/layout-plugin) page of the Flipper Documentation web site.
 
 ## Sections plugin
 
-Another Litho plugin that is very useful for debugging Litho is Sections. It can uncover the flow of state changes for the list backed by [Litho Sections](/docs/sections/start), visualise these changes such as which items were added, reused or deleted, and show the data corresponding to the specific Section.
+Another Litho plugin that is very useful for debugging Litho is 'Sections'. It can uncover the flow of state changes for the list backed by [Litho Sections](../sections/start.mdx), visualise these changes such as which items were added, reused or deleted, and show the data corresponding to the specific Section.  The following screenshot shows the Sections plugin in action.
 
 ![Flipper Sections plugin](/images/flipper-sections-plugin.png)
 
-To enable Sections plugin in your app you need to add this line in addition to the general Flipper configuration:
+To enable the Sections plugin in your app, you need to add the following line in addition to the general Flipper configuration:
 
 ```java
 client.addPlugin(new SectionsFlipperPlugin(true));
