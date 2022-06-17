@@ -3,19 +3,23 @@ id: coding-style
 title: Coding Style
 ---
 
-#### Guidelines:
+This page contains Best Practice guidelines for styling your code.
 
- * Name your specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.
- * The *ComponentContext* argument should be simply called `c` to make your layout code less verbose and more readable.
- * Use resource types (`ResType.STRING`, `ResType.COLOR`, `ResType.DIMEN_SIZE`, etc) where appropriate to make it easier to set prop values from Android resources.
- * Declare all required props first then optional ones (`optional = true`).
- * Declare common props (props defined for all Components on `Component.Builder`) after the component's own props.
- * Use static imports on all layout enums (`YogaEdge`, `YogaAlign`, `YogaJustify`, etc) to reduce your layout code and make it more readable.
- * Lifecycle methods, such as `@OnCreateLayout`, are static and package-private.
- * Use inline conditionals on optional children to keep the layout construction code fluent if possible.
- * If you are constructing a child container, add the container in the following line. This gives the code a layout like construction.
+## Guidelines
 
-Here is some sample code with our styling guidelines:
+* **Components**:
+  * Name your specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.
+  * The *ComponentContext* argument should be simply called `c` to make your layout code less verbose and more readable.
+* **Resource Types** - where appropriate, use resource types, such as `ResType.STRING`, `ResType.COLOR`, `ResType.DIMEN_SIZE`, to make it easier to set prop values from Android resources.
+* **Props**:
+  * Declare all required props first then optional ones (`optional = true`).
+  * Declare common props (props defined for all Components on `Component.Builder`) after the component's own props.
+* **Enums** - use static imports on all layout enums (such as `YogaEdge`, `YogaAlign`, `YogaJustify`) to reduce your layout code and make it more readable.
+* **Conditionals** - use inline conditionals on optional children to keep the layout construction code fluent if possible.
+* **Child Container** - if you are constructing a child container, add the container in the following line. This gives the code a layout like construction.
+* Lifecycle methods, such as `@OnCreateLayout`, are static and package-private.
+
+The following snippet is an example of an application of the Litho Best Practice coding style:
 
 ```java
 @LayoutSpec
