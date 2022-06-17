@@ -110,14 +110,15 @@ constructor(
       componentTree: ComponentTree? = null,
       widthPx: Int? = null,
       heightPx: Int? = null,
-      componentFunction: (ComponentScope.() -> Component)? = null
+      componentFunction: (ComponentScope.() -> Component?)? = null
   ): TestLithoView {
     val testLithoView = TestLithoView(context, componentsConfiguration)
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
     widthPx?.let { heightPx?.let { testLithoView.setSizePx(widthPx, heightPx) } }
     componentFunction?.let {
-      testLithoView.setRoot(with(ComponentScope(context)) { componentFunction() })
+      with(ComponentScope(context)) { componentFunction() }
+          ?.let { component -> testLithoView.setRoot(component) }
     }
     return testLithoView
   }
@@ -129,7 +130,7 @@ constructor(
       componentTree: ComponentTree? = null,
       widthPx: Int? = null,
       heightPx: Int? = null,
-      componentFunction: ComponentScope.() -> Component
+      componentFunction: ComponentScope.() -> Component?
   ): TestLithoView {
     val testLithoView =
         createTestLithoView(
