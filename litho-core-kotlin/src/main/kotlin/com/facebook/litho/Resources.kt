@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
@@ -81,3 +82,5 @@ fun ResourcesScope.colorAttr(@AttrRes id: Int, @ColorRes defResId: Int = 0): Int
     resourceResolver.resolveColorAttr(id, defResId)
 
 fun ResourcesScope.intRes(@IntegerRes id: Int): Int = resourceResolver.resolveIntRes(id)
+
+fun ResourcesScope.floatRes(@DimenRes id: Int): Float = resourceResolver.resolveFloatRes(id)
