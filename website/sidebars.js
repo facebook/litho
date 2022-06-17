@@ -132,12 +132,8 @@ module.exports = {
           'debugging/debugging-sections',
           ...fbInternalOnly(['debugging/fb/debugging-time-travel']),
         ],
-        'Developer Tools': [
-          'devtools/android-studio-plugin',
-          'devtools/flipper-plugins',
-        ],
+        'Developer Tools': ['devtools/flipper-plugins'],
       },
-      'performance/analysing-performance',
     ],
     'Best Practices': [
       'best-practices/immutability',
