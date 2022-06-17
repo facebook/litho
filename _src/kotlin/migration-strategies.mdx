@@ -10,10 +10,10 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 ### Prerequisites
 
-Before diving into this page, you might find it helpful to review the following tutorials:
+Before reading this page, you may find it helpful to review the following sections of the tutorial:
 
-* [Setting up the Project](/tutorial/project-setup.mdx) - the required settings and dependencies to add Litho to your project.
-* [Component and Props](/tutorial/first-components.md) - write a simple component, extend it to accept props, and learn about Flexbox in Litho.
+* [Setting up the Project](../tutorial/project-setup.mdx) - the required settings and dependencies to add Litho to your project.
+* [Component and Props](../tutorial/first-components.md) - write a simple component, extend it to accept props, and learn about Flexbox in Litho.
 
 ## Adopting Litho in your app
 
@@ -21,9 +21,10 @@ Using Litho in a new surface is fairly straightforward: you can put a LithoView 
 However, adopting Litho within an existing surface needs to be done more incrementally and can require a bit more thought.
 
 Litho Components can interoperate with Views in the same App or even in the same surface, so you can migrate View surfaces to Litho incrementally and maintain a hybrid Component-View UI.
+
 There are two common strategies for incrementally migrating to Litho: [Bottom Up](#bottom-up) and [Top-down](#top-down), as detailed in the following sub-sections.
 
-#### Bottom-up
+### Bottom-up
 
 With the bottom-up approach, you break down the UI into smaller pieces that can be converted incrementally. The View or ViewGroup in the original implementation is replaced by a LithoView that you attach as child to the root ViewGroup of your UI.
 
@@ -31,19 +32,20 @@ Consider the following UI as an example:
 
 <img src={useBaseUrl('/images/post-breakdown.png')} alt='post-breakdown'/>
 
-You can identify three UI blocks which can be converted independently into three Litho Components: Header, Media and Footer. You will have three LithoViews in your UI to render the Components.
+You can identify three UI blocks, which can be converted independently into three Litho Components: Header, Media and Footer. You'll have three LithoViews in your UI to render the Components.
 
 These Components are composed with smaller widgets such as Text or Image, similar to how Views are arranged in a ViewGroup.
-Litho provides [a library of widget Components](/widgets/builtin-widgets.mdx), which you can immediately start using. If your app has a custom design system that implements custom views for primitives such as Button, Text or Image, you can start by creating Components for these first; you can also reuse them across the app to convert multiple surfaces to Litho.
+Litho provides [a library of widget Components](../widgets/builtin-widgets.mdx), which you can immediately start using. If your app has a custom design system that implements custom views for primitives such as Button, Text or Image, you can start by creating Components for these first; you can also reuse them across the app to convert multiple surfaces to Litho.
 
-Once you have completed the incremental conversion, you can coalesce all the individual Components into a single Component and use one LithoView as the root of the UI.
+Once you've completed the incremental conversion, you can coalesce all the individual Components into a single Component and use one LithoView as the root of the UI.
 
-It is recommended to use the bottom-approach when you want to leverage performance optimisations such as incremental mount and view flattening sooner than you would with the top-down approach.
+It's recommended to use the bottom-approach when you want to leverage performance optimisations such as incremental mount and view flattening sooner than you would with the top-down approach.
 
-#### Top-down
+### Top-down
+
 With the top-down approach, you replace the root ViewGroup of your UI with a LithoView and wrap the root View representing the UI into a Mountable Component. As you convert smaller parts of the UI into Components, you extract them out of the Mountable Component and into individual LithoViews.
 
 Some scenarios when the top-down approach is suitable include:
 
 * Using Litho for the architecture of your surface and for writing new features, but existing Views might not be immediately converted to Litho.
-* Converting a list surface to [Sections](/docs/sections/start/). The root of the surface is a LithoView rendering a `RecyclerCollectionComponent`, while the individual list items can be either Views or Litho Components. You can leverage the Litho Lists API for features such as asynchronous data diffing or granular RecyclerView Adapter updates before converting the entire UI to Litho.
+* Converting a list surface to [Sections](../sections/start.mdx). The root of the surface is a LithoView rendering a `RecyclerCollectionComponent`, while the individual list items can be either Views or Litho Components. You can leverage the Litho Lists API for features such as asynchronous data diffing or granular RecyclerView Adapter updates before converting the entire UI to Litho.
