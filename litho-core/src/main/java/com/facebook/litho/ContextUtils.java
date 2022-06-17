@@ -33,7 +33,7 @@ public class ContextUtils {
    *     Activity has not been finished/destroyed yet. Returns null otherwise.
    */
   @Nullable
-  static Activity getValidActivityForContext(Context context) {
+  public static Activity getValidActivityForContext(Context context) {
     final Activity activity = findActivityInContext(context);
 
     if (activity == null || activity.isFinishing() || isActivityDestroyed(activity)) {
