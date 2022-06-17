@@ -44,10 +44,6 @@ public class MountItem {
     return mRenderTreeNode.getRenderUnit();
   }
 
-  void setContent(Object content) {
-    mContent = content;
-  }
-
   public void setIsBound(boolean bound) {
     mBound = bound;
   }
