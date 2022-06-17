@@ -5,9 +5,9 @@ title: Overview
 
 ## Content Description
 
-All components support content description by default. This means all layout builders have a prop of type `CharSequence` named `contentDescription` .
+By default, all components support content description. This means all layout builders have a prop of type `CharSequence` named `contentDescription` .
 
-Setting a content description on any component is as simple as:
+Setting a content description on any component is achieved with the following:
 
 ```java
 Image.create(c)
@@ -16,7 +16,7 @@ Image.create(c)
     .build();
 ```
 
-The content description set here has the same semantics as when it is set on an Android view.
+The content description set here has the same semantics as when set on an Android view.
 
 ## Custom accessibility
 
@@ -33,21 +33,21 @@ static void onPopulateAccessibilityNode(
 }
 ```
 
-This is only applicable for components which mount drawables, since if the component mounts a view, the support is built-in.
+This is only applicable for components that mount drawables since, if the component mounts a view, the support is built in.
 
 ## Extra accessibility nodes
 
 On more complex mount specs that need to expose extra nodes to the accessibility framework, you'll have to implement three extra methods with the following annotations:
 
-- **GetExtraAccessibilityNodesCount**: Returns number of extra accessibility nodes exposed by the component.
-- **OnPopulateExtraAccessibilityNode**: Populates the extra accessibility node with the given bounds.
+* **GetExtraAccessibilityNodesCount** - returns number of extra accessibility nodes exposed by the component.
+* **OnPopulateExtraAccessibilityNode** - populates the extra accessibility node with the given bounds.
 
 ## Accessibility Handling
 
-All components support a set of events corresponding to [`AccessibilityDelegateCompat`](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods.
+All components support a set of events corresponding to [AccessibilityDelegateCompat](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods.
 These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate`, which allows you to explicitly call `View`'s default implementation of accessibility methods where necessary.
 
-Here is an overview of the supported events:
+The following table provides an overview of the supported events:
 
 | Event | AccessibilityDelegate method
 | ----- | ----------------------------
@@ -60,14 +60,13 @@ Here is an overview of the supported events:
 | SendAccessibilityEventEvent | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int)">sendAccessibilityEvent</a>
 | SendAccessibilityUncheckedEvent |  <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a>
 
-
 Setting a handler for any of these events will result in an `AccessibilityDelegate` being set on the mounted `View`, which will call your event handler when the corresponding method is called.
 
 Whenever a method for which you haven't supplied an event handler is called, the delegate will defer to the Android `View`'s default implementation (equivalent to calling `super` or `superDelegate`'s implementation).
 
-For example, here are the steps for overriding `onInitializeAccessibilityNodeInfo` for a component:
+The following steps provide an example of overriding `onInitializeAccessibilityNodeInfo` for a component:
 
-1. Implementing an event handler
+1. Implement an event handler:
 
 ```java
 @OnEvent(OnInitializeAccessibilityNodeInfoEvent.class)
@@ -82,7 +81,7 @@ static void onInitializeAccessibilityNodeInfoEvent(
 }
 ```
 
-2. Setting that event handler on a component:
+2. Set the event handler on a component:
 
 ```java
 Text.create(c)
@@ -120,7 +119,7 @@ class PoliteComponentWrapper {
 }
 ```
 
-Now you can replace any usages of your component with `PoliteComponentWrapper`
+3. Replace any uses of your component with `PoliteComponentWrapper`:
 
 ```java
 @OnCreateLayout
@@ -138,8 +137,9 @@ static Component onCreateLayout(
 
 ## Accessibility Heading
 
-Heading is an accessibility property and will help the users to choose to "Navigate by Headings" and ignore scrolling through each and every subitem under a heading. "Navigate based on Heading" can be selected from "Local Context Menu" when talkback is on. Talkback gesture for "Local Context Menu" is **Swipe up then right**.
-Making any component an Accessibility Header is as simple as:
+Heading is an accessibility property that helps users to choose to 'Navigate by Headings' and ignore scrolling through each and every subitem under a heading. 'Navigate based on Heading' can be selected from "Local Context Menu" when talkback is on. Talkback gesture for "Local Context Menu" is **Swipe up then right**.
+
+Making any component an Accessibility Header is as simple as the following:
 
 ```java
 Row.create(c)
