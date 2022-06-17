@@ -24,6 +24,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.Context;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView.OnScrollChangeListener;
 import com.facebook.litho.Component;
@@ -103,9 +104,16 @@ public class VerticalScrollSpec {
       @State ComponentTree childComponentTree,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
+    int horizontalPadding = layout.getPaddingLeft() + layout.getPaddingRight();
+    int childWidthSpec =
+        ViewGroup.getChildMeasureSpec(
+            widthSpec, horizontalPadding, ViewGroup.LayoutParams.MATCH_PARENT);
+
     measureVerticalScroll(
-        c, widthSpec, heightSpec, size, childComponentTree, childComponent, fillViewport);
-    measuredWidth.set(size.width);
+        c, childWidthSpec, heightSpec, size, childComponentTree, childComponent, fillViewport);
+
+    // Add back horizontal padding since we subtracted it when creating the child width spec above
+    measuredWidth.set(size.width + horizontalPadding);
     measuredHeight.set(size.height);
   }
 
@@ -133,9 +141,9 @@ public class VerticalScrollSpec {
 
     measureVerticalScroll(
         c,
-        SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
-        SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
-        new Size(),
+        SizeSpec.makeSizeSpec(layoutWidth, EXACTLY),
+        SizeSpec.makeSizeSpec(layoutHeight, EXACTLY),
+        null,
         childComponentTree,
         childComponent,
         fillViewport);
@@ -145,7 +153,7 @@ public class VerticalScrollSpec {
       ComponentContext c,
       int widthSpec,
       int heightSpec,
-      Size size,
+      @Nullable Size size,
       ComponentTree childComponentTree,
       Component childComponent,
       boolean fillViewport) {
@@ -161,24 +169,26 @@ public class VerticalScrollSpec {
     childComponentTree.setRootAndSizeSpecSync(
         childComponent, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
 
-    // Compute the appropriate size depending on the heightSpec
-    switch (SizeSpec.getMode(heightSpec)) {
-      case EXACTLY:
-        // If this Vertical scroll is being measured with a fixed height we don't care about
-        // the size of the content and just use that instead
-        size.height = SizeSpec.getSize(heightSpec);
-        break;
+    if (size != null) {
+      // Compute the appropriate size depending on the heightSpec
+      switch (SizeSpec.getMode(heightSpec)) {
+        case EXACTLY:
+          // If this Vertical scroll is being measured with a fixed height we don't care about
+          // the size of the content and just use that instead
+          size.height = SizeSpec.getSize(heightSpec);
+          break;
 
-      case AT_MOST:
-        // For at most we want the VerticalScroll to be as big as its content up to the maximum
-        // height specified in the heightSpec
-        size.height = Math.max(0, Math.min(SizeSpec.getSize(heightSpec), size.height));
-        break;
+        case AT_MOST:
+          // For at most we want the VerticalScroll to be as big as its content up to the maximum
+          // height specified in the heightSpec
+          size.height = Math.max(0, Math.min(SizeSpec.getSize(heightSpec), size.height));
+          break;
+      }
+
+      // Ensure that size is not less than 0
+      size.width = Math.max(0, size.width);
+      size.height = Math.max(0, size.height);
     }
-
-    // Ensure that size is not less than 0
-    size.width = Math.max(0, size.width);
-    size.height = Math.max(0, size.height);
   }
 
   @OnCreateMountContent
