@@ -37,12 +37,12 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateCaller;
 import com.facebook.litho.Transition;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestAnimationMount;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
@@ -50,14 +50,10 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
-import java.util.Arrays;
-import java.util.Collection;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.LooperMode;
@@ -90,7 +86,7 @@ import org.robolectric.annotation.LooperMode;
  */
 @SuppressLint("ColorConstantUsageIssue")
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class AnimationTest {
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
@@ -98,30 +94,9 @@ public class AnimationTest {
   private final StateCaller mStateCaller = new StateCaller();
   private ActivityController<Activity> mActivityController;
 
-  final boolean mDelegateToRenderCoreMount;
-
-  boolean mConfigDelegateToRenderCoreMount;
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "delegateToRenderCoreMount={0}")
-  public static Collection data() {
-    return Arrays.asList(new Object[][] {{false}, {true}});
-  }
-
-  public AnimationTest(boolean delegateToRenderCoreMount) {
-    mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-  }
-
   @Before
   public void setUp() {
     mActivityController = Robolectric.buildActivity(Activity.class, new Intent());
-    mConfigDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-
-    ComponentsConfiguration.delegateToRenderCoreMount = mDelegateToRenderCoreMount;
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.delegateToRenderCoreMount = mConfigDelegateToRenderCoreMount;
   }
 
   @Test
