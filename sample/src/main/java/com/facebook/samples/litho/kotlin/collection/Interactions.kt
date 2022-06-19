@@ -56,7 +56,7 @@ class PullToRefreshExample(
         lazyCollectionController = controller,
         onPullToRefresh = {
           refresh()
-          controller.clearRefreshing()
+          controller.setRefreshing(false)
         },
     ) { /* Add children */
     }

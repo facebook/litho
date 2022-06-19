@@ -84,7 +84,7 @@ class LazyCollectionControllerTest {
     val recyclerEventsController = mock<RecyclerEventsController>()
     lazyCollectionController.recyclerEventsController = recyclerEventsController
 
-    lazyCollectionController.showRefreshing()
+    lazyCollectionController.setRefreshing(true)
     verify(recyclerEventsController).showRefreshing()
   }
 
@@ -95,7 +95,7 @@ class LazyCollectionControllerTest {
     val recyclerEventsController = mock<RecyclerEventsController>()
     lazyCollectionController.recyclerEventsController = recyclerEventsController
 
-    lazyCollectionController.clearRefreshing()
+    lazyCollectionController.setRefreshing(false)
     verify(recyclerEventsController).clearRefreshing()
   }
 

@@ -48,20 +48,16 @@ class LazyCollectionController {
     @UiThread get() = recyclerEventsController?.recyclerView
 
   /**
-   * Show the refresh indicator.
-   *
-   * It should not be necessary to call this directly. It will be triggered by the pull to refresh
-   * gesture when a `onPullToRefresh` has been specified on a [LazyCollection].
+   * Toggle the refresh indicator based off a boolean. It is not necessary to call this within the
+   * [LazyCollection]'s `onPullToRefresh` callback as it will be triggered automatically.
    */
   @UiThread
-  fun showRefreshing() {
-    recyclerEventsController?.showRefreshing()
-  }
-
-  /** Clear the refresh indicator */
-  @UiThread
-  fun clearRefreshing() {
-    recyclerEventsController?.clearRefreshing()
+  fun setRefreshing(isRefreshing: Boolean) {
+    if (isRefreshing) {
+      recyclerEventsController?.showRefreshing()
+    } else {
+      recyclerEventsController?.clearRefreshing()
+    }
   }
 
   /**

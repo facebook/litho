@@ -47,7 +47,7 @@ To implement 'pull to refresh' behaviour, provide a callback to the lazy collect
 To dismiss the refreshing indicator:
 
 1. Create a `LazyCollectionController` and attach it to the lazy collection via the `lazyCollectionController` parameter. Note that it should be defined in a `useState` hook.
-2. Call `LazyCollectionController.clearRefreshing()`.
+2. Call `LazyCollectionController.setRefreshing(false)`.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/Interactions.kt start=start_pull_to_refresh_example end=end_pull_to_refresh_example
 ```
