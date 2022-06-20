@@ -18,6 +18,7 @@ package com.facebook.litho.testing
 
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
+import com.facebook.litho.LithoView
 import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.Recycler
@@ -120,4 +121,12 @@ class TestCollection {
   /** @see findItems */
   inline fun findItems(vararg clazz: KClass<out Component>): List<TestCollectionItem> =
       findItems(clazz.map { it.java })
+
+  /** Retrieve the visible mounted children. */
+  fun getLithoViews(): List<LithoView> {
+    val recyclerView: RecyclerView = Whitebox.getInternalState(recyclerBinder, "mMountedView")
+    return (firstVisibleIndex..lastVisibleIndex).mapNotNull {
+      recyclerView.layoutManager?.findViewByPosition(it) as? LithoView
+    }
+  }
 }

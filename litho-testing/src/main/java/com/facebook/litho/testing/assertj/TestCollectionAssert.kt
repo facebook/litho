@@ -17,8 +17,11 @@
 package com.facebook.litho.testing.assertj
 
 import com.facebook.litho.Component
+import com.facebook.litho.LithoView
 import com.facebook.litho.testing.TestCollection
 import com.facebook.litho.testing.TestCollectionItem
+import com.facebook.litho.testing.viewtree.ViewPredicates
+import com.facebook.litho.testing.viewtree.ViewTree
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 
@@ -97,6 +100,36 @@ class TestCollectionAssert(testCollection: TestCollection) :
     actual.items.zip(components).forEach { (a, b) ->
       Assertions.assertThat(a.component.isEquivalentTo(b)).isTrue
     }
+    return this
+  }
+
+  private fun LithoView.hasVisibleText(text: String): Boolean {
+    val viewTree = ViewTree.of(this)
+    val children =
+        viewTree.findChild(ViewPredicates.hasVisibleText(text), ViewPredicates.isVisible())
+    return children?.isNotEmpty() == true
+  }
+
+  private fun List<LithoView>.hasVisibleText(text: String): Boolean {
+    for (view in this) {
+      if (view.hasVisibleText(text)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  fun hasVisibleText(text: String): TestCollectionAssert {
+    Assertions.assertThat(actual.getLithoViews().hasVisibleText(text))
+        .overridingErrorMessage("Expected visible text \"<%s>\", but was not found.", text)
+        .isTrue
+    return this
+  }
+
+  fun doesNotHaveVisibleText(text: String): TestCollectionAssert {
+    Assertions.assertThat(actual.getLithoViews().hasVisibleText(text))
+        .overridingErrorMessage("Did not expect visible text \"<%s>\"", text)
+        .isFalse
     return this
   }
 

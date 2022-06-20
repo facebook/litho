@@ -157,5 +157,7 @@ class LithoViewRuleListExampleTest {
         .containsComponents(zeroTextComponent)
         .doesNotContainComponents(helloTextComponent)
         .containsExactlyComponents(*fullComponentList)
+        .hasVisibleText("0")
+        .doesNotHaveVisibleText("cheeseburger")
   }
 }
