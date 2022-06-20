@@ -357,7 +357,7 @@ internal constructor(
 
   /** Returns the first [LazyCollection] from the ComponentTree, or null if not found. */
   fun findCollectionComponent(): TestCollection? {
-    val recycler = findComponent(Recycler::class.java) as Recycler ?: return null
+    val recycler = findComponent(Recycler::class.java) as Recycler? ?: return null
     return TestCollection(recycler)
   }
 
