@@ -2699,13 +2699,15 @@ public class ComponentTree implements LithoLifecycleListener {
             treeProps,
             source,
             extraAttribution);
-    final boolean waitingFromSyncLayout = localLayoutStateFuture.isFromSyncLayout;
+    final boolean waitingFromSyncLayout = isFromSyncLayout(source);
 
     synchronized (mLayoutStateFutureLock) {
       boolean canReuse = false;
       for (int i = 0; i < mLayoutStateFutures.size(); i++) {
         final LayoutStateFuture runningLsf = mLayoutStateFutures.get(i);
-        if (!runningLsf.isReleased() && runningLsf.equals(localLayoutStateFuture)) {
+        if (!runningLsf.isReleased()
+            && runningLsf.equals(localLayoutStateFuture)
+            && runningLsf.tryRegisterForResponse(waitingFromSyncLayout)) {
           // Use the latest LayoutState calculation if it's the same.
           localLayoutStateFuture = runningLsf;
           canReuse = true;
@@ -2713,10 +2715,11 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
       if (!canReuse) {
+        if (!localLayoutStateFuture.tryRegisterForResponse(waitingFromSyncLayout)) {
+          throw new RuntimeException("Failed to register to localLayoutState");
+        }
         mLayoutStateFutures.add(localLayoutStateFuture);
       }
-
-      localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
     }
 
     final LayoutState layoutState = localLayoutStateFuture.runAndGet(source);
@@ -2801,6 +2804,10 @@ public class ComponentTree implements LithoLifecycleListener {
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
   class LayoutStateFuture {
 
+    private static final int INTERRUPTIBLE = 0;
+    private static final int INTERRUPTED = 1;
+    private static final int NON_INTERRUPTIBLE = 2;
+
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);
     private final ComponentContext context;
     private final Component root;
@@ -2810,9 +2817,8 @@ public class ComponentTree implements LithoLifecycleListener {
     private final @Nullable TreeProps treeProps;
     private final RunnableFuture<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
-    private final boolean isFromSyncLayout;
     private final int layoutVersion;
-    private volatile boolean interruptRequested;
+    private final AtomicInteger interruptState = new AtomicInteger(INTERRUPTIBLE);
     @CalculateLayoutSource private final int source;
     private final String extraAttribution;
 
@@ -2821,8 +2827,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
-
-    private boolean isBlockingSyncLayout;
 
     private LayoutStateFuture(
         final ComponentContext context,
@@ -2840,7 +2844,6 @@ public class ComponentTree implements LithoLifecycleListener {
       this.heightSpec = heightSpec;
       this.diffingEnabled = diffingEnabled;
       this.treeProps = treeProps;
-      this.isFromSyncLayout = isFromSyncLayout(source);
       this.source = source;
       this.extraAttribution = extraAttribution;
       this.layoutVersion = layoutVersion;
@@ -2918,11 +2921,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     boolean isInterruptRequested() {
-      return !ThreadUtils.isMainThread() && interruptRequested;
-    }
-
-    private void interrupt() {
-      interruptRequested = true;
+      return interruptState.get() == INTERRUPTED;
     }
 
     void unregisterForResponse() {
@@ -2933,19 +2932,54 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    void registerForResponse(boolean waitingFromSyncLayout) {
-      refCount.incrementAndGet();
-      if (waitingFromSyncLayout) {
-        this.isBlockingSyncLayout = true;
+    /**
+     * We want to prevent a sync layout in the background from waiting on an interrupted layout
+     * (which will return a null layout state). To handle this, we make sure that a sync bg layout
+     * can only wait on a NON_INTERRUPTIBLE LSF, and that a NON_INTERRUPTIBLE LSF can't be
+     * interrupted.
+     *
+     * <p>The usage of AtomicInteger for interrupt state is just to make it lockless.
+     */
+    boolean tryRegisterForResponse(boolean waitingFromSyncLayout) {
+      if (waitingFromSyncLayout && mMoveLayoutsBetweenThreads && !isMainThread()) {
+        int state = interruptState.get();
+        if (state == INTERRUPTED) {
+          return false;
+        }
+        if (state == INTERRUPTIBLE) {
+          if (!interruptState.compareAndSet(INTERRUPTIBLE, NON_INTERRUPTIBLE)
+              && interruptState.get() != NON_INTERRUPTIBLE) {
+            return false;
+          }
+        }
       }
+
+      // If we haven't returned false by now, we are now marked NON_INTERRUPTIBLE so we're good to
+      // wait on this LSF
+      refCount.incrementAndGet();
+      return true;
+    }
+
+    /** We only want to interrupt an INTERRUPTIBLE layout. */
+    private boolean tryMoveToInterruptedState() {
+      int state = interruptState.get();
+      if (state == NON_INTERRUPTIBLE) {
+        return false;
+      }
+      if (state == INTERRUPTIBLE) {
+        if (!interruptState.compareAndSet(INTERRUPTIBLE, INTERRUPTED)
+            && interruptState.get() != INTERRUPTED) {
+          return false;
+        }
+      }
+
+      // If we haven't returned false by now, we are now marked INTERRUPTED so we're good to
+      // interrupt.
+      return true;
     }
 
     public int getWaitingCount() {
       return refCount.get();
-    }
-
-    boolean canBeCancelled() {
-      return !isBlockingSyncLayout && !isFromSyncLayout;
     }
 
     @VisibleForTesting
@@ -2969,10 +3003,11 @@ public class ComponentTree implements LithoLifecycleListener {
       if (isMainThread() && shouldWaitForResult) {
         // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
         // the bg task is interrupted.
-        if (mMoveLayoutsBetweenThreads && !isFromSyncLayout) {
-          interrupt();
-          interruptToken =
-              WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
+        if (mMoveLayoutsBetweenThreads) {
+          if (tryMoveToInterruptedState()) {
+            interruptToken =
+                WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
+          }
         }
 
         originalThreadPriority =
@@ -3027,7 +3062,7 @@ public class ComponentTree implements LithoLifecycleListener {
           }
         }
 
-        if (interruptRequested && result.isPartialLayoutState()) {
+        if (interruptState.get() == INTERRUPTED && result.isPartialLayoutState()) {
           if (ThreadUtils.isMainThread()) {
             // This means that the bg task was interrupted and it returned a partially resolved
             // InternalNode. We need to finish computing this LayoutState.

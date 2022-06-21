@@ -28,6 +28,7 @@ import com.facebook.litho.InterStagePropsContainer;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.Comparable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @deprecated Use MountSpecLifecycleTester if lifecycle assertions are needed or
@@ -302,9 +303,12 @@ public class TestDrawableComponent extends TestComponent {
     private final ThreadLocal<Boolean> mDoNotBlockOnThisThread = new ThreadLocal<>();
     private final TimeOutSemaphore mOnAsyncPrepareStartSemaphore = new TimeOutSemaphore(0);
     private final TimeOutSemaphore mAllowPrepareToCompleteSemaphore = new TimeOutSemaphore(0);
+    private final AtomicInteger mPrepareCount = new AtomicInteger(0);
 
     @Override
     public void onPrepare() {
+      mPrepareCount.incrementAndGet();
+
       if (mDoNotBlockOnThisThread.get() != null && mDoNotBlockOnThisThread.get()) {
         return;
       }
@@ -328,6 +332,10 @@ public class TestDrawableComponent extends TestComponent {
 
     public void setDoNotBlockOnThisThread() {
       mDoNotBlockOnThisThread.set(true);
+    }
+
+    public int getPrepareCount() {
+      return mPrepareCount.get();
     }
   }
 }

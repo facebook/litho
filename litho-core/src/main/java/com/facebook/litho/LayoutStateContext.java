@@ -146,7 +146,9 @@ public class LayoutStateContext {
 
   boolean isLayoutInterrupted() {
     boolean isInterruptRequested =
-        mLayoutStateFuture != null && mLayoutStateFuture.isInterruptRequested();
+        mLayoutStateFuture != null
+            && mLayoutStateFuture.isInterruptRequested()
+            && !ThreadUtils.isMainThread();
     boolean isInterruptible = mLayoutStateRef != null && mLayoutStateRef.isInterruptible();
 
     return isInterruptible && isInterruptRequested;

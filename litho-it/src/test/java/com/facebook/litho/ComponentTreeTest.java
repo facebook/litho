@@ -53,6 +53,7 @@ import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Assert;
@@ -1796,6 +1797,201 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testMainThreadLayoutWillInterruptCompatibleBGLayout() throws InterruptedException {
+    TestDrawableComponent component =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    // It's called a measure listener, but it is invoked every time a new layout is committed.
+    AtomicInteger commitCount = new AtomicInteger(0);
+    componentTree.addMeasureListener(
+        new ComponentTree.MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(
+              int layoutVersion, int width, int height, boolean stateUpdate) {
+            commitCount.incrementAndGet();
+          }
+        });
+    componentTree.attach();
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    component.setTestComponentListener(blockInPrepare);
+
+    componentTree.setSizeSpecAsync(widthSpec, heightSpec);
+    mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
+
+    blockInPrepare.awaitPrepareStart();
+
+    final AtomicReference<ComponentTree.LayoutStateFuture> futureRef = new AtomicReference<>(null);
+    final TimeOutSemaphore unblockMainThread =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                futureRef.set(waitForLayoutToAttachToFuture(componentTree));
+                blockInPrepare.allowPrepareToComplete();
+              }
+            });
+
+    componentTree.setSizeSpec(widthSpec, heightSpec, new Size());
+
+    unblockMainThread.acquire();
+
+    assertThat(componentTree.getRoot()).isEqualTo(component);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue();
+    assertThat(commitCount.get()).isEqualTo(1);
+    assertThat(futureRef.get().isInterruptRequested()).isTrue();
+    assertThat(blockInPrepare.getPrepareCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void testMainThreadLayoutWillNotInterruptCompatibleBGLayoutIfSyncBGLayoutIsAlsoPending()
+      throws InterruptedException {
+    TestDrawableComponent component =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    // It's called a measure listener, but it is invoked every time a new layout is committed.
+    AtomicInteger commitCount = new AtomicInteger(0);
+    componentTree.addMeasureListener(
+        new ComponentTree.MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(
+              int layoutVersion, int width, int height, boolean stateUpdate) {
+            commitCount.incrementAndGet();
+          }
+        });
+    componentTree.attach();
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    component.setTestComponentListener(blockInPrepare);
+
+    componentTree.setSizeSpecAsync(widthSpec, heightSpec);
+    TimeOutSemaphore layoutThreadLayout = mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
+
+    blockInPrepare.awaitPrepareStart();
+
+    final Size bgSyncSize = new Size();
+    final TimeOutSemaphore bgSyncLayout =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.setSizeSpec(widthSpec, heightSpec, bgSyncSize);
+              }
+            });
+
+    waitForLayoutToAttachToFuture(componentTree, 2);
+
+    final AtomicReference<ComponentTree.LayoutStateFuture> futureRef = new AtomicReference<>(null);
+    final TimeOutSemaphore unblockMainThread =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                // Wait for 3 layouts to attach: 2 bg and 1 main thread
+                futureRef.set(waitForLayoutToAttachToFuture(componentTree, 3));
+                blockInPrepare.allowPrepareToComplete();
+              }
+            });
+
+    final Size mainThreadSize = new Size();
+    componentTree.setSizeSpec(widthSpec, heightSpec, mainThreadSize);
+
+    unblockMainThread.acquire();
+    bgSyncLayout.acquire();
+    layoutThreadLayout.acquire();
+
+    assertThat(componentTree.getRoot()).isEqualTo(component);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue();
+    assertThat(commitCount.get()).isEqualTo(1);
+
+    assertThat(bgSyncSize.width).isEqualTo(1000);
+    assertThat(mainThreadSize.width).isEqualTo(1000);
+    assertThat(futureRef.get().isInterruptRequested()).isFalse();
+    assertThat(blockInPrepare.getPrepareCount()).isEqualTo(1);
+  }
+
+  @Test
+  public void testSyncBGLayoutWillNotAttachToInterruptedLayout() throws InterruptedException {
+    TestDrawableComponent component =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    // It's called a measure listener, but it is invoked every time a new layout is committed.
+    AtomicInteger commitCount = new AtomicInteger(0);
+    componentTree.addMeasureListener(
+        new ComponentTree.MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(
+              int layoutVersion, int width, int height, boolean stateUpdate) {
+            commitCount.incrementAndGet();
+          }
+        });
+    componentTree.attach();
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    component.setTestComponentListener(blockInPrepare);
+
+    componentTree.setSizeSpecAsync(widthSpec, heightSpec);
+    mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
+
+    blockInPrepare.awaitPrepareStart();
+
+    final Size bgSyncSize = new Size();
+    final TimeOutSemaphore unblockMainThread =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                // Wait for main thread layout to attach
+                ComponentTree.LayoutStateFuture future =
+                    waitForLayoutToAttachToFuture(componentTree, 2);
+                waitForFutureToBecomeInterrupted(future);
+
+                final TimeOutSemaphore bgSyncLayout =
+                    runOnBackgroundThread(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            blockInPrepare.setDoNotBlockOnThisThread();
+                            componentTree.setSizeSpec(widthSpec, heightSpec, bgSyncSize);
+                          }
+                        });
+
+                blockInPrepare.allowPrepareToComplete();
+                bgSyncLayout.acquire();
+              }
+            });
+
+    final Size mainThreadSize = new Size();
+    componentTree.setSizeSpec(widthSpec, heightSpec, mainThreadSize);
+
+    unblockMainThread.acquire();
+
+    assertThat(componentTree.getRoot()).isEqualTo(component);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue();
+
+    assertThat(bgSyncSize.width).isEqualTo(1000);
+    assertThat(mainThreadSize.width).isEqualTo(1000);
+  }
+
+  @Test
   public void testSetRootAfterRelease() {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
 
@@ -2089,10 +2285,16 @@ public class ComponentTreeTest {
     return latch;
   }
 
-  private static void waitForLayoutToAttachToFuture(ComponentTree componentTree) {
+  private static ComponentTree.LayoutStateFuture waitForLayoutToAttachToFuture(
+      ComponentTree componentTree) {
+    return waitForLayoutToAttachToFuture(componentTree, 2);
+  }
+
+  private static ComponentTree.LayoutStateFuture waitForLayoutToAttachToFuture(
+      ComponentTree componentTree, int expectedCount) {
     ComponentTree.LayoutStateFuture future = componentTree.getLayoutStateFutures().get(0);
     int timeSpentWaiting = 0;
-    while (future.getWaitingCount() != 2 && timeSpentWaiting < 5000) {
+    while (future.getWaitingCount() != expectedCount && timeSpentWaiting < 5000) {
       try {
         Thread.sleep(10);
       } catch (InterruptedException e) {
@@ -2102,8 +2304,26 @@ public class ComponentTreeTest {
     }
 
     assertThat(future.getWaitingCount())
-        .describedAs("Make sure the second thread is waiting on the first Future")
-        .isEqualTo(2);
+        .describedAs("Make sure all threads are waiting on the first Future")
+        .isEqualTo(expectedCount);
+
+    return future;
+  }
+
+  private static void waitForFutureToBecomeInterrupted(ComponentTree.LayoutStateFuture future) {
+    int timeSpentWaiting = 0;
+    while (!future.isInterruptRequested() && timeSpentWaiting < 5000) {
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      timeSpentWaiting += 10;
+    }
+
+    assertThat(future.isInterruptRequested())
+        .describedAs("Wait for future to be interrupted")
+        .isEqualTo(true);
   }
 
   private static HandlerThread createAndStartNewHandlerThread() {
