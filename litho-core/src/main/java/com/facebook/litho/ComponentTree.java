@@ -2706,7 +2706,7 @@ public class ComponentTree implements LithoLifecycleListener {
       for (int i = 0; i < mLayoutStateFutures.size(); i++) {
         final LayoutStateFuture runningLsf = mLayoutStateFutures.get(i);
         if (!runningLsf.isReleased()
-            && runningLsf.equals(localLayoutStateFuture)
+            && runningLsf.isEquivalentTo(localLayoutStateFuture)
             && runningLsf.tryRegisterForResponse(waitingFromSyncLayout)) {
           // Use the latest LayoutState calculation if it's the same.
           localLayoutStateFuture = runningLsf;
@@ -3135,16 +3135,10 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
+    public boolean isEquivalentTo(LayoutStateFuture that) {
+      if (this == that) {
         return true;
       }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-
-      LayoutStateFuture that = (LayoutStateFuture) o;
 
       if (widthSpec != that.widthSpec) {
         return false;
@@ -3162,15 +3156,6 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       return true;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = context.hashCode();
-      result = 31 * result + root.getId();
-      result = 31 * result + widthSpec;
-      result = 31 * result + heightSpec;
-      return result;
     }
   }
 
