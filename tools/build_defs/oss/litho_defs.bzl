@@ -235,6 +235,8 @@ LITHO_FRESCO_TARGETS = [
     make_dep_path("lib/fresco:fresco"),
 ]
 
+LITHO_FRESCO_EXPORTED_TARGETS = []
+
 LITHO_FLIPPER_TARGETS = [
     make_dep_path("lib/flipper:flipper"),
 ]

@@ -6,6 +6,7 @@
 load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_FRESCO_EXPORTED_TARGETS",
     "LITHO_FRESCO_TARGETS",
     "LITHO_OSS_TARGET",
     "LITHO_PROCESSOR_TARGET",
@@ -29,4 +30,5 @@ litho_android_library(
             LITHO_OSS_TARGET,
             LITHO_UTILS_TARGET,
         ],
+    exported_deps = LITHO_FRESCO_EXPORTED_TARGETS,
 )
