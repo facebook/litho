@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
@@ -52,15 +53,10 @@ public class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
+          @Nullable
           @Override
-          public void apply(StateHandler stateHandler) {
-            stateHandler
-                .getStateContainers()
-                .put(
-                    GLOBAL_KEY,
-                    KStateContainer.withNewState(
-                        (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY),
-                        "newValue"));
+          public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState) {
+            return KStateContainer.withNewState(currentState, "newValue");
           }
         });
 
@@ -102,36 +98,20 @@ public class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
+          @Nullable
           @Override
-          public void apply(StateHandler stateHandler) {
-            stateHandler
-                .getStateContainers()
-                .put(
-                    GLOBAL_KEY,
-                    KStateContainer.withNewState(
-                        (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY),
-                        "newValue"));
-            stateHandler
-                .getStateContainers()
-                .put(
-                    GLOBAL_KEY,
-                    ((KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY))
-                        .copyAndMutate(1, 5));
+          public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState) {
+            return KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5);
           }
         });
 
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
+          @Nullable
           @Override
-          public void apply(StateHandler stateHandler) {
-            final KStateContainer currentState =
-                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
-            stateHandler
-                .getStateContainers()
-                .put(
-                    GLOBAL_KEY,
-                    currentState.copyAndMutate(1, 1 + (int) currentState.mStates.get(1)));
+          public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState) {
+            return currentState.copyAndMutate(1, 1 + (int) currentState.mStates.get(1));
           }
         });
 
@@ -173,25 +153,20 @@ public class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
+          @Nullable
           @Override
-          public void apply(StateHandler stateHandler) {
-            KStateContainer current =
-                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
-            current = KStateContainer.withNewState(current, "newValue");
-            current = current.copyAndMutate(1, 5);
-            stateHandler.getStateContainers().put(GLOBAL_KEY, current);
+          public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState) {
+            return KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5);
           }
         });
 
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
+          @Nullable
           @Override
-          public void apply(StateHandler stateHandler) {
-            KStateContainer current =
-                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
-            current = current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
-            stateHandler.getStateContainers().put(GLOBAL_KEY, current);
+          public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer current) {
+            return current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
           }
         });
 
@@ -200,12 +175,10 @@ public class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
+          @Nullable
           @Override
-          public void apply(StateHandler stateHandler) {
-            KStateContainer current =
-                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
-            current = current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
-            stateHandler.getStateContainers().put(GLOBAL_KEY, current);
+          public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer current) {
+            return current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
           }
         });
 

@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
@@ -56,11 +57,19 @@ internal constructor(
     val value: T
 ) {
 
+  private val isSkipEqualValueStateUpdatesEnabled =
+      if (context.componentTree == null) ComponentsConfiguration.skipEqualValueStateUpdates
+      else context.componentTree.skipEqualValueStateUpdatesEnabled()
+
   /**
    * Updates this state value and enqueues a new layout calculation reflecting it to execute in the
    * background.
    */
   fun update(newValue: T) {
+    if (canSkip(newValue)) {
+      return
+    }
+
     context.updateHookStateAsync(context.globalKey, HookUpdaterValue(newValue))
   }
 
@@ -77,6 +86,10 @@ internal constructor(
    * succession).
    */
   fun update(newValueFunction: (T) -> T) {
+    if (canSkip(newValueFunction)) {
+      return
+    }
+
     context.updateHookStateAsync(context.globalKey, HookUpdaterLambda(newValueFunction))
   }
 
@@ -90,6 +103,10 @@ internal constructor(
    * it's known to be executed off the main thread.
    */
   fun updateSync(newValue: T) {
+    if (canSkip(newValue)) {
+      return
+    }
+
     context.updateHookStateSync(context.globalKey, HookUpdaterValue(newValue))
   }
 
@@ -102,14 +119,18 @@ internal constructor(
    *
    * For example, if your state update should increment a counter, using the function version of
    * [update] with `count -> count + 1` will allow you to account for updates that are in flight but
-   * not yet applied (e.g. if the user has tapped a button triggering the update multiple times in
-   * succession).
+   * not yet applied (e.g. if the user HooksStateHandlerTesthas tapped a button triggering the
+   * update multiple times in succession).
    *
    * Note: If [updateSync] is used on the main thread, it can easily cause dropped frames and
    * degrade user experience. Therefore it should only be used in exceptional circumstances or when
    * it's known to be executed off the main thread.
    */
   fun updateSync(newValueFunction: (T) -> T) {
+    if (canSkip(newValueFunction)) {
+      return
+    }
+
     context.updateHookStateSync(context.globalKey, HookUpdaterLambda(newValueFunction))
   }
 
@@ -124,6 +145,56 @@ internal constructor(
       return currentState?.copyAndMutate(
           hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
     }
+  }
+
+  private fun canSkip(newValue: T): Boolean {
+    if (!isSkipEqualValueStateUpdatesEnabled) {
+      return false
+    }
+
+    val committedStateHandler = context.componentTree.stateHandler
+
+    if (committedStateHandler != null) {
+      val committedStateContainer =
+          committedStateHandler.mStateContainers[context.globalKey] as KStateContainer?
+      if (committedStateContainer?.mStates != null &&
+          committedStateContainer.mStates[hookStateIndex] != null) {
+        val committedStateContainerWithAppliedPendingHooks =
+            committedStateHandler.getStateContainerWithHookUpdates(context.globalKey)
+
+        if (committedStateContainerWithAppliedPendingHooks != null &&
+            committedStateContainerWithAppliedPendingHooks.mStates[hookStateIndex] == newValue) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  private fun canSkip(newValueFunction: (T) -> T): Boolean {
+    if (!isSkipEqualValueStateUpdatesEnabled) {
+      return false
+    }
+
+    val committedStateHandler = context.componentTree.stateHandler ?: return false
+    val committedStateContainer =
+        committedStateHandler.mStateContainers[context.globalKey] as KStateContainer?
+    if (committedStateContainer?.mStates?.get(hookStateIndex) != null) {
+      val committedStateContainerWithAppliedPendingHooks =
+          committedStateHandler.getStateContainerWithHookUpdates(context.globalKey)
+
+      if (committedStateContainerWithAppliedPendingHooks != null) {
+        val committedUpdatedValue =
+            committedStateContainerWithAppliedPendingHooks.mStates[hookStateIndex] as T
+
+        val newValueAfterPendingUpdate = newValueFunction(committedUpdatedValue)
+
+        return committedUpdatedValue == newValueAfterPendingUpdate
+      }
+    }
+
+    return false
   }
 
   /**

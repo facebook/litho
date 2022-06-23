@@ -673,6 +673,11 @@ public class StateHandler {
     mPendingHookUpdates.add(new Pair<>(key, updater));
   }
 
+  @VisibleForTesting
+  int getPendingHookUpdatesCount() {
+    return mPendingHookUpdates == null ? 0 : mPendingHookUpdates.size();
+  }
+
   /**
    * Called when creating a new StateHandler for a layout calculation. It copies the source of truth
    * state, and then the current list of HookUpdater blocks that need to be applied. Unlike normal
@@ -698,6 +703,30 @@ public class StateHandler {
       }
       mAppliedHookUpdates = updates;
     }
+  }
+
+  /**
+   * Gets a state container with all applied updates for the given key without committing the
+   * updates to a state handler.
+   */
+  public @Nullable KStateContainer getStateContainerWithHookUpdates(String globalKey) {
+    final @Nullable StateContainer stateContainer = mStateContainers.get(globalKey);
+
+    if (stateContainer == null) {
+      return null;
+    }
+
+    KStateContainer currentCommittedState = (KStateContainer) stateContainer;
+
+    if (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty()) {
+      for (Pair<String, HookUpdater> hookUpdate : mPendingHookUpdates) {
+        if (hookUpdate.first.equals(globalKey)) {
+          currentCommittedState = hookUpdate.second.getUpdatedStateContainer(currentCommittedState);
+        }
+      }
+    }
+
+    return currentCommittedState;
   }
 
   /**
