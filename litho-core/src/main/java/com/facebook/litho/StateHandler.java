@@ -687,7 +687,14 @@ public class StateHandler {
     if (other.mPendingHookUpdates != null) {
       List<Pair<String, HookUpdater>> updates = new ArrayList<>(other.mPendingHookUpdates);
       for (Pair<String, HookUpdater> hookUpdate : updates) {
-        hookUpdate.second.apply(this);
+        final String key = hookUpdate.first;
+        final StateContainer stateContainer = mStateContainers.get(key);
+        // currentState could be null if the state is removed from the StateHandler before the
+        // update runs
+        if (stateContainer != null) {
+          final KStateContainer kStateContainer = (KStateContainer) stateContainer;
+          mStateContainers.put(key, hookUpdate.second.getUpdatedStateContainer(kStateContainer));
+        }
       }
       mAppliedHookUpdates = updates;
     }

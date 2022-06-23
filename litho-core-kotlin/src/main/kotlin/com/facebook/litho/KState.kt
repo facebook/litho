@@ -61,15 +61,7 @@ internal constructor(
    * background.
    */
   fun update(newValue: T) {
-    context.updateHookStateAsync(context.globalKey) { stateHandler ->
-      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
-      // currentState could be null if the state is removed from the StateHandler before the update
-      // runs
-      if (currentState != null) {
-        stateHandler.mStateContainers[context.globalKey] =
-            currentState.copyAndMutate(hookStateIndex, newValue)
-      }
-    }
+    context.updateHookStateAsync(context.globalKey, HookUpdaterValue(newValue))
   }
 
   /**
@@ -85,16 +77,7 @@ internal constructor(
    * succession).
    */
   fun update(newValueFunction: (T) -> T) {
-    context.updateHookStateAsync(context.globalKey) { stateHandler ->
-      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
-      // currentState could be null if the state is removed from the StateHandler before the update
-      // runs
-      if (currentState != null) {
-        stateHandler.mStateContainers[context.globalKey] =
-            currentState.copyAndMutate(
-                hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
-      }
-    }
+    context.updateHookStateAsync(context.globalKey, HookUpdaterLambda(newValueFunction))
   }
 
   /**
@@ -107,15 +90,7 @@ internal constructor(
    * it's known to be executed off the main thread.
    */
   fun updateSync(newValue: T) {
-    context.updateHookStateSync(context.globalKey) { stateHandler ->
-      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
-      // currentState could be null if the state is removed from the StateHandler before the update
-      // runs
-      if (currentState != null) {
-        stateHandler.mStateContainers[context.globalKey] =
-            currentState.copyAndMutate(hookStateIndex, newValue)
-      }
-    }
+    context.updateHookStateSync(context.globalKey, HookUpdaterValue(newValue))
   }
 
   /**
@@ -135,15 +110,19 @@ internal constructor(
    * it's known to be executed off the main thread.
    */
   fun updateSync(newValueFunction: (T) -> T) {
-    context.updateHookStateSync(context.globalKey) { stateHandler ->
-      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
-      // currentState could be null if the state is removed from the StateHandler before the update
-      // runs
-      if (currentState != null) {
-        stateHandler.mStateContainers[context.globalKey] =
-            currentState.copyAndMutate(
-                hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
-      }
+    context.updateHookStateSync(context.globalKey, HookUpdaterLambda(newValueFunction))
+  }
+
+  inner class HookUpdaterValue(val newValue: T) : HookUpdater {
+    override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? {
+      return currentState?.copyAndMutate(hookStateIndex, newValue)
+    }
+  }
+
+  inner class HookUpdaterLambda(val newValueFunction: (T) -> T) : HookUpdater {
+    override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? {
+      return currentState?.copyAndMutate(
+          hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
     }
   }
 

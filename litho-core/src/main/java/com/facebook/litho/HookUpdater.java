@@ -16,12 +16,15 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
+
 /**
  * EXPERIMENTAL - interface for a block of code that will update state created with useState. See
  * KState.kt for more details.
  */
 public interface HookUpdater {
 
-  /** Apply updates to the given {@link StateHandler}. */
-  void apply(StateHandler handler);
+  /** Get a KStateContainer instance with updates applied. */
+  @Nullable
+  KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState);
 }
