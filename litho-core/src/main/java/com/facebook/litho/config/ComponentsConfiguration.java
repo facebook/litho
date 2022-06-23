@@ -285,6 +285,8 @@ public class ComponentsConfiguration {
 
   public static boolean ensureComponentHostInvalidates = false;
 
+  public static boolean skipEqualValueStateUpdates = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
