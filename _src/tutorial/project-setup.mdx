@@ -7,11 +7,11 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-This page provides a set of steps that help you establish the necessary settings and dependencies required to add Litho to your project.
+After creating an Android app project in Android Studio, take the steps detailed in this page to configure it with the correct settings and dependencies.
 
-## 1. JCenter repository
+## 1. Link to the JCenter repository
 
-Litho artifacts are published to Bintray's JCenter. So, you'll need to make sure you have the JCenter repository in your root `build.gradle` file:
+Litho artifacts are published to Bintray's JCenter, so you need to ensure you have the JCenter repository in your projects's root `build.gradle` file:
 
 ```groovy title="build.gradle"
 repositories {
@@ -20,6 +20,8 @@ repositories {
 ```
 
 ## 2. Add Litho core dependencies
+
+Add the following to the `build.gradle` file, after the 'jcenter' entry of step 1:
 
 <VersionedCodeBlock language="groovy" code={`
 dependencies {
@@ -36,17 +38,23 @@ dependencies {
 }
 `} />
 
-In oder to use dependencies with annotation processors, you need to apply the Kotlin KAPT plugin at the top of your application's `build.gradle` file:
+## 3. Using the Annotation Processor
+
+The Annotation Processor is a part of the application build/compile process that generates code by reading annotations (such as @Override and @SuppressWanings).
+
+In order to use your project's dependencies (from Step 2) with Annotation Processors, you need to apply the `kotlin-kapt` plugin at the top of your app's `build.gradle` file:
 
 ```groovy
 apply plugin: 'kotlin-kapt'
 ```
 
-## 3. Wire up native libs
+## 4. Wire up native libs
 
-As a last step, you need to initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/).
+Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/)[^1].
 
-Your custom `Application` class is a good place to do this:
+[^1]: Yoga is a cross-platform (usable on Android, iOS, and other platforms) implementation of the Flexbox layout system used in web browsers. Litho uses Yoga to enable layouts (positioning of elements in the screen) to be specified via the Flexbox layouting system.
+
+Your custom `Application` class is a good place to initialize SoLoader:
 
 ```kotlin title="MyApplication.kt"
 class MyApplication: Application() {
@@ -60,13 +68,13 @@ class MyApplication: Application() {
 
 ## Testing your setup
 
-Having set up the project, you can test the config by adding a simple UI created with Litho. The simple UI is a built-in `Text` widget that displays the "Hello World!" text to an activity:
+You can test the above setup steps by adding the following simple UI, created with Litho, that displays "Hello, World!" text to an activity:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/MyActivity.kt start=start_example end=end_example
 ```
 
-That's it, if you build and run the app you should see "Hello World!" displayed on the screen.
+If you build and run the app you should see "Hello, World!" displayed on the screen. Project setup is complete!
 
-:::note
-Unfamiliar classes and items in red `Text` are covered in [Components and Props](first-components.md), the next section of the tutorial.
-:::
+## What next?
+
+The next section of the tutorial, [Components and Props](first-components.md), gives you a deeper understanding of what you've completed in this section.

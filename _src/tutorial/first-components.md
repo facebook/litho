@@ -2,76 +2,56 @@
 id: first-components
 title: Components and Props
 ---
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
-In this part of the tutorial, you'll learn the basic Litho building blocks, write a simple component, extend it to accept [props](../kotlin/basics.mdx#props) and get familiar with building layouts with [Flexbox](../kotlin/flexbox-containers.mdx) in Litho.
+In this section of the tutorial, you'll learn the basic Litho building blocks then create your first component that uses [props](../kotlin/basics.mdx#props).
 
-## Hello World!
+## Basic Litho building blocks
 
-To display a "Hello World!" text on the screen with Litho, you need to integrate Litho component hierarchy into your View hierarchy.
+:::info Basic Terminology
+
+* **Component** - all user-interactable elements in the UI (such as buttons, checkboxes, scrollbars, lists, menus, and text fields) that you see in the application are components. To be used, a component must be placed in a container.  For more information, see the [Components](../mainconcepts/components-basics.mdx) page in the 'Main Concepts' section.
+* **Container component** - arranges groups of components in a [layout](introducing-layout.md).
+* **Prop** - an item of data that cannot be changed (making it 'immutable') during the associated component's lifecycle. For more information, see the [Types of Props](../mainconcepts/props.mdx) page in the 'Main Concepts' section.
+:::
+
+To display the classic "Hello, World!" text on the screen with Litho, you need to integrate the Litho component hierarchy into your View hierarchy.
+To illustrate this, the "Hello, World" code (`MyActivity.kt`), from the [Setting up the Project](project-setup.mdx) section of the tutorial, is shown below:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/MyActivity.kt start=start_example end=end_example
 ```
 
-### Key Points
+### Key Points in MyActivity.kt
 
 * `LithoView` - a hierarchy of Litho components is rendered using a LithoView.
-* `Text(...)` - this is how you create a component, both built-in and components you define yourself.
-* `text = "Hello, World!", textSize = 50.dp` -  `text` and `textSize` are **props** ((an input parameters to configure the component)) of the Text component.
+* `val` - holds an immutable object that cannot be changed during the lifecycle of the component.
+* `Text(...)` - the 'Text' component (this is how you create an instance of a component (both built-in and those you define yourself).
+* `Text(...)` - assigns values to the props `text` and `textsize`.
 
-## First KComponent
+## Create your first component
 
-Welcome to your first Litho component! Previously, you used a built-in `Text` component but now you'll define your own. Like Text, your new component can also take **props**.
+Previously, you used a built-in `Text` component. Now, you'll define your own using the following 'HelloComponent.kt' code. As with the above, your 'first' component can also declare **props**:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
 ```
 
-To use your component, you can just replace the Text component from above with your component, setting the `name` prop:
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentActivity.kt start=start_example end=end_example
-```
-
-### Key Points
+### Key Points in HelloComponent.kt
 
 * `KComponent` - a class needed to extend in order to create components.
+* `name` - a `String` prop named `name`.
 * `render` - function override that returns what your component should render.
+* `Text(...)` - returns an instance of the `Text` component with its `text` prop set to the String "Hello $name'.
 
 :::tip
 Lots of code autocompletion and class templates can be found in the [Litho Android Studio plugin](../devtools/android-studio-plugin.md)!
 :::
 
-## Introducing Layout
+### Use you first component
 
-Enough of HelloWorlds, it's time to build an Instagram app!
+To use your component, just replace the Text component in the "Hello, World!" example with an instance of your `HelloComponent`:
 
-Before you start, add two simple classes to represent `User` and `Post` data models:
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/model/models.kt start=start_example end=end_example
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentActivity.kt start=start_example end=end_example
 ```
 
-Now it's time for UI work!
+## What next?
 
-First, you'll create a component for an Instagram post that requires layouting two images and a text in a particular way. Layouts in Litho are defined via the Flexbox API. To learn more about different layouting options, see the [Layout with Flexbox](../mainconcepts/flexbox-yoga.mdx) page. For now, it's enough to know that the main Flexbox primitives are **Column** and **Row**, which are used to arrange children vertically and horizontally, respectively.
-
-With their help, a `Post` component that will render the UI of an Instagram post will look like that:
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostComponent.kt start=start_example end=end_example
-```
-
-Though components are placed hierarchically correct, they don't look nice. So, as a final touch you can some Flexbox styles:
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/onboarding/PostStyledKComponent.kt start=start_example end=end_example
-```
-
-Your component should look like the following image.
-
-<img src={useBaseUrl("/images/simple_component_tutorial.png")} width="200px" className="white-background"/>
-
-### Key Points
-
-* `Column` and `Row` - the key container types in Litho. They stack children vertically and horizontally, respectively.
-* `padding` and `margin` - check the props that set padding and margin using `Dimen` (a class that represents dimension values in different Android units: `Px`, `Dp`, and `Sp`).
-* `drawableRes` - returns an Android Drawable from resource ID.
-* `Image` - image is another built-in component that can render a drawable.
+The next section of the tutorial [Introducing Layout](introducing-layout.md) helps you become familiar with building layouts using Flexbox.
