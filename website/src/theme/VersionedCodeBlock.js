@@ -21,7 +21,7 @@ import Highlight, {defaultProps} from 'prism-react-renderer';
 import github from 'prism-react-renderer/themes/github';
 import dracula from 'prism-react-renderer/themes/dracula';
 import {site} from '../../versionConfig.js';
-import useThemeContext from '@theme/hooks/useThemeContext';
+import {useThemeConfig} from '@docusaurus/theme-common';
 
 /*
 VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces
@@ -72,7 +72,7 @@ const VersionedCodeBlock = ({language, code}) => {
 
 // returns theme for codeblock depending on whether dark mode is activated
 function getCodeBlockTheme() {
-  const {isDarkTheme} = useThemeContext();
+  const {isDarkTheme} = useThemeConfig();
   if (isDarkTheme) {
     return dracula;
   } else {

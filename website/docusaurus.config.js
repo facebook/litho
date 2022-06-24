@@ -148,12 +148,6 @@ module.exports = {
         indexName: 'fblitho',
       }
     }),
-    googleAnalytics: fbContent({
-      internal: undefined,
-      external: {
-        trackingID: 'UA-44373548-28',
-      }
-    }),
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
@@ -249,6 +243,12 @@ module.exports = {
         }),
         staticDocsProject: 'litho',
         trackingFile: 'xplat/staticdocs/WATCHED_FILES',
+        googleAnalytics: fbContent({
+          internal: undefined,
+          external: {
+            trackingID: 'UA-44373548-28',
+          }
+        }),
       },
     ],
   ],
