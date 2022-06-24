@@ -23,6 +23,7 @@ import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -137,6 +138,22 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   @Nullable
   public T getMountedDrawable() {
     return mDrawable;
+  }
+
+  public Rect getVisualBounds() {
+    Rect untranslatedBounds = copyBounds();
+    if (mMatrix == null) {
+      return untranslatedBounds;
+    }
+
+    RectF translatedRectF = new RectF(untranslatedBounds);
+    mMatrix.mapRect(translatedRectF);
+
+    return new Rect(
+        Math.round(translatedRectF.left),
+        Math.round(translatedRectF.top),
+        Math.round(translatedRectF.right),
+        Math.round(translatedRectF.bottom));
   }
 
   private void setDrawableVisibilitySafe(boolean visible, boolean restart) {
