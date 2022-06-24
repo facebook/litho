@@ -258,6 +258,11 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("mUpdateStateSyncRunnableLock")
   private @Nullable UpdateStateSyncRunnable mUpdateStateSyncRunnable;
 
+  private final Object mUpdateStateAsyncRunnableLock = new Object();
+
+  @GuardedBy("mUpdateStateAsyncRunnableLock")
+  private @Nullable UpdateStateAsyncRunnable mUpdateStateAsyncRunnable;
+
   private final ComponentContext mContext;
 
   private @Nullable RunnableHandler mPreAllocateMountContentHandler;
@@ -386,6 +391,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final @Nullable ComponentsLogger mLogger;
 
+  private final boolean mPostAsyncStateUpdatesSchedulingToMainThread;
+
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
   }
@@ -410,6 +417,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   protected ComponentTree(Builder builder) {
     mComponentsConfiguration = builder.componentsConfiguration;
+    mPostAsyncStateUpdatesSchedulingToMainThread =
+        mComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread;
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = builder.root;
     if (builder.mLifecycleProvider != null) {
@@ -574,6 +583,7 @@ public class ComponentTree implements LithoLifecycleListener {
         mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
       }
     }
+
     synchronized (mCurrentCalculateLayoutRunnableLock) {
       if (mCurrentCalculateLayoutRunnable != null) {
         mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
@@ -1476,7 +1486,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    updateStateInternal(true, attribution, isCreateLayoutInProgress);
+    setupStateUpdateLayoutCalculation(attribution, isCreateLayoutInProgress);
   }
 
   final void updateHookStateSync(
@@ -1507,7 +1517,43 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    updateStateInternal(true, attribution, isCreateLayoutInProgress);
+    setupStateUpdateLayoutCalculation(attribution, isCreateLayoutInProgress);
+  }
+
+  private void setupStateUpdateLayoutCalculation(
+      String attribution, boolean isCreateLayoutInProgress) {
+    if (mPostAsyncStateUpdatesSchedulingToMainThread) {
+      postAsyncStateUpdateToFrontOfMainThread(attribution, isCreateLayoutInProgress);
+    } else {
+      updateStateInternal(true, attribution, isCreateLayoutInProgress);
+    }
+  }
+
+  /**
+   * Schedules a run of update state flow by posting a {@link UpdateStateAsyncRunnable} to the front
+   * of the {@link #mMainThreadHandler} queue.
+   *
+   * <p>This aims to allow the main thread to process all work (and eventual subsequent state
+   * updates), and then to run the state update flow (as fast as possible).
+   */
+  private void postAsyncStateUpdateToFrontOfMainThread(
+      String attribution, boolean isCreateLayoutInProgress) {
+    synchronized (mUpdateStateAsyncRunnableLock) {
+      if (mUpdateStateAsyncRunnable != null) {
+        mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
+      }
+      mUpdateStateAsyncRunnable =
+          new UpdateStateAsyncRunnable(attribution, isCreateLayoutInProgress);
+
+      String tag = EMPTY_STRING;
+      if (mMainThreadHandler.isTracing()) {
+        tag = "updateStateAsync " + attribution;
+        if (mRoot != null) {
+          tag = tag + mRoot.getSimpleName();
+        }
+      }
+      mMainThreadHandler.postAtFront(mUpdateStateAsyncRunnable, tag);
+    }
   }
 
   private void ensureSyncStateUpdateRunnable(String attribution, boolean isCreateLayoutInProgress) {
@@ -2498,10 +2544,18 @@ public class ComponentTree implements LithoLifecycleListener {
           mCurrentCalculateLayoutRunnable = null;
         }
       }
+
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
           mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
           mUpdateStateSyncRunnable = null;
+        }
+      }
+
+      synchronized (mUpdateStateAsyncRunnableLock) {
+        if (mUpdateStateAsyncRunnable != null) {
+          mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
+          mUpdateStateAsyncRunnable = null;
         }
       }
 
@@ -3225,6 +3279,26 @@ public class ComponentTree implements LithoLifecycleListener {
     @Override
     public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
+    }
+  }
+
+  /**
+   * This runnable is used to trigger the state update flow asynchronously. Therefore, it will
+   * results in a background threaded layout calculation.
+   */
+  private final class UpdateStateAsyncRunnable extends ThreadTracingRunnable {
+
+    private final String mAttribution;
+    private final boolean mIsCreateLayoutInProgress;
+
+    public UpdateStateAsyncRunnable(String attribution, boolean isCreateLayoutInProgress) {
+      mAttribution = attribution;
+      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
+    }
+
+    @Override
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+      updateStateInternal(true, mAttribution, mIsCreateLayoutInProgress);
     }
   }
 

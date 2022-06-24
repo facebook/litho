@@ -345,6 +345,14 @@ public class ComponentsConfiguration {
    */
   public static boolean isNonMainThreadFocusRequestLoggingEnabled = false;
 
+  /**
+   * Determines if we employ the strategy to post async state updates scheduling at the front of the
+   * MainThread queue.
+   *
+   * <p>This is a strategy that aims to improve our state updates batching.
+   */
+  public static boolean postAsyncStateUpdatesSchedulingToMainThread = false;
+
   public static ComponentsConfiguration.Builder create() {
     return create(defaultComponentsConfiguration);
   }

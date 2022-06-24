@@ -18,11 +18,14 @@ package com.facebook.litho
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.SizeSpec.EXACTLY
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleText
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
@@ -30,11 +33,13 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
+import org.robolectric.shadows.ShadowLooper
 
 /** Unit tests for [useState]. */
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -44,9 +49,18 @@ class KStateTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
 
+  @Rule
+  @JvmField
+  val backgroundLayoutLooperRule: BackgroundLayoutLooperRule = BackgroundLayoutLooperRule()
+
   private fun <T> ComponentScope.useCustomState(value: T): State<T> {
     val state = useState { value }
     return state
+  }
+
+  @After
+  fun tearDown() {
+    ComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread = false
   }
 
   @Test
@@ -108,6 +122,89 @@ class KStateTest {
 
     assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
     assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
+  }
+
+  @Test
+  fun stateUpdates_batched_triggerOnlyOneRender() {
+    ComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread = true
+
+    val renderCount = AtomicInteger(0)
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+
+        val counter = useState { 0 }
+
+        return Row(
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  // have to block the main looper while we are queueing updates to make
+                  // sure that if any scheduling is posted to the main thread, it only
+                  // happens after the work inside the onClick finishes.
+                  ShadowLooper.pauseMainLooper()
+                  counter.update { it + 1 }
+                  backgroundLayoutLooperRule.runToEndOfTasksSync()
+
+                  counter.update { it + 1 }
+                  backgroundLayoutLooperRule.runToEndOfTasksSync()
+                  ShadowLooper.unPauseMainLooper()
+                }) { child(Text(text = "Counter: ${counter.value}")) }
+      }
+    }
+
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 0") }
+    assertThat(renderCount.get()).isEqualTo(1)
+
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+    backgroundLayoutLooperRule.runToEndOfTasksSync()
+
+    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 2") }
+    assertThat(renderCount.get()).isEqualTo(2) /* 1 initial render + 1 update */
+  }
+
+  @Test
+  fun stateUpdates_notBatched_triggerMoreThanOneRender() {
+    ComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread = false
+
+    val renderCount = AtomicInteger(0)
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+
+        val counter = useState { 0 }
+
+        return Row(
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  // have to block the main looper while we are queueing updates to make
+                  // sure that if any scheduling is posted to the main thread, it only
+                  // happens after the work inside the onClick finishes.
+                  ShadowLooper.pauseMainLooper()
+
+                  counter.update { it + 1 }
+                  backgroundLayoutLooperRule.runToEndOfTasksSync()
+
+                  counter.update { it + 1 }
+                  backgroundLayoutLooperRule.runToEndOfTasksSync()
+
+                  ShadowLooper.unPauseMainLooper()
+                }) { child(Text(text = "Counter: ${counter.value}")) }
+      }
+    }
+
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 0") }
+
+    assertThat(renderCount.get()).isEqualTo(1)
+
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+    backgroundLayoutLooperRule.runToEndOfTasksSync()
+
+    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 2") }
+    assertThat(renderCount.get()).isEqualTo(3) /* 1 initial render + 2 updates */
   }
 
   @Test
