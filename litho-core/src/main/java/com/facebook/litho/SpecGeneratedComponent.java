@@ -16,14 +16,14 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.LayoutSpec;
-import javax.annotation.Nullable;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class SpecGeneratedComponent extends Component {
+public abstract class SpecGeneratedComponent extends Component implements EventTriggerTarget {
 
   private final String mSimpleName;
 
@@ -92,5 +92,27 @@ public abstract class SpecGeneratedComponent extends Component {
   @Override
   protected boolean usesLocalStateContainer() {
     return true;
+  }
+
+  @Override
+  @Nullable
+  public final Object acceptTriggerEvent(
+      EventTrigger eventTrigger, Object eventState, Object[] params) {
+    try {
+      return acceptTriggerEventImpl(eventTrigger, eventState, params);
+    } catch (Exception e) {
+      if (eventTrigger.mComponentContext != null) {
+        ComponentUtils.handle(eventTrigger.mComponentContext, e);
+        return null;
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  protected @Nullable Object acceptTriggerEventImpl(
+      EventTrigger eventTrigger, Object eventState, Object[] params) {
+    // Do nothing by default
+    return null;
   }
 }

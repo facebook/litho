@@ -96,7 +96,6 @@ public abstract class Component
         HasEventDispatcher,
         HasEventTrigger,
         EventDispatcher,
-        EventTriggerTarget,
         Equivalence<Component> {
 
   // This name needs to match the generated code in specmodels in
@@ -194,28 +193,6 @@ public abstract class Component
   @Override
   public MountItemsPool.ItemPool createRecyclingPool() {
     return onCreateMountContentPool();
-  }
-
-  @Override
-  @Nullable
-  public final Object acceptTriggerEvent(
-      EventTrigger eventTrigger, Object eventState, Object[] params) {
-    try {
-      return acceptTriggerEventImpl(eventTrigger, eventState, params);
-    } catch (Exception e) {
-      if (eventTrigger.mComponentContext != null) {
-        ComponentUtils.handle(eventTrigger.mComponentContext, e);
-        return null;
-      } else {
-        throw e;
-      }
-    }
-  }
-
-  protected @Nullable Object acceptTriggerEventImpl(
-      EventTrigger eventTrigger, Object eventState, Object[] params) {
-    // Do nothing by default
-    return null;
   }
 
   @ThreadSafe(enableChecks = false)

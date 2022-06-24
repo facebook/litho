@@ -77,12 +77,6 @@ abstract class MountableComponent() : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun acceptTriggerEventImpl(
-      eventTrigger: EventTrigger<*>,
-      eventState: Any,
-      params: Array<out Any>
-  ) = super.acceptTriggerEventImpl(eventTrigger, eventState, params)
-
   final override fun applyPreviousRenderData(previousRenderData: RenderData) =
       super.applyPreviousRenderData(previousRenderData)
 

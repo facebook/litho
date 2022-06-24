@@ -68,12 +68,6 @@ abstract class KComponent : Component() {
   // All other Component lifecycle methods are made final and no-op here as they shouldn't be
   // overriden.
 
-  final override fun acceptTriggerEventImpl(
-      eventTrigger: EventTrigger<*>,
-      eventState: Any,
-      params: Array<out Any>
-  ) = super.acceptTriggerEventImpl(eventTrigger, eventState, params)
-
   final override fun applyPreviousRenderData(previousRenderData: RenderData) =
       super.applyPreviousRenderData(previousRenderData)
 
