@@ -55,6 +55,7 @@ import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.config.BatchedUpdatesConfiguration;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
@@ -391,7 +392,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final @Nullable ComponentsLogger mLogger;
 
-  private final boolean mPostAsyncStateUpdatesSchedulingToMainThread;
+  private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
 
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
@@ -417,8 +418,21 @@ public class ComponentTree implements LithoLifecycleListener {
 
   protected ComponentTree(Builder builder) {
     mComponentsConfiguration = builder.componentsConfiguration;
-    mPostAsyncStateUpdatesSchedulingToMainThread =
-        mComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread;
+
+    BatchedUpdatesConfiguration batchedUpdatesConfiguration =
+        ComponentsConfiguration.sBatchedUpdatesConfiguration;
+    if (batchedUpdatesConfiguration == null) {
+      mBatchedStateUpdatesStrategy = null;
+    } else {
+      switch (batchedUpdatesConfiguration) {
+        case POST_TO_FRONT_OF_MAIN_THREAD:
+          mBatchedStateUpdatesStrategy = new PostStateUpdateToFrontOfMainThread();
+          break;
+        default:
+          mBatchedStateUpdatesStrategy = null;
+      }
+    }
+
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = builder.root;
     if (builder.mLifecycleProvider != null) {
@@ -1486,7 +1500,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    setupStateUpdateLayoutCalculation(attribution, isCreateLayoutInProgress);
+    onAsyncHookStateEnqueued(attribution, isCreateLayoutInProgress);
   }
 
   final void updateHookStateSync(
@@ -1517,42 +1531,14 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    setupStateUpdateLayoutCalculation(attribution, isCreateLayoutInProgress);
+    onAsyncHookStateEnqueued(attribution, isCreateLayoutInProgress);
   }
 
-  private void setupStateUpdateLayoutCalculation(
-      String attribution, boolean isCreateLayoutInProgress) {
-    if (mPostAsyncStateUpdatesSchedulingToMainThread) {
-      postAsyncStateUpdateToFrontOfMainThread(attribution, isCreateLayoutInProgress);
-    } else {
+  private void onAsyncHookStateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    if (mBatchedStateUpdatesStrategy == null) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
-    }
-  }
-
-  /**
-   * Schedules a run of update state flow by posting a {@link UpdateStateAsyncRunnable} to the front
-   * of the {@link #mMainThreadHandler} queue.
-   *
-   * <p>This aims to allow the main thread to process all work (and eventual subsequent state
-   * updates), and then to run the state update flow (as fast as possible).
-   */
-  private void postAsyncStateUpdateToFrontOfMainThread(
-      String attribution, boolean isCreateLayoutInProgress) {
-    synchronized (mUpdateStateAsyncRunnableLock) {
-      if (mUpdateStateAsyncRunnable != null) {
-        mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
-      }
-      mUpdateStateAsyncRunnable =
-          new UpdateStateAsyncRunnable(attribution, isCreateLayoutInProgress);
-
-      String tag = EMPTY_STRING;
-      if (mMainThreadHandler.isTracing()) {
-        tag = "updateStateAsync " + attribution;
-        if (mRoot != null) {
-          tag = tag + mRoot.getSimpleName();
-        }
-      }
-      mMainThreadHandler.postAtFront(mUpdateStateAsyncRunnable, tag);
+    } else {
+      mBatchedStateUpdatesStrategy.onStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
     }
   }
 
@@ -3571,6 +3557,36 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       return new ComponentTree(this);
+    }
+  }
+
+  /**
+   * Schedules a run of update state flow by posting a {@link UpdateStateAsyncRunnable} to the front
+   * of the {@link #mMainThreadHandler} queue.
+   *
+   * <p>This aims to allow the main thread to process all work (and eventual subsequent state
+   * updates), and then to run the state update flow (as fast as possible).
+   */
+  class PostStateUpdateToFrontOfMainThread implements BatchedStateUpdatesStrategy {
+
+    @Override
+    public void onStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+      synchronized (mUpdateStateAsyncRunnableLock) {
+        if (mUpdateStateAsyncRunnable != null) {
+          mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
+        }
+        mUpdateStateAsyncRunnable =
+            new UpdateStateAsyncRunnable(attribution, isCreateLayoutInProgress);
+
+        String tag = EMPTY_STRING;
+        if (mMainThreadHandler.isTracing()) {
+          tag = "updateStateAsync " + attribution;
+          if (mRoot != null) {
+            tag = tag + mRoot.getSimpleName();
+          }
+        }
+        mMainThreadHandler.postAtFront(mUpdateStateAsyncRunnable, tag);
+      }
     }
   }
 }

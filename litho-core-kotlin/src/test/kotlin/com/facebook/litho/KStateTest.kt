@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.SizeSpec.EXACTLY
+import com.facebook.litho.config.BatchedUpdatesConfiguration
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -60,7 +61,7 @@ class KStateTest {
 
   @After
   fun tearDown() {
-    ComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread = false
+    ComponentsConfiguration.sBatchedUpdatesConfiguration = null
   }
 
   @Test
@@ -126,7 +127,8 @@ class KStateTest {
 
   @Test
   fun stateUpdates_batched_triggerOnlyOneRender() {
-    ComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread = true
+    ComponentsConfiguration.sBatchedUpdatesConfiguration =
+        BatchedUpdatesConfiguration.POST_TO_FRONT_OF_MAIN_THREAD
 
     val renderCount = AtomicInteger(0)
 
@@ -166,7 +168,7 @@ class KStateTest {
 
   @Test
   fun stateUpdates_notBatched_triggerMoreThanOneRender() {
-    ComponentsConfiguration.postAsyncStateUpdatesSchedulingToMainThread = false
+    ComponentsConfiguration.sBatchedUpdatesConfiguration = null
 
     val renderCount = AtomicInteger(0)
 

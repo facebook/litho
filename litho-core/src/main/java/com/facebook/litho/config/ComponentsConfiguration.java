@@ -346,12 +346,11 @@ public class ComponentsConfiguration {
   public static boolean isNonMainThreadFocusRequestLoggingEnabled = false;
 
   /**
-   * Determines if we employ the strategy to post async state updates scheduling at the front of the
-   * MainThread queue.
+   * This configuration will determine which strategy we will try to employ to batch state updates.
    *
-   * <p>This is a strategy that aims to improve our state updates batching.
+   * <p>When {@code null} then we will have no specific batching strategy.
    */
-  public static boolean postAsyncStateUpdatesSchedulingToMainThread = false;
+  @Nullable public static BatchedUpdatesConfiguration sBatchedUpdatesConfiguration = null;
 
   public static ComponentsConfiguration.Builder create() {
     return create(defaultComponentsConfiguration);
