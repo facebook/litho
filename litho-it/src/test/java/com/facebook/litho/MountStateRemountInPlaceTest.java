@@ -24,7 +24,6 @@ import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
@@ -33,19 +32,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
 import android.graphics.Color;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.LayoutSpecConditionalReParenting;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
-import com.facebook.litho.widget.TextInput;
-import com.facebook.rendercore.utils.MeasureSpecUtils;
-import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -399,64 +390,5 @@ public class MountStateRemountInPlaceTest {
     assertThat(thirdComponent.wasOnMountCalled()).isTrue();
     assertThat(thirdComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
-  }
-
-  @Test
-  public void testRemountSameSubTreeWithDifferentParentHost() {
-    // RenderCore MountState does not use ComponentsLogger, so this test cannot work when it is
-    // enabled.
-    if (ComponentsConfiguration.delegateToRenderCoreMount) {
-      return;
-    }
-
-    ComponentContext c = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
-    mLegacyLithoViewRule.useContext(c);
-
-    Component component = TextInput.create(c).heightDip(100).widthDip(100).build();
-
-    mLegacyLithoViewRule
-        .attachToWindow()
-        .setRootAndSizeSpecSync(
-            LayoutSpecConditionalReParenting.create(c)
-                .firstComponent(component)
-                .reParent(false)
-                .build(),
-            MeasureSpecUtils.exactly(1000),
-            MeasureSpecUtils.exactly(1000))
-        .measure()
-        .layout();
-
-    mLegacyLithoViewRule
-        .attachToWindow()
-        .setRootAndSizeSpecSync(
-            LayoutSpecConditionalReParenting.create(c)
-                .firstComponent(component)
-                .reParent(true)
-                .build(),
-            MeasureSpecUtils.exactly(1000),
-            MeasureSpecUtils.exactly(1000))
-        .measure()
-        .layout();
-
-    final List<TestPerfEvent> events =
-        mComponentsLogger.getLoggedPerfEvents().stream()
-            .filter(
-                new Predicate<PerfEvent>() {
-                  @Override
-                  public boolean test(PerfEvent e) {
-                    return e.getMarkerId() == FrameworkLogEvents.EVENT_MOUNT;
-                  }
-                })
-            .map(
-                new Function<PerfEvent, TestPerfEvent>() {
-                  @Override
-                  public TestPerfEvent apply(PerfEvent e) {
-                    return (TestPerfEvent) e;
-                  }
-                })
-            .collect(Collectors.toList());
-    assertThat(events).hasSize(2);
-    assertThat(events.get(1).getAnnotations()).containsEntry(PARAM_MOVED_COUNT, 2);
-    assertThat(events.get(1).getPoints()).contains("PREPARE_MOUNT_START", "PREPARE_MOUNT_END");
   }
 }

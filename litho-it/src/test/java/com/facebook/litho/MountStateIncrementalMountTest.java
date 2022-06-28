@@ -216,7 +216,7 @@ public class MountStateIncrementalMountTest {
                     .child(excludeIMComponent))
             .build();
 
-    LithoView lithoView = new LithoView(mContext, true);
+    LithoView lithoView = new LithoView(mContext);
     mLegacyLithoViewRule
         .useLithoView(lithoView)
         .setRoot(root)

@@ -80,8 +80,6 @@ class ComponentErrorBoundaryTest {
     // Disable reconciliation so that the onCreateLayout is called for layout.
     ComponentsConfiguration.isReconciliationEnabled = false
     ComponentsConfiguration.isAnimationDisabled = false
-    ComponentsConfiguration.delegateToRenderCoreMount = true
-    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = true
     assumeThat(
         "These tests can only be run in debug mode.",
         ComponentsConfiguration.IS_INTERNAL_BUILD,
@@ -93,8 +91,6 @@ class ComponentErrorBoundaryTest {
     // Reset the the values of the config.
     ComponentsConfiguration.isReconciliationEnabled = currentReconciliationValue
     ComponentsConfiguration.isAnimationDisabled = true
-    ComponentsConfiguration.delegateToRenderCoreMount = false
-    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = false
   }
 
   @Test

@@ -28,13 +28,11 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
-import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Reducer;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -148,13 +146,8 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
   private void useVisibilityOutputsExtension(
       LithoView lithoView, VisibilityMountExtension visibilityOutputsExtension) {
-    if (ComponentsConfiguration.delegateToRenderCoreMount) {
-      LithoHostListenerCoordinator lithoHostListenerCoordinator =
-          Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
-      lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);
-    } else {
-      final MountDelegateTarget mountState = lithoView.getMountDelegateTarget();
-      Whitebox.setInternalState(mountState, "mVisibilityExtension", visibilityOutputsExtension);
-    }
+    LithoHostListenerCoordinator lithoHostListenerCoordinator =
+        Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
+    lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);
   }
 }

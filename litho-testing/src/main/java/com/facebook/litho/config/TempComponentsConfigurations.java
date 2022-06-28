@@ -26,12 +26,6 @@ public class TempComponentsConfigurations {
   private static final boolean originalShouldAddHostViewForRootComponent =
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
-  private static final boolean originalDelegateToRenderCoreMount =
-      ComponentsConfiguration.delegateToRenderCoreMount;
-
-  private static final boolean originalEnsureParentMountedInRenderCore =
-      ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
-
   private static final boolean shouldCompareCommonPropsInIsEquivalentTo =
       ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo;
 
@@ -44,23 +38,6 @@ public class TempComponentsConfigurations {
     ComponentsConfiguration.shouldDisableBgFgOutputs = originalShouldDisableBgFgOutputs;
     ComponentsConfiguration.shouldAddHostViewForRootComponent =
         originalShouldAddHostViewForRootComponent;
-  }
-
-  public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {
-    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = value;
-  }
-
-  public static void setDelegateToRenderCoreMount(boolean value) {
-    ComponentsConfiguration.delegateToRenderCoreMount = value;
-  }
-
-  public static void restoreDelegateToRenderCoreMount() {
-    ComponentsConfiguration.delegateToRenderCoreMount = originalDelegateToRenderCoreMount;
-  }
-
-  public static void restoreEnsureParentMountedInRenderCoreMountState() {
-    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState =
-        originalEnsureParentMountedInRenderCore;
   }
 
   public static void setShouldCompareCommonPropsInIsEquivalentTo(

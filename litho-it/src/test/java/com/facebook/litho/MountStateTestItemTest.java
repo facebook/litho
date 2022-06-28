@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -86,8 +85,6 @@ public class MountStateTestItemTest {
 
   @Test
   public void testEndToEndExtensionsWorkWithRenderCoreMountState() {
-    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
             mContext,
@@ -99,8 +96,6 @@ public class MountStateTestItemTest {
             });
 
     LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
-
-    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
   }
 
   @Test

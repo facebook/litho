@@ -31,7 +31,6 @@ import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.accessibility.importantForAccessibility
 import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.animated.alpha
-import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.width
@@ -51,8 +50,6 @@ import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
@@ -65,16 +62,6 @@ class MountableComponentsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
   @Rule @JvmField val expectedException = ExpectedException.none()
-
-  @Before
-  fun before() {
-    TempComponentsConfigurations.setDelegateToRenderCoreMount(true)
-  }
-
-  @After
-  fun after() {
-    TempComponentsConfigurations.restoreDelegateToRenderCoreMount()
-  }
 
   @Test
   fun `should render mountable component`() {

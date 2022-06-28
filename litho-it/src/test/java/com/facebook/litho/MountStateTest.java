@@ -114,10 +114,6 @@ public class MountStateTest {
 
   @Test
   public void onSetRootWithNoOutputsWithRenderCore_shouldSuccessfullyCompleteMount() {
-    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-
-    ComponentsConfiguration.delegateToRenderCoreMount = true;
-
     final Component root =
         Wrapper.create(mContext)
             .delegate(SolidColor.create(mContext).color(Color.BLACK).build())
@@ -133,16 +129,10 @@ public class MountStateTest {
     final Component emptyRoot = Wrapper.create(mContext).delegate(null).build();
 
     mLegacyLithoViewRule.setRoot(emptyRoot);
-
-    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
   }
 
   @Test
   public void onSetRootWithSimilarComponent_MountContentShouldUsePools() {
-    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-
-    ComponentsConfiguration.delegateToRenderCoreMount = true;
-
     final Component root =
         Column.create(mContext)
             .child(TextInput.create(mContext).widthDip(100).heightDip(100))
@@ -169,16 +159,10 @@ public class MountStateTest {
     View newView = mLegacyLithoViewRule.getLithoView().getChildAt(0);
 
     assertThat(newView).isSameAs(view);
-
-    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
   }
 
   @Test
   public void onSetRootWithDifferentComponent_MountContentPoolsShouldNoCollide() {
-    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-
-    ComponentsConfiguration.delegateToRenderCoreMount = true;
-
     final Component root =
         Column.create(mContext)
             .child(TextInput.create(mContext).widthDip(100).heightDip(100))
@@ -199,14 +183,10 @@ public class MountStateTest {
     mLegacyLithoViewRule
         .setRoot(newRoot)
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
-
-    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
   }
 
   @Test
   public void onSetRootWithNullComponentWithStatelessness_shouldMountWithoutCrashing() {
-    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-
     mLegacyLithoViewRule
         .attachToWindow()
         .setRoot(EmptyComponent.create(mLegacyLithoViewRule.getContext()))
@@ -222,15 +202,11 @@ public class MountStateTest {
     assertThat(tree.getMountableOutputCount()).isEqualTo(1);
     assertThat(tree.getRoot()).isSameAs(tree.getRenderTreeNodeAtIndex(0));
     assertThat(tree.getRenderTreeNodeIndex(ROOT_HOST_ID)).isEqualTo(0);
-
-    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
   }
 
   @Test
   public void mountingChildForUnmountedParentInRenderCore_shouldMountWithoutCrashing() {
-    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
-    TempComponentsConfigurations.setEnsureParentMountedInRenderCoreMountState(true);
 
     final Component root =
         Row.create(mContext)
@@ -273,16 +249,11 @@ public class MountStateTest {
     // If there is a problem, a crash will occur here.
     mLegacyLithoViewRule.getLithoView().getMountDelegateTarget().notifyMount(childId);
 
-    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
-    TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
   }
 
   @Test
   public void shouldUnregisterAllExtensions_whenUnmountAllItems() {
-    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-    TempComponentsConfigurations.setEnsureParentMountedInRenderCoreMountState(true);
-
     final Component root =
         Row.create(mContext)
             .backgroundColor(Color.BLUE)
@@ -321,9 +292,6 @@ public class MountStateTest {
     assertThat(coordinator).isNull();
     assertThat(mountDelegate).isNotNull();
     assertThat(mountDelegate.getExtensionStates()).isEmpty();
-
-    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
-    TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
   }
 
   /**

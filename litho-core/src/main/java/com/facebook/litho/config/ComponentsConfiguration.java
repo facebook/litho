@@ -145,16 +145,12 @@ public class ComponentsConfiguration {
    */
   public static boolean boostPerfLayoutStateFuture;
 
-  public static boolean delegateToRenderCoreMount = true;
-
   public static boolean alwaysWriteDiffNodes = false;
 
   /**
    * Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder
    */
   public static boolean computeRangeOnSyncLayout = false;
-
-  public static boolean ensureParentMountedInRenderCoreMountState = true;
 
   public static boolean shouldDisableBgFgOutputs = false;
 

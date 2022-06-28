@@ -268,16 +268,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     this(context, null);
   }
 
-  public LithoView(ComponentContext context, boolean delegateToRenderCore) {
-    this(context, null, delegateToRenderCore);
-  }
-
   public LithoView(ComponentContext context, @Nullable AttributeSet attrs) {
-    this(context, attrs, ComponentsConfiguration.delegateToRenderCoreMount);
-  }
-
-  public LithoView(
-      ComponentContext context, @Nullable AttributeSet attrs, final boolean delegateToRenderCore) {
     super(context.getAndroidContext(), attrs);
     mComponentContext = context;
 

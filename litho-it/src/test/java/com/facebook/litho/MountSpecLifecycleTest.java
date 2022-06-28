@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -413,13 +412,6 @@ public class MountSpecLifecycleTest {
 
   @Test
   public void onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethodsInRenderCore() {
-    // Only run when using mount delegate target - this test is specific for rendercore mountstate.
-    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
-      return;
-    }
-
-    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
-
     final Looper looper = ShadowLooper.getLooperForThread(Thread.currentThread());
     final ComponentTree tree =
         ComponentTree.create(mLegacyLithoViewRule.getContext())
@@ -454,8 +446,6 @@ public class MountSpecLifecycleTest {
     assertThat(MountItemsPool.getMountItemPools().size())
         .describedAs("Should contain only 1 content pool")
         .isEqualTo(1);
-
-    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
   }
 
   @Test
