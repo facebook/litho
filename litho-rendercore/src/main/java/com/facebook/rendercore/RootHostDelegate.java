@@ -63,6 +63,10 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
       return;
     }
 
+    if (newRenderTree == null) {
+      mMountState.unmountAllItems();
+    }
+
     mCurrentRenderTree = newRenderTree;
 
     mHost.requestLayout();
@@ -129,17 +133,9 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
         }
 
         renderTree = mCurrentRenderTree;
-
-        if (renderTree != null) {
-          mMountState.mount(renderTree);
-        } else {
-          mMountState.unmountAllItems();
-        }
-
+        mMountState.mount(renderTree);
         retries++;
       }
-    } else {
-      mMountState.unmountAllItems();
     }
   }
 
