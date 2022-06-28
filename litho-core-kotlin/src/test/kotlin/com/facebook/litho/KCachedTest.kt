@@ -18,10 +18,10 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.kotlin.widget.EmptyComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.helper.ComponentTestHelper
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.EmptyComponent
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 
 /** Unit tests for [useCached]. */
 @Suppress("MagicNumber")
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KCachedTest {
 
   private lateinit var context: ComponentContext

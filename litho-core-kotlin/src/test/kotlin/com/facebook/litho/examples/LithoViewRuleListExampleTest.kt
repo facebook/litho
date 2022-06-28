@@ -16,7 +16,6 @@
 
 package com.facebook.litho.examples
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -24,6 +23,7 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +34,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Examples of LithoViewRuleList usage */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class LithoViewRuleListExampleTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

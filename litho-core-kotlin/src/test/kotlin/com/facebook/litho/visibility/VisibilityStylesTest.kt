@@ -17,7 +17,6 @@
 package com.facebook.litho.visibility
 
 import android.widget.FrameLayout
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
@@ -25,6 +24,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Assertions.assertThat
@@ -33,7 +33,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for visibility event styles. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class VisibilityStylesTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

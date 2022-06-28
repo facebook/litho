@@ -18,7 +18,6 @@ package com.facebook.litho.kotlin.widget
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Column
 import com.facebook.litho.RecyclePool
 import com.facebook.litho.Style
@@ -26,6 +25,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountItemsPool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class ContentPoolingTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

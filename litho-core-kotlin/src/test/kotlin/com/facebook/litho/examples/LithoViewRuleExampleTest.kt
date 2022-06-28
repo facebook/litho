@@ -20,7 +20,6 @@ package com.facebook.litho.examples
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -38,6 +37,7 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.ComponentConditions.typeIs
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.assertj.LithoViewAssert
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -58,7 +58,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Examples of LithoViewRule usage */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class LithoViewRuleExampleTest {
   // start_example
   @Rule @JvmField val lithoViewRule = LithoViewRule()

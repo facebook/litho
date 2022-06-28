@@ -19,7 +19,6 @@ package com.facebook.litho.kotlin.widget
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.AccessibilityRole
 import com.facebook.litho.EventHandler
 import com.facebook.litho.MatrixDrawable
@@ -35,6 +34,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -44,7 +44,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [ExperimentalImage] */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class ExperimentalImageTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

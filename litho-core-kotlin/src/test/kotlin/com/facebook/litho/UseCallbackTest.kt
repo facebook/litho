@@ -16,10 +16,10 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.collection.LazyList
@@ -30,7 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Tests for [useCallback] and capturing of props/state within collections lambdas. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class UseCallbackTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

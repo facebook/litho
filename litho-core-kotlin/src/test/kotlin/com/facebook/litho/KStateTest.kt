@@ -16,13 +16,13 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
@@ -38,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useState]. */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KStateTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

@@ -16,13 +16,13 @@
 
 package com.facebook.litho.widget.collection
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.rotation
 import com.facebook.litho.view.scale
@@ -35,7 +35,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [Collection]'s deps prop */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class CollectionDepsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

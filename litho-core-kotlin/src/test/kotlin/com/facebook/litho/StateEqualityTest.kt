@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -27,7 +27,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Unit tests for equals of [State]. */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class StateEqualityTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

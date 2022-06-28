@@ -16,11 +16,11 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import java.util.concurrent.atomic.AtomicInteger
@@ -35,7 +35,7 @@ import org.robolectric.shadows.ShadowLooper
 
 /** Unit tests for skipping state updates if value won't change. */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KStateSkipSameValueTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 

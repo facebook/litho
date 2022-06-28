@@ -18,7 +18,6 @@
 
 package com.facebook.litho.flexbox
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.LithoView
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -30,13 +29,14 @@ import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests interop between Spec Components and flexbox [Style] properties. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class FlexboxStyleCompatibilityTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

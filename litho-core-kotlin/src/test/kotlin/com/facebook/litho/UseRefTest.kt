@@ -16,11 +16,11 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
@@ -28,7 +28,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Tests for [useRef]. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class UseRefTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

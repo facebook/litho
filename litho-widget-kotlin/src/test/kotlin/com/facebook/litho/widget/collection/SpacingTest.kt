@@ -20,7 +20,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -33,7 +33,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [Collection]'s children */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class SpacingTest {
 
   lateinit var view: View

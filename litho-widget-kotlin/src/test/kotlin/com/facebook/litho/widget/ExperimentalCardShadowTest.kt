@@ -16,12 +16,12 @@
 
 package com.facebook.litho.kotlin.widget
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import junit.framework.Assert.assertNotNull
 import main.kotlin.com.facebook.litho.kotlin.widget.ExperimentalCardShadow
 import org.assertj.core.api.Assertions.assertThat
@@ -32,7 +32,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [ExperimentalCardShadow] */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class ExperimentalCardShadowTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

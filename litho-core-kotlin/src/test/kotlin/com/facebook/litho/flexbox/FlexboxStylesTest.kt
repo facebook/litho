@@ -18,7 +18,6 @@ package com.facebook.litho.flexbox
 
 import android.graphics.Color
 import android.text.Layout
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentHost
@@ -43,6 +42,7 @@ import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
@@ -55,7 +55,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for common styles defined in [Style]. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class FlexboxStylesTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

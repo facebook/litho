@@ -17,7 +17,6 @@
 package com.facebook.litho.accessibility
 
 import android.view.View
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.EventHandler
@@ -36,6 +35,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -44,7 +44,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for accessibility styles. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class AccessibilityStylesTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

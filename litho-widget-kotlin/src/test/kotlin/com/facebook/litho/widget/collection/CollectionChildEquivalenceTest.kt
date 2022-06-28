@@ -17,13 +17,13 @@
 package com.facebook.litho.widget.collection
 
 import android.graphics.Color
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.backgroundColor
 import com.facebook.litho.view.onClick
 import org.assertj.core.api.Assertions.assertThat
@@ -35,7 +35,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [Collection]'s children */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class CollectionChildEquivalenceTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

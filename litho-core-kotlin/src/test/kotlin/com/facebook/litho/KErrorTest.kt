@@ -16,9 +16,9 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicReference
@@ -31,7 +31,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useError]. */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KErrorTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

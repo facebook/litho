@@ -16,9 +16,9 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.EmptyComponent
@@ -31,7 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for common props equivalence of KComponent classes. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KComponentEquivalenceWithCommonPropsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

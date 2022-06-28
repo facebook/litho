@@ -16,9 +16,9 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -26,7 +26,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Tests for setting a manual key with the [key] function. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class ManualKeyTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

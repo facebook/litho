@@ -17,12 +17,12 @@
 package com.facebook.litho
 
 import android.graphics.Color
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
@@ -33,7 +33,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Tests for [StyleCompat] */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class StyleCompatTest {
 
   @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()

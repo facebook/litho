@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.accessibility.ImportantForAccessibility
 import com.facebook.litho.accessibility.accessibilityRole
 import com.facebook.litho.accessibility.accessibilityRoleDescription
@@ -38,6 +37,7 @@ import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.match
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
@@ -57,7 +57,7 @@ import org.junit.runner.RunWith
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class MountableComponentsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

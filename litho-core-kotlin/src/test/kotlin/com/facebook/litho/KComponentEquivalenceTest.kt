@@ -16,13 +16,13 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for props equivalence of KComponent classes. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KComponentEquivalenceTest {
 
   @Test

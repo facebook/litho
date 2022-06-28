@@ -19,8 +19,8 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.helper.ComponentTestHelper
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith
 
 /** Unit tests for [getTreeProp] and [createTreeProp]. */
 @Suppress("MagicNumber")
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class KTreePropsTest {
 
   private lateinit var context: ComponentContext

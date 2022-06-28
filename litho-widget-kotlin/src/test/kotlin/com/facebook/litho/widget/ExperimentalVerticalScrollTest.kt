@@ -18,7 +18,6 @@ package com.facebook.litho.kotlin.widget
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.LithoView
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.Style
@@ -27,6 +26,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.LithoScrollView
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -37,7 +37,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [ExperimentalVerticalScroll] */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class ExperimentalVerticalScrollTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

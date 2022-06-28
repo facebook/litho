@@ -16,11 +16,11 @@
 
 package com.facebook.litho.widget.collection
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.kotlin.widget.EmptyComponent
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
@@ -31,7 +31,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Tests for [Collection]'s children */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class CollectionIdTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.lang.IllegalArgumentException
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
@@ -30,7 +30,7 @@ const val DENSITY = 2f
 const val SCALED_DENSITY = 10f
 
 /** Unit tests [Dimen]. */
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class DimenTest {
 
   @Rule @JvmField val expectedException = ExpectedException.none()
