@@ -235,7 +235,7 @@ public class LithoHostListenerCoordinator {
     mTransitionsExtensionState =
         mMountDelegateTarget.registerMountExtension(
             TransitionsExtension.getInstance(
-                true, (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null)));
+                (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null)));
   }
 
   void collectAllTransitions(LayoutState layoutState) {

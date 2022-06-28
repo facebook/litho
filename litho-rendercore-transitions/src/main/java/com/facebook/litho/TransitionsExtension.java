@@ -59,17 +59,12 @@ public class TransitionsExtension
         TransitionsExtensionInput, TransitionsExtension.TransitionsExtensionState>
     implements UnmountDelegateExtension<TransitionsExtension.TransitionsExtensionState> {
 
-  private static final TransitionsExtension sDefaultInstance =
-      new TransitionsExtension(false, null);
-  private static final TransitionsExtension sRemountEndOfHostInstance =
-      new TransitionsExtension(true, null);
+  private static final TransitionsExtension sDefaultInstance = new TransitionsExtension(null);
   private static TransitionsExtension sDebugInstance;
   private final @Nullable String mDebugTag;
-  private final boolean mRemountAtEndOfHost;
 
-  private TransitionsExtension(final boolean remountAtEndOfHost, final @Nullable String debugTag) {
+  private TransitionsExtension(final @Nullable String debugTag) {
     mDebugTag = debugTag;
-    mRemountAtEndOfHost = remountAtEndOfHost;
   }
 
   public static TransitionsExtension getInstance() {
@@ -77,23 +72,14 @@ public class TransitionsExtension
   }
 
   public static TransitionsExtension getInstance(final @Nullable String debugTag) {
-    return getInstance(false, debugTag);
-  }
-
-  public static TransitionsExtension getInstance(
-      final boolean remountAtEndOfHost, final @Nullable String debugTag) {
-    TransitionsExtension instance;
     if (debugTag != null) {
       if (sDebugInstance == null) {
-        sDebugInstance = new TransitionsExtension(remountAtEndOfHost, debugTag);
+        sDebugInstance = new TransitionsExtension(debugTag);
       }
-
-      instance = sDebugInstance;
+      return sDebugInstance;
     } else {
-      instance = remountAtEndOfHost ? sRemountEndOfHostInstance : sDefaultInstance;
+      return sDefaultInstance;
     }
-
-    return instance;
   }
 
   static class TransitionsExtensionState {
@@ -224,7 +210,7 @@ public class TransitionsExtension
     }
 
     updateTransitions(extensionState, input, mDebugTag);
-    extractDisappearingItems(extensionState, input, mRemountAtEndOfHost);
+    extractDisappearingItems(extensionState, input);
   }
 
   @Override
@@ -628,8 +614,7 @@ public class TransitionsExtension
    */
   private static void extractDisappearingItems(
       ExtensionState<TransitionsExtensionState> extensionState,
-      TransitionsExtensionInput newTransitionsExtensionInput,
-      boolean remountAtEndOfHost) {
+      TransitionsExtensionInput newTransitionsExtensionInput) {
     final MountDelegateTarget mountTarget = getMountTarget(extensionState);
     int mountItemCount = mountTarget.getRenderUnitCount();
     final TransitionsExtensionState state = extensionState.getState();
@@ -673,16 +658,13 @@ public class TransitionsExtension
                 + index);
       }
 
+      // Ensure index is at end of host for both the incoming and outgoing frame.
+      // This means either the child count of the root in the outgoing frame,
+      // or the child count of the root in the incoming frame. Whichever is greater.
       final int remountIndex =
-          remountAtEndOfHost
-              ?
-              // Ensure index is at end of host for both the incoming and outgoing frame.
-              // This means either the child count of the root in the outgoing frame,
-              // or the child count of the root in the incoming frame. Whichever is greater.
-              Math.max(
-                  getMountableOutputCountOfRoot(lastInput),
-                  getMountableOutputCountOfRoot(newTransitionsExtensionInput))
-              : index;
+          Math.max(
+              getMountableOutputCountOfRoot(lastInput),
+              getMountableOutputCountOfRoot(newTransitionsExtensionInput));
 
       // Moving item to the root if needed.
       remountHostToRootIfNeeded(extensionState, remountIndex, disappearingItem);
