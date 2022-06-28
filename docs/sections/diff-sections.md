@@ -1,8 +1,11 @@
 ---
 id: diff-sections
-title: 'Advanced: Writing your own DiffSection'
+title: 'Writing Your Own DiffSection'
 ---
-In this page, you will learn how to build your own `DiffSection`. The Sections API already provides two implementations that cover the most frequent use cases of `SingleComponentSection` and `DataDiffSection`. If the given implementation is not sufficient for your use case, then you should **write your own `DiffSection`**, as the complexity and chances of introducing subtle errors are both high.
+
+This page contains information needed to build your own `DiffSection`.
+
+The Sections API (accessed from the 'API' menu) already provides two implementations that cover the most frequent use cases of `SingleComponentSection` and `DataDiffSection`. If the given implementation is not sufficient for your use case, then you should **write your own `DiffSection`**, as the complexity and chances of introducing subtle errors are both high.
 
 ## DiffSectionSpec
 
@@ -56,15 +59,15 @@ The method annotated with `@OnDiff` must have, as its first and second argument,
 
 These props and state have a special type: `Diff<T>`.  If your prop is defined in another annotated method like `@Prop String prop1`, it must be defined as `@Prop Diff<String> prop1` when being used in the `@OnDiff` method. The reason for this `Diff<T>` type wrapper is so we can compare previous prop values with new prop values when computing changes.
 
-## Making Changes to the List with ChangeSet
+## Making changes to the List with ChangeSet
 
 The `ChangeSet` argument of the `@OnDiff` method is used by the Diff section spec to specify how the section changes in response to new data.  The `@OnDiff` method will always be called with both the current *and previous* props and the state values (hence the `Diff<T>` type). The expectation is that you'd be able to use the current and previous values to determine how to update the items being rendered.
 
 When you've determined the changes to be made, you should call the corresponding method on the `ChangeSet` object. These methods correspond to `RecyclerView.Adapter`'s `notifyItem*` methods. You can get an  idea of how this works in [SingleComponentSectionSpec#onDiff](https://github.com/facebook/litho/blob/d766e3b4965edf84eda0090f58d0020aa302d650/litho-sections-core/src/main/java/com/facebook/litho/sections/common/SingleComponentSectionSpec.java#L25):
 
-  * If you don't have a new `Component` (`component.getNext() == null`) then change the list by removing that row.
-  * Else if you have a new `Component` and no previous component, insert a new row.
-  * If both an old component and a new component exist, update that row to the new component.
+* If you don't have a new `Component` (`component.getNext() == null`) then change the list by removing that row.
+* Else if you have a new `Component` and no previous component, insert a new row.
+* If both an old component and a new component exist, update that row to the new component.
 
 :::note
 The indexes used in the `ChangeSet` method calls are *relative to the current section*.  For example, index 0 in `SingleComponentSectionSpec` may be index 100 in the final list, depending on the section hierarchy. The framework will take care of translating local indexes to global indexes when processing the `ChangeSet`.
