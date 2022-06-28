@@ -42,7 +42,13 @@ module.exports = {
           'mainconcepts/use-error-boundary',
         ],
       },
-      'mainconcepts/flexbox-yoga',
+      {
+        'Layout System with Flexbox': [
+          'mainconcepts/flexbox-yoga',
+          'mainconcepts/yoga-playground',
+          'mainconcepts/troubleshooting',
+        ],
+      },
       // TODO: Kotlin-ify,
       'mainconcepts/coordinate-state-actions/keys-and-identity',
     ],

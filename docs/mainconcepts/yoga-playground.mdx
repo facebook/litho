@@ -1,0 +1,137 @@
+---
+id: yoga-playground
+title: Yoga Playground
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+You can use the [Yoga Playground](https://yogalayout.com/playground) to try different layout configurations and generate corresponding Litho code, as shown in the following screenshot.
+
+<img src={useBaseUrl('/images/yoga-playground.png')} alt='Yoga Playground' className="white-background" />
+
+## Android Views vs. Litho with Yoga
+
+This section lists typical layout configurations in Android and how they translate to Litho with Yoga.
+
+### Vertically stacked items
+
+The following table shows vertically stacked items for Android Views and Litho with Yoga.
+
+<table>
+<tr>
+  <th>Android Views</th>
+  <th>Litho with Yoga</th>
+</tr>
+<tr><td>
+
+```xml
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Text 1" />
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Text 2" />
+</LinearLayout>
+```
+</td><td>
+
+```kotlin
+Column {
+  child(Text(text = "Text 1"))
+  child(Text(text = "Text 2"))
+}
+```
+
+</td></tr>
+</table>
+
+### Two items equally stretched horizontally
+
+To achieve an effect similar to a `LinearLayout` with weights, Flexbox provides a concept called `flexGrow(<weight>)`, as featured in the following table.
+
+<table>
+<tr>
+  <th>Android Views</th>
+  <th>Litho with Yoga</th>
+</tr>
+<tr><td>
+
+```xml
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:backgroundColor="@color/red"
+        android:layout_weight="1"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:backgroundColor="@color/blue"
+        android:layout_weight="1"/>
+</LinearLayout>
+```
+
+</td><td>
+
+```kotlin
+Row {
+  child(Image(style = Style.flex(grow = 1f), drawable = ColorDrawable(Color.RED)))
+  child(Image(style = Style.flex(grow = 1f), drawable = ColorDrawable(Color.BLUE)))
+}
+```
+
+</td></tr>
+</table>
+
+### Absolutely positioned items
+
+If you'd like to overlay one view on top of the other, similar to a `FrameLayout`, Flexbox can achieve that with `positionType(ABSOLUTE)`, as featured in the following table.
+
+<table>
+<tr>
+  <th>Android Views</th>
+  <th>Litho with Yoga</th>
+</tr>
+<tr><td>
+
+```xml
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/some_big_image"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Overlaid text"/>
+</FrameLayout>
+```
+
+</td><td>
+
+```kotlin
+Column {
+  child(Image(
+    style = Style.width(100.dp).height(100.dp),
+    drawable = drawableRes(R.drawable.some_big_image)))
+  child(Text(
+    style = Style.positionType(YogaPositionType.ABSOLUTE),
+    text = "Overlaid text"))
+}
+```
+
+</td></tr>
+</table>
