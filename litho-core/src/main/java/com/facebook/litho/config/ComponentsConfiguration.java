@@ -342,6 +342,12 @@ public class ComponentsConfiguration {
   public static boolean isNonMainThreadFocusRequestLoggingEnabled = false;
 
   /**
+   * Defines whether or not we should throw an exception when focus requests which happen on threads
+   * different than the Main Thread.
+   */
+  public static boolean isNonMainThreadFocusRequestThrowingEnabled = false;
+
+  /**
    * This configuration will determine which strategy we will try to employ to batch state updates.
    *
    * <p>When {@code null} then we will have no specific batching strategy.
