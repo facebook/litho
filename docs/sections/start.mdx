@@ -1,29 +1,30 @@
 ---
 id: start
-title: 'The Basics: DiffSection and GroupSection'
+title: Sections Basics
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
 
-## Introduction to Sections API
-
 :::info
-The Sections API, which is built on top of Litho, is a declarative, composable, and thread-safe API for writing highly-optimised List screens.
+The Sections API (see the 'API' menu) is built on top of Litho. It provides a declarative, composable, and thread-safe API for writing highly optimised List screens.
 :::
 
-The Sections API tries to address issues experiences at Facebook when writing complex Lists, such as maintaining many view types, handling multiple data sources, and composing Lists together.
+## Introduction
+
+The Sections API tries to address issues experienced at Meta when writing complex Lists, such as maintaining many view types, handling multiple data sources, and composing Lists together.
 
 Litho Components are used for various aspects of the UI. Sections are a way of composing data into a list of Litho Components or Views.
+
 If you visualize your screen as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen. The following diagram shows the relationship between Sections and Litho components.
 
 <img src={useBaseUrl("/images/sections-intro.png")} width="800px" />
 
-Sections use the same hierarchical declarative data model as Components.  Under the hood, Sections transparently handle processes such as calculating minimal sets of changes for data updates and granular UI refreshes. As part of Litho, the Sections API shares the same main concepts, such as annotation-based code generation, event handling, props, and state updates. Sections functionality is built on top of [Android's RecyclerView](https://developer.android.com/guide/topics/ui/layout/recyclerview).
+Sections use the same hierarchical declarative data model as Components. Under the hood, Sections transparently handle processes such as calculating minimal sets of changes for data updates and granular UI refreshes. As part of Litho, the Sections API shares the same main concepts, such as annotation-based code generation, event handling, props, and state updates. Sections functionality is built on top of [Android's RecyclerView](https://developer.android.com/guide/topics/ui/layout/recyclerview).
 
-## List Building Blocks
+## List building blocks
 
-In this document, you'll be walked through the parts necessary to build a list: a `RecyclerCollectionComponent` for your layout, which sets several `DiffSection` that are either `SingleComponentSection` or `DataDiffSection`, all contained inside `GroupSection` hierarchies.
+This section details the parts necessary to build a list: a [RecyclerCollectionComponent](#recyclercollectioncomponent) for your layout, which sets several `DiffSection`s that are either [SingleComponentSection](#singlecomponentsection) or [DataDiffSection](#datadiffsection), all contained inside [GroupSection](#groupsection) hierarchies.
 
 As preparation, the following 10-minute video 'Litho Lessons: Diffing in Sections' covers the basics of how diffing operates.
 
@@ -46,7 +47,7 @@ For advanced use cases, such as snapping and horizontal Lists, see the [Recycler
 
 Most Lists are composed of groups of homogeneous items interleaved with one-off items: picture a list of contacts sorted alphabetically and separated by headers indicating the first letter of the contact's name.
 
-Following this model, the Sections API ships two `DiffSectionSpec` implementations that can be combined to represent the structure of nearly any surface: `SingleComponentSection` and `DataDiffSection`.
+Following this model, the Sections API ships two `DiffSectionSpec` implementations that can be combined to represent the structure of nearly any surface: [SingleComponentSection](#singlecomponentsection) and [DataDiffSection](#datadiffsection).
 
 #### SingleComponentSection
 
@@ -79,7 +80,7 @@ DataDiffSection.<MyModel>create(c)
     .renderEventHandler(MyGroupSection.onRenderEdge(c));
 ```
 
-`DataDiffSection` is designed to efficiently render the parts of a surface that handle large flows of data. When an item at a certain position needs to be displayed on screen, the framework will check whether the model received in the new list of data changed since the last time it was rendered.
+The `DataDiffSection` is designed to efficiently render the parts of a surface that handle large flows of data. When an item at a certain position needs to be displayed on screen, the framework checks whether the model received in the new list of data changed since the last time it was rendered.
 
 If the data changed for the item in that position, the framework would dispatch a `RenderEvent` for that item, and the `DataDiffSection` will use the `RenderEvent` handler passed as a prop to create a Component for that item and display it.
 
@@ -106,7 +107,7 @@ A `GroupSectionSpec` is used to **structure your Sections into a hierarchy**, ea
 
 Group section specs are classes annotated with `@GroupSectionSpec`. Implementing a `GroupSectionSpec` is very simple: you only need to write one method annotated with `@OnCreateChildren`. This method returns a tree of Sections that will have root in this `GroupSectionSpec`.
 
-The following code shows how you could declare a simple list that contains a header followed by a list of `String` items:
+The following code shows how you could declare a simple List that contains a header followed by a list of `String` items:
 
 ```java
 @GroupSectionSpec
@@ -145,9 +146,9 @@ class SimpleListSectionSpec {
 }
 ```
 
-## Putting all the Pieces Together
+## Putting all the pieces together
 
-Imagine a surface that has multiple sub-sections consisting of a header and list of Strings. An example of this is a list of contacts grouped alphabetically, delimited by headers showing the first letter of the name. This could be achieved easily by creating a `GroupSectionSpec` that has a `SimpleListSection` child for every letter, as described in the following code:
+Imagine a surface that has multiple sub-sections consisting of a header and a list of Strings. An example of this is a list of contacts grouped alphabetically, delimited by headers showing the first letter of the name. This could be achieved easily by creating a `GroupSectionSpec` that has a `SimpleListSection` child for every letter, as described in the following code:
 
 ```java
 @GroupSectionSpec
@@ -196,15 +197,12 @@ static Component onCreateLayout(
 The complexity of handling operations on your list, such as inserts or removes, is hidden away and handled by the infrastructure.
 :::
 
-## Further Reading
+## Further reading
 
-Start by reading [Best Practices and Performance](best-practices.mdx).
-
-Afterwards, read any/all of the following documents:
-
+* [Best Practices and Performance](best-practices.mdx) (start here)
 * [Adding and Adapting RecyclerCollection to your App](recycler-collection-component.md)
 * [Advanced Topic: Granular Dependency Injection](services.md)
-* [Advanced Topic: Prefetch and pagination](working-ranges.md).
+* [Advanced Topic: Prefetch and pagination](working-ranges.md)
 
 <FbInternalOnly>
 

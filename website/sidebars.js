@@ -53,10 +53,14 @@ module.exports = {
       'sections/best-practices',
       'sections/hscrolls',
       'sections/api-overview',
-      'sections/working-ranges',
-      'sections/services',
-      'sections/view-support',
-      'sections/diff-sections',
+      {
+        'Advanced': [
+          'sections/working-ranges',
+          'sections/services',
+          'sections/view-support',
+          'sections/diff-sections',
+        ],
+      },
       'sections/architecture',
     ],
     // TODO: Kotlin-ify this section
