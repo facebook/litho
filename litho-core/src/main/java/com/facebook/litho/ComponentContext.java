@@ -85,6 +85,8 @@ public class ComponentContext implements Cloneable {
 
   private @Nullable ScopedComponentInfo mScopedComponentInfo;
 
+  private boolean isNestedTreeContext;
+
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
@@ -185,6 +187,11 @@ public class ComponentContext implements Cloneable {
     componentContext.mGlobalKey = globalKey;
     componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
     componentContext.mParentTreeProps = parentContext.mTreeProps;
+
+    // TODO: T124275447 make these Component Context fields final
+    // Either this component is nested tree or descendant of nested tree component
+    componentContext.isNestedTreeContext =
+        Component.isNestedTree(scope) || parentContext.isNestedTreeContext;
 
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
@@ -658,5 +665,17 @@ public class ComponentContext implements Cloneable {
     return mComponentTree != null
         && mComponentTree.useRenderUnitIdMap()
         && mComponentTree.shouldReuseOutputs();
+  }
+
+  boolean isSplitStateHandlersEnabled() {
+    if (getComponentTree() != null) {
+      return getComponentTree().isSplitStateHandlersEnabled();
+    } else {
+      return ComponentsConfiguration.isSplitStateHandlersEnabled;
+    }
+  }
+
+  boolean isNestedTreeContext() {
+    return isSplitStateHandlersEnabled() && this.isNestedTreeContext;
   }
 }
