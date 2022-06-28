@@ -1,6 +1,6 @@
 ---
 id: services
-title: 'Advanced: Granular Dependency Injection'
+title: Granular Dependency Injection
 ---
 
 Values such as `@Prop` flow through Sections before being rendered on-screen. The Sections API sits between your data source and the UI Component to efficiently calculate the changesets you need to render your components. For better performance, you should only do work at the layer where it's required.
@@ -14,6 +14,7 @@ Services are used by Sections to control your data source imperatively. It is th
 Since a service is tied to a particular Section, this means it has access to the `@Prop` and `@State` and interacts with them. This also means that the service is able to respond to events such as `@OnViewportChanged` and `@OnRefresh` and call for a state update when new data arrives to allow the data to flow down the hierarchy.
 
 ### Creation
+
 Services are persisted across state updates for however long the sections remain in the hierarchy. The first and only instance of a `Service` should be created in the lifecycle `@OnCreateService`, as follows:
 
 ```java
@@ -74,6 +75,7 @@ As mentioned, services are able to respond to Litho and Sections events such as 
      service.refreshData();
  }
 ```
+
 or `@OnViewportChanged`:
 
 ```java

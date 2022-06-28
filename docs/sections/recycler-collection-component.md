@@ -1,6 +1,6 @@
 ---
 id: recycler-collection-component
-title: Adding and adapting RecyclerCollection to your App
+title: Adding and Adapting the RecyclerCollection to Your App
 ---
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks of any Android application that contain a scrolling list of items. Litho recommends using [RecyclerCollectionComponent](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) and [Sections](start.mdx) to build scrolling Lists easily.  These APIs can be used to build apps from simple, homogeneous Lists to complex, heterogeneous Lists backed by multiple data sources, all while taking advantage of features such as background layout and incremental mount.
@@ -86,7 +86,7 @@ There are three methods to set the height of a horizontally scrolling `RecyclerC
 * **Unknown height method** - the height is not known when the Component is created so let the h-scroll set its height to the height of the first item.
 * **Dynamic height method** - lets the h-scroll dynamically change its height to fit the tallest item. This is the least performant method.
 
-For more information on these methods, see the [Nested Scrolling and Measurement](hscrolls.mdx) page of the Litho documentation.
+For more information on these methods, see the [Horizontal Scrolling and Measurement](hscrolls.mdx) page of the Litho documentation.
 
 ### Pull to Refresh
 
@@ -107,9 +107,9 @@ final Component component =
 
 With the sections API, you can integrate data fetching through [loading events](../communicating-with-the-ui.md#loadingstate-loadingstate) and [services](services.md).  `RecyclerCollectionComponent` can listen to these [loading events](pathname:///javadoc/com/facebook/litho/sections/LoadingEvent.html) and respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things occur when fetching data:
 
- - `loadingComponent` - data is being loaded and there's nothing in the list
- - `emptyComponent` - data has finished loading and there's nothing to show.
- - `errorComponent` - data loading has failed and there's nothing in the list.
+* `loadingComponent` - data is being loaded and there's nothing in the list.
+* `emptyComponent` - data has finished loading and there's nothing to show.
+* `errorComponent` - data loading has failed and there's nothing in the list.
 
 ```java
 final Component component =
@@ -128,4 +128,4 @@ final Component component =
         .build();
  ```
 
-For details of props supported by `RecyclerCollectionComponent`, see it's [Javadoc web page](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html).
+For details of props supported by `RecyclerCollectionComponent`, see the [Javadoc web page](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html).

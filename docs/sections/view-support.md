@@ -1,11 +1,11 @@
 ---
 id: view-support
-title: 'Advanced: Mixing with Android Views'
+title: Mixing with Android Views
 ---
 
 Sections work best when combined with the rendering optimisations that Litho Components offer. However, the API also provides **support for rendering Android** `View`s instead of (or along with) Components. This makes the transition to Sections easier; you can still take advantage of the performance benefits regardless of your product's UI using traditional Android Views, Litho Components or a mix of the two.
 
-View support is available only through `DataDiffSection`.
+View support is available only through [DataDiffSection](start.mdx#datadiffsection).
 
 The following code shows how to declare what the framework should render for a certain item:
 
