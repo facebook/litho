@@ -55,6 +55,7 @@ import com.facebook.litho.specmodels.processor.TagExtractor;
 import com.facebook.litho.specmodels.processor.TriggerMethodExtractor;
 import com.facebook.litho.specmodels.processor.TypeVariablesExtractor;
 import com.facebook.litho.specmodels.processor.UpdateStateMethodExtractor;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -81,7 +82,9 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
       new BuilderMethodModel(
           ParameterizedTypeName.get(
-              ClassNames.EVENT_HANDLER, SectionClassNames.LOADING_EVENT_HANDLER),
+              ClassNames.EVENT_HANDLER.annotated(
+                  ImmutableList.of(AnnotationSpec.builder(ClassNames.NULLABLE).build())),
+              SectionClassNames.LOADING_EVENT_HANDLER),
           "loadingEventHandler");
 
   static {

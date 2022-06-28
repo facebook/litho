@@ -32,6 +32,7 @@ import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -43,7 +44,9 @@ public class PsiDiffSectionSpecModelFactory {
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
       new BuilderMethodModel(
           ParameterizedTypeName.get(
-              ClassNames.EVENT_HANDLER, SectionClassNames.LOADING_EVENT_HANDLER),
+              ClassNames.EVENT_HANDLER.annotated(
+                  ImmutableList.of(AnnotationSpec.builder(ClassNames.NULLABLE).build())),
+              SectionClassNames.LOADING_EVENT_HANDLER),
           "loadingEventHandler");
 
   public PsiDiffSectionSpecModelFactory() {

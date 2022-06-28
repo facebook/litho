@@ -145,7 +145,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
-      @Prop(optional = true) ItemDecoration itemDecoration,
+      @Prop(optional = true) @Nullable ItemDecoration itemDecoration,
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,

@@ -53,7 +53,7 @@ public abstract class Section extends SectionLifecycle
   private Section mParent;
   private boolean mInvalidated;
   private SectionContext mScopedContext;
-  EventHandler<LoadingEvent> loadingEventHandler;
+  @Nullable EventHandler<LoadingEvent> loadingEventHandler;
 
   /**
    * Holds onto how many direct section children of each type this Section has. Used for
@@ -111,7 +111,7 @@ public abstract class Section extends SectionLifecycle
       return getThis();
     }
 
-    protected T loadingEventHandler(EventHandler<LoadingEvent> loadingEventHandler) {
+    protected T loadingEventHandler(@Nullable EventHandler<LoadingEvent> loadingEventHandler) {
       mSection.loadingEventHandler = loadingEventHandler;
       return getThis();
     }
