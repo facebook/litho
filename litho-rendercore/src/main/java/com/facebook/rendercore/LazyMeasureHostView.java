@@ -67,7 +67,10 @@ public class LazyMeasureHostView extends HostView implements RenderCoreExtension
 
       if (mCurrentRenderResult != null) {
         mMountState.mount(mCurrentRenderResult.getRenderTree());
+      } else {
+        mMountState.unmountAllItems();
       }
+
       // We could run into the case that mounting a tree ends up requesting another mount.
       // We need to keep re-mounting untile the mounted renderTree matches the mCurrentRenderResult.
       int retries = 0;
@@ -109,7 +112,6 @@ public class LazyMeasureHostView extends HostView implements RenderCoreExtension
 
     if (lazyRenderTreeProvider == null) {
       mCurrentRenderResult = null;
-      mMountState.unmountAllItems();
     }
 
     mLazyRenderTreeProvider = lazyRenderTreeProvider;

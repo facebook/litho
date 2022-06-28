@@ -69,9 +69,17 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
         }
 
         renderTree = mCurrentRenderTree;
-        mMountState.mount(renderTree);
+
+        if (renderTree != null) {
+          mMountState.mount(renderTree);
+        } else {
+          mMountState.unmountAllItems();
+        }
+
         retries++;
       }
+    } else {
+      mMountState.unmountAllItems();
     }
 
     performLayoutOnChildrenIfNecessary(this);
@@ -86,10 +94,6 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   public void setRenderTree(@Nullable RenderTree tree) {
     if (mCurrentRenderTree == tree) {
       return;
-    }
-
-    if (tree == null) {
-      mMountState.unmountAllItems();
     }
 
     mCurrentRenderTree = tree;
