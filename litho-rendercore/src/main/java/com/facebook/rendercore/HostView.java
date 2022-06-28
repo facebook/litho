@@ -101,9 +101,13 @@ public class HostView extends Host {
     }
 
     throw new IllegalStateException(
-        "Mount item "
-            + item
-            + "Was selected for unmount but was not found in the list of mounted items");
+        "Mount item was not found in the list of mounted items."
+            + "\nItem to remove: "
+            + item.getRenderTreeNode().generateDebugString(null)
+            + "\nMounted items: "
+            + getDescriptionOfMountedItems(mMountItems)
+            + "\nScraped items: "
+            + getDescriptionOfMountedItems(mScrapMountItemsArray));
   }
 
   private static int findItemIndexInArray(MountItem item, MountItem[] array) {
@@ -613,6 +617,31 @@ public class HostView extends Host {
       }
       invalidate();
     }
+  }
+
+  private String getDescriptionOfMountedItems(@Nullable MountItem[] items) {
+
+    if (items == null) {
+      return "<null>";
+    }
+
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < items.length; i++) {
+      if (items[i] != null) {
+        builder
+            .append("Item at index: ")
+            .append(i)
+            .append(" Type: ")
+            .append(items[i].getRenderUnit().getDescription())
+            .append(" Position in parent: ")
+            .append(items[i].getRenderTreeNode().getPositionInParent())
+            .append("\n");
+      } else {
+        builder.append("Item at index: ").append(i).append(" item is null").append("\n");
+      }
+    }
+
+    return builder.toString();
   }
 
   static class MarshmallowHelper {

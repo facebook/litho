@@ -125,7 +125,7 @@ public class RenderTreeNode {
 
   public String generateDebugString(@Nullable RenderTree tree) {
     final long id = mRenderUnit.getId();
-    final String contentType = mRenderUnit.getRenderContentType().toString();
+    final String contentType = mRenderUnit.getDescription();
     final int index = tree != null ? tree.getRenderTreeNodeIndex(mRenderUnit.getId()) : -1;
     final String bounds = mBounds.toShortString();
     final int childCount = getChildrenCount();
@@ -133,7 +133,7 @@ public class RenderTreeNode {
 
     return String.format(
         Locale.US,
-        "Id=%d; contentType='%s'; indexInTree=%d; posInParent=%d; bounds=%s; absPosition=[%d, %d]; childCount=%d; parentId=%d;",
+        "Id=%d; renderUnit='%s'; indexInTree=%d; posInParent=%d; bounds=%s; absPosition=[%d, %d]; childCount=%d; parentId=%d;",
         id,
         contentType,
         index,
