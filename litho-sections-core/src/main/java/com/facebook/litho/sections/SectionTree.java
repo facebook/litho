@@ -187,7 +187,6 @@ public class SectionTree {
 
   private final @Nullable PendingFocusOrchestrator mPendingFocusOrchestrator;
   private final boolean mIsPendingFocusEnabled;
-  private final boolean mIsNonMainThreadFocusRequestLoggingEnabled;
   private final boolean mIsNonMainThreadFocusRequestThrowingEnabled;
 
   private LoadEventsHandler mLoadEventsHandler;
@@ -360,8 +359,6 @@ public class SectionTree {
     mUseBackgroundChangeSets = mTarget.supportsBackgroundChangeSets();
     mFocusDispatcher = new FocusDispatcher(mTarget);
     mIsPendingFocusEnabled = ComponentsConfiguration.isPendingFocusEnabled;
-    mIsNonMainThreadFocusRequestLoggingEnabled =
-        ComponentsConfiguration.isNonMainThreadFocusRequestLoggingEnabled;
     mIsNonMainThreadFocusRequestThrowingEnabled =
         ComponentsConfiguration.isNonMainThreadFocusRequestThrowingEnabled;
 
@@ -854,7 +851,6 @@ public class SectionTree {
 
   void requestFocusEnd(final String sectionKey) {
     maybeThrowIfNotMainThread();
-    logFocusRequestIfNotMainThread();
 
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
@@ -880,7 +876,6 @@ public class SectionTree {
 
   private void requestFocus(final String sectionKey, final int index) {
     maybeThrowIfNotMainThread();
-    logFocusRequestIfNotMainThread();
 
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
@@ -917,7 +912,6 @@ public class SectionTree {
 
   void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
     maybeThrowIfNotMainThread();
-    logFocusRequestIfNotMainThread();
 
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
@@ -947,7 +941,6 @@ public class SectionTree {
 
   void requestFocusWithOffset(final String sectionKey, final Object id, final int offset) {
     maybeThrowIfNotMainThread();
-    logFocusRequestIfNotMainThread();
 
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
@@ -991,7 +984,6 @@ public class SectionTree {
       final int offset,
       final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
-    logFocusRequestIfNotMainThread();
 
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
@@ -1024,7 +1016,6 @@ public class SectionTree {
       final int offset,
       final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
-    logFocusRequestIfNotMainThread();
 
     if (mIsPendingFocusEnabled) {
       synchronized (this) {
@@ -1736,16 +1727,6 @@ public class SectionTree {
           "Focus request not called from Main Thread (Current Thread:"
               + Thread.currentThread().getName()
               + ")");
-    }
-  }
-
-  private void logFocusRequestIfNotMainThread() {
-    if (mIsNonMainThreadFocusRequestLoggingEnabled && !ThreadUtils.isMainThread()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.FATAL,
-          "SectionTree:FocusRequestNotInMainThread",
-          "The focus request is being called from non-UI thread: "
-              + Thread.currentThread().getName());
     }
   }
 
