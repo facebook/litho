@@ -14,17 +14,17 @@ import TabItem from '@theme/TabItem';
 
 Litho provides predefined APIs to support a range of use cases where components require callbacks when the on-screen position relative to the visible viewport changes.
 
-## Types of Visibility Callbacks
+## Types of Visibility callbacks
 
 The framework currently supports six types of Visibility callbacks:
 
-* [Visible](pathname:///javadoc/com/facebook/litho/VisibleEvent.html): Invoked when at least 1 pixel of the Component is visible. If the component mounts some content, then the `event.content`
+* [Visible](pathname:///javadoc/com/facebook/litho/VisibleEvent.html) - invoked when at least 1 pixel of the Component is visible. If the component mounts some content, then the `event.content`
 will be a reference to that content.
-* [Invisible](pathname:///javadoc/com/facebook/litho/InvisibleEvent.html): Invoked when the Component no longer has any pixels on the screen.
-* [Focused](pathname:///javadoc/com/facebook/litho/FocusedVisibleEvent.html): Invoked when either the Component occupies at least 50% of the viewport or if the Component is smaller than half the viewport, when it is fully visible.
-* [Unfocused](pathname:///javadoc/com/facebook/litho/UnfocusedVisibleEvent.html): Invoked when the Component is no longer focused, such as if it's not fully visible and does not occupy at least half the viewport.
-* [Full Impression](pathname:///javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): If the Component is smaller than the viewport, this callback is invoked when the entire Component is visible in the viewport. If the Component is bigger than the viewport, then just covering the viewport won't invoke this callback: it will be invoked when all the edges have passed through the viewport once.
-* [Visibility Changed](pathname:///javadoc/com/facebook/litho/VisibilityChangedEvent.html): Invoked when the visible bounds of the Component change. The event object will tell you the visible top and left coordinate, and the current visible width and height of the content.
+* [Invisible](pathname:///javadoc/com/facebook/litho/InvisibleEvent.html) - invoked when the Component no longer has any pixels on the screen.
+* [Focused](pathname:///javadoc/com/facebook/litho/FocusedVisibleEvent.html) - invoked when either the Component occupies at least 50% of the viewport or if the Component is smaller than half the viewport, when it is fully visible.
+* [Unfocused](pathname:///javadoc/com/facebook/litho/UnfocusedVisibleEvent.html) - invoked when the Component is no longer focused, such as if it's not fully visible and does not occupy at least half the viewport.
+* [Full Impression](pathname:///javadoc/com/facebook/litho/FullImpressionVisibleEvent.html) - if the Component is smaller than the viewport, this callback is invoked when the entire Component is visible in the viewport. If the Component is bigger than the viewport, then just covering the viewport won't invoke this callback: it will be invoked when all the edges have passed through the viewport once.
+* [Visibility Changed](pathname:///javadoc/com/facebook/litho/VisibilityChangedEvent.html) - invoked when the visible bounds of the Component change. The event object will tell you the visible top and left coordinate, and the current visible width and height of the content.
 
 ## Usage
 
@@ -34,21 +34,20 @@ The following example illustrates setting visibility callbacks on a component:
 ```
 
 :::tip
-Visibility change callbacks should be used with particular care since they are invoked on every frame while scrolling. No heavy work should be done inside the visibility changed callbacks. 'Visible', 'Invisible', 'Focused', 'Unfocused', and 'Full Impression' are recommended over visibility changed whenever possible.
+Visibility change callbacks should be used with particular care since they are invoked on every frame while scrolling. No heavy work should be done inside the visibility changed callbacks. 'Visible', 'Invisible', 'Focused', 'Unfocused', and 'Full Impression' are recommended over 'Visibility Changed' whenever possible.
 :::
-
 
 ### Custom visibility percentage
 
-By default, `VisibleEvent` is triggered when at least 1 pixel of the Component is visible. In some cases, you may want to listen to custom visibility changes and perform an action when the Component is only partially visible. You can specify a ratio of the Component width or height for the visibility callback to be dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
+By default, `VisibleEvent` is triggered when at least 1 pixel of the Component is visible. In some cases, you may want to listen for custom visibility changes and perform an action when the Component is only partially visible. You can specify a ratio of the Component width or height for the visibility callback to be dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
 
 :::info
-Currently, the Kotlin API does not expose `visibleHeightRatio` and `visibleWidthRatio`. Please use the Codengen APIs if you need to leverage that.
+Currently, the Kotlin API does not expose `visibleHeightRatio` and `visibleWidthRatio`. Please use the Codegen APIs if you need to leverage that.
 :::
 
 For the example above, a Visibility Event is dispatched when at least 80% of the Component's height and 10% of the Component's width is visible. When the Component's visible percentage changes to less than 80% of total height, an invisible event will be dispatched. If not specified, the default width or height ratio is 1f.
 
-## Changing LithoView Visibility
+## Changing LithoView visibility
 
 There are cases when the visibility callback needs to be invoked on the LithoView components because the LithoView's visibility changed but did not receive any callbacks to inform it of this change.
 For example, when an activity is added to the back stack, covering the current UI. For such cases, Litho provides the [LithoLifecycleProvider API](#litholifecycleprovider-api) to notify LithoView about changes in its visibility, and to dispatch correct events to components inside.
@@ -68,17 +67,17 @@ public interface LithoLifecycleProvider {
 }
 ```
 
-#### Valid LithoLifecycleProvider states:
+#### Valid LithoLifecycleProvider states
 
 * `HINT_INVISIBLE` - indicates that the lifecycle provider is considered to be not visible on screen. Lifecycle observers can perform operations that are associated with invisibility status.
 An example of moving to a `HINT_INVISIBLE` state is when a fragment goes from **Resumed** to **Paused** because the app was backgrounded. The **invisible** events will be dispatched to all Components inside the `LithoView` that were visible.
 
 * `HINT_VISIBLE` - indicates that the lifecycle provider is considered visible on screen.
-Lifecycle observers can perform operations that are associated with visibility status. An example of moving to `HINT_VISIBLE` state is when a fragment goes from **Paused** to **Resumed** because the app was foregrounded. **Visible ** events will be dispatched to all Components inside the `LithoView` which meet the visibility criteria.
+Lifecycle observers can perform operations that are associated with visibility status. An example of moving to `HINT_VISIBLE` state is when a fragment goes from **Paused** to **Resumed** because the app was foregrounded. **Visible** events will be dispatched to all Components inside the `LithoView` which meet the visibility criteria.
 
 * `DESTROYED` - the final state of a lifecycle provider. Lifecycle observers can perform operations associated with releasing resources. An example of moving to `DESTROYED` state is when the hosting Activity is destroyed. The `ComponentTree` associated with the `LithoView` will be released; all the **invisible** events will be dispatched to all Components that were visible, and all content will be unmounted.
 
-#### Listening to a `LithoLifecycleProvider` state changes:
+#### Listening to a `LithoLifecycleProvider` state changes
 
 You can register a `LithoView` to listen to state changes of a `LithoLifecycleProvider` instance when you create it:
 
@@ -108,7 +107,6 @@ Use `AOSPLithoLifecycleProvider` when you want to associate a LithoView's visibi
 * Adding a Fragment on top of another Fragment doesn't move the first Fragment to a **Paused** state, and there's no indication that it's no longer visible to the user.
 
 When you need to handle these state changes manually, you can use `LithoLifecycleProviderDelegate`, a generic `LithoLifecycleProvider` implementation, to change state when appropriate.
-
 
 #### ViewPager example
 
