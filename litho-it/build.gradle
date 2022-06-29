@@ -25,10 +25,11 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
     }
 
     testOptions {
+        unitTests.includeAndroidResources = true
+
         unitTests.all {
             // Because of native libraries loading (Yoga), we can never reuse a class loader and
             // need to fork a new process per class.

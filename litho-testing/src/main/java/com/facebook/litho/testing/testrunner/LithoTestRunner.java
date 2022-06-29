@@ -19,9 +19,6 @@ package com.facebook.litho.testing.testrunner;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.config.ComponentsConfiguration;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -31,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.DefaultTestLifecycle;
@@ -39,7 +35,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.bytecode.Sandbox;
-import org.robolectric.util.Logger;
 import org.robolectric.util.ReflectionHelpers;
 
 public class LithoTestRunner extends RobolectricTestRunner {
@@ -54,38 +49,6 @@ public class LithoTestRunner extends RobolectricTestRunner {
    */
   public LithoTestRunner(final Class<?> testClass) throws InitializationError {
     super(testClass);
-  }
-
-  @Override
-  protected Config buildGlobalConfig() {
-    // If we're running with gradle, the test runner will start running from within
-    // the given sub-project.
-    Properties props = getGradleProperties();
-    boolean excludeFromLithoManifest =
-        Boolean.valueOf(props.getProperty(PROP_EXCLUDE_LITHO_MANIFEST, "false"));
-
-    if (System.getProperty("org.gradle.test.worker") != null && !excludeFromLithoManifest) {
-      return new Config.Builder().setManifest("../litho-it/src/main/AndroidManifest.xml").build();
-    }
-
-    // BUCK will set up the manifest correctly, so nothing to do here.
-    return super.buildGlobalConfig();
-  }
-
-  private Properties getGradleProperties() {
-    Properties prop = new Properties();
-
-    File file = new File("gradle.properties");
-
-    if (file.exists() && file.canRead()) {
-      try (FileInputStream input = new FileInputStream(file)) {
-        prop.load(input);
-      } catch (IOException exception) {
-        Logger.error("Failed to read gradle.properties", exception);
-      }
-    }
-
-    return prop;
   }
 
   /**
@@ -264,17 +227,4 @@ public class LithoTestRunner extends RobolectricTestRunner {
       }
     }
   }
-
-  /**
-   * If this property is set on `gradle.properties` then this Test Runner won't set the
-   * AndroidManifest to be the one at `../litho-it/...`.
-   *
-   * <p>In modules that use the
-   *
-   * <pre>includeAndroidResources = true</pre>
-   *
-   * there is a conflict when also setting a {@code Config} which sets the AndroidManifest. By using
-   * this property you explicitly discard the Android Manifest setting by this runner.
-   */
-  private static final String PROP_EXCLUDE_LITHO_MANIFEST = "exclude-litho-manifest";
 }

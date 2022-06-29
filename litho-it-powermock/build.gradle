@@ -24,10 +24,11 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
     }
 
     testOptions {
+        unitTests.includeAndroidResources = true
+
         unitTests.all {
             // Because we use Powermock and changing Robolectric configurations in combination
             // with native libraries, we can never reuse a class loader and need to fork a new

@@ -86,7 +86,7 @@ ext.deps = [
         supportRecyclerView: 'androidx.recyclerview:recyclerview:1.2.0-beta01',
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.1',
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.1',
-        supportTestCore    : 'androidx.test:core:1.2.0',
+        supportTestCore    : 'androidx.test:core:1.4.0',
         supportTestRunner  : 'androidx.test:runner:1.1.1',
         supportTestRules   : 'androidx.test:rules:1.1.1',
         supportTestJunit   : 'androidx.test.ext:junit:1.1.2',
