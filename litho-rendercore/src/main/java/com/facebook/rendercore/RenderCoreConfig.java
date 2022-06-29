@@ -27,4 +27,10 @@ public class RenderCoreConfig {
    * system property at startup but can be overridden at runtime.
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
+
+  /**
+   * Enabling this config will log mounting errors instead of throwing exceptions. In addition it
+   * will safely clean Hosts so they can be released back to the pool.
+   */
+  public static boolean shouldIgnoreMountingErrors = false;
 }

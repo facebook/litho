@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewParent;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
@@ -84,6 +85,25 @@ public class HostView extends Host {
   @Override
   public void unmount(MountItem item) {
     final int index = findItemIndex(item);
+
+    if (RenderCoreConfig.shouldIgnoreMountingErrors
+        && index != item.getRenderTreeNode().getPositionInParent()) {
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "HostView:IndexMismatch",
+              "The actual index of the Item being unmounted doesn't match its position in parent."
+                  + " actual index: "
+                  + index
+                  + " index in parent: "
+                  + item.getRenderTreeNode().getPositionInParent()
+                  + " RenderUnit: "
+                  + item.getRenderTreeNode().getRenderUnit().getDescription(),
+              null,
+              0,
+              null);
+    }
+
     unmount(index, item);
   }
 
@@ -100,14 +120,34 @@ public class HostView extends Host {
       }
     }
 
-    throw new IllegalStateException(
-        "Mount item was not found in the list of mounted items."
-            + "\nItem to remove: "
-            + item.getRenderTreeNode().generateDebugString(null)
-            + "\nMounted items: "
-            + getDescriptionOfMountedItems(mMountItems)
-            + "\nScraped items: "
-            + getDescriptionOfMountedItems(mScrapMountItemsArray));
+    if (RenderCoreConfig.shouldIgnoreMountingErrors) {
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "HostView:ItemNotFound",
+              "Mount item was not found in the list of mounted items."
+                  + "\nItem to remove: "
+                  + item.getRenderTreeNode().generateDebugString(null)
+                  + "\nMounted items: "
+                  + getDescriptionOfMountedItems(mMountItems)
+                  + "\nScraped items: "
+                  + getDescriptionOfMountedItems(mScrapMountItemsArray),
+              null,
+              0,
+              null);
+
+      // return the index of the node as a fallback value.
+      return item.getRenderTreeNode().getPositionInParent();
+    } else {
+      throw new IllegalStateException(
+          "Mount item was not found in the list of mounted items."
+              + "\nItem to remove: "
+              + item.getRenderTreeNode().generateDebugString(null)
+              + "\nMounted items: "
+              + getDescriptionOfMountedItems(mMountItems)
+              + "\nScraped items: "
+              + getDescriptionOfMountedItems(mScrapMountItemsArray));
+    }
   }
 
   private static int findItemIndexInArray(MountItem item, MountItem[] array) {
@@ -619,6 +659,19 @@ public class HostView extends Host {
     }
   }
 
+  @VisibleForTesting
+  public String getDescriptionOfMountedItems() {
+    StringBuilder builder = new StringBuilder();
+
+    builder
+        .append("\nMounted Items")
+        .append(getDescriptionOfMountedItems(mMountItems))
+        .append("\nScraped Items: ")
+        .append(getDescriptionOfMountedItems(mScrapMountItemsArray));
+
+    return builder.toString();
+  }
+
   private String getDescriptionOfMountedItems(@Nullable MountItem[] items) {
 
     if (items == null) {
@@ -642,6 +695,28 @@ public class HostView extends Host {
     }
 
     return builder.toString();
+  }
+
+  @Override
+  public void safelyUnmountAll() {
+    safelyUnmountAll(mMountItems);
+    safelyUnmountAll(mScrapMountItemsArray);
+  }
+
+  private void safelyUnmountAll(@Nullable MountItem[] items) {
+    if (items != null) {
+      for (int i = 0; i < items.length; i++) {
+        final @Nullable MountItem item = items[i];
+        if (item != null) {
+          if (item.getRenderUnit().getRenderType() == DRAWABLE) {
+            unmountDrawable(item);
+          } else {
+            unmountView(item);
+            mIsChildDrawingOrderDirty = true;
+          }
+        }
+      }
+    }
   }
 
   static class MarshmallowHelper {

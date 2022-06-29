@@ -96,4 +96,11 @@ public abstract class Host extends ViewGroup {
     }
     super.setClipChildren(clipChildren);
   }
+
+  public String getDescriptionOfMountedItems() {
+    return "";
+  }
+
+  /** Use this API to remove all mounted items from the Host to recover from errors. */
+  public void safelyUnmountAll() {}
 }
