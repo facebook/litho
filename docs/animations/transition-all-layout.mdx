@@ -4,7 +4,7 @@ title: Animating All Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-[`Transition.allLayout()`](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) enables you to easily animate all layout changes without having to assign `transitionKeys` to all `Components`:
+The Transition method [allLayout](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) enables you to easily animate all layout changes without having to assign `transitionKeys` to all `Components`:
 
 ```java
 @OnCreateTransition
@@ -13,18 +13,18 @@ static Transition onCreateTransition(ComponentContext c) {
 }
 ```
 
-Note, that `Transition.allLayout()`:
+The following key points apply to `Transition.allLayout()`:
 
-1. Targets `AnimatedProperty.X`, `Y`, `HEIGHT` and `WIDTH` of all `Components` present in the layout tree.
+1. Targets `AnimatedProperty.X`, `Y`, `HEIGHT` and `WIDTH` of all Components present in the layout tree.
 2. Can be used to define [Change](transition-types.mdx#change-transitions) transitions only. To define the [Appear](transition-types.mdx#appear-transitions) and [Disappear](transition-types.mdx#disappear-transitions) transitions, `transitionKeys` still need to be assigned.
 3. Could be used as a part of more [complex choreography](transition-choreography.mdx).
 
-The following example can be found in `Litho Sample App`->`API Demos`->`Animated Badge`:
+The following example can be found in `Litho Sample App -> API Demos -> Animated Badge`:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/animatedbadge/AnimatedBadgeSpec.java start=start end=end
 ```
 
-The following animation shows 'Animated Badge' in action.
+The following animation shows the above 'AnimatedBadgeSpec' in action.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/alllayout.webm")}></source>
