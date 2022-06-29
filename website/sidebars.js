@@ -75,9 +75,13 @@ module.exports = {
       'animations/transition-types',
       'animations/transition-all-layout',
       'animations/transition-choreography',
-      'animations/transition-definitions',
-      'animations/transition-key-types',
       'animations/dynamic-props',
+      {
+        'Advanced': [
+          'animations/transition-definitions',
+          'animations/transition-key-types',
+        ],
+      },
     ],
     'Visibility': [
       // TODO: Kotlin-ify
