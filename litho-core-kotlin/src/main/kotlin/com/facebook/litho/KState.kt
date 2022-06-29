@@ -119,8 +119,8 @@ internal constructor(
    *
    * For example, if your state update should increment a counter, using the function version of
    * [update] with `count -> count + 1` will allow you to account for updates that are in flight but
-   * not yet applied (e.g. if the user HooksStateHandlerTesthas tapped a button triggering the
-   * update multiple times in succession).
+   * not yet applied (e.g. if the user has tapped a button triggering the update multiple times in
+   * succession).
    *
    * Note: If [updateSync] is used on the main thread, it can easily cause dropped frames and
    * degrade user experience. Therefore it should only be used in exceptional circumstances or when

@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.StateContainer.StateUpdate;
 
-import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -76,8 +75,8 @@ public class StateHandler {
 
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
-  private List<Pair<String, HookUpdater>> mPendingHookUpdates;
-  private List<Pair<String, HookUpdater>> mAppliedHookUpdates;
+  private Map<String, List<HookUpdater>> mPendingHookUpdates;
+  private Map<String, List<HookUpdater>> mAppliedHookUpdates;
 
   private final InitialStateContainer mInitialStateContainer;
 
@@ -403,7 +402,7 @@ public class StateHandler {
     clearUnusedStateContainers(stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
-    commitHookState(stateHandler);
+    commitHookState(stateHandler.mAppliedHookUpdates);
 
     if (mStateContainerNotFoundForKeys != null) {
       mStateContainerNotFoundForKeys.clear();
@@ -419,14 +418,10 @@ public class StateHandler {
       keys.addAll(mPendingStateUpdates.keySet());
     }
     if (mPendingHookUpdates != null) {
-      for (Pair<String, HookUpdater> hookUpdates : mPendingHookUpdates) {
-        keys.add(hookUpdates.first);
-      }
+      keys.addAll(mPendingHookUpdates.keySet());
     }
     if (mAppliedHookUpdates != null) {
-      for (Pair<String, HookUpdater> hookUpdates : mAppliedHookUpdates) {
-        keys.add(hookUpdates.first);
-      }
+      keys.addAll(mAppliedHookUpdates.keySet());
     }
 
     return keys;
@@ -668,14 +663,28 @@ public class StateHandler {
    */
   void queueHookStateUpdate(String key, HookUpdater updater) {
     if (mPendingHookUpdates == null) {
-      mPendingHookUpdates = new ArrayList<>();
+      mPendingHookUpdates = new HashMap<>();
     }
-    mPendingHookUpdates.add(new Pair<>(key, updater));
+    List<HookUpdater> hookUpdaters = mPendingHookUpdates.get(key);
+    if (hookUpdaters == null) {
+      hookUpdaters = new ArrayList<>();
+      mPendingHookUpdates.put(key, hookUpdaters);
+    }
+    hookUpdaters.add(updater);
   }
 
   @VisibleForTesting
   int getPendingHookUpdatesCount() {
-    return mPendingHookUpdates == null ? 0 : mPendingHookUpdates.size();
+    if (mPendingHookUpdates == null || mPendingHookUpdates.isEmpty()) {
+      return 0;
+    }
+
+    int count = 0;
+    for (List<HookUpdater> hookUpdaters : mPendingHookUpdates.values()) {
+      count += hookUpdaters.size();
+    }
+
+    return count;
   }
 
   /**
@@ -690,15 +699,19 @@ public class StateHandler {
   @SuppressWarnings("unchecked")
   private void runHooks(StateHandler other) {
     if (other.mPendingHookUpdates != null) {
-      List<Pair<String, HookUpdater>> updates = new ArrayList<>(other.mPendingHookUpdates);
-      for (Pair<String, HookUpdater> hookUpdate : updates) {
-        final String key = hookUpdate.first;
+      Map<String, List<HookUpdater>> updates = getHookUpdatesCopy(other.mPendingHookUpdates);
+      for (Map.Entry<String, List<HookUpdater>> hookUpdates : updates.entrySet()) {
+        final String key = hookUpdates.getKey();
         final StateContainer stateContainer = mStateContainers.get(key);
         // currentState could be null if the state is removed from the StateHandler before the
         // update runs
         if (stateContainer != null) {
-          final KStateContainer kStateContainer = (KStateContainer) stateContainer;
-          mStateContainers.put(key, hookUpdate.second.getUpdatedStateContainer(kStateContainer));
+          KStateContainer kStateContainer = (KStateContainer) stateContainer;
+          for (HookUpdater hookUpdate : hookUpdates.getValue()) {
+            kStateContainer = hookUpdate.getUpdatedStateContainer(kStateContainer);
+          }
+
+          mStateContainers.put(key, kStateContainer);
         }
       }
       mAppliedHookUpdates = updates;
@@ -716,17 +729,21 @@ public class StateHandler {
       return null;
     }
 
-    KStateContainer currentCommittedState = (KStateContainer) stateContainer;
+    KStateContainer stateContainerWithUpdatesApplied = (KStateContainer) stateContainer;
 
     if (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty()) {
-      for (Pair<String, HookUpdater> hookUpdate : mPendingHookUpdates) {
-        if (hookUpdate.first.equals(globalKey)) {
-          currentCommittedState = hookUpdate.second.getUpdatedStateContainer(currentCommittedState);
-        }
+      final List<HookUpdater> hookUpdaters = mPendingHookUpdates.get(globalKey);
+      if (hookUpdaters == null) {
+        return stateContainerWithUpdatesApplied;
+      }
+
+      for (HookUpdater hookUpdater : hookUpdaters) {
+        stateContainerWithUpdatesApplied =
+            hookUpdater.getUpdatedStateContainer(stateContainerWithUpdatesApplied);
       }
     }
 
-    return currentCommittedState;
+    return stateContainerWithUpdatesApplied;
   }
 
   /**
@@ -734,12 +751,40 @@ public class StateHandler {
    * state needs to be committed. In this case, we want to remove any pending state updates that
    * this StateHandler applied, while leaving new ones that have accumulated in the interim. We also
    * copy over the new mapping from hook state keys to values.
-   *
-   * @param stateHandler the StateHandler whose layout is being committed
    */
-  private void commitHookState(StateHandler stateHandler) {
-    if (mPendingHookUpdates != null && stateHandler.mAppliedHookUpdates != null) {
-      mPendingHookUpdates.removeAll(stateHandler.mAppliedHookUpdates);
+  private void commitHookState(@Nullable Map<String, List<HookUpdater>> appliedHookUpdates) {
+    if (appliedHookUpdates == null
+        || mPendingHookUpdates == null
+        || mPendingHookUpdates.isEmpty()) {
+      return;
     }
+
+    for (Map.Entry<String, List<HookUpdater>> appliedHookUpdatesForKey :
+        appliedHookUpdates.entrySet()) {
+      String globalKey = appliedHookUpdatesForKey.getKey();
+      final List<HookUpdater> pendingHookUpdatersForKey = mPendingHookUpdates.get(globalKey);
+
+      if (pendingHookUpdatersForKey == null) {
+        continue;
+      }
+
+      final List<HookUpdater> appliedHookUpdatersForKey = appliedHookUpdatesForKey.getValue();
+      pendingHookUpdatersForKey.removeAll(appliedHookUpdatersForKey);
+
+      if (pendingHookUpdatersForKey.isEmpty()) {
+        mPendingHookUpdates.remove(globalKey);
+      }
+    }
+  }
+
+  private Map<String, List<HookUpdater>> getHookUpdatesCopy(
+      Map<String, List<HookUpdater>> copyFrom) {
+    final Map<String, List<HookUpdater>> copyInto = new HashMap<>(copyFrom.size());
+
+    for (Map.Entry<String, List<HookUpdater>> entry : copyFrom.entrySet()) {
+      copyInto.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+    }
+
+    return copyInto;
   }
 }
