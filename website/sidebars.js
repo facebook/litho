@@ -65,9 +65,9 @@ module.exports = {
           'sections/services',
           'sections/view-support',
           'sections/diff-sections',
+          'sections/architecture',
         ],
       },
-      'sections/architecture',
     ],
     // TODO: Kotlin-ify this section
     'Animations': [

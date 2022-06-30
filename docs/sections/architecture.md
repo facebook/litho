@@ -1,6 +1,6 @@
 ---
 id: architecture
-title: 'Internal 🏗: Sections implementation architecture'
+title: Sections Implementation Architecture
 ---
 
 At its core, the Sections framework is responsible for producing a [ChangeSet](pathname:///javadoc/com/facebook/litho/sections/ChangeSet.html) from immutable props and a hierarchy of [Sections](pathname:///javadoc/com/facebook/litho/sections/Section.html). The framework produces these `ChangeSets` by creating a new section hierarchy whenever a `SectionTree` is set with a Section with new props, or whenever a Section in the hierarchy updates its internal state when comparing the new hierarchy with the old hierarchy.
@@ -11,8 +11,8 @@ Using the Sections framework begins with creating a [SectionTree](pathname:///ja
 
 `SectionTree` instances are responsible for:
 
-   * Computing/recomputing changes whenever state & props values change.
-   * Communicating with a [Target](pathname:///javadoc/com/facebook/litho/sections/SectionTree.Target.html) implementation that can update the UI (including telling the `Target` about new changes).
+* Computing/recomputing changes whenever state & props values change.
+* Communicating with a [Target](pathname:///javadoc/com/facebook/litho/sections/SectionTree.Target.html) implementation that can update the UI (including telling the `Target` about new changes).
 
 SectionTrees must be created with a `Target` implementation. The [Target](pathname:///javadoc/com/facebook/litho/sections/SectionTree.Target.html) interface is the API between `SectionTree` and the UI.
 
@@ -49,6 +49,6 @@ After generating a new tree, `SectionTree` will recursively traverse the new tre
 [SectionContext](pathname:///javadoc/com/facebook/litho/sections/SectionContext.html) is an object that is used to associate each `Section` instance in a hierarchy with its `SectionTree`. `SectionContext` instances are released and recreated every time a `SectionTree` re-calculates its changeset (anytime props or state change). This means you should not rely on the `SectionContext` passed into your spec delegate methods to always be associated with a valid `Section` instance. As a general rule, a `SectionContext` object is only valid between the `@OnBindService` and `@OnUnbindService` methods. You should not keep an instance of `SectionContext` alive outside this window.
 :::
 
-### SectionTree and RecyclerCollectionComponent
+### SectionTree and the RecyclerCollectionComponent
 
 [RecyclerCollectionComponent](recycler-collection-component.md) is a Litho component that creates and binds a `SectionTree` to a `Recycler` behind the scenes to make it incredibly easy to use the Sections framework with Litho. `RecyclerCollectionComponent` creates and holds onto a `SectionTree` instance as state and exposes a prop to accept new sections.  Updating the SectionTree when using `RecyclerCollectionComponent` is as simple as updating the section prop passed into it.
