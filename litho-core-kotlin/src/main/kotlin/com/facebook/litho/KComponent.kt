@@ -74,12 +74,6 @@ abstract class KComponent : Component() {
 
   final override fun canResolve() = false
 
-  final override fun createInterStagePropsContainer() = super.createInterStagePropsContainer()
-
-  final override fun createPrepareInterStagePropsContainer(): PrepareInterStagePropsContainer? {
-    return super.createPrepareInterStagePropsContainer()
-  }
-
   final override fun createStateContainer() = super.createStateContainer()
 
   final override fun dispatchOnEnteredRange(c: ComponentContext, name: String) =

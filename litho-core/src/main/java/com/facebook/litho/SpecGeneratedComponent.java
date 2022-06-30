@@ -135,6 +135,25 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
 
   protected void createInitialState(ComponentContext c) {}
 
+  protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {
+    return null;
+  }
+
+  protected @Nullable PrepareInterStagePropsContainer createPrepareInterStagePropsContainer() {
+    return null;
+  }
+
+  protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
+      final ComponentContext scopedContext,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    return interStagePropsContainer;
+  }
+
+  protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
+      final ComponentContext scopedContext) {
+    return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
+  }
+
   /** @return true if the Component is using state, false otherwise. */
   protected boolean hasState() {
     return false;

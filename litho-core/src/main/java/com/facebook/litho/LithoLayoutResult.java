@@ -91,8 +91,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
     */
     final Component component = node.getTailComponent();
-    if (!Component.isMountable(component)) {
-      mLayoutData = component.createInterStagePropsContainer();
+    if (component instanceof SpecGeneratedComponent) {
+      mLayoutData = ((SpecGeneratedComponent) component).createInterStagePropsContainer();
     }
   }
 

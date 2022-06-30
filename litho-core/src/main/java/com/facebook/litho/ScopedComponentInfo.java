@@ -60,7 +60,10 @@ public class ScopedComponentInfo implements Cloneable {
     mComponent = component;
     mContext = context;
     mStateContainer = component.createStateContainer();
-    mPrepareInterStagePropsContainer = component.createPrepareInterStagePropsContainer();
+    mPrepareInterStagePropsContainer =
+        component instanceof SpecGeneratedComponent
+            ? ((SpecGeneratedComponent) component).createPrepareInterStagePropsContainer()
+            : null;
     mErrorEventHandler = errorEventHandler;
   }
 
@@ -173,6 +176,7 @@ public class ScopedComponentInfo implements Cloneable {
             .applyStateUpdatesForComponent(
                 mContext, (SpecGeneratedComponent) mComponent, mContext.getGlobalKey());
       }
+
     } else {
       // the get method adds the state container to the needed state container map
       stateHandler.getStateContainer(mContext.getGlobalKey());

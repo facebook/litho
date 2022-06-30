@@ -1301,25 +1301,6 @@ public abstract class Component
     return getSimpleName();
   }
 
-  protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
-      final ComponentContext scopedContext,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    return interStagePropsContainer;
-  }
-
-  protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
-      final ComponentContext scopedContext) {
-    return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
-  }
-
-  protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {
-    return null;
-  }
-
-  protected @Nullable PrepareInterStagePropsContainer createPrepareInterStagePropsContainer() {
-    return null;
-  }
-
   /**
    * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
    *     needed
