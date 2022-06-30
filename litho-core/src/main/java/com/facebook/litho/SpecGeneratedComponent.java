@@ -143,6 +143,14 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     return null;
   }
 
+  protected void dispatchOnEnteredRange(ComponentContext c, String name) {
+    // Do nothing by default
+  }
+
+  protected void dispatchOnExitedRange(ComponentContext c, String name) {
+    // Do nothing by default
+  }
+
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       final ComponentContext scopedContext,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {

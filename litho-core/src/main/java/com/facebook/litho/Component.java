@@ -406,14 +406,6 @@ public abstract class Component
     return false;
   }
 
-  protected void dispatchOnEnteredRange(ComponentContext c, String name) {
-    // Do nothing by default
-  }
-
-  protected void dispatchOnExitedRange(ComponentContext c, String name) {
-    // Do nothing by default
-  }
-
   /**
    * Get extra accessibility node id at a given point within the component.
    *

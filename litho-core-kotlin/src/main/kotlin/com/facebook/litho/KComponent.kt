@@ -76,14 +76,8 @@ abstract class KComponent : Component() {
 
   final override fun createStateContainer() = super.createStateContainer()
 
-  final override fun dispatchOnEnteredRange(c: ComponentContext, name: String) =
-      super.dispatchOnEnteredRange(c, name)
-
   final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
       super.dispatchOnEventImpl(eventHandler, eventState)
-
-  final override fun dispatchOnExitedRange(c: ComponentContext, name: String) =
-      super.dispatchOnExitedRange(c, name)
 
   internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
 

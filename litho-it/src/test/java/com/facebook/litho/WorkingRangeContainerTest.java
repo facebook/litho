@@ -37,8 +37,8 @@ public class WorkingRangeContainerTest {
 
   private WorkingRangeContainer mWorkingRangeContainer;
   private WorkingRange mWorkingRange;
-  private Component mComponent;
-  private Component mComponent2;
+  private SpecGeneratedComponent mComponent;
+  private SpecGeneratedComponent mComponent2;
   private ScopedComponentInfo mScopedComponentInfo;
   private ScopedComponentInfo mScopedComponentInfo2;
   private ComponentContext mComponentContext;
@@ -54,8 +54,8 @@ public class WorkingRangeContainerTest {
     mLayoutStateContext = mock(LayoutStateContext.class);
 
     mWorkingRange = new TestWorkingRange();
-    mComponent = mock(Component.class);
-    mComponent2 = mock(Component.class);
+    mComponent = mock(SpecGeneratedComponent.class);
+    mComponent2 = mock(SpecGeneratedComponent.class);
 
     mScopedComponentInfo = mock(ScopedComponentInfo.class);
     mScopedComponentInfo2 = mock(ScopedComponentInfo.class);
