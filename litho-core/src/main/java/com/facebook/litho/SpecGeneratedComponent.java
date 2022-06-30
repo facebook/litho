@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component.RenderData;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -149,6 +150,33 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
 
   protected void dispatchOnExitedRange(ComponentContext c, String name) {
     // Do nothing by default
+  }
+
+  /**
+   * Get extra accessibility node id at a given point within the component.
+   *
+   * @param x x co-ordinate within the mounted component
+   * @param y y co-ordinate within the mounted component
+   * @return the extra virtual view id if one is found, otherwise {@code
+   *     ExploreByTouchHelper#INVALID_ID}
+   */
+  protected int getExtraAccessibilityNodeAt(
+      final ComponentContext c,
+      final int x,
+      final int y,
+      final @Nullable InterStagePropsContainer InterStagePropsContainer) {
+    return ExploreByTouchHelper.INVALID_ID;
+  }
+
+  /**
+   * The number of extra accessibility nodes that this component wishes to provides to the
+   * accessibility system.
+   *
+   * @return the number of extra nodes
+   */
+  protected int getExtraAccessibilityNodesCount(
+      final ComponentContext c, final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    return 0;
   }
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(

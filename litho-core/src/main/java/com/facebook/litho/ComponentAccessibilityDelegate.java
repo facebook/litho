@@ -134,7 +134,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    final Component component = layoutOutput.getComponent();
+    if (!(layoutOutput.getComponent() instanceof SpecGeneratedComponent)) {
+      return;
+    }
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) layoutOutput.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
@@ -168,7 +171,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Rect bounds = drawable.getBounds();
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    final Component component = layoutOutput.getComponent();
+    if (!(layoutOutput.getComponent() instanceof SpecGeneratedComponent)) {
+      return;
+    }
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) layoutOutput.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);
 
     node.setClassName(component.getClass().getName());
@@ -209,7 +215,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    final Component component = layoutOutput.getComponent();
+    if (!(layoutOutput.getComponent() instanceof SpecGeneratedComponent)) {
+      return INVALID_ID;
+    }
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) layoutOutput.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {

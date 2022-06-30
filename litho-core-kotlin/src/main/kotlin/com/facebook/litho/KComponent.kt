@@ -83,18 +83,6 @@ abstract class KComponent : Component() {
 
   final override fun getDynamicProps() = super.getDynamicProps()
 
-  final override fun getExtraAccessibilityNodeAt(
-      c: ComponentContext,
-      x: Int,
-      y: Int,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.getExtraAccessibilityNodeAt(c, x, y, interStagePropsContainer)
-
-  final override fun getExtraAccessibilityNodesCount(
-      c: ComponentContext,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.getExtraAccessibilityNodesCount(c, interStagePropsContainer)
-
   final override fun getMountType() = super.getMountType()
 
   final override fun getSimpleName(): String = super.getSimpleName()

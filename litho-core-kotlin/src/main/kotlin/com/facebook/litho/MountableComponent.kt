@@ -91,18 +91,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun getDynamicProps() = super.getDynamicProps()
 
-  final override fun getExtraAccessibilityNodeAt(
-      c: ComponentContext,
-      x: Int,
-      y: Int,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.getExtraAccessibilityNodeAt(c, x, y, interStagePropsContainer)
-
-  final override fun getExtraAccessibilityNodesCount(
-      c: ComponentContext,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.getExtraAccessibilityNodesCount(c, interStagePropsContainer)
-
   final override fun getSimpleName(): String = super.getSimpleName()
 
   final override fun getTreePropsForChildren(c: ComponentContext, treeProps: TreeProps?) =
