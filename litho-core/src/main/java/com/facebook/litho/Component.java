@@ -57,9 +57,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
@@ -409,14 +407,6 @@ public abstract class Component
   protected @Nullable TreeProps getTreePropsForChildren(
       ComponentContext c, @Nullable TreeProps treeProps) {
     return treeProps;
-  }
-
-  /**
-   * @return true if the component implements {@link OnAttached} or {@link OnDetached} delegate
-   *     methods.
-   */
-  protected boolean hasAttachDetachCallback() {
-    return false;
   }
 
   /**

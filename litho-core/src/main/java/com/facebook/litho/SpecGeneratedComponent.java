@@ -22,6 +22,8 @@ import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component.RenderData;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnAttached;
+import com.facebook.litho.annotations.OnDetached;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -188,6 +190,14 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
   protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
       final ComponentContext scopedContext) {
     return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
+  }
+
+  /**
+   * @return true if the component implements {@link OnAttached} or {@link OnDetached} delegate
+   *     methods.
+   */
+  protected boolean hasAttachDetachCallback() {
+    return false;
   }
 
   /** @return true if the Component is using state, false otherwise. */

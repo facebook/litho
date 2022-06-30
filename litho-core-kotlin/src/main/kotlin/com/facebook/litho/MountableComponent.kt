@@ -96,8 +96,6 @@ abstract class MountableComponent() : Component() {
   final override fun getTreePropsForChildren(c: ComponentContext, treeProps: TreeProps?) =
       super.getTreePropsForChildren(c, treeProps)
 
-  final override fun hasAttachDetachCallback(): Boolean = false
-
   final override fun hasChildLithoViews(): Boolean = false
 
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()

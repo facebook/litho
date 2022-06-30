@@ -427,8 +427,9 @@ public class TestLayoutState {
     }
 
     // 12. Add attachable components
-    if (component.hasAttachDetachCallback()) {
-      // needs ComponentUtils.getGlobalKey?
+    if (component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component)
+            .hasAttachDetachCallback()) { // needs ComponentUtils.getGlobalKey?
       node.addAttachable(new LayoutSpecAttachable(globalKey, component, scopedComponentInfo));
     }
 
