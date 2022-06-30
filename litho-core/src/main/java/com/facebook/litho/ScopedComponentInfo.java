@@ -152,7 +152,7 @@ public class ScopedComponentInfo implements Cloneable {
 
   public void commitToLayoutState(StateHandler stateHandler) {
     if (mComponent.usesLocalStateContainer()) {
-      if (mComponent.hasState()) {
+      if (hasState()) {
         stateHandler.addStateContainer(mContext.getGlobalKey(), mStateContainer);
       }
     } else {
@@ -168,14 +168,20 @@ public class ScopedComponentInfo implements Cloneable {
    */
   void applyStateUpdates(final StateHandler stateHandler) {
     if (mComponent.usesLocalStateContainer()) {
-      if (mComponent.hasState()) {
+      if (hasState()) {
         Preconditions.checkNotNull(stateHandler)
-            .applyStateUpdatesForComponent(mContext, mComponent, mContext.getGlobalKey());
+            .applyStateUpdatesForComponent(
+                mContext, (SpecGeneratedComponent) mComponent, mContext.getGlobalKey());
       }
     } else {
       // the get method adds the state container to the needed state container map
       stateHandler.getStateContainer(mContext.getGlobalKey());
     }
+  }
+
+  private boolean hasState() {
+    return mComponent instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) mComponent).hasState();
   }
 
   @Override

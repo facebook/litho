@@ -123,6 +123,23 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     throw new RuntimeException("Components that have dynamic Props must override this method");
   }
 
+  // This will not be needed anymore for stateless components.
+  protected void copyInterStageImpl(
+      final @Nullable InterStagePropsContainer copyIntoInterStagePropsContainer,
+      final @Nullable InterStagePropsContainer copyFromInterStagePropsContainer) {}
+
+  // This will not be needed anymore for stateless components.
+  protected void copyPrepareInterStageImpl(
+      final @Nullable PrepareInterStagePropsContainer copyIntoInterStagePropsContainer,
+      final @Nullable PrepareInterStagePropsContainer copyFromInterStagePropsContainer) {}
+
+  protected void createInitialState(ComponentContext c) {}
+
+  /** @return true if the Component is using state, false otherwise. */
+  protected boolean hasState() {
+    return false;
+  }
+
   protected boolean needsPreviousRenderData() {
     return false;
   }

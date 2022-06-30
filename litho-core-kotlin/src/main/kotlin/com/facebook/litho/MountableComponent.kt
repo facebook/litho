@@ -82,20 +82,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun canResolve(): Boolean = false
 
-  final override fun copyInterStageImpl(
-      copyIntoInterStagePropsContainer: InterStagePropsContainer?,
-      copyFromInterStagePropsContainer: InterStagePropsContainer?
-  ) = super.copyInterStageImpl(copyIntoInterStagePropsContainer, copyFromInterStagePropsContainer)
-
-  final override fun copyPrepareInterStageImpl(
-      to: PrepareInterStagePropsContainer?,
-      from: PrepareInterStagePropsContainer?
-  ) {
-    super.copyPrepareInterStageImpl(to, from)
-  }
-
-  final override fun createInitialState(c: ComponentContext) = super.createInitialState(c)
-
   final override fun createInterStagePropsContainer() = super.createInterStagePropsContainer()
 
   final override fun createPrepareInterStagePropsContainer(): PrepareInterStagePropsContainer? {
@@ -141,10 +127,6 @@ abstract class MountableComponent() : Component() {
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
   final override fun hasOwnErrorHandler(): Boolean = false
-
-  final override fun hasState(): Boolean = false
-
-  final override fun usesLocalStateContainer(): Boolean = false
 
   final override fun implementsAccessibility(): Boolean = false
 

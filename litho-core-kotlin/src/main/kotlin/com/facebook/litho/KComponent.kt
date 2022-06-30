@@ -74,20 +74,6 @@ abstract class KComponent : Component() {
 
   final override fun canResolve() = false
 
-  final override fun copyInterStageImpl(
-      copyIntoInterStagePropsContainer: InterStagePropsContainer?,
-      copyFromInterStagePropsContainer: InterStagePropsContainer?
-  ) = super.copyInterStageImpl(copyIntoInterStagePropsContainer, copyFromInterStagePropsContainer)
-
-  final override fun copyPrepareInterStageImpl(
-      to: PrepareInterStagePropsContainer?,
-      from: PrepareInterStagePropsContainer?
-  ) {
-    super.copyPrepareInterStageImpl(to, from)
-  }
-
-  final override fun createInitialState(c: ComponentContext) = super.createInitialState(c)
-
   final override fun createInterStagePropsContainer() = super.createInterStagePropsContainer()
 
   final override fun createPrepareInterStagePropsContainer(): PrepareInterStagePropsContainer? {
@@ -135,10 +121,6 @@ abstract class KComponent : Component() {
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
   final override fun hasOwnErrorHandler() = false
-
-  final override fun hasState() = false
-
-  final override fun usesLocalStateContainer() = false
 
   final override fun implementsAccessibility() = false
 

@@ -78,7 +78,7 @@ public class InitialStateContainer {
     synchronized (stateLock) {
       final StateContainer stateContainer = mInitialStates.get(key);
       if (stateContainer == null) {
-        component.createInitialState(scopedContext);
+        ((SpecGeneratedComponent) component).createInitialState(scopedContext);
         mInitialStates.put(key, scopedContext.getScopedComponentInfo().getStateContainer());
       } else {
         component.transferState(

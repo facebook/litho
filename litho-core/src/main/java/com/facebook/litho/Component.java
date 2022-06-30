@@ -406,8 +406,6 @@ public abstract class Component
     return false;
   }
 
-  protected void createInitialState(ComponentContext c) {}
-
   protected void dispatchOnEnteredRange(ComponentContext c, String name) {
     // Do nothing by default
   }
@@ -463,11 +461,6 @@ public abstract class Component
    * incremental mount enabled.
    */
   protected boolean hasChildLithoViews() {
-    return false;
-  }
-
-  /** @return true if the Component is using state, false otherwise. */
-  protected boolean hasState() {
     return false;
   }
 
@@ -1289,16 +1282,6 @@ public abstract class Component
   boolean canResolve() {
     return false;
   }
-
-  // This will not be needed anymore for stateless components.
-  protected void copyInterStageImpl(
-      final @Nullable InterStagePropsContainer copyIntoInterStagePropsContainer,
-      final @Nullable InterStagePropsContainer copyFromInterStagePropsContainer) {}
-
-  // This will not be needed anymore for stateless components.
-  protected void copyPrepareInterStageImpl(
-      final @Nullable PrepareInterStagePropsContainer copyIntoInterStagePropsContainer,
-      final @Nullable PrepareInterStagePropsContainer copyFromInterStagePropsContainer) {}
 
   protected DynamicValue[] getDynamicProps() {
     return sEmptyArray;

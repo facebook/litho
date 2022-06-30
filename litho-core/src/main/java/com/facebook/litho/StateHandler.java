@@ -337,11 +337,9 @@ public class StateHandler {
    */
   @ThreadSafe(enableChecks = false)
   void applyStateUpdatesForComponent(
-      final ComponentContext scopedContext, final Component component, final String key) {
-    if (!component.hasState()) {
-      return;
-    }
-
+      final ComponentContext scopedContext,
+      final SpecGeneratedComponent component,
+      final String key) {
     maybeInitStateContainers();
     maybeInitNeededStateContainers();
 
