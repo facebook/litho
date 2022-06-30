@@ -119,6 +119,10 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
 
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
+  protected void bindDynamicProp(int dynamicPropIndex, @Nullable Object value, Object content) {
+    throw new RuntimeException("Components that have dynamic Props must override this method");
+  }
+
   protected boolean needsPreviousRenderData() {
     return false;
   }

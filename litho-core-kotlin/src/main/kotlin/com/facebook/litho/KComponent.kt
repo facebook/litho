@@ -68,9 +68,6 @@ abstract class KComponent : Component() {
   // All other Component lifecycle methods are made final and no-op here as they shouldn't be
   // overriden.
 
-  final override fun bindDynamicProp(dynamicPropIndex: Int, value: Any?, content: Any) =
-      super.bindDynamicProp(dynamicPropIndex, value, content)
-
   final override fun canMeasure() = false
 
   final override fun canPreallocate() = false

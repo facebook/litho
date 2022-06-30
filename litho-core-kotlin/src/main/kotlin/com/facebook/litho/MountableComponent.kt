@@ -77,9 +77,6 @@ abstract class MountableComponent() : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun bindDynamicProp(dynamicPropIndex: Int, value: Any?, content: Any) =
-      super.bindDynamicProp(dynamicPropIndex, value, content)
-
   /** TODO: T115516203 [MountableComponent] solve for pre-allocation */
   final override fun canPreallocate(): Boolean = false
 

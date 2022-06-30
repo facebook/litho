@@ -1282,10 +1282,6 @@ public abstract class Component
     layoutStateContext.markLayoutStarted();
   }
 
-  protected void bindDynamicProp(int dynamicPropIndex, @Nullable Object value, Object content) {
-    throw new RuntimeException("Components that have dynamic Props must override this method");
-  }
-
   /**
    * Indicate that this component implements its own {@link #resolve(LayoutStateContext,
    * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.

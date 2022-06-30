@@ -91,7 +91,8 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       final @Nullable DynamicValue<?> value = dynamicProps[i];
 
       try {
-        component.bindDynamicProp(i, value != null ? value.get() : null, content);
+        ((SpecGeneratedComponent) component)
+            .bindDynamicProp(i, value != null ? value.get() : null, content);
 
         addDependentComponentAndSubscribeIfNeeded(value, component);
         dynamicValues.add(value);
@@ -286,7 +287,7 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       final DynamicValue[] dynamicProps = component.getDynamicProps();
       for (int i = 0; i < dynamicProps.length; i++) {
         if (value == dynamicProps[i]) {
-          component.bindDynamicProp(i, value.get(), content);
+          ((SpecGeneratedComponent) component).bindDynamicProp(i, value.get(), content);
         }
       }
     }
