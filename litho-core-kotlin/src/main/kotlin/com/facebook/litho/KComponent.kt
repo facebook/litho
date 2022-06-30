@@ -68,9 +68,6 @@ abstract class KComponent : Component() {
   // All other Component lifecycle methods are made final and no-op here as they shouldn't be
   // overriden.
 
-  final override fun applyPreviousRenderData(previousRenderData: RenderData) =
-      super.applyPreviousRenderData(previousRenderData)
-
   final override fun bindDynamicProp(dynamicPropIndex: Int, value: Any?, content: Any) =
       super.bindDynamicProp(dynamicPropIndex, value, content)
 
@@ -155,8 +152,6 @@ abstract class KComponent : Component() {
   final override fun isPureRender() = false
 
   final override fun makeShallowCopy() = super.makeShallowCopy()
-
-  final override fun needsPreviousRenderData() = false
 
   final override fun onAttached(c: ComponentContext) = super.onAttached(c)
 

@@ -56,7 +56,7 @@ public class RenderState {
   private void recordRenderData(final ScopedComponentInfo scopedComponentInfo) {
     final Component component = scopedComponentInfo.getComponent();
     final String globalKey = scopedComponentInfo.getContext().getGlobalKey();
-    if (!component.needsPreviousRenderData()) {
+    if (!isPreviousRenderDataSupported(component)) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
     }
@@ -82,12 +82,17 @@ public class RenderState {
   private void applyPreviousRenderData(ScopedComponentInfo scopedComponentInfo) {
     final Component component = scopedComponentInfo.getComponent();
     final String globalKey = scopedComponentInfo.getContext().getGlobalKey();
-    if (!component.needsPreviousRenderData()) {
+    if (!isPreviousRenderDataSupported(component)) {
       throw new RuntimeException(
           "Trying to apply previous render data to component that doesn't support it");
     }
 
     final Component.RenderData previousRenderData = mRenderData.get(globalKey);
-    component.applyPreviousRenderData(previousRenderData);
+    ((SpecGeneratedComponent) component).applyPreviousRenderData(previousRenderData);
+  }
+
+  private boolean isPreviousRenderDataSupported(Component component) {
+    return component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).needsPreviousRenderData();
   }
 }

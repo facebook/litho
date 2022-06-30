@@ -385,9 +385,6 @@ public abstract class Component
     }
   }
 
-  protected void applyPreviousRenderData(
-      com.facebook.litho.Component.RenderData previousRenderData) {}
-
   /**
    * Whether this {@link com.facebook.litho.Component} is able to measure itself according to
    * specific size constraints.
@@ -506,10 +503,6 @@ public abstract class Component
   }
 
   protected boolean isPureRender() {
-    return false;
-  }
-
-  protected boolean needsPreviousRenderData() {
     return false;
   }
 

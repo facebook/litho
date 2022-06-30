@@ -77,9 +77,6 @@ abstract class MountableComponent() : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  final override fun applyPreviousRenderData(previousRenderData: RenderData) =
-      super.applyPreviousRenderData(previousRenderData)
-
   final override fun bindDynamicProp(dynamicPropIndex: Int, value: Any?, content: Any) =
       super.bindDynamicProp(dynamicPropIndex, value, content)
 
@@ -163,8 +160,6 @@ abstract class MountableComponent() : Component() {
   final override fun implementsShouldUpdate(): Boolean = true
 
   final override fun makeShallowCopy() = super.makeShallowCopy()
-
-  final override fun needsPreviousRenderData(): Boolean = false
 
   final override fun onAttached(c: ComponentContext) = super.onAttached(c)
 

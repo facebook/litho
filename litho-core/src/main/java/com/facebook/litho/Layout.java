@@ -422,7 +422,8 @@ class Layout {
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {
-      if (component.needsPreviousRenderData()) {
+      if (component instanceof SpecGeneratedComponent
+          && ((SpecGeneratedComponent) component).needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo);
       } else {
         try {

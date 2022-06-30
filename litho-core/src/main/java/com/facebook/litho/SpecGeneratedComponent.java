@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.Component.RenderData;
 import com.facebook.litho.annotations.LayoutSpec;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
@@ -114,5 +115,11 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
       EventTrigger eventTrigger, Object eventState, Object[] params) {
     // Do nothing by default
     return null;
+  }
+
+  protected void applyPreviousRenderData(RenderData previousRenderData) {}
+
+  protected boolean needsPreviousRenderData() {
+    return false;
   }
 }
