@@ -366,6 +366,9 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private @Nullable StateHandler mStateHandler;
 
+  @GuardedBy("this")
+  private @Nullable TreeState mTreeState;
+
   @ThreadConfined(ThreadConfined.UI)
   private @Nullable RenderState mPreviousRenderState;
 
@@ -468,6 +471,7 @@ public class ComponentTree implements LithoLifecycleListener {
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
         builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
+    mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -2580,6 +2584,7 @@ public class ComponentTree implements LithoLifecycleListener {
       mMainThreadLayoutState = null;
       mCommittedLayoutState = null;
       mStateHandler = null;
+      mTreeState = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
     }
@@ -3324,6 +3329,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private RunnableHandler layoutThreadHandler;
     private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable StateHandler stateHandler;
+    private @Nullable TreeState treeState;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
@@ -3454,6 +3460,15 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder stateHandler(@Nullable StateHandler stateHandler) {
       this.stateHandler = stateHandler;
+      return this;
+    }
+
+    /**
+     * Specify an initial tree state object that the ComponentTree can use to set the current values
+     * for states.
+     */
+    public Builder treeState(@Nullable TreeState treeState) {
+      this.treeState = treeState;
       return this;
     }
 
