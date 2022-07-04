@@ -305,7 +305,7 @@ public class StateHandler {
     }
   }
 
-  private synchronized void removePendingStateUpdate(String key) {
+  synchronized void removePendingStateUpdate(String key) {
     mPendingStateUpdates.remove(key);
   }
 
