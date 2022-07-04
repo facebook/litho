@@ -3,13 +3,13 @@ id: builtin-widgets
 title: Built-in widgets
 ---
 
-Litho provides a number of built-in components. You can find the full list of components and APIs within the [javadocs for the com.facebook.litho.widget package](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html).  This page covers the most basic built-in widgets.
+This page covers the basic built-in widgets. You can find the full list of components and APIs within the [com.facebook.litho.widget](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html) package in javadocs.
 
 ## Text
 
-This is the most basic Litho component to show simple text: it's the equivalent of an Android `TextView` within Litho.
+Shows simple text (the equivalent of an Android `TextView` within Litho).
 
-### Required Props
+### Required Prop
 
 * `CharSequence text` - text to display.
 
@@ -19,7 +19,7 @@ This is the most basic Litho component to show simple text: it's the equivalent 
 
 A full list of the optional props is available in the [javadocs](pathname:///javadoc/com/facebook/litho/widget/Text.html).
 
-Most props directly accept resources ids too:
+Most props directly accept resources ids:
 
 ```java
 final Component component =
@@ -33,11 +33,11 @@ final Component component =
 
 ## TextInput
 
-Component that renders an editable text input using an Android `EditText`.
+Renders an editable text input using an Android `EditText`.
 
-### Required Props
+### Required Prop
 
-* None.
+None.
 
 ### Usage
 
@@ -45,7 +45,7 @@ As this component is backed by Android's `EditText`, many native capabilities ar
 
 * Use an `android.text.InputFilter ` to set a text length limit or modify text input.
 * Change the input representation by passing an `android.text.InputType` constant.
-* For performance reasons, avoid re-creating the Component with different props to change its configuration. Instead, you can use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
+* For performance reasons, avoid recreating the Component with different props to change its configuration. Instead, you can use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
 
 ```java
 private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
@@ -60,12 +60,11 @@ Component component =
         .build();
  ```
 
-
 ## Image
 
-A component that displays a drawable.
+Displays a drawable.
 
-### Required Props
+### Required Prop
 
 * `Drawable drawable` - drawable to display.
 
@@ -78,12 +77,13 @@ Component component =
         .scaleType(ImageView.ScaleType.CENTER_CROP)
         .build();
 ```
+
 ## Card
 
 The Litho equivalent of an Android `CardView`. `Card` applies borders with shadows/elevation to a given component.
 If your card is rendered on top of a dynamically coloured background that cannot be 'faked' using the `Card` component, use the less performant prop `transparencyEnabled(true)`.
 
-### Required Props
+### Required Prop
 
 * `Component content` - the component to decorate.
 
@@ -100,9 +100,9 @@ Component component =
 
 ## SolidColor
 
-A simple Component to render solid colour.
+Renders solid colour.
 
-### Required Props
+### Required Prop
 
 * `int color` - colour to display.
 
@@ -120,11 +120,12 @@ Component component =
 
 Renders an infinitely spinning progress bar backed by the Android's `ProgressBar`.
 
-### Required Props
+### Required Prop
 
-* None.
+None.
 
-#### Usage
+### Usage
+
 ```java
 Component component =
 	  Progress.create(c)
@@ -132,14 +133,14 @@ Component component =
         .build();
 ```
 
-
 ## Spinner
 
 A simple spinner (dropdown) component. Derived from the standard Android `Spinner`.
 
-##### Required Props
-- `List<String> options`: List of possible options to select from.
-- `String selectedOption`: Currently selected option.
+### Required Props
+
+* `List<String> options` - list of selection options.
+* `String selectedOption` - the currently selected option.
 
 ### Usage
 
@@ -154,9 +155,9 @@ Component component =
 
 ## VerticalScroll
 
-A Component that wraps another component, allowing it to be vertically scrollable. It's analogous to Android's `ScrollView`.
+Wraps another component, allowing it to be vertically scrollable. It's analogous to Android's `ScrollView`.
 
-### Required Props
+### Required Prop
 
 * `Component childComponent` - a component to vertically scroll.
 
@@ -173,9 +174,9 @@ Component component =
 
 ## HorizontalScroll
 
-Component that wraps another component, allowing it to be horizontally scrollable. It's analogous to Android's `HorizontalScrollView`.
+Wraps another component, allowing it to be horizontally scrollable. It's analogous to Android's `HorizontalScrollView`.
 
-### Required Props
+### Required Prop
 
 * `Component contentProps` - a Component to horizontally scroll.
 
@@ -192,4 +193,4 @@ Component component =
 
 `Recycler` is the equivalent of Android's `RecyclerView`. It's recommended that you use [Sections](../sections/start.mdx) for efficient list rendering, which uses `Recycler` under the hood.
 
-If you  want to use `Recycler` directly, see the [Adding and adapting the RecyclerCollection to your app](../sections/recycler-collection-component.md) page of the litho documentation.
+If you  want to use `Recycler` directly, see the [Adding and adapting the RecyclerCollection to your app](../sections/recycler-collection-component.md) page.
