@@ -32,6 +32,7 @@ import com.facebook.litho.componentsfinder.ComponentsFinderKt;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
@@ -436,7 +437,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
   public LithoViewAssert hasAnyMatchingComponent(Condition<InspectableComponent> condition) {
     InspectableComponent inspectableComponent = InspectableComponent.getRootInstance(actual);
     boolean conditionMet =
-        iterateOverAllChildren(inspectableComponent.getChildComponents(), condition);
+        iterateOverAllChildren(Collections.singletonList(inspectableComponent), condition);
     Assertions.assertThat(conditionMet)
         .overridingErrorMessage(
             "Expected LithoView <%s> to satisfy condition <%s>", actual, condition)
