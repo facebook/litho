@@ -230,6 +230,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * this ComponentTree.
    */
   public interface NewLayoutStateReadyListener {
+
     void onNewLayoutStateReady(ComponentTree componentTree);
   }
 
@@ -426,16 +427,19 @@ public class ComponentTree implements LithoLifecycleListener {
 
     BatchedUpdatesConfiguration batchedUpdatesConfiguration =
         ComponentsConfiguration.sBatchedUpdatesConfiguration;
-    if (batchedUpdatesConfiguration == null) {
-      mBatchedStateUpdatesStrategy = null;
-    } else {
+    if (batchedUpdatesConfiguration != null) {
       switch (batchedUpdatesConfiguration) {
         case POST_TO_FRONT_OF_MAIN_THREAD:
           mBatchedStateUpdatesStrategy = new PostStateUpdateToFrontOfMainThread();
           break;
+        case POST_AFTER_COMPONENT_CALLBACKS:
+          mBatchedStateUpdatesStrategy = new ApplyPendingStateUpdatesOnComponentCallbackEnd();
+          break;
         default:
           mBatchedStateUpdatesStrategy = null;
       }
+    } else {
+      mBatchedStateUpdatesStrategy = null;
     }
 
     mContext = ComponentContext.withComponentTree(builder.context, this);
@@ -1549,7 +1553,8 @@ public class ComponentTree implements LithoLifecycleListener {
     if (mBatchedStateUpdatesStrategy == null) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
     } else {
-      mBatchedStateUpdatesStrategy.onStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
+      mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
+          attribution, isCreateLayoutInProgress);
     }
   }
 
@@ -1612,6 +1617,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
       if (isCreateLayoutInProgress) {
         logStateUpdatesFromCreateLayout(attribution);
+      }
+
+      if (mBatchedStateUpdatesStrategy != null) {
+        mBatchedStateUpdatesStrategy.onInternalStateUpdateStart();
       }
     }
 
@@ -2005,8 +2014,8 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /**
-   * @deprecated
    * @see #showTooltip(LithoTooltip, String, int, int)
+   * @deprecated
    */
   @Deprecated
   void showTooltip(
@@ -2281,7 +2290,6 @@ public class ComponentTree implements LithoLifecycleListener {
     final int heightSpec;
     final Component root;
     final int localLayoutVersion;
-
     // Cancel any scheduled layout requests we might have in the background queue
     // since we are starting a new layout computation.
     synchronized (mCurrentCalculateLayoutRunnableLock) {
@@ -3304,6 +3312,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * An encapsulation of currentVisibleArea and processVisibilityOutputs for each re-entrant mount.
    */
   private static final class ReentrantMount {
+
     final @Nullable Rect currentVisibleArea;
     final boolean processVisibilityOutputs;
 
@@ -3592,11 +3601,12 @@ public class ComponentTree implements LithoLifecycleListener {
   class PostStateUpdateToFrontOfMainThread implements BatchedStateUpdatesStrategy {
 
     @Override
-    public void onStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
       synchronized (mUpdateStateAsyncRunnableLock) {
         if (mUpdateStateAsyncRunnable != null) {
           mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
         }
+
         mUpdateStateAsyncRunnable =
             new UpdateStateAsyncRunnable(attribution, isCreateLayoutInProgress);
 
@@ -3608,6 +3618,99 @@ public class ComponentTree implements LithoLifecycleListener {
           }
         }
         mMainThreadHandler.postAtFront(mUpdateStateAsyncRunnable, tag);
+      }
+    }
+
+    @Override
+    public void onInternalStateUpdateStart() {
+      synchronized (mUpdateStateAsyncRunnableLock) {
+        if (mUpdateStateAsyncRunnable != null) {
+          mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
+        }
+      }
+    }
+  }
+
+  void beginStateUpdateBatch() {
+    if (mBatchedStateUpdatesStrategy instanceof ApplyPendingStateUpdatesOnComponentCallbackEnd) {
+      ((ApplyPendingStateUpdatesOnComponentCallbackEnd) mBatchedStateUpdatesStrategy)
+          .onComponentCallbackStart();
+    }
+  }
+
+  void commitStateUpdateBatch(String attribution, boolean isCreateLayoutInProgress) {
+    if (mBatchedStateUpdatesStrategy instanceof ApplyPendingStateUpdatesOnComponentCallbackEnd) {
+      ((ApplyPendingStateUpdatesOnComponentCallbackEnd) mBatchedStateUpdatesStrategy)
+          .onComponentCallbackEnd(attribution, isCreateLayoutInProgress);
+    }
+  }
+
+  /**
+   * In this strategy we keep track of any "Component Callback" running. The examples of this could
+   * be callbacks set on {@code Style}.
+   *
+   * <p>For example:
+   *
+   * <pre>{@code
+   * Style.onClick {
+   *  // component callback start
+   *  state.update { it + 1 }
+   *  state2.update { it + 2 }
+   *  // component callback end
+   * }
+   *
+   * }</pre>
+   *
+   * In this scenario, we will simply enqueue the state updates and wait for the component callback
+   * end to trigger the layout calculation.
+   */
+  class ApplyPendingStateUpdatesOnComponentCallbackEnd implements BatchedStateUpdatesStrategy {
+
+    private final ThreadLocal<Integer> mNumOpenCallbacksCount =
+        new ThreadLocal<Integer>() {
+
+          @NonNull
+          @Override
+          protected Integer initialValue() {
+            return 0;
+          }
+        };
+
+    private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger();
+
+    @Override
+    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+      /*
+       * If we have open callbacks then we simply enqueue the update and don't process it.
+       * Otherwise, we fallback to the default flow and schedule one layout calculation for each
+       * enqueued state update.
+       */
+      int currentOpenCallbacks = mNumOpenCallbacksCount.get();
+      if (currentOpenCallbacks == 0) {
+        updateStateInternal(true, attribution, isCreateLayoutInProgress);
+      } else {
+        mEnqueuedUpdatesCount.incrementAndGet();
+      }
+    }
+
+    @Override
+    public void onInternalStateUpdateStart() {
+      mEnqueuedUpdatesCount.set(0);
+    }
+
+    public void onComponentCallbackStart() {
+      int currentOpenCallbacks = mNumOpenCallbacksCount.get();
+      mNumOpenCallbacksCount.set(currentOpenCallbacks + 1);
+    }
+
+    public void onComponentCallbackEnd(String attribution, boolean isCreateLayoutInProgress) {
+      int currentOpenCallbacks = mNumOpenCallbacksCount.get();
+      if (currentOpenCallbacks > 0) {
+        mNumOpenCallbacksCount.set(currentOpenCallbacks - 1);
+
+        if (mEnqueuedUpdatesCount.getAndSet(0) > 0) {
+          updateStateInternal(true, attribution, isCreateLayoutInProgress);
+        }
       }
     }
   }

@@ -17,8 +17,8 @@
 package com.facebook.litho.core
 
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.exhaustive
@@ -68,9 +68,9 @@ internal enum class CoreFloatField {
 /** Common style item for all core dimen styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
 internal data class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
-    val pixelValue = value.toPixels(resourceResolver)
+    val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
       // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.
       CoreDimenField.WIDTH -> commonProps.widthPx(pixelValue)
@@ -104,7 +104,7 @@ internal data class CoreDimenStyleItem(val field: CoreDimenField, val value: Dim
 /** Common style item for all core float styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
 internal class CoreFloatStyleItem(val field: CoreFloatField, val value: Float) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.

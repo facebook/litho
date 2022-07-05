@@ -57,7 +57,9 @@ public class LithoTestRunner extends RobolectricTestRunner {
    *     configurations.
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getExtraRunConfigurations() {
-    return Arrays.asList(PostToFrontOfMainThreadBatchedUpdateStateTestRunConfiguration.class);
+    return Arrays.asList(
+        PostToFrontOfMainThreadBatchedUpdateStateTestRunConfiguration.class,
+        PostAfterComponentsCallbacksBatchedUpdateStateTestRunConfiguration.class);
   }
 
   @Override

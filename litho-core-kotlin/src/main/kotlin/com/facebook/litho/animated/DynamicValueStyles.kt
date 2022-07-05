@@ -18,6 +18,7 @@ package com.facebook.litho.animated
 
 import android.graphics.drawable.Drawable
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicPropsManager.KEY_ALPHA
 import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR
 import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE
@@ -29,7 +30,6 @@ import com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y
 import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X
 import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y
 import com.facebook.litho.DynamicValue
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.exhaustive
@@ -56,7 +56,7 @@ internal enum class DynamicField {
 @PublishedApi
 internal data class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) :
     StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val dynamicProps = component.getOrCreateCommonDynamicPropsHolder()
     when (field) {
       DynamicField.ALPHA -> dynamicProps.put(KEY_ALPHA, value)

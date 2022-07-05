@@ -73,7 +73,7 @@ fun ResourcesScope.createColumn(
             wrap,
             isReversed,
             resolvedContainerScope?.children)
-        .apply { style?.applyToComponent(resourceResolver, this) }
+        .apply { style?.applyToComponent(context, this) }
 
 /**
  * Constructs a new [Row]. Add children by using [FlexboxContainerScope.child] or
@@ -128,7 +128,7 @@ fun ResourcesScope.createRow(
             wrap,
             isReversed,
             resolvedContainerScope?.children)
-        .apply { style?.applyToComponent(resourceResolver, this) }
+        .apply { style?.applyToComponent(context, this) }
 
 /**
  * The implicit receiver for the trailing lambda on [ResourcesScope.Column] or [ResourcesScope.Row].

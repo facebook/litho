@@ -21,5 +21,7 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface BatchedStateUpdatesStrategy {
 
-  void onStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress);
+  void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress);
+
+  void onInternalStateUpdateStart();
 }

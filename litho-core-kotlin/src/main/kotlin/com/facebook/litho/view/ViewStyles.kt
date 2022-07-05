@@ -25,10 +25,12 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
+import com.facebook.litho.EventHandler
+import com.facebook.litho.FreeToCalculateLayoutEventHandler
 import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.TouchEvent
@@ -91,7 +93,7 @@ internal enum class DimenField {
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
 @PublishedApi
 internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
@@ -101,15 +103,21 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.FOCUSABLE -> commonProps.focusable(value as Boolean)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
       ObjectField.ON_CLICK ->
-          commonProps.clickHandler(eventHandler(value as ((ClickEvent) -> Unit)))
+          commonProps.clickHandler(
+              eventHandler(value as ((ClickEvent) -> Unit))
+                  .wrapInFreeToCalculateLayoutEventHandler(context))
       ObjectField.ON_LONG_CLICK ->
           commonProps.longClickHandler(
-              eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
+              eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean))
+                  .wrapInFreeToCalculateLayoutEventHandler(context))
       ObjectField.ON_INTERCEPT_TOUCH ->
           commonProps.interceptTouchHandler(
-              eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean)))
+              eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean))
+                  .wrapInFreeToCalculateLayoutEventHandler(context))
       ObjectField.ON_TOUCH ->
-          commonProps.touchHandler(eventHandler(value as ((TouchEvent) -> Unit)))
+          commonProps.touchHandler(
+              eventHandler(value as ((TouchEvent) -> Unit))
+                  .wrapInFreeToCalculateLayoutEventHandler(context))
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
       ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
       ObjectField.TEST_KEY -> commonProps.testKey(value as String?)
@@ -123,10 +131,17 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
   }
 }
 
+@PublishedApi
+internal fun <E> EventHandler<E>.wrapInFreeToCalculateLayoutEventHandler(
+    context: ComponentContext
+): EventHandler<E> {
+  return FreeToCalculateLayoutEventHandler(this, context)
+}
+
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
 internal data class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       FloatField.ALPHA -> commonProps.alpha(value)
@@ -141,9 +156,9 @@ internal data class FloatStyleItem(val field: FloatField, val value: Float) : St
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
 internal data class DimenStyleItem(val field: DimenField, val value: Dimen) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
-    val pixelValue = value.toPixels(resourceResolver)
+    val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
       DimenField.TOUCH_EXPANSION_START -> commonProps.touchExpansionPx(YogaEdge.START, pixelValue)
       DimenField.TOUCH_EXPANSION_TOP -> commonProps.touchExpansionPx(YogaEdge.TOP, pixelValue)
@@ -456,9 +471,10 @@ internal data class ShadowStyleItem(
     @ColorInt val ambientShadowColor: Int,
     @ColorInt val spotShadowColor: Int
 ) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
-    commonProps.shadowElevationPx(elevation.toPixels(resourceResolver).toFloat())
+    commonProps.shadowElevationPx(elevation.toPixels(context.resourceResolver).toFloat())
     commonProps.outlineProvider(outlineProvider)
     commonProps.ambientShadowColor(ambientShadowColor)
     commonProps.spotShadowColor(spotShadowColor)

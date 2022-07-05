@@ -34,7 +34,7 @@ abstract class MountableComponent() : Component() {
     val mountableWithStyle = mountableComponentScope.render()
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
-    mountableWithStyle.style?.applyToComponent(c.resourceResolver, this)
+    mountableWithStyle.style?.applyToComponent(c, this)
 
     return PrepareResult(
         mountableWithStyle.mountable,

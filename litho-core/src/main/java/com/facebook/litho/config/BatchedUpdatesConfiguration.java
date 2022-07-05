@@ -20,5 +20,6 @@ import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public enum BatchedUpdatesConfiguration {
-  POST_TO_FRONT_OF_MAIN_THREAD;
+  POST_TO_FRONT_OF_MAIN_THREAD,
+  POST_AFTER_COMPONENT_CALLBACKS
 }

@@ -18,8 +18,8 @@ package com.facebook.litho.flexbox
 
 import com.facebook.litho.Border
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.exhaustive
@@ -67,9 +67,9 @@ internal enum class FlexboxObjectField {
 @PublishedApi
 internal data class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dimen) :
     StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
-    val pixelValue = value.toPixels(resourceResolver)
+    val pixelValue = value.toPixels(context.resourceResolver)
     when (field) {
       FlexboxDimenField.FLEX_BASIS -> commonProps.flexBasisPx(pixelValue)
       FlexboxDimenField.POSITION_ALL -> commonProps.positionPx(YogaEdge.ALL, pixelValue)
@@ -89,7 +89,7 @@ internal data class FlexboxDimenStyleItem(val field: FlexboxDimenField, val valu
 /** Common style item for all float styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
 internal class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       FlexboxFloatField.FLEX -> commonProps.flex(value)
@@ -104,7 +104,7 @@ internal class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : 
 /** Common style item for all object styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
 internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: Any?) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }

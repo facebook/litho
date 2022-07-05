@@ -20,7 +20,6 @@ package com.facebook.litho.transition
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.Transition
@@ -33,7 +32,7 @@ internal data class TransitionKeyStyleItem(
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType
 ) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     commonProps.transitionKey(transitionKey, context.globalKey)
     commonProps.transitionKeyType(transitionKeyType)

@@ -17,10 +17,10 @@
 package com.facebook.litho.visibility
 
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.FocusedVisibleEvent
 import com.facebook.litho.FullImpressionVisibleEvent
 import com.facebook.litho.InvisibleEvent
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.UnfocusedVisibleEvent
@@ -50,7 +50,7 @@ internal enum class VisibilityFloatField {
 
 @PublishedApi
 internal data class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       VisibilityField.ON_VISIBLE ->
@@ -74,7 +74,7 @@ internal data class VisibilityStyleItem(val field: VisibilityField, val value: A
 @PublishedApi
 internal class VisibilityFloatStyleItem(val field: VisibilityFloatField, val value: Float) :
     StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       VisibilityFloatField.VISIBLE_HEIGHT_RATIO -> commonProps.visibleHeightRatio(value)

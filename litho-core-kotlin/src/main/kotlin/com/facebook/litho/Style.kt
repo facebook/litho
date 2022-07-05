@@ -23,7 +23,7 @@ package com.facebook.litho
 interface StyleItem {
 
   /** Sets this style item value on the given [Component]. */
-  fun applyToComponent(resourceResolver: ResourceResolver, component: Component)
+  fun applyToComponent(context: ComponentContext, component: Component)
 }
 
 /** exposed to avoid package-private error on [Component] */
@@ -79,8 +79,8 @@ open class Style(
     }
   }
 
-  internal fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
-    forEach { it.applyToComponent(resourceResolver, component) }
+  internal fun applyToComponent(context: ComponentContext, component: Component) {
+    forEach { it.applyToComponent(context, component) }
   }
 
   override fun equals(other: Any?): Boolean {

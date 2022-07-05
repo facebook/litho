@@ -18,12 +18,12 @@ package com.facebook.litho.accessibility
 
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.OnPopulateAccessibilityEventEvent
 import com.facebook.litho.OnRequestSendAccessibilityEventEvent
 import com.facebook.litho.PerformAccessibilityActionEvent
-import com.facebook.litho.ResourceResolver
 import com.facebook.litho.SendAccessibilityEventEvent
 import com.facebook.litho.SendAccessibilityEventUncheckedEvent
 import com.facebook.litho.Style
@@ -56,7 +56,7 @@ internal enum class AccessibilityField {
 @PublishedApi
 internal data class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) :
     StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+  override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       AccessibilityField.ACCESSIBILITY_HEADING -> commonProps.accessibilityHeading(value as Boolean)
