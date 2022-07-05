@@ -69,6 +69,7 @@ class KBatchedStateUpdatesTest {
             */
             arrayOf(TestConfig(BatchedUpdatesConfiguration.POST_TO_FRONT_OF_MAIN_THREAD, 2)),
             arrayOf(TestConfig(BatchedUpdatesConfiguration.POST_TO_CHOREOGRAPHER_CALLBACK, 2)),
+            arrayOf(TestConfig(BatchedUpdatesConfiguration.BEST_EFFORT_FRONT_AND_CHOREOGRAPHER, 2)),
         )
   }
 

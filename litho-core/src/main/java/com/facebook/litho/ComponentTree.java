@@ -434,6 +434,9 @@ public class ComponentTree implements LithoLifecycleListener {
         case POST_TO_CHOREOGRAPHER_CALLBACK:
           mBatchedStateUpdatesStrategy = new PostStateUpdateToChoreographerCallback();
           break;
+        case BEST_EFFORT_FRONT_AND_CHOREOGRAPHER:
+          mBatchedStateUpdatesStrategy = new BestEffortFrontOfMainThreadAndChoreographer();
+          break;
         default:
           mBatchedStateUpdatesStrategy = null;
       }
@@ -3846,6 +3849,34 @@ public class ComponentTree implements LithoLifecycleListener {
 
     private void scheduleChoreographerCreation() {
       mMainThreadHandler.postAtFront(mCreateMainChoreographerRunnable, "Create Main Choreographer");
+    }
+  }
+
+  class BestEffortFrontOfMainThreadAndChoreographer implements BatchedStateUpdatesStrategy {
+
+    private final PostStateUpdateToFrontOfMainThread mPostStateUpdateToFrontOfMainThread =
+        new PostStateUpdateToFrontOfMainThread();
+    private final PostStateUpdateToChoreographerCallback mPostStateUpdateToChoreographerCallback =
+        new PostStateUpdateToChoreographerCallback();
+
+    @Override
+    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+      mPostStateUpdateToFrontOfMainThread.onAsyncStateUpdateEnqueued(
+          attribution, isCreateLayoutInProgress);
+      mPostStateUpdateToChoreographerCallback.onAsyncStateUpdateEnqueued(
+          attribution, isCreateLayoutInProgress);
+    }
+
+    @Override
+    public void onInternalStateUpdateStart() {
+      mPostStateUpdateToFrontOfMainThread.onInternalStateUpdateStart();
+      mPostStateUpdateToChoreographerCallback.onInternalStateUpdateStart();
+    }
+
+    @Override
+    public void release() {
+      mPostStateUpdateToFrontOfMainThread.release();
+      mPostStateUpdateToChoreographerCallback.release();
     }
   }
 }
