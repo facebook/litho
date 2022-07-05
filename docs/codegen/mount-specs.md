@@ -7,27 +7,28 @@ title: "Mount Specs"
 A *mount spec* defines a component that can render views or drawables.
 :::
 
-Mount specs should only be created when you need to integrate your own views/drawables with Litho. Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
+Mount specs should only be created when you need to integrate your own views/drawables with Litho. Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a 'View' or a 'Drawable') to be displayed.
 
-Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are  optional.
+Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
+
+## Mount spec Component lifecycle
+
+The following abbreviations are used in the lifecycle
+
+* **BG** - occurs on a background (BG) thread when possible. Do not modify the view hierarchy.
+* **UI** - can occur on a UI thread.
+* **PC** - performance critical; it's recommended to put in as little work as possible, use `BG` methods instead.
 
 The lifecycle of mount spec components is as follows:
 
-:::note
-
-* `BG`- occurs on a background (BG) thread when possible. Do not modify the view hierarchy.
-* `UI` - can occur on UI thread.
-* `PC` - Performance critical. Put as little work in it as possible, use `BG` methods instead.
-:::
-
-1. Run `@OnPrepare` once, before the layout calculation [`BG`/`UI`].
-2. Run `@OnMeasure` optionally during layout calculation. This will **not** be called if Yoga has already determined your component's bounds (for example, a static width/height was set on the component) [`BG`/`UI`].
-3. Run `@OnBoundsDefined` once, after layout calculation. This will be called whether or not `@OnMeasure` was called [`BG`/`UI`].
-4. Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. **It must not return null** [`UI`].
-5. Run `@OnMount` before the component is attached to a hosting view. This will happen when the component is about to become visible when incremental mount is enabled (it is enabled by default) [`UI`/`PC`].
-6. Run `@OnBind` after the component is attached to a hosting view [`UI`/`PC`].
-7. Run `@OnUnbind` before the component is detached from a hosting view [`UI`/`PC`].
-8. Run `@OnUnmount` optionally after the component is detached from a hosting view. See incremental mount notes on `@OnMount`: they apply in reverse here [`UI`/`PC`].
+1. Run `@OnPrepare` once, before the layout calculation [BG/UI].
+2. Run `@OnMeasure` optionally during layout calculation. This will **not** be called if Yoga has already determined your component's bounds (for example, a static width/height was set on the component) [BG/UI].
+3. Run `@OnBoundsDefined` once, after layout calculation. This will be called whether or not `@OnMeasure` was called [BG/UI].
+4. Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. **It must not return null** [UI].
+5. Run `@OnMount` before the component is attached to a hosting view. This will happen when the component is about to become visible when incremental mount is enabled (it is enabled by default) [UI/PC].
+6. Run `@OnBind` after the component is attached to a hosting view [UI/PC].
+7. Run `@OnUnbind` before the component is detached from a hosting view [UI/PC].
+8. Run `@OnUnmount` optionally after the component is detached from a hosting view. See incremental mount notes on `@OnMount`: they apply in reverse here [UI/PC].
 
 ## Mounting
 
@@ -162,7 +163,7 @@ Within the above snippet:
 
 ## Pre-allocation
 
-When a MountSpec component is being mounted, its `View`/`Drawable` content needs to be either initialized or reused from the recycling pool. If the pool is empty, a new instance will be created at that time, which might keep the UI thread too busy and drop one or more frames. To mitigate that, Litho can pre-allocate a few instances and put in the recycling pool:
+When a MountSpec component is being mounted, its View/Drawable content needs to be either initialized or reused from the recycling pool. If the pool is empty, a new instance will be created at that time, which might keep the UI thread too busy and drop one or more frames. To mitigate that, Litho can pre-allocate a few instances and put in the recycling pool:
 
 ``` java
 @MountSpec(poolSize = 3, canPreallocate = true)
@@ -171,4 +172,4 @@ public class ColorComponentSpec {
 }
 ```
 
-`canPreallocate` enables pre-allocation for this MountSpec and `poolSize` defines the number of instances to pre-allocate. For this `ColorComponent` example, three instances of `ColorDrawable` will be created and put in the recycling pool. This option is recommended for MountSpec components that inflate a complex `View`.
+`canPreallocate` enables pre-allocation for this MountSpec and `poolSize` defines the number of instances to pre-allocate. For this `ColorComponent` example, three instances of `ColorDrawable` will be created and put in the recycling pool. This option is recommended for MountSpec components that inflate a complex View.
