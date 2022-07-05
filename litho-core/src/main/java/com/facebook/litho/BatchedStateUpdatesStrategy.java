@@ -24,4 +24,6 @@ public interface BatchedStateUpdatesStrategy {
   void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress);
 
   void onInternalStateUpdateStart();
+
+  void release();
 }

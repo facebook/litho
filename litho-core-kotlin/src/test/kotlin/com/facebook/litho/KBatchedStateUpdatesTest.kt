@@ -67,7 +67,9 @@ class KBatchedStateUpdatesTest {
             batch the updates and do only one extra render (besides the initial one) - therefore the
             expected render count is 2.
             */
-            arrayOf(TestConfig(BatchedUpdatesConfiguration.POST_TO_FRONT_OF_MAIN_THREAD, 2)))
+            arrayOf(TestConfig(BatchedUpdatesConfiguration.POST_TO_FRONT_OF_MAIN_THREAD, 2)),
+            arrayOf(TestConfig(BatchedUpdatesConfiguration.POST_TO_CHOREOGRAPHER_CALLBACK, 2)),
+        )
   }
 
   @ParameterizedRobolectricTestRunner.Parameter lateinit var config: TestConfig
