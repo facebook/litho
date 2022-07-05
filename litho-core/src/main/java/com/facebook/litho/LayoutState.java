@@ -299,7 +299,8 @@ public class LayoutState
       return null;
     }
 
-    if (isMountable(node.getTailComponent()) && !result.wasMeasured()) {
+    final boolean hasExactSize = !result.wasMeasured();
+    if (isMountable(node.getTailComponent()) && hasExactSize) {
       final int width =
           result.getWidth()
               - result.getPaddingRight()
@@ -317,7 +318,7 @@ public class LayoutState
 
     final @Nullable Object layoutData = result.getLayoutData();
 
-    return createRenderTreeNode(unit, layoutState, result, true, layoutData, parent);
+    return createRenderTreeNode(unit, layoutState, result, true, layoutData, parent, hasExactSize);
   }
 
   private static void addRootHostRenderTreeNode(
@@ -364,7 +365,7 @@ public class LayoutState
       @Nullable DebugHierarchy.Node hierarchy) {
 
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, layoutState, result, false, null, parent);
+        createRenderTreeNode(unit, layoutState, result, false, null, parent, false);
 
     final LayoutOutput hostOutput = unit.getLayoutOutput();
 
@@ -390,7 +391,8 @@ public class LayoutState
       final LithoLayoutResult result,
       final boolean useNodePadding,
       final @Nullable Object layoutData,
-      final @Nullable RenderTreeNode parent) {
+      final @Nullable RenderTreeNode parent,
+      final boolean hasExactSize) {
 
     final int hostTranslationX;
     final int hostTranslationY;
@@ -410,10 +412,19 @@ public class LayoutState
     if (useNodePadding) {
       if (isMountable(unit.output.getComponent())) {
         if (!isMountableView(unit)) {
-          l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
-          t += result.getPaddingTop() + result.getLayoutBorder(YogaEdge.TOP);
-          r -= (result.getPaddingRight() + result.getLayoutBorder(YogaEdge.RIGHT));
-          b -= (result.getPaddingBottom() + result.getLayoutBorder(YogaEdge.BOTTOM));
+          if (!hasExactSize) {
+            l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
+            t += result.getPaddingTop() + result.getLayoutBorder(YogaEdge.TOP);
+            r -= (result.getPaddingRight() + result.getLayoutBorder(YogaEdge.RIGHT));
+            b -= (result.getPaddingBottom() + result.getLayoutBorder(YogaEdge.BOTTOM));
+          } else {
+            // for exact size the border doesn't need to be adjusted since it's inside the bounds of
+            // the content
+            l += result.getPaddingLeft();
+            t += result.getPaddingTop();
+            r -= result.getPaddingRight();
+            b -= result.getPaddingBottom();
+          }
         }
       } else if (!isMountableView(unit)) {
         l += result.getPaddingLeft();
@@ -998,7 +1009,7 @@ public class LayoutState
       boolean matchHostBoundsTransitions) {
 
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, layoutState, result, false, null, parent);
+        createRenderTreeNode(unit, layoutState, result, false, null, parent, false);
 
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
     final LayoutOutput output = drawableRenderUnit.getLayoutOutput();
