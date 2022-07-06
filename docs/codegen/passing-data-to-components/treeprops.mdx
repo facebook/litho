@@ -3,14 +3,14 @@ id: treeprops
 title: "TreeProps"
 ---
 
-:::note
-This page covers the old Java Spec API. If you aren't using the Spec API, please refer to [TreeProps](mainconcepts/props.mdx/#tree-props).
-:::
-
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::caution
+This page covers the old Java Spec API. If you aren't using the Spec API, refer to the [TreeProps](../../mainconcepts/props.mdx#tree-props) section of the 'Types of Props' page.
+:::
 
 A TreeProp is a special type of [prop](props.md) that is transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass props to every component in your hierarchy.
 
@@ -31,6 +31,7 @@ In order to declare a TreeProp you need to use `TreePropProvider`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentKComponent.kt start=start_example end=end_example
 ```
+
   </TabItem>
   <TabItem value="java">
 
@@ -38,6 +39,7 @@ Each TreeProp is declared and created from a method annotated with `@OnCreateTre
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 </Tabs>
 
@@ -60,6 +62,7 @@ The child component can access the TreeProp value through a `ComponentScope.getT
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ChildKComponent.kt start=start_example end=end_example
 ```
+
   </TabItem>
 
   <TabItem value="java">
@@ -68,6 +71,7 @@ The child component can access the TreeProp value through a parameter annotated 
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ChildComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 </Tabs>
 
@@ -88,11 +92,13 @@ If you want to access a TreeProp from the component that created it, you can tra
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentComponentTreePropAsStateKComponent.kt start=start_example end=end_example
 ```
+
   </TabItem>
   <TabItem value="java">
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentComponentTreePropAsStateSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 </Tabs>
 
@@ -138,6 +144,7 @@ The leaf node renders the TreeProp as text in the example case but would normall
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/LeafKComponent.kt start=start_example end=end_example
 ```
+
   </TabItem>
   <TabItem value="java">
 
@@ -157,6 +164,7 @@ The leaf node simply renders the TreeProp as text in our example case here, but 
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/LeafComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 </Tabs>
 
