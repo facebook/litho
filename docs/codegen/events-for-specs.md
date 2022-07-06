@@ -3,7 +3,7 @@ id: events-for-specs
 title: Events for Specs
 ---
 
-The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention, Event class names are suffixed with *Event*.
+The framework provides a general-purpose API to connect components through events. Events are declared as a POJO (Plain Old Java Object) with an `@Event` annotation. By convention, Event class names are suffixed with *Event*.
 
 Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
 
