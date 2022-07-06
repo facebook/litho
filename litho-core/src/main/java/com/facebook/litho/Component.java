@@ -776,14 +776,6 @@ public abstract class Component
     return handle.getComponentTree().getEventTrigger(handle, id);
   }
 
-  /**
-   * This method is overridden in the generated component to return true if and only if the
-   * Component Spec has an OnError lifecycle callback.
-   */
-  protected boolean hasOwnErrorHandler() {
-    return false;
-  }
-
   protected static <E> EventHandler<E> newEventHandler(
       final Class<? extends Component> reference,
       final String className,

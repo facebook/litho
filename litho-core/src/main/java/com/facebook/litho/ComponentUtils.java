@@ -598,7 +598,8 @@ public class ComponentUtils {
 
   public static EventHandler<ErrorEvent> createOrGetErrorEventHandler(
       Component component, ComponentContext parentContext, ComponentContext scopedContext) {
-    if (component.hasOwnErrorHandler()) {
+    if (component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).hasOwnErrorHandler()) {
       return new EventHandler<>(
           component, Component.ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
     } else {

@@ -100,8 +100,6 @@ abstract class MountableComponent() : Component() {
 
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
-  final override fun hasOwnErrorHandler(): Boolean = false
-
   final override fun implementsAccessibility(): Boolean = false
 
   final override fun implementsExtraAccessibilityNodes(): Boolean = false

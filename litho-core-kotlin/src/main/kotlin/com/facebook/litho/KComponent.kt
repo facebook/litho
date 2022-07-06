@@ -94,8 +94,6 @@ abstract class KComponent : Component() {
 
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
-  final override fun hasOwnErrorHandler() = false
-
   final override fun implementsAccessibility() = false
 
   final override fun implementsExtraAccessibilityNodes() = false

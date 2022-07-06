@@ -200,6 +200,14 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     return false;
   }
 
+  /**
+   * This method is overridden in the generated component to return true if and only if the
+   * Component Spec has an OnError lifecycle callback.
+   */
+  protected boolean hasOwnErrorHandler() {
+    return false;
+  }
+
   /** @return true if the Component is using state, false otherwise. */
   protected boolean hasState() {
     return false;
