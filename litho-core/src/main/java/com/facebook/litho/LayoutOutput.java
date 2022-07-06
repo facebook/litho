@@ -111,7 +111,8 @@ class LayoutOutput implements Cloneable {
     }
 
     return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
-        || mComponent.implementsAccessibility();
+        || (mComponent instanceof SpecGeneratedComponent
+            && ((SpecGeneratedComponent) mComponent).implementsAccessibility());
   }
 
   @Nullable

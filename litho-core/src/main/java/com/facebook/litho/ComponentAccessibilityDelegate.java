@@ -266,9 +266,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
-    if (mountItem != null
-        && getLayoutOutput(mountItem).getComponent().implementsExtraAccessibilityNodes()) {
-      return super.getAccessibilityNodeProvider(host);
+    if (mountItem != null && getLayoutOutput(mountItem) != null) {
+      final Component component = getLayoutOutput(mountItem).getComponent();
+      if ((component instanceof SpecGeneratedComponent
+          && ((SpecGeneratedComponent) component).implementsExtraAccessibilityNodes())) {
+        return super.getAccessibilityNodeProvider(host);
+      }
     }
 
     return null;

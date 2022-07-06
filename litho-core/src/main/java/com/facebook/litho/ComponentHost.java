@@ -628,7 +628,10 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   private void updateAccessibilityState(final LayoutOutput output) {
     // If the item has extra A11Y nodes then virtual views are implemented.
-    if (output.isAccessible() && output.getComponent().implementsExtraAccessibilityNodes()) {
+    Component component = output.getComponent();
+    if (output.isAccessible()
+        && component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).implementsExtraAccessibilityNodes()) {
       setImplementsVirtualViews(true);
     }
 

@@ -510,7 +510,8 @@ public class InternalNodeUtils {
 
     final boolean implementsAccessibility =
         (nodeInfo != null && nodeInfo.needsAccessibilityDelegate())
-            || component.implementsAccessibility();
+            || (component instanceof SpecGeneratedComponent
+                && ((SpecGeneratedComponent) component).implementsAccessibility());
 
     final int importantForAccessibility = node.getImportantForAccessibility();
 

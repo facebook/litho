@@ -422,24 +422,6 @@ public abstract class Component
     return false;
   }
 
-  /**
-   * Whether this component will populate any accessibility nodes or events that are passed to it.
-   *
-   * @return true if the component implements accessibility info
-   */
-  protected boolean implementsAccessibility() {
-    return false;
-  }
-
-  /**
-   * Whether this component will expose any virtual views to the accessibility framework
-   *
-   * @return true if the component exposes extra accessibility nodes
-   */
-  protected boolean implementsExtraAccessibilityNodes() {
-    return false;
-  }
-
   protected boolean implementsShouldUpdate() {
     return false;
   }

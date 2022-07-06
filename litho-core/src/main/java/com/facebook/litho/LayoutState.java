@@ -2031,7 +2031,9 @@ public class LayoutState
       parent.child(node);
     }
 
-    if (layoutOutput.getComponent().implementsExtraAccessibilityNodes()
+    if (layoutOutput.getComponent() instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) layoutOutput.getComponent())
+            .implementsExtraAccessibilityNodes()
         && layoutOutput.isAccessible()
         && parent != null) {
       final LayoutOutput output = LayoutOutput.getLayoutOutput(parent);
