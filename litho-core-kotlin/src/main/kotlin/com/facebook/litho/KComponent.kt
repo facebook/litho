@@ -104,12 +104,6 @@ abstract class KComponent : Component() {
       interStagePropsContainer: InterStagePropsContainer?
   ) = super.onBind(c, mountedContent, interStagePropsContainer)
 
-  final override fun onBoundsDefined(
-      c: ComponentContext,
-      layout: ComponentLayout,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onBoundsDefined(c, layout, interStagePropsContainer)
-
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
   final override fun onCreateMountContentPool() = super.onCreateMountContentPool()

@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.customview.widget.ExploreByTouchHelper;
@@ -246,4 +247,18 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
    * @param c The {@link ComponentContext} the Component was constructed with.
    */
   protected void onAttached(ComponentContext c) {}
+
+  /**
+   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
+   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
+   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
+   * position of the component in the layout tree.
+   *
+   * @param c The {@link Context} used by this component.
+   * @param layout The {@link ComponentLayout} with defined position and size.
+   */
+  protected void onBoundsDefined(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      @Nullable InterStagePropsContainer interStagePropsContainer) {}
 }

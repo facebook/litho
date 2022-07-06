@@ -749,9 +749,9 @@ public class LayoutState
       }
 
       try {
-        if (isMountSpec(component) && !isMountable(component)) {
-          component.onBoundsDefined(
-              context, result, (InterStagePropsContainer) layoutData.mLayoutData);
+        if (isMountSpec(component) && component instanceof SpecGeneratedComponent) {
+          ((SpecGeneratedComponent) component)
+              .onBoundsDefined(context, result, (InterStagePropsContainer) layoutData.mLayoutData);
         }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(context, component, e);

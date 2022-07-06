@@ -219,8 +219,8 @@ public class InternalNodeUtils {
   /**
    * Common method to create the {@link LithoRenderUnit} for backgrounds, foregrounds, and border.
    * The method uses the {@param outputType} to decide between the options. This method will call
-   * the shouldupdate, and {@link Component#onBoundsDefined(ComponentContext, ComponentLayout)} for
-   * the {@link DrawableComponent}.
+   * the shouldupdate, and {@link SpecGeneratedComponent#onBoundsDefined(ComponentContext,
+   * ComponentLayout)} for the {@link DrawableComponent}.
    */
   static LithoRenderUnit createDrawableRenderUnit(
       final LithoLayoutResult result,
@@ -282,7 +282,9 @@ public class InternalNodeUtils {
     }
 
     try {
-      component.onBoundsDefined(result.getContext(), result, null);
+      if (component instanceof SpecGeneratedComponent) {
+        ((SpecGeneratedComponent) component).onBoundsDefined(result.getContext(), result, null);
+      }
     } catch (Exception e) {
       ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
     } finally {

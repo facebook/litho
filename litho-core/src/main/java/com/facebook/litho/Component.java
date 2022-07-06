@@ -438,20 +438,6 @@ public abstract class Component
   }
 
   /**
-   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
-   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
-   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
-   * position of the component in the layout tree.
-   *
-   * @param c The {@link Context} used by this component.
-   * @param layout The {@link ComponentLayout} with defined position and size.
-   */
-  protected void onBoundsDefined(
-      final ComponentContext c,
-      final ComponentLayout layout,
-      @Nullable InterStagePropsContainer interStagePropsContainer) {}
-
-  /**
    * Invokes the Component-specific render implementation, returning a RenderResult. The
    * RenderResult will have the Component this Component rendered to (which will then need to be
    * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
