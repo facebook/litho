@@ -106,8 +106,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun makeShallowCopy() = super.makeShallowCopy()
 
-  final override fun onAttached(c: ComponentContext) = super.onAttached(c)
-
   final override fun onBind(
       c: ComponentContext,
       mountedContent: Any,

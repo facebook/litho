@@ -28,11 +28,11 @@ import com.facebook.infer.annotation.Nullsafe;
 final class LayoutSpecAttachable implements Attachable {
 
   private final String mGlobalKey;
-  private final Component mComponent;
+  private final SpecGeneratedComponent mComponent;
   private final ScopedComponentInfo mScopedComponentInfo;
 
   public LayoutSpecAttachable(
-      String globalKey, Component component, ScopedComponentInfo scopedComponentInfo) {
+      String globalKey, SpecGeneratedComponent component, ScopedComponentInfo scopedComponentInfo) {
     mGlobalKey = globalKey;
     mComponent = component;
     mScopedComponentInfo = scopedComponentInfo;

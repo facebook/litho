@@ -442,7 +442,9 @@ class Layout {
     if (component instanceof SpecGeneratedComponent
         && ((SpecGeneratedComponent) component).hasAttachDetachCallback()) {
       // needs ComponentUtils.getGlobalKey?
-      node.addAttachable(new LayoutSpecAttachable(globalKey, component, scopedComponentInfo));
+      node.addAttachable(
+          new LayoutSpecAttachable(
+              globalKey, (SpecGeneratedComponent) component, scopedComponentInfo));
     }
 
     // 13. Add working ranges to the InternalNode.

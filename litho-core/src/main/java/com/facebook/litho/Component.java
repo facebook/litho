@@ -430,13 +430,6 @@ public abstract class Component
     return false;
   }
 
-  /**
-   * Called when the component is attached to the {@link ComponentTree}.
-   *
-   * @param c The {@link ComponentContext} the Component was constructed with.
-   */
-  protected void onAttached(ComponentContext c) {}
-
   protected void onBind(
       final ComponentContext c,
       final Object mountedContent,

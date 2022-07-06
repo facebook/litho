@@ -239,4 +239,11 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
   protected boolean needsPreviousRenderData() {
     return false;
   }
+
+  /**
+   * Called when the component is attached to the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onAttached(ComponentContext c) {}
 }
