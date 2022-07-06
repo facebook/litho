@@ -261,4 +261,11 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
       final ComponentContext c,
       final ComponentLayout layout,
       @Nullable InterStagePropsContainer interStagePropsContainer) {}
+
+  /**
+   * Called when the component is detached from the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onDetached(ComponentContext c) {}
 }

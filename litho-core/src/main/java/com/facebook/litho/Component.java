@@ -476,13 +476,6 @@ public abstract class Component
   }
 
   /**
-   * Called when the component is detached from the {@link ComponentTree}.
-   *
-   * @param c The {@link ComponentContext} the Component was constructed with.
-   */
-  protected void onDetached(ComponentContext c) {}
-
-  /**
    * Called to provide a fallback if a supported lifecycle method throws an exception. It is
    * possible to either recover from the error here or reraise the exception to catch it at a higher
    * level or crash the application.
