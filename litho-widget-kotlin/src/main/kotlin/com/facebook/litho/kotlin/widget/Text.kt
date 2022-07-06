@@ -56,6 +56,8 @@ inline fun ResourcesScope.Text(
     ellipsize: TextUtils.TruncateAt? = null,
     lineSpacingMultiplier: Float = 1f,
     lineHeight: Dimen? = null,
+    extraSpacing: Dimen? = null,
+    letterSpacing: Float = 0f,
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = true,
@@ -84,6 +86,8 @@ inline fun ResourcesScope.Text(
         .minLines(minLines)
         .maxLines(maxLines)
         .apply { lineHeight?.let { lineHeightPx(it.toPixels().toFloat()) } }
+        .apply { extraSpacing?.let { extraSpacingPx(it.toPixels().toFloat()) } }
+        .letterSpacing(letterSpacing)
         .shouldIncludeFontPadding(includeFontPadding)
         .accessibleClickableSpans(accessibleClickableSpans)
         .clipToBounds(clipToBounds)
