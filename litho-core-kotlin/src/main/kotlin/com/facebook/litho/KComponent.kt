@@ -110,8 +110,6 @@ abstract class KComponent : Component() {
 
   final override fun onCreateTransition(c: ComponentContext) = super.onCreateTransition(c)
 
-  final override fun onError(c: ComponentContext, e: Exception) = super.onError(c, e)
-
   final override fun onLoadStyle(c: ComponentContext) = super.onLoadStyle(c)
 
   final override fun onMeasure(

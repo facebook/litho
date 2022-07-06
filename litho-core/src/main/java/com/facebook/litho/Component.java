@@ -475,30 +475,6 @@ public abstract class Component
     return null;
   }
 
-  /**
-   * Called to provide a fallback if a supported lifecycle method throws an exception. It is
-   * possible to either recover from the error here or reraise the exception to catch it at a higher
-   * level or crash the application.
-   *
-   * @see com.facebook.litho.annotations.OnError
-   * @param c The {@link ComponentContext} the Component was constructed with.
-   * @param e The exception caught.
-   */
-  protected void onError(ComponentContext c, Exception e) {
-    EventHandler<ErrorEvent> eventHandler = c.getErrorEventHandler();
-    if (eventHandler == null) {
-      if (e instanceof RuntimeException) {
-        throw (RuntimeException) e;
-      } else {
-        throw new RuntimeException(e);
-      }
-    }
-    ErrorEvent errorEvent = new ErrorEvent();
-    errorEvent.exception = e;
-    errorEvent.componentTree = c != null ? c.getComponentTree() : null;
-    eventHandler.dispatchEvent(errorEvent);
-  }
-
   protected void onLoadStyle(ComponentContext c) {}
 
   protected void onMeasure(
