@@ -8,12 +8,14 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-This page covers how to convert existing code from lifecycle methods in the Java Specs API to hooks in the Kotlin API. To familiarize yourself with the concept and rules for Hooks, see the [Introduction to Hooks](/mainconcepts/hooks-intro.mdx) page.
+This page covers how to convert existing code from lifecycle methods in the Java Specs API to hooks in the Kotlin API.
+
+To familiarize yourself with the concept and rules for Hooks, see the [Introduction to Hooks](../mainconcepts/hooks-intro.mdx) page.
 :::
 
 One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
 
-## [`useState`](/mainconcepts/use-state.mdx)
+## useState
 
 `useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The following code shows a comparison of Spec API and Kotlin API code for the same component:
 
@@ -43,7 +45,9 @@ One of the biggest changes in the Litho Kotlin API is the introduction of hooks:
 
 A common pattern in the Java Spec API was to perform side effects in `@OnCreateInitialState` (such as attaching a listener). Instead, any side effects like this should now be done with the [useEffect Hook](/mainconcepts/use-effect.mdx), which provides functionality to clean up and handle prop changes.
 
-## [`useEffect`](/mainconcepts/use-effect.mdx)
+For more information, see the [useState](../mainconcepts/use-state.mdx) page in the 'Main Concepts' section.
+
+## useEffect
 
 The `useEffect` hook gives the ability to safely perform side-effects from a component and corresponds to the Java Spec API's `@OnAttached`/`@OnDetached` lifecycle methods.
 
@@ -69,22 +73,26 @@ An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
 ```
 
-## [`useRef`](/mainconcepts/use-ref.mdx)
+For more information, see the [useEffect](../mainconcepts/use-effect.mdx) page in the 'Main Concepts' section.
+
+## useRef
 
 The `useRef` hook allows a component to maintain a mutable reference that doesn't trigger a re-render when updated.
 
 It returns an instance of `Ref` which has a single mutable `value` property which should only be read/written on the UI thread. `useRef` can be used as a replacement for [lazy state](/docs/codegen/state-for-specs#lazy-state-updates) from the Spec API, though it has more uses beyond that.
 
-### Example: Logging Seen State
+### Example: logging 'seen' state
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LogOnceComponent.kt start=start_useref_example end=end_useref_example
 ```
 
-## [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx)
+For more information, see the [useRef](../mainconcepts/use-ref.mdx) page in the 'Main Concepts' section.
+
+## useErrorBoundary
 
 The `useErrorBoundary` hook allows KComponents to catch and handle errors higher up in the tree and provide appropriate fallback, logging or retry mechanisms. It corresponds to the Java Spec API's `@OnError` functionality.
 
-### Example: Providing an Error State in UI
+### Example: providing an 'error' state in the UI
 
 A KComponent becomes an error boundary when it declares a `useErrorBoundary` hook. The example below shows how the implementation of a boundary that renders an error state compares between the Java Spec API and the Kotlin API:
 
@@ -110,9 +118,9 @@ A KComponent becomes an error boundary when it declares a `useErrorBoundary` hoo
 
 </Tabs>
 
-Check out the main [`useErrorBoundary`](/mainconcepts/use-error-boundary.mdx) for more detailed information.
+For more information, see the [useErrorBoundary](../mainconcepts/use-error-boundary.mdx) page in the 'Main Concepts' section.
 
-## `useTransition`
+## useTransition
 
 `useTransition` registers a transition to be applied when the current layout is committed. It corresponds to the Java Spec API's `@OnCreateTransition` functionality.
 
