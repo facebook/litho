@@ -1517,7 +1517,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    onAsyncHookStateEnqueued(attribution, isCreateLayoutInProgress);
+    onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
   }
 
   final void updateHookStateSync(
@@ -1548,10 +1548,10 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
-    onAsyncHookStateEnqueued(attribution, isCreateLayoutInProgress);
+    onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
   }
 
-  private void onAsyncHookStateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+  private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
     if (mBatchedStateUpdatesStrategy == null) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
     } else {
