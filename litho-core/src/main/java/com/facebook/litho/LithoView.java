@@ -88,7 +88,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
           if (mRectRequestedWhileCached) {
             mRectRequestedWhileCached = false;
-            maybeRefreshAfterViewPortChange();
+            maybeRefreshAfterViewPortChange(false);
           }
         }
       };
@@ -97,7 +97,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-          maybeRefreshAfterViewPortChange();
+          maybeRefreshAfterViewPortChange(false);
         }
       };
 
@@ -105,7 +105,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       new ViewTreeObserver.OnScrollChangedListener() {
         @Override
         public void onScrollChanged() {
-          maybeRefreshAfterViewPortChange();
+          maybeRefreshAfterViewPortChange(false);
         }
       };
 
@@ -1259,8 +1259,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     while (parent instanceof ViewGroup) {
       final ViewGroup parentView = (ViewGroup) parent;
 
-      final int dx = currentView.getLeft() - parentView.getScrollX();
-      final int dy = currentView.getTop() - parentView.getScrollY();
+      final int dx =
+          currentView.getLeft() - parentView.getScrollX() + (int) parentView.getTranslationX();
+      final int dy =
+          currentView.getTop() - parentView.getScrollY() + (int) parentView.getTranslationY();
 
       outRect.offset(dx, dy);
 
@@ -1337,13 +1339,13 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    */
   public void notifyLithoViewGlobalPositionChanged() {
     if (mAreViewTreeObserverListenersRegistered) {
-      maybeRefreshAfterViewPortChange();
+      maybeRefreshAfterViewPortChange(true);
     } else {
       notifyVisibleBoundsChangedInternal();
     }
   }
 
-  private void maybeRefreshAfterViewPortChange() {
+  private void maybeRefreshAfterViewPortChange(final boolean isManualPositionChange) {
     if (!shouldViewTreeObserverListenersBeRegistered()) {
       return;
     }
@@ -1356,6 +1358,13 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     if (isScrollPositionChanged()) {
       notifyVisibleBoundsChangedInternal();
+
+      if (isManualPositionChange) {
+        final List<LithoView> childLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
+        for (LithoView lv : childLithoViews) {
+          lv.maybeRefreshAfterViewPortChange(true);
+        }
+      }
     }
   }
 

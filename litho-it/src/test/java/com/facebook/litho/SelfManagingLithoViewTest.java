@@ -36,13 +36,7 @@ public class SelfManagingLithoViewTest {
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
 
   @Test
-  public void lithoViewWithTranslatedParent_doesNotAffectMountContent() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return;
-    }
-
+  public void lithoViewWithTranslatedParent_mountsOnlyVisibleItems() {
     // This test is only relevant for self managing litho-views.
     if (!ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
       return;
@@ -50,7 +44,7 @@ public class SelfManagingLithoViewTest {
 
     final Context context = mLegacyLithoViewRule.context.getAndroidContext();
 
-    // The LithoView's parent's parent. 100x100 with 25 translationY
+    // The LithoView's parent's parent. 100x100 with 30 translationY
     final FrameLayout parent1 = new FrameLayout(context);
     parent1.setTop(0);
     parent1.setBottom(100);
@@ -58,7 +52,7 @@ public class SelfManagingLithoViewTest {
     parent1.setRight(100);
     parent1.setTranslationY(30);
 
-    // The LithoView's parent. 100x100 with 50 translationY
+    // The LithoView's parent. 100x100 with 20 translationY (total 50 for LV)
     final FrameLayout parent2 = new FrameLayout(context);
     parent2.setTop(0);
     parent2.setBottom(100);
@@ -73,8 +67,6 @@ public class SelfManagingLithoViewTest {
 
     // Create a vertical scroll spec with 10 children.
     // 5 of these children will be outside the parents bounds due to translation.
-    // Self managing litho-views ignore translation for calculating the visible rect, so we
-    // expect to still see all 10 litho views mounted.
     mLegacyLithoViewRule
         .setRoot(createVerticalScrollWithChildren(10))
         .setSizeSpecs(
@@ -94,6 +86,16 @@ public class SelfManagingLithoViewTest {
 
     final LithoView scrollerLithoView = childLithoViews.get(0);
 
+    // Assert that only 5 children are mounted
+    assertThat(scrollerLithoView.getMountItemCount()).isEqualTo(5);
+
+    // Reset translation to 0
+    parent1.setTranslationY(0);
+    parent2.setTranslationY(0);
+
+    // Inform of manual position change
+    IncrementalMountUtils.incrementallyMountLithoViews(parent1, true);
+
     // Assert that all 10 children are mounted
     assertThat(scrollerLithoView.getMountItemCount()).isEqualTo(10);
 
@@ -104,12 +106,6 @@ public class SelfManagingLithoViewTest {
 
   @Test
   public void whenScrolling_lithoViewDoesNotUpdateUntilViewTreeObserverFires() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return;
-    }
-
     // This test is only relevant for self managing litho-views.
     if (!ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
       return;
@@ -150,12 +146,6 @@ public class SelfManagingLithoViewTest {
 
   @Test
   public void whenOffsetTopAndBottom_IncrementalMountUtilsShouldEnsureMount() {
-
-    // TODO(T118124771): Test failure because of incorrect visible bounds
-    if (ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
-      return;
-    }
-
     // This test is only relevant for self managing litho-views.
     if (!ComponentsConfiguration.lithoViewSelfManageViewPortChanges) {
       return;
