@@ -35,6 +35,7 @@ litho_android_test_library(
     name = "whitebox",
     srcs = glob(["Whitebox.java"]),
     autoglob = False,
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

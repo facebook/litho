@@ -64,6 +64,7 @@ litho_android_test_library(
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
     autoglob = False,
+    language = "JAVA",
     deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,

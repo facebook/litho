@@ -34,6 +34,7 @@ fb_native.remote_file(
 litho_android_library(
     name = "imagepipeline",
     autoglob = False,
+    language = "JAVA",
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":bolts",

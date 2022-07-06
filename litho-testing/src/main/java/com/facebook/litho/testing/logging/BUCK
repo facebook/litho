@@ -13,6 +13,7 @@ load(
 
 litho_android_library(
     name = "logging",
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

@@ -102,6 +102,7 @@ litho_android_library(
         ],
     ),
     autoglob = False,
+    language = "JAVA",
     source = "8",
     target = "8",
     visibility = [

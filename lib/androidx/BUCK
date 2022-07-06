@@ -293,6 +293,7 @@ fb_java_library(
 litho_android_library(
     name = "androidx-testing",
     autoglob = False,
+    language = "JAVA",
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":androidx-test-monitor-aar",
@@ -304,6 +305,7 @@ litho_android_library(
 litho_android_library(
     name = "androidx-testing-core",
     autoglob = False,
+    language = "JAVA",
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":androidx-test-core-aar",
@@ -313,6 +315,7 @@ litho_android_library(
 litho_android_library(
     name = "androidx-recyclerview",
     autoglob = False,
+    language = "JAVA",
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":androidx-interpolator-aar",

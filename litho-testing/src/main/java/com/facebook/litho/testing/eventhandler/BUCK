@@ -12,6 +12,7 @@ load(
 
 litho_android_library(
     name = "eventhandler",
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

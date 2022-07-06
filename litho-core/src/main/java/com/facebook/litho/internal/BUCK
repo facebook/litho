@@ -17,6 +17,7 @@ litho_android_library(
     feature = FBApp_UIFrameworks_Litho_Litho,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
+    language = "JAVA",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho:litho"),
     ],

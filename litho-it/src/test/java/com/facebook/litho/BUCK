@@ -121,6 +121,7 @@ litho_android_library(
         "StateUpdateTestComponent.java",
     ],
     autoglob = False,
+    language = "JAVA",
     source = "8",
     target = "8",
     visibility = [

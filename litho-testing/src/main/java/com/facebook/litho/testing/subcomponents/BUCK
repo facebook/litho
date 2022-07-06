@@ -15,6 +15,7 @@ load(
 
 litho_android_library(
     name = "subcomponents",
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
