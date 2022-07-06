@@ -100,8 +100,6 @@ abstract class MountableComponent() : Component() {
 
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
-  final override fun isMountSizeDependent(): Boolean = false
-
   final override fun isPureRender(): Boolean = true
 
   final override fun implementsShouldUpdate(): Boolean = true

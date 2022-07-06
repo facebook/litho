@@ -244,7 +244,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (nextComponent.isMountSizeDependent()
+    if (nextComponent instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) nextComponent).isMountSizeDependent()
         && !sameSize(
             Preconditions.checkNotNull(nextLayoutData),
             Preconditions.checkNotNull(currentLayoutData))) {

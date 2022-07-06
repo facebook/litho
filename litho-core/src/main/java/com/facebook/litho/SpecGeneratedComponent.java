@@ -231,6 +231,11 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     return false;
   }
 
+  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
+  protected boolean isMountSizeDependent() {
+    return false;
+  }
+
   protected boolean needsPreviousRenderData() {
     return false;
   }

@@ -426,11 +426,6 @@ public abstract class Component
     return false;
   }
 
-  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
-  protected boolean isMountSizeDependent() {
-    return false;
-  }
-
   protected boolean isPureRender() {
     return false;
   }

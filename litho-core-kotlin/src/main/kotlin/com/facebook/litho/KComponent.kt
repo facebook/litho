@@ -94,8 +94,6 @@ abstract class KComponent : Component() {
 
   internal final override fun hasCommonDynamicProps() = super.hasCommonDynamicProps()
 
-  final override fun isMountSizeDependent() = false
-
   final override fun isPureRender() = false
 
   final override fun makeShallowCopy() = super.makeShallowCopy()
