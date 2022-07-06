@@ -3,16 +3,16 @@ id: state-for-specs
 title: State in Specs
 ---
 
-:::note
-This page covers the old Java Spec API. If you aren't using the Spec API, please refer to [Introduction to Hooks](mainconcepts/hooks-intro.mdx).
-:::
-
+:::caution
 This page introduces the concept of state in a component written using the Java Spec API, namely a `@LayoutSpec` or `@MountSpec`.
+
+If you aren't using the Spec API, refer to the [Introduction to Hooks](../mainconcepts/hooks-intro.mdx) page.
+:::
 
 A component can have two types of data:
 
 * **Props** - passed down from the parent and cannot change during a component's lifecycle.
-* **State** - State data is encapsulated and managed within the component and is transparent to the parent.
+* **State** - state data is encapsulated and managed within the component and is transparent to the parent.
 
 This page uses the example of a `Counter` component, in which you can click a button to increase or decrease a value. The example helps you to learn how to use State to make the `Counter` component reusable and encapsulated; it provides an overview of adding state to a component.
 
@@ -33,7 +33,7 @@ class CounterComponentSpec {
 }
 ```
 
-The `Counter` component is missing a crucial feature, which is interacting with the buttons to update the count value.
+The `Counter` component is missing a crucial feature: interacting with the buttons to update the count value.
 
 Ideally, you'd want this component to encapsulate all this behaviour in its internal implementation, which would mean you'd write it once then reuse it anywhere you need a counter, as follows:
 
@@ -112,17 +112,17 @@ static void onClickDecrease(ComponentContext c) {}
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/identity/CounterComponentSpec.java start=start_counter end=end_counter
 ```
 
-## State API Reference and Considerations
+## State API reference and considerations
 
 ### Data Immutability
 
 Due to background layout, state can be accessed anytime by multiple threads. To ensure thread safety, state objects should be immutable (if for some rare reason this is not possible, then at least thread safe). The simplest solution is to express your state in terms of primitives since primitives are, by definition, immutable.
 
-### Component Identity
+### Component identity
 
 Litho uses keys to keep track of component identity between layout changes and correctly identify a component as the target of a state update. For more information on how the component identity functions, see the [Keys and Component Identity](../mainconcepts/coordinate-state-actions/keys-and-identity.md) page.
 
-### Initialising State Values
+### Initialising State values
 
 State initialisation is guaranteed to happen once and only once for a component based on its [identity](../mainconcepts/coordinate-state-actions/keys-and-identity.md), even if there are multiple threads attempting to calculate the layout for the same component in parallel.
 
@@ -139,7 +139,7 @@ The following are points to keep in mind when writing an `@OnCreateInitialState`
 * Initializing a state value is not mandatory and implementing an `@OnCreateInitialState` method can be entirely skipped. If a state value is not explicitly initialised, the initial state is assigned the default value of its inferred type. For example, `0` for integer state, `false` for Boolean state or `null` for Objects.
 * You should never need to call the `@OnCreateInitialState` method yourself.
 
-### Updating State Values
+### Updating State values
 
 Every state update triggers a new layout calculation for its `ComponentTree`. Passing new props to a Litho component and updating the state are implemented in the same way in Litho, so there is no performance difference. To understand when you should update a Component using new props or updating state, see the [Props vs. State](../best-practices/props-vs-state.md) page.
 
