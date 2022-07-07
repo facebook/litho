@@ -33,7 +33,7 @@ public interface BatchedStateUpdatesStrategy {
    * <p>This method should return {@code true} if it is considering this update to its batching
    * strategy; otherwise it should simply return {@code false}.
    */
-  boolean onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress);
+  boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress);
 
   /**
    * This method is called whenever {@link ComponentTree#updateStateInternal(boolean, String,
@@ -65,8 +65,7 @@ public interface BatchedStateUpdatesStrategy {
    * In the same way as {@link #onComponentCallbackStart(ComponentCallbackType)}, this method is the
    * counterpart which registers that a specific component callback has ended.
    */
-  void onComponentCallbackEnd(
-      ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress);
+  void onComponentCallbackEnd(ComponentCallbackType callbackType);
 
   /**
    * This method should be called whenever the resources held by this strategy should be freed or

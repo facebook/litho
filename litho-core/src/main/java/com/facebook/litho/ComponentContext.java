@@ -419,11 +419,7 @@ public class ComponentContext implements Cloneable {
   final void registerComponentCallbackEnd(ComponentCallbackType componentCallbackType) {
     if (mComponentTree == null) return;
 
-    Component scope = getComponentScope();
-    mComponentTree.commitStateUpdateBatch(
-        componentCallbackType,
-        scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
-        isCreateLayoutInProgress());
+    mComponentTree.commitStateUpdateBatch(componentCallbackType);
   }
 
   public void applyLazyStateUpdatesForContainer(StateContainer container) {

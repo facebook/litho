@@ -1553,8 +1553,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
     if (mBatchedStateUpdatesStrategy == null
-        || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
-            attribution, isCreateLayoutInProgress)) {
+        || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(isCreateLayoutInProgress)) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
     }
   }
@@ -3302,7 +3301,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     @Override
     public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-      updateStateInternal(true, mAttribution, mIsCreateLayoutInProgress);
+      updateStateInternal(true, "Batching Strategy: " + mAttribution, mIsCreateLayoutInProgress);
     }
   }
 
@@ -3599,24 +3598,31 @@ public class ComponentTree implements LithoLifecycleListener {
   class PostStateUpdateToFrontOfMainThread implements BatchedStateUpdatesStrategy {
 
     private final Object mUpdateStateAsyncRunnableLock = new Object();
+    private final String mTag;
+
+    PostStateUpdateToFrontOfMainThread() {
+      this("FrontOfMainThread");
+    }
+
+    PostStateUpdateToFrontOfMainThread(String tag) {
+      mTag = tag;
+    }
 
     @GuardedBy("mUpdateStateAsyncRunnableLock")
     private @Nullable UpdateStateAsyncRunnable mUpdateStateAsyncRunnable;
 
     @Override
-    public boolean onAsyncStateUpdateEnqueued(
-        String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress) {
       synchronized (mUpdateStateAsyncRunnableLock) {
         if (mUpdateStateAsyncRunnable != null) {
           mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
         }
 
-        mUpdateStateAsyncRunnable =
-            new UpdateStateAsyncRunnable(attribution, isCreateLayoutInProgress);
+        mUpdateStateAsyncRunnable = new UpdateStateAsyncRunnable(mTag, isCreateLayoutInProgress);
 
         String tag = EMPTY_STRING;
         if (mMainThreadHandler.isTracing()) {
-          tag = "updateStateAsync " + attribution;
+          tag = "updateStateAsync " + mTag;
           if (mRoot != null) {
             tag = tag + mRoot.getSimpleName();
           }
@@ -3638,8 +3644,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public void onComponentCallbackEnd(
-        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
+    public void onComponentCallbackEnd(ComponentCallbackType callbackType) {
       // do nothing
     }
 
@@ -3660,22 +3665,19 @@ public class ComponentTree implements LithoLifecycleListener {
   void beginStateUpdateBatch(ComponentCallbackType componentCallbackType) {
     if (mBatchedStateUpdatesStrategy != null) {
       if (ComponentsSystrace.isTracing()) {
-        ComponentsSystrace.beginSection("stateUpdateBatch (" + componentCallbackType.name() + ")");
+        ComponentsSystrace.beginSection(
+            "onComponentCallbackStart (" + componentCallbackType.name() + ")");
       }
       mBatchedStateUpdatesStrategy.onComponentCallbackStart(componentCallbackType);
     }
   }
 
-  void commitStateUpdateBatch(
-      ComponentCallbackType componentCallbackType,
-      String attribution,
-      boolean isCreateLayoutInProgress) {
+  void commitStateUpdateBatch(ComponentCallbackType componentCallbackType) {
     if (mBatchedStateUpdatesStrategy != null) {
       if (ComponentsSystrace.isTracing()) {
         ComponentsSystrace.endSection();
       }
-      mBatchedStateUpdatesStrategy.onComponentCallbackEnd(
-          componentCallbackType, attribution, isCreateLayoutInProgress);
+      mBatchedStateUpdatesStrategy.onComponentCallbackEnd(componentCallbackType);
     }
   }
 
@@ -3713,8 +3715,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger();
 
     @Override
-    public boolean onAsyncStateUpdateEnqueued(
-        String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress) {
       /*
        * If we have open callbacks then we simply enqueue the update and don't process it.
        * Otherwise, we fallback to the default flow and schedule one layout calculation for each
@@ -3741,14 +3742,16 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public void onComponentCallbackEnd(
-        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
+    public void onComponentCallbackEnd(ComponentCallbackType callbackType) {
       int currentOpenCallbacks = mNumOpenCallbacksCount.get();
       if (currentOpenCallbacks > 0) {
         mNumOpenCallbacksCount.set(currentOpenCallbacks - 1);
 
         if (mEnqueuedUpdatesCount.getAndSet(0) > 0) {
-          updateStateInternal(true, attribution, isCreateLayoutInProgress);
+          updateStateInternal(
+              true,
+              "Batching Strategy: Component Callback (" + callbackType.name() + ")",
+              getContext().isCreateLayoutInProgress());
         }
       }
     }
@@ -3785,17 +3788,15 @@ public class ComponentTree implements LithoLifecycleListener {
     private final AtomicReference<Choreographer> mMainChoreographer = new AtomicReference<>();
 
     private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger(0);
+    private final String mTag;
 
     private final Choreographer.FrameCallback mFrameCallback =
         new Choreographer.FrameCallback() {
           @Override
           public void doFrame(long l) {
             if (mEnqueuedUpdatesCount.getAndSet(0) > 0) {
-              Component scope = getContext().getComponentScope();
               updateStateInternal(
-                  true,
-                  scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
-                  mContext.isCreateLayoutInProgress());
+                  true, "Batching Strategy: " + mTag, mContext.isCreateLayoutInProgress());
             }
           }
         };
@@ -3815,9 +3816,13 @@ public class ComponentTree implements LithoLifecycleListener {
         };
 
     PostStateUpdateToChoreographerCallback() {
-      initializeMainChoreographer();
+      this("Choreographer");
     }
 
+    PostStateUpdateToChoreographerCallback(String tag) {
+      mTag = tag;
+      initializeMainChoreographer();
+    }
     /**
      * This method will guarantee that we will create a {@link Choreographer} instance linked to the
      * Main Thread {@link Looper}.
@@ -3840,8 +3845,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public boolean onAsyncStateUpdateEnqueued(
-        String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress) {
       if (mEnqueuedUpdatesCount.getAndIncrement() == 0 && mMainChoreographer.get() != null) {
         mMainChoreographer.get().postFrameCallback(mFrameCallback);
       }
@@ -3861,9 +3865,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public void onComponentCallbackEnd(
-        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
-
+    public void onComponentCallbackEnd(ComponentCallbackType callbackType) {
       // do nothing
     }
 
@@ -3896,17 +3898,14 @@ public class ComponentTree implements LithoLifecycleListener {
   class BestEffortFrontOfMainThreadAndChoreographer implements BatchedStateUpdatesStrategy {
 
     private final PostStateUpdateToFrontOfMainThread mPostStateUpdateToFrontOfMainThread =
-        new PostStateUpdateToFrontOfMainThread();
+        new PostStateUpdateToFrontOfMainThread("BestEffort/FrontOfMainThread");
     private final PostStateUpdateToChoreographerCallback mPostStateUpdateToChoreographerCallback =
-        new PostStateUpdateToChoreographerCallback();
+        new PostStateUpdateToChoreographerCallback("BestEffort/Choreographer");
 
     @Override
-    public boolean onAsyncStateUpdateEnqueued(
-        String attribution, boolean isCreateLayoutInProgress) {
-      mPostStateUpdateToFrontOfMainThread.onAsyncStateUpdateEnqueued(
-          attribution, isCreateLayoutInProgress);
-      mPostStateUpdateToChoreographerCallback.onAsyncStateUpdateEnqueued(
-          attribution, isCreateLayoutInProgress);
+    public boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress) {
+      mPostStateUpdateToFrontOfMainThread.onAsyncStateUpdateEnqueued(isCreateLayoutInProgress);
+      mPostStateUpdateToChoreographerCallback.onAsyncStateUpdateEnqueued(isCreateLayoutInProgress);
 
       return true;
     }
@@ -3924,12 +3923,9 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public void onComponentCallbackEnd(
-        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
-      mPostStateUpdateToFrontOfMainThread.onComponentCallbackEnd(
-          callbackType, attribution, isCreateLayoutInProgress);
-      mPostStateUpdateToChoreographerCallback.onComponentCallbackEnd(
-          callbackType, attribution, isCreateLayoutInProgress);
+    public void onComponentCallbackEnd(ComponentCallbackType callbackType) {
+      mPostStateUpdateToFrontOfMainThread.onComponentCallbackEnd(callbackType);
+      mPostStateUpdateToChoreographerCallback.onComponentCallbackEnd(callbackType);
     }
 
     @Override
