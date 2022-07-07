@@ -7,16 +7,18 @@ A lazy collection is updated by changing the prop/state values from which it is 
 
 To ensure correctness and performance you must:
 
-1. [Provide ids](#child-identity) for any children that can be updated.
-2. Make sure props of children don't unnecessarily change, leading to [unnecessary layouts](#avoiding-unecessary-layouts).
+1. [Provide Child identity](#child-identity) for all children that can be updated.
+2. [Avoid unnecessary layouts](#avoiding-unnecessary-layouts) by making sure that props of children don't unnecessarily change.
 
-## Child Identity
+The above two points are detailed in the following sections.
 
-Each child in a lazy collection has an id. The id is either assigned by the Developer, or, if no id is provided, then it is generated using the component's type and position.
+## Child identity
+
+Each child in a lazy collection has an `id`, which is either assigned by the Developer.
 
 The `id` is used to determine how a collection changed after an update: children may have been added, removed, changed position, or had their content updated. Since an `id` is unique to a child, it is used to match children across changes to create minimal changeset and apply content update animations, and so on.
 
-If no `id` parameter is provided then an id is generated based on the child's position and type. This is only sufficient for static content.
+If no `id` parameter is assigned by a Developer, then it's generated using the child's position and type (this is only sufficient for static content).
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_static_id_example end=end_static_id_example
 ```
@@ -28,18 +30,18 @@ In the following example, there are two `Text` components, one is added conditio
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_child_id_example end=end_child_id_example
 ```
 
-Content backed by lists should be added using the `children(..)` function: specify an `id` lambda that generates an id for each item.
+Content backed by lists should be added using the `children(..)` function: specify an `id` lambda that generates an id for each item:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_children_id_example end=end_children_id_example
+```
 
 :::caution
 It is unacceptable to generate ids using a simple incrementing variable as items may change positions. Instead, use an id from the data model.
 :::
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_children_id_example end=end_children_id_example
-```
-
 **An `id` must be unique and immutable.** Breaking this contract may lead to occasional `IndexOutOfBoundsException` exceptions during layout.
 
-## Avoiding Unnecessary Layouts
+## Avoiding unnecessary layouts
 
 During a list update, if a child with the same `id` is found in the old and new lists then the lazy collection automatically detects if the content has changed. If an update has not occurred, the subtree will be re-used as-is, otherwise it is re-created.
 
@@ -49,7 +51,7 @@ Content changes are detected by checking the equality of the component's props. 
 **The behaviour will be functionally correct by default.** If you use props that do not provide an `equals()` the UI will still use the most up-to-date prop and state values. However, there will be unnecessary layouts which will impact performance.
 :::
 
-### Using Classes Without `equals()` as Props
+### Using classes without `equals()` as Props
 
 If a component accepts a prop that does not implement an `equals()` then it will never be reused.
 
@@ -85,7 +87,7 @@ Here, unnecessary layouts can be avoided using two techniques:
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_drawable_fixed end=end_drawable_fixed
 ```
 
-### Using Lambdas as Props
+### Using lambdas as Props
 
 Lambdas do not provide an `equals()`, for example, `{} == {}` is `false`. This means that using a lambda as a prop may cause unnecessary layouts.
 
