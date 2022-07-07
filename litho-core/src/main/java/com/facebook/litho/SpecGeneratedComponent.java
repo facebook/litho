@@ -56,6 +56,35 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
   }
 
+  final void bind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    if (c != null) {
+      c.enterNoStateUpdatesMethod("bind");
+    }
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("onBind: " + getSimpleName());
+    }
+    try {
+      onBind(c, mountedContent, interStagePropsContainer);
+    } catch (Exception e) {
+      if (c != null) {
+        ComponentUtils.handle(c, e);
+      } else {
+        throw e;
+      }
+    } finally {
+      if (c != null) {
+        c.exitNoStateUpdatesMethod();
+      }
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
+    }
+  }
+
   final void mount(
       final ComponentContext c,
       final Object convertContent,
@@ -82,6 +111,23 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
       if (isTracing) {
         RenderCoreSystrace.endSection();
       }
+    }
+  }
+
+  final void unbind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("onUnbind: " + getSimpleName());
+    }
+    try {
+      onUnbind(c, mountedContent, interStagePropsContainer);
+    } catch (Exception e) {
+      ComponentUtils.handle(c, e);
+    } finally {
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -280,6 +326,12 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
    */
   protected void onAttached(ComponentContext c) {}
 
+  protected void onBind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    // Do nothing by default.
+  }
   /**
    * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
    * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
@@ -364,6 +416,13 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
   protected void onMount(
       final ComponentContext c,
       final Object convertContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    // Do nothing by default.
+  }
+
+  protected void onUnbind(
+      final ComponentContext c,
+      final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }

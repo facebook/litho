@@ -213,7 +213,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
         }
       }
 
-      output.getComponent().bind(getComponentContext(unit), content, getInterStageProps(data));
+      ((SpecGeneratedComponent) output.getComponent())
+          .bind(getComponentContext(unit), content, getInterStageProps(data));
     }
 
     @Override
@@ -223,7 +224,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unbind(getComponentContext(unit), content, getInterStageProps(data));
+      ((SpecGeneratedComponent) output.getComponent())
+          .unbind(getComponentContext(unit), content, getInterStageProps(data));
     }
   }
 

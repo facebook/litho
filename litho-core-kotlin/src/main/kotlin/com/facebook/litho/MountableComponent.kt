@@ -106,12 +106,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun makeShallowCopy() = super.makeShallowCopy()
 
-  final override fun onBind(
-      c: ComponentContext,
-      mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onBind(c, mountedContent, interStagePropsContainer)
-
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
   final override fun onCreateMountContentPool() = super.onCreateMountContentPool()
@@ -144,12 +138,6 @@ abstract class MountableComponent() : Component() {
           interStagePropsContainer)
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
-
-  final override fun onUnbind(
-      c: ComponentContext,
-      mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onUnbind(c, mountedContent, interStagePropsContainer)
 
   final override fun onUnmount(
       c: ComponentContext,

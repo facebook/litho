@@ -268,35 +268,6 @@ public abstract class Component
     return com.facebook.litho.Component.MountType.NONE;
   }
 
-  final void bind(
-      final ComponentContext c,
-      final Object mountedContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    if (c != null) {
-      c.enterNoStateUpdatesMethod("bind");
-    }
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("onBind: " + getSimpleName());
-    }
-    try {
-      onBind(c, mountedContent, interStagePropsContainer);
-    } catch (Exception e) {
-      if (c != null) {
-        ComponentUtils.handle(c, e);
-      } else {
-        throw e;
-      }
-    } finally {
-      if (c != null) {
-        c.exitNoStateUpdatesMethod();
-      }
-      if (isTracing) {
-        RenderCoreSystrace.endSection();
-      }
-    }
-  }
-
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
@@ -317,23 +288,6 @@ public abstract class Component
 
   final void loadStyle(ComponentContext c) {
     onLoadStyle(c);
-  }
-
-  final void unbind(
-      final ComponentContext c,
-      final Object mountedContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("onUnbind: " + getSimpleName());
-    }
-    try {
-      onUnbind(c, mountedContent, interStagePropsContainer);
-    } catch (Exception e) {
-      ComponentUtils.handle(c, e);
-    } finally {
-      RenderCoreSystrace.endSection();
-    }
   }
 
   final void unmount(
@@ -399,13 +353,6 @@ public abstract class Component
 
   protected boolean isPureRender() {
     return false;
-  }
-
-  protected void onBind(
-      final ComponentContext c,
-      final Object mountedContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    // Do nothing by default.
   }
 
   /**
@@ -485,13 +432,6 @@ public abstract class Component
 
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
-  }
-
-  protected void onUnbind(
-      final ComponentContext c,
-      final Object mountedContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    // Do nothing by default.
   }
 
   /**
