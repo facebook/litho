@@ -421,12 +421,6 @@ public abstract class Component
     return DEFAULT_MAX_PREALLOCATION;
   }
 
-  /**
-   * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
-   * props as fields on the ComponentImpl.
-   */
-  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
-
   protected @Nullable com.facebook.litho.Component.RenderData recordRenderData(
       ComponentContext c, com.facebook.litho.Component.RenderData toRecycle) {
     return null;

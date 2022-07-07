@@ -141,9 +141,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun poolSize() = super.poolSize()
 
-  final override fun populateTreeProps(parentTreeProps: TreeProps?) =
-      super.populateTreeProps(parentTreeProps)
-
   final override fun recordEventTrigger(c: ComponentContext, container: EventTriggersContainer) =
       super.recordEventTrigger(c, container)
 

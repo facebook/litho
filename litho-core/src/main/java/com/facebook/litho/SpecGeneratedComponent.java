@@ -457,4 +457,10 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
+
+  /**
+   * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
+   * props as fields on the ComponentImpl.
+   */
+  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 }
