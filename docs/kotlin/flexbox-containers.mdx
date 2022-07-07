@@ -9,12 +9,14 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-This page covers how to convert existing code from Java Spec API to Kotlin API. For the main Layout spec information,  refer to the [Layout System with Flexbox](mainconcepts/flexbox-yoga.mdx) page.
+This page covers how to convert existing code from the Java Spec API to the Kotlin API.
+
+For the main Layout spec information, refer to the [Layout System with Flexbox](mainconcepts/flexbox-yoga.mdx) page.
 :::
 
 ## Rows and Columns, Revisited
 
-As in the Spec API, `Row` and `Column` (see the image, below) are the primary layout containers used in the KComponent API. If you need a refresher on them, take a look a the [Layout System with Flexbox](/docs/mainconcepts/flexbox-yoga) page.
+As with the Spec API, `Row` and `Column` are the primary layout containers used in the KComponent API.
 
 <img src={useBaseUrl('/images/litho-layout-row-column-simple.png')} />
 
@@ -23,7 +25,7 @@ As in the Spec API, `Row` and `Column` (see the image, below) are the primary la
 If you're used to the Spec way of writing containers, there are a few important differences when using `Row` and `Column` in the KComponent API:
 
 1. **Props of Rows and Columns** - props that configure the `Row`/`Column` itself, like `alignItems` or `justifyContent`, now appear as props directly on the container Component. In this way, there is no difference from setting props on any other component.
-2. **Common Props** - props that configure a particular child's positioning within the context of a `Row`/`Column`, like `alignSelf` or `flex`, now appear with other [common props](/docs/kotlin/kotlin-api-basics#common-props) on the `Style` passed to that child. You can think of this as akin to `LayoutParams` in vanilla Android - they must be able to go on any component and are read by the parent.
+2. **Common Props** - props that configure a particular child's positioning within the context of a `Row`/`Column`, like `alignSelf` or `flex`, now appear with other [common props](basics.mdx#common-props) on the `Style` passed to that child. You can think of this as akin to `LayoutParams` in vanilla Android in that they must be able to go on any component and are read by the parent.
 3. **Children** - children are added within a trailing lambda using the `child()` call.
 
 You can see this in practice in the following code:
@@ -50,10 +52,10 @@ The benefit of this is that you can now statically verify all required props are
 
 ### Flexbox Properties Cheatsheet
 
-The following table helps you to identify, at a glance, whether to set a layout property directly on the `Row`/`Column` or on `Style`:
+The following table helps you to identify whether to set a layout property directly on the `Row`/`Column` or on the `Style`:
 
 | Flexbox Property | Configures a Specific Child? | Example KComponent Usage |
-| -- | -- | -- |
+| :-- | :-: | :-- |
 | `alignContent` | No | `Row(alignContent = YogaAlign.CENTER)` |
 | `alignItems` | No | `Row(alignItems = YogaAlign.CENTER)` |
 | `alignSelf` | Yes | `Style.alignSelf(YogaAlign.CENTER)` |
