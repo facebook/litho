@@ -1,20 +1,20 @@
 ---
 id: lazycollections
-title: Lazy Collections
+title: Introduction
 ---
 
-## Motivation
-
-A simple, but non-scalable method to render a list of components is to use a `Column` or `Row` container:
+A simple, but non-scalable approach to render a list of components is to use a `Column` or `Row` container:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_column_example end=end_column_example
 ```
 
-The above example creates a `Column` and adds child `Text` component for each friend. It's made scrollable by wrapping it in a `VerticalScroll`.
+The above component creates a `Column` and adds a child `Text` component for each friend: it's made scrollable by wrapping it in a `VerticalScroll`.
 
 **This approach is inefficient and inflexible when dealing with many items or when the items are expected to be updated.**
 
-Consider if there were 100 friends. During the layout of the `Column` you would also layout 100 `Text` components, despite only a few being visible on the screen. If one of the names was updated or changed position, a layout of all 100 `Text` components would be triggered and the change would be applied without an animation.
+Consider if there were 100 friends. During the layout of the `Column`, you would also layout 100 `Text` components, despite only a few being visible on the screen. If one of the names was updated or changed position, a layout of all 100 `Text` components would be triggered and the change would be applied without an animation.
+
+A much more efficient and flexible approach is to use Lazy Collections.
 
 ## Lazy Collections
 
@@ -24,9 +24,9 @@ Lazy collections are available as follows:
 
 * [LazyList](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyList.kt)
 * [LazyGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyGrid.kt)
-* [LazyStaggeredGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyStaggeredGrid.kt).
+* [LazyStaggeredGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyStaggeredGrid.kt)
+
+The following example creates a `LazyList` and adds a child `Text` component for each list item. It doesn't require all children to be laid out to start showing content on screen. When adding children to a Column, you must specify an `id` parameter on each child, which is required for [applying updates correctly](lazycollections-working-with-updates.mdx).
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_lazy_list_example end=end_lazy_list_example
 ```
-
-The above example creates a `LazyList` and adds a child `Text` component for each list item. It doesn't require all children to be laid out to start showing content on screen. When adding children to a Column, you must specify an `id` parameter on each child, which is required for [applying updates correctly](lazycollections-working-with-updates.mdx).
