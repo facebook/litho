@@ -179,7 +179,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unmount(getComponentContext(unit), content, getInterStageProps(data));
+      ((SpecGeneratedComponent) output.getComponent())
+          .unmount(getComponentContext(unit), content, getInterStageProps(data));
     }
   }
 

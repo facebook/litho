@@ -131,12 +131,6 @@ abstract class KComponent : Component() {
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
 
-  final override fun onUnmount(
-      c: ComponentContext,
-      mountedContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onUnmount(c, mountedContent, interStagePropsContainer)
-
   final override fun poolSize() = super.poolSize()
 
   final override fun populateTreeProps(parentTreeProps: TreeProps?) =

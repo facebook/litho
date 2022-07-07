@@ -63,7 +63,6 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.PoolableContentProvider;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -290,23 +289,6 @@ public abstract class Component
     onLoadStyle(c);
   }
 
-  final void unmount(
-      final ComponentContext c,
-      final Object mountedContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("onUnmount: " + getSimpleName());
-    }
-    try {
-      onUnmount(c, mountedContent, interStagePropsContainer);
-    } catch (Exception e) {
-      ComponentUtils.handle(c, e);
-    } finally {
-      RenderCoreSystrace.endSection();
-    }
-  }
-
   /**
    * Whether this {@link com.facebook.litho.Component} is able to measure itself according to
    * specific size constraints.
@@ -432,20 +414,6 @@ public abstract class Component
 
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
-  }
-
-  /**
-   * Unload UI elements associated with this component.
-   *
-   * @param c The {@link Context} for this mount operation.
-   * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
-   * @param interStagePropsContainer
-   */
-  protected void onUnmount(
-      final ComponentContext c,
-      final Object mountedContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    // Do nothing by default.
   }
 
   @ThreadSafe
@@ -839,8 +807,9 @@ public abstract class Component
    * a LayoutState calculation reach out to the Litho team to discuss an alternative solution.
    *
    * <p>If this is called during a LayoutState calculation, it will delegate to {@link
-   * SpecG#onMeasure(ComponentContext, ComponentLayout, int, int, Size, InterStagePropsContainer)},
-   * which does cache the measurement result for the duration of this LayoutState.
+   * SpecGeneratedComponent#onMeasure(ComponentContext, ComponentLayout, int, int, Size,
+   * InterStagePropsContainer)}, which does cache the measurement result for the duration of this
+   * LayoutState.
    */
   @Deprecated
   public final void measureMightNotCacheInternalNode(

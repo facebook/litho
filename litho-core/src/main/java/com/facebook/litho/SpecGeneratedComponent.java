@@ -131,6 +131,23 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     }
   }
 
+  final void unmount(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("onUnmount: " + getSimpleName());
+    }
+    try {
+      onUnmount(c, mountedContent, interStagePropsContainer);
+    } catch (Exception e) {
+      ComponentUtils.handle(c, e);
+    } finally {
+      RenderCoreSystrace.endSection();
+    }
+  }
+
   /**
    * @return the Component this Component should delegate its getSimpleName calls to. See {@link
    *     LayoutSpec#simpleNameDelegate()}
@@ -421,6 +438,20 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
   }
 
   protected void onUnbind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    // Do nothing by default.
+  }
+
+  /**
+   * Unload UI elements associated with this component.
+   *
+   * @param c The {@link Context} for this mount operation.
+   * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
+   * @param interStagePropsContainer
+   */
+  protected void onUnmount(
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
