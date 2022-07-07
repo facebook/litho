@@ -35,7 +35,7 @@ import com.facebook.rendercore.MountItemsPool;
  *     MountSpec.
  */
 @Deprecated
-public class ViewCompatComponent<V extends View> extends Component {
+public class ViewCompatComponent<V extends View> extends SpecGeneratedComponent {
 
   private static final int UNSPECIFIED_POOL_SIZE = -1;
 
@@ -55,7 +55,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super(System.identityHashCode(viewCreator));
+    super(System.identityHashCode(viewCreator), "ViewCompatComponent_" + componentName);
     mViewCreator = viewCreator;
     mComponentName = componentName;
   }
@@ -172,10 +172,5 @@ public class ViewCompatComponent<V extends View> extends Component {
   @Override
   protected int poolSize() {
     return mPoolSize == UNSPECIFIED_POOL_SIZE ? super.poolSize() : mPoolSize;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "ViewCompatComponent_" + mComponentName;
   }
 }

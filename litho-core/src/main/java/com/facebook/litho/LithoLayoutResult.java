@@ -533,13 +533,14 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           return new MeasureResult(size.width, size.height);
         } else {
           final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
-          component.onMeasure(
-              componentScopedContext,
-              this,
-              widthSpec,
-              heightSpec,
-              size,
-              (InterStagePropsContainer) getLayoutData());
+          ((SpecGeneratedComponent) component)
+              .onMeasure(
+                  componentScopedContext,
+                  this,
+                  widthSpec,
+                  heightSpec,
+                  size,
+                  (InterStagePropsContainer) getLayoutData());
 
           return new MeasureResult(size.width, size.height);
         }

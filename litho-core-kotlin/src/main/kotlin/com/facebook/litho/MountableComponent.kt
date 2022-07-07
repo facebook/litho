@@ -120,15 +120,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun onLoadStyle(c: ComponentContext) = super.onLoadStyle(c)
 
-  final override fun onMeasure(
-      c: ComponentContext,
-      layout: ComponentLayout,
-      widthSpec: Int,
-      heightSpec: Int,
-      size: Size,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onMeasure(c, layout, widthSpec, heightSpec, size, interStagePropsContainer)
-
   final override fun onMeasureBaseline(
       c: ComponentContext,
       width: Int,

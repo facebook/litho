@@ -292,4 +292,17 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     errorEvent.componentTree = c != null ? c.getComponentTree() : null;
     eventHandler.dispatchEvent(errorEvent);
   }
+
+  protected void onMeasure(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      final int widthSpec,
+      final int heightSpec,
+      final Size size,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    throw new IllegalStateException(
+        "You must override onMeasure() if you return true in canMeasure(), "
+            + "Component is: "
+            + this);
+  }
 }

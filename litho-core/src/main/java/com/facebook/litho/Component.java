@@ -477,19 +477,6 @@ public abstract class Component
 
   protected void onLoadStyle(ComponentContext c) {}
 
-  protected void onMeasure(
-      final ComponentContext c,
-      final ComponentLayout layout,
-      final int widthSpec,
-      final int heightSpec,
-      final Size size,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    throw new IllegalStateException(
-        "You must override onMeasure() if you return true in canMeasure(), "
-            + "Component is: "
-            + this);
-  }
-
   /**
    * Called during layout calculation to determine the baseline of a component.
    *
