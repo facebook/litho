@@ -274,6 +274,8 @@ public class ComponentsConfiguration {
 
   public static boolean shouldCheckConsistencyOfChildren = false;
 
+  public static boolean shouldDelegateContentDescriptionChangeEvent = false;
+
   /** This toggles whether {@Link #LayoutThreadPoolExecutor} should timeout core threads or not */
   public static boolean shouldAllowCoreThreadTimeout = false;
 

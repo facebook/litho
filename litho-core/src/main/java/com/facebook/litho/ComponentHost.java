@@ -442,6 +442,15 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   @Override
   public void setContentDescription(@Nullable CharSequence contentDescription) {
+    if (ComponentsConfiguration.shouldDelegateContentDescriptionChangeEvent) {
+      if (mContentDescription == null) {
+        if (contentDescription == null) {
+          return;
+        }
+      } else if (mContentDescription.equals(contentDescription)) {
+        return;
+      }
+    }
     mContentDescription = contentDescription;
 
     if (!TextUtils.isEmpty(contentDescription)
@@ -449,7 +458,12 @@ public class ComponentHost extends Host implements DisappearingHost {
             == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
-
+    if (ComponentsConfiguration.shouldDelegateContentDescriptionChangeEvent
+        && !TextUtils.isEmpty(contentDescription)) {
+      // To fix the issue that the TYPE_WINDOW_CONTENT_CHANGED event doesn't get triggered.
+      // More details at here: https://fburl.com/aoa2apq5
+      super.setContentDescription(contentDescription);
+    }
     maybeInvalidateAccessibilityState();
   }
 
