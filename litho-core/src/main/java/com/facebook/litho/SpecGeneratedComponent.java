@@ -305,4 +305,20 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
             + "Component is: "
             + this);
   }
+
+  /**
+   * Called during layout calculation to determine the baseline of a component.
+   *
+   * @param c The {@link Context} used by this component.
+   * @param width The width of this component.
+   * @param height The height of this component.
+   * @param interStagePropsContainer
+   */
+  protected int onMeasureBaseline(
+      final ComponentContext c,
+      final int width,
+      final int height,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    return height;
+  }
 }

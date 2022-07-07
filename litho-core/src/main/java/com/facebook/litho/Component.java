@@ -478,22 +478,6 @@ public abstract class Component
   protected void onLoadStyle(ComponentContext c) {}
 
   /**
-   * Called during layout calculation to determine the baseline of a component.
-   *
-   * @param c The {@link Context} used by this component.
-   * @param width The width of this component.
-   * @param height The height of this component.
-   * @param interStagePropsContainer
-   */
-  protected int onMeasureBaseline(
-      final ComponentContext c,
-      final int width,
-      final int height,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    return height;
-  }
-
-  /**
    * Deploy all UI elements representing the final bounds defined in the given {@link
    * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
    * mounted.

@@ -26,7 +26,12 @@ public class LithoYogaBaselineFunction implements YogaBaselineFunction {
   public float baseline(YogaNode cssNode, float width, float height) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final LithoNode node = result.getNode();
-    final Component component = node.getTailComponent();
+    if (!(node.getTailComponent() instanceof SpecGeneratedComponent)) {
+      throw new IllegalStateException(
+          "Trying to call onMeasureBaseline on a non-Spec component: "
+              + node.getTailComponent().getSimpleName());
+    }
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) node.getTailComponent();
     final @Nullable InterStagePropsContainer interStageProps =
         (InterStagePropsContainer) result.getLayoutData();
 

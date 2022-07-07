@@ -112,13 +112,6 @@ abstract class KComponent : Component() {
 
   final override fun onLoadStyle(c: ComponentContext) = super.onLoadStyle(c)
 
-  final override fun onMeasureBaseline(
-      c: ComponentContext,
-      width: Int,
-      height: Int,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onMeasureBaseline(c, width, height, interStagePropsContainer)
-
   final override fun onMount(
       c: ComponentContext,
       convertContent: Any,
