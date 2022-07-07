@@ -25,15 +25,17 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentCallbackLayoutEventHandler
+import com.facebook.litho.ComponentCallbackType
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.EventHandler
-import com.facebook.litho.FreeToCalculateLayoutEventHandler
 import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.TouchEvent
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
@@ -105,19 +107,19 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.ON_CLICK ->
           commonProps.clickHandler(
               eventHandler(value as ((ClickEvent) -> Unit))
-                  .wrapInFreeToCalculateLayoutEventHandler(context))
+                  .maybeWrapInInputCallbackEventHandler(context))
       ObjectField.ON_LONG_CLICK ->
           commonProps.longClickHandler(
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean))
-                  .wrapInFreeToCalculateLayoutEventHandler(context))
+                  .maybeWrapInInputCallbackEventHandler(context))
       ObjectField.ON_INTERCEPT_TOUCH ->
           commonProps.interceptTouchHandler(
               eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean))
-                  .wrapInFreeToCalculateLayoutEventHandler(context))
+                  .maybeWrapInInputCallbackEventHandler(context))
       ObjectField.ON_TOUCH ->
           commonProps.touchHandler(
               eventHandler(value as ((TouchEvent) -> Unit))
-                  .wrapInFreeToCalculateLayoutEventHandler(context))
+                  .maybeWrapInInputCallbackEventHandler(context))
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
       ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
       ObjectField.TEST_KEY -> commonProps.testKey(value as String?)
@@ -132,11 +134,14 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
 }
 
 @PublishedApi
-internal fun <E> EventHandler<E>.wrapInFreeToCalculateLayoutEventHandler(
+internal fun <E> EventHandler<E>.maybeWrapInInputCallbackEventHandler(
     context: ComponentContext
-): EventHandler<E> {
-  return FreeToCalculateLayoutEventHandler(this, context)
-}
+): EventHandler<E> =
+    if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
+      ComponentCallbackLayoutEventHandler(ComponentCallbackType.INPUT, this, context)
+    } else {
+      this
+    }
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi

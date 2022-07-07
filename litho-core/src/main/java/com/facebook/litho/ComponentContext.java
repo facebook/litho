@@ -410,17 +410,18 @@ public class ComponentContext implements Cloneable {
         isCreateLayoutInProgress());
   }
 
-  final void registerComponentCallbackStart() {
+  final void registerComponentCallbackStart(ComponentCallbackType componentCallbackType) {
     if (mComponentTree == null) return;
 
-    mComponentTree.beginStateUpdateBatch();
+    mComponentTree.beginStateUpdateBatch(componentCallbackType);
   }
 
-  final void registerComponentCallbackEnd() {
+  final void registerComponentCallbackEnd(ComponentCallbackType componentCallbackType) {
     if (mComponentTree == null) return;
 
     Component scope = getComponentScope();
     mComponentTree.commitStateUpdateBatch(
+        componentCallbackType,
         scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
         isCreateLayoutInProgress());
   }

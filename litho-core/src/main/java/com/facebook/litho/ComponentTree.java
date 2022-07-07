@@ -1552,11 +1552,10 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
-    if (mBatchedStateUpdatesStrategy == null) {
+    if (mBatchedStateUpdatesStrategy == null
+        || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
+            attribution, isCreateLayoutInProgress)) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
-    } else {
-      mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
-          attribution, isCreateLayoutInProgress);
     }
   }
 
@@ -3605,7 +3604,8 @@ public class ComponentTree implements LithoLifecycleListener {
     private @Nullable UpdateStateAsyncRunnable mUpdateStateAsyncRunnable;
 
     @Override
-    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(
+        String attribution, boolean isCreateLayoutInProgress) {
       synchronized (mUpdateStateAsyncRunnableLock) {
         if (mUpdateStateAsyncRunnable != null) {
           mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
@@ -3623,19 +3623,32 @@ public class ComponentTree implements LithoLifecycleListener {
         }
         mMainThreadHandler.postAtFront(mUpdateStateAsyncRunnable, tag);
       }
+
+      return true;
     }
 
     @Override
     public void onInternalStateUpdateStart() {
-      synchronized (mUpdateStateAsyncRunnableLock) {
-        if (mUpdateStateAsyncRunnable != null) {
-          mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
-        }
-      }
+      removePendingRunnable();
+    }
+
+    @Override
+    public void onComponentCallbackStart(ComponentCallbackType callbackType) {
+      // do nothing
+    }
+
+    @Override
+    public void onComponentCallbackEnd(
+        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
+      // do nothing
     }
 
     @Override
     public void release() {
+      removePendingRunnable();
+    }
+
+    private void removePendingRunnable() {
       synchronized (mUpdateStateAsyncRunnableLock) {
         if (mUpdateStateAsyncRunnable != null) {
           mMainThreadHandler.remove(mUpdateStateAsyncRunnable);
@@ -3644,17 +3657,25 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  void beginStateUpdateBatch() {
-    if (mBatchedStateUpdatesStrategy instanceof ApplyPendingStateUpdatesOnComponentCallbackEnd) {
-      ((ApplyPendingStateUpdatesOnComponentCallbackEnd) mBatchedStateUpdatesStrategy)
-          .onComponentCallbackStart();
+  void beginStateUpdateBatch(ComponentCallbackType componentCallbackType) {
+    if (mBatchedStateUpdatesStrategy != null) {
+      if (ComponentsSystrace.isTracing()) {
+        ComponentsSystrace.beginSection("stateUpdateBatch (" + componentCallbackType.name() + ")");
+      }
+      mBatchedStateUpdatesStrategy.onComponentCallbackStart(componentCallbackType);
     }
   }
 
-  void commitStateUpdateBatch(String attribution, boolean isCreateLayoutInProgress) {
-    if (mBatchedStateUpdatesStrategy instanceof ApplyPendingStateUpdatesOnComponentCallbackEnd) {
-      ((ApplyPendingStateUpdatesOnComponentCallbackEnd) mBatchedStateUpdatesStrategy)
-          .onComponentCallbackEnd(attribution, isCreateLayoutInProgress);
+  void commitStateUpdateBatch(
+      ComponentCallbackType componentCallbackType,
+      String attribution,
+      boolean isCreateLayoutInProgress) {
+    if (mBatchedStateUpdatesStrategy != null) {
+      if (ComponentsSystrace.isTracing()) {
+        ComponentsSystrace.endSection();
+      }
+      mBatchedStateUpdatesStrategy.onComponentCallbackEnd(
+          componentCallbackType, attribution, isCreateLayoutInProgress);
     }
   }
 
@@ -3692,7 +3713,8 @@ public class ComponentTree implements LithoLifecycleListener {
     private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger();
 
     @Override
-    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(
+        String attribution, boolean isCreateLayoutInProgress) {
       /*
        * If we have open callbacks then we simply enqueue the update and don't process it.
        * Otherwise, we fallback to the default flow and schedule one layout calculation for each
@@ -3700,9 +3722,10 @@ public class ComponentTree implements LithoLifecycleListener {
        */
       int currentOpenCallbacks = mNumOpenCallbacksCount.get();
       if (currentOpenCallbacks == 0) {
-        updateStateInternal(true, attribution, isCreateLayoutInProgress);
+        return false;
       } else {
         mEnqueuedUpdatesCount.incrementAndGet();
+        return true;
       }
     }
 
@@ -3711,12 +3734,15 @@ public class ComponentTree implements LithoLifecycleListener {
       resetEnqueuedUpdates();
     }
 
-    public void onComponentCallbackStart() {
+    @Override
+    public void onComponentCallbackStart(ComponentCallbackType callbackType) {
       int currentOpenCallbacks = mNumOpenCallbacksCount.get();
       mNumOpenCallbacksCount.set(currentOpenCallbacks + 1);
     }
 
-    public void onComponentCallbackEnd(String attribution, boolean isCreateLayoutInProgress) {
+    @Override
+    public void onComponentCallbackEnd(
+        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
       int currentOpenCallbacks = mNumOpenCallbacksCount.get();
       if (currentOpenCallbacks > 0) {
         mNumOpenCallbacksCount.set(currentOpenCallbacks - 1);
@@ -3814,16 +3840,31 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(
+        String attribution, boolean isCreateLayoutInProgress) {
       if (mEnqueuedUpdatesCount.getAndIncrement() == 0 && mMainChoreographer.get() != null) {
         mMainChoreographer.get().postFrameCallback(mFrameCallback);
       }
+
+      return true;
     }
 
     @Override
     public void onInternalStateUpdateStart() {
       resetEnqueuedUpdates();
       removeFrameCallback();
+    }
+
+    @Override
+    public void onComponentCallbackStart(ComponentCallbackType callbackType) {
+      // do nothing
+    }
+
+    @Override
+    public void onComponentCallbackEnd(
+        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
+
+      // do nothing
     }
 
     @Override
@@ -3860,17 +3901,35 @@ public class ComponentTree implements LithoLifecycleListener {
         new PostStateUpdateToChoreographerCallback();
 
     @Override
-    public void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(
+        String attribution, boolean isCreateLayoutInProgress) {
       mPostStateUpdateToFrontOfMainThread.onAsyncStateUpdateEnqueued(
           attribution, isCreateLayoutInProgress);
       mPostStateUpdateToChoreographerCallback.onAsyncStateUpdateEnqueued(
           attribution, isCreateLayoutInProgress);
+
+      return true;
     }
 
     @Override
     public void onInternalStateUpdateStart() {
       mPostStateUpdateToFrontOfMainThread.onInternalStateUpdateStart();
       mPostStateUpdateToChoreographerCallback.onInternalStateUpdateStart();
+    }
+
+    @Override
+    public void onComponentCallbackStart(ComponentCallbackType callbackType) {
+      mPostStateUpdateToFrontOfMainThread.onComponentCallbackStart(callbackType);
+      mPostStateUpdateToChoreographerCallback.onComponentCallbackStart(callbackType);
+    }
+
+    @Override
+    public void onComponentCallbackEnd(
+        ComponentCallbackType callbackType, String attribution, boolean isCreateLayoutInProgress) {
+      mPostStateUpdateToFrontOfMainThread.onComponentCallbackEnd(
+          callbackType, attribution, isCreateLayoutInProgress);
+      mPostStateUpdateToChoreographerCallback.onComponentCallbackEnd(
+          callbackType, attribution, isCreateLayoutInProgress);
     }
 
     @Override

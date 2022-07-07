@@ -27,31 +27,35 @@ import com.facebook.infer.annotation.Nullsafe;
  * calculation until the moment we know the event was handled.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public final class FreeToCalculateLayoutEventHandler<E> extends EventHandler<E>
+public final class ComponentCallbackLayoutEventHandler<E> extends EventHandler<E>
     implements HasEventDispatcher, EventDispatcher {
 
   protected final EventHandler<E> mDelegateEventHandler;
   private final ComponentContext mContext;
+  private final ComponentCallbackType mComponentCallbackType;
 
-  public FreeToCalculateLayoutEventHandler(
-      EventHandler<E> delegateEventHandler, ComponentContext context) {
+  public ComponentCallbackLayoutEventHandler(
+      ComponentCallbackType componentCallbackType,
+      EventHandler<E> delegateEventHandler,
+      ComponentContext context) {
     super(null, delegateEventHandler.id);
     mDelegateEventHandler = delegateEventHandler;
     mHasEventDispatcher = this;
     mContext = context;
+    mComponentCallbackType = componentCallbackType;
   }
 
   @Nullable
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     try {
-      mContext.registerComponentCallbackStart();
+      mContext.registerComponentCallbackStart(mComponentCallbackType);
 
       EventDispatcher mDelegateEventDispatcher =
           mDelegateEventHandler.mHasEventDispatcher.getEventDispatcher();
       return mDelegateEventDispatcher.dispatchOnEvent(eventHandler, eventState);
     } finally {
-      mContext.registerComponentCallbackEnd();
+      mContext.registerComponentCallbackEnd(mComponentCallbackType);
     }
   }
 
@@ -62,9 +66,9 @@ public final class FreeToCalculateLayoutEventHandler<E> extends EventHandler<E>
 
   @Override
   public boolean isEquivalentTo(@Nullable EventHandler other) {
-    if (other instanceof FreeToCalculateLayoutEventHandler) {
+    if (other instanceof ComponentCallbackLayoutEventHandler) {
       return mDelegateEventHandler.isEquivalentTo(
-          ((FreeToCalculateLayoutEventHandler<?>) other).mDelegateEventHandler);
+          ((ComponentCallbackLayoutEventHandler<?>) other).mDelegateEventHandler);
     }
 
     return mDelegateEventHandler.isEquivalentTo(other);
