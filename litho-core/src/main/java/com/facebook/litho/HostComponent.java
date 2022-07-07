@@ -24,7 +24,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-class HostComponent extends Component {
+class HostComponent extends SpecGeneratedComponent {
 
   /**
    * We duplicate mComponentDynamicProps here, in order to provide {@link
@@ -35,7 +35,9 @@ class HostComponent extends Component {
 
   private boolean mImplementsVirtualViews = false;
 
-  protected HostComponent() {}
+  protected HostComponent() {
+    super("HostComponent");
+  }
 
   @Override
   protected MountContentPool onCreateMountContentPool() {
@@ -138,11 +140,6 @@ class HostComponent extends Component {
   @Override
   boolean hasCommonDynamicProps() {
     return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "HostComponent";
   }
 
   /**

@@ -163,7 +163,13 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit {
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().mount(getComponentContext(unit), content, getInterStageProps(data));
+      final Component component = output.getComponent();
+      if (!(component instanceof SpecGeneratedComponent)) {
+        throw new IllegalStateException(
+            "Trying to call bind on non-Spec component: " + component.getSimpleName());
+      }
+      ((SpecGeneratedComponent) component)
+          .mount(getComponentContext(unit), content, getInterStageProps(data));
     }
 
     @Override

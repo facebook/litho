@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.customview.widget.ExploreByTouchHelper;
@@ -25,6 +27,7 @@ import com.facebook.litho.Component.RenderData;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.rendercore.RenderCoreSystrace;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -51,6 +54,35 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     }
 
     return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
+  }
+
+  final void mount(
+      final ComponentContext c,
+      final Object convertContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    if (c != null) {
+      c.enterNoStateUpdatesMethod("mount");
+    }
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("onMount: " + getSimpleName());
+    }
+    try {
+      onMount(c, convertContent, interStagePropsContainer);
+    } catch (Exception e) {
+      if (c != null) {
+        ComponentUtils.handle(c, e);
+      } else {
+        throw e;
+      }
+    } finally {
+      if (c != null) {
+        c.exitNoStateUpdatesMethod();
+      }
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
+    }
   }
 
   /**
@@ -320,5 +352,19 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
       final int height,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     return height;
+  }
+
+  /**
+   * Deploy all UI elements representing the final bounds defined in the given {@link
+   * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
+   * mounted.
+   *
+   * @param c The {@link ComponentContext} to mount the component into.
+   */
+  protected void onMount(
+      final ComponentContext c,
+      final Object convertContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
+    // Do nothing by default.
   }
 }

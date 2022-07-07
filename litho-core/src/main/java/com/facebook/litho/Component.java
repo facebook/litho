@@ -319,35 +319,6 @@ public abstract class Component
     onLoadStyle(c);
   }
 
-  final void mount(
-      final ComponentContext c,
-      final Object convertContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    if (c != null) {
-      c.enterNoStateUpdatesMethod("mount");
-    }
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("onMount: " + getSimpleName());
-    }
-    try {
-      onMount(c, convertContent, interStagePropsContainer);
-    } catch (Exception e) {
-      if (c != null) {
-        ComponentUtils.handle(c, e);
-      } else {
-        throw e;
-      }
-    } finally {
-      if (c != null) {
-        c.exitNoStateUpdatesMethod();
-      }
-      if (isTracing) {
-        RenderCoreSystrace.endSection();
-      }
-    }
-  }
-
   final void unbind(
       final ComponentContext c,
       final Object mountedContent,
@@ -476,20 +447,6 @@ public abstract class Component
   }
 
   protected void onLoadStyle(ComponentContext c) {}
-
-  /**
-   * Deploy all UI elements representing the final bounds defined in the given {@link
-   * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
-   * mounted.
-   *
-   * @param c The {@link ComponentContext} to mount the component into.
-   */
-  protected void onMount(
-      final ComponentContext c,
-      final Object convertContent,
-      final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    // Do nothing by default.
-  }
 
   /**
    * Populate an accessibility node with information about the component.
@@ -942,9 +899,8 @@ public abstract class Component
    * a LayoutState calculation reach out to the Litho team to discuss an alternative solution.
    *
    * <p>If this is called during a LayoutState calculation, it will delegate to {@link
-   * Component#onMeasure(ComponentContext, ComponentLayout, int, int, Size,
-   * InterStagePropsContainer)}, which does cache the measurement result for the duration of this
-   * LayoutState.
+   * SpecG#onMeasure(ComponentContext, ComponentLayout, int, int, Size, InterStagePropsContainer)},
+   * which does cache the measurement result for the duration of this LayoutState.
    */
   @Deprecated
   public final void measureMightNotCacheInternalNode(

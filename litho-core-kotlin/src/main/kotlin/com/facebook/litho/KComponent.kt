@@ -112,12 +112,6 @@ abstract class KComponent : Component() {
 
   final override fun onLoadStyle(c: ComponentContext) = super.onLoadStyle(c)
 
-  final override fun onMount(
-      c: ComponentContext,
-      convertContent: Any,
-      interStagePropsContainer: InterStagePropsContainer?
-  ) = super.onMount(c, convertContent, interStagePropsContainer)
-
   final override fun onPopulateAccessibilityNode(
       c: ComponentContext,
       host: View,
