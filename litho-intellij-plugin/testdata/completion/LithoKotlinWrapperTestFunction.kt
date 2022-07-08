@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-inline fun ComponentScope.Spinner(
+inline fun ResourcesScope.Spinner(
     options: List<String>,
     selectedOption: String,
     @LayoutRes itemLayout: Int = android.R.layout.simple_dropdown_item_1line,
