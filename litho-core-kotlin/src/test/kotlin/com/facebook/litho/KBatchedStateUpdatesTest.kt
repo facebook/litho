@@ -22,6 +22,7 @@ import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleText
 import com.facebook.litho.view.onClick
@@ -72,13 +73,13 @@ class KBatchedStateUpdatesTest {
     }
 
     val testLithoView = lithoViewRule.render { TestComponent() }
-    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 0") }
+    LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
     lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
-    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 2") }
+    LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 2")
     val expectedRenderCount =
         if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
           2 /* initial render + render triggered by batched updates */
@@ -130,13 +131,13 @@ class KBatchedStateUpdatesTest {
     }
 
     val testLithoView = lithoViewRule.render { TestComponent() }
-    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 0") }
+    LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
     lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
-    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 4") }
+    LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 5")
     val expectedCount =
         if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
           3 /* initial render + render triggered by sync update (which interrupts batching) + render triggered by async update */
@@ -182,12 +183,12 @@ class KBatchedStateUpdatesTest {
     }
 
     val testLithoView = lithoViewRule.render { TestComponent() }
-    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 0") }
+    LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 0")
     assertThat(renderCount.get()).isEqualTo(1)
 
     executeAndRunPendingBgTasks { lithoViewRule.act(testLithoView) { clickOnTag("test_view") } }
 
-    lithoViewRule.act(testLithoView) { hasVisibleText("Counter: 3") }
+    LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 3")
     val expectedCount =
         if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
           2 /* initial render + render triggered by sync update */
