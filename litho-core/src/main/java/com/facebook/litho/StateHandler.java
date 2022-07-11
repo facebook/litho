@@ -59,7 +59,7 @@ public class StateHandler {
    * Maps a component key to a component object that retains the current state values for that key.
    */
   @GuardedBy("this")
-  public Map<String, StateContainer> mStateContainers;
+  public @Nullable Map<String, StateContainer> mStateContainers;
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore

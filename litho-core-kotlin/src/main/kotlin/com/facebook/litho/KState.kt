@@ -156,7 +156,7 @@ internal constructor(
 
     if (committedStateHandler != null) {
       val committedStateContainer =
-          committedStateHandler.mStateContainers[context.globalKey] as KStateContainer?
+          committedStateHandler.mStateContainers?.get(context.globalKey) as KStateContainer?
       if (committedStateContainer?.mStates != null &&
           committedStateContainer.mStates[hookStateIndex] != null) {
         val committedStateContainerWithAppliedPendingHooks =
@@ -179,7 +179,7 @@ internal constructor(
 
     val committedStateHandler = context.componentTree.stateHandler ?: return false
     val committedStateContainer =
-        committedStateHandler.mStateContainers[context.globalKey] as KStateContainer?
+        committedStateHandler.mStateContainers?.get(context.globalKey) as KStateContainer?
     if (committedStateContainer?.mStates?.get(hookStateIndex) != null) {
       val committedStateContainerWithAppliedPendingHooks =
           committedStateHandler.getStateContainerWithHookUpdates(context.globalKey)
