@@ -37,7 +37,7 @@ import java.util.Map;
  * <p>Immutability: RenderUnits should be immutable! Continuing to change them after they are built
  * and given to RenderCore (e.g. via RenderState) is not safe.
  */
-public abstract class RenderUnit<MOUNT_CONTENT> implements PoolableContentProvider {
+public abstract class RenderUnit<MOUNT_CONTENT> implements ContentAllocator {
 
   public enum RenderType {
     DRAWABLE,

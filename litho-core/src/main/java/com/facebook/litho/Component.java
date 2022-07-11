@@ -60,8 +60,8 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
-import com.facebook.rendercore.PoolableContentProvider;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -87,7 +87,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Component
     implements Cloneable,
-        PoolableContentProvider,
+        ContentAllocator,
         HasEventDispatcher,
         HasEventTrigger,
         EventDispatcher,

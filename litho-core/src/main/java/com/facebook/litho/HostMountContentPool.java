@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.PoolableContentProvider;
+import com.facebook.rendercore.ContentAllocator;
 
 /**
  * A specific MountContentPool for HostComponent - needed to do correct recycling with things like
@@ -35,7 +35,7 @@ public class HostMountContentPool extends RecyclePool implements MountContentPoo
   }
 
   @Override
-  public Object acquire(Context c, PoolableContentProvider component) {
+  public Object acquire(Context c, ContentAllocator component) {
     if (!mIsEnabled) {
       return component.createPoolableContent(c);
     }
@@ -59,7 +59,7 @@ public class HostMountContentPool extends RecyclePool implements MountContentPoo
   }
 
   @Override
-  public void maybePreallocateContent(Context c, PoolableContentProvider component) {
+  public void maybePreallocateContent(Context c, ContentAllocator component) {
     // Pre-allocation not yet supported
   }
 }

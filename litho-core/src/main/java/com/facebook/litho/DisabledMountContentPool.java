@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.PoolableContentProvider;
+import com.facebook.rendercore.ContentAllocator;
 
 /**
  * A MountContentPool that has no size and doesn't recycle objects. Return from
@@ -28,7 +28,7 @@ import com.facebook.rendercore.PoolableContentProvider;
 public class DisabledMountContentPool implements MountContentPool {
 
   @Override
-  public Object acquire(Context c, PoolableContentProvider component) {
+  public Object acquire(Context c, ContentAllocator component) {
     return component.createPoolableContent(c);
   }
 
@@ -36,7 +36,7 @@ public class DisabledMountContentPool implements MountContentPool {
   public void release(Object item) {}
 
   @Override
-  public void maybePreallocateContent(Context c, PoolableContentProvider component) {}
+  public void maybePreallocateContent(Context c, ContentAllocator component) {}
 
   @Override
   public String getName() {

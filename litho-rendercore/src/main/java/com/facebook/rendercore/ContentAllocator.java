@@ -22,7 +22,7 @@ import com.facebook.infer.annotation.Nullsafe;
 
 /** Defines a class that can provide mountable content to be pooled. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public interface PoolableContentProvider {
+public interface ContentAllocator {
 
   /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass */
   Object createPoolableContent(Context context);

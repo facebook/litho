@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import com.facebook.rendercore.PoolableContentProvider;
+import com.facebook.rendercore.ContentAllocator;
 
 public class TrackingMountContentPool extends DefaultMountContentPool {
 
@@ -29,7 +29,7 @@ public class TrackingMountContentPool extends DefaultMountContentPool {
   }
 
   @Override
-  public Object acquire(Context c, PoolableContentProvider component) {
+  public Object acquire(Context c, ContentAllocator component) {
     Object item = super.acquire(c, component);
     mAcquireCount++;
     return item;

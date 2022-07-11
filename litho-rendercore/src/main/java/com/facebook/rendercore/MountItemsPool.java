@@ -71,8 +71,8 @@ public class MountItemsPool {
    */
   public static boolean sIsManualCallbacks;
 
-  public static Object acquireMountContent(
-      Context context, PoolableContentProvider poolableMountContent) {
+  public static Object acquireMountContent(Context context, ContentAllocator poolableMountContent) {
+
     final ItemPool pool = getMountContentPool(context, poolableMountContent);
     if (pool == null) {
       return poolableMountContent.createPoolableContent(context);
@@ -87,7 +87,7 @@ public class MountItemsPool {
   }
 
   public static void release(
-      Context context, PoolableContentProvider poolableMountContent, Object mountContent) {
+      Context context, ContentAllocator poolableMountContent, Object mountContent) {
     final ItemPool pool = getMountContentPool(context, poolableMountContent);
     if (pool != null) {
       pool.release(mountContent);
@@ -95,7 +95,7 @@ public class MountItemsPool {
   }
 
   public static void maybePreallocateContent(
-      Context context, PoolableContentProvider poolableMountContent) {
+      Context context, ContentAllocator poolableMountContent) {
     final ItemPool pool = getMountContentPool(context, poolableMountContent);
     if (pool != null) {
       pool.maybePreallocateContent(context, poolableMountContent);
@@ -109,7 +109,7 @@ public class MountItemsPool {
    * implementation.
    */
   public static void prefillMountContentPool(
-      Context context, int poolSize, PoolableContentProvider poolableMountContent) {
+      Context context, int poolSize, ContentAllocator poolableMountContent) {
     if (poolSize == 0) {
       return;
     }
@@ -123,12 +123,12 @@ public class MountItemsPool {
   }
 
   private static @Nullable ItemPool getMountContentPool(
-      Context context, PoolableContentProvider poolableMountContent) {
+      Context context, ContentAllocator poolableMountContent) {
     return getMountContentPool(context, poolableMountContent, DEFAULT_POOL_SIZE);
   }
 
   private static @Nullable ItemPool getMountContentPool(
-      Context context, PoolableContentProvider poolableMountContent, int size) {
+      Context context, ContentAllocator poolableMountContent, int size) {
     if (poolableMountContent.isRecyclingDisabled()) {
       return null;
     }
@@ -173,7 +173,7 @@ public class MountItemsPool {
   }
 
   public static Object acquireHostMountContent(
-      Context context, @Nullable IBinder windowToken, PoolableContentProvider hostContentProvider) {
+      Context context, @Nullable IBinder windowToken, ContentAllocator hostContentProvider) {
     final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
     if (pool == null) {
       return hostContentProvider.createPoolableContent(context);
@@ -185,7 +185,7 @@ public class MountItemsPool {
   public static void releaseHostMountContent(
       Context context,
       @Nullable IBinder windowToken,
-      PoolableContentProvider hostContentProvider,
+      ContentAllocator hostContentProvider,
       Object content) {
     final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
     if (pool == null) {
@@ -196,7 +196,7 @@ public class MountItemsPool {
   }
 
   private static @Nullable ItemPool getHostMountContentPool(
-      Context context, @Nullable IBinder windowToken, PoolableContentProvider hostContentProvider) {
+      Context context, @Nullable IBinder windowToken, ContentAllocator hostContentProvider) {
     // Currently, this seems most likely to occur when we call unmountAllItems from onViewRecycled
     // in an RV as the RootHost will have already been detached.
     if (windowToken == null) {
@@ -366,7 +366,7 @@ public class MountItemsPool {
      * @param renderUnit the RenderUnit for the item
      * @return a pooled content item
      */
-    Object acquire(Context c, PoolableContentProvider poolableMountContent);
+    Object acquire(Context c, ContentAllocator poolableMountContent);
 
     /**
      * Called when an item is released and can return to the pool
@@ -382,7 +382,7 @@ public class MountItemsPool {
      * @param c the android context
      * @param renderUnit the RenderUnit for the item
      */
-    void maybePreallocateContent(Context c, PoolableContentProvider poolableMountContent);
+    void maybePreallocateContent(Context c, ContentAllocator poolableMountContent);
   }
 
   static class DefaultItemPool implements ItemPool {
@@ -396,7 +396,7 @@ public class MountItemsPool {
     }
 
     @Override
-    public Object acquire(Context c, PoolableContentProvider poolableMountContent) {
+    public Object acquire(Context c, ContentAllocator poolableMountContent) {
       return mPool.acquire();
     }
 
@@ -415,7 +415,7 @@ public class MountItemsPool {
     }
 
     @Override
-    public void maybePreallocateContent(Context c, PoolableContentProvider poolableMountContent) {
+    public void maybePreallocateContent(Context c, ContentAllocator poolableMountContent) {
       // Do Nothing.
     }
   }
