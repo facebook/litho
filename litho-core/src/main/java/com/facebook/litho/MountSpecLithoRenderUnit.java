@@ -26,13 +26,12 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderUnit;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
-public class MountSpecLithoRenderUnit extends LithoRenderUnit implements ContentAllocator {
+public class MountSpecLithoRenderUnit extends LithoRenderUnit {
 
   private boolean mIsShouldUpdateCachingEnabled;
   private boolean mIsShouldUpdateResultCached;
@@ -91,18 +90,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   }
 
   @Override
-  public Object getPoolableContentType() {
-    return getRenderContentType();
-  }
-
-  @Override
   public String getDescription() {
     return output.getComponent().getSimpleName();
-  }
-
-  @Override
-  public ContentAllocator getContentAllocator() {
-    return this;
   }
 
   @Override

@@ -37,7 +37,7 @@ import java.util.Map;
  * <p>Immutability: RenderUnits should be immutable! Continuing to change them after they are built
  * and given to RenderCore (e.g. via RenderState) is not safe.
  */
-public abstract class RenderUnit<MOUNT_CONTENT> {
+public abstract class RenderUnit<MOUNT_CONTENT> implements ContentAllocator {
 
   public enum RenderType {
     DRAWABLE,
@@ -86,7 +86,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     return mRenderType;
   }
 
-  public abstract ContentAllocator getContentAllocator();
+  public abstract MOUNT_CONTENT createContent(Context c);
+
+  @Override
+  public Object createPoolableContent(Context context) {
+    return createContent(context);
+  }
 
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
   public abstract long getId();
@@ -95,9 +100,25 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     return getClass();
   }
 
+  @Override
+  public Object getPoolableContentType() {
+    return getRenderContentType();
+  }
+
+  @Override
+  public boolean isRecyclingDisabled() {
+    return false;
+  }
+
   protected void onStartUpdateRenderUnit() {}
 
   protected void onEndUpdateRenderUnit() {}
+
+  @Nullable
+  @Override
+  public MountItemsPool.ItemPool createRecyclingPool() {
+    return null;
+  }
 
   public String getDescription() {
     // This API is primarily used for tracing, and the section names have a char limit of 127.

@@ -24,31 +24,20 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ContentAllocator {
 
-  /** Allocates the mountable content (View or Drawable). */
-  Object createContent(Context context);
-
   /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass */
-  default Object createPoolableContent(Context context) {
-    return createContent(context);
-  }
+  Object createPoolableContent(Context context);
 
   /**
    * Returns an object defining the type of the mount-content. Typically the mount-content's Class.
    */
-  default Object getPoolableContentType() {
-    return getClass();
-  }
+  Object getPoolableContentType();
 
   /** Return true if pooling should be disabled for this mount content. */
-  default boolean isRecyclingDisabled() {
-    return false;
-  }
+  boolean isRecyclingDisabled();
 
   /**
    * Creates an ItemPool for this mountable content. Returning null will generate a default pool.
    */
   @Nullable
-  default MountItemsPool.ItemPool createRecyclingPool() {
-    return null;
-  }
+  MountItemsPool.ItemPool createRecyclingPool();
 }

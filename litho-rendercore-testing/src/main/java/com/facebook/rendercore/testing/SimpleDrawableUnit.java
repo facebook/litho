@@ -18,10 +18,9 @@ package com.facebook.rendercore.testing;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
-public class SimpleDrawableUnit extends RenderUnit<Drawable> implements ContentAllocator {
+public class SimpleDrawableUnit extends RenderUnit<Drawable> {
 
   private final Drawable drawable;
   private final long id;
@@ -35,16 +34,6 @@ public class SimpleDrawableUnit extends RenderUnit<Drawable> implements ContentA
   @Override
   public Drawable createContent(Context c) {
     return drawable;
-  }
-
-  @Override
-  public Object getPoolableContentType() {
-    return getRenderContentType();
-  }
-
-  @Override
-  public ContentAllocator getContentAllocator() {
-    return this;
   }
 
   @Override

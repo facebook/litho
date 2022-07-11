@@ -164,11 +164,6 @@ public abstract class Component
   }
 
   @Override
-  public Object createContent(Context context) {
-    return createMountContent(context);
-  }
-
-  @Override
   public Object createPoolableContent(Context context) {
     final Object content = createMountContent(context);
     if (content == null) {

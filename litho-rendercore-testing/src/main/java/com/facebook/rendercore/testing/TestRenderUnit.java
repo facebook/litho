@@ -18,11 +18,10 @@ package com.facebook.rendercore.testing;
 
 import android.content.Context;
 import android.view.View;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class TestRenderUnit extends RenderUnit implements ContentAllocator {
+public class TestRenderUnit extends RenderUnit {
 
   static AtomicLong sIdGenerator = new AtomicLong();
 
@@ -40,11 +39,6 @@ public class TestRenderUnit extends RenderUnit implements ContentAllocator {
   @Override
   public Object createContent(Context c) {
     return new View(c);
-  }
-
-  @Override
-  public ContentAllocator getContentAllocator() {
-    return this;
   }
 
   @Override

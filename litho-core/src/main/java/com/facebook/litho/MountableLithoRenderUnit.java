@@ -21,12 +21,11 @@ import static com.facebook.rendercore.RenderUnit.Extension.extension;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
 import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class MountableLithoRenderUnit extends LithoRenderUnit implements ContentAllocator {
+public class MountableLithoRenderUnit extends LithoRenderUnit {
 
   private final Mountable<?> mMountable;
 
@@ -70,16 +69,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit implements Content
   @Override
   public Object createContent(Context c) {
     return mMountable.createContent(c);
-  }
-
-  @Override
-  public Object getPoolableContentType() {
-    return getRenderContentType();
-  }
-
-  @Override
-  public ContentAllocator getContentAllocator() {
-    return this;
   }
 
   @Override

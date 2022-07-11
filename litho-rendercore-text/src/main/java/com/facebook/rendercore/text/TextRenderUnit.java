@@ -20,11 +20,10 @@ import static com.facebook.rendercore.RenderUnit.Extension.extension;
 import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayoutContext;
 
-public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator {
+public class TextRenderUnit extends RenderUnit<RCTextView> {
   private long mId;
 
   public TextRenderUnit(long id) {
@@ -36,11 +35,6 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
   @Override
   public RCTextView createContent(Context c) {
     return new RCTextView(c);
-  }
-
-  @Override
-  public ContentAllocator getContentAllocator() {
-    return this;
   }
 
   @Override

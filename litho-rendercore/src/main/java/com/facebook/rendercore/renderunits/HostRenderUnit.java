@@ -1,6 +1,4 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,14 +26,13 @@ import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.InterceptTouchHandler;
 import com.facebook.rendercore.RenderUnit;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class HostRenderUnit extends RenderUnit<HostView> implements ContentAllocator {
+public class HostRenderUnit extends RenderUnit<HostView> {
 
   private static final int UNSET = -1;
   private static final int SET_FALSE = 0;
@@ -70,13 +67,8 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
   }
 
   @Override
-  public HostView createContent(Context context) {
-    return new HostView(context);
-  }
-
-  @Override
-  public ContentAllocator getContentAllocator() {
-    return this;
+  public HostView createContent(Context c) {
+    return new HostView(c);
   }
 
   @Override

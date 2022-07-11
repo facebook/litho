@@ -1701,7 +1701,7 @@ public class LayoutState
           }
 
           MountItemsPool.maybePreallocateContent(
-              mContext.getAndroidContext(), treeNode.getRenderUnit().getContentAllocator());
+              mContext.getAndroidContext(), treeNode.getRenderUnit());
 
           if (isTracing) {
             ComponentsSystrace.endSection();
