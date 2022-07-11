@@ -150,8 +150,6 @@ abstract class MountableComponent() : Component() {
   final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
       super.resolve(layoutContext, c)
 
-  final override fun shouldAlwaysRemeasure(): Boolean = false
-
   final override fun shouldUpdate(
       previous: Component?,
       prevStateContainer: StateContainer?,

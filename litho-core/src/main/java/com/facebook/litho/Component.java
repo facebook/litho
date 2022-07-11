@@ -432,14 +432,6 @@ public abstract class Component
     return Layout.create(layoutContext, c, this);
   }
 
-  /**
-   * @return true if the Component should always be measured when receiving a remeasure event, false
-   *     otherwise.
-   */
-  protected boolean shouldAlwaysRemeasure() {
-    return false;
-  }
-
   protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
     return true;
   }

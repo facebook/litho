@@ -514,7 +514,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (diffNode != null
         && diffNode.getLastWidthSpec() == widthSpec
         && diffNode.getLastHeightSpec() == heightSpec
-        && !component.shouldAlwaysRemeasure()) {
+        && !shouldAlwaysRemeasure(component)) {
 
       return new MeasureResult(
           (int) diffNode.getLastMeasuredWidth(), (int) diffNode.getLastMeasuredHeight());
@@ -550,6 +550,14 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           ComponentsSystrace.endSection();
         }
       }
+    }
+  }
+
+  private boolean shouldAlwaysRemeasure(Component component) {
+    if (component instanceof SpecGeneratedComponent) {
+      return ((SpecGeneratedComponent) component).shouldAlwaysRemeasure();
+    } else {
+      return false;
     }
   }
 

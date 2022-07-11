@@ -463,4 +463,12 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
    * props as fields on the ComponentImpl.
    */
   protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
+
+  /**
+   * @return true if the Component should always be measured when receiving a remeasure event, false
+   *     otherwise.
+   */
+  protected boolean shouldAlwaysRemeasure() {
+    return false;
+  }
 }

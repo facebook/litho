@@ -142,8 +142,6 @@ abstract class KComponent : Component() {
   final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
       super.resolve(layoutContext, c)
 
-  final override fun shouldAlwaysRemeasure() = false
-
   final override fun shouldUpdate(
       previous: Component?,
       prevStateContainer: StateContainer?,
