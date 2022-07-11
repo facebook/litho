@@ -32,18 +32,7 @@ import java.util.List;
  */
 public class Reducer {
 
-  public static final RenderUnit sRootHostRenderUnit =
-      new RenderUnit(RenderUnit.RenderType.VIEW) {
-        @Override
-        public Object createContent(Context c) {
-          return null;
-        }
-
-        @Override
-        public long getId() {
-          return MountState.ROOT_HOST_ID;
-        }
-      };
+  public static final RenderUnit sRootHostRenderUnit = new RootHostRenderUnit();
 
   private static void reduceTree(
       final Context context,
@@ -221,6 +210,33 @@ public class Reducer {
           visitor.visit(parent, result, bounds, absoluteX, absoluteY, size, input);
         }
       }
+    }
+  }
+
+  private static class RootHostRenderUnit extends RenderUnit implements ContentAllocator {
+
+    public RootHostRenderUnit() {
+      super(RenderUnit.RenderType.VIEW);
+    }
+
+    @Override
+    public Object createContent(Context context) {
+      return null;
+    }
+
+    @Override
+    public Object getPoolableContentType() {
+      return getRenderContentType();
+    }
+
+    @Override
+    public ContentAllocator getContentAllocator() {
+      return this;
+    }
+
+    @Override
+    public long getId() {
+      return MountState.ROOT_HOST_ID;
     }
   }
 }

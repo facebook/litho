@@ -61,7 +61,7 @@ public class MountItem {
   }
 
   public void releaseMountContent(Context context) {
-    MountItemsPool.release(context, getRenderUnit(), mContent);
+    MountItemsPool.release(context, getRenderUnit().getContentAllocator(), mContent);
   }
 
   public RenderTreeNode getRenderTreeNode() {
