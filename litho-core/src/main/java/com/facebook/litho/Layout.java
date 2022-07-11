@@ -623,9 +623,12 @@ class Layout {
     c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
-    final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
-    c.setParentTreeProps(ancestor);
-    c.setTreeProps(descendants);
+    if (component instanceof SpecGeneratedComponent) {
+      final TreeProps descendants =
+          ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);
+      c.setParentTreeProps(ancestor);
+      c.setTreeProps(descendants);
+    }
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(c, component, c.getGlobalKey());

@@ -26,6 +26,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component.RenderData;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
+import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.rendercore.RenderCoreSystrace;
 
@@ -286,6 +287,12 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
   protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
       final ComponentContext scopedContext) {
     return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
+  }
+
+  /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
+  protected @Nullable TreeProps getTreePropsForChildren(
+      ComponentContext c, @Nullable TreeProps treeProps) {
+    return treeProps;
   }
 
   /**

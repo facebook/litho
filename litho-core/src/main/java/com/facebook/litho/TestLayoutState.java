@@ -189,8 +189,10 @@ public class TestLayoutState {
       return layoutCreatedInWillRender;
     }
 
-    final TreeProps treeProps = c.getTreeProps();
-    c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
+    if (component instanceof SpecGeneratedComponent) {
+      final TreeProps treeProps = c.getTreeProps();
+      c.setTreeProps(((SpecGeneratedComponent) component).getTreePropsForChildren(c, treeProps));
+    }
 
     if (component instanceof Wrapper) {
       Component delegate = ((Wrapper) component).delegate;
