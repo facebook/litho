@@ -149,7 +149,6 @@ public class RecyclerBinder
   private final boolean mRecyclerViewItemPrefetch;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
-  private final boolean mEnableOperationLog;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -204,29 +203,6 @@ public class RecyclerBinder
   private @Nullable ComponentWarmer mComponentWarmer;
   private final RunnableHandler mPreallocateMountContentHandler;
   private final boolean mPreallocatePerMountSpec;
-  private final ArrayList<String> mCTOps = new ArrayList<>();
-
-  public void addOp(Object... params) {
-    if (!mEnableOperationLog || !ComponentsConfiguration.shouldCollectLogsInRecyclerBinder) {
-      return;
-    }
-    StringBuilder builder = new StringBuilder();
-    for (Object element : params) {
-      builder.append(element);
-    }
-    builder.append(" (").append(Thread.currentThread().getName()).append(")");
-    synchronized (this) {
-      mCTOps.add(builder.toString());
-    }
-  }
-
-  private String getOpString() {
-    StringBuilder res = new StringBuilder();
-    for (String op : mCTOps) {
-      res.append(op).append("\n");
-    }
-    return res.toString();
-  }
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -484,7 +460,6 @@ public class RecyclerBinder
     private boolean recyclerViewItemPrefetch = false;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
-    private boolean enableOperationLog = false;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
 
     /**
@@ -608,15 +583,6 @@ public class RecyclerBinder
      */
     public Builder hasDynamicItemHeight(boolean hasDynamicItemHeight) {
       this.hasDynamicItemHeight = hasDynamicItemHeight;
-      return this;
-    }
-
-    /**
-     * Tell RecyclerBinder should keep the latest operations for diagnosing IndexOutOfBounds
-     * exception. It happens rarely so we don't want to enable it by default.
-     */
-    public Builder enableOperationLog() {
-      this.enableOperationLog = true;
       return this;
     }
 
@@ -854,10 +820,8 @@ public class RecyclerBinder
     // Since ComponentTree#release() can only be called on main thread, release the trees
     // immediately if we're on main thread, or post a runnable on main thread.
     if (ThreadUtils.isMainThread()) {
-      addOp("detach from main thread");
       releaseComponentTreeHolders(mComponentTreeHolders);
     } else {
-      addOp("detach from bg thread");
       final List<ComponentTreeHolder> toRelease;
       synchronized (this) {
         toRelease = new ArrayList<>(mComponentTreeHolders);
@@ -1022,7 +986,6 @@ public class RecyclerBinder
     mComponentWarmer = builder.mComponentWarmer;
     mStartupLogger = builder.startupLogger;
     mErrorEventHandler = builder.errorEventHandler;
-    mEnableOperationLog = builder.enableOperationLog;
   }
 
   /**
@@ -1040,7 +1003,6 @@ public class RecyclerBinder
     // immediate mode
     synchronized (this) {
       addToCurrentBatch(new AsyncUpdateOperation(position, renderInfo));
-      addOp("updateItemAtAsync at ", position);
     }
   }
 
@@ -1060,7 +1022,6 @@ public class RecyclerBinder
 
     synchronized (this) {
       addToCurrentBatch(new AsyncUpdateRangeOperation(position, renderInfos));
-      addOp("updateRangeAtAsync of size ", renderInfos.size(), " at ", position);
     }
   }
 
@@ -1079,7 +1040,6 @@ public class RecyclerBinder
           "(" + hashCode() + ") insertItemAtAsync " + position + ", name: " + renderInfo.getName());
     }
 
-    addOp("insertItemAtAsync at ", position);
     assertNotNullRenderInfo(renderInfo);
     final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
@@ -1120,7 +1080,6 @@ public class RecyclerBinder
               + Arrays.toString(names));
     }
 
-    addOp("insertRangeAtAsync of size ", renderInfos.size(), " at ", position);
     synchronized (this) {
       mHasAsyncOperations = true;
 
@@ -1239,7 +1198,6 @@ public class RecyclerBinder
           throw ComponentUtils.wrapWithMetadata(
               mComponentContext, new RuntimeException(exceptionMessage));
         }
-        addOp("retrying apply ready batch");
 
         // Making changes to the adapter here will crash us. Just post to the next frame boundary.
         ChoreographerCompatImpl.getInstance()
@@ -1270,7 +1228,6 @@ public class RecyclerBinder
           mAsyncBatches.pollFirst();
         }
 
-        addOp("applyBatch");
         applyBatch(batch);
         appliedBatch |= batch.mIsDataChanged;
       }
@@ -1281,7 +1238,6 @@ public class RecyclerBinder
         }
 
         maybeUpdateRangeOrRemeasureForMutation();
-        addOp("finishApplyingBatches");
       }
     } finally {
       if (isTracing) {
@@ -1360,7 +1316,6 @@ public class RecyclerBinder
 
     mRenderInfoViewCreatorController.maybeTrackViewCreator(operation.mHolder.getRenderInfo());
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
-    addOp("applyAsyncInsert at ", operation.mPosition);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
     final boolean shouldUpdate =
@@ -1402,7 +1357,6 @@ public class RecyclerBinder
 
       // TODO(t28619782): When moving a CT into range, do an async prepare
       addToCurrentBatch(operation);
-      addOp("moveItemAsync ", fromPosition, " to ", toPosition);
     }
   }
 
@@ -1423,7 +1377,6 @@ public class RecyclerBinder
 
       mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
-      addOp("removeItemAtAsync at ", position);
     }
   }
 
@@ -1452,7 +1405,6 @@ public class RecyclerBinder
         mAsyncComponentTreeHolders.remove(position);
       }
       addToCurrentBatch(operation);
-      addOp("removeRangeAtAsync of size ", count, " at ", position);
     }
   }
 
@@ -1474,7 +1426,6 @@ public class RecyclerBinder
 
       final AsyncRemoveRangeOperation operation = new AsyncRemoveRangeOperation(0, count);
       addToCurrentBatch(operation);
-      addOp("clearAsync of size ", count);
     }
   }
 
@@ -1497,11 +1448,9 @@ public class RecyclerBinder
       }
       toRelease = new ArrayList<>(mComponentTreeHolders);
       mComponentTreeHolders.clear();
-      addOp("clear from replaceAll");
       for (RenderInfo renderInfo : renderInfos) {
         mComponentTreeHolders.add(createComponentTreeHolder(renderInfo));
       }
-      addOp("insert size ", renderInfos.size(), " from replaceAll");
     }
     mInternalAdapter.notifyDataSetChanged();
     mViewportManager.setShouldUpdate(true);
@@ -1559,7 +1508,6 @@ public class RecyclerBinder
         throw new RuntimeException("Trying to do a sync insert when using asynchronous mutations!");
       }
       mComponentTreeHolders.add(position, holder);
-      addOp("add from insertItemAt at ", position);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
     }
 
@@ -1690,7 +1638,6 @@ public class RecyclerBinder
         mComponentTreeHolders.add(position + i, holder);
         mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       }
-      addOp("Insert size ", renderInfos.size(), " from insertRangeAt at ", position);
     }
 
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
@@ -1732,9 +1679,7 @@ public class RecyclerBinder
                 + mComponentTreeHolders.size()
                 + "). This likely means data passed to the section had duplicates or a mutable data model. Component involved in the error whose backing data model may have duplicates: "
                 + renderInfo.getName()
-                + ". Read more here: https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception"
-                + ". Operations Info: "
-                + getOpString());
+                + ". Read more here: https://fblitho.com/docs/sections/best-practices/#avoiding-indexoutofboundsexception");
       }
 
       holder = mComponentTreeHolders.get(position);
@@ -1743,7 +1688,6 @@ public class RecyclerBinder
       assertNotNullRenderInfo(renderInfo);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       updateHolder(holder, renderInfo);
-      addOp("Update item at ", position);
     }
 
     // If this item is rendered with a view (or was rendered with a view before now) we need to
@@ -1779,7 +1723,6 @@ public class RecyclerBinder
               + ", names: "
               + Arrays.toString(names));
     }
-    addOp("UpdateRangeAt of size ", renderInfos.size(), " at ", position);
 
     synchronized (this) {
       try {
@@ -1838,7 +1781,6 @@ public class RecyclerBinder
     synchronized (this) {
       holder = mComponentTreeHolders.remove(fromPosition);
       mComponentTreeHolders.add(toPosition, holder);
-      addOp("moveItem ", fromPosition, " to ", toPosition);
 
       isNewPositionInRange =
           mEstimatedViewportCount != UNSET
@@ -1875,7 +1817,6 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(position);
-      addOp("removeItemAt at " + position);
     }
     mInternalAdapter.notifyItemRemoved(position);
 
@@ -1910,7 +1851,6 @@ public class RecyclerBinder
         final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
         toRelease.add(holder);
       }
-      addOp("removeRangeAt ", count, " at ", position);
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
 
@@ -1928,7 +1868,6 @@ public class RecyclerBinder
   public void notifyChangeSetCompleteAsync(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
     final boolean isTracing = ComponentsSystrace.isTracing();
-    addOp("notifyChangeSetCompleteAsync");
     if (isTracing) {
       ComponentsSystrace.beginSection("notifyChangeSetCompleteAsync");
     }

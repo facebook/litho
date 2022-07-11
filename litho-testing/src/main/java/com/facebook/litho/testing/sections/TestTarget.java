@@ -206,9 +206,6 @@ public class TestTarget implements SectionTree.Target {
   @Override
   public void changeConfig(DynamicConfig dynamicConfig) {}
 
-  @Override
-  public void addOp(Object... params) {}
-
   public void clear() {
     mOperations.clear();
     mNumChanges = 0;

@@ -1153,9 +1153,6 @@ public class SectionTreeTest {
 
     @Override
     public void changeConfig(DynamicConfig dynamicConfig) {}
-
-    @Override
-    public void addOp(Object... params) {}
   }
 
   private static List<String> generateData(int length) {

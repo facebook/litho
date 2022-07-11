@@ -150,12 +150,6 @@ public class SectionTree {
     /** Notify this target that a new set of configurations is applied. */
     void changeConfig(DynamicConfig dynamicConfig);
 
-    /**
-     * @Deprecated Do not use it! For recording more actions to help diagnose why
-     * IndexOutOfBoundsException happens in RecyclerBinder.
-     */
-    void addOp(Object... params);
-
     class DynamicConfig {
 
       public final @CommitPolicy int mChangeSetsCommitPolicy;
@@ -497,7 +491,6 @@ public class SectionTree {
       return;
     }
 
-    mTarget.addOp("refresh");
     refreshRecursive(section);
   }
 
@@ -1294,12 +1287,6 @@ public class SectionTree {
               + ") ====");
     }
 
-    mTarget.addOp(
-        "applyNewChangeSet source:",
-        SectionsLogEventUtils.applyNewChangeSetSourceToString(source),
-        ", name:",
-        (mNextSection != null ? mNextSection.getSimpleName() : "<null>"));
-
     try {
       Section currentRoot;
       Section nextRoot;
@@ -1628,8 +1615,6 @@ public class SectionTree {
   @ThreadConfined(ThreadConfined.ANY)
   private void applyChangeSetsToTargetBackgroundAllowed(
       ThreadTracingRunnable prevTracingRunnable, ChangesetDebugInfo changesetDebugInfo) {
-    mTarget.addOp("applyChangeSetsToTargetBackgroundAllowed");
-
     if (!mUseBackgroundChangeSets) {
       throw new IllegalStateException(
           "Must use UIThread-only variant when background change sets are not enabled.");
@@ -1679,8 +1664,6 @@ public class SectionTree {
   @UiThread
   private void applyChangeSetsToTargetUIThreadOnly(
       @Nullable ChangesetDebugInfo changesetDebugInfo) {
-    mTarget.addOp("applyChangeSetsToTargetUIThreadOnly");
-
     assertMainThread();
     if (mUseBackgroundChangeSets) {
       throw new IllegalStateException(
@@ -1736,7 +1719,6 @@ public class SectionTree {
       @Nullable final ChangesetDebugInfo changesetDebugInfo) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    mTarget.addOp("applyChangeSetsToTargetUnchecked size=", changeSets.size());
     if (isTracing) {
       ComponentsSystrace.beginSection("applyChangeSetToTarget");
     }
@@ -1746,14 +1728,6 @@ public class SectionTree {
       for (int i = 0, size = changeSets.size(); i < size; i++) {
         final ChangeSet changeSet = changeSets.get(i);
 
-        mTarget.addOp(
-            "applyChangeSetsToTargetUnchecked applyChangeSet:(",
-            changeSet.hashCode(),
-            ") changeCount:(",
-            changeSet.getChangeCount(),
-            ") finalCount:(",
-            changeSet.getCount(),
-            ")");
         if (changeSet.getChangeCount() > 0) {
           for (int j = 0, changeSize = changeSet.getChangeCount(); j < changeSize; j++) {
             final Change change = changeSet.getChangeAt(j);

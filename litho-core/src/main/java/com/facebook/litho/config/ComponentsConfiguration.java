@@ -270,8 +270,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;
 
-  public static boolean shouldCollectLogsInRecyclerBinder = false;
-
   public static boolean shouldCheckConsistencyOfChildren = false;
 
   public static boolean shouldDelegateContentDescriptionChangeEvent = false;
