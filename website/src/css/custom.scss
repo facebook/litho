@@ -24,6 +24,7 @@
   --ifm-navbar-link-hover-color: #fff;
   --ifm-button-border-width: 2px;
   --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: #e7e7e7;
   //--ifm-font-color-base: #484848;
 }
 
@@ -58,13 +59,6 @@
 
 .navbar-sidebar__brand {
   background-color: var(--ifm-color-primary);
-}
-
-.docusaurus-highlight-code-line {
-  background-color: #e7e7e7;
-  display: block;
-  margin: 0 calc(-1 * var(--ifm-pre-padding));
-  padding: 0 var(--ifm-pre-padding);
 }
 
 .video {
