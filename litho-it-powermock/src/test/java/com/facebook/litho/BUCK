@@ -34,6 +34,7 @@ litho_robolectric4_powermock_test(
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     # This is our secret sauce for PowerMock.
     fork_mode = "per_test",
+    language = "JAVA",
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
