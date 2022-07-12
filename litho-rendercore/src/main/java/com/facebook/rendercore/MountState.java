@@ -685,7 +685,8 @@ public class MountState implements MountDelegateTarget {
     final Host host = (Host) parentContent;
 
     // 3. call the RenderUnit's Mount bindings.
-    final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
+    final Object content =
+        MountItemsPool.acquireMountContent(mContext, renderUnit.getContentAllocator());
 
     if (mMountDelegate != null) {
       mMountDelegate.startNotifyVisibleBoundsChangedSection();

@@ -20,9 +20,10 @@ import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
 import android.view.View;
+import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
-public class SimpleViewUnit extends RenderUnit<View> {
+public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator {
 
   private final View view;
   private final long id;
@@ -36,6 +37,16 @@ public class SimpleViewUnit extends RenderUnit<View> {
   @Override
   public View createContent(Context c) {
     return view;
+  }
+
+  @Override
+  public Object getPoolableContentType() {
+    return getRenderContentType();
+  }
+
+  @Override
+  public ContentAllocator getContentAllocator() {
+    return this;
   }
 
   @Override
