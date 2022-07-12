@@ -67,6 +67,8 @@ public class SectionTreeTest {
   private SectionContext mSectionContext;
   private ShadowLooper mChangeSetThreadShadowLooper;
 
+  private boolean mDefaultIsDebugModeEnabled = ComponentsConfiguration.isDebugModeEnabled;
+
   @Before
   public void setup() throws Exception {
     mSectionContext = new SectionContext(getApplicationContext());
@@ -82,6 +84,7 @@ public class SectionTreeTest {
     // other tests.
     mChangeSetThreadShadowLooper.runToEndOfTasks();
     ComponentsConfiguration.isPendingFocusEnabled = false;
+    ComponentsConfiguration.isDebugModeEnabled = mDefaultIsDebugModeEnabled;
   }
 
   @Test
@@ -698,6 +701,7 @@ public class SectionTreeTest {
 
   @Test
   public void testPendingFocusRequestPersistsBetweenSectionChanges() throws InterruptedException {
+    ComponentsConfiguration.isDebugModeEnabled = false;
     ComponentsConfiguration.isPendingFocusEnabled = true;
 
     final TestTarget changeSetHandler = new TestTarget();
