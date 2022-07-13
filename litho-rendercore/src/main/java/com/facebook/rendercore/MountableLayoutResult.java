@@ -18,7 +18,7 @@ package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 
-public class MeasureResult implements Node.LayoutResult {
+public class MountableLayoutResult implements Node.LayoutResult {
 
   private final @Nullable RenderUnit<?> mRenderUnit;
   private final int mMeasuredWidth;
@@ -27,7 +27,7 @@ public class MeasureResult implements Node.LayoutResult {
   private final int mHeightSpec;
   private final Object mLayoutData;
 
-  public MeasureResult(
+  public MountableLayoutResult(
       @Nullable RenderUnit<?> renderUnit,
       int widthSpec,
       int heightSpec,
@@ -36,7 +36,7 @@ public class MeasureResult implements Node.LayoutResult {
     this(renderUnit, widthSpec, heightSpec, measuredWidth, measuredHeight, null);
   }
 
-  public MeasureResult(
+  public MountableLayoutResult(
       @Nullable RenderUnit<?> renderUnit,
       int widthSpec,
       int heightSpec,
@@ -70,17 +70,17 @@ public class MeasureResult implements Node.LayoutResult {
 
   @Override
   public final Node.LayoutResult getChildAt(int index) {
-    throw new IllegalArgumentException("A MeasureResult has no children");
+    throw new IllegalArgumentException("A MountableLayoutResult has no children");
   }
 
   @Override
   public final int getXForChildAtIndex(int index) {
-    throw new IllegalArgumentException("A MeasureResult has no children");
+    throw new IllegalArgumentException("A MountableLayoutResult has no children");
   }
 
   @Override
   public final int getYForChildAtIndex(int index) {
-    throw new IllegalArgumentException("A MeasureResult has no children");
+    throw new IllegalArgumentException("A MountableLayoutResult has no children");
   }
 
   @Override

@@ -38,7 +38,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
-import com.facebook.rendercore.MeasureResult;
+import com.facebook.rendercore.MountableLayoutResult;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.utils.LayoutUtils;
 
@@ -75,7 +75,7 @@ public class TextMeasurementUtils {
     TextStyle textStyle;
   }
 
-  public static MeasureResult layout(
+  public static MountableLayoutResult layout(
       RenderState.LayoutContext context,
       int widthSpec,
       int heightSpec,
@@ -91,7 +91,7 @@ public class TextMeasurementUtils {
     textLayoutContext.textStyle = textStyle;
     if (TextUtils.isEmpty(text) && !textStyle.shouldLayoutEmptyText) {
       textLayoutContext.processedText = text;
-      return new MeasureResult(renderUnit, widthSpec, heightSpec, 0, 0, textLayoutContext);
+      return new MountableLayoutResult(renderUnit, widthSpec, heightSpec, 0, 0, textLayoutContext);
     }
 
     Layout layout =
@@ -198,7 +198,7 @@ public class TextMeasurementUtils {
       textLayoutContext.imageSpans = spanned.getSpans(0, processedText.length(), ImageSpan.class);
     }
 
-    return new MeasureResult(
+    return new MountableLayoutResult(
         renderUnit, widthSpec, heightSpec, layoutWidth, layoutHeight, textLayoutContext);
   }
 
