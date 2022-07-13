@@ -27,7 +27,6 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.Dimen
-import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
@@ -41,6 +40,8 @@ import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.R
 import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.litho.widget.VerticalScrollEventsController
+import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderUnit
 import kotlin.math.max
 import kotlin.math.min
@@ -159,7 +160,7 @@ internal class VerticalScrollMountable(
           as LithoScrollView
 
   override fun measure(
-      context: ComponentContext,
+      context: RenderState.LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?,
@@ -190,7 +191,10 @@ internal class VerticalScrollMountable(
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     val actualComponent =
         if (fillViewport) {
-          Wrapper.create(context).delegate(component).minHeightPx(height).build()
+          Wrapper.create(ComponentContext(context.androidContext))
+              .delegate(component)
+              .minHeightPx(height)
+              .build()
         } else {
           component
         }

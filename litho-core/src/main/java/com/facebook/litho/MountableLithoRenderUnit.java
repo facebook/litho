@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.Mountable;
 import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)

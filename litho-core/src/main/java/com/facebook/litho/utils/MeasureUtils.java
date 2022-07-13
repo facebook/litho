@@ -26,10 +26,10 @@ import android.util.Log;
 import android.view.View.MeasureSpec;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.MeasureResult;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.MeasureResult;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public final class MeasureUtils {

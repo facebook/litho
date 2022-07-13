@@ -19,11 +19,9 @@ package com.facebook.litho.kotlin.widget
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
-import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
@@ -32,6 +30,8 @@ import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.Style
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.utils.MeasureUtils
+import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderUnit
 
 /**
@@ -67,7 +67,7 @@ internal class ImageMountable(
   }
 
   override fun measure(
-      context: ComponentContext,
+      context: RenderState.LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

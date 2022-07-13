@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,15 +16,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.MountItemsPool;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RenderUnit.Binder;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +42,10 @@ import java.util.List;
  *       when they are reused from the content pool.
  * </ul>
  *
- * <b>Tip: Override {@link #isEquivalentTo(Mountable)} to improve performance.
- *
  * @param <ContentT> The type of the content.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
+public abstract class Mountable<ContentT> {
 
   private @Nullable List<Binder<?, ContentT>> mBinders = null;
 
@@ -62,7 +60,7 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    *
    * @return Returns {@link RenderUnit.RenderType#VIEW} or {@link RenderUnit.RenderType#DRAWABLE}.
    */
-  protected abstract RenderUnit.RenderType getRenderType();
+  public abstract RenderUnit.RenderType getRenderType();
 
   /**
    * Creates new mountable content when called.
@@ -75,7 +73,7 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    * @param context The Android context.
    * @return A new mountable content.
    */
-  protected abstract ContentT createContent(Context context);
+  public abstract ContentT createContent(Context context);
 
   /**
    * Given a {@param widthSpec} and {@param heightSpec} set the width and height this Mountable will
@@ -87,8 +85,7 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    *
    * <p>As a performance optimisation the framework will skip this method if this Mountable is equal
    * to the previous Mountable, and if the size specs are compatible. In order to do this the
-   * framework will check if every field of the Mountable is equal using reflection. Override {@link
-   * #isEquivalentTo(Mountable)} to change the implementation.
+   * framework will check if every field of the Mountable is equal using reflection.
    *
    * <ul>
    *   <li>Must not cause side effects.
@@ -99,20 +96,16 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    *
    * @return a {@link MeasureResult} with the width, height, and optional layout data.
    */
-  protected abstract MeasureResult measure(
-      final ComponentContext context,
+  public abstract MeasureResult measure(
+      final RenderState.LayoutContext context,
       final int widthSpec,
       final int heightSpec,
       final @Nullable Object previousLayoutData);
 
   /** A list of {@link Binder} to set and unset properties on the content. */
-  protected @Nullable List<Binder<?, ContentT>> getBinders() {
+  @Nullable
+  public List<Binder<?, ContentT>> getBinders() {
     return mBinders;
-  }
-
-  @Override
-  public boolean isEquivalentTo(Mountable<?> other) {
-    return EquivalenceUtils.hasEquivalentFields(this, other);
   }
 
   /**
@@ -122,7 +115,7 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
    *
    * @return {@code true} to preallocate the content, otherwise {@code false}
    */
-  protected boolean canPreallocate() {
+  public boolean canPreallocate() {
     return false;
   }
 
@@ -132,9 +125,8 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
   }
 
   /** Creates the content pool the framework should use for this Mountable. */
-  protected MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(
-        "<cls>" + getClass().getName() + "</cls>", getPoolSize(), true);
+  public MountItemsPool.ItemPool onCreateMountContentPool() {
+    return new MountItemsPool.DefaultItemPool(this, getPoolSize());
   }
 
   private void addBinder(Binder<?, ContentT> binder) {

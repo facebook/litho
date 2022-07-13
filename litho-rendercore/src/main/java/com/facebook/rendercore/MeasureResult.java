@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,16 +16,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
-import static com.facebook.litho.SizeSpec.AT_MOST;
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static android.view.View.MeasureSpec.AT_MOST;
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
 
-import android.util.Log;
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 
 /** Encapsulates the measured size of a Mountable, and any layout data */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -50,15 +51,12 @@ public class MeasureResult {
    */
   public static MeasureResult withEqualDimensions(
       final int widthSpec, final int heightSpec, final @Nullable Object layoutData) {
-    final int widthMode = SizeSpec.getMode(widthSpec);
-    final int widthSize = SizeSpec.getSize(widthSpec);
-    final int heightMode = SizeSpec.getMode(heightSpec);
-    final int heightSize = SizeSpec.getSize(heightSpec);
+    final int widthMode = View.MeasureSpec.getMode(widthSpec);
+    final int widthSize = View.MeasureSpec.getSize(widthSpec);
+    final int heightMode = View.MeasureSpec.getMode(heightSpec);
+    final int heightSize = View.MeasureSpec.getSize(heightSpec);
 
     if (widthMode == UNSPECIFIED && heightMode == UNSPECIFIED) {
-      if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-        Log.d("MeasureResult", "Size set to {0, 0} because both width and height are UNSPECIFIED");
-      }
       return new MeasureResult(0, 0, layoutData);
     }
 

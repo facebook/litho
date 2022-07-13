@@ -23,7 +23,6 @@ import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import junit.framework.Assert.assertNotNull
-import main.kotlin.com.facebook.litho.kotlin.widget.ExperimentalCardShadow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

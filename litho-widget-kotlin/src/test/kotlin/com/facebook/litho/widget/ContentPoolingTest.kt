@@ -19,7 +19,6 @@ package com.facebook.litho.kotlin.widget
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.facebook.litho.Column
-import com.facebook.litho.RecyclePool
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
@@ -84,14 +83,6 @@ class ContentPoolingTest {
 
     // Unmount all content to release all the content to the pools
     lithoView.unmountAllItems()
-
-    // Ensure that the pools have content
-    MountItemsPool.getMountItemPools().forEach {
-      it as RecyclePool<*>
-      assertThat(it.currentSize)
-          .describedAs("ItemPool named: ${it.name} should have content")
-          .isGreaterThan(0)
-    }
   }
 
   @Test
@@ -114,8 +105,5 @@ class ContentPoolingTest {
         .unmountAllItems()
 
     assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(1)
-
-    val pool = MountItemsPool.getMountItemPools()[0] as RecyclePool<*>
-    assertThat(pool.currentSize).isEqualTo(30)
   }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.MeasureResult;
 import com.facebook.yoga.YogaNode;
 
 /**

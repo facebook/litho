@@ -25,7 +25,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.rendercore.MeasureResult;
+import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
@@ -528,7 +531,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
         if (mountable != null) {
-          MeasureResult size = mountable.measure(getContext(), widthSpec, heightSpec, mLayoutData);
+          // TODO: replace with proper layout context passed down here
+          final LayoutContext layoutContext =
+              new LayoutContext(
+                  getContext().getAndroidContext(),
+                  new LithoRenderContext(mLayoutContext),
+                  0,
+                  null,
+                  null);
+          MeasureResult size = mountable.measure(layoutContext, widthSpec, heightSpec, mLayoutData);
           mLayoutData = size.layoutData;
           return new MeasureResult(size.width, size.height);
         } else {

@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.annotation.SuppressLint;
+import com.facebook.rendercore.MeasureResult;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;

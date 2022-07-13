@@ -18,14 +18,14 @@ package com.facebook.litho.widget
 
 import android.content.Context
 import android.view.View
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.utils.MeasureSpecUtils.atMost
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
@@ -138,7 +138,7 @@ private class PrepareTrackingMountable(val mountTracking: MutableList<Int>, val 
   override fun createContent(context: Context): View = View(context)
 
   override fun measure(
-      context: ComponentContext,
+      context: RenderState.LayoutContext<Any>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

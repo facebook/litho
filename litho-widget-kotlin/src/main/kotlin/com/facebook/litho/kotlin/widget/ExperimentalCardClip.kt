@@ -18,9 +18,7 @@ package com.facebook.litho.kotlin.widget
 
 import android.content.Context
 import android.graphics.Color
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.MeasureResult
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
@@ -31,6 +29,8 @@ import com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT
 import com.facebook.litho.widget.CardClipDrawable.NONE
 import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
 import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
+import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderUnit
 
 /**
@@ -78,7 +78,7 @@ internal class CardClipMountable(
   override fun createContent(context: Context): CardClipDrawable = CardClipDrawable()
 
   override fun measure(
-      context: ComponentContext,
+      context: RenderState.LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

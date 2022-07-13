@@ -20,6 +20,7 @@ import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.Mountable
 
 /**
  * <p>Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec

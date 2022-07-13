@@ -60,6 +60,7 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
@@ -318,7 +319,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     if (mMountable != null
         && diff.getMountable() != null
-        && mMountable.isEquivalentTo(diff.getMountable())) {
+        && EquivalenceUtils.hasEquivalentFields(mMountable, diff.getMountable())) {
 
       result.setLayoutData(diff.getLayoutData());
       result.setCachedMeasuresValid(true);

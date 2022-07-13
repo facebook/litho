@@ -42,6 +42,8 @@ import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
@@ -331,56 +333,6 @@ class MountableComponentsTest {
   }
 
   @Test
-  fun `should not remeasure comparable mountable if the equivalence passes`() {
-    val c = lithoViewRule.context
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
-    val view = TextView(c.androidContext)
-
-    val testView =
-        lithoViewRule.render {
-          Column.create(c)
-              .child(
-                  TestViewMountableComponent(
-                      identity = 0,
-                      view = view,
-                      steps = steps,
-                      style = Style.width(100.px).flex(grow = 1f),
-                      shouldUseComparableMountable = true,
-                  ))
-              .build()
-        }
-
-    assertThat(LifecycleStep.getSteps(steps))
-        .containsExactly(
-            LifecycleStep.RENDER,
-            LifecycleStep.ON_MEASURE,
-            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
-            LifecycleStep.ON_MOUNT)
-
-    steps.clear()
-
-    lithoViewRule.render(lithoView = testView.lithoView) {
-      Column.create(c)
-          .child(
-              TestViewMountableComponent(
-                  identity = 0, // ensures that equivalence call is true
-                  view = TextView(c.androidContext), // ensure that field field equals fails
-                  steps = steps,
-                  style = Style.width(100.px).flex(grow = 1f),
-                  shouldUseComparableMountable = true,
-              ))
-          .build()
-    }
-
-    assertThat(LifecycleStep.getSteps(steps))
-        .containsExactly(
-            LifecycleStep.RENDER,
-            LifecycleStep.SHOULD_UPDATE,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT)
-  }
-
-  @Test
   fun `should remeasure mountable if size specs change`() {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
@@ -525,7 +477,6 @@ class TestViewMountableComponent(
     val view: View,
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
-    val shouldUseComparableMountable: Boolean = false,
     val style: Style? = null
 ) : MountableComponent() {
 
@@ -533,13 +484,7 @@ class TestViewMountableComponent(
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
-    return MountableWithStyle(
-        if (shouldUseComparableMountable) {
-          ComparableViewMountable(identity, view, steps)
-        } else {
-          ViewMountable(identity, view, steps)
-        },
-        style)
+    return MountableWithStyle(ViewMountable(identity, view, steps), style)
   }
 }
 
@@ -557,7 +502,7 @@ open class ViewMountable(
   }
 
   override fun measure(
-      context: ComponentContext,
+      context: RenderState.LayoutContext<Any>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?,
@@ -606,18 +551,6 @@ open class ViewMountable(
   override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
 }
 
-class ComparableViewMountable(
-    override val id: Int = 0,
-    override val view: View,
-    override val steps: MutableList<LifecycleStep.StepInfo>? = null,
-    override val updateState: ((String) -> Unit)? = null,
-) : ViewMountable(id, view, steps, updateState) {
-
-  override fun isEquivalentTo(other: Mountable<*>): Boolean {
-    return id == (other as ViewMountable).id
-  }
-}
-
 class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? = null) :
     MountableComponent() {
 
@@ -636,7 +569,7 @@ class DrawableMountable(
   }
 
   override fun measure(
-      context: ComponentContext,
+      context: RenderState.LayoutContext<Any>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?,
