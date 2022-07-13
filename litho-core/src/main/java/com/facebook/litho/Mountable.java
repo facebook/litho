@@ -50,7 +50,6 @@ import java.util.List;
 public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
 
   private @Nullable List<Binder<?, ContentT>> mBinders = null;
-  private @Nullable Controller<ContentT> mController = null;
 
   /**
    * Specifies if the content type is {@link View} or a {@link Drawable}.
@@ -111,28 +110,6 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
     return mBinders;
   }
 
-  /**
-   * Registers a {@link Controller} for this {@link Mountable}.
-   *
-   * @throws RuntimeException if a {@link Controller} was has already been registered for this
-   *     {@link Mountable}.
-   */
-  protected final void registerController(Controller<ContentT> controller) {
-    if (mController != null) {
-      throw new RuntimeException(
-          "A controller is already registered for this Mountable. Mountable.registerContoller() should be called at most once.");
-    }
-    mController = controller;
-
-    addBinder(controller);
-  }
-
-  /** A {@link Controller} registered for this Mountable. */
-  @Nullable
-  protected final Controller<ContentT> getController() {
-    return mController;
-  }
-
   @Override
   public boolean isEquivalentTo(Mountable<?> other) {
     return EquivalenceUtils.hasEquivalentFields(this, other);
@@ -160,78 +137,10 @@ public abstract class Mountable<ContentT> implements Equivalence<Mountable<?>> {
         "<cls>" + getClass().getName() + "</cls>", getPoolSize(), true);
   }
 
-  /**
-   * Registers a {@link DynamicValue} with this {@link Mountable}.
-   *
-   * <p>The {@param valueSetter} lambda is invoked every time a new value is set on the {@param
-   * dynamicValue}.
-   *
-   * <p>The {@param valueSetter} lambda is also invoked when the content is unbound to set the
-   * {@param defaultValue}.
-   */
-  protected final <T> void subscribeToMountDynamicValue(
-      DynamicValue<T> dynamicValue,
-      @Nullable T defaultValue,
-      ValueSetter<ContentT, T> valueSetter) {
-    addBinder(new DynamicPropsBinder<>(dynamicValue, defaultValue, valueSetter));
-  }
-
   private void addBinder(Binder<?, ContentT> binder) {
     if (mBinders == null) {
       mBinders = new ArrayList<>(2);
     }
     mBinders.add(binder);
-  }
-
-  private static final class DynamicPropsBinder<ContentT, T> extends Controller<ContentT>
-      implements DynamicValue.OnValueChangeListener<T> {
-
-    private final DynamicValue<T> mDynamicValue;
-    private final @Nullable T mDefaultValue;
-    private final ValueSetter<ContentT, T> mValueSetter;
-
-    public DynamicPropsBinder(
-        DynamicValue<T> dynamicValue,
-        @Nullable T defaultValue,
-        ValueSetter<ContentT, T> valueSetter) {
-      mDynamicValue = dynamicValue;
-      mDefaultValue = defaultValue;
-      mValueSetter = valueSetter;
-    }
-
-    @Override
-    public void onValueChange(DynamicValue<T> value) {
-      ContentT content = getContent();
-      if (content != null) {
-        ThreadUtils.assertMainThread();
-        mValueSetter.invoke(content, value.get());
-      }
-    }
-
-    @Override
-    public void bind(
-        Context context,
-        ContentT content,
-        Mountable<ContentT> mountable,
-        @Nullable Object layoutData) {
-      super.bind(context, content, mountable, layoutData);
-      mDynamicValue.attachListener(this);
-      mValueSetter.invoke(content, mDynamicValue.get());
-    }
-
-    @Override
-    public void unbind(
-        Context context,
-        ContentT content,
-        Mountable<ContentT> mountable,
-        @Nullable Object layoutData) {
-      super.unbind(context, content, mountable, layoutData);
-      mValueSetter.invoke(content, mDefaultValue);
-      mDynamicValue.detach(this);
-    }
-  }
-
-  public interface ValueSetter<Content, Type> {
-    void invoke(Content content, @Nullable Type value);
   }
 }

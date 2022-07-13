@@ -46,7 +46,6 @@ import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import com.nhaarman.mockitokotlin2.mock
-import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -413,119 +412,6 @@ class MountableComponentsTest {
   }
 
   @Test
-  fun `controller should set and get props on the content`() {
-    val c = lithoViewRule.context
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
-    val controller = ViewController()
-    val root =
-        TestViewMountableComponent(
-            identity = 0,
-            view = TextView(c.androidContext),
-            steps = steps,
-            controller = controller,
-            shouldUseComparableMountable = true,
-            style = Style.width(100.px).height(100.px))
-
-    val testView = lithoViewRule.render { root }
-
-    controller.setTag("tag")
-
-    val view = testView.findViewWithTag("tag")
-
-    assertThat(view.tag).isEqualTo("tag")
-    assertThat(controller.getTag()).isEqualTo("tag")
-  }
-
-  @Test
-  fun `controller should unbind after unmount`() {
-    val c = lithoViewRule.context
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
-    val controller = ViewController()
-    val root =
-        TestViewMountableComponent(
-            identity = 0,
-            view = TextView(c.androidContext),
-            steps = steps,
-            controller = controller,
-            shouldUseComparableMountable = true,
-            style = Style.width(100.px).height(100.px))
-
-    val testView = lithoViewRule.render { root }
-
-    controller.setTag("tag")
-
-    testView.lithoView.setComponentTree(null, true)
-
-    assertThat(controller.getTag()).isNull()
-  }
-
-  @Test
-  fun `new controller should replace old controller`() {
-    val c = lithoViewRule.context
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
-    val controller1 = ViewController()
-    val root1 =
-        TestViewMountableComponent(
-            identity = 0,
-            view = TextView(c.androidContext),
-            steps = steps,
-            controller = controller1,
-            shouldUseComparableMountable = true,
-            style = Style.width(100.px).height(100.px))
-
-    val testView = lithoViewRule.render { root1 }
-
-    controller1.setTag("tag1")
-    assertThat(controller1.getTag()).isEqualTo("tag1")
-
-    val controller2 = ViewController()
-    val root2 =
-        TestViewMountableComponent(
-            identity = 0,
-            view = TextView(c.androidContext),
-            steps = steps,
-            controller = controller2,
-            shouldUseComparableMountable = true,
-            style = Style.width(100.px).height(100.px))
-
-    lithoViewRule.render(lithoView = testView.lithoView) { root2 }
-
-    controller1.setTag("random")
-    assertThat(controller1.getTag()).isNull()
-
-    controller2.setTag("tag2")
-    assertThat(controller2.getTag()).isEqualTo("tag2")
-  }
-
-  @Test
-  fun `registerController should throw if controller already registered`() {
-    expectedException.expect(RuntimeException::class.java)
-    expectedException.expectMessage("A controller is already registered for this Mountable")
-
-    val c = lithoViewRule.context
-    val steps = mutableListOf<LifecycleStep.StepInfo>()
-    val controller1 = ViewController()
-    val controller2 = ViewController()
-    val root =
-        TestViewMountableComponent(
-            identity = 0,
-            view = TextView(c.androidContext),
-            steps = steps,
-            controller = controller1,
-            controller2 = controller2,
-            shouldUseComparableMountable = true,
-            style = Style.width(100.px).height(100.px))
-
-    lithoViewRule.render { root }
-
-    controller1.setTag("tag1")
-    assertThat(controller1.getTag()).isNull()
-
-    controller2.setTag("tag2")
-    assertThat(controller2.getTag()).isEqualTo("tag2")
-  }
-
-  @Test
   fun `same instance should be equivalent`() {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
@@ -633,164 +519,13 @@ class MountableComponentsTest {
     val nodeInfo2 = node2?.nodeInfo
     assertThat(nodeInfo2?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE_BUTTON)
   }
-
-  @Test
-  fun `when dynamic value is set if should update the content`() {
-    val tag = DynamicValue<Any?>("0")
-    val root =
-        TestViewMountableComponent(
-            EditText(lithoViewRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
-
-    val test = lithoViewRule.render { root }
-
-    test.findViewWithTag("0")
-
-    tag.set("1")
-
-    test.findViewWithTag("1")
-  }
-
-  @Test
-  fun `when component with dynamic value is unmounted it should unbind the dynamic value`() {
-    val tag = DynamicValue<Any?>("0")
-    val root =
-        TestViewMountableComponent(
-            EditText(lithoViewRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
-
-    val test = lithoViewRule.render { root }
-
-    val view = test.findViewWithTag("0")
-
-    test.lithoView.setComponentTree(null, true)
-
-    assertThat(tag.numberOfListeners).isEqualTo(0)
-
-    tag.set("1")
-
-    // tag should be set to default value
-    assertThat(view.tag).isEqualTo("default_value")
-  }
-
-  @Test
-  fun `when new dynamic value is set it should unbind the old dynamic value`() {
-    val tag1 = DynamicValue<Any?>("0")
-    val root1 =
-        TestViewMountableComponent(
-            EditText(lithoViewRule.context.androidContext),
-            dynamicTag = tag1,
-            style = Style.width(100.px).height(100.px))
-
-    val test = lithoViewRule.render { root1 }
-
-    test.findViewWithTag("0")
-
-    tag1.set("1")
-
-    test.findViewWithTag("1")
-
-    assertThat(tag1.numberOfListeners).isEqualTo(1)
-
-    val tag2 = DynamicValue<Any?>("2")
-    val root2 =
-        TestViewMountableComponent(
-            EditText(lithoViewRule.context.androidContext),
-            dynamicTag = tag2,
-            style = Style.width(100.px).height(100.px))
-
-    test.setRoot(root2)
-
-    assertThat(tag1.numberOfListeners).isEqualTo(0)
-
-    // should have view with new tag
-    val view = test.findViewWithTag("2")
-
-    // set new tag using the old dynamic value
-    tag1.set("3")
-
-    // the above should not work, the tag should not change
-    assertThat(view.tag).isEqualTo("2")
-
-    // set the new tag using the new dynamic value
-    tag2.set("3")
-
-    // the above should work, the tag should change
-    assertThat(view.tag).isEqualTo("3")
-
-    assertThat(tag2.numberOfListeners).isEqualTo(1)
-  }
-
-  @Test
-  fun `when same dynamic value is used on different components it should update the content for all instances`() {
-    val c = lithoViewRule.context
-    val tag = DynamicValue<Any?>("0")
-    val root =
-        Column.create(c)
-            .child(
-                TestViewMountableComponent(
-                    EditText(lithoViewRule.context.androidContext),
-                    dynamicTag = tag,
-                    style = Style.width(100.px).height(100.px)))
-            .child(
-                TestViewMountableComponent(
-                    EditText(lithoViewRule.context.androidContext),
-                    dynamicTag = tag,
-                    style = Style.width(100.px).height(100.px)))
-            .build()
-
-    val test = lithoViewRule.render { root }
-
-    val lithoView = test.lithoView
-    val child0 = lithoView.getChildAt(0)
-    val child1 = lithoView.getChildAt(1)
-
-    assertThat(child0.tag).isEqualTo("0")
-    assertThat(child1.tag).isEqualTo("0")
-
-    tag.set("1")
-
-    assertThat(child0.tag).isEqualTo("1")
-    assertThat(child1.tag).isEqualTo("1")
-  }
-
-  @Test
-  fun `when same component with dynamic value is used multiple times it should update the content for all instances`() {
-    val c = lithoViewRule.context
-    val tag = DynamicValue<Any?>("0")
-    val component =
-        TestViewMountableComponent(
-            EditText(lithoViewRule.context.androidContext),
-            dynamicTag = tag,
-            style = Style.width(100.px).height(100.px))
-    val root = Column.create(c).child(component).child(component).build()
-
-    val test = lithoViewRule.render { root }
-
-    val lithoView = test.lithoView
-    val child0 = lithoView.getChildAt(0)
-    val child1 = lithoView.getChildAt(1)
-
-    assertThat(child0.tag).isEqualTo("0")
-    assertThat(child1.tag).isEqualTo("0")
-
-    tag.set("1")
-
-    assertThat(child0.tag).isEqualTo("1")
-    assertThat(child1.tag).isEqualTo("1")
-  }
 }
 
 class TestViewMountableComponent(
     val view: View,
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
-    val controller: ViewController? = null,
-    val controller2: ViewController? = null,
     val shouldUseComparableMountable: Boolean = false,
-    val dynamicTag: DynamicValue<Any?>? = null,
     val style: Style? = null
 ) : MountableComponent() {
 
@@ -800,10 +535,9 @@ class TestViewMountableComponent(
 
     return MountableWithStyle(
         if (shouldUseComparableMountable) {
-          ComparableViewMountable(
-              identity, view, steps, controller = controller, controller2 = controller2)
+          ComparableViewMountable(identity, view, steps)
         } else {
-          ViewMountable(identity, view, steps, controller = controller, dynamicTag = dynamicTag)
+          ViewMountable(identity, view, steps)
         },
         style)
   }
@@ -814,20 +548,7 @@ open class ViewMountable(
     open val view: View,
     open val steps: MutableList<LifecycleStep.StepInfo>? = null,
     open val updateState: ((String) -> Unit)? = null,
-    open val controller: ViewController? = null,
-    open val controller2: ViewController? = null,
-    val dynamicTag: DynamicValue<Any?>? = null,
-    val defaultTagValue: Any? = "default_value",
 ) : SimpleMountable<View>() {
-
-  init {
-    controller?.let { registerController(controller as Controller<View>) }
-    dynamicTag?.let {
-      subscribeToMountDynamicValue(dynamicTag, defaultTagValue) { content, value ->
-        content.tag = value
-      }
-    }
-  }
 
   override fun createContent(context: Context): View {
     updateState?.invoke("createContent")
@@ -890,14 +611,7 @@ class ComparableViewMountable(
     override val view: View,
     override val steps: MutableList<LifecycleStep.StepInfo>? = null,
     override val updateState: ((String) -> Unit)? = null,
-    override val controller: ViewController? = null,
-    override val controller2: ViewController? = null,
 ) : ViewMountable(id, view, steps, updateState) {
-
-  init {
-    controller?.let { registerController(controller as Controller<View>) }
-    controller2?.let { registerController(controller2 as Controller<View>) }
-  }
 
   override fun isEquivalentTo(other: Mountable<*>): Boolean {
     return id == (other as ViewMountable).id
@@ -967,14 +681,3 @@ class DrawableMountable(
 }
 
 class TestLayoutData(val width: Int, val height: Int)
-
-class ViewController : Controller<View>() {
-
-  fun getTag(): Any? {
-    return content?.tag
-  }
-
-  fun setTag(tag: Any?) {
-    content?.tag = tag
-  }
-}
