@@ -27,6 +27,7 @@ instrumentation_test(
     apk_under_test = "litho",
     contacts = LITHO_CONTACT_NAME,
     is_androidx = True,
+    language = "JAVA",
     deps = [
         ":testutil",
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
