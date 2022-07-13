@@ -354,7 +354,7 @@ public class SectionTree {
     mFocusDispatcher = new FocusDispatcher(mTarget);
     mIsPendingFocusEnabled = ComponentsConfiguration.isPendingFocusEnabled;
     mIsNonMainThreadFocusRequestThrowingEnabled =
-        ComponentsConfiguration.isNonMainThreadFocusRequestThrowingEnabled();
+        ComponentsConfiguration.isNonMainThreadFocusRequestThrowingEnabled;
 
     mPendingFocusOrchestrator =
         mIsPendingFocusEnabled ? new PendingFocusOrchestrator(mFocusDispatcher) : null;
