@@ -46,24 +46,17 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.text.accessibility.AccessibilityUtils;
 import com.facebook.rendercore.text.accessibility.RCAccessibleClickableSpan;
 import java.util.List;
 
 /** A pared-down TextView that only displays text. */
 @DoNotStrip
 public class RCTextView extends View {
-
-  private static final String ACCESSIBILITY_ROLE_BUTTON = "Button";
-  private static final String ACCESSIBILITY_ROLE_IMAGE = "Image";
-  private static final String ACCESSIBILITY_ROLE_IMAGE_BUTTON = "Image Button";
-  private static final String ACCESSIBILITY_ROLE_HEADER = "Header";
-  private static final String ACCESSIBILITY_ROLE_SELECTED_BUTTON = "Selected Button";
-  private static final String ACCESSIBILITY_ROLE_TAB_WIDGET = "Tab Bar";
-  private static final String ACCESSIBILITY_ROLE_LINK = "Link";
-
   private static final String ACCESSIBILITY_CLASS_BUTTON = "android.widget.Button";
-  private static final String ACCESSIBILITY_CLASS_IMAGE = "android.widget.ImageView";
-  private static final String ACCESSIBILITY_CLASS_TAB_WIDGET = "android.widget.TabWidget";
+  // See TextView#getTextForAccessibility()
+  private static final int SAFE_PARCELABLE_SIZE = 1000000;
+  @Nullable private final RCTextAccessibilityDelegate mRCTextAccessibilityDelegate;
   private CharSequence mText;
   private ClickableSpan[] mClickableSpans;
   private Layout mLayout;
@@ -75,13 +68,11 @@ public class RCTextView extends View {
   private int mHighlightColor;
   private int mHighlightCornerRadius;
   private ImageSpan[] mImageSpans;
-
   private int mSelectionStart;
   private int mSelectionEnd;
   private Path mSelectionPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
-  @Nullable private final RCTextAccessibilityDelegate mRCTextAccessibilityDelegate;
 
   public RCTextView(Context context) {
     super(context);
@@ -92,6 +83,11 @@ public class RCTextView extends View {
     } else {
       mRCTextAccessibilityDelegate = null;
     }
+  }
+
+  private static boolean highlightOffsetsValid(
+      CharSequence text, int highlightStart, int highlightEnd) {
+    return highlightStart >= 0 && highlightEnd <= text.length() && highlightStart < highlightEnd;
   }
 
   @Override
@@ -171,11 +167,6 @@ public class RCTextView extends View {
     mImageSpans = imageSpans;
     mClickableSpans = clickableSpans;
     invalidate();
-  }
-
-  private static boolean highlightOffsetsValid(
-      CharSequence text, int highlightStart, int highlightEnd) {
-    return highlightStart >= 0 && highlightEnd <= text.length() && highlightStart < highlightEnd;
   }
 
   public void unmount() {
@@ -262,9 +253,6 @@ public class RCTextView extends View {
   private void clearSelection() {
     setSelection(0, 0);
   }
-
-  // See TextView#getTextForAccessibility()
-  private static final int SAFE_PARCELABLE_SIZE = 1000000;
 
   private CharSequence getTextForAccessibility() {
     if (mText == null || mText.length() < SAFE_PARCELABLE_SIZE) {
@@ -406,6 +394,10 @@ public class RCTextView extends View {
         || super.dispatchHoverEvent(event);
   }
 
+  public Layout getLayout() {
+    return mLayout;
+  }
+
   private class RCTextAccessibilityDelegate extends ExploreByTouchHelper {
 
     @Nullable private AccessibilityDelegateCompat mWrappedAccessibilityDelegate;
@@ -503,39 +495,8 @@ public class RCTextView extends View {
         RCAccessibleClickableSpan span, AccessibilityNodeInfoCompat node) {
       final String label = span.getAccessibilityLabel();
       final String role = span.getAccessibilityRole();
-
-      if (label != null) {
-        node.setContentDescription(label);
-      }
-
-      if (role != null) {
-        switch (role) {
-          case ACCESSIBILITY_ROLE_BUTTON:
-          case ACCESSIBILITY_ROLE_IMAGE_BUTTON:
-            node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
-            break;
-          case ACCESSIBILITY_ROLE_HEADER:
-            node.setHeading(true);
-            break;
-          case ACCESSIBILITY_ROLE_SELECTED_BUTTON:
-            node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
-            node.setSelected(true);
-            break;
-          case ACCESSIBILITY_ROLE_IMAGE:
-            node.setClassName(ACCESSIBILITY_CLASS_IMAGE);
-            node.removeAction(AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SELECT);
-            break;
-          case ACCESSIBILITY_ROLE_TAB_WIDGET:
-            node.setClassName(ACCESSIBILITY_CLASS_TAB_WIDGET);
-            break;
-          case ACCESSIBILITY_ROLE_LINK:
-            node.setClassName(ACCESSIBILITY_CLASS_BUTTON);
-            // TODO T79642729: this needs to be translated. This will be commented unti the task
-            // is fixed.
-            // info.setRoleDescription(ACCESSIBILITY_ROLE_LINK);
-            break;
-        }
-      }
+      AccessibilityUtils.initializeAccessibilityLabel(label, node);
+      AccessibilityUtils.initializeAccessibilityRole(getContext(), role, null, node);
     }
 
     @Override
@@ -574,9 +535,5 @@ public class RCTextView extends View {
         mWrappedAccessibilityDelegate.onInitializeAccessibilityNodeInfo(host, info);
       }
     }
-  }
-
-  public Layout getLayout() {
-    return mLayout;
   }
 }
