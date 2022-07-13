@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.facebook.R;
 
 public class AccessibilityUtils {
 
@@ -74,9 +75,7 @@ public class AccessibilityUtils {
           break;
         case ACCESSIBILITY_ROLE_LINK:
           info.setClassName(ACCESSIBILITY_CLASS_BUTTON);
-          // TODO T79642729: this needs to be translated. This will be commented until the task is
-          // fixed.
-          // info.setRoleDescription(ACCESSIBILITY_ROLE_LINK);
+          info.setRoleDescription(context.getString(R.string.accessibility_link_role));
           break;
       }
     }
