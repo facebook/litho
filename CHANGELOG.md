@@ -5,7 +5,7 @@
 
 _release-date_
 
- * TBA
+ * **Breaking:** `PoolableContentProvider` renamed to `ContentAllocator` in RenderCore. `RenderUnit` no longer implements `PoolableContentProvider`, instead it should return `ContentAllocator` implementation from `getContentAllocator` method.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.2...master).
 
