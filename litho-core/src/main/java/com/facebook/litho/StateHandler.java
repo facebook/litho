@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -213,6 +214,7 @@ public class StateHandler {
           if (transitionsFromStateUpdate == null) {
             transitionsFromStateUpdate = new ArrayList<>();
           }
+          TransitionUtils.setOwnerKey(transition, key);
           transitionsFromStateUpdate.add(transition);
         }
       }
