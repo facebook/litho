@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
@@ -295,8 +296,8 @@ public class LayoutState
       LayoutState layoutState,
       @Nullable RenderTreeNode parent) {
 
-    final @Nullable LithoRenderUnit unit = result.getRenderUnit();
-    if (unit == null) {
+    if (isLayoutSpec(node.getTailComponent())) {
+      // back out when dealing with Layout Specs
       return null;
     }
 
@@ -318,6 +319,11 @@ public class LayoutState
       final RenderState.LayoutContext layoutContext =
           LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
       result.measure(layoutContext, exactly(width), exactly(height));
+    }
+
+    final @Nullable LithoRenderUnit unit = result.getRenderUnit();
+    if (unit == null) {
+      return null;
     }
 
     final @Nullable Object layoutData = result.getLayoutData();
