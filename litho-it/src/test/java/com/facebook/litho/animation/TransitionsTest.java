@@ -28,9 +28,11 @@ import com.facebook.litho.Row;
 import com.facebook.litho.StateCaller;
 import com.facebook.litho.Transition;
 import com.facebook.litho.dataflow.MockTimingSource;
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.StateWithTransitionTestComponent;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
 import com.facebook.yoga.YogaAlign;
@@ -38,6 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 /**
  * We test the different kind of Transitions and how they compose different animations.
@@ -54,6 +57,8 @@ public class TransitionsTest {
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
   private final StateCaller mStateCaller = new StateCaller();
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
 
   public static final String RED_TRANSITION_KEY = "red";
   public static final String GREEN_TRANSITION_KEY = "green";
@@ -96,6 +101,56 @@ public class TransitionsTest {
 
   @Test
   public void
+      transitionAnimations_runTransitionsInSequence_elementsShouldAnimateOneAfterTheOtherOnUpdateStateWithTransition() {
+    final StateWithTransitionTestComponent component =
+        StateWithTransitionTestComponent.create(mLegacyLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .testComponent(mTestComponent)
+            .build();
+
+    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    View redView = mLegacyLithoViewRule.findViewWithTag(RED_TRANSITION_KEY);
+    View greenView = mLegacyLithoViewRule.findViewWithTag(GREEN_TRANSITION_KEY);
+    View blueView = mLegacyLithoViewRule.findViewWithTag(BLUE_TRANSITION_KEY);
+
+    assertThat(redView.getX()).describedAs("redView should be at start position").isEqualTo(1040);
+    assertThat(greenView.getX())
+        .describedAs("greenView should be at start position")
+        .isEqualTo(1040);
+    assertThat(blueView.getX()).describedAs("blueView should be at start position").isEqualTo(1040);
+
+    mStateCaller.update();
+
+    // Wait till layout has been calculated on background thread with async state update
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    // Mount gets scheduled on main thread.
+    // Wait for all tasks scheduled on main thread to finish.
+    ShadowLooper.idleMainLooper();
+
+    mTransitionTestRule.step(10);
+
+    assertThat(redView.getX()).describedAs("redView after 10 frames").isEqualTo(0);
+    assertThat(greenView.getX()).describedAs("greenView after 10 frames").isEqualTo(1040);
+    assertThat(blueView.getX()).describedAs("blueView after 10 frames").isEqualTo(1040);
+
+    mTransitionTestRule.step(10);
+
+    assertThat(redView.getX()).describedAs("redView after 20 frames").isEqualTo(0);
+    assertThat(greenView.getX()).describedAs("greenView after 20 frames").isEqualTo(0);
+    assertThat(blueView.getX()).describedAs("blueView after 20 frames").isEqualTo(1040);
+
+    mTransitionTestRule.step(10);
+
+    assertThat(redView.getX()).describedAs("redView after 30 frames").isEqualTo(0);
+    assertThat(greenView.getX()).describedAs("greenView after 30 frames").isEqualTo(0);
+    assertThat(blueView.getX()).describedAs("blueView after 30 frames").isEqualTo(0);
+  }
+
+  @Test
+  public void
       transitionAnimations_runTransitionsInSequence_elementsShouldAnimateOneAfterTheOther() {
     final TestAnimationsComponent component =
         TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
@@ -131,15 +186,15 @@ public class TransitionsTest {
 
     mTransitionTestRule.step(10);
 
-    assertThat(redView.getX()).describedAs("redView after 30 frames").isEqualTo(0);
-    assertThat(greenView.getX()).describedAs("greenView after 30 frames").isEqualTo(1040);
-    assertThat(blueView.getX()).describedAs("blueView after 30 frames").isEqualTo(1040);
+    assertThat(redView.getX()).describedAs("redView after 10 frames").isEqualTo(0);
+    assertThat(greenView.getX()).describedAs("greenView after 10 frames").isEqualTo(1040);
+    assertThat(blueView.getX()).describedAs("blueView after 10 frames").isEqualTo(1040);
 
     mTransitionTestRule.step(10);
 
-    assertThat(redView.getX()).describedAs("redView after 30 frames").isEqualTo(0);
-    assertThat(greenView.getX()).describedAs("greenView after 30 frames").isEqualTo(0);
-    assertThat(blueView.getX()).describedAs("blueView after 30 frames").isEqualTo(1040);
+    assertThat(redView.getX()).describedAs("redView after 20 frames").isEqualTo(0);
+    assertThat(greenView.getX()).describedAs("greenView after 20 frames").isEqualTo(0);
+    assertThat(blueView.getX()).describedAs("blueView after 20 frames").isEqualTo(1040);
 
     mTransitionTestRule.step(10);
 
