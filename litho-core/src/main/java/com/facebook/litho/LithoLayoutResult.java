@@ -22,13 +22,14 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node.LayoutResult;
-import com.facebook.rendercore.RenderState.LayoutContext;
+import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
@@ -439,11 +440,22 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mYogaNode;
   }
 
+  public static RenderState.LayoutContext getLayoutContextFromYogaNode(YogaNode yogaNode) {
+    return ((Pair<RenderState.LayoutContext, LithoLayoutResult>) yogaNode.getData()).first;
+  }
+
+  public static LithoLayoutResult getLayoutResultFromYogaNode(YogaNode yogaNode) {
+    return ((Pair<RenderState.LayoutContext, LithoLayoutResult>) yogaNode.getData()).second;
+  }
+
   boolean wasMeasured() {
     return mLastMeasuredWidth != DiffNode.UNSPECIFIED;
   }
 
-  MeasureResult measure(final int widthSpec, final int heightSpec) {
+  MeasureResult measure(
+      final RenderState.LayoutContext<LithoRenderContext> context,
+      final int widthSpec,
+      final int heightSpec) {
 
     if (mLayoutContext.isLayoutReleased()) {
       return new MeasureResult(0, 0);
@@ -463,7 +475,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     MeasureResult size;
 
     try {
-      size = measureInternal(widthSpec, heightSpec);
+      size = measureInternal(context, widthSpec, heightSpec);
       if (size.width < 0 || size.height < 0) {
         throw new IllegalStateException(
             "MeasureOutput not set, Component is: "
@@ -506,7 +518,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return size;
   }
 
-  protected MeasureResult measureInternal(final int widthSpec, final int heightSpec) {
+  protected MeasureResult measureInternal(
+      final RenderState.LayoutContext<LithoRenderContext> context,
+      final int widthSpec,
+      final int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final LithoNode node = mNode;
     final Component component = node.getTailComponent();
@@ -531,15 +546,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
         if (mountable != null) {
-          // TODO: replace with proper layout context passed down here
-          final LayoutContext layoutContext =
-              new LayoutContext(
-                  getContext().getAndroidContext(),
-                  new LithoRenderContext(mLayoutContext),
-                  0,
-                  null,
-                  null);
-          MeasureResult size = mountable.measure(layoutContext, widthSpec, heightSpec, mLayoutData);
+          MeasureResult size = mountable.measure(context, widthSpec, heightSpec, mLayoutData);
           mLayoutData = size.layoutData;
           return new MeasureResult(size.width, size.height);
         } else {

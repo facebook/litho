@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.annotation.SuppressLint;
 import com.facebook.rendercore.MeasureResult;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -34,10 +35,12 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode) {
-    final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
+    final RenderState.LayoutContext context =
+        LithoLayoutResult.getLayoutContextFromYogaNode(cssNode);
+    final LithoLayoutResult result = LithoLayoutResult.getLayoutResultFromYogaNode(cssNode);
     final int widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
     final int heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
-    final MeasureResult size = result.measure(widthSpec, heightSpec);
+    final MeasureResult size = result.measure(context, widthSpec, heightSpec);
     return YogaMeasureOutput.make(size.width, size.height);
   }
 }

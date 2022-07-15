@@ -45,6 +45,7 @@ import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Pair;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -390,8 +391,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    */
   @SuppressLint("LongLogTag")
   private static YogaNode buildYogaTree(
-      LithoRenderContext renderContext, LithoNode currentNode, @Nullable YogaNode parentNode) {
-
+      RenderState.LayoutContext<LithoRenderContext> context,
+      LithoNode currentNode,
+      @Nullable YogaNode parentNode) {
+    final LithoRenderContext renderContext = context.getRenderContext();
     final YogaNode node;
 
     node = NodeConfig.createYogaNode();
@@ -400,16 +403,16 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     currentNode.writeToYogaNode(node);
 
     final @Nullable LithoLayoutResult parentLayoutResult =
-        parentNode != null ? (LithoLayoutResult) parentNode.getData() : null;
+        parentNode != null ? LithoLayoutResult.getLayoutResultFromYogaNode(parentNode) : null;
     final LithoLayoutResult layoutResult =
         currentNode.createLayoutResult(renderContext.mLayoutStateContext, node, parentLayoutResult);
     currentNode.applyDiffNode(renderContext.mLayoutStateContext, layoutResult, parentLayoutResult);
-    node.setData(layoutResult);
+    node.setData(new Pair(context, layoutResult));
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
-      final YogaNode childNode = buildYogaTree(renderContext, currentNode.getChildAt(i), node);
+      final YogaNode childNode = buildYogaTree(context, currentNode.getChildAt(i), node);
       node.addChildAt(childNode, i);
-      layoutResult.addChild((LithoLayoutResult) childNode.getData());
+      layoutResult.addChild(LithoLayoutResult.getLayoutResultFromYogaNode(childNode));
     }
 
     return node;
@@ -442,7 +445,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       RenderCoreSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
     }
 
-    final YogaNode root = buildYogaTree(c.getRenderContext(), this, null);
+    final YogaNode root = buildYogaTree(c, this, null);
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
@@ -477,7 +480,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       RenderCoreSystrace.endSection();
     }
 
-    return (LithoLayoutResult) root.getData();
+    return LithoLayoutResult.getLayoutResultFromYogaNode(root);
   }
 
   public void child(

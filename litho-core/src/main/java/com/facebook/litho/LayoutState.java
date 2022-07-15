@@ -51,6 +51,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
@@ -313,7 +314,10 @@ public class LayoutState
               - result.getPaddingBottom()
               - result.getLayoutBorder(YogaEdge.TOP)
               - result.getLayoutBorder(YogaEdge.BOTTOM);
-      result.measure(exactly(width), exactly(height));
+
+      final RenderState.LayoutContext layoutContext =
+          LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
+      result.measure(layoutContext, exactly(width), exactly(height));
     }
 
     final @Nullable Object layoutData = result.getLayoutData();
