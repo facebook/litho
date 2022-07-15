@@ -399,7 +399,7 @@ public final class DebugComponent {
 
   @Nullable
   public StateContainer getStateContainer() {
-    return getContext().getScopedComponentInfo().getStateContainer();
+    return mNode.getComponentInfoAt(mComponentIndex).getStateContainer();
   }
 
   @Nullable
