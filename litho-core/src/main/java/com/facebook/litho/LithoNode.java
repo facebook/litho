@@ -1360,7 +1360,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     final List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
 
     for (ScopedComponentInfo info : scopedComponentInfos) {
-      info.commitToLayoutState(c.getStateHandler());
+      info.commitToLayoutState(c.getTreeState());
     }
   }
 
