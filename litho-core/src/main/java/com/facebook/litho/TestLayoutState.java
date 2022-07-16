@@ -58,7 +58,7 @@ public class TestLayoutState {
             component,
             ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
 
-    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
+    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getTreeState());
 
     final LithoNode root =
         createImmediateLayout(layoutStateContext, c, widthSpec, heightSpec, component);
@@ -98,7 +98,7 @@ public class TestLayoutState {
             c,
             component,
             ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
-    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
+    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getTreeState());
 
     node.appendComponent(
         new ScopedComponentInfo(new TestComponent(component), scopedContext, null));

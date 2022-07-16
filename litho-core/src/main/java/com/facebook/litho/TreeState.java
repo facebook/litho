@@ -110,9 +110,10 @@ public class TreeState {
   void applyStateUpdatesEarly(
       final ComponentContext context,
       final Component component,
-      final @Nullable LithoNode prevTreeRootNode) {
-    mRenderStateHandler.applyStateUpdatesEarly(context, component, prevTreeRootNode);
-    mLayoutStateHandler.applyStateUpdatesEarly(context, component, prevTreeRootNode);
+      final @Nullable LithoNode prevTreeRootNode,
+      final boolean isNestedTree) {
+    final StateHandler stateHandler = getStateHandler(isNestedTree);
+    stateHandler.applyStateUpdatesEarly(context, component, prevTreeRootNode);
   }
 
   void applyStateUpdatesForComponent(

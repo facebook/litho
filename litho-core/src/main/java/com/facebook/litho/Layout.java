@@ -252,7 +252,7 @@ class Layout {
       final Component component,
       final @Nullable LithoNode current) {
     if (c.isApplyStateUpdateEarlyEnabled() && c.getComponentTree() != null) {
-      layoutStateContext.getStateHandler().applyStateUpdatesEarly(c, component, current);
+      layoutStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
     }
   }
 
@@ -465,6 +465,12 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
 
+    if (parentContext.isApplyStateUpdateEarlyEnabled()) {
+      layoutStateContext
+          .getTreeState()
+          .applyStateUpdatesEarly(parentContext, component, null, true);
+    }
+
     // Create a new layout.
     final @Nullable LithoNode newNode =
         create(
@@ -620,7 +626,7 @@ class Layout {
             globalKeyToReuse == null
                 ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
                 : globalKeyToReuse);
-    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getStateHandler());
+    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getTreeState());
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
     if (component instanceof SpecGeneratedComponent) {

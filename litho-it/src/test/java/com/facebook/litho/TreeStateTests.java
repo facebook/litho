@@ -60,7 +60,7 @@ public class TreeStateTests {
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), false, false);
 
     // Apply state updates
-    treeState.applyStateUpdatesEarly(mContext, mTestComponent, null);
+    treeState.applyStateUpdatesEarly(mContext, mTestComponent, null, false);
 
     StateUpdateTestComponent.TestStateContainer previousStateContainer =
         (StateUpdateTestComponent.TestStateContainer)
