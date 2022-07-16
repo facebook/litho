@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.Prop;
@@ -34,8 +35,8 @@ public class NestedTreeComponentWithChildStateSpec {
 
     return SimpleStateUpdateEmulator.create(c)
         .caller(caller)
-        .widthPx(widthSpec)
-        .heightPx(heightSpec)
+        .widthPx(SizeSpec.getSize(widthSpec))
+        .heightPx(SizeSpec.getSize(heightSpec))
         .prefix("Count: ")
         .build();
   }

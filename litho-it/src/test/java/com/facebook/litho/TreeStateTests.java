@@ -190,8 +190,10 @@ public class TreeStateTests {
         false,
         true);
 
-    final Set<String> keysForPendingUpdates = treeState.getKeysForPendingUpdates();
-    assertThat(keysForPendingUpdates).contains(mTestComponentKey);
-    assertThat(keysForPendingUpdates).contains(anotherTestComponentKey);
+    final Set<String> renderKeysForPendingUpdates = treeState.getKeysForPendingRenderStateUpdates();
+    assertThat(renderKeysForPendingUpdates).contains(mTestComponentKey);
+
+    final Set<String> layoutKeysForPendingUpdates = treeState.getKeysForPendingLayoutStateUpdates();
+    assertThat(layoutKeysForPendingUpdates).contains(anotherTestComponentKey);
   }
 }

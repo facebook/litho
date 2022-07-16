@@ -1118,12 +1118,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       final Component next,
       final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey) {
-    final StateHandler stateHandler = layoutStateContext.getStateHandler();
+    final TreeState treeState = layoutStateContext.getTreeState();
     final Set<String> keys;
-    if (stateHandler == null) {
+    if (treeState == null) {
       keys = Collections.emptySet();
     } else {
-      keys = stateHandler.getKeysForPendingUpdates();
+      keys = treeState.getKeysForPendingRenderStateUpdates();
     }
 
     return reconcile(layoutStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);

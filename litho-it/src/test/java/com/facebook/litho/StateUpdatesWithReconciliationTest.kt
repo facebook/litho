@@ -497,4 +497,37 @@ class StateUpdatesWithReconciliationTest() {
 
     assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
   }
+
+  @Test
+  fun `test main tree and nested tree state update`() {
+    val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
+    val nestedStateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
+
+    class TestComponent() : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Column(style = Style.width(200.px).height(200.px)) {
+          child(
+              SimpleStateUpdateEmulator.create(context)
+                  .caller(stateUpdater)
+                  .prefix("SimpleTextCount: ")
+                  .build())
+          child(
+              NestedTreeComponentWithChildState.create(context).caller(nestedStateUpdater).build())
+        }
+      }
+    }
+
+    lithoViewRule.render { TestComponent() }
+
+    stateUpdater.increment()
+    // main tree counter gets incremented
+    assertThat(lithoViewRule.lithoView).hasVisibleText("SimpleTextCount: 2")
+
+    nestedStateUpdater.increment()
+
+    // nested tree counter gets incremented
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+    // main tree counter remains same
+    assertThat(lithoViewRule.lithoView).hasVisibleText("SimpleTextCount: 2")
+  }
 }

@@ -19,7 +19,6 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -124,11 +123,16 @@ public class TreeState {
         scopedContext, (SpecGeneratedComponent) component, key);
   }
 
-  Set<String> getKeysForPendingUpdates() {
-    Set<String> keys = new HashSet<>();
-    keys.addAll(mRenderStateHandler.getKeysForPendingUpdates());
-    keys.addAll(mLayoutStateHandler.getKeysForPendingUpdates());
-    return keys;
+  private static Set<String> getKeysForPendingStateUpdates(final StateHandler stateHandler) {
+    return stateHandler.getKeysForPendingUpdates();
+  }
+
+  Set<String> getKeysForPendingRenderStateUpdates() {
+    return getKeysForPendingStateUpdates(mRenderStateHandler);
+  }
+
+  Set<String> getKeysForPendingLayoutStateUpdates() {
+    return getKeysForPendingStateUpdates(mLayoutStateHandler);
   }
 
   void addStateContainer(String key, StateContainer stateContainer, boolean isNestedTree) {
