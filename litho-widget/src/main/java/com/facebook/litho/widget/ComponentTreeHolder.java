@@ -33,6 +33,7 @@ import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -100,7 +101,7 @@ public class ComponentTreeHolder {
   private @Nullable ComponentTree mComponentTree;
 
   @GuardedBy("this")
-  private StateHandler mStateHandler;
+  private TreeState mTreeState;
 
   @GuardedBy("this")
   private RenderInfo mRenderInfo;
@@ -393,8 +394,8 @@ public class ComponentTreeHolder {
 
   @VisibleForTesting
   @Nullable
-  StateHandler getStateHandler() {
-    return mStateHandler;
+  TreeState getTreeState() {
+    return mTreeState;
   }
 
   public synchronized void setRenderInfo(RenderInfo renderInfo) {
@@ -473,7 +474,7 @@ public class ComponentTreeHolder {
 
       builder
           .layoutThreadHandler(mLayoutHandler)
-          .stateHandler(mStateHandler)
+          .treeState(mTreeState)
           .preAllocateMountContentHandler(mPreallocateMountContentHandler)
           .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
           .measureListener(
@@ -566,7 +567,7 @@ public class ComponentTreeHolder {
       return;
     }
 
-    mStateHandler = mComponentTree.acquireStateHandler();
+    mTreeState = mComponentTree.acquireTreeState();
   }
 
   @GuardedBy("this")

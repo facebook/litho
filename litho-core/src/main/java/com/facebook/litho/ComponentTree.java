@@ -1948,6 +1948,16 @@ public class ComponentTree implements LithoLifecycleListener {
     return StateHandler.createNewInstance(mStateHandler);
   }
 
+  /**
+   * Provides a new instance of the {@link TreeState} that is initialized with the TreeState held by
+   * the ComponentTree.
+   *
+   * @return a copy of tree state instance help by ComponentTree
+   */
+  public synchronized TreeState acquireTreeState() {
+    return mTreeState == null ? new TreeState() : new TreeState(mTreeState);
+  }
+
   public static @Nullable LithoLifecycleProvider getLifecycleProvider(ComponentContext context) {
     return context.getComponentTree() == null
         ? null

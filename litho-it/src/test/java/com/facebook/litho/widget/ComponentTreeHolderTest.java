@@ -108,7 +108,7 @@ public class ComponentTreeHolderTest {
     // component goes out of range
     holder.acquireStateAndReleaseTree(true);
     assertThat(holder.getComponentTree()).isNull();
-    assertThat(holder.getStateHandler()).isNotNull();
+    assertThat(holder.getTreeState()).isNotNull();
   }
 
   @Test
@@ -119,7 +119,7 @@ public class ComponentTreeHolderTest {
     // component goes out of range
     holder.acquireStateAndReleaseTree(false);
     assertThat(holder.getComponentTree()).isNull();
-    assertThat(holder.getStateHandler()).isNull();
+    assertThat(holder.getTreeState()).isNull();
   }
 
   @Test
@@ -135,7 +135,7 @@ public class ComponentTreeHolderTest {
     // component goes out of range
     holder.acquireStateAndReleaseTree(false);
     assertThat(holder.getComponentTree()).isNull();
-    assertThat(holder.getStateHandler()).isNotNull();
+    assertThat(holder.getTreeState()).isNotNull();
   }
 
   @Test

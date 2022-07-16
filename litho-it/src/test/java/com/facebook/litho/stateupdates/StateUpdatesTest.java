@@ -39,6 +39,7 @@ import com.facebook.litho.NestedTreeHolderResult;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateHandler;
+import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
@@ -540,8 +541,8 @@ public class StateUpdatesTest {
     // Simulate Activity destroyed so that we have pending state update which should be restored
     // correctly when we acquire state handler and again process the pending state update.
     looper.quit();
-    final StateHandler stateHandler = componentTree.acquireStateHandler();
-    componentTree = ComponentTree.create(mContext, component).stateHandler(stateHandler).build();
+    final TreeState treeState = componentTree.acquireTreeState();
+    componentTree = ComponentTree.create(mContext, component).treeState(treeState).build();
 
     mLithoViewRule
         .createTestLithoView(null, componentTree)
