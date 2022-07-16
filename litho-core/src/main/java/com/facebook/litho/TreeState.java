@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.arch.core.util.Function;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +149,72 @@ public class TreeState {
   void removePendingStateUpdate(String key, boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     stateHandler.removePendingStateUpdate(key);
+  }
+
+  <T> boolean canSkipStateUpdate(
+      final String globalKey,
+      final int hookStateIndex,
+      final @Nullable T newValue,
+      final boolean isNestedTree) {
+    final StateHandler stateHandler = getStateHandler(isNestedTree);
+    final KStateContainer committedStateContainer =
+        stateHandler.mStateContainers == null
+            ? null
+            : (KStateContainer) stateHandler.mStateContainers.get(globalKey);
+
+    if (committedStateContainer != null
+        && committedStateContainer.mStates != null
+        && committedStateContainer.mStates.get(hookStateIndex) != null) {
+      final KStateContainer committedStateContainerWithAppliedPendingHooks =
+          stateHandler.getStateContainerWithHookUpdates(globalKey);
+
+      if (committedStateContainerWithAppliedPendingHooks != null) {
+        final T committedUpdatedValue =
+            (T) committedStateContainerWithAppliedPendingHooks.mStates.get(hookStateIndex);
+
+        if (committedUpdatedValue == null && newValue == null) {
+          return true;
+        }
+
+        return committedUpdatedValue != null && committedUpdatedValue.equals(newValue);
+      }
+    }
+
+    return false;
+  }
+
+  <T> boolean canSkipStateUpdate(
+      final Function<T, T> newValueFunction,
+      final String globalKey,
+      final int hookStateIndex,
+      final boolean isNestedTree) {
+    final StateHandler stateHandler = getStateHandler(isNestedTree);
+    final KStateContainer committedStateContainer =
+        stateHandler.mStateContainers == null
+            ? null
+            : (KStateContainer) stateHandler.mStateContainers.get(globalKey);
+
+    if (committedStateContainer != null
+        && committedStateContainer.mStates != null
+        && committedStateContainer.mStates.get(hookStateIndex) != null) {
+      final KStateContainer committedStateContainerWithAppliedPendingHooks =
+          stateHandler.getStateContainerWithHookUpdates(globalKey);
+
+      if (committedStateContainerWithAppliedPendingHooks != null) {
+        final T committedUpdatedValue =
+            (T) committedStateContainerWithAppliedPendingHooks.mStates.get(hookStateIndex);
+        final T newValueAfterPendingUpdate = newValueFunction.apply(committedUpdatedValue);
+
+        if (committedUpdatedValue == null && newValueAfterPendingUpdate == null) {
+          return true;
+        }
+
+        return committedUpdatedValue != null
+            && committedUpdatedValue.equals(newValueAfterPendingUpdate);
+      }
+    }
+
+    return false;
   }
 
   @Nullable

@@ -152,24 +152,9 @@ internal constructor(
       return false
     }
 
-    val committedStateHandler = context.componentTree.stateHandler
-
-    if (committedStateHandler != null) {
-      val committedStateContainer =
-          committedStateHandler.mStateContainers?.get(context.globalKey) as KStateContainer?
-      if (committedStateContainer?.mStates != null &&
-          committedStateContainer.mStates[hookStateIndex] != null) {
-        val committedStateContainerWithAppliedPendingHooks =
-            committedStateHandler.getStateContainerWithHookUpdates(context.globalKey)
-
-        if (committedStateContainerWithAppliedPendingHooks != null &&
-            committedStateContainerWithAppliedPendingHooks.mStates[hookStateIndex] == newValue) {
-          return true
-        }
-      }
-    }
-
-    return false
+    return context.componentTree.treeState?.canSkipStateUpdate(
+        context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext())
+        ?: false
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
@@ -177,24 +162,9 @@ internal constructor(
       return false
     }
 
-    val committedStateHandler = context.componentTree.stateHandler ?: return false
-    val committedStateContainer =
-        committedStateHandler.mStateContainers?.get(context.globalKey) as KStateContainer?
-    if (committedStateContainer?.mStates?.get(hookStateIndex) != null) {
-      val committedStateContainerWithAppliedPendingHooks =
-          committedStateHandler.getStateContainerWithHookUpdates(context.globalKey)
-
-      if (committedStateContainerWithAppliedPendingHooks != null) {
-        val committedUpdatedValue =
-            committedStateContainerWithAppliedPendingHooks.mStates[hookStateIndex] as T
-
-        val newValueAfterPendingUpdate = newValueFunction(committedUpdatedValue)
-
-        return committedUpdatedValue == newValueAfterPendingUpdate
-      }
-    }
-
-    return false
+    return context.componentTree.treeState?.canSkipStateUpdate(
+        newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext())
+        ?: false
   }
 
   /**

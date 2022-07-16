@@ -76,6 +76,59 @@ class KStateSkipSameValueTest {
   }
 
   @Test
+  fun `skip state update if nullable new value is the same as old value during layout`() {
+    ShadowLooper.pauseMainLooper()
+
+    val renderCount = AtomicInteger()
+    val stateSampleString: String? = "sample string"
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { stateSampleString }
+
+        // unconditional state update
+        state.updateSync(null)
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    for (i in 0..10) {
+      ShadowLooper.runMainLooperOneTask()
+    }
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `skip state update if new value object is the same as old value during layout`() {
+    ShadowLooper.pauseMainLooper()
+
+    val renderCount = AtomicInteger()
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { Person("Joe") }
+
+        // unconditional state update
+        state.updateSync(Person("Joe"))
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    for (i in 0..10) {
+      ShadowLooper.runMainLooperOneTask()
+    }
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
   fun `skip async state update if new value is the same as old value`() {
     val renderCount = AtomicInteger()
 
@@ -86,6 +139,52 @@ class KStateSkipSameValueTest {
 
         // unconditional state update
         state.update(true)
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    lithoViewRule.idle()
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `skip async state update if nullable new value is the same as old value`() {
+    val renderCount = AtomicInteger()
+
+    val stateSampleString: String? = "sample string"
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { stateSampleString }
+
+        // unconditional state update
+        state.update(null)
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    lithoViewRule.idle()
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `skip async state update if new value object reference is the same as old value`() {
+    val renderCount = AtomicInteger()
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { Person("Joe") }
+
+        // unconditional state update
+        state.update(Person("Joe"))
 
         return Row { child(Text(text = "hello world")) }
       }
@@ -226,6 +325,59 @@ class KStateSkipSameValueTest {
   }
 
   @Test
+  fun `skip lambda state update if new nullable value is the same as old value during layout`() {
+    ShadowLooper.pauseMainLooper()
+
+    val renderCount = AtomicInteger()
+    val stateSampleString: String? = "sample string"
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { stateSampleString }
+
+        // unconditional state update
+        state.updateSync { null }
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    for (i in 0..10) {
+      ShadowLooper.runMainLooperOneTask()
+    }
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `skip lambda state update if new object is the same as old value during layout`() {
+    ShadowLooper.pauseMainLooper()
+
+    val renderCount = AtomicInteger()
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { Person("Joe") }
+
+        // unconditional state update
+        state.updateSync { Person("Joe") }
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    for (i in 0..10) {
+      ShadowLooper.runMainLooperOneTask()
+    }
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
   fun `skip lambda async state update if new value is the same as old value`() {
     val renderCount = AtomicInteger()
 
@@ -236,6 +388,51 @@ class KStateSkipSameValueTest {
 
         // unconditional state update
         state.update { true }
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    lithoViewRule.idle()
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `skip lambda async state update if new nullable value is the same as old value`() {
+    val renderCount = AtomicInteger()
+    val stateSampleString: String? = "sample string"
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { stateSampleString }
+
+        // unconditional state update
+        state.update { null }
+
+        return Row { child(Text(text = "hello world")) }
+      }
+    }
+
+    lithoViewRule.render { RootComponent(renderCount = renderCount) }
+    lithoViewRule.idle()
+
+    Assertions.assertThat(renderCount.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `skip lambda async state update if new object value is the same as old value`() {
+    val renderCount = AtomicInteger()
+
+    class RootComponent(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        val state = useState { Person("Joe") }
+
+        // unconditional state update
+        state.update { Person("Joe") }
 
         return Row { child(Text(text = "hello world")) }
       }
@@ -343,7 +540,8 @@ class KStateSkipSameValueTest {
        * We need to perform this assertion here because as soon as we exit this lambda, all pending
        * runnables enqueued on the UI or BG thread will be executed.
        */
-      Assertions.assertThat(lithoView.componentTree.stateHandler?.pendingHookUpdatesCount)
+      Assertions.assertThat(
+              lithoView.componentTree.treeState?.getRenderStateHandler()?.pendingHookUpdatesCount)
           .isEqualTo(2)
     }
 
@@ -356,5 +554,17 @@ class KStateSkipSameValueTest {
 
   private interface Listener {
     fun onTriggerListener()
+  }
+
+  class Person(var name: String) {
+    override fun equals(that: Any?): Boolean {
+      if (that == null) return false
+      if (that !is Person) return false
+      return this.name == that.name
+    }
+
+    override fun hashCode(): Int {
+      return name.hashCode()
+    }
   }
 }
