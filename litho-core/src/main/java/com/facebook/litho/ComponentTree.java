@@ -388,6 +388,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isSplitStateHandlersEnabled;
 
+  private final boolean mIsApplyStateUpdateEarlyEnabled;
+
   private final boolean mMoveLayoutsBetweenThreads;
 
   private final @Nullable String mLogTag;
@@ -471,6 +473,7 @@ public class ComponentTree implements LithoLifecycleListener {
       isReconciliationEnabled = builder.isReconciliationEnabled;
     }
     isSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
+    mIsApplyStateUpdateEarlyEnabled = ComponentsConfiguration.applyStateUpdateEarly;
     mErrorEventHandler = builder.errorEventHandler;
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
 
@@ -1304,6 +1307,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isSplitStateHandlersEnabled() {
     return isSplitStateHandlersEnabled;
+  }
+
+  public boolean isApplyStateUpdateEarlyEnabled() {
+    return mIsApplyStateUpdateEarlyEnabled;
   }
 
   public ErrorEventHandler getErrorEventHandler() {

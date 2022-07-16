@@ -21,7 +21,6 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.ArrayList;
@@ -196,7 +195,10 @@ public class StateHandler {
     }
   }
 
-  private void applyStateUpdates(final String key, final StateContainer newStateContainer) {
+  private void applyStateUpdates(
+      final ComponentContext scopedContext,
+      final String key,
+      final StateContainer newStateContainer) {
     final List<StateUpdate> stateUpdatesForKey;
 
     synchronized (this) {
@@ -222,7 +224,7 @@ public class StateHandler {
       LithoStats.incrementComponentAppliedStateUpdateCountBy(stateUpdatesForKey.size());
 
       synchronized (this) {
-        if (!ComponentsConfiguration.applyStateUpdateEarly) {
+        if (!scopedContext.isApplyStateUpdateEarlyEnabled()) {
           mPendingStateUpdates.remove(key); // remove from pending
         }
         if (mPendingLazyStateUpdates != null) {
@@ -267,7 +269,7 @@ public class StateHandler {
             final StateContainer newStateContainer = stateContainer.clone();
             mNeededStateContainers.add(key);
             mStateContainers.put(key, newStateContainer);
-            applyStateUpdates(key, newStateContainer);
+            applyStateUpdates(context, key, newStateContainer);
           } catch (Exception ex) {
 
             // Remove pending state update from ComponentTree's state handler since we don't want to
@@ -293,10 +295,6 @@ public class StateHandler {
   }
 
   public void thowSoftErrorIfStateContainerWasNotFound(String key, Component component) {
-    if (!ComponentsConfiguration.applyStateUpdateEarly) {
-      return;
-    }
-
     if (mStateContainerNotFoundForKeys != null && mStateContainerNotFoundForKeys.contains(key)) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
@@ -350,8 +348,8 @@ public class StateHandler {
 
     addStateContainer(key, newStateContainer);
 
-    if (!ComponentsConfiguration.applyStateUpdateEarly) {
-      applyStateUpdates(key, newStateContainer);
+    if (!scopedContext.isApplyStateUpdateEarlyEnabled()) {
+      applyStateUpdates(scopedContext, key, newStateContainer);
     } else {
       // We maintain a HashSet of global keys for which we could not find the StateContainer while
       // applying state updates early.
