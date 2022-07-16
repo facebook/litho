@@ -2386,14 +2386,14 @@ public class ComponentTree implements LithoLifecycleListener {
         logFinishLayout(source, extraAttribution, localLayoutState, committedNewLayout);
       }
 
-      final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
+      final TreeState localTreeState = localLayoutState.consumeTreeState();
       if (committedNewLayout) {
 
         scopedComponentInfos = localLayoutState.consumeScopedComponentInfos();
 
-        if (layoutStateStateHandler != null && scopedComponentInfos != null) {
-          final StateHandler stateHandler = mStateHandler;
-          if (stateHandler != null) { // we could have been released
+        if (localTreeState != null && scopedComponentInfos != null) {
+          final TreeState treeState = mTreeState;
+          if (treeState != null) { // we could have been released
             if (ComponentsConfiguration.isTimelineEnabled) {
               ScopedComponentInfo rootScopedComponentInfo = null;
               for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
@@ -2407,9 +2407,19 @@ public class ComponentTree implements LithoLifecycleListener {
                       ? rootScopedComponentInfo.getContext().getGlobalKey()
                       : null;
               DebugComponentTimeMachine.saveTimelineSnapshot(
-                  this, root, globalKey, stateHandler, treeProps, source, extraAttribution);
+                  this,
+                  root,
+                  globalKey,
+                  treeState.getRenderStateHandler(),
+                  treeProps,
+                  source,
+                  extraAttribution);
             }
-            stateHandler.commit(layoutStateStateHandler);
+
+            treeState.commitRenderState(localTreeState);
+            if (isSplitStateHandlersEnabled()) {
+              treeState.commitLayoutState(localTreeState);
+            }
           }
         }
 
@@ -2419,8 +2429,11 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
 
-      if (mStateHandler != null && layoutStateStateHandler != null) {
-        mStateHandler.getInitialStateContainer().unregisterStateHandler(layoutStateStateHandler);
+      if (mTreeState != null && localTreeState != null) {
+        mTreeState.unregisterRenderState(localTreeState);
+        if (isSplitStateHandlersEnabled()) {
+          mTreeState.unregisterLayoutState(localTreeState);
+        }
       }
 
       // Resetting the count after layout calculation is complete and it was triggered from within
@@ -2946,21 +2959,27 @@ public class ComponentTree implements LithoLifecycleListener {
       final ComponentContext contextWithStateHandler;
       final LayoutState previousLayoutState;
 
-      final StateHandler stateHandler;
+      final TreeState treeState;
       synchronized (ComponentTree.this) {
-        stateHandler = StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
+        treeState =
+            ComponentTree.this.mTreeState == null
+                ? new TreeState()
+                : new TreeState(ComponentTree.this.mTreeState);
 
         previousLayoutState = mCommittedLayoutState;
         contextWithStateHandler = new ComponentContext(context, treeProps, null);
 
-        stateHandler.getInitialStateContainer().registerStateHandler(stateHandler);
+        treeState.registerRenderState();
+        if (isSplitStateHandlersEnabled()) {
+          treeState.registerLayoutState();
+        }
       }
 
       return LayoutState.calculate(
           contextWithStateHandler,
           root,
           layoutStateFuture,
-          stateHandler,
+          treeState,
           ComponentTree.this.mId,
           widthSpec,
           heightSpec,

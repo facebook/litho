@@ -41,20 +41,30 @@ public class TreeState {
     mLayoutStateHandler = StateHandler.createNewInstance(treeState.mLayoutStateHandler);
   }
 
+  // TODO: Remove this method
+  StateHandler getRenderStateHandler() {
+    return mRenderStateHandler;
+  }
+
   private StateHandler getStateHandler(boolean isNestedTree) {
     return isNestedTree ? mLayoutStateHandler : mRenderStateHandler;
   }
 
-  void register() {
+  void registerRenderState() {
     mRenderStateHandler.getInitialStateContainer().registerStateHandler(mRenderStateHandler);
+  }
+
+  void registerLayoutState() {
     mLayoutStateHandler.getInitialStateContainer().registerStateHandler(mLayoutStateHandler);
   }
 
-  void unregister(TreeState treeState) {
+  void unregisterRenderState(TreeState treeState) {
     mRenderStateHandler
         .getInitialStateContainer()
         .unregisterStateHandler(treeState.mRenderStateHandler);
+  }
 
+  void unregisterLayoutState(TreeState treeState) {
     mLayoutStateHandler
         .getInitialStateContainer()
         .unregisterStateHandler(treeState.mLayoutStateHandler);

@@ -150,7 +150,8 @@ public class StateUpdatesTest {
     assertThat(previousStateContainer).isNotNull();
     assertThat(previousStateContainer.mCount)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
-    assertThat(getStateHandler().getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(getRenderStateHandler().getInitialStateContainer().mInitialStates.isEmpty())
+        .isTrue();
   }
 
   @Test
@@ -392,24 +393,26 @@ public class StateUpdatesTest {
       e.printStackTrace();
     }
 
-    assertThat(getStateHandler().getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
-    assertThat(getStateHandler().getInitialStateContainer().mPendingStateHandlers.isEmpty())
+    assertThat(getRenderStateHandler().getInitialStateContainer().mInitialStates.isEmpty())
+        .isTrue();
+    assertThat(getRenderStateHandler().getInitialStateContainer().mPendingStateHandlers.isEmpty())
         .isTrue();
     assertThat(stateUpdateCalled.intValue()).isEqualTo(1);
     assertThat(stateValue.intValue()).isEqualTo(secondStateValue.intValue());
     assertThat(stateValue.intValue()).isEqualTo(10);
   }
 
-  private StateHandler getStateHandler() {
-    return Whitebox.getInternalState(mComponentTree, "mStateHandler");
+  private StateHandler getRenderStateHandler() {
+    final TreeState treeState = Whitebox.getInternalState(mComponentTree, "mTreeState");
+    return Whitebox.getInternalState(treeState, "mRenderStateHandler");
   }
 
   private Map<String, StateContainer> getStateContainersMap() {
-    return getStateHandler().getStateContainers();
+    return getRenderStateHandler().getStateContainers();
   }
 
   private Map<String, List<StateUpdate>> getPendingStateUpdates() {
-    return getStateHandler().getPendingStateUpdates();
+    return getRenderStateHandler().getPendingStateUpdates();
   }
 
   private List<StateUpdate> getPendingStateUpdatesForComponent(String globalKey) {

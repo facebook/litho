@@ -81,7 +81,8 @@ public class TreeStateTests {
     final TreeState localTreeState = new TreeState(treeState);
 
     // Register local tree state to ISC
-    localTreeState.register();
+    localTreeState.registerRenderState();
+    localTreeState.registerLayoutState();
 
     // Add state containers in ISC
     localTreeState.applyStateUpdatesForComponent(
@@ -102,7 +103,8 @@ public class TreeStateTests {
     }
 
     // Unregister local tree state from ISC
-    treeState.unregister(localTreeState);
+    treeState.unregisterRenderState(localTreeState);
+    treeState.unregisterLayoutState(localTreeState);
 
     // State containers in ISC should be cleared
     assertThat(renderStateHandler.getInitialStateContainer()).isNotNull();

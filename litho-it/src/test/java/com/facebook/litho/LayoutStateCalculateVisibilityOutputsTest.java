@@ -255,7 +255,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         context,
         component,
         null,
-        new StateHandler(),
+        new TreeState(),
         componentTreeId,
         widthSpec,
         heightSpec,

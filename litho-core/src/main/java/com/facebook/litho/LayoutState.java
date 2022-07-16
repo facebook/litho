@@ -192,7 +192,7 @@ public class LayoutState
   private @Nullable AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
 
-  private @Nullable StateHandler mStateHandler;
+  private @Nullable TreeState mTreeState;
   private @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable TransitionId mCurrentTransitionId;
   private @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
@@ -231,13 +231,13 @@ public class LayoutState
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
-    this(context, Column.create(context).build(), new StateHandler(), null, null, null);
+    this(context, Column.create(context).build(), new TreeState(), null, null, null);
   }
 
   LayoutState(
       ComponentContext context,
       Component rootComponent,
-      final StateHandler stateHandler,
+      final TreeState treeState,
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable LayoutState current,
       final @Nullable DiffNode diffTreeRoot) {
@@ -245,7 +245,7 @@ public class LayoutState
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
-    mStateHandler = stateHandler;
+    mTreeState = treeState;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mLastMeasuredLayouts = new HashMap<>();
     mScopedComponentInfos = new ArrayList<>();
@@ -254,7 +254,11 @@ public class LayoutState
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
     mLayoutStateContext =
         new LayoutStateContext(
-            this, stateHandler, context.getComponentTree(), layoutStateFuture, diffTreeRoot);
+            this,
+            treeState.getRenderStateHandler(),
+            context.getComponentTree(),
+            layoutStateFuture,
+            diffTreeRoot);
     mLithoNodeCacheForLayoutWithSizeSpec =
         ComponentsConfiguration.useResolvedTree ? new HashMap<>() : null;
   }
@@ -1152,7 +1156,7 @@ public class LayoutState
         c,
         component,
         null,
-        new StateHandler(),
+        new TreeState(),
         componentTreeId,
         widthSpec,
         heightSpec,
@@ -1167,7 +1171,7 @@ public class LayoutState
       ComponentContext c,
       Component component,
       @Nullable LayoutStateFuture layoutStateFuture,
-      StateHandler stateHandler,
+      TreeState treeState,
       int componentTreeId,
       int widthSpec,
       int heightSpec,
@@ -1209,7 +1213,7 @@ public class LayoutState
         currentRoot = currentLayoutState.mRoot;
         currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
         isReconcilable =
-            isReconcilable(c, component, Preconditions.checkNotNull(stateHandler), currentRoot);
+            isReconcilable(c, component, Preconditions.checkNotNull(treeState), currentRoot);
         if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
           currentLayoutState.mRoot = null;
           currentLayoutState.mLayoutResult = null;
@@ -1242,7 +1246,7 @@ public class LayoutState
 
       layoutState =
           new LayoutState(
-              c, component, stateHandler, layoutStateFuture, currentLayoutState, diffTreeRoot);
+              c, component, treeState, layoutStateFuture, currentLayoutState, diffTreeRoot);
 
       layoutStateContext = layoutState.getLayoutStateContext();
       if (logLayoutState != null) {
@@ -1617,14 +1621,14 @@ public class LayoutState
   private static boolean isReconcilable(
       final ComponentContext c,
       final Component nextRootComponent,
-      final StateHandler stateHandler,
+      final TreeState treeState,
       final @Nullable LithoNode currentLayoutResult) {
 
     if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
       return false;
     }
 
-    if (stateHandler == null || !stateHandler.hasUncommittedUpdates()) {
+    if (treeState == null || !treeState.hasUncommittedUpdates()) {
       return false;
     }
 
@@ -1963,10 +1967,10 @@ public class LayoutState
    */
   @Nullable
   @CheckReturnValue
-  StateHandler consumeStateHandler() {
-    final StateHandler stateHandler = mStateHandler;
-    mStateHandler = null;
-    return stateHandler;
+  TreeState consumeTreeState() {
+    final TreeState treeState = mTreeState;
+    mTreeState = null;
+    return treeState;
   }
 
   @Nullable
