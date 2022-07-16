@@ -1715,6 +1715,11 @@ public class ComponentTree implements LithoLifecycleListener {
     return mStateHandler;
   }
 
+  @Nullable
+  TreeState getTreeState() {
+    return mTreeState;
+  }
+
   void recordEventHandler(ComponentContext scopedContext, EventHandler eventHandler) {
     mEventHandlersController.recordEventHandler(scopedContext.getGlobalKey(), eventHandler);
   }
