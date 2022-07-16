@@ -361,9 +361,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private @Nullable LayoutState mCommittedLayoutState;
 
   @GuardedBy("this")
-  private @Nullable StateHandler mStateHandler;
-
-  @GuardedBy("this")
   private @Nullable TreeState mTreeState;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -477,9 +474,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mErrorEventHandler = builder.errorEventHandler;
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
 
-    final StateHandler builderStateHandler = builder.stateHandler;
-    mStateHandler =
-        builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
 
     if (builder.previousRenderState != null) {
@@ -1711,11 +1705,6 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @Nullable
-  StateHandler getStateHandler() {
-    return mStateHandler;
-  }
-
-  @Nullable
   TreeState getTreeState() {
     return mTreeState;
   }
@@ -2630,7 +2619,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
       mMainThreadLayoutState = null;
       mCommittedLayoutState = null;
-      mStateHandler = null;
       mTreeState = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
@@ -3383,7 +3371,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean isLayoutDiffingEnabled = true;
     private RunnableHandler layoutThreadHandler;
     private @Nullable RunnableHandler preAllocateMountContentHandler;
-    private @Nullable StateHandler stateHandler;
     private @Nullable TreeState treeState;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
@@ -3506,15 +3493,6 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder layoutThreadHandler(RunnableHandler handler) {
       layoutThreadHandler = handler;
-      return this;
-    }
-
-    /**
-     * Specify an initial state handler object that the ComponentTree can use to set the current
-     * values for states.
-     */
-    public Builder stateHandler(@Nullable StateHandler stateHandler) {
-      this.stateHandler = stateHandler;
       return this;
     }
 
