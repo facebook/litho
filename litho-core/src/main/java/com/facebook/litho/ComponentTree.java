@@ -2170,7 +2170,7 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       if (root != null) {
-        if (mStateHandler != null && mStateHandler.hasUncommittedUpdates()) {
+        if ((mTreeState != null && mTreeState.hasUncommittedUpdates())) {
           root = root.makeShallowCopyWithNewId();
         }
       }
