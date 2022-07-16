@@ -254,11 +254,7 @@ public class LayoutState
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
     mLayoutStateContext =
         new LayoutStateContext(
-            this,
-            treeState.getRenderStateHandler(),
-            context.getComponentTree(),
-            layoutStateFuture,
-            diffTreeRoot);
+            this, treeState, context.getComponentTree(), layoutStateFuture, diffTreeRoot);
     mLithoNodeCacheForLayoutWithSizeSpec =
         ComponentsConfiguration.useResolvedTree ? new HashMap<>() : null;
   }

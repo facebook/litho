@@ -39,7 +39,7 @@ public class LayoutStateContext {
   private final @Nullable ComponentTree mComponentTree;
 
   private @Nullable LayoutState mLayoutStateRef;
-  private @Nullable StateHandler mStateHandler;
+  private @Nullable TreeState mTreeState;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
   private @Nullable DiffNode mCurrentDiffTree;
@@ -59,7 +59,7 @@ public class LayoutStateContext {
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, new StateHandler(), c.getComponentTree(), null, null);
+        new LayoutStateContext(layoutState, new TreeState(), c.getComponentTree(), null, null);
     layoutState.setLayoutStateContextForTest(layoutStateContext);
     return layoutStateContext;
   }
@@ -76,12 +76,12 @@ public class LayoutStateContext {
   @Deprecated
   public LayoutStateContext(
       final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, new StateHandler(), componentTree, null, null);
+    this(layoutState, new TreeState(), componentTree, null, null);
   }
 
   LayoutStateContext(
       final LayoutState layoutState,
-      final StateHandler stateHandler,
+      final TreeState treeState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable DiffNode currentDiffTree) {
@@ -89,7 +89,7 @@ public class LayoutStateContext {
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
     mCurrentDiffTree = currentDiffTree;
-    mStateHandler = stateHandler;
+    mTreeState = treeState;
     mThreadCreatedOn = Thread.currentThread().getName();
   }
 
@@ -120,7 +120,7 @@ public class LayoutStateContext {
 
   void releaseReference() {
     mLayoutStateRef = null;
-    mStateHandler = null;
+    mTreeState = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
     mComponentIdToWillRenderLayout = null;
@@ -194,7 +194,11 @@ public class LayoutStateContext {
   }
 
   StateHandler getStateHandler() {
-    return Preconditions.checkNotNull(mStateHandler);
+    return Preconditions.checkNotNull(mTreeState).getRenderStateHandler();
+  }
+
+  TreeState getTreeState() {
+    return Preconditions.checkNotNull(mTreeState);
   }
 
   @Nullable
