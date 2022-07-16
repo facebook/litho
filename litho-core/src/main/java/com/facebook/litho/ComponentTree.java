@@ -2032,18 +2032,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   synchronized @Nullable List<Transition> getStateUpdateTransitions() {
-    final List<Transition> updateStateTransitions;
-    if (mStateHandler != null && mStateHandler.getPendingStateUpdateTransitions() != null) {
-      final Map<String, List<Transition>> pendingStateUpdateTransitions =
-          mStateHandler.getPendingStateUpdateTransitions();
-      updateStateTransitions = new ArrayList<>();
-      for (List<Transition> pendingTransitions : pendingStateUpdateTransitions.values()) {
-        updateStateTransitions.addAll(pendingTransitions);
-      }
-    } else {
-      updateStateTransitions = null;
-    }
-    return updateStateTransitions;
+    return mTreeState == null ? null : mTreeState.getPendingStateUpdateTransitions();
   }
 
   /**

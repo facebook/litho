@@ -151,12 +151,13 @@ public class TreeState {
   }
 
   @Nullable
-  List<Transition> getStateUpdateTransitions() {
-    final List<Transition> updateStateTransitions = new ArrayList<>();
+  List<Transition> getPendingStateUpdateTransitions() {
+    List<Transition> updateStateTransitions = null;
 
     if (mRenderStateHandler.getPendingStateUpdateTransitions() != null) {
       final Map<String, List<Transition>> pendingStateUpdateTransitions =
           mRenderStateHandler.getPendingStateUpdateTransitions();
+      updateStateTransitions = new ArrayList<>();
       for (List<Transition> pendingTransitions : pendingStateUpdateTransitions.values()) {
         updateStateTransitions.addAll(pendingTransitions);
       }
@@ -165,12 +166,17 @@ public class TreeState {
     if (mLayoutStateHandler.getPendingStateUpdateTransitions() != null) {
       final Map<String, List<Transition>> pendingStateUpdateTransitions =
           mLayoutStateHandler.getPendingStateUpdateTransitions();
+
+      if (updateStateTransitions == null) {
+        updateStateTransitions = new ArrayList<>();
+      }
+
       for (List<Transition> pendingTransitions : pendingStateUpdateTransitions.values()) {
         updateStateTransitions.addAll(pendingTransitions);
       }
     }
 
-    return updateStateTransitions.isEmpty() ? null : updateStateTransitions;
+    return updateStateTransitions;
   }
 
   void putCachedValue(Object cachedValueInputs, Object cachedValue, boolean isNestedTree) {
