@@ -349,7 +349,11 @@ public class ComponentContext implements Cloneable {
     }
 
     mComponentTree.updateStateSync(
-        getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
+        getGlobalKey(),
+        stateUpdate,
+        attribution,
+        isCreateLayoutInProgress(),
+        isNestedTreeContext());
   }
 
   /**
@@ -365,7 +369,11 @@ public class ComponentContext implements Cloneable {
     }
 
     mComponentTree.updateStateAsync(
-        getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
+        getGlobalKey(),
+        stateUpdate,
+        attribution,
+        isCreateLayoutInProgress(),
+        isNestedTreeContext());
   }
 
   public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
@@ -377,7 +385,7 @@ public class ComponentContext implements Cloneable {
       return;
     }
 
-    mComponentTree.updateStateLazy(getGlobalKey(), stateUpdate);
+    mComponentTree.updateStateLazy(getGlobalKey(), stateUpdate, isNestedTreeContext());
   }
 
   final void updateHookStateAsync(String globalKey, HookUpdater updateBlock) {
@@ -392,7 +400,8 @@ public class ComponentContext implements Cloneable {
         globalKey,
         updateBlock,
         scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
-        isCreateLayoutInProgress());
+        isCreateLayoutInProgress(),
+        isNestedTreeContext());
   }
 
   final void updateHookStateSync(String globalKey, HookUpdater updateBlock) {
@@ -407,7 +416,8 @@ public class ComponentContext implements Cloneable {
         globalKey,
         updateBlock,
         scope != null ? scope.getSimpleName() : "hook",
-        isCreateLayoutInProgress());
+        isCreateLayoutInProgress(),
+        isNestedTreeContext());
   }
 
   final void registerComponentCallbackStart(ComponentCallbackType componentCallbackType) {
@@ -427,7 +437,8 @@ public class ComponentContext implements Cloneable {
       return;
     }
 
-    mComponentTree.applyLazyStateUpdatesForContainer(getGlobalKey(), container);
+    mComponentTree.applyLazyStateUpdatesForContainer(
+        getGlobalKey(), container, isNestedTreeContext());
   }
 
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {

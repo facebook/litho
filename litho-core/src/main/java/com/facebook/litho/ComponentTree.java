@@ -1465,48 +1465,75 @@ public class ComponentTree implements LithoLifecycleListener {
         null);
   }
 
+  @VisibleForTesting
   synchronized void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
+    updateStateLazy(componentKey, stateUpdate, false);
+  }
+
+  synchronized void updateStateLazy(
+      String componentKey, StateUpdate stateUpdate, boolean isNestedTree) {
     if (mRoot == null) {
       return;
     }
 
-    if (mStateHandler != null) {
-      mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
+    if (mTreeState != null) {
+      mTreeState.queueStateUpdate(componentKey, stateUpdate, true, isNestedTree);
     }
   }
 
   synchronized void applyLazyStateUpdatesForContainer(
-      String componentKey, StateContainer container) {
-    if (mRoot == null || mStateHandler == null) {
+      String componentKey, StateContainer container, boolean isNestedTree) {
+
+    if (mRoot == null || mTreeState == null) {
       return;
     }
 
-    mStateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
+    mTreeState.applyLazyStateUpdatesForContainer(componentKey, container, isNestedTree);
+  }
+
+  @VisibleForTesting
+  void updateStateSync(
+      String componentKey,
+      StateUpdate stateUpdate,
+      String attribution,
+      boolean isCreateLayoutInProgress) {
+    updateStateSync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress, false);
   }
 
   void updateStateSync(
       String componentKey,
       StateUpdate stateUpdate,
       String attribution,
-      boolean isCreateLayoutInProgress) {
+      boolean isCreateLayoutInProgress,
+      boolean isNestedTree) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      if (mStateHandler != null) {
-        mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
+      if (mTreeState != null) {
+        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isNestedTree);
       }
     }
 
     ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
   }
 
+  @VisibleForTesting
   void updateStateAsync(
       String componentKey,
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress) {
+    updateStateAsync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress, false);
+  }
+
+  void updateStateAsync(
+      String componentKey,
+      StateUpdate stateUpdate,
+      String attribution,
+      boolean isCreateLayoutInProgress,
+      boolean isNestedTree) {
     if (!mIsAsyncUpdateStateEnabled) {
       throw new RuntimeException(
           "Triggering async state updates on this component tree is "
@@ -1518,8 +1545,8 @@ public class ComponentTree implements LithoLifecycleListener {
         return;
       }
 
-      if (mStateHandler != null) {
-        mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
+      if (mTreeState != null) {
+        mTreeState.queueStateUpdate(componentKey, stateUpdate, false, isNestedTree);
       }
     }
 
@@ -1528,14 +1555,18 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   final void updateHookStateSync(
-      String globalKey, HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
+      String globalKey,
+      HookUpdater updater,
+      String attribution,
+      boolean isCreateLayoutInProgress,
+      boolean isNestedTree) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      if (mStateHandler != null) {
-        mStateHandler.queueHookStateUpdate(globalKey, updater);
+      if (mTreeState != null) {
+        mTreeState.queueHookStateUpdate(globalKey, updater, isNestedTree);
       }
     }
 
@@ -1543,14 +1574,18 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   final void updateHookStateAsync(
-      String globalKey, HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
+      String globalKey,
+      HookUpdater updater,
+      String attribution,
+      boolean isCreateLayoutInProgress,
+      boolean isNestedTree) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      if (mStateHandler != null) {
-        mStateHandler.queueHookStateUpdate(globalKey, updater);
+      if (mTreeState != null) {
+        mTreeState.queueHookStateUpdate(globalKey, updater, isNestedTree);
       }
     }
 
