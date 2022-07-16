@@ -614,14 +614,14 @@ public class ComponentContext implements Cloneable {
     if (mComponentTree == null) {
       return null;
     }
-    return mComponentTree.getCachedValue(cachedValueInputs);
+    return mComponentTree.getCachedValue(cachedValueInputs, isNestedTreeContext());
   }
 
   public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
     if (mComponentTree == null) {
       return;
     }
-    mComponentTree.putCachedValue(cachedValueInputs, cachedValue);
+    mComponentTree.putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
   /**

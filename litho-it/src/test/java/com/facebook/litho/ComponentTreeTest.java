@@ -2004,10 +2004,10 @@ public class ComponentTreeTest {
   @Test
   public void testCachedValues() {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
-    assertThat(componentTree.getCachedValue("key1")).isNull();
-    componentTree.putCachedValue("key1", "value1");
-    assertThat(componentTree.getCachedValue("key1")).isEqualTo("value1");
-    assertThat(componentTree.getCachedValue("key2")).isNull();
+    assertThat(componentTree.getCachedValue("key1", false)).isNull();
+    componentTree.putCachedValue("key1", "value1", false);
+    assertThat(componentTree.getCachedValue("key1", false)).isEqualTo("value1");
+    assertThat(componentTree.getCachedValue("key2", false)).isNull();
   }
 
   // TODO(T37885964): Fix me

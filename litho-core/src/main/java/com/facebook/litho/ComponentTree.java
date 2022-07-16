@@ -2683,11 +2683,11 @@ public class ComponentTree implements LithoLifecycleListener {
     return mRoot == null ? null : mRoot.getSimpleName();
   }
 
-  synchronized @Nullable Object getCachedValue(Object cachedValueInputs) {
-    if (mReleased || mStateHandler == null) {
+  synchronized @Nullable Object getCachedValue(Object cachedValueInputs, boolean isNestedTree) {
+    if (mReleased || mTreeState == null) {
       return null;
     }
-    return mStateHandler.getCachedValue(cachedValueInputs);
+    return mTreeState.getCachedValue(cachedValueInputs, isNestedTree);
   }
 
   @VisibleForTesting
@@ -2696,11 +2696,12 @@ public class ComponentTree implements LithoLifecycleListener {
     return mAttachDetachHandler;
   }
 
-  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
-    if (mReleased || mStateHandler == null) {
+  synchronized void putCachedValue(
+      Object cachedValueInputs, Object cachedValue, boolean isNestedTree) {
+    if (mReleased || mTreeState == null) {
       return;
     }
-    mStateHandler.putCachedValue(cachedValueInputs, cachedValue);
+    mTreeState.putCachedValue(cachedValueInputs, cachedValue, isNestedTree);
   }
 
   public static synchronized Looper getDefaultLayoutThreadLooper() {
