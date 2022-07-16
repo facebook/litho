@@ -62,7 +62,7 @@ public final class DebugComponentTimeMachine {
       ComponentTree componentTree,
       Component root,
       String rootGlobalKey,
-      StateHandler stateHandler,
+      TreeState treeState,
       TreeProps props,
       @LayoutState.CalculateLayoutSource int source,
       @Nullable String attribution) {
@@ -71,9 +71,8 @@ public final class DebugComponentTimeMachine {
       return false;
     }
 
-    final StateHandler frozenStateHandler = new StateHandler(stateHandler);
-    componentTree.appendTimeline(
-        root, rootGlobalKey, frozenStateHandler, props, source, attribution);
+    final TreeState frozenTreeState = new TreeState(treeState);
+    componentTree.appendTimeline(root, rootGlobalKey, frozenTreeState, props, source, attribution);
 
     return true;
   }
@@ -94,7 +93,7 @@ public final class DebugComponentTimeMachine {
       final TreeRevision selected = treeRevisions.findByKey(destination);
       if (selected != null) {
         oldTree.resetState(
-            selected.revisionNumber, selected.root, selected.props, selected.handler);
+            selected.revisionNumber, selected.root, selected.props, selected.treeState);
       }
       return true;
     }
@@ -136,7 +135,7 @@ public final class DebugComponentTimeMachine {
         new SimpleDateFormat("hh:mm:ss.SSS", Locale.getDefault());
 
     public final Component root;
-    public final StateHandler handler;
+    public final TreeState treeState;
     public final TreeProps props;
     public final long revisionMoment;
     public final long revisionNumber;
@@ -146,14 +145,14 @@ public final class DebugComponentTimeMachine {
 
     private TreeRevision(
         Component root,
-        StateHandler handler,
+        TreeState treeState,
         TreeProps props,
         long revisionMoment,
         long revisionNumber,
         @LayoutState.CalculateLayoutSource int source,
         @Nullable String attribution) {
       this.root = root;
-      this.handler = handler;
+      this.treeState = treeState;
       this.props = props;
       this.revisionMoment = revisionMoment;
       this.revisionNumber = revisionNumber;
@@ -181,14 +180,14 @@ public final class DebugComponentTimeMachine {
     TreeRevisions(
         final Component root,
         final String rootGlobalKey,
-        final StateHandler handler,
+        final TreeState treeState,
         final TreeProps props,
         final @LayoutState.CalculateLayoutSource int source,
         final @Nullable String attribution) {
       rootName = root.getSimpleName() + " key=" + rootGlobalKey;
       internalAdd(
           new TreeRevision(
-              root, handler, props, System.currentTimeMillis(), 0, source, attribution));
+              root, treeState, props, System.currentTimeMillis(), 0, source, attribution));
     }
 
     public TreeRevisions shallowCopy() {
@@ -202,14 +201,20 @@ public final class DebugComponentTimeMachine {
 
     void setLatest(
         final Component root,
-        final StateHandler handler,
+        final TreeState treeState,
         final TreeProps props,
         final @LayoutState.CalculateLayoutSource int source,
         final @Nullable String attribution) {
       long nextRevision = revisions.get(revisions.size() - 1).revisionNumber + 1;
       final TreeRevision revision =
           new TreeRevision(
-              root, handler, props, System.currentTimeMillis(), nextRevision, source, attribution);
+              root,
+              treeState,
+              props,
+              System.currentTimeMillis(),
+              nextRevision,
+              source,
+              attribution);
       internalAdd(revision);
     }
 

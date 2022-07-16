@@ -1356,9 +1356,9 @@ public class ComponentTree implements LithoLifecycleListener {
    */
   @UiThread
   synchronized void resetState(
-      long selectedRevision, Component root, TreeProps props, StateHandler newState) {
+      long selectedRevision, Component root, TreeProps props, TreeState newTreeState) {
     ThreadUtils.assertMainThread();
-    mStateHandler = newState;
+    mTreeState = newTreeState;
     mRootTreeProps = props;
     final DebugComponentTimeMachine.TreeRevisions timeline = mTimeline;
     if (timeline != null) {
@@ -1401,7 +1401,7 @@ public class ComponentTree implements LithoLifecycleListener {
   void appendTimeline(
       Component root,
       String rootGlobalKey,
-      StateHandler stateHandler,
+      TreeState treeState,
       TreeProps props,
       @LayoutState.CalculateLayoutSource int source,
       @Nullable String attribution) {
@@ -1409,9 +1409,9 @@ public class ComponentTree implements LithoLifecycleListener {
     if (mTimeline == null) {
       mTimeline =
           new DebugComponentTimeMachine.TreeRevisions(
-              root, rootGlobalKey, stateHandler, props, source, attribution);
+              root, rootGlobalKey, treeState, props, source, attribution);
     } else {
-      mTimeline.setLatest(root, stateHandler, props, source, attribution);
+      mTimeline.setLatest(root, treeState, props, source, attribution);
     }
   }
 
@@ -2442,13 +2442,7 @@ public class ComponentTree implements LithoLifecycleListener {
                       ? rootScopedComponentInfo.getContext().getGlobalKey()
                       : null;
               DebugComponentTimeMachine.saveTimelineSnapshot(
-                  this,
-                  root,
-                  globalKey,
-                  treeState.getRenderStateHandler(),
-                  treeProps,
-                  source,
-                  extraAttribution);
+                  this, root, globalKey, treeState, treeProps, source, extraAttribution);
             }
 
             treeState.commitRenderState(localTreeState);
