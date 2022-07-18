@@ -429,6 +429,14 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
+  protected boolean excludeFromIncrementalMount() {
+    boolean _result;
+    _result = (boolean) TestMountSpec.enablePrefetch((boolean) prop2);
+
+    return _result;
+  }
+
+  @Override
   public Component.MountType getMountType() {
     return Component.MountType.DRAWABLE;
   }
@@ -436,11 +444,6 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected int poolSize() {
     return 3;
-  }
-
-  @Override
-  protected boolean excludeFromIncrementalMount() {
-    return true;
   }
 
   @Override

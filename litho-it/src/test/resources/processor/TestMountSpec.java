@@ -63,6 +63,7 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
@@ -72,7 +73,6 @@ import javax.annotation.Nullable;
 @MountSpec(
     events = TestEvent.class,
     isPureRender = true,
-    excludeFromIncrementalMount = true,
     hasChildLithoViews = true,
     canPreallocate = true)
 public class TestMountSpec<S extends View> implements TestTag {
@@ -201,5 +201,10 @@ public class TestMountSpec<S extends View> implements TestTag {
   static int onCalculateCached(
       @Prop Object prop3, @Prop char prop5, @State(canUpdateLazily = true) long state1) {
     return 0;
+  }
+
+  @ShouldExcludeFromIncrementalMount
+  static boolean enablePrefetch(@Prop(optional = true) boolean prop2) {
+    return prop2;
   }
 }

@@ -86,8 +86,6 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
                 runMode))
         .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(mountSpecModel))
-        .addTypeSpecDataHolder(
-            MountSpecGenerator.generateExcludeFromIncrementalMount(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateCanPreallocate(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateHasChildLithoViews(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(mountSpecModel))

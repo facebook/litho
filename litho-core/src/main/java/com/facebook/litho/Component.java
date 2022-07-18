@@ -308,7 +308,7 @@ public abstract class Component
 
   /**
    * @return Boolean indicating whether the component skips Incremental Mount. If this is true then
-   *     the Component is not going to be Incremental Mounted.
+   *     the Component will not be involved in Incremental Mount.
    */
   protected boolean excludeFromIncrementalMount() {
     return false;

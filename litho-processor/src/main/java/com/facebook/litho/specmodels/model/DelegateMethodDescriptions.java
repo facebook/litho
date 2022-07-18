@@ -56,6 +56,7 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
@@ -473,6 +474,16 @@ public final class DelegateMethodDescriptions {
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .build();
 
+  public static final DelegateMethodDescription SHOULD_EXCLUDE_FROM_INCREMENTAL_MOUNT =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.BOOLEAN)
+          .name("excludeFromIncrementalMount")
+          .definedParameterTypes(ImmutableList.of())
+          .optionalParameterTypes(ImmutableList.of(PROP, INJECT_PROP))
+          .build();
+
   public static final DelegateMethodDescription ON_ATTACHED =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
@@ -556,6 +567,8 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(
         GetExtraAccessibilityNodesCount.class, GET_EXTRA_ACCESSIBILITY_NODES_COUNT);
     mountSpecDelegateMethodsMap.put(ShouldAlwaysRemeasure.class, SHOULD_ALWAYS_REMEASURE);
+    mountSpecDelegateMethodsMap.put(
+        ShouldExcludeFromIncrementalMount.class, SHOULD_EXCLUDE_FROM_INCREMENTAL_MOUNT);
     mountSpecDelegateMethodsMap.put(OnAttached.class, ON_ATTACHED);
     mountSpecDelegateMethodsMap.put(OnDetached.class, ON_DETACHED);
     MOUNT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(mountSpecDelegateMethodsMap);

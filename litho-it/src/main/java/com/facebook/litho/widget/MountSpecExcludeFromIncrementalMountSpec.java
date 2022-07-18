@@ -36,8 +36,9 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ShouldExcludeFromIncrementalMount;
 
-@MountSpec(excludeFromIncrementalMount = true)
+@MountSpec
 class MountSpecExcludeFromIncrementalMountSpec {
 
   @OnCreateInitialState
@@ -57,6 +58,11 @@ class MountSpecExcludeFromIncrementalMountSpec {
     size.width = SizeSpec.getSize(widthSpec);
     size.height = SizeSpec.getSize(heightSpec);
     lifecycleTracker.addStep(LifecycleStep.ON_MEASURE, size);
+  }
+
+  @ShouldExcludeFromIncrementalMount
+  static boolean shouldPrefetch() {
+    return true;
   }
 
   @UiThread
