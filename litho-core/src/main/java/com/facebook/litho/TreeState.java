@@ -118,8 +118,7 @@ public class TreeState {
 
   void applyStateUpdatesForComponent(
       final ComponentContext scopedContext, final Component component, final String key) {
-    final StateHandler stateHandler =
-        scopedContext.isNestedTreeContext() ? mLayoutStateHandler : mRenderStateHandler;
+    final StateHandler stateHandler = getStateHandler(scopedContext.isNestedTreeContext());
     stateHandler.applyStateUpdatesForComponent(
         scopedContext, (SpecGeneratedComponent) component, key);
   }
