@@ -6,6 +6,7 @@
 _release-date_
 
  * **Breaking:** `PoolableContentProvider` renamed to `ContentAllocator` in RenderCore. `RenderUnit` no longer implements `PoolableContentProvider`, instead it should return `ContentAllocator` implementation from `getContentAllocator` method.
+ * **Breaking:** `StateHandler` has now been replaced by `TreeState` in `ComponentTree` for all state handling. Use `ComponentTree.acquireTreeState()` and `ComponentTree.Builder.treeState(...)` to save/restore state across different component trees.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.41.2...master).
 
