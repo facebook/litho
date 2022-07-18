@@ -31,7 +31,6 @@ import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.Size;
-import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -44,8 +43,8 @@ import javax.annotation.concurrent.ThreadSafe;
 /**
  * A class used to store the data backing a {@link RecyclerBinder}. For each item the
  * ComponentTreeHolder keeps the {@link RenderInfo} which contains the original {@link Component}
- * and either the {@link ComponentTree} or the {@link StateHandler} depending upon whether the item
- * is within the current working range or not.
+ * and either the {@link ComponentTree} or the {@link TreeState} depending upon whether the item is
+ * within the current working range or not.
  */
 @ThreadSafe
 public class ComponentTreeHolder {
@@ -251,9 +250,9 @@ public class ComponentTreeHolder {
 
   @VisibleForTesting
   @UiThread
-  public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
-    if (acquireStateHandlerOnRelease || shouldAcquireStateHandlerOnRelease()) {
-      acquireStateHandler();
+  public synchronized void acquireStateAndReleaseTree(boolean acquireTreeStateOnRelease) {
+    if (acquireTreeStateOnRelease || shouldAcquireTreeStateOnRelease()) {
+      acquireTreeState();
     }
 
     acquireAnimationState();
@@ -551,18 +550,18 @@ public class ComponentTreeHolder {
     return false;
   }
 
-  private boolean shouldAcquireStateHandlerOnRelease() {
-    final Object acquireStateHandler =
+  private boolean shouldAcquireTreeStateOnRelease() {
+    final Object acquireTreeState =
         mRenderInfo.getCustomAttribute(ACQUIRE_STATE_HANDLER_ON_RELEASE);
-    if (acquireStateHandler instanceof Boolean) {
-      return (Boolean) acquireStateHandler;
+    if (acquireTreeState instanceof Boolean) {
+      return (Boolean) acquireTreeState;
     }
 
     return false;
   }
 
   @GuardedBy("this")
-  private void acquireStateHandler() {
+  private void acquireTreeState() {
     if (mComponentTree == null) {
       return;
     }
