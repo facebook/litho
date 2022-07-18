@@ -18,8 +18,8 @@ package com.facebook.litho.widget
 
 import android.content.Context
 import android.view.View
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.MountableComponent
+import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.testing.LithoViewRule
@@ -117,7 +117,7 @@ private class PrepareTrackingMountableComponent(
     val mountTracking: MutableList<Int>,
     val tag: Int
 ) : MountableComponent() {
-  override fun ComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableWithStyle {
     prepareTracking.add(tag)
     return MountableWithStyle(
         PrepareTrackingMountable(mountTracking = mountTracking, tag = tag), style = null)

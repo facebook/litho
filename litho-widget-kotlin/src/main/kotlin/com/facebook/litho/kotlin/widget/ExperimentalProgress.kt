@@ -20,8 +20,8 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.MountableComponent
+import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
@@ -44,7 +44,7 @@ class ExperimentalProgress(
     private val style: Style? = null
 ) : MountableComponent() {
 
-  override fun ComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableWithStyle {
     val defaultColor = getTheme().colors.primary
     return MountableWithStyle(
         ProgressMountable(

@@ -19,10 +19,10 @@ package com.facebook.litho.kotlin.widget
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.MountableComponent
+import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
@@ -49,7 +49,7 @@ class ExperimentalImage(
     val style: Style? = null,
 ) : MountableComponent() {
 
-  override fun ComponentScope.render(): MountableWithStyle =
+  override fun MountableComponentScope.render(): MountableWithStyle =
       MountableWithStyle(ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY), style)
 }
 

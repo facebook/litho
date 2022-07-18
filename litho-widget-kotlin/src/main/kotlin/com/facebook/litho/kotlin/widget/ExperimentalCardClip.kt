@@ -18,8 +18,8 @@ package com.facebook.litho.kotlin.widget
 
 import android.content.Context
 import android.graphics.Color
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.MountableComponent
+import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
@@ -54,7 +54,7 @@ class ExperimentalCardClip(
     private val style: Style? = null
 ) : MountableComponent() {
 
-  override fun ComponentScope.render(): MountableWithStyle =
+  override fun MountableComponentScope.render(): MountableWithStyle =
       MountableWithStyle(
           CardClipMountable(
               clippingColor = clippingColor,

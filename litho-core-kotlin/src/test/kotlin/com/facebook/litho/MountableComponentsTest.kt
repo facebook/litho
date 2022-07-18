@@ -195,7 +195,7 @@ class MountableComponentsTest {
     lateinit var stateRef: AtomicReference<String>
 
     class TestComponent(val view: View) : MountableComponent() {
-      override fun ComponentScope.render(): MountableWithStyle {
+      override fun MountableComponentScope.render(): MountableWithStyle {
         val testState: State<String> = useState { "initial" }
         stateRef = AtomicReference(testState.value)
         return MountableWithStyle(
@@ -480,7 +480,7 @@ class TestViewMountableComponent(
     val style: Style? = null
 ) : MountableComponent() {
 
-  override fun ComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableWithStyle {
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
@@ -554,7 +554,7 @@ open class ViewMountable(
 class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? = null) :
     MountableComponent() {
 
-  override fun ComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableWithStyle {
     return MountableWithStyle(
         DrawableMountable(drawable), Style.accessibilityRole(AccessibilityRole.IMAGE) + style)
   }

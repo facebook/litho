@@ -31,7 +31,7 @@ import com.facebook.rendercore.Mountable
 abstract class MountableComponent() : Component() {
 
   final override fun prepare(c: ComponentContext): PrepareResult {
-    val mountableComponentScope = ComponentScope(c)
+    val mountableComponentScope = MountableComponentScope(c)
     val mountableWithStyle = mountableComponentScope.render()
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
@@ -44,7 +44,7 @@ abstract class MountableComponent() : Component() {
   }
 
   /** This function must return [Mountable] which are immutable. */
-  abstract fun ComponentScope.render(): MountableWithStyle
+  abstract fun MountableComponentScope.render(): MountableWithStyle
 
   final override fun getMountType(): MountType = MountType.MOUNTABLE
 

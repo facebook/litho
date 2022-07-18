@@ -24,10 +24,10 @@ import android.view.View
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.Dimen
 import com.facebook.litho.MountableComponent
+import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Size
@@ -101,7 +101,7 @@ class ExperimentalVerticalScroll(
     val style: Style? = null,
 ) : MountableComponent() {
 
-  override fun ComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableWithStyle {
 
     val scrollPosition = useState {
       LithoScrollView.ScrollPosition(initialScrollPosition.toPixels())
