@@ -94,16 +94,20 @@ public class StateUpdatesTest {
     return Whitebox.getInternalState(treeState, "mLayoutStateHandler");
   }
 
+  private TreeState getTreeState(final ComponentTree componentTree) {
+    return Whitebox.getInternalState(componentTree, "mTreeState");
+  }
+
   private <T> T getLayoutStateHandleStateContainer(
       final ComponentTree componentTree, final String globalKey) {
-    final StateHandler stateHandler = getLayoutStateHandler(componentTree);
-    return (T) stateHandler.mStateContainers.get(globalKey);
+    final TreeState treeState = getTreeState(componentTree);
+    return (T) Whitebox.invokeMethod(treeState, "getStateContainer", globalKey, true);
   }
 
   private <T> T getStateHandleStateContainer(
       final ComponentTree componentTree, final String globalKey) {
-    final StateHandler stateHandler = getRenderStateHandler(componentTree);
-    return (T) stateHandler.mStateContainers.get(globalKey);
+    final TreeState treeState = getTreeState(componentTree);
+    return (T) Whitebox.invokeMethod(treeState, "getStateContainer", globalKey, false);
   }
 
   private <T> T getInitialStateContainer(

@@ -163,9 +163,7 @@ public class TreeState {
       final boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     final KStateContainer committedStateContainer =
-        stateHandler.mStateContainers == null
-            ? null
-            : (KStateContainer) stateHandler.mStateContainers.get(globalKey);
+        (KStateContainer) stateHandler.getStateContainer(globalKey);
 
     if (committedStateContainer != null
         && committedStateContainer.mStates != null
@@ -195,9 +193,7 @@ public class TreeState {
       final boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     final KStateContainer committedStateContainer =
-        stateHandler.mStateContainers == null
-            ? null
-            : (KStateContainer) stateHandler.mStateContainers.get(globalKey);
+        (KStateContainer) stateHandler.getStateContainer(globalKey);
 
     if (committedStateContainer != null
         && committedStateContainer.mStates != null

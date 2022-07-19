@@ -59,14 +59,14 @@ public class StateHandler {
    * Maps a component key to a component object that retains the current state values for that key.
    */
   @GuardedBy("this")
-  public @Nullable Map<String, StateContainer> mStateContainers;
+  private @Nullable Map<String, StateContainer> mStateContainers;
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore
    * their StateContainer needs to be kept around.
    */
   @GuardedBy("this")
-  public HashSet<String> mNeededStateContainers;
+  private HashSet<String> mNeededStateContainers;
 
   /** Map of all cached values that are stored for the current ComponentTree. */
   @GuardedBy("this")
