@@ -720,24 +720,32 @@ public class StateHandler {
    * updates to a state handler.
    */
   public @Nullable KStateContainer getStateContainerWithHookUpdates(String globalKey) {
-    final @Nullable StateContainer stateContainer = mStateContainers.get(globalKey);
+    final @Nullable StateContainer stateContainer;
 
-    if (stateContainer == null) {
-      return null;
+    synchronized (this) {
+      stateContainer = mStateContainers.get(globalKey);
+
+      if (stateContainer == null) {
+        return null;
+      }
     }
-
     KStateContainer stateContainerWithUpdatesApplied = (KStateContainer) stateContainer;
 
-    if (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty()) {
-      final List<HookUpdater> hookUpdaters = mPendingHookUpdates.get(globalKey);
-      if (hookUpdaters == null) {
-        return stateContainerWithUpdatesApplied;
-      }
+    List<HookUpdater> hookUpdaters = null;
 
-      for (HookUpdater hookUpdater : hookUpdaters) {
-        stateContainerWithUpdatesApplied =
-            hookUpdater.getUpdatedStateContainer(stateContainerWithUpdatesApplied);
+    synchronized (this) {
+      if (mPendingHookUpdates != null && mPendingHookUpdates.containsKey(globalKey)) {
+        hookUpdaters = new ArrayList<>(mPendingHookUpdates.get(globalKey));
       }
+    }
+
+    if (hookUpdaters == null) {
+      return stateContainerWithUpdatesApplied;
+    }
+
+    for (HookUpdater hookUpdater : hookUpdaters) {
+      stateContainerWithUpdatesApplied =
+          hookUpdater.getUpdatedStateContainer(stateContainerWithUpdatesApplied);
     }
 
     return stateContainerWithUpdatesApplied;
