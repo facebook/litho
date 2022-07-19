@@ -30,18 +30,19 @@ import com.facebook.litho.config.ComponentsConfiguration
 fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
-  val stateHandler: StateHandler =
-      context.layoutStateContext?.stateHandler
+  val treeState: TreeState =
+      context.layoutStateContext?.treeState
           ?: throw IllegalStateException("Cannot create state outside of layout calculation")
 
-  val kState = stateHandler.getStateContainer(globalKey) as KStateContainer?
+  val kState =
+      treeState.getStateContainer(globalKey, context.isNestedTreeContext()) as KStateContainer?
 
   if (kState == null || kState.mStates.size <= hookIndex) {
     // The initial state was not computed yet. let's create it and put it in the state
     val state =
-        stateHandler.initialStateContainer.createOrGetInitialHookState(
-            globalKey, hookIndex, initializer)
-    stateHandler.stateContainers[globalKey] = state
+        treeState.createOrGetInitialHookState(
+            globalKey, hookIndex, initializer, context.isNestedTreeContext())
+    treeState.addStateContainer(globalKey, state, context.isNestedTreeContext())
 
     return State(context, hookIndex, state.mStates[hookIndex] as T)
   }

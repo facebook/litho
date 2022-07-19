@@ -257,4 +257,12 @@ public class TreeState {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     return stateHandler.getCachedValue(cachedValueInputs);
   }
+
+  <T> KStateContainer createOrGetInitialHookState(
+      String key, int hookStateIndex, HookInitializer<T> initializer, boolean isNestedTree) {
+    final StateHandler stateHandler = getStateHandler(isNestedTree);
+    return stateHandler
+        .getInitialStateContainer()
+        .createOrGetInitialHookState(key, hookStateIndex, initializer);
+  }
 }

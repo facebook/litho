@@ -193,10 +193,6 @@ public class LayoutStateContext {
     return node;
   }
 
-  StateHandler getStateHandler() {
-    return Preconditions.checkNotNull(mTreeState).getRenderStateHandler();
-  }
-
   TreeState getTreeState() {
     return Preconditions.checkNotNull(mTreeState);
   }
