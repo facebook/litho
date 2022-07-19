@@ -23,8 +23,10 @@ import android.graphics.drawable.Drawable;
 import com.facebook.flipper.core.FlipperObject;
 import com.facebook.flipper.plugins.inspector.InspectorValue;
 import com.facebook.flipper.plugins.inspector.Named;
+import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import java.lang.reflect.Field;
@@ -36,57 +38,68 @@ import javax.annotation.Nullable;
 
 public class DataUtils {
 
-  static List<Named<FlipperObject>> getPropData(Object node) throws Exception {
+  static List<Named<FlipperObject>> getPropData(Object node) {
     final FlipperObject.Builder props = new FlipperObject.Builder();
     List<Named<FlipperObject>> data = new ArrayList<>();
 
     boolean hasProps = false;
 
+    boolean isSpecComponent = node instanceof SpecGeneratedComponent;
+
     for (Field f : node.getClass().getDeclaredFields()) {
       f.setAccessible(true);
 
-      final Prop annotation = f.getAnnotation(Prop.class);
-      if (annotation != null) {
-        if (f.get(node) != null
-            && PropWithInspectorSection.class.isAssignableFrom(f.get(node).getClass())) {
-          final AbstractMap.SimpleEntry<String, String> datum =
-              ((PropWithInspectorSection) f.get(node)).getFlipperLayoutInspectorSection();
-          if (datum != null) {
-            data.add(new Named<>(datum.getKey(), new FlipperObject(datum.getValue())));
-          }
-        }
-
-        switch (annotation.resType()) {
-          case COLOR:
-            props.put(f.getName(), f.get(node) == null ? "null" : fromColor((Integer) f.get(node)));
-            break;
-          case DRAWABLE:
-            props.put(
-                f.getName(), f.get(node) == null ? "null" : fromDrawable((Drawable) f.get(node)));
-            break;
-          default:
-            if (f.get(node) != null
-                && PropWithDescription.class.isAssignableFrom(f.get(node).getClass())) {
-              final Object description =
-                  ((PropWithDescription) f.get(node)).getFlipperLayoutInspectorPropDescription();
-              // Treat the description as immutable for now, because it's a "translation" of the
-              // actual prop,
-              // mutating them is not going to change the original prop.
-              if (description instanceof Map<?, ?>) {
-                final Map<?, ?> descriptionMap = (Map<?, ?>) description;
-                for (Map.Entry<?, ?> entry : descriptionMap.entrySet()) {
-                  props.put(entry.getKey().toString(), InspectorValue.immutable(entry.getValue()));
-                }
-              } else {
-                props.put(f.getName(), InspectorValue.immutable(description));
-              }
-            } else {
-              props.put(f.getName(), FlipperEditor.makeFlipperField(node, f));
-            }
-            break;
-        }
-        hasProps = true;
+      Object prop;
+      try {
+        prop = f.get(node);
+      } catch (IllegalAccessException e) {
+        continue;
       }
+      String propName = f.getName();
+
+      final Prop annotation = f.getAnnotation(Prop.class);
+      if (isSpecComponent && annotation == null) {
+        // Only expose `@Prop` annotated fields for Spec components
+        continue;
+      }
+
+      hasProps = true;
+
+      if (prop != null && PropWithInspectorSection.class.isAssignableFrom(prop.getClass())) {
+        final AbstractMap.SimpleEntry<String, String> datum =
+            ((PropWithInspectorSection) prop).getFlipperLayoutInspectorSection();
+        if (datum != null) {
+          data.add(new Named<>(datum.getKey(), new FlipperObject(datum.getValue())));
+        }
+      }
+
+      if (annotation != null) {
+        ResType resType = annotation.resType();
+        if (resType == ResType.COLOR) {
+          props.put(propName, prop == null ? "null" : fromColor((Integer) prop));
+        } else if (resType == ResType.DRAWABLE) {
+          props.put(propName, prop == null ? "null" : fromDrawable((Drawable) prop));
+        }
+      }
+
+      if (prop != null && PropWithDescription.class.isAssignableFrom(prop.getClass())) {
+        final Object description =
+            ((PropWithDescription) prop).getFlipperLayoutInspectorPropDescription();
+        // Treat the description as immutable for now, because it's a "translation" of the
+        // actual prop,
+        // mutating them is not going to change the original prop.
+        if (description instanceof Map<?, ?>) {
+          final Map<?, ?> descriptionMap = (Map<?, ?>) description;
+          for (Map.Entry<?, ?> entry : descriptionMap.entrySet()) {
+            props.put(entry.getKey().toString(), InspectorValue.immutable(entry.getValue()));
+          }
+        } else {
+          props.put(propName, InspectorValue.immutable(description));
+        }
+        continue;
+      }
+
+      props.put(propName, FlipperEditor.makeFlipperField(node, f));
     }
 
     if (hasProps) {
