@@ -165,15 +165,18 @@ public class StateHandler {
     pendingStateUpdatesForKey.add(stateUpdate);
   }
 
+  void keepStateContainerForGlobalKey(String key) {
+    maybeInitNeededStateContainers();
+    mNeededStateContainers.add(key);
+  }
+
   /**
    * StateContainer in this StateHandler should be accessed using this method as it will also ensure
    * that the state is marked as needed
    */
+  @Nullable
   StateContainer getStateContainer(String key) {
-    maybeInitStateContainers();
-    maybeInitNeededStateContainers();
-    mNeededStateContainers.add(key);
-    return mStateContainers.get(key);
+    return mStateContainers == null ? null : mStateContainers.get(key);
   }
 
   private StateContainer createOrGetStateContainerForComponent(

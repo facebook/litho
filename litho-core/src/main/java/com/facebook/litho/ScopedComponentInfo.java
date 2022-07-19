@@ -160,7 +160,8 @@ public class ScopedComponentInfo implements Cloneable {
       }
     } else {
       // the get method adds the state container to the needed state container map
-      treeState.getStateContainer(mContext.getGlobalKey(), mContext.isNestedTreeContext());
+      treeState.keepStateContainerForGlobalKey(
+          mContext.getGlobalKey(), mContext.isNestedTreeContext());
     }
   }
 
@@ -176,8 +177,9 @@ public class ScopedComponentInfo implements Cloneable {
       }
 
     } else {
-      // the get method adds the state container to the needed state container map
-      treeState.getStateContainer(mContext.getGlobalKey(), mContext.isNestedTreeContext());
+      // adds the global key to the needed state container global keys
+      treeState.keepStateContainerForGlobalKey(
+          mContext.getGlobalKey(), mContext.isNestedTreeContext());
     }
   }
 

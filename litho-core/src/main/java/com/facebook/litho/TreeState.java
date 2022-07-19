@@ -140,6 +140,12 @@ public class TreeState {
     stateHandler.addStateContainer(key, stateContainer);
   }
 
+  void keepStateContainerForGlobalKey(String key, boolean isNestedTree) {
+    final StateHandler stateHandler = getStateHandler(isNestedTree);
+    stateHandler.keepStateContainerForGlobalKey(key);
+  }
+
+  @Nullable
   StateContainer getStateContainer(String key, boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     return stateHandler.getStateContainer(key);
