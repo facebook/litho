@@ -24,12 +24,31 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.Prop;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @LayoutSpec
 public class LayoutWithSizeSpecWithCachedValueSpec {
 
+  public static class CalculateCachedValueCounter {
+    private final AtomicInteger counter;
+
+    public CalculateCachedValueCounter() {
+      this.counter = new AtomicInteger(0);
+    }
+
+    void increment() {
+      this.counter.incrementAndGet();
+    }
+
+    public int get() {
+      return this.counter.get();
+    }
+  }
+
   @OnCalculateCachedValue(name = "expensiveValue")
-  static int onCalculateExpensiveValue(@Prop Integer number) {
+  static int onCalculateExpensiveValue(
+      @Prop Integer number, @Prop CalculateCachedValueCounter counter) {
+    counter.increment();
     return number == null ? -1 : number;
   }
 
