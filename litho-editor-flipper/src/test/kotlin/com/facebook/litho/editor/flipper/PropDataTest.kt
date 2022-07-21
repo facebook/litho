@@ -16,17 +16,23 @@
 
 package com.facebook.litho.editor.flipper
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.testing.LithoViewRule
 import java.util.AbstractMap
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class PropDataTest {
+
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun `test KComponent with no props does not create a Props section`() {
@@ -114,6 +120,115 @@ class PropDataTest {
     // Single values are overridden
     assertThat(flipperObject.getObject("singleDescription").getString("value"))
         .isEqualTo("Hello World!")
+
+    // Map values are added directly to the prop list
+    assertThat(flipperObject.getObject("Hello").getInt("value")).isEqualTo(1)
+    assertThat(flipperObject.getObject("World").getInt("value")).isEqualTo(2)
+  }
+
+  @Test
+  fun `test LayoutSpec with no props does not create a Props section`() {
+    val component = LayoutNoProps.create(lithoViewRule.context).build()
+
+    val propData = DataUtils.getPropData(component)
+    val props = propData.find { it.name == "Props" }
+
+    assertThat(props).isNull()
+  }
+
+  @Test
+  fun `test LayoutSpec props included in Props scetion`() {
+    val component = LayoutWithBasicProps.create(lithoViewRule.context).a(null).b(2).c(true).build()
+    val propData = DataUtils.getPropData(component)
+    val props = propData.find { it.name == "Props" }
+
+    assertThat(props).isNotNull
+    props ?: return
+
+    val flipperObject = props.value
+    // Fallback to class name
+    assertThat(flipperObject.getObject("a").get("value")).isEqualTo("class java.lang.Object")
+    assertThat(flipperObject.getObject("b").getInt("value")).isEqualTo(2)
+    assertThat(flipperObject.getObject("c").getBoolean("value")).isTrue
+  }
+
+  @Test
+  fun `test LayoutSpec color props included in Props scetion`() {
+    val component =
+        LayoutWithColorProps.create(lithoViewRule.context)
+            .a(Color.WHITE)
+            .b(ColorDrawable(Color.RED))
+            .build()
+    val propData = DataUtils.getPropData(component)
+    val props = propData.find { it.name == "Props" }
+
+    assertThat(props).isNotNull
+    props ?: return
+
+    val flipperObject = props.value
+    val a = flipperObject.getObject("a")
+    assertThat(a.getInt("value")).isEqualTo(Color.WHITE)
+    assertThat(a.getString("__type__")).isEqualTo("color")
+
+    // ColorDrawables are treated as colors
+    val b = flipperObject.getObject("b")
+    assertThat(b.getInt("value")).isEqualTo(Color.RED)
+    assertThat(b.getString("__type__")).isEqualTo("color")
+  }
+
+  @Test
+  fun `test LayoutSpec PropWithInspectorSection props creates new scetion`() {
+    val propWithInspectorSection =
+        object : PropWithInspectorSection {
+          override fun getFlipperLayoutInspectorSection(): AbstractMap.SimpleEntry<String, String> =
+              AbstractMap.SimpleEntry("New Section", "{\"A\":\"B\"}")
+        }
+
+    val component =
+        LayoutWithPropWithInspectorSection.create(lithoViewRule.context)
+            .a(propWithInspectorSection)
+            .build()
+
+    val propData = DataUtils.getPropData(component)
+    val inspectorSection = propData.find { it.name == "New Section" }
+    assertThat(inspectorSection).isNotNull
+    inspectorSection ?: return
+
+    val flipperObject = inspectorSection.value
+    assertThat(flipperObject.getString("A")).isEqualTo("B")
+  }
+
+  @Test
+  fun `test LayoutSpec PropWithDescription props included in Props scetion`() {
+    val singleDescription =
+        object : PropWithDescription {
+          override fun getFlipperLayoutInspectorPropDescription(): Any = "Hello World!"
+        }
+
+    val mapDescription =
+        object : PropWithDescription {
+          override fun getFlipperLayoutInspectorPropDescription(): Any =
+              mapOf(
+                  "Hello" to 1,
+                  "World" to 2,
+              )
+        }
+
+    val component =
+        LayoutWithPropWithDescription.create(lithoViewRule.context)
+            .a(singleDescription)
+            .b(mapDescription)
+            .build()
+
+    val propData = DataUtils.getPropData(component)
+    val props = propData.find { it.name == "Props" }
+    assertThat(props).isNotNull
+    props ?: return
+
+    val flipperObject = props.value
+
+    // Single values are overridden
+    assertThat(flipperObject.getObject("a").getString("value")).isEqualTo("Hello World!")
 
     // Map values are added directly to the prop list
     assertThat(flipperObject.getObject("Hello").getInt("value")).isEqualTo(1)
