@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "make_dep_path")
 
 fb_native.android_aar(
     name = "litho-widget-material",
+    labels = ["supermodule:android/default/litho.core"],
     manifest_skeleton = "src/main/AndroidManifest.xml",
     visibility = [
         "PUBLIC",
@@ -15,5 +16,4 @@ fb_native.android_aar(
     deps = [
         make_dep_path("litho-widget-material/src/main/java/com/facebook/litho/widget:widget"),
     ],
-    labels = ["supermodule:android/default/litho.core"],
 )

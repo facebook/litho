@@ -22,11 +22,11 @@ load(
 
 fb_native.android_binary(
     name = "sample",
+    aapt_mode = "aapt2",
     includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
     use_split_dex = True,
-    aapt_mode = "aapt2",
     visibility = [
         "PUBLIC",
     ],
