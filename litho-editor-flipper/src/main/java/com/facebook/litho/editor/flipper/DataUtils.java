@@ -77,8 +77,10 @@ public class DataUtils {
         ResType resType = annotation.resType();
         if (resType == ResType.COLOR) {
           props.put(propName, prop == null ? "null" : fromColor((Integer) prop));
+          continue;
         } else if (resType == ResType.DRAWABLE) {
           props.put(propName, prop == null ? "null" : fromDrawable((Drawable) prop));
+          continue;
         }
       }
 
