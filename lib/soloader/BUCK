@@ -39,18 +39,18 @@ fb_prebuilt_jar(
 
 fb_native.remote_file(
     name = "nativeloader.jar",
-    sha1 = "86cb3da9384707034355ac1e84e9a8cf6de80f7c",
-    url = "mvn:com.facebook.soloader:nativeloader:jar:0.8.2",
+    sha1 = "171783d0f3f525fb9e18eb3af758c0b3aaeaed69",
+    url = "mvn:com.facebook.soloader:nativeloader:jar:0.10.4",
 )
 
-fb_native.android_prebuilt_aar(
+fb_prebuilt_jar(
     name = "annotation-prebuilt",
-    aar = ":annotation.aar",
+    binary_jar = ":annotation.jar",
     visibility = ["PUBLIC"],
 )
 
 fb_native.remote_file(
-    name = "annotation.aar",
-    sha1 = "ae6d46195467467fae746c6225f79ac41e7039e8",
-    url = "mvn:com.facebook.soloader:annotation:aar:0.8.2",
+    name = "annotation.jar",
+    sha1 = "dc58463712cb3e5f03d8ee5ac9743b9ced9afa77",
+    url = "mvn:com.facebook.soloader:annotation:jar:0.10.4",
 )
