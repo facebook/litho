@@ -16,10 +16,12 @@
 
 package com.facebook.litho.editor;
 
+import android.util.Pair;
 import com.facebook.litho.editor.instances.AtomicBooleanEditorInstance;
 import com.facebook.litho.editor.instances.AtomicIntegerEditorInstance;
 import com.facebook.litho.editor.instances.AtomicReferenceEditorInstance;
 import com.facebook.litho.editor.instances.BoolEditorInstance;
+import com.facebook.litho.editor.instances.GenericEditorInstance;
 import com.facebook.litho.editor.instances.NumberEditorInstance;
 import com.facebook.litho.editor.instances.StringEditorInstance;
 import com.facebook.litho.editor.instances.UtilSizeEditorInstance;
@@ -183,6 +185,7 @@ public final class EditorRegistry {
     registerEditor(Byte.class, new NumberEditorInstance<>(Byte.class));
 
     registerEditor(CharSequence.class, new StringEditorInstance());
+    registerEditor(Pair.class, new GenericEditorInstance());
 
     final BoolEditorInstance boolEditor = new BoolEditorInstance();
     registerEditor(Boolean.class, boolEditor);
