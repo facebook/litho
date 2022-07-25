@@ -24,6 +24,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.ColorInt
 import com.facebook.litho.Dimen
+import com.facebook.litho.Handle
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
@@ -52,7 +53,8 @@ inline fun ResourcesScope.TextInput(
     inputType: Int = EditorInfo.TYPE_CLASS_TEXT,
     imeOptions: Int = EditorInfo.IME_NULL,
     noinline onTextChanged: ((TextChangedEvent) -> Unit)? = null,
-    noinline onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null
+    noinline onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null,
+    handle: Handle? = null,
 ): TextInput =
     TextInput.create(context)
         .initialText(initialText)
@@ -69,6 +71,7 @@ inline fun ResourcesScope.TextInput(
         .maxLines(maxLines)
         .inputType(inputType)
         .imeOptions(imeOptions)
+        .handle(handle)
         .kotlinStyle(style)
         .apply {
           onTextChanged?.let { textChangedEventHandler(eventHandler(it)) }
