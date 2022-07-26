@@ -16,7 +16,7 @@
  * @format
  */
 
-const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
+const {fbContent, fbInternalOnly} = require('docusaurus-plugin-internaldocs-fb/internal');
 
 const repoUrl = 'https://github.com/facebook/litho';
 const siteTitle = fbContent({internal: 'Litho @FB', external: 'Litho'});

@@ -2039,7 +2039,7 @@
     "@docsearch/css" "3.1.0"
     algoliasearch "^4.0.0"
 
-"@docusaurus/core@2.0.0-beta.21", "@docusaurus/core@^2.0.0-beta.21":
+"@docusaurus/core@2.0.0-beta.21":
   version "2.0.0-beta.21"
   resolved "https://registry.yarnpkg.com/@docusaurus/core/-/core-2.0.0-beta.21.tgz#50897317b22dbd94b1bf91bb30c2a0fddd15a806"
   integrity sha512-qysDMVp1M5UozK3u/qOxsEZsHF7jeBvJDS+5ItMPYmNKvMbNKeYZGA0g6S7F9hRDwjIlEbvo7BaX0UMDcmTAWA==
@@ -2168,7 +2168,7 @@
     "@types/react-router-dom" "*"
     react-helmet-async "*"
 
-"@docusaurus/plugin-client-redirects@^2.0.0-beta.21":
+"@docusaurus/plugin-client-redirects@2.0.0-beta.21":
   version "2.0.0-beta.21"
   resolved "https://registry.yarnpkg.com/@docusaurus/plugin-client-redirects/-/plugin-client-redirects-2.0.0-beta.21.tgz#bf0c3e94d89c7bd15933dacdfefc17fec22c5d76"
   integrity sha512-4xzrti0au7SaQT/cxr+FM9b+R5gfOSFODwQJ2QeTXbkdiz1+9DV3bp8nB/2CmzZ9ApY5lsueXNpa4n7+UAngrA==
@@ -2282,7 +2282,7 @@
     sitemap "^7.1.1"
     tslib "^2.4.0"
 
-"@docusaurus/preset-classic@^2.0.0-beta.21":
+"@docusaurus/preset-classic@2.0.0-beta.21":
   version "2.0.0-beta.21"
   resolved "https://registry.yarnpkg.com/@docusaurus/preset-classic/-/preset-classic-2.0.0-beta.21.tgz#1362d8650ebed22633db411caaba80075f7c86ce"
   integrity sha512-KvBnIUu7y69pNTJ9UhX6SdNlK6prR//J3L4rhN897tb8xx04xHHILlPXko2Il+C3Xzgh3OCgyvkoz9K6YlFTDw==
@@ -5201,10 +5201,10 @@ dns-packet@^5.2.2:
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
 
-docusaurus-plugin-internaldocs-fb@0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.12.1.tgz#8e869934d07a4bb4b0818e54059d5bf3080df67d"
-  integrity sha512-i8MMK71vomNtEdOeHmkh3vWtk8Qs+3sx1Z9sGz4DbP/n86u4RIjT6VZv1L/scaNaydP9sd7/LJodfuflRwqPyA==
+docusaurus-plugin-internaldocs-fb@0.12.2:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.12.2.tgz#1f0ed0f49bc9f1562544956516d3d0e907438032"
+  integrity sha512-XvSQOtcE+4JpifxaRFvZ7ClOLig1mA1IftTi6EXCK+5r4yJVeUuwoishX+Xdus9mBrdTL/EDd6qeS9owWJMZJQ==
   dependencies:
     "@mdx-js/mdx" "^2.1.1"
     "@mdx-js/react" "^1.6.22"

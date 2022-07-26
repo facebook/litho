@@ -3,7 +3,7 @@ id: communicating-between-components
 title: Communicating Between Components
 ---
 
-import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
 
 ### Dispatching an Event from a child to its parent
 
