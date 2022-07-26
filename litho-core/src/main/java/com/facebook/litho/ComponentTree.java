@@ -825,15 +825,23 @@ public class ComponentTree implements LithoLifecycleListener {
     // Per ComponentTree visible area. Because LithoViews can be nested and mounted
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = new Rect();
+    final boolean hasNonEmptyVisibleRect =
+        mLithoView.getCorrectedLocalVisibleRect(currentVisibleArea);
 
-    if (mLithoView.getCorrectedLocalVisibleRect(currentVisibleArea)
+    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
+        && !hasNonEmptyVisibleRect) {
+      // Set to pure empty to allow for easy comparisons.
+      currentVisibleArea.setEmpty();
+    }
+
+    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
+        || hasNonEmptyVisibleRect
         || hasComponentsExcludedFromIncrementalMount(mMainThreadLayoutState)
         // It might not be yet visible but animating from 0 height/width in which case we still
         // need to mount them to trigger animation.
         || animatingRootBoundsFromZero(currentVisibleArea)) {
       mountComponent(currentVisibleArea, true);
     }
-    // if false: no-op, doesn't have visible area, is not ready or not attached
   }
 
   // Check if we should ignore the result of visible rect checking and continue doing

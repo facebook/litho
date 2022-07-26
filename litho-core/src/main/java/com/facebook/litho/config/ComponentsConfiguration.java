@@ -156,6 +156,12 @@ public class ComponentsConfiguration {
 
   public static boolean shouldAddHostViewForRootComponent = false;
 
+  /**
+   * When true, IM will not stop when the LithoView's visible rect is empty, and will proceed to
+   * unmount everything.
+   */
+  public static boolean shouldContinueIncrementalMountWhenVisibileRectIsEmpty = false;
+
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
 

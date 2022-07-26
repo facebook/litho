@@ -139,8 +139,8 @@ public class MountStateIncrementalMountWithTransitionsTest {
 
     final Component childOfAnimatingComponent =
         RecyclerCollectionComponent.create(mLegacyLithoViewRule.getContext())
+            .widthPx(40)
             .heightPx(40)
-            .topPaddingPx(40)
             .section(
                 TestSingleComponentListSection.create(sectionContext)
                     .data(animatingComponents)
@@ -154,7 +154,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
           public Component getComponent(ComponentContext componentContext, boolean state) {
             if (!state) {
               return Column.create(componentContext)
-                  .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                  .alignItems(YogaAlign.FLEX_END)
                   .child(
                       Column.create(componentContext)
                           .flexGrow(1)
@@ -165,7 +165,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
             }
 
             return Column.create(componentContext)
-                .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                .alignItems(YogaAlign.FLEX_START)
                 .child(
                     Column.create(componentContext)
                         .flexGrow(1)

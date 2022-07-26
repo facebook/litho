@@ -61,7 +61,8 @@ public class LithoTestRunner extends RobolectricTestRunner {
         PostToFrontOfMainThreadBatchedUpdateStateTestRunConfiguration.class,
         PostAfterComponentsCallbacksBatchedUpdateStateTestRunConfiguration.class,
         PostToChoreographerBatchedUpdateStateTestRunConfiguration.class,
-        BestEffortFrontOfQueueAndChoreographerBatchedUpdateStateTestRunConfiguration.class);
+        BestEffortFrontOfQueueAndChoreographerBatchedUpdateStateTestRunConfiguration.class,
+        AllowIncMountWhenVisibleRectIsEmptyTestRunConfiguration.class);
   }
 
   @Override

@@ -2140,4 +2140,44 @@ public class VisibilityEventsTest {
         .describedAs("Visible event should be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
+
+  @Test
+  public void testOnInvisibleWhenVisibleRectBecomesEmpty() {
+    // Test only relevant when IM continues when the visible rect is empty.
+    if (!ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10).build();
+
+    // Set root with non-empty size specs.
+    mLegacyLithoViewRule
+        .setRoot(component)
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    // Ensure onVisible is fired.
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+
+    // Clear the steps.
+    steps.clear();
+
+    // Keep the same root, but now set the width size specs to 0 and remeasure / layout.
+    mLegacyLithoViewRule
+        .setSizeSpecs(makeSizeSpec(0, EXACTLY), makeSizeSpec(10, EXACTLY))
+        .measure()
+        .layout();
+
+    // Ensure onInvisible is now fired.
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+  }
 }

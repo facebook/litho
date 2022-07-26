@@ -167,7 +167,12 @@ public class LithoViewTest {
     ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertThat(getInternalMountItems(mLithoView)).isEqualTo(0);
+    // With no volume, ensure the component is not mounted.
+    // When IM is blocked when rect is empty - nothing is mounted, so we expect 0 items.
+    // When IM continues when rect is empty - the root host is mounted, so we expect 1 item.
+    final int totalExpectedMountedItems =
+        ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty ? 1 : 0;
+    assertThat(getInternalMountItems(mLithoView)).isEqualTo(totalExpectedMountedItems);
   }
 
   /** This verifies that the width is correct with at most layout params. */
