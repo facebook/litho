@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",

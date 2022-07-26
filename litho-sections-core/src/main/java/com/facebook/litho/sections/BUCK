@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("@fbsource//xplat/pfh/FBApp/UIFrameworks/Litho/Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
