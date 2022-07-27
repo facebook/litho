@@ -93,9 +93,6 @@ public class LayoutState
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
 
-  static final String KEY_LAYOUT_STATE_ID = "layoutId";
-  static final String KEY_PREVIOUS_LAYOUT_STATE_ID = "previousLayoutId";
-
   @IntDef({
     CalculateLayoutSource.TEST,
     CalculateLayoutSource.NONE,
@@ -220,8 +217,6 @@ public class LayoutState
   final boolean mShouldDisableDrawableOutputs =
       mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableBgFgOutputs;
 
-  final Map<String, Object> mLayoutData = new HashMap<>();
-
   // TODO(t66287929): Remove mIsCommitted from LayoutState by matching RenderState logic around
   // Futures.
   private boolean mIsCommitted;
@@ -250,8 +245,6 @@ public class LayoutState
     mLastMeasuredLayouts = new HashMap<>();
     mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
-    mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
-    mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
     mLayoutStateContext =
         new LayoutStateContext(
             this, treeState, context.getComponentTree(), layoutStateFuture, diffTreeRoot);
