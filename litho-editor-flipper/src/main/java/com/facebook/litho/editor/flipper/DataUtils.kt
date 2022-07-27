@@ -69,20 +69,13 @@ object DataUtils {
           continue
         }
       }
-      if (prop != null && PropWithDescription::class.java.isAssignableFrom(prop.javaClass)) {
-        val description = (prop as PropWithDescription).flipperLayoutInspectorPropDescription
-        // Treat the description as immutable for now, because it's a "translation" of the
-        // actual prop,
-        // mutating them is not going to change the original prop.
-        if (description is Map<*, *>) {
-          for ((key, value) in description) {
-            props.put(key.toString(), InspectorValue.immutable(value))
-          }
-        } else {
-          props.put(propName, InspectorValue.immutable(description))
-        }
+
+      val description = getValueOverride(prop)
+      if (description != null) {
+        props.put(propName, description)
         continue
       }
+
       props.put(propName, FlipperEditor.makeFlipperField(node, f))
     }
     if (hasProps) {
@@ -90,6 +83,26 @@ object DataUtils {
     }
     return data
   }
+
+  // Props can override the value shown in the Layout Inspector by implementing PropWithDescription
+  // e.g. to include additional debug information.
+  private fun getValueOverride(prop: Any?): FlipperObject? =
+      prop
+          ?.let { it as? PropWithDescription }
+          ?.flipperLayoutInspectorPropDescription
+          ?.let {
+            when (it) {
+              is Map<*, *> ->
+                  FlipperObject.Builder()
+                      .apply {
+                        it.entries.forEach { (key, value) ->
+                          put(key.toString(), InspectorValue.immutable(value))
+                        }
+                      }
+                      .build()
+              else -> InspectorValue.immutable(it).toFlipperObject()
+            }
+          }
 
   @JvmStatic
   fun getStateData(stateContainer: StateContainer?): FlipperObject? {

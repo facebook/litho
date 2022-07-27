@@ -121,9 +121,10 @@ class PropDataTest {
     assertThat(flipperObject.getObject("singleDescription").getString("value"))
         .isEqualTo("Hello World!")
 
-    // Map values are added directly to the prop list
-    assertThat(flipperObject.getObject("Hello").getInt("value")).isEqualTo(1)
-    assertThat(flipperObject.getObject("World").getInt("value")).isEqualTo(2)
+    // Map values are added directly ot the prop list
+    val mapDescription = flipperObject.getObject("mapDescription")
+    assertThat(mapDescription.getObject("Hello").getInt("value")).isEqualTo(1)
+    assertThat(mapDescription.getObject("World").getInt("value")).isEqualTo(2)
   }
 
   @Test
@@ -200,12 +201,12 @@ class PropDataTest {
 
   @Test
   fun `test LayoutSpec PropWithDescription props included in Props scetion`() {
-    val singleDescription =
+    val propWithOverride =
         object : PropWithDescription {
           override fun getFlipperLayoutInspectorPropDescription(): Any = "Hello World!"
         }
 
-    val mapDescription =
+    val propWithMapOverride =
         object : PropWithDescription {
           override fun getFlipperLayoutInspectorPropDescription(): Any =
               mapOf(
@@ -216,8 +217,8 @@ class PropDataTest {
 
     val component =
         LayoutWithPropWithDescription.create(lithoViewRule.context)
-            .a(singleDescription)
-            .b(mapDescription)
+            .a(propWithOverride)
+            .b(propWithMapOverride)
             .build()
 
     val propData = DataUtils.getPropData(component)
@@ -230,8 +231,8 @@ class PropDataTest {
     // Single values are overridden
     assertThat(flipperObject.getObject("a").getString("value")).isEqualTo("Hello World!")
 
-    // Map values are added directly to the prop list
-    assertThat(flipperObject.getObject("Hello").getInt("value")).isEqualTo(1)
-    assertThat(flipperObject.getObject("World").getInt("value")).isEqualTo(2)
+    val mapDescription = flipperObject.getObject("b")
+    assertThat(mapDescription.getObject("Hello").getInt("value")).isEqualTo(1)
+    assertThat(mapDescription.getObject("World").getInt("value")).isEqualTo(2)
   }
 }
