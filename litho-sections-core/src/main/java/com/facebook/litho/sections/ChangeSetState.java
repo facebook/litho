@@ -36,7 +36,6 @@ import androidx.core.util.Pair;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.PerfEvent;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -207,12 +206,9 @@ public class ChangeSetState {
     // later because a section is considered unchanged if the old one and the new one have
     // the same props and state.
     final boolean isChildrenOfSectionConsistent =
-        !ComponentsConfiguration.shouldCheckConsistencyOfChildren
-            || (!currentRootIsNull && (currentRoot.getCount() == newRoot.getCount()));
+        !currentRootIsNull && (currentRoot.getCount() == newRoot.getCount());
     // Components both exist and don't need to update.
-    if (isChildrenOfSectionConsistent
-        && !currentRootIsNull
-        && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
+    if (isChildrenOfSectionConsistent && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
       final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
       newRoot.setCount(changeSet.getCount());
