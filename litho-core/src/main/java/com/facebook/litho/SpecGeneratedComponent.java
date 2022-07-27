@@ -32,7 +32,8 @@ import com.facebook.rendercore.RenderCoreSystrace;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class SpecGeneratedComponent extends Component implements EventTriggerTarget {
+public abstract class SpecGeneratedComponent extends Component
+    implements EventTriggerTarget, HasEventTrigger {
 
   private final String mSimpleName;
 
@@ -177,6 +178,11 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     } else {
       return new RenderResult(onCreateLayout(c));
     }
+  }
+
+  @Override
+  public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
+    // Do nothing by default
   }
 
   /**
@@ -474,6 +480,10 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
    * props as fields on the ComponentImpl.
    */
   protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
+
+  protected @Nullable RenderData recordRenderData(ComponentContext c, RenderData toRecycle) {
+    return null;
+  }
 
   /**
    * @return true if the Component should always be measured when receiving a remeasure event, false

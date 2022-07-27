@@ -137,12 +137,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun poolSize() = super.poolSize()
 
-  final override fun recordEventTrigger(c: ComponentContext, container: EventTriggersContainer) =
-      super.recordEventTrigger(c, container)
-
-  final override fun recordRenderData(c: ComponentContext, toRecycle: RenderData) =
-      super.recordRenderData(c, toRecycle)
-
   final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
       super.resolve(layoutContext, c)
 

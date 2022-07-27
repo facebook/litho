@@ -89,7 +89,6 @@ public abstract class Component
     implements Cloneable,
         ContentAllocator,
         HasEventDispatcher,
-        HasEventTrigger,
         EventDispatcher,
         Equivalence<Component> {
 
@@ -417,11 +416,6 @@ public abstract class Component
   @ThreadSafe
   protected int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
-  }
-
-  protected @Nullable com.facebook.litho.Component.RenderData recordRenderData(
-      ComponentContext c, com.facebook.litho.Component.RenderData toRecycle) {
-    return null;
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
@@ -824,11 +818,6 @@ public abstract class Component
       outputSize.height = result != null ? result.getHeight() : 0;
       outputSize.width = result != null ? result.getWidth() : 0;
     }
-  }
-
-  @Override
-  public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
-    // Do nothing by default
   }
 
   @Nullable

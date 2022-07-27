@@ -74,7 +74,8 @@ public class RenderState {
 
     final ComponentContext scopedContext = scopedComponentInfo.getContext();
     final Component.RenderData existingInfo = mRenderData.get(globalKey);
-    final Component.RenderData newInfo = component.recordRenderData(scopedContext, existingInfo);
+    final Component.RenderData newInfo =
+        ((SpecGeneratedComponent) component).recordRenderData(scopedContext, existingInfo);
 
     mRenderData.put(globalKey, newInfo);
   }
