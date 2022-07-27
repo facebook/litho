@@ -22,6 +22,7 @@ import com.facebook.litho.editor.instances.AtomicIntegerEditorInstance;
 import com.facebook.litho.editor.instances.AtomicReferenceEditorInstance;
 import com.facebook.litho.editor.instances.BoolEditorInstance;
 import com.facebook.litho.editor.instances.GenericEditorInstance;
+import com.facebook.litho.editor.instances.ListEditorInstance;
 import com.facebook.litho.editor.instances.NumberEditorInstance;
 import com.facebook.litho.editor.instances.StringEditorInstance;
 import com.facebook.litho.editor.instances.UtilSizeEditorInstance;
@@ -195,6 +196,9 @@ public final class EditorRegistry {
 
     registerEditor(AtomicBoolean.class, new AtomicBooleanEditorInstance());
     registerEditor(AtomicInteger.class, new AtomicIntegerEditorInstance());
+
+    registerEditor(java.util.List.class, new ListEditorInstance());
+    registerEditor(java.util.AbstractList.class, new ListEditorInstance());
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
       registerEditor(android.util.Size.class, new UtilSizeEditorInstance());

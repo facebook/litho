@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor.model;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -78,28 +79,28 @@ public abstract class EditorValue {
 
   public abstract static class DefaultEditorVisitor implements EditorVisitor<Void> {
 
-    public Void isShape(EditorShape object) {
+    public @Nullable Void isShape(EditorShape object) {
       return null;
     }
 
-    public Void isArray(EditorArray array) {
+    public @Nullable Void isArray(EditorArray array) {
       return null;
     }
 
     @Override
-    public Void isPick(EditorPick pick) {
+    public @Nullable Void isPick(EditorPick pick) {
       return null;
     }
 
-    public Void isNumber(EditorNumber number) {
+    public @Nullable Void isNumber(EditorNumber number) {
       return null;
     }
 
-    public Void isString(EditorString string) {
+    public @Nullable Void isString(EditorString string) {
       return null;
     }
 
-    public Void isBool(EditorBool bool) {
+    public @Nullable Void isBool(EditorBool bool) {
       return null;
     }
   }
