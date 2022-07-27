@@ -17,13 +17,11 @@
 package com.facebook.litho.widget;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.EmptyComponent;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
-import com.facebook.litho.RenderResult;
 
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends BaseRenderInfo {
@@ -126,25 +124,6 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
     public ComponentRenderInfo build() {
       return new ComponentRenderInfo(this);
-    }
-  }
-
-  private static class EmptyComponent extends Component {
-
-    @Override
-    protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
-      return new RenderResult(Column.create(c).build());
-    }
-
-    @Override
-    public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
-      return EmptyComponent.this == other
-          || (other != null && EmptyComponent.this.getClass() == other.getClass());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "EmptyComponent";
     }
   }
 }

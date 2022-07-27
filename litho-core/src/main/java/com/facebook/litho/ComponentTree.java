@@ -1328,11 +1328,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * we will run a layout and then proxy a message to the main thread to cause a
    * relayout/invalidate.
    */
-  public void setRoot(Component root) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+  public void setRoot(@Nullable Component root) {
     setRootAndSizeSpecAndWrapper(
         root,
         SIZE_UNINITIALIZED,
@@ -1450,11 +1446,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  public void setRootAsync(Component root) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+  public void setRootAsync(@Nullable Component root) {
     setRootAndSizeSpecAndWrapper(
         root,
         SIZE_UNINITIALIZED,
@@ -1858,11 +1850,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /** Compute asynchronously a new layout with the given component root and sizes */
-  public void setRootAndSizeSpecAsync(Component root, int widthSpec, int heightSpec) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+  public void setRootAndSizeSpecAsync(@Nullable Component root, int widthSpec, int heightSpec) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1879,11 +1867,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * Compute asynchronously a new layout with the given component root, sizes and stored TreeProps.
    */
   public void setRootAndSizeSpecAsync(
-      Component root, int widthSpec, int heightSpec, @Nullable TreeProps treeProps) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+      @Nullable Component root, int widthSpec, int heightSpec, @Nullable TreeProps treeProps) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1897,11 +1881,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /** Compute a new layout with the given component root and sizes */
-  public void setRootAndSizeSpecSync(Component root, int widthSpec, int heightSpec) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+  public void setRootAndSizeSpecSync(@Nullable Component root, int widthSpec, int heightSpec) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1914,11 +1894,8 @@ public class ComponentTree implements LithoLifecycleListener {
         null);
   }
 
-  public void setRootAndSizeSpecSync(Component root, int widthSpec, int heightSpec, Size output) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+  public void setRootAndSizeSpecSync(
+      @Nullable Component root, int widthSpec, int heightSpec, Size output) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1932,11 +1909,11 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   public void setRootAndSizeSpecSync(
-      Component root, int widthSpec, int heightSpec, Size output, @Nullable TreeProps treeProps) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
+      @Nullable Component root,
+      int widthSpec,
+      int heightSpec,
+      Size output,
+      @Nullable TreeProps treeProps) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1950,16 +1927,12 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   public void setVersionedRootAndSizeSpec(
-      Component root,
+      @Nullable Component root,
       int widthSpec,
       int heightSpec,
       Size output,
       @Nullable TreeProps treeProps,
       int externalRootVersion) {
-    if (root == null) {
-      throw new IllegalArgumentException("Root component can't be null");
-    }
-
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -2127,13 +2100,11 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /**
-   * This internal version of {@link #setRootAndSizeSpecInternal(Component, int, int, boolean, Size,
-   * int, String, TreeProps)} wraps the provided root in a wrapper component first. Ensure to only
-   * call this for entry calls to setRoot, i.e. non-recurring calls as you will otherwise continue
-   * rewrapping the component.
+   * Common internal entry-point for calls which are updating the root. If the provided root is
+   * null, an EmptyComponent is used instead.
    */
   private void setRootAndSizeSpecAndWrapper(
-      Component root,
+      @Nullable Component root,
       int widthSpec,
       int heightSpec,
       boolean isAsync,
@@ -2142,6 +2113,9 @@ public class ComponentTree implements LithoLifecycleListener {
       int externalRootVersion,
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps) {
+    if (root == null) {
+      root = new EmptyComponent();
+    }
 
     setRootAndSizeSpecInternal(
         root,
@@ -3616,7 +3590,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
       // Setting root to default to allow users to initialise without a root.
       if (root == null) {
-        root = Row.create(context).build();
+        root = new EmptyComponent();
       }
       // TODO: T48569046 verify logTag when it will be set on CT directly
       if (logger != null && logTag == null) {

@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho;
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import javax.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
-/**
- * A component that doesn't render anything.
- *
- * @deprecated This file is going to be codemod'ed away soon(tm) - use
- *     com.facebook.litho.EmptyComponent instead
- */
-@Deprecated
-@LayoutSpec
-class EmptyComponentSpec {
+/** A component which renders nothing. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
+public final class EmptyComponent extends Component {
 
-  @OnCreateLayout
-  static @Nullable Component onCreateLayout(ComponentContext c) {
-    return null;
+  @Override
+  protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
+    return new RenderResult(null);
   }
 }
