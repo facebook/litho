@@ -83,8 +83,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun canResolve(): Boolean = false
 
-  final override fun createStateContainer() = super.createStateContainer()
-
   final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
       super.dispatchOnEventImpl(eventHandler, eventState)
 

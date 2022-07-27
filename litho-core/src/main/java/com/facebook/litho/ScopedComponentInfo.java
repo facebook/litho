@@ -58,7 +58,10 @@ public class ScopedComponentInfo implements Cloneable {
       final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
     mComponent = component;
     mContext = context;
-    mStateContainer = component.createStateContainer();
+    mStateContainer =
+        component instanceof SpecGeneratedComponent
+            ? ((SpecGeneratedComponent) component).createStateContainer()
+            : null;
     mPrepareInterStagePropsContainer =
         component instanceof SpecGeneratedComponent
             ? ((SpecGeneratedComponent) component).createPrepareInterStagePropsContainer()

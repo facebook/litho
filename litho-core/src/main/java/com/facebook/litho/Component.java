@@ -983,10 +983,6 @@ public abstract class Component
     return mId;
   }
 
-  protected @Nullable StateContainer createStateContainer() {
-    return null;
-  }
-
   @Override
   public final String toString() {
     return getSimpleName();

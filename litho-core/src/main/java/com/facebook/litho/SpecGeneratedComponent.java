@@ -149,6 +149,10 @@ public abstract class SpecGeneratedComponent extends Component implements EventT
     }
   }
 
+  protected @Nullable StateContainer createStateContainer() {
+    return null;
+  }
+
   /**
    * @return the Component this Component should delegate its getSimpleName calls to. See {@link
    *     LayoutSpec#simpleNameDelegate()}

@@ -74,8 +74,6 @@ abstract class KComponent : Component() {
 
   final override fun canResolve() = false
 
-  final override fun createStateContainer() = super.createStateContainer()
-
   final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
       super.dispatchOnEventImpl(eventHandler, eventState)
 
