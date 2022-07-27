@@ -565,4 +565,26 @@ class FlexboxStylesTest {
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
   }
+
+  @Test
+  fun marginAuto_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(200, 200)
+        .setRoot {
+          Row(
+              style =
+                  Style.width(100.px)
+                      .height(100.px)
+                      .marginAuto(YogaEdge.LEFT)
+                      .marginAuto(YogaEdge.TOP))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.currentRootNode?.yogaNode?.getMargin(YogaEdge.LEFT).toString())
+        .isEqualTo("auto")
+    assertThat(lithoViewRule.currentRootNode?.yogaNode?.getMargin(YogaEdge.TOP).toString())
+        .isEqualTo("auto")
+  }
 }

@@ -60,6 +60,7 @@ internal enum class FlexboxObjectField {
   ALIGN_SELF,
   BORDER,
   LAYOUT_DIRECTION,
+  MARGIN_AUTO,
   POSITION_TYPE,
 }
 
@@ -112,6 +113,7 @@ internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: 
       FlexboxObjectField.LAYOUT_DIRECTION -> commonProps.layoutDirection(value as YogaDirection)
       FlexboxObjectField.POSITION_TYPE ->
           value?.let { commonProps.positionType(it as YogaPositionType) }
+      FlexboxObjectField.MARGIN_AUTO -> value?.let { commonProps.marginAuto(it as YogaEdge) }
     }.exhaustive
   }
 }
@@ -230,3 +232,10 @@ inline fun Style.border(border: Border): Style =
  */
 inline fun Style.layoutDirection(layoutDirection: YogaDirection): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.LAYOUT_DIRECTION, layoutDirection)
+
+/**
+ * Sets margin value for specified edge to auto. The item will extend the margin for this edge to
+ * occupy the extra space in the parent, depending on the direction (Row or Column).
+ */
+inline fun Style.marginAuto(edge: YogaEdge): Style =
+    this + FlexboxObjectStyleItem(FlexboxObjectField.MARGIN_AUTO, edge)
