@@ -82,6 +82,7 @@ public class IncrementalMountOutput {
 
     if (child.excludeFromIncrementalMount) {
       host.excludeFromIncrementalMount = true;
+      needsUpdate = true;
     }
 
     if (childBounds.top < hostBounds.top) {

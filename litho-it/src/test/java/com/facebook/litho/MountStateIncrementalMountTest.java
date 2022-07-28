@@ -65,6 +65,8 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.ComponentTreeHolder;
 import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.MountSpecExcludeFromIncrementalMount;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
@@ -108,7 +110,7 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
-  public void testIncrementalMountForOffscreenComponents() {
+  public void testExcludeFromIncrementalMountForInvisibleComponents() {
 
     // ┌─────────────┬────────┐
     // │Visible Rect │        │
@@ -134,55 +136,73 @@ public class MountStateIncrementalMountTest {
     final LifecycleTracker tracker1 = new LifecycleTracker();
     final Component component1 =
         MountSpecLifecycleTester.create(mContext)
-            .lifecycleTracker(tracker1)
             .widthPx(100)
-            .heightPx(100)
+            .heightPx(30)
+            .lifecycleTracker(tracker1)
             .build();
 
     // Component2 marked with `excludeFromIncrementalMount`
     final LifecycleTracker tracker2 = new LifecycleTracker();
     final Component component2 =
         MountSpecExcludeFromIncrementalMount.create(mContext)
-            .lifecycleTracker(tracker2)
             .widthPx(100)
-            .heightPx(100)
+            .heightPx(30)
+            .lifecycleTracker(tracker2)
             .build();
 
     // Component3 without `excludeFromIncrementalMount`
     final LifecycleTracker tracker3 = new LifecycleTracker();
     final Component component3 =
         MountSpecLifecycleTester.create(mContext)
-            .lifecycleTracker(tracker3)
             .widthPx(100)
-            .heightPx(100)
+            .heightPx(30)
+            .lifecycleTracker(tracker3)
             .build();
 
+    // add a RootHost to check if the state of [excludeFromIncrementalMount]
+    // propagates up to its parent
     final Component root =
-        Column.create(mContext)
-            .widthPercent(100)
-            .heightPercent(300)
-            .child(component1)
-            .child(component2)
-            .child(component3)
+        Wrapper.create(mContext)
+            .delegate(
+                Column.create(mContext)
+                    .child(component1)
+                    .child(component2)
+                    .child(component3)
+                    .build())
+            .wrapInView()
             .build();
 
-    mLegacyLithoViewRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(exactly(100), exactly(100))
-        .measure();
-    LithoView lithoView = mLegacyLithoViewRule.getLithoView();
+    mLegacyLithoViewRule.attachToWindow().setSizeSpecs(exactly(100), exactly(100)).measure();
 
-    lithoView.layout(0, 0, 100, 100);
+    ComponentRenderInfo info = ComponentRenderInfo.create().component(root).build();
+    ComponentTreeHolder holder = ComponentTreeHolder.create().renderInfo(info).build();
+    holder.computeLayoutSync(mContext, exactly(100), exactly(100), new Size());
+
+    LithoView lithoView = mLegacyLithoViewRule.getLithoView();
+    lithoView.setComponentTree(holder.getComponentTree());
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 30), true);
     assertThat(tracker1.isMounted())
-        .describedAs("Onscreen component WITHOUT excludeFromIncrementalMount should be mounted")
+        .describedAs("Visible component WITHOUT excludeFromIM should get mounted")
         .isTrue();
     assertThat(tracker2.isMounted())
-        .describedAs("Offscreen component WITH excludeFromIncrementalMount should be mounted")
+        .describedAs("Invisible component WITH excludeFromIM should get mounted")
         .isTrue();
     assertThat(tracker3.isMounted())
-        .describedAs(
-            "Offscreen component WITHOUT excludeFromIncrementalMount should Not be mounted")
+        .describedAs("Invisible component WITHOUT excludeFromIM should Not get mounted")
+        .isFalse();
+
+    // move the view out of visible area and make sure the component that marked as excludeFromIM
+    // will not get unmounted
+    lithoView.notifyVisibleBoundsChanged(new Rect(0, -50, 100, -10), false);
+    assertThat(tracker1.isMounted())
+        .describedAs("Invisible component WITHOUT excludeFromIM should get unmounted")
+        .isFalse();
+    assertThat(tracker2.isMounted())
+        .describedAs("Invisible component WITH excludeFromIM should Not get unmounted")
+        .isTrue();
+    assertThat(tracker3.isMounted())
+        .describedAs("Invisible component WITHOUT excludeFromIM should get mounted")
         .isFalse();
   }
 
