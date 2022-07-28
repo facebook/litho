@@ -165,9 +165,7 @@ public class SectionContext extends ComponentContext {
   }
 
   public Section getSectionScope() {
-    final Section section = mScope.get();
-
-    return section;
+    return mScope.get();
   }
 
   KeyHandler getKeyHandler() {

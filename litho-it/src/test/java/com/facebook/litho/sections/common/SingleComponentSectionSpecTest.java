@@ -28,6 +28,7 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.Diff;
 import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangeSet;
+import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -43,12 +44,14 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class SingleComponentSectionSpecTest {
 
+  private final Section mSection = mock(Section.class);
   private SectionContext mSectionContext;
   private ChangeSet mChangeSet;
 
   @Before
   public void setup() throws Exception {
-    mSectionContext = new SectionContext(getApplicationContext());
+    mSectionContext =
+        SectionContext.withScope(new SectionContext(getApplicationContext()), mSection);
     mChangeSet = ChangeSet.acquireChangeSet(null, false);
   }
 
