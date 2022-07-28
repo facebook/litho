@@ -120,10 +120,6 @@ public class ComponentsConfiguration {
    */
   public static boolean isLayoutDiffingEnabled = true;
 
-  // TODO T39526148 Remove once Flipper plugin is usable.
-  /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
-  public static boolean enableRenderInfoDebugging = false;
-
   public static boolean canInterruptAndMoveLayoutsBetweenThreads = true;
 
   /**
@@ -134,7 +130,7 @@ public class ComponentsConfiguration {
   public static boolean disableGetAnnotationUsage;
 
   public static boolean isRenderInfoDebuggingEnabled() {
-    return isDebugModeEnabled && enableRenderInfoDebugging;
+    return isDebugModeEnabled;
   }
 
   public static @Nullable LithoPerfBoosterFactory perfBoosterFactory = null;
