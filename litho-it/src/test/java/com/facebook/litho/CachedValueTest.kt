@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.kotlin.widget.EmptyComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner

@@ -56,6 +56,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsReporter;
+import com.facebook.litho.EmptyComponent;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
@@ -1175,7 +1176,7 @@ public class RecyclerBinderTest {
     final List<RenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       final ComponentRenderInfo.Builder builder =
-          ComponentRenderInfo.create().component(EmptyComponent.create(mComponentContext).build());
+          ComponentRenderInfo.create().component(new EmptyComponent());
       if (i == 0 || i == 7) {
         builder.customAttribute(ComponentTreeHolder.PREVENT_RELEASE_TAG, true);
       }

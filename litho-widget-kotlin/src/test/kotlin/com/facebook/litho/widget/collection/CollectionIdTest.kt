@@ -17,11 +17,9 @@
 package com.facebook.litho.widget.collection
 
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentScope
-import com.facebook.litho.kotlin.widget.EmptyComponent
+import com.facebook.litho.EmptyComponent
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -36,8 +34,7 @@ class CollectionIdTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
-  private fun emptyComponent(): EmptyComponent =
-      ComponentScope(lithoViewRule.context).EmptyComponent()
+  private fun emptyComponent(): EmptyComponent = EmptyComponent()
 
   private fun textComponent(): Component = Text.create(lithoViewRule.context).text("Hello").build()
 

@@ -31,7 +31,6 @@ import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
-import com.facebook.litho.widget.EmptyComponent;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.MountSpecWithMountUnmountAssertion;
 import com.facebook.litho.widget.MountSpecWithMountUnmountAssertionSpec;
@@ -189,7 +188,7 @@ public class MountStateTest {
   public void onSetRootWithNullComponentWithStatelessness_shouldMountWithoutCrashing() {
     mLegacyLithoViewRule
         .attachToWindow()
-        .setRoot(EmptyComponent.create(mLegacyLithoViewRule.getContext()))
+        .setRoot(new EmptyComponent())
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();

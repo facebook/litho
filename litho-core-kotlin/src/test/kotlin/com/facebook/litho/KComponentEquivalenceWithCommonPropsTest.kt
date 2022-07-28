@@ -21,7 +21,6 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.EmptyComponent
 import java.lang.Exception
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -51,7 +50,7 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun kcomponentWithCommonProps_isEquivalentTo_checksAllFields() {
     class ComponentWithStyleProp(val style: Style) : KComponent() {
       override fun ComponentScope.render(): Component =
-          EmptyComponent.create(context).kotlinStyle(style).build()
+          Row.create(context).kotlinStyle(style).build()
     }
 
     val onClick: (ClickEvent) -> Unit = {}
@@ -78,7 +77,7 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     class ComponentWithStyleProp(val style: Style) : KComponent() {
       override fun ComponentScope.render(): Component =
-          EmptyComponent.create(context).kotlinStyle(style).build()
+          Row.create(context).kotlinStyle(style).build()
     }
 
     val onClick: (ClickEvent) -> Unit = {}
@@ -107,7 +106,7 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun kcomponentInRow_isEquivalentToWithCommonProps_checksAllFields() {
     class ComponentWithStyleProp(val style: Style) : KComponent() {
       override fun ComponentScope.render(): Component =
-          EmptyComponent.create(context).kotlinStyle(style).build()
+          Row.create(context).kotlinStyle(style).build()
     }
 
     val onClick: (ClickEvent) -> Unit = {}
@@ -155,7 +154,7 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun kcomponentInColumn_isEquivalentToWithCommonProps_checksAllFields() {
     class ComponentWithStyleProp(val style: Style) : KComponent() {
       override fun ComponentScope.render(): Component =
-          EmptyComponent.create(context).kotlinStyle(style).build()
+          Row.create(context).kotlinStyle(style).build()
     }
 
     val onClick: (ClickEvent) -> Unit = {}
@@ -203,7 +202,7 @@ class KComponentEquivalenceWithCommonPropsTest {
   fun kcomponentInWrapper_isEquivalentToWithCommonProps_checksAllFields() {
     class ComponentWithStyleProp(val style: Style) : KComponent() {
       override fun ComponentScope.render(): Component =
-          EmptyComponent.create(context).kotlinStyle(style).build()
+          Row.create(context).kotlinStyle(style).build()
     }
 
     val onClick: (ClickEvent) -> Unit = {}

@@ -19,6 +19,7 @@ package com.facebook.samples.litho.kotlin.collection
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.EmptyComponent as MyComponent
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
@@ -26,7 +27,6 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.useCallback
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
-import com.facebook.litho.widget.EmptyComponent as MyComponent
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
 
@@ -35,7 +35,7 @@ class SimpleGroupMigration(private val title: String) : KComponent() {
   override fun ComponentScope.render(): Component = LazyList {
     // Add SingleComponentSection components as children:
     child(Text(title))
-    child(MyComponent.create(context).build())
+    child(MyComponent())
   }
 }
 // end_simple_group

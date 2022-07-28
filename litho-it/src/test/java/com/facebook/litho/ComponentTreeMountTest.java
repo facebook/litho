@@ -29,7 +29,6 @@ import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.TestTransitionComponent;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.EmptyComponent;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
@@ -65,8 +64,7 @@ public class ComponentTreeMountTest {
 
   @Test
   public void testReentrantMounts() {
-    final LithoView lithoView =
-        mountComponent(mContext, EmptyComponent.create(mContext).build(), true, true);
+    final LithoView lithoView = mountComponent(mContext, new EmptyComponent(), true, true);
     final EventHandler<VisibleEvent> visibleEventHandler =
         EventHandlerTestHelper.createMockEventHandler(
             VisibleEvent.class,

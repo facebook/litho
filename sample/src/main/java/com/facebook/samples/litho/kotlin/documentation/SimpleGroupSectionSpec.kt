@@ -16,13 +16,13 @@
 
 package com.facebook.samples.litho.kotlin.documentation
 
+import com.facebook.litho.EmptyComponent as MyComponent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.annotations.GroupSectionSpec
 import com.facebook.litho.sections.annotations.OnCreateChildren
 import com.facebook.litho.sections.common.SingleComponentSection
-import com.facebook.litho.widget.EmptyComponent as MyComponent
 import com.facebook.litho.widget.Text
 
 // start_example
@@ -34,7 +34,7 @@ object SimpleGroupSectionSpec {
       Children.create()
           // highlight-start
           .child(SingleComponentSection.create(c).component(Text.create(c).text(title).build()))
-          .child(SingleComponentSection.create(c).component(MyComponent.create(c).build()))
+          .child(SingleComponentSection.create(c).component(MyComponent()))
           // highlight-end
           .build()
 }

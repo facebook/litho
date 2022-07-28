@@ -18,11 +18,9 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.facebook.litho.kotlin.widget.EmptyComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.EmptyComponent
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -41,7 +39,7 @@ class KCachedTest {
   @Before
   fun setUp() {
     context = ComponentContext(getApplicationContext<Context>())
-    emptyComponent = ComponentScope(context).EmptyComponent()
+    emptyComponent = EmptyComponent()
   }
 
   @Test

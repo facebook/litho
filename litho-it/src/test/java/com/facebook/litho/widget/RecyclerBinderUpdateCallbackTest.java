@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.DefaultComponentsReporter;
+import com.facebook.litho.EmptyComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
@@ -255,7 +256,7 @@ public class RecyclerBinderUpdateCallbackTest {
     public RenderInfo render(Object o, int idx) {
       return ComponentRenderInfo.create()
           .customAttribute(OBJECT_KEY, o)
-          .component(EmptyComponent.create(mComponentContext))
+          .component(new EmptyComponent())
           .build();
     }
   }
