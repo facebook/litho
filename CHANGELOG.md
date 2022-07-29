@@ -5,6 +5,7 @@
 
 _release-date_
 
+ * **Breaking:** `com.facebook.litho.widget.EmptyComponentSpec` is removed. Construct a `com.facebook.litho.EmptyComponent` directly. In places that require a Builder, use `Wrapper.create(<context>).delegate(EmptyComponent())`
  * **Breaking:** `PoolableContentProvider` renamed to `ContentAllocator` in RenderCore. `RenderUnit` no longer implements `PoolableContentProvider`, instead it should return `ContentAllocator` implementation from `getContentAllocator` method.
  * **Breaking:** `StateHandler` has now been replaced by `TreeState` in `ComponentTree` for all state handling. Use `ComponentTree.acquireTreeState()` and `ComponentTree.Builder.treeState(...)` to save/restore state across different component trees.
 
