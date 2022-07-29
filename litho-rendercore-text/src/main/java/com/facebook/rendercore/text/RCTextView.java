@@ -73,13 +73,16 @@ public class RCTextView extends View {
   private Path mSelectionPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
+  private boolean mIsSettingDefaultAccessibilityDelegate = false;
 
   public RCTextView(Context context) {
     super(context);
 
     if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       mRCTextAccessibilityDelegate = new RCTextAccessibilityDelegate();
+      mIsSettingDefaultAccessibilityDelegate = true;
       ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+      mIsSettingDefaultAccessibilityDelegate = false;
     } else {
       mRCTextAccessibilityDelegate = null;
     }
@@ -376,14 +379,18 @@ public class RCTextView extends View {
   @Override
   public void setAccessibilityDelegate(@Nullable View.AccessibilityDelegate delegate) {
     super.setAccessibilityDelegate(delegate);
-    // We need to do this like this to get the AccessibilityDelegateCompat with the ViewCompat
-    // helper since the compatibility class/methods are protected.
-    final AccessibilityDelegateCompat accessibilityDelegateCompat =
-        ViewCompat.getAccessibilityDelegate(this);
-    if (mRCTextAccessibilityDelegate != null
-        && accessibilityDelegateCompat != mRCTextAccessibilityDelegate) {
+    // This check is needed as in for some devices with api level < 29, the wrapped accessibility
+    // delegate is not an instance of AccessibilityDelegateAdapter and gets wrapped again.
+
+    if (mRCTextAccessibilityDelegate != null && !mIsSettingDefaultAccessibilityDelegate) {
+      // We need to do this like this to get the AccessibilityDelegateCompat with the ViewCompat
+      // helper since the compatibility class/methods are protected.
+      final AccessibilityDelegateCompat accessibilityDelegateCompat =
+          ViewCompat.getAccessibilityDelegate(this);
       mRCTextAccessibilityDelegate.setWrappedAccessibilityDelegate(accessibilityDelegateCompat);
+      mIsSettingDefaultAccessibilityDelegate = true;
       ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+      mIsSettingDefaultAccessibilityDelegate = false;
     }
   }
 
