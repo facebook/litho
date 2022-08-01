@@ -118,10 +118,26 @@ class Layout {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    final @Nullable LithoLayoutResult result =
-        node != null
-            ? measure(layoutStateContext, androidContext, node, widthSpec, heightSpec)
-            : null;
+    final @Nullable LithoLayoutResult result;
+
+    if (node != null) {
+      final boolean isTracing = RenderCoreSystrace.isEnabled();
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
+      }
+
+      final LayoutContext<LithoRenderContext> context =
+          new LayoutContext<>(
+              androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
+
+      result = node.calculateLayout(context, widthSpec, heightSpec);
+
+      if (isTracing) {
+        RenderCoreSystrace.endSection(/* measureTree */ );
+      }
+    } else {
+      result = null;
+    }
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -582,31 +598,6 @@ class Layout {
     }
 
     return c;
-  }
-
-  static LithoLayoutResult measure(
-      final LayoutStateContext layoutStateContext,
-      final Context androidContext,
-      final LithoNode root,
-      final int widthSpec,
-      final int heightSpec) {
-
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("measureTree:" + root.getHeadComponent().getSimpleName());
-    }
-
-    final LayoutContext<LithoRenderContext> context =
-        new LayoutContext<>(
-            androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
-
-    LithoLayoutResult result = root.calculateLayout(context, widthSpec, heightSpec);
-
-    if (isTracing) {
-      RenderCoreSystrace.endSection(/* measureTree */ );
-    }
-
-    return result;
   }
 
   static @Nullable LithoLayoutResult resumeCreateAndMeasureComponent(
