@@ -1299,12 +1299,13 @@ public class LayoutState
 
       } else {
         root =
-            Layout.measure(
+            Layout.layout(
                 layoutStateContext,
                 c.getAndroidContext(),
                 layoutCreatedInWillRender,
                 widthSpec,
-                heightSpec);
+                heightSpec,
+                logLayoutState);
       }
 
       final @Nullable LithoNode node = root != null ? root.getNode() : null;

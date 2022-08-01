@@ -67,7 +67,7 @@ public class TestLayoutState {
       return root;
     }
 
-    Layout.measure(layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec);
+    Layout.layout(layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, null);
 
     return root;
   }

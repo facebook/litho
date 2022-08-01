@@ -109,7 +109,7 @@ class Layout {
 
   static @Nullable LithoLayoutResult layout(
       final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
+      final Context androidContext,
       final @Nullable LithoNode node,
       final int widthSpec,
       final int heightSpec,
@@ -120,7 +120,7 @@ class Layout {
 
     final @Nullable LithoLayoutResult result =
         node != null
-            ? measure(layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec)
+            ? measure(layoutStateContext, androidContext, node, widthSpec, heightSpec)
             : null;
 
     if (layoutStatePerfEvent != null) {
@@ -182,7 +182,13 @@ class Layout {
     }
 
     final @Nullable LithoLayoutResult result =
-        layout(layoutStateContext, c, node, widthSpec, heightSpec, layoutStatePerfEvent);
+        layout(
+            layoutStateContext,
+            c.getAndroidContext(),
+            node,
+            widthSpec,
+            heightSpec,
+            layoutStatePerfEvent);
 
     return new LayoutResultHolder(result);
   }
@@ -494,8 +500,13 @@ class Layout {
     layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
 
     // 4.b Measure the tree
-    return measure(
-        layoutStateContext, parentContext.getAndroidContext(), newNode, widthSpec, heightSpec);
+    return layout(
+        layoutStateContext,
+        parentContext.getAndroidContext(),
+        newNode,
+        widthSpec,
+        heightSpec,
+        null);
   }
 
   static @Nullable LithoLayoutResult measure(
@@ -625,16 +636,9 @@ class Layout {
 
     resume(layoutStateContext, root);
 
-    if (logLayoutState != null) {
-      logLayoutState.markerPoint("start_measure");
-    }
-
     final LithoLayoutResult result =
-        measure(layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec);
-
-    if (logLayoutState != null) {
-      logLayoutState.markerPoint("end_measure");
-    }
+        layout(
+            layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, logLayoutState);
 
     if (isTracing) {
       RenderCoreSystrace.endSection();
@@ -660,17 +664,18 @@ class Layout {
   }
 
   @VisibleForTesting
-  static LithoLayoutResult remeasure(
+  static @Nullable LithoLayoutResult remeasure(
       final LayoutStateContext layoutStateContext,
       final LithoLayoutResult layout,
       final int widthSpec,
       final int heightSpec) {
-    return measure(
+    return layout(
         layoutStateContext,
         layout.getContext().getAndroidContext(),
         layout.getNode(),
         widthSpec,
-        heightSpec);
+        heightSpec,
+        null);
   }
 
   @Nullable
