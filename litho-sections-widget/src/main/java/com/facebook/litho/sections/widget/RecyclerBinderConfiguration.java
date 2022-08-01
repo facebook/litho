@@ -208,7 +208,7 @@ public class RecyclerBinderConfiguration {
     private boolean mWrapContent = false;
     private boolean mDynamicItemHeight = false;
     private boolean mHScrollAsyncMode = false;
-    private boolean mEnableStableIds = false;
+    private boolean mEnableStableIds = ComponentsConfiguration.enableRecyclerBinderStableId;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;

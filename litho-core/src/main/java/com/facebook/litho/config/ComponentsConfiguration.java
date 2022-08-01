@@ -283,6 +283,8 @@ public class ComponentsConfiguration {
 
   public static boolean skipEqualValueStateUpdates = false;
 
+  public static boolean enableRecyclerBinderStableId = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
