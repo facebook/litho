@@ -170,14 +170,12 @@ public class SpecGeneratedComponentLifecycleTest {
             anyInt(),
             (Component) any(),
             anyBoolean(),
-            anyBoolean(),
             (String) any()))
         .thenCallRealMethod();
     when(Layout.create(
             (LayoutStateContext) any(),
             (ComponentContext) any(),
             (Component) any(),
-            anyBoolean(),
             (String) any()))
         .thenCallRealMethod();
     when(Layout.create((LayoutStateContext) any(), (ComponentContext) any(), (Component) any()))
@@ -186,7 +184,6 @@ public class SpecGeneratedComponentLifecycleTest {
             (LayoutStateContext) any(),
             (ComponentContext) any(),
             (Component) any(),
-            anyBoolean(),
             (String) any()))
         .thenCallRealMethod();
 
@@ -344,7 +341,6 @@ public class SpecGeneratedComponentLifecycleTest {
             mNestedTreeHeightSpec,
             component,
             true,
-            false,
             null);
     final ComponentContext scopedContext =
         node.getComponentContextAt(getComponentKeys(node).indexOf("$" + KEY));

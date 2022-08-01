@@ -32,6 +32,7 @@ import android.content.pm.ApplicationInfo;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderCoreSystrace;
@@ -65,7 +66,7 @@ class Layout {
 
     final @Nullable LithoNode node;
     if (current == null) {
-      node = create(layoutStateContext, c, widthSpec, heightSpec, component, true, false, null);
+      node = create(layoutStateContext, c, widthSpec, heightSpec, component, true, null);
 
       // This needs to finish layout on the UI thread.
       if (node != null && layoutStateContext.isLayoutInterrupted()) {
@@ -81,8 +82,12 @@ class Layout {
     } else {
       final String globalKeyToReuse = current.getHeadComponentKey();
 
+      if (globalKeyToReuse == null) {
+        throw new IllegalStateException("Cannot reuse a null global key");
+      }
+
       final ComponentContext updatedScopedContext =
-          update(layoutStateContext, c, component, true, globalKeyToReuse);
+          update(layoutStateContext, c, component, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
 
       node =
@@ -196,14 +201,13 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component) {
-    return create(layoutStateContext, parent, component, false, null);
+    return create(layoutStateContext, parent, component, null);
   }
 
   static @Nullable LithoNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       Component component,
-      final boolean reuseGlobalKey,
       final @Nullable String globalKeyToReuse) {
     return create(
         layoutStateContext,
@@ -212,7 +216,6 @@ class Layout {
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
         component,
         false,
-        reuseGlobalKey,
         globalKeyToReuse);
   }
 
@@ -223,7 +226,6 @@ class Layout {
       final int parentHeightSpec,
       Component component,
       final boolean resolveNestedTree,
-      final boolean reuseGlobalKey,
       final @Nullable String globalKeyToReuse) {
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
@@ -251,7 +253,7 @@ class Layout {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = update(layoutStateContext, parent, component, reuseGlobalKey, globalKeyToReuse);
+      c = update(layoutStateContext, parent, component, globalKeyToReuse);
       globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
@@ -416,8 +418,7 @@ class Layout {
             heightSpec,
             component,
             true,
-            true,
-            globalKey);
+            Preconditions.checkNotNull(globalKey));
 
     return newNode;
   }
@@ -541,14 +542,7 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component,
-      final boolean reuseGlobalKey,
       @Nullable final String globalKeyToReuse) {
-
-    if (reuseGlobalKey) {
-      if (globalKeyToReuse == null) {
-        throw new IllegalStateException("Cannot reuse a null global key");
-      }
-    }
 
     final TreeProps ancestor = parent.getTreeProps();
 

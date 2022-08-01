@@ -316,7 +316,7 @@ public class TestLayoutState {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = Layout.update(layoutStateContext, parent, component, false, null);
+      c = Layout.update(layoutStateContext, parent, component, null);
       globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
