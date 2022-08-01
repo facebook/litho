@@ -877,8 +877,8 @@ public class SectionTree {
           mPendingFocusOrchestrator.registerPendingFocus(
               sectionLocationInfo.mStartIndex + index, 0, null);
         }
-        schedulePendingScrollExecution();
       }
+      schedulePendingScrollExecution();
       return;
     }
 
@@ -913,8 +913,8 @@ public class SectionTree {
           mPendingFocusOrchestrator.registerPendingFocus(
               sectionLocationInfo.mStartIndex + index, offset, null);
         }
-        schedulePendingScrollExecution();
       }
+      schedulePendingScrollExecution();
       return;
     }
 
