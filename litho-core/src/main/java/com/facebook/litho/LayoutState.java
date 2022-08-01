@@ -1272,9 +1272,6 @@ public class LayoutState
                 layoutStateContext,
                 c,
                 component,
-                isReconcilable
-                    ? Preconditions.checkNotNull(currentRoot).getHeadComponentKey()
-                    : null,
                 widthSpec,
                 heightSpec,
                 isReconcilable,

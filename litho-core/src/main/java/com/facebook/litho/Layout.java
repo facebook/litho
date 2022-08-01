@@ -53,7 +53,6 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
-      final @Nullable String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LithoNode current,
@@ -80,6 +79,8 @@ class Layout {
         layoutStateContext.markLayoutUninterruptible();
       }
     } else {
+      final String globalKeyToReuse = current.getHeadComponentKey();
+
       final ComponentContext updatedScopedContext =
           update(layoutStateContext, c, component, true, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
@@ -131,14 +132,13 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
     return createResolvedTree(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null);
+        layoutStateContext, c, component, widthSpec, heightSpec, false, null, null);
   }
 
   static @Nullable ResolvedTree createResolvedTree(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
-      final @Nullable String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
       final boolean isReconcilable,
@@ -155,7 +155,6 @@ class Layout {
         layoutStateContext,
         c,
         component,
-        globalKeyToReuse,
         widthSpec,
         heightSpec,
         isReconcilable ? current : null,
