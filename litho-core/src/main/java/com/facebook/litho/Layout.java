@@ -58,28 +58,7 @@ class Layout {
       final int heightSpec,
       final @Nullable LithoNode current,
       final @Nullable PerfEvent layoutStatePerfEvent) {
-    final @Nullable LithoNode node =
-        resolve(
-            layoutStateContext,
-            c,
-            component,
-            globalKeyToReuse,
-            widthSpec,
-            heightSpec,
-            current,
-            layoutStatePerfEvent);
-    return node == null ? null : new ResolvedTree(node);
-  }
 
-  static @Nullable LithoNode resolve(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
-      final Component component,
-      final @Nullable String globalKeyToReuse,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable LithoNode current,
-      final @Nullable PerfEvent layoutStatePerfEvent) {
     if (layoutStatePerfEvent != null) {
       final String event = current == null ? EVENT_START_CREATE_LAYOUT : EVENT_START_RECONCILE;
       layoutStatePerfEvent.markerPoint(event);
@@ -95,7 +74,7 @@ class Layout {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
 
-        return node;
+        return new ResolvedTree(node);
       } else {
         // Layout is complete, disable interruption from this point on.
         layoutStateContext.markLayoutUninterruptible();
@@ -119,7 +98,7 @@ class Layout {
       layoutStatePerfEvent.markerPoint(event);
     }
 
-    return node;
+    return node == null ? null : new ResolvedTree(node);
   }
 
   static @Nullable LithoLayoutResult layout(
