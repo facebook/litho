@@ -1267,39 +1267,22 @@ public class LayoutState
 
         final LayoutResultHolder holder;
 
-        if (ComponentsConfiguration.useResolvedTree) {
-          final @Nullable ResolvedTree resolvedTree =
-              Layout.createResolvedTree(
-                  layoutStateContext,
-                  c,
-                  component,
-                  isReconcilable
-                      ? Preconditions.checkNotNull(currentRoot).getHeadComponentKey()
-                      : null,
-                  widthSpec,
-                  heightSpec,
-                  isReconcilable,
-                  currentRoot,
-                  logLayoutState);
-          final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
-          holder =
-              Layout.measureTree(
-                  layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
-        } else {
-          holder =
-              Layout.createAndMeasureComponent(
-                  layoutStateContext,
-                  c,
-                  component,
-                  isReconcilable
-                      ? Preconditions.checkNotNull(currentRoot).getHeadComponentKey()
-                      : null,
-                  widthSpec,
-                  heightSpec,
-                  isReconcilable,
-                  currentRoot,
-                  logLayoutState);
-        }
+        final @Nullable ResolvedTree resolvedTree =
+            Layout.createResolvedTree(
+                layoutStateContext,
+                c,
+                component,
+                isReconcilable
+                    ? Preconditions.checkNotNull(currentRoot).getHeadComponentKey()
+                    : null,
+                widthSpec,
+                heightSpec,
+                isReconcilable,
+                currentRoot,
+                logLayoutState);
+        final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+        holder =
+            Layout.measureTree(layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
 
         // Check if layout was interrupted.
         if (holder.wasLayoutInterrupted()) {

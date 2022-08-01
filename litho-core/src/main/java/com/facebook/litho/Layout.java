@@ -145,16 +145,6 @@ class Layout {
     return result;
   }
 
-  static LayoutResultHolder createAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
-      final Component component,
-      final int widthSpec,
-      final int heightSpec) {
-    return createAndMeasureComponent(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, false, null, null);
-  }
-
   static @Nullable ResolvedTree createResolvedTree(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -212,38 +202,6 @@ class Layout {
         layout(layoutStateContext, c, node, widthSpec, heightSpec, layoutStatePerfEvent);
 
     return new LayoutResultHolder(result);
-  }
-
-  static LayoutResultHolder createAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
-      final Component component,
-      final @Nullable String globalKeyToReuse,
-      final int widthSpec,
-      final int heightSpec,
-      final boolean isReconcilable,
-      final @Nullable LithoNode current,
-      final @Nullable PerfEvent layoutStatePerfEvent) {
-
-    try {
-      applyStateUpdateEarly(layoutStateContext, c, component, current);
-    } catch (Exception ex) {
-      ComponentUtils.handleWithHierarchy(c, component, ex);
-      return new LayoutResultHolder(null);
-    }
-
-    final LithoNode node =
-        resolve(
-            layoutStateContext,
-            c,
-            component,
-            globalKeyToReuse,
-            widthSpec,
-            heightSpec,
-            isReconcilable ? current : null,
-            layoutStatePerfEvent);
-
-    return measureTree(layoutStateContext, node, c, widthSpec, heightSpec, layoutStatePerfEvent);
   }
 
   private static void applyStateUpdateEarly(

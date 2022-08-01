@@ -57,6 +57,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
@@ -2264,14 +2265,25 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LithoLayoutResult node =
-        Layout.createAndMeasureComponent(
-                layoutStateContext,
-                c,
-                component,
-                makeSizeSpec(width, AT_MOST),
-                makeSizeSpec(height, AT_MOST))
-            .mResult;
+    int widthSpec = makeSizeSpec(width, AT_MOST);
+    int heightSpec = makeSizeSpec(height, AT_MOST);
+
+    final @Nullable ResolvedTree resolvedTree =
+        Layout.createResolvedTree(
+            Preconditions.checkNotNull(layoutStateContext), c, component, widthSpec, heightSpec);
+
+    final LithoNode lithoNode = resolvedTree == null ? null : resolvedTree.getRoot();
+
+    final LayoutResultHolder holder =
+        Layout.measureTree(
+            Preconditions.checkNotNull(layoutStateContext),
+            lithoNode,
+            c,
+            widthSpec,
+            heightSpec,
+            null);
+
+    final LithoLayoutResult node = holder.mResult;
 
     assertThat(node.getWidth()).isEqualTo(width);
     assertThat(node.getHeight()).isEqualTo(height);

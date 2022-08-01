@@ -712,35 +712,24 @@ public abstract class Component
 
       final LayoutResultHolder container;
 
-      if (ComponentsConfiguration.useResolvedTree) {
+      final @Nullable ResolvedTree resolvedTree =
+          Layout.createResolvedTree(
+              Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
+              c,
+              this,
+              widthSpec,
+              heightSpec);
 
-        final @Nullable ResolvedTree resolvedTree =
-            Layout.createResolvedTree(
-                Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
-                c,
-                this,
-                widthSpec,
-                heightSpec);
+      final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-        final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
-
-        container =
-            Layout.measureTree(
-                Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
-                node,
-                c,
-                widthSpec,
-                heightSpec,
-                null);
-      } else {
-        container =
-            Layout.createAndMeasureComponent(
-                Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
-                c,
-                this,
-                widthSpec,
-                heightSpec);
-      }
+      container =
+          Layout.measureTree(
+              Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
+              node,
+              c,
+              widthSpec,
+              heightSpec,
+              null);
 
       if (container.wasLayoutInterrupted()) {
         return;
@@ -806,9 +795,24 @@ public abstract class Component
     final ComponentContext contextForLayout =
         new ComponentContext(c, c.getTreeProps(), layoutStateContext);
 
+    final @Nullable ResolvedTree resolvedTree =
+        Layout.createResolvedTree(
+            Preconditions.checkNotNull(layoutStateContext),
+            contextForLayout,
+            this,
+            widthSpec,
+            heightSpec);
+
+    final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+
     final LayoutResultHolder holder =
-        Layout.createAndMeasureComponent(
-            layoutStateContext, contextForLayout, this, widthSpec, heightSpec);
+        Layout.measureTree(
+            Preconditions.checkNotNull(layoutStateContext),
+            node,
+            contextForLayout,
+            widthSpec,
+            heightSpec,
+            null);
 
     if (holder.wasLayoutInterrupted()) {
       outputSize.height = 0;
