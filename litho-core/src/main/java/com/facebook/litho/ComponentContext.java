@@ -709,4 +709,12 @@ public class ComponentContext implements Cloneable {
   boolean isNestedTreeContext() {
     return isSplitStateHandlersEnabled() && this.isNestedTreeContext;
   }
+
+  boolean shouldAlwaysResolveNestedTreeInMeasure() {
+    if (getComponentTree() != null) {
+      return getComponentTree().shouldAlwaysResolveNestedTreeInMeasureEnabled();
+    } else {
+      return ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure;
+    }
+  }
 }

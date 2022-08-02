@@ -266,6 +266,8 @@ public class ComponentsConfiguration {
 
   public static boolean isSplitStateHandlersEnabled = false;
 
+  public static boolean shouldAlwaysResolveNestedTreeInMeasure = false;
+
   public static boolean useResolvedTree = false;
 
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;

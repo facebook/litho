@@ -67,7 +67,15 @@ class Layout {
 
     final @Nullable LithoNode node;
     if (current == null) {
-      node = create(layoutStateContext, c, widthSpec, heightSpec, component, true, null);
+      node =
+          create(
+              layoutStateContext,
+              c,
+              widthSpec,
+              heightSpec,
+              component,
+              !c.shouldAlwaysResolveNestedTreeInMeasure(),
+              null);
 
       // This needs to finish layout on the UI thread.
       if (node != null && layoutStateContext.isLayoutInterrupted()) {

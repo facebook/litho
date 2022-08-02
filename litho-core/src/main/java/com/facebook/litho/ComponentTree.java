@@ -387,6 +387,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean mIsApplyStateUpdateEarlyEnabled;
 
+  private final boolean mShouldAlwaysResolveNestedTreeInMeasure;
+
   private final boolean mMoveLayoutsBetweenThreads;
 
   private final @Nullable String mLogTag;
@@ -471,6 +473,8 @@ public class ComponentTree implements LithoLifecycleListener {
     }
     isSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
     mIsApplyStateUpdateEarlyEnabled = ComponentsConfiguration.applyStateUpdateEarly;
+    mShouldAlwaysResolveNestedTreeInMeasure =
+        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure;
     mErrorEventHandler = builder.errorEventHandler;
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
 
@@ -1313,6 +1317,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isApplyStateUpdateEarlyEnabled() {
     return mIsApplyStateUpdateEarlyEnabled;
+  }
+
+  public boolean shouldAlwaysResolveNestedTreeInMeasureEnabled() {
+    return mShouldAlwaysResolveNestedTreeInMeasure;
   }
 
   public ErrorEventHandler getErrorEventHandler() {
