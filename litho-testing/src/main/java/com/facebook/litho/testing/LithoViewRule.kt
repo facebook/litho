@@ -28,6 +28,7 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -115,7 +116,12 @@ constructor(
     val testLithoView = TestLithoView(context, componentsConfiguration)
     componentTree?.let { testLithoView.useComponentTree(componentTree) }
     lithoView?.let { testLithoView.useLithoView(lithoView) }
-    widthPx?.let { heightPx?.let { testLithoView.setSizePx(widthPx, heightPx) } }
+    if (widthPx != null || heightPx != null) {
+      val widthSpec = if (widthPx != null) exactly(widthPx) else DEFAULT_WIDTH_SPEC
+      val heightSpec = if (heightPx != null) exactly(heightPx) else DEFAULT_HEIGHT_SPEC
+      testLithoView.setSizeSpecs(widthSpec, heightSpec)
+    }
+
     componentFunction?.let {
       with(ComponentScope(context)) { componentFunction() }
           ?.let { component -> testLithoView.setRoot(component) }
