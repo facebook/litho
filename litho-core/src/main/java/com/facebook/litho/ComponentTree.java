@@ -1714,17 +1714,6 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @GuardedBy("mEventTriggersContainer")
-  private void bindTriggerHandler(
-      ComponentContext scopedContext, SpecGeneratedComponent component) {
-    final @Nullable Handle componentHandle = component.getHandle();
-
-    if (componentHandle != null) {
-      componentHandle.setComponentTree(this);
-    }
-    component.recordEventTrigger(scopedContext, mEventTriggersContainer);
-  }
-
-  @GuardedBy("mEventTriggersContainer")
   private void clearUnusedTriggerHandlers() {
     mEventTriggersContainer.clear();
   }
@@ -2490,12 +2479,16 @@ public class ComponentTree implements LithoLifecycleListener {
       clearUnusedTriggerHandlers();
       for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
         final ComponentContext scopedContext = scopedComponentInfo.getContext();
-        if (scopedComponentInfo.getComponent() instanceof SpecGeneratedComponent) {
-          final SpecGeneratedComponent component =
-              (SpecGeneratedComponent) scopedComponentInfo.getComponent();
+        final Component component = scopedComponentInfo.getComponent();
+        final @Nullable Handle componentHandle = component.getHandle();
+        if (componentHandle != null) {
+          componentHandle.setComponentTree(this);
+        }
+        if (component instanceof SpecGeneratedComponent) {
           mEventHandlersController.bindEventHandlers(
               scopedContext, component, scopedContext.getGlobalKey());
-          bindTriggerHandler(scopedContext, component);
+          ((SpecGeneratedComponent) component)
+              .recordEventTrigger(scopedContext, mEventTriggersContainer);
         }
       }
     }
