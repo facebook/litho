@@ -45,7 +45,6 @@ public class LayoutStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
-  private boolean mHasNestedTreeDiffNodeSet = false;
 
   private boolean mIsLayoutStarted = false;
 
@@ -190,18 +189,16 @@ public class LayoutStateContext {
   }
 
   void setNestedTreeDiffNode(@Nullable DiffNode diff) {
-    mHasNestedTreeDiffNodeSet = true;
     mCurrentNestedTreeDiffNode = diff;
   }
 
   boolean hasNestedTreeDiffNodeSet() {
-    return mHasNestedTreeDiffNodeSet;
+    return mCurrentNestedTreeDiffNode != null;
   }
 
   public @Nullable DiffNode consumeNestedTreeDiffNode() {
     final DiffNode node = mCurrentNestedTreeDiffNode;
     mCurrentNestedTreeDiffNode = null;
-    mHasNestedTreeDiffNodeSet = false;
     return node;
   }
 
