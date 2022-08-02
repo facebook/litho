@@ -91,6 +91,24 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
   public abstract long getId();
 
+  protected @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>>
+      getMountUnmountBinderTypeToExtensionMap() {
+    return mMountUnmountBinderTypeToExtensionMap;
+  }
+
+  protected @Nullable List<Extension<?, MOUNT_CONTENT>> getMountUnmountExtensions() {
+    return mMountUnmountExtensions;
+  }
+
+  protected @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>>
+      getAttachDetachBinderTypeToExtensionMap() {
+    return mAttachDetachBinderTypeToExtensionMap;
+  }
+
+  protected @Nullable List<Extension<?, MOUNT_CONTENT>> getAttachDetachExtensions() {
+    return mAttachDetachExtensions;
+  }
+
   public Class<?> getRenderContentType() {
     return getClass();
   }
@@ -206,7 +224,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Bind all mountUnmount extension functions. */
-  void mountExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+  protected void mountExtensions(
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+
     if (mMountUnmountExtensions == null) {
       return;
     }
@@ -216,8 +236,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  /** Unbind all mountUnmount extension functions. Public because used from Litho's MountState. */
-  public void unmountExtensions(
+  /** Unbind all mountUnmount extension functions. */
+  protected void unmountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
     if (mMountUnmountExtensions == null) {
       return;
@@ -230,7 +250,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Bind all attachDetach extension functions. */
-  void attachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+  protected void attachExtensions(
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
     if (mAttachDetachExtensions == null) {
       return;
     }
@@ -241,7 +262,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Unbind all attachDetach extension functions. */
-  void detachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+  protected void detachExtensions(
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
     if (mAttachDetachExtensions == null) {
       return;
     }
@@ -266,27 +288,27 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       boolean isAttached) {
 
     final List<Extension> attachDetachExtensionsForBind =
-        new ArrayList<>(sizeOrZero(mAttachDetachExtensions));
+        new ArrayList<>(sizeOrZero(getAttachDetachExtensions()));
     final List<Extension> attachDetachExtensionsForUnbind =
-        new ArrayList<>(sizeOrZero(currentRenderUnit.mAttachDetachExtensions));
+        new ArrayList<>(sizeOrZero(currentRenderUnit.getAttachDetachExtensions()));
     final List<Extension> mountUnmountExtensionsForBind =
-        new ArrayList<>(sizeOrZero(mMountUnmountExtensions));
+        new ArrayList<>(sizeOrZero(getMountUnmountExtensions()));
     final List<Extension> mountUnmountExtensionsForUnbind =
-        new ArrayList<>(sizeOrZero(currentRenderUnit.mMountUnmountExtensions));
+        new ArrayList<>(sizeOrZero(currentRenderUnit.getMountUnmountExtensions()));
 
     // 1. Diff the extensions to resolve what's to bind/unbind.
     resolveExtensionsToUpdate(
-        currentRenderUnit.mAttachDetachExtensions,
-        mAttachDetachExtensions,
-        currentRenderUnit.mAttachDetachBinderTypeToExtensionMap,
+        currentRenderUnit.getAttachDetachExtensions(),
+        getAttachDetachExtensions(),
+        currentRenderUnit.getAttachDetachBinderTypeToExtensionMap(),
         currentLayoutData,
         newLayoutData,
         attachDetachExtensionsForBind,
         attachDetachExtensionsForUnbind);
     resolveExtensionsToUpdate(
-        currentRenderUnit.mMountUnmountExtensions,
-        mMountUnmountExtensions,
-        currentRenderUnit.mMountUnmountBinderTypeToExtensionMap,
+        currentRenderUnit.getMountUnmountExtensions(),
+        getMountUnmountExtensions(),
+        currentRenderUnit.getMountUnmountBinderTypeToExtensionMap(),
         currentLayoutData,
         newLayoutData,
         mountUnmountExtensionsForBind,

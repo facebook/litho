@@ -18,15 +18,13 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class LithoRenderUnit extends RenderUnit<Object>
-    implements TransitionRenderUnit, ContentAllocator {
+public abstract class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
 
   protected final long mId;
   protected final LayoutOutput output;
@@ -56,11 +54,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object>
   @Override
   public boolean getMatchHostBounds() {
     return (output.getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
-  }
-
-  @Override
-  public boolean isRecyclingDisabled() {
-    return output.getComponent().isRecyclingDisabled();
   }
 
   static @Nullable ComponentContext getComponentContext(MountItem item) {

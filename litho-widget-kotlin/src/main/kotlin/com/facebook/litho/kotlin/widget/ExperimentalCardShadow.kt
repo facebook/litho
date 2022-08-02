@@ -25,7 +25,6 @@ import com.facebook.litho.Style
 import com.facebook.litho.widget.CardShadowDrawable
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
-import com.facebook.rendercore.RenderUnit
 
 /**
  * A component that is able to render the card's shadow.
@@ -79,7 +78,7 @@ internal class CardShadowMountable(
     private val hideBottomShadow: Boolean,
     private val shadowLeftSizeOverride: Float,
     private val shadowRightSizeOverride: Float,
-) : SimpleMountable<CardShadowDrawable>() {
+) : SimpleMountable<CardShadowDrawable>(RenderType.DRAWABLE) {
 
   override fun createContent(context: Context): CardShadowDrawable = CardShadowDrawable()
 
@@ -113,6 +112,4 @@ internal class CardShadowMountable(
       heightSpec: Int,
       previousLayoutData: Any?
   ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
 }

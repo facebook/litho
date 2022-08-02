@@ -35,6 +35,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.yoga.YogaConstants;
@@ -308,7 +309,11 @@ class Layout {
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
         PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
         if (prepareResult != null) {
-          node.setMountable(prepareResult.mountable);
+          Mountable<?> mountable = prepareResult.mountable;
+          final String componentKey = scopedComponentInfo.getContext().getGlobalKey();
+          mountable.setId(
+              LayoutStateContext.calculateNextId(layoutStateContext, component, componentKey));
+          node.setMountable(mountable);
         }
       }
 

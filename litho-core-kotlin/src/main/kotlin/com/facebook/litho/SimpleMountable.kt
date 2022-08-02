@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit
 
@@ -26,7 +27,13 @@ import com.facebook.rendercore.RenderUnit
  *
  * <p>Experimental. Currently for Litho team internal use only.</p>
  */
-abstract class SimpleMountable<ContentT : Any> : Mountable<ContentT>() {
+abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
+    Mountable<ContentT>(renderType), ContentAllocator {
+
+  init {
+    addMountUnmountExtension(
+        Extension.extension(this, BINDER as Binder<SimpleMountable<ContentT>, ContentT>))
+  }
 
   /**
    * Called just before mounting the content. Use it to set properties on the content. This method
@@ -53,48 +60,45 @@ abstract class SimpleMountable<ContentT : Any> : Mountable<ContentT>() {
       EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable) &&
           currentLayoutData === nextLayoutData
 
-  final override fun getBinders(): List<RenderUnit.Binder<*, ContentT>> {
-    val binders = super.getBinders()
-    return binders?.apply { add(BINDER_LIST[0] as RenderUnit.Binder<*, ContentT>) }
-        ?: BINDER_LIST as List<RenderUnit.Binder<*, ContentT>>
+  override fun getContentAllocator(): ContentAllocator {
+    return this
   }
 }
 
-private val BINDER_LIST: List<RenderUnit.Binder<*, *>> =
-    listOf(
-        object : RenderUnit.Binder<SimpleMountable<Any>, Any> {
-          override fun shouldUpdate(
-              currentMountable: SimpleMountable<Any>,
-              newMountable: SimpleMountable<Any>,
-              currentLayoutData: Any?,
-              nextLayoutData: Any?
-          ): Boolean {
-            currentLayoutData as LithoLayoutData
-            nextLayoutData as LithoLayoutData
-            return newMountable.shouldUpdate(
-                currentMountable,
-                newMountable,
-                currentLayoutData.mLayoutData,
-                nextLayoutData.mLayoutData)
-          }
+private val BINDER: RenderUnit.Binder<*, *> =
+    object : RenderUnit.Binder<SimpleMountable<Any>, Any> {
+      override fun shouldUpdate(
+          currentMountable: SimpleMountable<Any>,
+          newMountable: SimpleMountable<Any>,
+          currentLayoutData: Any?,
+          nextLayoutData: Any?
+      ): Boolean {
+        currentLayoutData as LithoLayoutData
+        nextLayoutData as LithoLayoutData
+        return newMountable.shouldUpdate(
+            currentMountable,
+            newMountable,
+            currentLayoutData.mLayoutData,
+            nextLayoutData.mLayoutData)
+      }
 
-          override fun bind(
-              context: Context,
-              content: Any,
-              mountable: SimpleMountable<Any>,
-              layoutData: Any?
-          ) {
-            layoutData as LithoLayoutData
-            mountable.mount(context, content, layoutData.mLayoutData)
-          }
+      override fun bind(
+          context: Context,
+          content: Any,
+          mountable: SimpleMountable<Any>,
+          layoutData: Any?
+      ) {
+        layoutData as LithoLayoutData
+        mountable.mount(context, content, layoutData.mLayoutData)
+      }
 
-          override fun unbind(
-              context: Context,
-              content: Any,
-              mountable: SimpleMountable<Any>,
-              layoutData: Any?
-          ) {
-            layoutData as LithoLayoutData
-            mountable.unmount(context, content, layoutData.mLayoutData)
-          }
-        })
+      override fun unbind(
+          context: Context,
+          content: Any,
+          mountable: SimpleMountable<Any>,
+          layoutData: Any?
+      ) {
+        layoutData as LithoLayoutData
+        mountable.unmount(context, content, layoutData.mLayoutData)
+      }
+    }

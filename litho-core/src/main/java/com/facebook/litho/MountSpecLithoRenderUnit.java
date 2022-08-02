@@ -96,6 +96,11 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   }
 
   @Override
+  public boolean isRecyclingDisabled() {
+    return output.getComponent().isRecyclingDisabled();
+  }
+
+  @Override
   public String getDescription() {
     return output.getComponent().getSimpleName();
   }

@@ -128,6 +128,18 @@ public class LayoutStateContext {
     mThreadReleasedOn.add(Thread.currentThread().getName());
   }
 
+  static long calculateNextId(
+      LayoutStateContext layoutStateContext, Component component, String componentKey) {
+    final LayoutState layoutState = Preconditions.checkNotNull(layoutStateContext.getLayoutState());
+
+    return layoutState.calculateLayoutOutputId(
+        component,
+        componentKey,
+        layoutState.getCurrentLevel(),
+        OutputUnitType.CONTENT,
+        -1 /* previousId */);
+  }
+
   /** Returns the LayoutState instance or null if the layout state has been released. */
   @Nullable
   LayoutState getLayoutState() {

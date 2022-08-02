@@ -44,7 +44,6 @@ import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
-import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import com.nhaarman.mockitokotlin2.mock
@@ -493,7 +492,7 @@ open class ViewMountable(
     open val view: View,
     open val steps: MutableList<LifecycleStep.StepInfo>? = null,
     open val updateState: ((String) -> Unit)? = null,
-) : SimpleMountable<View>() {
+) : SimpleMountable<View>(RenderType.VIEW) {
 
   override fun createContent(context: Context): View {
     updateState?.invoke("createContent")
@@ -547,8 +546,6 @@ open class ViewMountable(
     newMountable as ViewMountable
     return true
   }
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
 }
 
 class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? = null) :
@@ -562,7 +559,7 @@ class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? =
 
 class DrawableMountable(
     val drawable: Drawable,
-) : SimpleMountable<Drawable>() {
+) : SimpleMountable<Drawable>(RenderType.DRAWABLE) {
 
   override fun createContent(context: Context): Drawable {
     return drawable
@@ -609,8 +606,6 @@ class DrawableMountable(
     newMountable as DrawableMountable
     return true
   }
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
 }
 
 class TestLayoutData(val width: Int, val height: Int)

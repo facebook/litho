@@ -30,7 +30,6 @@ import com.facebook.litho.theming.getTheme
 import com.facebook.litho.widget.ProgressView
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
-import com.facebook.rendercore.RenderUnit
 
 /**
  * Renders an infinitely spinning progress bar.
@@ -58,7 +57,7 @@ private const val defaultSize: Int = 50
 internal class ProgressMountable(
     private val color: Int,
     private val indeterminateDrawable: Drawable?
-) : SimpleMountable<ProgressView>() {
+) : SimpleMountable<ProgressView>(RenderType.VIEW) {
 
   override fun createContent(context: Context): ProgressView = ProgressView(context)
 
@@ -104,6 +103,4 @@ internal class ProgressMountable(
     return newMountable.color != currentMountable.color ||
         newMountable.indeterminateDrawable != currentMountable.indeterminateDrawable
   }
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
 }

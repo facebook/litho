@@ -29,12 +29,12 @@ import java.util.List;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class PrepareResult {
 
-  public final @Nullable Mountable<?> mountable;
+  public final Mountable<?> mountable;
   public final @Nullable List<Transition> transitions;
   public final @Nullable List<Attachable> useEffectEntries;
 
   public PrepareResult(
-      @Nullable Mountable<?> mountable,
+      Mountable<?> mountable,
       @Nullable List<Transition> transitions,
       @Nullable List<Attachable> useEffectEntries) {
     this.mountable = mountable;

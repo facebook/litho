@@ -25,7 +25,7 @@ public class MountableLayoutResult implements Node.LayoutResult {
   private final int mMeasuredHeight;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final Object mLayoutData;
+  private final @Nullable Object mLayoutData;
 
   public MountableLayoutResult(
       @Nullable RenderUnit<?> renderUnit,
@@ -42,7 +42,7 @@ public class MountableLayoutResult implements Node.LayoutResult {
       int heightSpec,
       int measuredWidth,
       int measuredHeight,
-      Object layoutData) {
+      @Nullable Object layoutData) {
     mRenderUnit = renderUnit;
     mMeasuredWidth = measuredWidth;
     mMeasuredHeight = measuredHeight;

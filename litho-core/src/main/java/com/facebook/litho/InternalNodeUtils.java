@@ -393,7 +393,6 @@ public class InternalNodeUtils {
     Mountable<?> mountable = node.getMountable();
     if (mountable != null && isMountable(component)) {
       return MountableLithoRenderUnit.create(
-          id,
           component,
           context,
           layoutOutputNodeInfo,

@@ -32,7 +32,6 @@ import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.utils.MeasureUtils
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
-import com.facebook.rendercore.RenderUnit
 
 /**
  * A component to render a [Drawable].
@@ -60,7 +59,7 @@ class ExperimentalImage(
 internal class ImageMountable(
     val drawable: Drawable,
     val scaleType: ScaleType,
-) : SimpleMountable<MatrixDrawable<Drawable>>() {
+) : SimpleMountable<MatrixDrawable<Drawable>>(RenderType.DRAWABLE) {
 
   override fun createContent(context: Context): MatrixDrawable<Drawable> {
     return MatrixDrawable()
@@ -138,8 +137,6 @@ internal class ImageMountable(
     return (newMountable.scaleType != currentMountable.scaleType ||
         !DrawableUtils.isEquivalentTo(newMountable.drawable, currentMountable.drawable))
   }
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
 
   override fun getPoolSize(): Int = 30
 }

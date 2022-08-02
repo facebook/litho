@@ -16,43 +16,29 @@
 
 package com.facebook.litho;
 
-import static com.facebook.rendercore.RenderUnit.Extension.extension;
-
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
-import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.Mountable;
 import java.util.List;
+import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class MountableLithoRenderUnit extends LithoRenderUnit implements ContentAllocator {
+public class MountableLithoRenderUnit extends LithoRenderUnit {
 
-  private final Mountable<?> mMountable;
+  private final Mountable<Object> mMountable;
 
   private MountableLithoRenderUnit(
-      final long id,
       final LayoutOutput output,
       final Mountable mountable,
       final @Nullable ComponentContext context) {
-    super(id, output, mountable.getRenderType(), context);
-    this.mMountable = mountable;
+    super(mountable.getId(), output, mountable.getRenderType(), context);
 
-    addMountUnmountExtentions(mMountable);
-  }
-
-  private void addMountUnmountExtentions(final Mountable mountable) {
-    List<Binder> binders = mountable.getBinders();
-    if (binders != null) {
-      for (Binder binder : binders) {
-        addMountUnmountExtensions(extension(mMountable, binder));
-      }
-    }
+    mMountable = mountable;
   }
 
   public static MountableLithoRenderUnit create(
-      final long id,
       final Component component,
       final @Nullable ComponentContext context,
       final @Nullable NodeInfo nodeInfo,
@@ -65,32 +51,61 @@ public class MountableLithoRenderUnit extends LithoRenderUnit implements Content
         new LayoutOutput(
             component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
 
-    return new MountableLithoRenderUnit(id, output, mountable, context);
-  }
-
-  @Override
-  public Object createContent(Context c) {
-    return mMountable.createContent(c);
-  }
-
-  @Override
-  public Object getPoolableContentType() {
-    return getRenderContentType();
+    return new MountableLithoRenderUnit(output, mountable, context);
   }
 
   @Override
   public ContentAllocator getContentAllocator() {
-    return this;
+    return mMountable.getContentAllocator();
+  }
+
+  @Override
+  protected void mountExtensions(Context context, Object o, @Nullable Object layoutData) {
+    mMountable.mountExtensions(context, o, layoutData);
+  }
+
+  @Override
+  protected void unmountExtensions(Context context, Object o, @Nullable Object layoutData) {
+    mMountable.unmountExtensions(context, o, layoutData);
+  }
+
+  @Override
+  protected void attachExtensions(Context context, Object content, @Nullable Object layoutData) {
+    mMountable.attachExtensions(context, content, layoutData);
+  }
+
+  @Override
+  protected void detachExtensions(Context context, Object content, @Nullable Object layoutData) {
+    mMountable.detachExtensions(context, content, layoutData);
+  }
+
+  @Nullable
+  @Override
+  public Map<Class<?>, Extension<?, Object>> getMountUnmountBinderTypeToExtensionMap() {
+    return mMountable.getMountUnmountBinderTypeToExtensionMap();
+  }
+
+  @Nullable
+  @Override
+  public List<Extension<?, Object>> getMountUnmountExtensions() {
+    return mMountable.getMountUnmountExtensions();
+  }
+
+  @Nullable
+  @Override
+  public Map<Class<?>, Extension<?, Object>> getAttachDetachBinderTypeToExtensionMap() {
+    return mMountable.getAttachDetachBinderTypeToExtensionMap();
+  }
+
+  @Nullable
+  @Override
+  public List<Extension<?, Object>> getAttachDetachExtensions() {
+    return mMountable.getAttachDetachExtensions();
   }
 
   @Override
   public Class<?> getRenderContentType() {
     return mMountable.getClass();
-  }
-
-  @Override
-  public MountItemsPool.ItemPool createRecyclingPool() {
-    return mMountable.onCreateMountContentPool();
   }
 
   @Override

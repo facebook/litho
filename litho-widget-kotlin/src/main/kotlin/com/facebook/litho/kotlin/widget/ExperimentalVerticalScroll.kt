@@ -42,7 +42,6 @@ import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.litho.widget.VerticalScrollEventsController
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
-import com.facebook.rendercore.RenderUnit
 import kotlin.math.max
 import kotlin.math.min
 
@@ -151,9 +150,7 @@ internal class VerticalScrollMountable(
     val onInterceptTouchListener: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     val scrollPosition: LithoScrollView.ScrollPosition,
     val componentTree: ComponentTree,
-) : SimpleMountable<LithoScrollView>() {
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.VIEW
+) : SimpleMountable<LithoScrollView>(RenderType.VIEW) {
 
   override fun createContent(context: Context): LithoScrollView =
       LayoutInflater.from(context).inflate(R.layout.litho_scroll_view, null, false)

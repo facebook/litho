@@ -31,7 +31,6 @@ import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
 import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
-import com.facebook.rendercore.RenderUnit
 
 /**
  * A component that paints rounded edges to mimic a clipping operation on the component being
@@ -73,7 +72,7 @@ internal class CardClipMountable(
     private val disableClipTopRight: Boolean,
     private val disableClipBottomLeft: Boolean,
     private val disableClipBottomRight: Boolean,
-) : SimpleMountable<CardClipDrawable>() {
+) : SimpleMountable<CardClipDrawable>(RenderType.DRAWABLE) {
 
   override fun createContent(context: Context): CardClipDrawable = CardClipDrawable()
 
@@ -100,6 +99,4 @@ internal class CardClipMountable(
     content.setClippingColor(Color.WHITE)
     content.setDisableClip(NONE)
   }
-
-  override fun getRenderType(): RenderUnit.RenderType = RenderUnit.RenderType.DRAWABLE
 }

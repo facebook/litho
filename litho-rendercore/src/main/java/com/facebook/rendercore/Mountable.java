@@ -1,5 +1,3 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -19,13 +17,10 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.RenderUnit.Binder;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This represents the rendering primitive. Every {@link Mountable} must define what content it
@@ -43,37 +38,54 @@ import java.util.List;
  * </ul>
  *
  * @param <ContentT> The type of the content.
+ *     <p>Experimental. Currently for Litho team internal use only.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class Mountable<ContentT> {
+public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implements Node {
 
-  private @Nullable List<Binder<?, ContentT>> mBinders = null;
+  private long mId;
+  private boolean mIsIdSet;
 
-  /**
-   * Specifies if the content type is {@link View} or a {@link Drawable}.
-   *
-   * <ul>
-   *   <li>This must be a constant.
-   *   <li>Must not cause side effects.
-   *   <li>Can be called from any thread.
-   * </ul>
-   *
-   * @return Returns {@link RenderUnit.RenderType#VIEW} or {@link RenderUnit.RenderType#DRAWABLE}.
-   */
-  public abstract RenderUnit.RenderType getRenderType();
+  public Mountable(RenderUnit.RenderType renderType) {
+    super(renderType);
+  }
 
-  /**
-   * Creates new mountable content when called.
-   *
-   * <ul>
-   *   <li>Must not cause side effects.
-   *   <li>Called from the main thread.
-   * </ul>
-   *
-   * @param context The Android context.
-   * @return A new mountable content.
-   */
-  public abstract ContentT createContent(Context context);
+  public final void setId(long id) {
+    if (mIsIdSet) {
+      throw new RuntimeException("Id can only be set once for any Mountable");
+    }
+    mId = id;
+    mIsIdSet = true;
+  }
+
+  @Override
+  public final long getId() {
+    return mId;
+  }
+
+  @Override
+  public final RenderUnit.RenderType getRenderType() {
+    return super.getRenderType();
+  }
+
+  @Override
+  public final LayoutResult calculateLayout(
+      RenderState.LayoutContext context, int widthSpec, int heightSpec) {
+    final MeasureResult measureResult =
+        measure(
+            context,
+            widthSpec,
+            heightSpec,
+            null /* TODO(mkarpinski): either pass in the data or get rid of this param */);
+
+    return new MountableLayoutResult(
+        this,
+        widthSpec,
+        heightSpec,
+        measureResult.width,
+        measureResult.height,
+        measureResult.layoutData);
+  }
 
   /**
    * Given a {@param widthSpec} and {@param heightSpec} set the width and height this Mountable will
@@ -96,17 +108,11 @@ public abstract class Mountable<ContentT> {
    *
    * @return a {@link MeasureResult} with the width, height, and optional layout data.
    */
-  public abstract MeasureResult measure(
+  protected abstract MeasureResult measure(
       final RenderState.LayoutContext context,
       final int widthSpec,
       final int heightSpec,
       final @Nullable Object previousLayoutData);
-
-  /** A list of {@link Binder} to set and unset properties on the content. */
-  @Nullable
-  public List<Binder<?, ContentT>> getBinders() {
-    return mBinders;
-  }
 
   /**
    * This API informs the framework to fill the content pool for this Mountable ahead of time. The
@@ -129,10 +135,54 @@ public abstract class Mountable<ContentT> {
     return new MountItemsPool.DefaultItemPool(this, getPoolSize());
   }
 
-  private void addBinder(Binder<?, ContentT> binder) {
-    if (mBinders == null) {
-      mBinders = new ArrayList<>(2);
-    }
-    mBinders.add(binder);
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final void mountExtensions(Context context, Object contentT, @Nullable Object layoutData) {
+    super.mountExtensions(context, (ContentT) contentT, layoutData);
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final void unmountExtensions(
+      Context context, Object contentT, @Nullable Object layoutData) {
+    super.unmountExtensions(context, (ContentT) contentT, layoutData);
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final void attachExtensions(Context context, Object content, @Nullable Object layoutData) {
+    super.attachExtensions(context, (ContentT) content, layoutData);
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final void detachExtensions(Context context, Object content, @Nullable Object layoutData) {
+    super.detachExtensions(context, (ContentT) content, layoutData);
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final @Nullable Map<Class<?>, Extension<?, ContentT>>
+      getMountUnmountBinderTypeToExtensionMap() {
+    return super.getMountUnmountBinderTypeToExtensionMap();
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final @Nullable List<Extension<?, ContentT>> getMountUnmountExtensions() {
+    return super.getMountUnmountExtensions();
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final @Nullable Map<Class<?>, Extension<?, ContentT>>
+      getAttachDetachBinderTypeToExtensionMap() {
+    return super.getAttachDetachBinderTypeToExtensionMap();
+  }
+
+  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
+  @Override
+  public final @Nullable List<Extension<?, ContentT>> getAttachDetachExtensions() {
+    return super.getAttachDetachExtensions();
   }
 }
