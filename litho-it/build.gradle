@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -96,6 +97,7 @@ dependencies {
     implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
+    implementation project(':litho-sections-widget')
     implementation project(':litho-testing')
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
@@ -107,6 +109,8 @@ dependencies {
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
+    kapt project(':litho-processor')
+    kapt project(':litho-sections-processor')
 
     // Test project dependencies
     testCompileOnly project(':litho-sections-annotations')
