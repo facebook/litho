@@ -50,6 +50,7 @@ public class RecyclerBinderConfiguration {
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mHScrollAsyncMode;
   private boolean mEnableStableIds;
+  private boolean mEnableItemPrefetch;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
@@ -80,6 +81,7 @@ public class RecyclerBinderConfiguration {
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
       boolean enableStableIds,
+      boolean enableItemPrefetch,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
       boolean isReconciliationEnabled,
@@ -109,6 +111,7 @@ public class RecyclerBinderConfiguration {
     mEstimatedViewportCount = estimatedViewportCount;
     mLithoViewFactory = lithoViewFactory;
     mErrorEventHandler = errorEventHandler;
+    mEnableItemPrefetch = enableItemPrefetch;
   }
 
   public float getRangeRatio() {
@@ -146,6 +149,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean getEnableStableIds() {
     return mEnableStableIds;
+  }
+
+  public boolean getEnableItemPrefetch() {
+    return mEnableItemPrefetch;
   }
 
   public @Nullable List<ComponentLogParams> getInvalidStateLogParamsList() {
@@ -209,6 +216,7 @@ public class RecyclerBinderConfiguration {
     private boolean mDynamicItemHeight = false;
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = ComponentsConfiguration.enableRecyclerBinderStableId;
+    private boolean mEnableItemPrefetch = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
@@ -247,6 +255,7 @@ public class RecyclerBinderConfiguration {
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
       this.mLithoViewFactory = configuration.mLithoViewFactory;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
+      this.mEnableItemPrefetch = configuration.mEnableItemPrefetch;
     }
 
     /**
@@ -340,6 +349,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder enableItemPrefetch(boolean enableItemPrefetch) {
+      mEnableItemPrefetch = enableItemPrefetch;
+      return this;
+    }
+
     public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
       this.mMoveLayoutsBetweenThreads = isEnabled;
       return this;
@@ -413,6 +427,7 @@ public class RecyclerBinderConfiguration {
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,
           mEnableStableIds,
+          mEnableItemPrefetch,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
           mIsReconciliationEnabled,
