@@ -37,7 +37,7 @@ class DashPathEffectBorder : KComponent() {
                 Border(
                     BorderEdge(NiceColor.BLUE, 5f.dp),
                     effect = BorderEffect.dashed(floatArrayOf(10f, 5f), 0f)))) {
-      child(Text("This component has a dash path effect applied", textSize = 20f.dp))
-    }
+          child(Text("This component has a dash path effect applied", textSize = 20f.dp))
+        }
   }
 }

@@ -50,8 +50,8 @@ class CollectionPaginationTest {
             lazyCollectionController = controller,
             onNearEnd = OnNearCallback { onNearEndCallbackCount.incrementAndGet() },
             style = Style.viewTag("collection_tag").onClick { controller.scrollToIndex(4) }) {
-          (0..4).forEach { child(Text("Child $it")) }
-        }
+              (0..4).forEach { child(Text("Child $it")) }
+            }
       }
     }
 

@@ -42,7 +42,7 @@ class RtlColorWidthBorder : KComponent() {
                         edgeTop = BorderEdge(NiceColor.YELLOW, 4f.dp),
                         edgeBottom = BorderEdge(NiceColor.BLUE, 16f.dp)))
                 .layoutDirection(YogaDirection.RTL)) {
-      child(Text("This component is RTL", textSize = 20f.dp))
-    }
+          child(Text("This component is RTL", textSize = 20f.dp))
+        }
   }
 }

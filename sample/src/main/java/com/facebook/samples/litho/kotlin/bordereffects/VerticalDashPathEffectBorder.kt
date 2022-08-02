@@ -39,7 +39,9 @@ class VerticalDashPathEffectBorder : KComponent() {
                     BorderEdge(width = 5f.dp),
                     edgeVertical = BorderEdge(color = NiceColor.RED),
                     effect = BorderEffect.dashed(floatArrayOf(20f, 5f), 0f)))) {
-      child(Text("This component has a dash path effect on its vertical edges", textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has a dash path effect on its vertical edges", textSize = 20f.dp))
+        }
   }
 }

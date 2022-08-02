@@ -48,39 +48,39 @@ class IdentityRootComponent : KComponent() {
                 logOnce.value = true
               }
             }) { // end_use_ref
-      if (isFirstCounterEnabled.value) {
-        child(
-            key("first_row") {
-              Row {
-                child(CounterComponent())
-                child(
-                    Text(
-                        text = "X",
-                        textSize = 30.dp,
-                        style =
-                            Style.margin(all = 30.dp).onClick {
-                              isFirstCounterEnabled.update(false)
-                            }))
-              }
-            })
-      }
-      // end_manual_key
-      if (isSecondCounterEnabled.value) {
-        child(
-            key("second_row") {
-              Row {
-                child(CounterComponent())
-                child(
-                    Text(
-                        text = "X",
-                        textSize = 30.dp,
-                        style =
-                            Style.margin(all = 30.dp).onClick {
-                              isSecondCounterEnabled.update(false)
-                            }))
-              }
-            })
-      }
-    }
+          if (isFirstCounterEnabled.value) {
+            child(
+                key("first_row") {
+                  Row {
+                    child(CounterComponent())
+                    child(
+                        Text(
+                            text = "X",
+                            textSize = 30.dp,
+                            style =
+                                Style.margin(all = 30.dp).onClick {
+                                  isFirstCounterEnabled.update(false)
+                                }))
+                  }
+                })
+          }
+          // end_manual_key
+          if (isSecondCounterEnabled.value) {
+            child(
+                key("second_row") {
+                  Row {
+                    child(CounterComponent())
+                    child(
+                        Text(
+                            text = "X",
+                            textSize = 30.dp,
+                            style =
+                                Style.margin(all = 30.dp).onClick {
+                                  isSecondCounterEnabled.update(false)
+                                }))
+                  }
+                })
+          }
+        }
   }
 }

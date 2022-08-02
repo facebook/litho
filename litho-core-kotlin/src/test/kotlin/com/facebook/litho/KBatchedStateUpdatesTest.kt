@@ -68,7 +68,9 @@ class KBatchedStateUpdatesTest {
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                   }
-                }) { child(Text(text = "Counter: ${counter.value}")) }
+                }) {
+              child(Text(text = "Counter: ${counter.value}"))
+            }
       }
     }
 
@@ -126,7 +128,9 @@ class KBatchedStateUpdatesTest {
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                     executeAndRunPendingBgTasks { counter.update { it + 1 } }
                   }
-                }) { child(Text(text = "Counter: ${counter.value}")) }
+                }) {
+              child(Text(text = "Counter: ${counter.value}"))
+            }
       }
     }
 
@@ -178,7 +182,9 @@ class KBatchedStateUpdatesTest {
                     /* this sync should consume all pending batched updates when batching is enabled */
                     executeAndRunPendingBgTasks { counter.updateSync { it + 1 } }
                   }
-                }) { child(Text(text = "Counter: ${counter.value}")) }
+                }) {
+              child(Text(text = "Counter: ${counter.value}"))
+            }
       }
     }
 

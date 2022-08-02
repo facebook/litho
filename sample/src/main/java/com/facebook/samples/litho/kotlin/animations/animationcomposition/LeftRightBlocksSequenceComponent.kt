@@ -52,27 +52,27 @@ class LeftRightBlocksSequenceComponent : KComponent() {
     return Column(
         alignItems = (if (left.value) YogaAlign.FLEX_START else YogaAlign.FLEX_END),
         style = Style.onClick { e -> left.update(!left.value) }) {
-      child(
-          Row(
-              style =
-                  Style.height(40f.dp)
-                      .width(40f.dp)
-                      .backgroundColor(Color.parseColor("#ee1111"))
-                      .transitionKey(context, "red", Transition.TransitionKeyType.GLOBAL)))
-      child(
-          Row(
-              style =
-                  Style.height(40f.dp)
-                      .width(40f.dp)
-                      .backgroundColor(Color.parseColor("#1111ee"))
-                      .transitionKey(context, "blue", Transition.TransitionKeyType.GLOBAL)))
-      child(
-          Row(
-              style =
-                  Style.height(40f.dp)
-                      .width(40f.dp)
-                      .backgroundColor(Color.parseColor("#11ee11"))
-                      .transitionKey(context, "green", Transition.TransitionKeyType.GLOBAL)))
-    }
+          child(
+              Row(
+                  style =
+                      Style.height(40f.dp)
+                          .width(40f.dp)
+                          .backgroundColor(Color.parseColor("#ee1111"))
+                          .transitionKey(context, "red", Transition.TransitionKeyType.GLOBAL)))
+          child(
+              Row(
+                  style =
+                      Style.height(40f.dp)
+                          .width(40f.dp)
+                          .backgroundColor(Color.parseColor("#1111ee"))
+                          .transitionKey(context, "blue", Transition.TransitionKeyType.GLOBAL)))
+          child(
+              Row(
+                  style =
+                      Style.height(40f.dp)
+                          .width(40f.dp)
+                          .backgroundColor(Color.parseColor("#11ee11"))
+                          .transitionKey(context, "green", Transition.TransitionKeyType.GLOBAL)))
+        }
   }
 }

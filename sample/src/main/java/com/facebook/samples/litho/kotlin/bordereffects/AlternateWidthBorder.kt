@@ -40,10 +40,10 @@ class AlternateWidthBorder : KComponent() {
                     edgeLeft = BorderEdge(width = 2f.dp),
                     edgeRight = BorderEdge(width = 8f.dp),
                 ))) {
-      child(
-          Text(
-              "This component has all borders specified to the same color, but not width",
-              textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has all borders specified to the same color, but not width",
+                  textSize = 20f.dp))
+        }
   }
 }

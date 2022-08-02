@@ -71,9 +71,9 @@ class AnimatedBadgeKotlin : KComponent() {
 
     return Column(
         style = Style.padding(all = 8f.dp).onClick { state.update(state.value.plus(1).rem(4)) }) {
-      child(Row(style = Style.margin(top = 8f.dp)) { child(buildComment1(expanded1)) })
-      child(Row(style = Style.margin(top = 16f.dp)) { child(buildComment2(expanded2)) })
-    }
+          child(Row(style = Style.margin(top = 8f.dp)) { child(buildComment1(expanded1)) })
+          child(Row(style = Style.margin(top = 16f.dp)) { child(buildComment2(expanded2)) })
+        }
   }
 
   private fun ResourcesScope.buildComment1(expanded: Boolean): Component =
@@ -88,34 +88,34 @@ class AnimatedBadgeKotlin : KComponent() {
                               .padding(all = 3f.dp)
                               .background(RoundedRect(Color.WHITE, 12.dp)),
                       alignItems = YogaAlign.CENTER) {
-                    child(
-                        Column(
-                            style =
-                                Style.height(18f.dp)
-                                    .width(18f.dp)
-                                    .background(RoundedRect(0xffffb74b, 9.dp))))
-                    if (expanded) {
-                      child(
-                          key("text") {
-                            Text(
-                                "Top Follower",
+                        child(
+                            Column(
                                 style =
-                                    Style.margin(left = 8f.dp)
-                                        .transitionKey(
-                                            context,
-                                            TRANSITION_KEY_TEXT,
-                                            Transition.TransitionKeyType.GLOBAL),
+                                    Style.height(18f.dp)
+                                        .width(18f.dp)
+                                        .background(RoundedRect(0xffffb74b, 9.dp))))
+                        if (expanded) {
+                          child(
+                              key("text") {
+                                Text(
+                                    "Top Follower",
+                                    style =
+                                        Style.margin(left = 8f.dp)
+                                            .transitionKey(
+                                                context,
+                                                TRANSITION_KEY_TEXT,
+                                                Transition.TransitionKeyType.GLOBAL),
+                                    textSize = 12f.dp,
+                                    clipToBounds = true)
+                              })
+                        }
+                        child(
+                            Text(
+                                "+1",
+                                style = Style.margin(left = 8f.dp, right = 4f.dp),
                                 textSize = 12f.dp,
-                                clipToBounds = true)
-                          })
-                    }
-                    child(
-                        Text(
-                            "+1",
-                            style = Style.margin(left = 8f.dp, right = 4f.dp),
-                            textSize = 12f.dp,
-                            textColor = Color.BLUE))
-                  })
+                                textColor = Color.BLUE))
+                      })
             })
         child(Text("So awesome!", textSize = 18f.dp))
       }
@@ -133,31 +133,31 @@ class AnimatedBadgeKotlin : KComponent() {
                               .padding(all = 3f.dp)
                               .background(RoundedRect(Color.WHITE, 12.dp)),
                       alignItems = YogaAlign.CENTER) {
-                    child(
-                        Column(
-                            style =
-                                Style.positionType(YogaPositionType.ABSOLUTE)
-                                    .position(start = (if (expanded) 27 else 3).dp)
-                                    .positionType(YogaPositionType.ABSOLUTE)
-                                    .height(18f.dp)
-                                    .width(18f.dp)
-                                    .background(RoundedRect(0xFFB2CFE5, 9.dp))))
-                    child(
-                        Column(
-                            style =
-                                Style.positionType(YogaPositionType.ABSOLUTE)
-                                    .position(start = (if (expanded) 15 else 3).dp)
-                                    .positionType(YogaPositionType.ABSOLUTE)
-                                    .height(18f.dp)
-                                    .width(18f.dp)
-                                    .background(RoundedRect(0xFF4B8C61, 9.dp))))
-                    child(
-                        Column(
-                            style =
-                                Style.height(18f.dp)
-                                    .width(18f.dp)
-                                    .background(RoundedRect(0xFFFFB74B, 9.dp))))
-                  })
+                        child(
+                            Column(
+                                style =
+                                    Style.positionType(YogaPositionType.ABSOLUTE)
+                                        .position(start = (if (expanded) 27 else 3).dp)
+                                        .positionType(YogaPositionType.ABSOLUTE)
+                                        .height(18f.dp)
+                                        .width(18f.dp)
+                                        .background(RoundedRect(0xFFB2CFE5, 9.dp))))
+                        child(
+                            Column(
+                                style =
+                                    Style.positionType(YogaPositionType.ABSOLUTE)
+                                        .position(start = (if (expanded) 15 else 3).dp)
+                                        .positionType(YogaPositionType.ABSOLUTE)
+                                        .height(18f.dp)
+                                        .width(18f.dp)
+                                        .background(RoundedRect(0xFF4B8C61, 9.dp))))
+                        child(
+                            Column(
+                                style =
+                                    Style.height(18f.dp)
+                                        .width(18f.dp)
+                                        .background(RoundedRect(0xFFFFB74B, 9.dp))))
+                      })
             })
         child(Text("So awesome!", textSize = 18f.dp))
       }

@@ -44,10 +44,10 @@ class AlternateColorCornerPathEffectBorder : KComponent() {
                     edgeRight = BorderEdge(color = NiceColor.GREEN),
                     radius = BorderRadius(20f.dp),
                     effect = BorderEffect.discrete(4f, 11f)))) {
-      child(
-          Text(
-              "This component has a path effect with rounded corners + multiple colors",
-              textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has a path effect with rounded corners + multiple colors",
+                  textSize = 20f.dp))
+        }
   }
 }

@@ -38,12 +38,12 @@ class ExpandableElementMe(
         Row(
             style = Style.padding(start = 75.dp, end = 5.dp),
             justifyContent = YogaJustify.FLEX_END) {
-          child(
-              ExpandableElementMessageContent(
-                  backgroundColor = 0xFF0084FF.toInt(),
-                  messageTextColor = Color.WHITE,
-                  messageText = messageText))
-        },
+              child(
+                  ExpandableElementMessageContent(
+                      backgroundColor = 0xFF0084FF.toInt(),
+                      messageTextColor = Color.WHITE,
+                      messageText = messageText))
+            },
         timestamp,
         seen)
   }

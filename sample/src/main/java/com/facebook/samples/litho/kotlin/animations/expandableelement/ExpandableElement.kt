@@ -61,16 +61,16 @@ class ExpandableElement(
             Style.padding(top = 8.dp).transitionKey(context, TRANSITION_MSG_PARENT).onClick {
               expanded.update(!expanded.value)
             }) {
-      if (expanded.value) {
-        child(ExpandableElementTopDetail(timestamp))
-      }
-      child(
-          Column {
-            child(content)
-            if (expanded.value) {
-              child(ExpandableElementBottomDetail(seen))
-            }
-          })
-    }
+          if (expanded.value) {
+            child(ExpandableElementTopDetail(timestamp))
+          }
+          child(
+              Column {
+                child(content)
+                if (expanded.value) {
+                  child(ExpandableElementBottomDetail(seen))
+                }
+              })
+        }
   }
 }

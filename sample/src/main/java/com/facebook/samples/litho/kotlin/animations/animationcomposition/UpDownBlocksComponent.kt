@@ -51,28 +51,28 @@ class UpDownBlocksComponent : KComponent() {
     return Row(
         alignItems = (if (top.value) YogaAlign.FLEX_START else YogaAlign.FLEX_END),
         style = Style.height(200f.dp).onClick { e -> top.update(!top.value) }) {
-      child(
-          Row(
-              style =
-                  Style.height(40f.dp)
-                      .flex(grow = 1f)
-                      .backgroundColor(Color.parseColor("#ee1111"))
-                      .transitionKey(context, "red", Transition.TransitionKeyType.GLOBAL)))
+          child(
+              Row(
+                  style =
+                      Style.height(40f.dp)
+                          .flex(grow = 1f)
+                          .backgroundColor(Color.parseColor("#ee1111"))
+                          .transitionKey(context, "red", Transition.TransitionKeyType.GLOBAL)))
 
-      child(
-          Row(
-              style =
-                  Style.height(40f.dp)
-                      .flex(grow = 1f)
-                      .backgroundColor(Color.parseColor("#1111ee"))
-                      .transitionKey(context, "blue", Transition.TransitionKeyType.GLOBAL)))
-      child(
-          Row(
-              style =
-                  Style.height(40f.dp)
-                      .flex(grow = 1f)
-                      .backgroundColor(Color.parseColor("#11ee11"))
-                      .transitionKey(context, "green", Transition.TransitionKeyType.GLOBAL)))
-    }
+          child(
+              Row(
+                  style =
+                      Style.height(40f.dp)
+                          .flex(grow = 1f)
+                          .backgroundColor(Color.parseColor("#1111ee"))
+                          .transitionKey(context, "blue", Transition.TransitionKeyType.GLOBAL)))
+          child(
+              Row(
+                  style =
+                      Style.height(40f.dp)
+                          .flex(grow = 1f)
+                          .backgroundColor(Color.parseColor("#11ee11"))
+                          .transitionKey(context, "green", Transition.TransitionKeyType.GLOBAL)))
+        }
   }
 }

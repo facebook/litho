@@ -39,10 +39,10 @@ class AlternateColorWidthBorder : KComponent() {
                     edgeLeft = BorderEdge(NiceColor.RED, 2f.dp),
                     edgeRight = BorderEdge(NiceColor.GREEN, 8f.dp),
                 ))) {
-      child(
-          Text(
-              "This component has each border specified to a different color + width",
-              textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has each border specified to a different color + width",
+                  textSize = 20f.dp))
+        }
   }
 }

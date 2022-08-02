@@ -41,7 +41,7 @@ class AlternateColorPathEffectBorder : KComponent() {
                     edgeRight = BorderEdge(NiceColor.GREEN),
                     edgeBottom = BorderEdge(NiceColor.BLUE),
                     effect = BorderEffect.discrete(5f, 10f)))) {
-      child(Text("This component has a path effect with multiple colors", textSize = 20f.dp))
-    }
+          child(Text("This component has a path effect with multiple colors", textSize = 20f.dp))
+        }
   }
 }

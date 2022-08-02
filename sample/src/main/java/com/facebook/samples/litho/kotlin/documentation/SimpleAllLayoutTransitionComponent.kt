@@ -39,8 +39,8 @@ class SimpleAllLayoutTransitionKComponent : KComponent() {
     return Column(
         style = Style.margin(all = 10.dp).onClick { toRight.update { !it } },
         alignItems = if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START) {
-      child(SolidColor.create(context).color(Color.YELLOW).widthDip(80f).heightDip(80f).build())
-    }
+          child(SolidColor.create(context).color(Color.YELLOW).widthDip(80f).heightDip(80f).build())
+        }
   }
   // layout_end
 }
@@ -55,7 +55,7 @@ class SimpleAllLayoutTransitionKComponentV2 : KComponent() {
     return Column(
         style = Style.margin(all = 10.dp).onClick { toRight.update { !it } },
         alignItems = if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START) {
-      child(SolidColor.create(context).color(Color.YELLOW).widthDip(80f).heightDip(80f).build())
-    }
+          child(SolidColor.create(context).color(Color.YELLOW).widthDip(80f).heightDip(80f).build())
+        }
   }
 }

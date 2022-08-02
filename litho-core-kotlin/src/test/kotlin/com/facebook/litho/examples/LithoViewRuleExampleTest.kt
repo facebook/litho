@@ -81,11 +81,11 @@ class LithoViewRuleExampleTest {
                 Style.width(100.px).height(100.px).viewTag("test_view").onClick {
                   showChild.update(true)
                 }) {
-          child(Text("some_text2"))
-          if (showChild.value) {
-            child(InnerComponent())
-          }
-        }
+              child(Text("some_text2"))
+              if (showChild.value) {
+                child(InnerComponent())
+              }
+            }
       }
     }
 
@@ -113,11 +113,11 @@ class LithoViewRuleExampleTest {
 
         return Row(
             style = Style.width(100.px).height(100.px).onVisible { showChild.update(true) }) {
-          child(Text("some_other_text"))
-          if (showChild.value) {
-            child(InnerComponent())
-          }
-        }
+              child(Text("some_other_text"))
+              if (showChild.value) {
+                child(InnerComponent())
+              }
+            }
       }
     }
 
@@ -393,10 +393,10 @@ class LithoViewRuleExampleTest {
                     .height(100.px)
                     .onClick { showText.update { isTextShowing -> !isTextShowing } }
                     .contentDescription("row")) {
-          if (showText.value) {
-            child(Text(text = "Text"))
-          }
-        }
+              if (showText.value) {
+                child(Text(text = "Text"))
+              }
+            }
       }
     }
     // component_for_action_end

@@ -40,8 +40,8 @@ class ExpandableElementMessageContent(
             Style.padding(all = 8.dp)
                 .margin(all = 8.dp)
                 .background(getMessageBackground(backgroundColor))) {
-      child(Text(textSize = 18.sp, textColor = messageTextColor, text = messageText))
-    }
+          child(Text(textSize = 18.sp, textColor = messageTextColor, text = messageText))
+        }
   }
 
   fun getMessageBackground(color: Int): ShapeDrawable {

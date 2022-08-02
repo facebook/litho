@@ -45,24 +45,26 @@ class VisibilityHandlingExampleComponent : KComponent() {
                   }
                 }
                 .onInvisible { log("Invisible", "null") }) {
-      child(Text("hello world"))
-      child(
-          Row(
-              style =
-                  Style.onVisibilityChanged { event ->
-                    if (event.percentVisibleHeight > 50) {
-                      Log.d(
-                          "visibility-changed",
-                          "View is mostly visible now. With: " +
-                              "\ntop: ${event.visibleTop}" +
-                              "\nleft: ${event.visibleLeft}" +
-                              "\nvisible width: ${event.visibleWidth}" +
-                              "\nvisible height: ${event.visibleHeight}" +
-                              "\npercentage visible height: ${event.percentVisibleHeight}" +
-                              "\npercentage visible width: ${event.percentVisibleWidth}")
-                    }
-                  }) { child(Text("This is an example.")) })
-    }
+          child(Text("hello world"))
+          child(
+              Row(
+                  style =
+                      Style.onVisibilityChanged { event ->
+                        if (event.percentVisibleHeight > 50) {
+                          Log.d(
+                              "visibility-changed",
+                              "View is mostly visible now. With: " +
+                                  "\ntop: ${event.visibleTop}" +
+                                  "\nleft: ${event.visibleLeft}" +
+                                  "\nvisible width: ${event.visibleWidth}" +
+                                  "\nvisible height: ${event.visibleHeight}" +
+                                  "\npercentage visible height: ${event.percentVisibleHeight}" +
+                                  "\npercentage visible width: ${event.percentVisibleWidth}")
+                        }
+                      }) {
+                    child(Text("This is an example."))
+                  })
+        }
   }
 
   fun log(type: String, content: String) {

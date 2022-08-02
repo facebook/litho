@@ -29,7 +29,9 @@ class TreePropsExampleComponent : KComponent() {
     return TreePropProvider(
         Typeface::class.java to Typeface.DEFAULT_BOLD,
         String::class.java to getTextTitle(),
-        Int::class.java to Color.RED) { TreePropsChildComponent() }
+        Int::class.java to Color.RED) {
+          TreePropsChildComponent()
+        }
     // declaring_tree_prop_end
   }
 }

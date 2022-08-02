@@ -21,12 +21,12 @@ class Selectable(val text: String, val selected: Boolean, val onClick: (ClickEve
     return Row(
         justifyContent = YogaJustify.SPACE_BETWEEN,
         style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(onClick)) {
-      child(Text(text))
-      child(
-          Image(
-              drawableRes(
-                  if (selected) android.R.drawable.checkbox_on_background
-                  else android.R.drawable.checkbox_off_background)))
-    }
+          child(Text(text))
+          child(
+              Image(
+                  drawableRes(
+                      if (selected) android.R.drawable.checkbox_on_background
+                      else android.R.drawable.checkbox_off_background)))
+        }
   }
 }

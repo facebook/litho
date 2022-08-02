@@ -78,7 +78,9 @@ class CollectionOnViewPortChangedTest {
         return LazyList(
             handle = handle,
             onViewportChanged = onViewportChanged,
-            style = Style.viewTag("collection_tag")) { (0..4).forEach { child(Text("Child $it")) } }
+            style = Style.viewTag("collection_tag")) {
+              (0..4).forEach { child(Text("Child $it")) }
+            }
       }
     }
 

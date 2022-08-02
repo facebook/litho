@@ -61,26 +61,27 @@ class TransitionsComponent : KComponent() {
               alphaValue.update { prevValue -> if (prevValue == 1f) 0.5f else 1f }
               shouldExpand.update(!shouldExpand.value)
             }) {
-      child(
-          Column(
-              style =
-                  Style.width(50.dp)
-                      .height(50.dp)
-                      .margin(all = 5.dp)
-                      .transitionKey(
-                          context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
-                      .alignSelf(if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START)
-                      .background(RoundedRect(0xff666699, 8.dp))))
-      child(
-          Column(
-              style =
-                  Style.width(if (shouldExpand.value) 75.dp else 50.dp)
-                      .height(if (shouldExpand.value) 75.dp else 50.dp)
-                      .margin(all = 5.dp)
-                      .transitionKey(
-                          context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
-                      .background(RoundedRect(0xffba7bb5, 8.dp))))
-      child(ContainersComponent())
-    }
+          child(
+              Column(
+                  style =
+                      Style.width(50.dp)
+                          .height(50.dp)
+                          .margin(all = 5.dp)
+                          .transitionKey(
+                              context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
+                          .alignSelf(
+                              if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START)
+                          .background(RoundedRect(0xff666699, 8.dp))))
+          child(
+              Column(
+                  style =
+                      Style.width(if (shouldExpand.value) 75.dp else 50.dp)
+                          .height(if (shouldExpand.value) 75.dp else 50.dp)
+                          .margin(all = 5.dp)
+                          .transitionKey(
+                              context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
+                          .background(RoundedRect(0xffba7bb5, 8.dp))))
+          child(ContainersComponent())
+        }
   }
 }

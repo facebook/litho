@@ -45,9 +45,11 @@ class StoryKComponent(private val user: User) : KComponent() {
                       context.androidContext, "Open ${user.username} Story", Toast.LENGTH_SHORT)
                   .show()
             }) {
-      child(Image(drawable = drawableRes(user.avatarRes), style = Style.width(72.dp).height(72.dp)))
-      child(Text(text = user.username, textSize = 10.sp))
-    }
+          child(
+              Image(
+                  drawable = drawableRes(user.avatarRes), style = Style.width(72.dp).height(72.dp)))
+          child(Text(text = user.username, textSize = 10.sp))
+        }
   }
 }
 // end_example

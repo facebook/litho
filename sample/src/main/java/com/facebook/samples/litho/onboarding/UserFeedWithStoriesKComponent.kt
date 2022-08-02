@@ -46,8 +46,8 @@ class UserFeedWithStoriesKComponent(
               startPadding = 4.dp,
               topPadding = 4.dp,
               style = Style.padding(vertical = 6.dp)) {
-            usersWithStories.forEach { user -> child(StoryKComponent(user = user)) }
-          })
+                usersWithStories.forEach { user -> child(StoryKComponent(user = user)) }
+              })
 
       child(Row(style = Style.height(1.px).backgroundColor(0x22888888)))
 

@@ -51,14 +51,14 @@ class OverlayRenderCount(val component: Component) : KComponent() {
               style =
                   Style.positionType(YogaPositionType.ABSOLUTE)
                       .position(bottom = 0.px, end = 0.px)) {
-            child(
-                Text(
-                    text = "renderCount = ${renderCount.value}",
-                    textSize = 8.sp,
-                    textColor = Color.WHITE,
-                    backgroundColor = Color.DKGRAY,
-                    style = Style.alpha(.8f).padding(horizontal = 8.dp)))
-          })
+                child(
+                    Text(
+                        text = "renderCount = ${renderCount.value}",
+                        textSize = 8.sp,
+                        textColor = Color.WHITE,
+                        backgroundColor = Color.DKGRAY,
+                        style = Style.alpha(.8f).padding(horizontal = 8.dp)))
+              })
     }
   }
 }

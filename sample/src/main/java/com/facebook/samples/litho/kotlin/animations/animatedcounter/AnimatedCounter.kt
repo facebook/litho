@@ -49,16 +49,16 @@ class AnimatingCounterRootComponent : KComponent() {
               style = Style.alignSelf(YogaAlign.CENTER).flex(grow = 1f),
               justifyContent = YogaJustify.CENTER,
               alignItems = YogaAlign.CENTER) {
-            child(
-                Text(
-                    style = Style.padding(all = 8.dp).onClick { count.update { c -> c + 1 } },
-                    text = "+"))
-            child(AnimatingCounter(count = count.value))
-            child(
-                Text(
-                    style = Style.padding(all = 8.dp).onClick { count.update { c -> c - 1 } },
-                    text = "-"))
-          })
+                child(
+                    Text(
+                        style = Style.padding(all = 8.dp).onClick { count.update { c -> c + 1 } },
+                        text = "+"))
+                child(AnimatingCounter(count = count.value))
+                child(
+                    Text(
+                        style = Style.padding(all = 8.dp).onClick { count.update { c -> c - 1 } },
+                        text = "-"))
+              })
     }
   }
 }

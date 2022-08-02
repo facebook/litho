@@ -37,10 +37,10 @@ class AllBorder : KComponent() {
                 Border(
                     edgeAll = BorderEdge(NiceColor.BLUE, 5f.dp),
                 ))) {
-      child(
-          Text(
-              "This component has all borders specified to the same color + width",
-              textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has all borders specified to the same color + width",
+                  textSize = 20f.dp))
+        }
   }
 }

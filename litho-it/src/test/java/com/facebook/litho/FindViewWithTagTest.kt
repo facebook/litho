@@ -45,9 +45,9 @@ class FindViewWithTagTest {
       override fun ComponentScope.render(): Component {
         return Column(
             style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag("Find Me!")) }) {
-          child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
-          child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
-        }
+              child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
+              child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
+            }
       }
     }
 
@@ -65,9 +65,9 @@ class FindViewWithTagTest {
         return Column(
             style =
                 Style.wrapInView().onVisible { viewRef.set(findViewWithTag("I don't exist")) }) {
-          child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
-          child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
-        }
+              child(Column(style = Style.viewTag("not_this_one").width(100.dp).height(100.dp)))
+              child(Column(style = Style.viewTag("Find Me!").width(100.dp).height(100.dp)))
+            }
       }
     }
 
@@ -86,9 +86,9 @@ class FindViewWithTagTest {
       override fun ComponentScope.render(): Component {
         return Column(
             style = Style.wrapInView().onVisible { viewRef.set(findViewWithTag(handleTag2)) }) {
-          child(Column(style = Style.viewTag(handleTag1).width(100.dp).height(100.dp)))
-          child(Column(style = Style.viewTag(handleTag2).width(100.dp).height(100.dp)))
-        }
+              child(Column(style = Style.viewTag(handleTag1).width(100.dp).height(100.dp)))
+              child(Column(style = Style.viewTag(handleTag2).width(100.dp).height(100.dp)))
+            }
       }
     }
 

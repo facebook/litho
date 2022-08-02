@@ -106,26 +106,36 @@ class BoundsAnimationComponent : KComponent() {
     return Column(
         alignItems = YogaAlign.CENTER,
         style = Style.backgroundColor(Color.WHITE).padding(vertical = 8.dp)) {
-      child(
-          Text(
-              text = "ABT " + if (autoBoundsTransitionEnabled.value) "enabled" else "disabled",
-              textSize = 20.sp,
-              textStyle = Typeface.BOLD,
-              textColor = Color.BLACK,
-              style =
-                  Style.onClick {
-                    autoBoundsTransitionEnabled.update(autoBoundsTransitionEnabled.value.not())
-                  }))
-      child(
-          Text(text = "Affected Children", textSize = 20.sp, style = Style.margin(vertical = 8.dp)))
-      child(getAffectedChildren(isAffectedChildrenExpanded))
-      child(
-          Text(text = "Affected Siblings", textSize = 20.sp, style = Style.margin(vertical = 8.dp)))
-      child(getAffectedSiblings(isAffectedSiblingsExpanded))
-      child(Text(text = "Affected Parent", textSize = 20.sp, style = Style.margin(vertical = 8.dp)))
-      child(getAffectedParents(isAffectedParentExpanded))
-      child(getAllTogether(isAllTogetherExpanded))
-    }
+          child(
+              Text(
+                  text = "ABT " + if (autoBoundsTransitionEnabled.value) "enabled" else "disabled",
+                  textSize = 20.sp,
+                  textStyle = Typeface.BOLD,
+                  textColor = Color.BLACK,
+                  style =
+                      Style.onClick {
+                        autoBoundsTransitionEnabled.update(autoBoundsTransitionEnabled.value.not())
+                      }))
+          child(
+              Text(
+                  text = "Affected Children",
+                  textSize = 20.sp,
+                  style = Style.margin(vertical = 8.dp)))
+          child(getAffectedChildren(isAffectedChildrenExpanded))
+          child(
+              Text(
+                  text = "Affected Siblings",
+                  textSize = 20.sp,
+                  style = Style.margin(vertical = 8.dp)))
+          child(getAffectedSiblings(isAffectedSiblingsExpanded))
+          child(
+              Text(
+                  text = "Affected Parent",
+                  textSize = 20.sp,
+                  style = Style.margin(vertical = 8.dp)))
+          child(getAffectedParents(isAffectedParentExpanded))
+          child(getAllTogether(isAllTogetherExpanded))
+        }
   }
 
   private fun ResourcesScope.getAffectedChildren(isExpanded: State<Boolean>): Component =
@@ -140,35 +150,35 @@ class BoundsAnimationComponent : KComponent() {
                   .padding(all = 8.dp)
                   .backgroundColor(Color.YELLOW)
                   .onClick { isExpanded.update(isExpanded.value.not()) }) {
-        child(
-            Column(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CHILD_AFFECTED_CHILDREN_START,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .flex(1f)
-                        .backgroundColor(Color.RED)))
-        child(
-            Column(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CHILD_AFFECTED_CHILDREN_MIDDLE,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .flex(1f)
-                        .backgroundColor(Color.RED)
-                        .margin(horizontal = 8.dp)))
-        child(
-            Column(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CHILD_AFFECTED_CHILDREN_END,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .flex(1f)
-                        .backgroundColor(Color.RED)))
-      }
+            child(
+                Column(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CHILD_AFFECTED_CHILDREN_START,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .flex(1f)
+                            .backgroundColor(Color.RED)))
+            child(
+                Column(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CHILD_AFFECTED_CHILDREN_MIDDLE,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .flex(1f)
+                            .backgroundColor(Color.RED)
+                            .margin(horizontal = 8.dp)))
+            child(
+                Column(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CHILD_AFFECTED_CHILDREN_END,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .flex(1f)
+                            .backgroundColor(Color.RED)))
+          }
 
   private fun ResourcesScope.getAffectedSiblings(isExpanded: State<Boolean>): Component =
       Row(
@@ -182,26 +192,26 @@ class BoundsAnimationComponent : KComponent() {
                   .padding(all = 8.dp)
                   .backgroundColor(Color.LTGRAY)
                   .onClick { isExpanded.update(isExpanded.value.not()) }) {
-        child(
-            Column(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CHILD_AFFECTED_SIBLINGS_START,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .flex(1f)
-                        .backgroundColor(Color.RED)))
-        child(
-            Column(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CHILD_AFFECTED_SIBLINGS_END,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .flex(if (isExpanded.value) 2f else 1f)
-                        .backgroundColor(Color.YELLOW)
-                        .margin(start = 8.dp)))
-      }
+            child(
+                Column(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CHILD_AFFECTED_SIBLINGS_START,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .flex(1f)
+                            .backgroundColor(Color.RED)))
+            child(
+                Column(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CHILD_AFFECTED_SIBLINGS_END,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .flex(if (isExpanded.value) 2f else 1f)
+                            .backgroundColor(Color.YELLOW)
+                            .margin(start = 8.dp)))
+          }
 
   private fun ResourcesScope.getAffectedParents(isExpanded: State<Boolean>): Component =
       Row(
@@ -215,16 +225,16 @@ class BoundsAnimationComponent : KComponent() {
                   .padding(all = 8.dp)
                   .backgroundColor(Color.LTGRAY)
                   .onClick { isExpanded.update(isExpanded.value.not()) }) {
-        child(
-            Column(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CHILD_AFFECTED_PARENT,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .width((60 * if (isExpanded.value) 2 else 1).dp)
-                        .backgroundColor(Color.YELLOW)))
-      }
+            child(
+                Column(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CHILD_AFFECTED_PARENT,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .width((60 * if (isExpanded.value) 2 else 1).dp)
+                            .backgroundColor(Color.YELLOW)))
+          }
 
   private fun ResourcesScope.getAllTogether(isExpanded: State<Boolean>): Component =
       Column(
@@ -238,67 +248,67 @@ class BoundsAnimationComponent : KComponent() {
                   .padding(all = 8.dp)
                   .backgroundColor(Color.LTGRAY)
                   .onClick { isExpanded.update(isExpanded.value.not()) }) {
-        child(
-            Row(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CONTAINER_ALL_TOGETHER_TOP,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .height(60.dp)
-                        .padding(all = 6.dp)
-                        .backgroundColor(Color.GRAY)) {
-              child(
-                  Column(
-                      style =
-                          Style.transitionKey(
-                                  context,
-                                  TRANSITION_KEY_CHILD_ALL_TOGETHER_TOP_START,
-                                  Transition.TransitionKeyType.GLOBAL)
-                              .margin(end = 6.dp)
-                              .flex(1f)
-                              .backgroundColor(Color.RED)))
-              child(
-                  Column(
-                      style =
-                          Style.transitionKey(
-                                  context,
-                                  TRANSITION_KEY_CHILD_ALL_TOGETHER_TOP_END,
-                                  Transition.TransitionKeyType.GLOBAL)
-                              .flex(1f)
-                              .backgroundColor(Color.RED)))
-            })
-        child(
-            Row(
-                style =
-                    Style.transitionKey(
-                            context,
-                            TRANSITION_KEY_CONTAINER_ALL_TOGETHER_BOTTOM,
-                            Transition.TransitionKeyType.GLOBAL)
-                        .height(60.dp)
-                        .padding(all = 6.dp)
-                        .margin(top = 8.dp)
-                        .backgroundColor(Color.GRAY)) {
-              child(
-                  Column(
-                      style =
-                          Style.transitionKey(
-                                  context,
-                                  TRANSITION_KEY_CHILD_ALL_TOGETHER_BOTTOM_START,
-                                  Transition.TransitionKeyType.GLOBAL)
-                              .margin(end = 6.dp)
-                              .width(100.dp)
-                              .backgroundColor(Color.RED)))
-              child(
-                  Column(
-                      style =
-                          Style.transitionKey(
-                                  context,
-                                  TRANSITION_KEY_CHILD_ALL_TOGETHER_BOTTOM_END,
-                                  Transition.TransitionKeyType.GLOBAL)
-                              .flex(1f)
-                              .width((if (isExpanded.value) 200 else 100).dp)
-                              .backgroundColor(Color.YELLOW)))
-            })
-      }
+            child(
+                Row(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CONTAINER_ALL_TOGETHER_TOP,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .height(60.dp)
+                            .padding(all = 6.dp)
+                            .backgroundColor(Color.GRAY)) {
+                      child(
+                          Column(
+                              style =
+                                  Style.transitionKey(
+                                          context,
+                                          TRANSITION_KEY_CHILD_ALL_TOGETHER_TOP_START,
+                                          Transition.TransitionKeyType.GLOBAL)
+                                      .margin(end = 6.dp)
+                                      .flex(1f)
+                                      .backgroundColor(Color.RED)))
+                      child(
+                          Column(
+                              style =
+                                  Style.transitionKey(
+                                          context,
+                                          TRANSITION_KEY_CHILD_ALL_TOGETHER_TOP_END,
+                                          Transition.TransitionKeyType.GLOBAL)
+                                      .flex(1f)
+                                      .backgroundColor(Color.RED)))
+                    })
+            child(
+                Row(
+                    style =
+                        Style.transitionKey(
+                                context,
+                                TRANSITION_KEY_CONTAINER_ALL_TOGETHER_BOTTOM,
+                                Transition.TransitionKeyType.GLOBAL)
+                            .height(60.dp)
+                            .padding(all = 6.dp)
+                            .margin(top = 8.dp)
+                            .backgroundColor(Color.GRAY)) {
+                      child(
+                          Column(
+                              style =
+                                  Style.transitionKey(
+                                          context,
+                                          TRANSITION_KEY_CHILD_ALL_TOGETHER_BOTTOM_START,
+                                          Transition.TransitionKeyType.GLOBAL)
+                                      .margin(end = 6.dp)
+                                      .width(100.dp)
+                                      .backgroundColor(Color.RED)))
+                      child(
+                          Column(
+                              style =
+                                  Style.transitionKey(
+                                          context,
+                                          TRANSITION_KEY_CHILD_ALL_TOGETHER_BOTTOM_END,
+                                          Transition.TransitionKeyType.GLOBAL)
+                                      .flex(1f)
+                                      .width((if (isExpanded.value) 200 else 100).dp)
+                                      .backgroundColor(Color.YELLOW)))
+                    })
+          }
 }

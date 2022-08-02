@@ -44,9 +44,10 @@ class CompositePathEffectBorder : KComponent() {
                     edgeRight = BorderEdge(color = NiceColor.GREEN),
                     radius = BorderRadius(20f.dp),
                     effect = BorderEffect.dashed(floatArrayOf(10f, 5f), 0f)))) {
-      child(
-          Text(
-              "This component has a composite path effect of discrete + corner", textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has a composite path effect of discrete + corner",
+                  textSize = 20f.dp))
+        }
   }
 }

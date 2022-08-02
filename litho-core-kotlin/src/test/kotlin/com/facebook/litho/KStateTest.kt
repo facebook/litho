@@ -163,11 +163,11 @@ class KStateTest {
 
         return Row(
             style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } }) {
-          child(
-              Text(
-                  style = Style.viewTag("Counter: ${counter.value}"),
-                  text = "Counter: ${counter.value}"))
-        }
+              child(
+                  Text(
+                      style = Style.viewTag("Counter: ${counter.value}"),
+                      text = "Counter: ${counter.value}"))
+            }
       }
     }
 

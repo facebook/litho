@@ -221,8 +221,8 @@ class FlexboxStylesTest {
                       .height(100.px)
                       .padding(
                           left = left.px, top = top.px, right = right.px, bottom = bottom.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
-          }
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -242,8 +242,8 @@ class FlexboxStylesTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).padding(start = start.px, end = end.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
-          }
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -266,8 +266,8 @@ class FlexboxStylesTest {
                   Style.width(100.px)
                       .height(100.px)
                       .padding(horizontal = horizontal.px, vertical = vertical.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
-          }
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -288,8 +288,8 @@ class FlexboxStylesTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).padding(padding.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
-          }
+                child(Row(style = Style.flex(grow = 1f).wrapInView()))
+              }
         }
         .assertMatches(
             match<LithoView> {

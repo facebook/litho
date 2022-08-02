@@ -52,19 +52,19 @@ class KDebugComponent(private val message: String, private val throwable: Throwa
             Style.onClick { onClick(message, throwable) }
                 .padding(all = 1.dp)
                 .backgroundColor(DARK_RED_FRAME)) {
-      child(
-          Text(
-              style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND),
-              text = message,
-              textSize = 16.dp))
-      child(
-          Text(
-              style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND),
-              text = StacktraceHelper.formatStacktrace(throwable),
-              textSize = 12.dp,
-              textColor = LIGHT_GRAY_TEXT,
-              typeface = Typeface.MONOSPACE))
-    }
+          child(
+              Text(
+                  style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND),
+                  text = message,
+                  textSize = 16.dp))
+          child(
+              Text(
+                  style = Style.padding(all = 4.dp).backgroundColor(LIGHT_RED_BACKGROUND),
+                  text = StacktraceHelper.formatStacktrace(throwable),
+                  textSize = 12.dp,
+                  textColor = LIGHT_GRAY_TEXT,
+                  typeface = Typeface.MONOSPACE))
+        }
   }
 
   private fun onClick(message: String, throwable: Throwable) {

@@ -63,8 +63,7 @@ class LazyCollectionControllerTest {
         return LazyList(
             lazyCollectionController = lazyCollectionController,
             style = Style.viewTag("collection_tag"),
-        ) {
-        }
+        ) {}
       }
     }
 

@@ -119,38 +119,38 @@ class AnimatedComponent : KComponent() {
                     staggerTopAnimation.start()
                     pulseAnimation.start()
                   }) {
-            child(
-                Column(
-                    style =
-                        Style.width(100.dp)
-                            .height(150.dp)
-                            .margin(all = 5.dp)
-                            .background(RoundedRect(0xff99b3ff, 8.dp))))
-            child(
-                Column(
-                    style =
-                        Style.width(100.dp)
-                            .height(150.dp)
-                            .margin(all = 5.dp)
-                            .alpha(alpha)
-                            .background(RoundedRect(0xffffd480, 8.dp))))
-            child(
-                Column(
-                    style =
-                        Style.width(100.dp)
-                            .height(150.dp)
-                            .margin(all = 5.dp)
-                            .alpha(alpha2)
-                            .background(RoundedRect(0xffe699cc, 8.dp))))
-            child(
-                Column(
-                    style =
-                        Style.width(100.dp)
-                            .height(150.dp)
-                            .margin(all = 5.dp)
-                            .alpha(alpha3)
-                            .background(RoundedRect(0xff9fdfbf, 8.dp))))
-          })
+                child(
+                    Column(
+                        style =
+                            Style.width(100.dp)
+                                .height(150.dp)
+                                .margin(all = 5.dp)
+                                .background(RoundedRect(0xff99b3ff, 8.dp))))
+                child(
+                    Column(
+                        style =
+                            Style.width(100.dp)
+                                .height(150.dp)
+                                .margin(all = 5.dp)
+                                .alpha(alpha)
+                                .background(RoundedRect(0xffffd480, 8.dp))))
+                child(
+                    Column(
+                        style =
+                            Style.width(100.dp)
+                                .height(150.dp)
+                                .margin(all = 5.dp)
+                                .alpha(alpha2)
+                                .background(RoundedRect(0xffe699cc, 8.dp))))
+                child(
+                    Column(
+                        style =
+                            Style.width(100.dp)
+                                .height(150.dp)
+                                .margin(all = 5.dp)
+                                .alpha(alpha3)
+                                .background(RoundedRect(0xff9fdfbf, 8.dp))))
+              })
       child(
           Row(
               style =
@@ -171,14 +171,14 @@ class AnimatedComponent : KComponent() {
                             scale2
                           })
                       .background(RoundedRect(0xffd9d9d9, 8.dp))) {
-            child(
-                Row(
-                    style =
-                        Style.margin(30.dp)
-                            .width(90.dp)
-                            .height(20.dp)
-                            .background(RoundedRect(0xff999999, 12.dp))))
-          })
+                child(
+                    Row(
+                        style =
+                            Style.margin(30.dp)
+                                .width(90.dp)
+                                .height(20.dp)
+                                .background(RoundedRect(0xff999999, 12.dp))))
+              })
       child(
           Row(style = Style.alignSelf(YogaAlign.CENTER).wrapInView()) {
             child(

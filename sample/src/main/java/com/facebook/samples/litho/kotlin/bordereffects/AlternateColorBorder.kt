@@ -40,10 +40,10 @@ class AlternateColorBorder : KComponent() {
                     edgeLeft = BorderEdge(color = NiceColor.RED),
                     edgeRight = BorderEdge(color = NiceColor.GREEN),
                 ))) {
-      child(
-          Text(
-              "This component has all borders specified to the same width, but not colors",
-              textSize = 20f.dp))
-    }
+          child(
+              Text(
+                  "This component has all borders specified to the same width, but not colors",
+                  textSize = 20f.dp))
+        }
   }
 }

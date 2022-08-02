@@ -47,6 +47,8 @@ class VaryingRadiiBorder : KComponent() {
                             topRight = 5f.dp,
                             bottomLeft = 30f.dp,
                             bottomRight = 20f.dp),
-                ))) { child(Text("This component has varying corner radii", textSize = 20f.dp)) }
+                ))) {
+          child(Text("This component has varying corner radii", textSize = 20f.dp))
+        }
   }
 }

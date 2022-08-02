@@ -283,7 +283,9 @@ class KStateSkipSameValueTest {
                 Style.viewTag("clickTag").onClick {
                   state.updateSync(true)
                   state.updateSync(false)
-                }) { child(Text(text = "State is ${state.value}")) }
+                }) {
+              child(Text(text = "State is ${state.value}"))
+            }
       }
     }
 
@@ -529,7 +531,9 @@ class KStateSkipSameValueTest {
                 Style.viewTag("clickTag").onClick {
                   state.updateSync { currentState -> !currentState }
                   state.updateSync { currentState -> !currentState }
-                }) { child(Text(text = "State is ${state.value}")) }
+                }) {
+              child(Text(text = "State is ${state.value}"))
+            }
       }
     }
 

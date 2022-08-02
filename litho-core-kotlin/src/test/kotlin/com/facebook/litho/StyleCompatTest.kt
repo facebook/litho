@@ -143,15 +143,15 @@ class StyleCompatTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
-            child(
-                Row(
-                    style =
-                        StyleCompat.heightPx(100)
-                            .minWidthPx(50)
-                            .flexShrink(1f)
-                            .wrapInView()
-                            .build()))
-          }
+                child(
+                    Row(
+                        style =
+                            StyleCompat.heightPx(100)
+                                .minWidthPx(50)
+                                .flexShrink(1f)
+                                .wrapInView()
+                                .build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -199,8 +199,8 @@ class StyleCompatTest {
                       .paddingPx(YogaEdge.END, right)
                       .paddingPx(YogaEdge.BOTTOM, bottom)
                       .build()) {
-            child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
-          }
+                child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -225,8 +225,8 @@ class StyleCompatTest {
                       .paddingPx(YogaEdge.HORIZONTAL, horizontal)
                       .paddingPx(YogaEdge.VERTICAL, vertical)
                       .build()) {
-            child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
-          }
+                child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -248,8 +248,8 @@ class StyleCompatTest {
               alignItems = YogaAlign.STRETCH,
               style =
                   StyleCompat.widthPx(100).heightPx(100).paddingPx(YogaEdge.ALL, padding).build()) {
-            child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
-          }
+                child(Row(style = StyleCompat.flexGrow(1f).wrapInView().build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -273,17 +273,17 @@ class StyleCompatTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
-            child(
-                Row(
-                    style =
-                        StyleCompat.marginPx(YogaEdge.START, left)
-                            .marginPx(YogaEdge.TOP, top)
-                            .marginPx(YogaEdge.END, right)
-                            .marginPx(YogaEdge.BOTTOM, bottom)
-                            .flexGrow(1f)
-                            .wrapInView()
-                            .build()))
-          }
+                child(
+                    Row(
+                        style =
+                            StyleCompat.marginPx(YogaEdge.START, left)
+                                .marginPx(YogaEdge.TOP, top)
+                                .marginPx(YogaEdge.END, right)
+                                .marginPx(YogaEdge.BOTTOM, bottom)
+                                .flexGrow(1f)
+                                .wrapInView()
+                                .build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -303,15 +303,15 @@ class StyleCompatTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
-            child(
-                Row(
-                    style =
-                        StyleCompat.marginPx(YogaEdge.HORIZONTAL, horizontal)
-                            .marginPx(YogaEdge.VERTICAL, vertical)
-                            .flexGrow(1f)
-                            .wrapInView()
-                            .build()))
-          }
+                child(
+                    Row(
+                        style =
+                            StyleCompat.marginPx(YogaEdge.HORIZONTAL, horizontal)
+                                .marginPx(YogaEdge.VERTICAL, vertical)
+                                .flexGrow(1f)
+                                .wrapInView()
+                                .build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
@@ -332,14 +332,14 @@ class StyleCompatTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = StyleCompat.widthPx(100).heightPx(100).build()) {
-            child(
-                Row(
-                    style =
-                        StyleCompat.marginPx(YogaEdge.ALL, margin)
-                            .flexGrow(1f)
-                            .wrapInView()
-                            .build()))
-          }
+                child(
+                    Row(
+                        style =
+                            StyleCompat.marginPx(YogaEdge.ALL, margin)
+                                .flexGrow(1f)
+                                .wrapInView()
+                                .build()))
+              }
         }
         .assertMatches(
             match<LithoView> {
