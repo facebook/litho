@@ -73,13 +73,14 @@ public class RCTextView extends View {
   private Path mSelectionPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
+  private boolean mIsSettingDefaultAccessibilityDelegate = false;
 
   public RCTextView(Context context) {
     super(context);
 
     if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       mRCTextAccessibilityDelegate = new RCTextAccessibilityDelegate();
-      ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+      setDefaultAccessibilityDelegate();
     } else {
       mRCTextAccessibilityDelegate = null;
     }
@@ -373,17 +374,26 @@ public class RCTextView extends View {
     }
   }
 
+  private void setDefaultAccessibilityDelegate() {
+    if (mRCTextAccessibilityDelegate != null) {
+      mIsSettingDefaultAccessibilityDelegate = true;
+      ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+      mIsSettingDefaultAccessibilityDelegate = false;
+    }
+  }
+
   @Override
   public void setAccessibilityDelegate(@Nullable View.AccessibilityDelegate delegate) {
     super.setAccessibilityDelegate(delegate);
-    // We need to do this like this to get the AccessibilityDelegateCompat with the ViewCompat
-    // helper since the compatibility class/methods are protected.
-    final AccessibilityDelegateCompat accessibilityDelegateCompat =
-        ViewCompat.getAccessibilityDelegate(this);
-    if (mRCTextAccessibilityDelegate != null
-        && accessibilityDelegateCompat != mRCTextAccessibilityDelegate) {
-      mRCTextAccessibilityDelegate.setWrappedAccessibilityDelegate(accessibilityDelegateCompat);
-      ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+    if (mRCTextAccessibilityDelegate != null && !mIsSettingDefaultAccessibilityDelegate) {
+      // We need to do this like this to get the AccessibilityDelegateCompat with the ViewCompat
+      // helper since the compatibility class/methods are protected.
+      final AccessibilityDelegateCompat accessibilityDelegateCompat =
+          ViewCompat.getAccessibilityDelegate(this);
+      if (accessibilityDelegateCompat != mRCTextAccessibilityDelegate) {
+        mRCTextAccessibilityDelegate.setWrappedAccessibilityDelegate(accessibilityDelegateCompat);
+        setDefaultAccessibilityDelegate();
+      }
     }
   }
 
