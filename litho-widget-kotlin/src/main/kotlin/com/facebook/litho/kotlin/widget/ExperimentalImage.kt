@@ -104,15 +104,17 @@ internal class ImageMountable(
           )
         }
 
+    val aspectRatio: Float = drawable.intrinsicWidth.toFloat() / drawable.intrinsicHeight.toFloat()
+
     return MeasureUtils.measureResultUsingAspectRatio(
         widthSpec,
         heightSpec,
         drawable.intrinsicWidth,
         drawable.intrinsicHeight,
-        (drawable.intrinsicWidth / drawable.intrinsicHeight).toFloat(),
+        aspectRatio,
         ImageLayoutData(
-            if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else (width),
-            if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else (height),
+            if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else width,
+            if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else height,
             matrix))
   }
 
