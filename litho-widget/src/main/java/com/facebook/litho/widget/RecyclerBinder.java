@@ -3649,25 +3649,12 @@ public class RecyclerBinder
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
-      if (viewCreator != null) {
-        final View view = viewCreator.createView(mComponentContext.getAndroidContext(), parent);
-        try {
-          return new BaseViewHolder(view, false);
-        } catch (IllegalArgumentException ex) {
-          throw new IllegalArgumentException(
-              "createView() may not return null from :"
-                  + getClassNameForDebug(viewCreator.getClass()),
-              ex);
-        }
-      } else {
-        final LithoView lithoView =
-            mLithoViewFactory == null
-                ? new LithoView(mComponentContext, null)
-                : mLithoViewFactory.createLithoView(mComponentContext);
+      final LithoView lithoView =
+          mLithoViewFactory == null
+              ? new LithoView(mComponentContext, null)
+              : mLithoViewFactory.createLithoView(mComponentContext);
 
-        return new BaseViewHolder(lithoView, true);
-      }
+      return new BaseViewHolder(lithoView, true);
     }
 
     @Override
@@ -3675,23 +3662,10 @@ public class RecyclerBinder
         BaseViewHolder viewHolder,
         int position,
         @Nullable ComponentTree componentTree,
-        RenderInfo renderInfo) {
-      if (!viewHolder.isLithoViewType) {
-        final ViewBinder viewBinder = renderInfo.getViewBinder();
-        viewHolder.viewBinder = viewBinder;
-        viewBinder.bind(viewHolder.itemView);
-      }
-    }
+        RenderInfo renderInfo) {}
 
     @Override
-    public void onViewRecycled(BaseViewHolder viewHolder) {
-      if (!viewHolder.isLithoViewType) {
-        if (viewHolder.viewBinder != null) {
-          viewHolder.viewBinder.unbind(viewHolder.itemView);
-          viewHolder.viewBinder = null;
-        }
-      }
-    }
+    public void onViewRecycled(BaseViewHolder viewHolder) {}
 
     @Override
     public boolean hasStableIds() {
@@ -3701,14 +3675,6 @@ public class RecyclerBinder
     @Override
     public long getItemId(int position) {
       return mComponentTreeHolders.get(position).getId();
-    }
-
-    private @Nullable String getClassNameForDebug(Class c) {
-      Class<?> enclosingClass = c.getEnclosingClass();
-      if (enclosingClass == null) {
-        return c.getCanonicalName();
-      }
-      return enclosingClass.getCanonicalName();
     }
   }
 
@@ -3721,6 +3687,18 @@ public class RecyclerBinder
 
     @Override
     public RecyclerBinderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
+      if (viewCreator != null) {
+        final View view = viewCreator.createView(mComponentContext.getAndroidContext(), parent);
+        try {
+          return new BaseViewHolder(view, false);
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(
+              "createView() may not return null from :"
+                  + getClassNameForDebug(viewCreator.getClass()),
+              ex);
+        }
+      }
       return mRecyclerBinderAdapterDelegate.onCreateViewHolder(parent, viewType);
     }
 
@@ -3820,15 +3798,30 @@ public class RecyclerBinder
         } else {
           lithoView.resetMountStartupLoggingInfo();
         }
+        mRecyclerBinderAdapterDelegate.onBindViewHolder(
+            holder, normalizedPosition, componentTreeHolder.getComponentTree(), renderInfo);
+      } else if (holder instanceof BaseViewHolder) {
+        BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
+        if (!baseViewHolder.isLithoViewType) {
+          final ViewBinder viewBinder = renderInfo.getViewBinder();
+          baseViewHolder.viewBinder = viewBinder;
+          viewBinder.bind(baseViewHolder.itemView);
+        }
       }
-      mRecyclerBinderAdapterDelegate.onBindViewHolder(
-          holder, normalizedPosition, componentTreeHolder.getComponentTree(), renderInfo);
 
       if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
         RenderInfoDebugInfoRegistry.setRenderInfoToViewMapping(
             holder.itemView,
             renderInfo.getDebugInfo(RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG));
       }
+    }
+
+    private @Nullable String getClassNameForDebug(Class c) {
+      Class<?> enclosingClass = c.getEnclosingClass();
+      if (enclosingClass == null) {
+        return c.getCanonicalName();
+      }
+      return enclosingClass.getCanonicalName();
     }
 
     @Override
@@ -3857,13 +3850,21 @@ public class RecyclerBinder
 
     @Override
     public void onViewRecycled(RecyclerBinderViewHolder holder) {
-      mRecyclerBinderAdapterDelegate.onViewRecycled(holder);
       final LithoView lithoView = (LithoView) holder.getLithoView();
       if (lithoView != null) {
+        mRecyclerBinderAdapterDelegate.onViewRecycled(holder);
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
         lithoView.resetMountStartupLoggingInfo();
+      } else if (holder instanceof BaseViewHolder) {
+        BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
+        if (!baseViewHolder.isLithoViewType) {
+          if (baseViewHolder.viewBinder != null) {
+            baseViewHolder.viewBinder.unbind(baseViewHolder.itemView);
+            baseViewHolder.viewBinder = null;
+          }
+        }
       }
     }
 
