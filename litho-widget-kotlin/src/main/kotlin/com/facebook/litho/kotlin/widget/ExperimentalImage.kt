@@ -25,8 +25,9 @@ import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableWithStyle
 import com.facebook.litho.SimpleMountable
+import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
-import com.facebook.litho.SizeSpec.EXACTLY
+import com.facebook.litho.SizeSpec.UNSPECIFIED
 import com.facebook.litho.Style
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.utils.MeasureUtils
@@ -71,50 +72,37 @@ internal class ImageMountable(
       heightSpec: Int,
       previousLayoutData: Any?
   ): MeasureResult {
+    val size = Size()
 
-    val width =
-        if (SizeSpec.getMode(widthSpec) == EXACTLY ||
-            drawable.intrinsicWidth <= 0 ||
-            scaleType == ScaleType.FIT_XY) {
-          SizeSpec.getSize(widthSpec)
-        } else {
-          drawable.intrinsicWidth
-        }
+    val intrinsicWidth = drawable.intrinsicWidth
+    val intrinsicHeight = drawable.intrinsicHeight
 
-    val height =
-        if (SizeSpec.getMode(heightSpec) == EXACTLY ||
-            drawable.intrinsicHeight <= 0 ||
-            scaleType == ScaleType.FIT_XY) {
-          SizeSpec.getSize(heightSpec)
-        } else {
-          drawable.intrinsicHeight
-        }
+    if (SizeSpec.getMode(widthSpec) == UNSPECIFIED && SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
+      size.width = intrinsicWidth
+      size.height = intrinsicHeight
+    } else {
+      val aspectRatio = intrinsicWidth.toFloat() / intrinsicHeight.toFloat()
+
+      // MeasureUtils.measureWithAspectRatio will appropriately set sizes on the size object
+      MeasureUtils.measureWithAspectRatio(
+          widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size)
+    }
 
     val matrix =
-        if (scaleType == ScaleType.FIT_XY ||
-            drawable.intrinsicWidth <= 0 ||
-            drawable.intrinsicHeight <= 0) {
+        if (scaleType == ScaleType.FIT_XY || intrinsicWidth <= 0 || intrinsicHeight <= 0) {
           null
         } else {
-          DrawableMatrix.create(
-              drawable,
-              scaleType,
-              width,
-              height,
-          )
+          DrawableMatrix.create(drawable, scaleType, size.width, size.height)
         }
 
-    val aspectRatio: Float = drawable.intrinsicWidth.toFloat() / drawable.intrinsicHeight.toFloat()
+    val useLayoutSize = ScaleType.FIT_XY == scaleType || intrinsicWidth <= 0 || intrinsicHeight <= 0
 
-    return MeasureUtils.measureResultUsingAspectRatio(
-        widthSpec,
-        heightSpec,
-        drawable.intrinsicWidth,
-        drawable.intrinsicHeight,
-        aspectRatio,
+    return MeasureResult(
+        size.width,
+        size.height,
         ImageLayoutData(
-            if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else width,
-            if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else height,
+            if (useLayoutSize) size.width else intrinsicWidth,
+            if (useLayoutSize) size.height else intrinsicHeight,
             matrix))
   }
 
