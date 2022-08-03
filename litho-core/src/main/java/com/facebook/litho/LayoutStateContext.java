@@ -47,6 +47,8 @@ public class LayoutStateContext {
 
   private @Nullable PerfEvent mPerfEvent;
 
+  private LayoutPhaseMeasuredResultCache mCache;
+
   private final String mThreadCreatedOn;
   private List<String> mThreadReleasedOn = new LinkedList<>();
   private List<String> mThreadResumedOn = new LinkedList<>();
@@ -90,6 +92,7 @@ public class LayoutStateContext {
     mTreeState = treeState;
     mThreadCreatedOn = Thread.currentThread().getName();
     mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState);
+    mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
   }
 
   public RenderStateContext getRenderStateContext() {
@@ -174,6 +177,10 @@ public class LayoutStateContext {
   // Create & measure - split by getting render / layout handlers
   TreeState getTreeState() {
     return Preconditions.checkNotNull(mTreeState);
+  }
+
+  LayoutPhaseMeasuredResultCache getCache() {
+    return mCache;
   }
 
   // Used in bloks

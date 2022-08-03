@@ -28,6 +28,7 @@ public class RenderStateContext {
   private boolean mIsInterruptible = true;
 
   private @Nullable TreeState mTreeState;
+  private RenderPhaseMeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
 
   public RenderStateContext(
@@ -35,6 +36,7 @@ public class RenderStateContext {
       final TreeState treeState) {
     mLayoutStateFuture = layoutStateFuture;
     mTreeState = treeState;
+    mCache = new RenderPhaseMeasuredResultCache();
   }
 
   // Create
@@ -98,6 +100,10 @@ public class RenderStateContext {
     }
 
     return mTreeState;
+  }
+
+  RenderPhaseMeasuredResultCache getCache() {
+    return mCache;
   }
 
   public void release() {
