@@ -30,14 +30,31 @@ import com.facebook.yoga.YogaNode;
 public class NestedTreeHolder extends LithoNode {
 
   final @Nullable TreeProps mPendingTreeProps;
+  final @Nullable LithoNode mCachedNode;
 
   @Nullable int[] mNestedBorderEdges;
   @Nullable Edges mNestedTreePadding;
   @Nullable boolean[] mNestedIsPaddingPercentage;
 
   protected NestedTreeHolder(ComponentContext context, @Nullable TreeProps props) {
+    this(context, props, null);
+  }
+
+  protected NestedTreeHolder(
+      ComponentContext context, @Nullable TreeProps props, @Nullable LithoNode cacheNode) {
     super(context);
     mPendingTreeProps = TreeProps.copy(props);
+    mCachedNode = cacheNode;
+  }
+
+  /**
+   * When a node is measured during Component.measure and a layout-result is cached, it is cached
+   * using that node as the key. Later, this layout may resolve a nested-tree-holder node, and so in
+   * order to be able to access this cache, this node is used.
+   */
+  @Nullable
+  public LithoNode getCachedNode() {
+    return mCachedNode;
   }
 
   public @Nullable TreeProps getPendingTreeProps() {

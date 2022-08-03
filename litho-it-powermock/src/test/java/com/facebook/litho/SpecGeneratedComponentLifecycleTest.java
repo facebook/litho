@@ -144,17 +144,19 @@ public class SpecGeneratedComponentLifecycleTest {
 
     try {
       whenNew(NestedTreeHolder.class)
-          .withArguments((ComponentContext) any(), (TreeProps) any())
+          .withArguments((ComponentContext) any(), (TreeProps) any(), (LithoNode) any())
           .thenAnswer(
               new Answer<NestedTreeHolder>() {
                 @Override
                 public NestedTreeHolder answer(InvocationOnMock invocation) throws Throwable {
                   final ComponentContext c = (ComponentContext) invocation.getArguments()[0];
                   final TreeProps props = (TreeProps) invocation.getArguments()[1];
+                  final LithoNode keyNode = (LithoNode) invocation.getArguments()[2];
                   final NestedTreeHolder node = getNextInputOnlyNestedTreeHolder();
                   Whitebox.setInternalState(node, "mContext", c.getAndroidContext());
                   Whitebox.setInternalState(node, "mScopedComponentInfos", new ArrayList<>(2));
                   Whitebox.setInternalState(node, "mPendingTreeProps", TreeProps.copy(props));
+                  Whitebox.setInternalState(node, "mCachedNode", keyNode);
 
                   return node;
                 }

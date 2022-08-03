@@ -44,19 +44,23 @@ public class ComponentShallowCopyTest {
     final LayoutState layoutState = new LayoutState(mContext);
 
     final ComponentContext c = new ComponentContext(mContext);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    c.setLayoutStateContext(layoutStateContext);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
+
+    final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c, 100, 100, new Size());
-    assertThat(layoutState.getCachedLayout(component)).isNotNull();
+    assertThat(resultCache.getCachedResult(component)).isNotNull();
 
     Component copyComponent = component.makeShallowCopy();
-    assertThat(layoutState.getCachedLayout(copyComponent)).isNotNull();
+    assertThat(resultCache.getCachedResult(copyComponent)).isNotNull();
 
-    assertThat(layoutState.getCachedLayout(component))
-        .isEqualTo(layoutState.getCachedLayout(copyComponent));
+    assertThat(resultCache.getCachedResult(component))
+        .isEqualTo(resultCache.getCachedResult(copyComponent));
   }
 
   @Test
@@ -68,20 +72,25 @@ public class ComponentShallowCopyTest {
 
     final ComponentContext c1 = new ComponentContext(mContext);
     final LayoutStateContext lsc1 = new LayoutStateContext(layoutState1, c1.getComponentTree());
+    final RenderStateContext rsc1 = lsc1.getRenderStateContext();
     Whitebox.setInternalState(layoutState1, "mLayoutStateContext", lsc1);
     c1.setLayoutStateContext(lsc1);
 
     final ComponentContext c2 = new ComponentContext(mContext);
     final LayoutStateContext lsc2 = new LayoutStateContext(layoutState2, c2.getComponentTree());
+    final RenderStateContext rsc2 = lsc2.getRenderStateContext();
     Whitebox.setInternalState(layoutState2, "mLayoutStateContext", lsc2);
     c2.setLayoutStateContext(lsc2);
 
+    final RenderPhaseMeasuredResultCache resultCache1 = rsc1.getCache();
+    final RenderPhaseMeasuredResultCache resultCache2 = rsc2.getCache();
+
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c1, 100, 100, new Size());
-    assertThat(layoutState1.getCachedLayout(component)).isNotNull();
+    assertThat(resultCache1.getCachedResult(component)).isNotNull();
 
     Component copyComponent = component.makeShallowCopy();
-    assertThat(layoutState2.getCachedLayout(copyComponent)).isNull();
+    assertThat(resultCache2.getCachedResult(copyComponent)).isNull();
   }
 
   @Test

@@ -55,8 +55,10 @@ public class InternalNodeUtils {
   }
 
   static NestedTreeHolder createNestedTreeHolder(
-      final ComponentContext context, final @Nullable TreeProps props) {
-    return new NestedTreeHolder(context, props);
+      final ComponentContext context,
+      final @Nullable TreeProps props,
+      final @Nullable LithoNode cachedNode) {
+    return new NestedTreeHolder(context, props, cachedNode);
   }
 
   /**

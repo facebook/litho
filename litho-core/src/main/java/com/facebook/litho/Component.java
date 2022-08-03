@@ -702,15 +702,20 @@ public abstract class Component
               + "If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    LithoLayoutResult lastMeasuredLayout = layoutState.getCachedLayout(this);
+    final LayoutStateContext layoutStateContext =
+        Preconditions.checkNotNull(layoutState.getLayoutStateContext());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
+
+    LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
+
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
-      layoutState.clearCachedLayout(this);
+      resultCache.clearCache(this);
 
-      final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
       final LayoutResultHolder container;
 
       final @Nullable ResolvedTree resolvedTree =
@@ -719,7 +724,7 @@ public abstract class Component
 
       final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-      if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+      if (renderStateContext.isLayoutInterrupted() && node != null) {
         container = LayoutResultHolder.interrupted(node);
       } else {
         container =
@@ -742,7 +747,8 @@ public abstract class Component
         return;
       }
 
-      layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
+      // Add the cached result.
+      resultCache.addCachedResult(this, lastMeasuredLayout.mNode, lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
@@ -758,7 +764,7 @@ public abstract class Component
     outputSize.height = lastMeasuredLayout.getHeight();
 
     if (!shouldCacheResult) {
-      layoutState.clearCachedLayout(this);
+      resultCache.clearCache(this);
     }
   }
 
@@ -1007,14 +1013,9 @@ public abstract class Component
     return mCommonProps;
   }
 
-  private boolean hasCachedLayout(final LayoutStateContext layoutStateContext) {
-    final LayoutState layoutState = layoutStateContext.getLayoutState();
-
-    if (layoutState != null) {
-      return layoutState.hasCachedLayout(this);
-    }
-
-    return false;
+  private boolean hasCachedNode(final RenderStateContext renderStateContext) {
+    final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
+    return resultCache.hasCachedNode(this);
   }
 
   /**
@@ -1074,8 +1075,8 @@ public abstract class Component
     return isLayoutSpecWithSizeSpec(component);
   }
 
-  static boolean hasCachedLayout(final LayoutStateContext context, final Component component) {
-    return component.hasCachedLayout(context);
+  static boolean hasCachedNode(final RenderStateContext context, final Component component) {
+    return component.hasCachedNode(context);
   }
 
   /** @return whether the given component is a pure render component. */

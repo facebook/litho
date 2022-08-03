@@ -1025,6 +1025,7 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
     c.setLayoutStateContext(layoutStateContext);
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
 
@@ -1035,7 +1036,8 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, EXACTLY);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode =
+        renderStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(internalNode.getWidth());
@@ -1075,9 +1077,11 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    c.setLayoutStateContext(layoutStateContext);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1086,7 +1090,8 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode =
+        renderStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(100);
@@ -1126,9 +1131,11 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    c.setLayoutStateContext(layoutStateContext);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1137,7 +1144,8 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode =
+        renderStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(99);
@@ -1175,9 +1183,11 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    c.setLayoutStateContext(layoutStateContext);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1186,7 +1196,8 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode =
+        renderStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(50);

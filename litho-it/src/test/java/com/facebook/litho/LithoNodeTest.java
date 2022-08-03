@@ -363,20 +363,23 @@ public class LithoNodeTest {
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
     c.setLayoutStateContext(layoutStateContext);
 
+    final RenderPhaseMeasuredResultCache resultCache =
+        layoutStateContext.getRenderStateContext().getCache();
+
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
     final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
     final Size textSize = new Size();
     textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
-    assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
-    LithoLayoutResult cachedLayout = layoutState.getCachedLayout(textComponent);
+    assertThat(resultCache.getCachedResult(textComponent)).isNotNull();
+    LithoLayoutResult cachedLayout = resultCache.getCachedResult(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
 
-    layoutState.clearCachedLayout(textComponent);
-    assertThat(layoutState.getCachedLayout(textComponent)).isNull();
+    resultCache.clearCache(textComponent);
+    assertThat(resultCache.getCachedResult(textComponent)).isNull();
   }
 
   @Test
@@ -390,20 +393,23 @@ public class LithoNodeTest {
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
     c.setLayoutStateContext(layoutStateContext);
 
+    final RenderPhaseMeasuredResultCache resultCache =
+        layoutStateContext.getRenderStateContext().getCache();
+
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
     final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
     final Size textSize = new Size();
     textComponent.measureMightNotCacheInternalNode(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
-    assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
-    LithoLayoutResult cachedLayout = layoutState.getCachedLayout(textComponent);
+    assertThat(resultCache.getCachedResult(textComponent)).isNotNull();
+    LithoLayoutResult cachedLayout = resultCache.getCachedResult(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
 
-    layoutState.clearCachedLayout(textComponent);
-    assertThat(layoutState.getCachedLayout(textComponent)).isNull();
+    resultCache.clearCache(textComponent);
+    assertThat(resultCache.getCachedResult(textComponent)).isNull();
   }
 
   @Test

@@ -60,24 +60,30 @@ public class RenderPhaseMeasuredResultCache {
   }
 
   /** Return true if there exists a cached layout result for the given component. */
-  public boolean hasCachedResult(final Component component) {
-    return hasCachedResult(component.getId());
+  public boolean hasCachedNode(final Component component) {
+    return hasCachedNode(component.getId());
   }
 
   /** Return true if there exists a cached layout result for the given component ID. */
-  public boolean hasCachedResult(final int componentId) {
-    final @Nullable LithoNode node = mComponentIdToNodeCache.get(componentId);
-
-    if (node == null) {
-      return false;
-    }
-
-    return hasCachedResult(node);
+  public boolean hasCachedNode(final int componentId) {
+    return mComponentIdToNodeCache.containsKey(componentId);
   }
 
   /** Return true if there exists a cached layout result for the given LithoNode. */
-  public boolean hasCachedResult(final LithoNode node) {
+  public boolean hasCachedNode(final LithoNode node) {
     return mNodeToResultCache.containsKey(node);
+  }
+
+  /** Returns the cached LithoNode from a given component. */
+  @Nullable
+  public LithoNode getCachedNode(final Component component) {
+    return getCachedNode(component.getId());
+  }
+
+  /** Returns the cached LithoNode from a given component ID. */
+  @Nullable
+  public LithoNode getCachedNode(final int componentId) {
+    return mComponentIdToNodeCache.get(componentId);
   }
 
   /** Returns the cached layout result for the given component, or null if it does not exist. */

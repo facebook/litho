@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static com.facebook.litho.Component.hasCachedLayout;
+import static com.facebook.litho.Component.hasCachedNode;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
@@ -262,19 +262,20 @@ class Layout {
       RenderCoreSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+
     final LithoNode node;
     final ComponentContext c;
     final String globalKey;
     final boolean isNestedTree = isNestedTree(component);
-    final boolean hasCachedLayout = hasCachedLayout(layoutStateContext, component);
+    final boolean hasCachedNode = hasCachedNode(renderStateContext, component);
     final ScopedComponentInfo scopedComponentInfo;
 
     try {
 
       // 1. Consume the layout created in `willrender`.
       final LithoNode cached =
-          component.consumeLayoutCreatedInWillRender(
-              layoutStateContext.getRenderStateContext(), parent);
+          component.consumeLayoutCreatedInWillRender(renderStateContext, parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
@@ -292,11 +293,13 @@ class Layout {
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution =
-          (isNestedTree || hasCachedLayout) && !resolveNestedTree;
+          (isNestedTree || hasCachedNode) && !resolveNestedTree;
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = InternalNodeUtils.createNestedTreeHolder(c, c.getTreeProps());
+        node =
+            InternalNodeUtils.createNestedTreeHolder(
+                c, c.getTreeProps(), renderStateContext.getCache().getCachedNode(component));
       }
 
       // If the component can resolve itself resolve it.
@@ -376,7 +379,7 @@ class Layout {
     // another component.
     if (node.getComponentCount() == 0) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
-      if (isMountSpecWithMeasure || ((isNestedTree || hasCachedLayout) && !resolveNestedTree)) {
+      if (isMountSpecWithMeasure || ((isNestedTree || hasCachedNode) && !resolveNestedTree)) {
         node.setMeasureFunction(sMeasureFunction);
       }
     }
@@ -460,13 +463,13 @@ class Layout {
   private static @Nullable LithoLayoutResult measureNestedTree(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
-      final NestedTreeHolderResult holder,
+      final NestedTreeHolderResult holderResult,
       final int widthSpec,
       final int heightSpec) {
 
     // 1. Check if current layout result is compatible with size spec and can be reused or not
-    final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
-    final LithoNode node = holder.getNode();
+    final @Nullable LithoLayoutResult currentLayout = holderResult.getNestedResult();
+    final NestedTreeHolder node = holderResult.getNode();
     final Component component = node.getTailComponent();
 
     if (currentLayout != null
@@ -482,7 +485,7 @@ class Layout {
 
     // 2. Check if cached layout result is compatible and can be reused or not.
     final @Nullable LithoLayoutResult cachedLayout =
-        consumeCachedLayout(layoutStateContext, component, holder, widthSpec, heightSpec);
+        consumeCachedLayout(layoutStateContext, node, holderResult, widthSpec, heightSpec);
 
     if (cachedLayout != null) {
       return cachedLayout;
@@ -517,15 +520,15 @@ class Layout {
       return null;
     }
 
-    holder.getNode().copyInto(newNode);
+    holderResult.getNode().copyInto(newNode);
 
     // If the resolved tree inherits the layout direction, then set it now.
     if (newNode.isLayoutDirectionInherit()) {
-      newNode.layoutDirection(holder.getResolvedLayoutDirection());
+      newNode.layoutDirection(holderResult.getResolvedLayoutDirection());
     }
 
     // Set the DiffNode for the nested tree's result to consume during measurement.
-    layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
+    layoutStateContext.setNestedTreeDiffNode(holderResult.getDiffNode());
 
     // 4.b Measure the tree
     return layout(
@@ -685,29 +688,25 @@ class Layout {
   @Nullable
   static LithoLayoutResult consumeCachedLayout(
       final LayoutStateContext layoutStateContext,
-      final Component component,
-      final NestedTreeHolderResult holder,
+      final NestedTreeHolder holder,
+      final NestedTreeHolderResult holderResult,
       final int widthSpec,
       final int heightSpec) {
-    final LayoutState layoutState = layoutStateContext.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          component.getSimpleName()
-              + ": Trying to access the cached InternalNode for a component outside of a"
-              + " LayoutState calculation. If that is what you must do, see"
-              + " Component#measureMightNotCacheInternalNode.");
+    if (holder.getCachedNode() == null) {
+      return null;
     }
 
-    final @Nullable LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
+    final LayoutPhaseMeasuredResultCache resultCache = layoutStateContext.getCache();
+    final Component component = holder.getTailComponent();
+
+    final @Nullable LithoLayoutResult cachedLayout =
+        resultCache.getCachedResult(holder.getCachedNode());
 
     if (cachedLayout != null) {
-
-      layoutState.clearCachedLayout(component);
-
       final boolean isFromCurrentLayout =
           cachedLayout.getLayoutStateContext() == layoutStateContext;
       final boolean hasValidDirection =
-          InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
+          InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout);
       final boolean hasCompatibleSizeSpec =
           hasCompatibleSizeSpec(
               cachedLayout.getLastWidthSpec(),

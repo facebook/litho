@@ -145,8 +145,6 @@ public class LayoutState
   private final LongSparseArray<AnimatableItem> mAnimatableItems = new LongSparseArray<>(8);
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
 
-  private final Map<Integer, LithoLayoutResult> mLastMeasuredLayouts;
-
   // Cache to keep LithoNode which was measured with a particular size spec. The key here
   // represents globalKey + widthSpec + heightSpec. This is temporary, in final desired end state we
   // will have all the LithoNodes for nested tree resolved before the measure step.
@@ -241,7 +239,6 @@ public class LayoutState
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mTreeState = treeState;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
-    mLastMeasuredLayouts = new HashMap<>();
     mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutStateContext =
@@ -1750,23 +1747,6 @@ public class LayoutState
       String globalKey, int widthSpec, int heightSpec, LithoNode lithoNode) {
     final String key = globalKey + ":" + widthSpec + ":" + heightSpec;
     Preconditions.checkNotNull(mLithoNodeCacheForLayoutWithSizeSpec).put(key, lithoNode);
-  }
-
-  @Nullable
-  LithoLayoutResult getCachedLayout(Component component) {
-    return mLastMeasuredLayouts.get(component.getId());
-  }
-
-  boolean hasCachedLayout(Component component) {
-    return mLastMeasuredLayouts.containsKey(component.getId());
-  }
-
-  void clearCachedLayout(Component component) {
-    mLastMeasuredLayouts.remove(component.getId());
-  }
-
-  void addLastMeasuredLayout(Component component, LithoLayoutResult lastMeasuredLayout) {
-    mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 
   static DiffNode createDiffNode(final ScopedComponentInfo tail, final @Nullable DiffNode parent) {
