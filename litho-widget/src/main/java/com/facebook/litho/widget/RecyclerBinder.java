@@ -64,6 +64,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.MeasureComparisonUtils;
+import com.facebook.litho.MountHelper;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
@@ -105,6 +106,7 @@ public class RecyclerBinder
 
   private static final Size sDummySize = new Size();
   private static final Rect sDummyRect = new Rect();
+  private static final Rect sEmptyRect = new Rect();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
@@ -3800,6 +3802,11 @@ public class RecyclerBinder
         }
         mRecyclerBinderAdapterDelegate.onBindViewHolder(
             holder, normalizedPosition, componentTreeHolder.getComponentTree(), renderInfo);
+
+        if (mComponentsConfiguration.requestMountForPrefetchedItems) {
+          // Try to pre-mount components marked as excludeFromIncrementalMount.
+          MountHelper.requestMount(componentTreeHolder.getComponentTree(), sEmptyRect, false);
+        }
       } else if (holder instanceof BaseViewHolder) {
         BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
         if (!baseViewHolder.isLithoViewType) {

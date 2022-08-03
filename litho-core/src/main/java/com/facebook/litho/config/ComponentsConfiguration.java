@@ -287,6 +287,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableRecyclerBinderStableId = false;
 
+  public static boolean requestMountForPrefetchedItems = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
