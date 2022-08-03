@@ -204,10 +204,6 @@ class Layout {
       return new LayoutResultHolder(null);
     }
 
-    if (layoutStateContext.getRenderStateContext().isLayoutInterrupted()) {
-      return LayoutResultHolder.interrupted(node);
-    }
-
     final @Nullable LithoLayoutResult result =
         layout(
             layoutStateContext,

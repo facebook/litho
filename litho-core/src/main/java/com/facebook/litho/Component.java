@@ -710,26 +710,27 @@ public abstract class Component
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       layoutState.clearCachedLayout(this);
 
+      final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
       final LayoutResultHolder container;
 
       final @Nullable ResolvedTree resolvedTree =
           Layout.createResolvedTree(
-              Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
-              c,
-              this,
-              widthSpec,
-              heightSpec);
+              Preconditions.checkNotNull(layoutStateContext), c, this, widthSpec, heightSpec);
 
       final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-      container =
-          Layout.measureTree(
-              Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
-              node,
-              c,
-              widthSpec,
-              heightSpec,
-              null);
+      if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+        container = LayoutResultHolder.interrupted(node);
+      } else {
+        container =
+            Layout.measureTree(
+                Preconditions.checkNotNull(layoutStateContext),
+                node,
+                c,
+                widthSpec,
+                heightSpec,
+                null);
+      }
 
       if (container.wasLayoutInterrupted()) {
         return;
@@ -805,14 +806,19 @@ public abstract class Component
 
     final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-    final LayoutResultHolder holder =
-        Layout.measureTree(
-            Preconditions.checkNotNull(layoutStateContext),
-            node,
-            contextForLayout,
-            widthSpec,
-            heightSpec,
-            null);
+    final LayoutResultHolder holder;
+    if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+      holder = LayoutResultHolder.interrupted(node);
+    } else {
+      holder =
+          Layout.measureTree(
+              Preconditions.checkNotNull(layoutStateContext),
+              node,
+              contextForLayout,
+              widthSpec,
+              heightSpec,
+              null);
+    }
 
     if (holder.wasLayoutInterrupted()) {
       outputSize.height = 0;

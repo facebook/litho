@@ -1273,8 +1273,14 @@ public class LayoutState
                 currentRoot,
                 logLayoutState);
         final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
-        holder =
-            Layout.measureTree(layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
+
+        if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+          holder = LayoutResultHolder.interrupted(node);
+        } else {
+          holder =
+              Layout.measureTree(
+                  layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
+        }
 
         // Check if layout was interrupted.
         if (holder.wasLayoutInterrupted()) {
