@@ -200,7 +200,6 @@ public class LayoutState
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
-  private volatile boolean mIsInterruptible = true;
 
   private @Nullable RenderTree mCachedRenderTree = null;
 
@@ -263,14 +262,6 @@ public class LayoutState
 
   boolean isCreateLayoutInProgress() {
     return mIsCreateLayoutInProgress;
-  }
-
-  boolean isInterruptible() {
-    return mIsInterruptible;
-  }
-
-  void setInterruptible(boolean isInterruptible) {
-    mIsInterruptible = isInterruptible;
   }
 
   LayoutStateContext getLayoutStateContext() {
@@ -583,7 +574,7 @@ public class LayoutState
       final @Nullable DebugHierarchy.Node parentHierarchy) {
     final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
 
-    if (layoutStateContext.isLayoutReleased()) {
+    if (layoutStateContext.getRenderStateContext().isLayoutReleased()) {
       return;
     }
 
@@ -1245,8 +1236,12 @@ public class LayoutState
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
 
+      final @Nullable RenderStateContext currentRenderStateContext =
+          currentLayoutStateContext != null
+              ? currentLayoutStateContext.getRenderStateContext()
+              : null;
       final LithoNode layoutCreatedInWillRender =
-          component.consumeLayoutCreatedInWillRender(currentLayoutStateContext, c);
+          component.consumeLayoutCreatedInWillRender(currentRenderStateContext, c);
 
       c.setLayoutStateContext(layoutStateContext);
 
@@ -1456,7 +1451,7 @@ public class LayoutState
 
   private static void setSizeAfterMeasureAndCollectResults(
       ComponentContext c, LayoutState layoutState) {
-    if (layoutState.getLayoutStateContext().isLayoutReleased()) {
+    if (layoutState.getLayoutStateContext().getRenderStateContext().isLayoutReleased()) {
       return;
     }
 

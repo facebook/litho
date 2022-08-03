@@ -63,7 +63,7 @@ public class TestLayoutState {
     final LithoNode root =
         createImmediateLayout(layoutStateContext, c, widthSpec, heightSpec, component);
 
-    if (root == null || layoutStateContext.isLayoutInterrupted()) {
+    if (root == null || layoutStateContext.getRenderStateContext().isLayoutInterrupted()) {
       return root;
     }
 
@@ -150,11 +150,11 @@ public class TestLayoutState {
 
     if (children != null) {
       for (Component child : children) {
-        if (layoutContext.isLayoutReleased()) {
+        if (layoutContext.getRenderStateContext().isLayoutReleased()) {
           return null;
         }
 
-        if (layoutContext.isLayoutInterrupted()) {
+        if (layoutContext.getRenderStateContext().isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
           if (child != null) {
@@ -183,7 +183,7 @@ public class TestLayoutState {
 
     final LithoNode node;
     final LithoNode layoutCreatedInWillRender =
-        component.consumeLayoutCreatedInWillRender(layoutStateContext, c);
+        component.consumeLayoutCreatedInWillRender(layoutStateContext.getRenderStateContext(), c);
 
     if (layoutCreatedInWillRender != null) {
       return layoutCreatedInWillRender;
@@ -307,7 +307,8 @@ public class TestLayoutState {
 
       // 1. Consume the layout created in `willrender`.
       final LithoNode cached =
-          component.consumeLayoutCreatedInWillRender(layoutStateContext, parent);
+          component.consumeLayoutCreatedInWillRender(
+              layoutStateContext.getRenderStateContext(), parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {

@@ -127,11 +127,11 @@ public final class Row extends Component {
 
     if (children != null) {
       for (Component child : children) {
-        if (layoutContext.isLayoutReleased()) {
+        if (layoutContext.getRenderStateContext().isLayoutReleased()) {
           return null;
         }
 
-        if (layoutContext.isLayoutInterrupted()) {
+        if (layoutContext.getRenderStateContext().isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
           node.child(layoutContext, c, child);

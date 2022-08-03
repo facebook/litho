@@ -826,14 +826,14 @@ public abstract class Component
 
   @Nullable
   final LithoNode consumeLayoutCreatedInWillRender(
-      final @Nullable LayoutStateContext layoutStateContext, @Nullable ComponentContext context) {
+      final @Nullable RenderStateContext renderStateContext, @Nullable ComponentContext context) {
     LithoNode layout;
 
-    if (context == null || layoutStateContext == null) {
+    if (context == null || renderStateContext == null) {
       return null;
     }
 
-    layout = layoutStateContext.consumeLayoutCreatedInWillRender(mId);
+    layout = renderStateContext.consumeLayoutCreatedInWillRender(mId);
 
     if (layout != null) {
       assertSameBaseContext(context, layout.getAndroidContext());
@@ -848,13 +848,13 @@ public abstract class Component
 
   @VisibleForTesting
   @Nullable
-  final LithoNode getLayoutCreatedInWillRender(final LayoutStateContext layoutStateContext) {
-    return layoutStateContext.getLayoutCreatedInWillRender(mId);
+  final LithoNode getLayoutCreatedInWillRender(final RenderStateContext renderStateContext) {
+    return renderStateContext.getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
-      final LayoutStateContext layoutStateContext, final @Nullable LithoNode newValue) {
-    layoutStateContext.setLayoutCreatedInWillRender(mId, newValue);
+      final RenderStateContext renderStateContext, final @Nullable LithoNode newValue) {
+    renderStateContext.setLayoutCreatedInWillRender(mId, newValue);
   }
 
   /**
@@ -1026,17 +1026,18 @@ public abstract class Component
 
     final LayoutStateContext layoutStateContext =
         Preconditions.checkNotNull(c.getLayoutStateContext());
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
 
     final LithoNode componentLayoutCreatedInWillRender =
-        component.getLayoutCreatedInWillRender(layoutStateContext);
+        component.getLayoutCreatedInWillRender(renderStateContext);
     if (componentLayoutCreatedInWillRender != null) {
-      return willRender(layoutStateContext, c, component, componentLayoutCreatedInWillRender);
+      return willRender(renderStateContext, c, component, componentLayoutCreatedInWillRender);
     }
 
     final LithoNode newLayoutCreatedInWillRender = Layout.create(layoutStateContext, c, component);
-    boolean willRender = willRender(layoutStateContext, c, component, newLayoutCreatedInWillRender);
+    boolean willRender = willRender(renderStateContext, c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
-      component.setLayoutCreatedInWillRender(layoutStateContext, newLayoutCreatedInWillRender);
+      component.setLayoutCreatedInWillRender(renderStateContext, newLayoutCreatedInWillRender);
     }
     return willRender;
   }
@@ -1108,7 +1109,7 @@ public abstract class Component
   }
 
   private static boolean willRender(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       ComponentContext context,
       Component component,
       @Nullable LithoNode node) {
@@ -1121,7 +1122,7 @@ public abstract class Component
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
       component.consumeLayoutCreatedInWillRender(
-          layoutStateContext, context); // Clear the layout created in will render
+          renderStateContext, context); // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");

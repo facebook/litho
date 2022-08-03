@@ -457,7 +457,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       final int widthSpec,
       final int heightSpec) {
 
-    if (mLayoutContext.isLayoutReleased()) {
+    if (mLayoutContext.getRenderStateContext().isLayoutReleased()) {
       return new MeasureResult(0, 0);
     }
 

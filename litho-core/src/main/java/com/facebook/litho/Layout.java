@@ -65,6 +65,8 @@ class Layout {
       layoutStatePerfEvent.markerPoint(event);
     }
 
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+
     final @Nullable LithoNode node;
     if (current == null) {
       node =
@@ -78,7 +80,7 @@ class Layout {
               null);
 
       // This needs to finish layout on the UI thread.
-      if (node != null && layoutStateContext.isLayoutInterrupted()) {
+      if (node != null && renderStateContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
@@ -86,7 +88,7 @@ class Layout {
         return new ResolvedTree(node);
       } else {
         // Layout is complete, disable interruption from this point on.
-        layoutStateContext.markLayoutUninterruptible();
+        renderStateContext.markLayoutUninterruptible();
       }
     } else {
       final String globalKeyToReuse = current.getHeadComponentKey();
@@ -202,7 +204,7 @@ class Layout {
       return new LayoutResultHolder(null);
     }
 
-    if (layoutStateContext.isLayoutInterrupted()) {
+    if (layoutStateContext.getRenderStateContext().isLayoutInterrupted()) {
       return LayoutResultHolder.interrupted(node);
     }
 
@@ -275,7 +277,8 @@ class Layout {
 
       // 1. Consume the layout created in `willrender`.
       final LithoNode cached =
-          component.consumeLayoutCreatedInWillRender(layoutStateContext, parent);
+          component.consumeLayoutCreatedInWillRender(
+              layoutStateContext.getRenderStateContext(), parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
@@ -620,15 +623,16 @@ class Layout {
       final int widthSpec,
       final int heightSpec,
       final @Nullable PerfEvent logLayoutState) {
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
 
-    if (layoutStateContext.isLayoutReleased()) {
+    if (renderStateContext.isLayoutReleased()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           "ReleasedLayoutResumed",
           layoutStateContext.getLifecycleDebugString());
     }
 
-    if (root == null || layoutStateContext.isLayoutReleased()) {
+    if (root == null || renderStateContext.isLayoutReleased()) {
       return null;
     }
 

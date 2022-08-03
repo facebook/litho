@@ -21,10 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Wraps objects which should only be available for the duration of a LayoutState, to access them in
@@ -41,7 +39,6 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable TreeState mTreeState;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
   private @Nullable DiffNode mCurrentDiffTree;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
@@ -53,6 +50,8 @@ public class LayoutStateContext {
   private final String mThreadCreatedOn;
   private List<String> mThreadReleasedOn = new LinkedList<>();
   private List<String> mThreadResumedOn = new LinkedList<>();
+
+  private final RenderStateContext mRenderStateContext;
 
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
@@ -90,39 +89,21 @@ public class LayoutStateContext {
     mCurrentDiffTree = currentDiffTree;
     mTreeState = treeState;
     mThreadCreatedOn = Thread.currentThread().getName();
+    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState);
   }
 
-  @Nullable
-  LithoNode consumeLayoutCreatedInWillRender(int componentId) {
-    if (mComponentIdToWillRenderLayout != null) {
-      return mComponentIdToWillRenderLayout.remove(componentId);
-    } else {
-      return null;
-    }
+  public RenderStateContext getRenderStateContext() {
+    return mRenderStateContext;
   }
 
-  @Nullable
-  LithoNode getLayoutCreatedInWillRender(int componentId) {
-    if (mComponentIdToWillRenderLayout != null) {
-      return mComponentIdToWillRenderLayout.get(componentId);
-    } else {
-      return null;
-    }
-  }
-
-  void setLayoutCreatedInWillRender(int componentId, final @Nullable LithoNode node) {
-    if (mComponentIdToWillRenderLayout == null) {
-      mComponentIdToWillRenderLayout = new HashMap<>();
-    }
-    mComponentIdToWillRenderLayout.put(componentId, node);
-  }
-
+  // Post Measure
+  // After collect results
   void releaseReference() {
     mLayoutStateRef = null;
     mTreeState = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
-    mComponentIdToWillRenderLayout = null;
+    mRenderStateContext.release();
     mPerfEvent = null;
     mThreadReleasedOn.add(Thread.currentThread().getName());
   }
@@ -139,42 +120,26 @@ public class LayoutStateContext {
         -1 /* previousId */);
   }
 
+  // Create & Measure!
   /** Returns the LayoutState instance or null if the layout state has been released. */
   @Nullable
   LayoutState getLayoutState() {
     return mLayoutStateRef;
   }
 
+  // Only in tests
   @Nullable
   @VisibleForTesting
   public ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
+  // Only in tests
   public @Nullable LayoutStateFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
   }
 
-  boolean isLayoutInterrupted() {
-    boolean isInterruptRequested =
-        mLayoutStateFuture != null
-            && mLayoutStateFuture.isInterruptRequested()
-            && !ThreadUtils.isMainThread();
-    boolean isInterruptible = mLayoutStateRef != null && mLayoutStateRef.isInterruptible();
-
-    return isInterruptible && isInterruptRequested;
-  }
-
-  boolean isLayoutReleased() {
-    return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
-  }
-
-  public void markLayoutUninterruptible() {
-    if (mLayoutStateRef != null) {
-      mLayoutStateRef.setInterruptible(false);
-    }
-  }
-
+  // Before create
   void markLayoutStarted() {
     if (mIsLayoutStarted) {
       throw new IllegalStateException(
@@ -184,41 +149,50 @@ public class LayoutStateContext {
     mIsLayoutStarted = true;
   }
 
+  // Measure
   public @Nullable DiffNode getCurrentDiffTree() {
     return mCurrentDiffTree;
   }
 
+  // Measure
   void setNestedTreeDiffNode(@Nullable DiffNode diff) {
     mCurrentNestedTreeDiffNode = diff;
   }
 
+  // Measure
   boolean hasNestedTreeDiffNodeSet() {
     return mCurrentNestedTreeDiffNode != null;
   }
 
+  // Measure
   public @Nullable DiffNode consumeNestedTreeDiffNode() {
     final DiffNode node = mCurrentNestedTreeDiffNode;
     mCurrentNestedTreeDiffNode = null;
     return node;
   }
 
+  // Create & measure - split by getting render / layout handlers
   TreeState getTreeState() {
     return Preconditions.checkNotNull(mTreeState);
   }
 
+  // Used in bloks
   @Nullable
   public PerfEvent getPerfEvent() {
     return mPerfEvent;
   }
 
+  // Pre-create
   public void setPerfEvent(@Nullable PerfEvent perfEvent) {
     mPerfEvent = perfEvent;
   }
 
+  // Resume
   public void markLayoutResumed() {
     mThreadResumedOn.add(Thread.currentThread().getName());
   }
 
+  // Resume
   public String getLifecycleDebugString() {
     StringBuilder builder = new StringBuilder();
 
