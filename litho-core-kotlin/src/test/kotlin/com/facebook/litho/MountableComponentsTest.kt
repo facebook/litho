@@ -470,18 +470,170 @@ class MountableComponentsTest {
     val nodeInfo2 = node2?.nodeInfo
     assertThat(nodeInfo2?.accessibilityRole).isEqualTo(AccessibilityRole.IMAGE_BUTTON)
   }
+
+  @Test
+  fun `when dynamic value is set if should update the content`() {
+    val tag = DynamicValue<Any?>("0")
+    val root =
+        TestViewMountableComponent(
+            EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag,
+            style = Style.width(100.px).height(100.px))
+
+    val test = lithoViewRule.render { root }
+
+    test.findViewWithTag("0")
+
+    tag.set("1")
+
+    test.findViewWithTag("1")
+  }
+
+  @Test
+  fun `when component with dynamic value is unmounted it should unbind the dynamic value`() {
+    val tag = DynamicValue<Any?>("0")
+    val root =
+        TestViewMountableComponent(
+            EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag,
+            style = Style.width(100.px).height(100.px))
+
+    val test = lithoViewRule.render { root }
+
+    val view = test.findViewWithTag("0")
+
+    test.lithoView.setComponentTree(null, true)
+
+    assertThat(tag.numberOfListeners).isEqualTo(0)
+
+    tag.set("1")
+
+    // tag should be set to default value
+    assertThat(view.tag).isEqualTo("default_value")
+  }
+
+  @Test
+  fun `when new dynamic value is set it should unbind the old dynamic value`() {
+    val tag1 = DynamicValue<Any?>("0")
+    val root1 =
+        TestViewMountableComponent(
+            EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag1,
+            style = Style.width(100.px).height(100.px))
+
+    val test = lithoViewRule.render { root1 }
+
+    test.findViewWithTag("0")
+
+    tag1.set("1")
+
+    test.findViewWithTag("1")
+
+    assertThat(tag1.numberOfListeners).isEqualTo(1)
+
+    val tag2 = DynamicValue<Any?>("2")
+    val root2 =
+        TestViewMountableComponent(
+            EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag2,
+            style = Style.width(100.px).height(100.px))
+
+    test.setRoot(root2)
+
+    assertThat(tag1.numberOfListeners).isEqualTo(0)
+
+    // should have view with new tag
+    val view = test.findViewWithTag("2")
+
+    // set new tag using the old dynamic value
+    tag1.set("3")
+
+    // the above should not work, the tag should not change
+    assertThat(view.tag).isEqualTo("2")
+
+    // set the new tag using the new dynamic value
+    tag2.set("3")
+
+    // the above should work, the tag should change
+    assertThat(view.tag).isEqualTo("3")
+
+    assertThat(tag2.numberOfListeners).isEqualTo(1)
+  }
+
+  @Test
+  fun `when same dynamic value is used on different components it should update the content for all instances`() {
+    val c = lithoViewRule.context
+    val tag = DynamicValue<Any?>("0")
+    val root =
+        Column.create(c)
+            .child(
+                TestViewMountableComponent(
+                    EditText(lithoViewRule.context.androidContext),
+                    dynamicTag = tag,
+                    style = Style.width(100.px).height(100.px)))
+            .child(
+                TestViewMountableComponent(
+                    EditText(lithoViewRule.context.androidContext),
+                    dynamicTag = tag,
+                    style = Style.width(100.px).height(100.px)))
+            .build()
+
+    val test = lithoViewRule.render { root }
+
+    val lithoView = test.lithoView
+    val child0 = lithoView.getChildAt(0)
+    val child1 = lithoView.getChildAt(1)
+
+    assertThat(child0.tag).isEqualTo("0")
+    assertThat(child1.tag).isEqualTo("0")
+
+    tag.set("1")
+
+    assertThat(child0.tag).isEqualTo("1")
+    assertThat(child1.tag).isEqualTo("1")
+  }
+
+  @Test
+  fun `when same component with dynamic value is used multiple times it should update the content for all instances`() {
+    val c = lithoViewRule.context
+    val tag = DynamicValue<Any?>("0")
+    val component =
+        TestViewMountableComponent(
+            EditText(lithoViewRule.context.androidContext),
+            dynamicTag = tag,
+            style = Style.width(100.px).height(100.px))
+    val root = Column.create(c).child(component).child(component).build()
+
+    val test = lithoViewRule.render { root }
+
+    val lithoView = test.lithoView
+    val child0 = lithoView.getChildAt(0)
+    val child1 = lithoView.getChildAt(1)
+
+    assertThat(child0.tag).isEqualTo("0")
+    assertThat(child1.tag).isEqualTo("0")
+
+    tag.set("1")
+
+    assertThat(child0.tag).isEqualTo("1")
+    assertThat(child1.tag).isEqualTo("1")
+  }
 }
 
 class TestViewMountableComponent(
     val view: View,
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
+    val dynamicTag: DynamicValue<Any?>? = null,
     val style: Style? = null
 ) : MountableComponent() {
 
   override fun MountableComponentScope.render(): MountableWithStyle {
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
+
+    // using tag for convenience of tests
+    dynamicTag?.let { dynamicTag.bindTo("default_value", View::setTag) }
 
     return MountableWithStyle(ViewMountable(identity, view, steps), style)
   }

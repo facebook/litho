@@ -21,6 +21,7 @@ import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.Mountable
+import com.facebook.rendercore.RenderUnit.Extension.extension
 
 /**
  * <p>Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec
@@ -36,6 +37,10 @@ abstract class MountableComponent() : Component() {
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
     mountableWithStyle.style?.applyToComponent(c, this)
+
+    mountableWithStyle.mountable.addMountUnmountExtension(
+        extension(
+            mountableWithStyle.mountable, DynamicValuesBinder(mountableComponentScope.binders)))
 
     return PrepareResult(
         mountableWithStyle.mountable,
