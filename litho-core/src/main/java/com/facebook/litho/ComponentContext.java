@@ -226,18 +226,23 @@ public class ComponentContext implements Cloneable {
 
   /** Returns true if this method is called during layout creation. */
   boolean isCreateLayoutInProgress() {
-    final LayoutStateContext context;
+    final @Nullable LayoutStateContext context;
     if (mLayoutStateContext != null) {
       context = mLayoutStateContext.get();
     } else {
       context = null;
     }
 
-    if (context == null || context.getLayoutState() == null) {
+    if (context == null) {
       return false;
     }
 
-    return context.getLayoutState().isCreateLayoutInProgress();
+    final @Nullable LayoutState state = context.getLayoutState();
+    if (state == null) {
+      return false;
+    }
+
+    return state.isCreateLayoutInProgress();
   }
 
   @Nullable
