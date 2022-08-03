@@ -99,8 +99,6 @@ public class LayoutStateContext {
     return mRenderStateContext;
   }
 
-  // Post Measure
-  // After collect results
   void releaseReference() {
     mLayoutStateRef = null;
     mTreeState = null;
@@ -123,26 +121,23 @@ public class LayoutStateContext {
         -1 /* previousId */);
   }
 
-  // Create & Measure!
   /** Returns the LayoutState instance or null if the layout state has been released. */
   @Nullable
+  @Deprecated
   LayoutState getLayoutState() {
     return mLayoutStateRef;
   }
 
-  // Only in tests
   @Nullable
   @VisibleForTesting
   public ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
-  // Only in tests
   public @Nullable LayoutStateFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
   }
 
-  // Before create
   void markLayoutStarted() {
     if (mIsLayoutStarted) {
       throw new IllegalStateException(
@@ -152,29 +147,24 @@ public class LayoutStateContext {
     mIsLayoutStarted = true;
   }
 
-  // Measure
   public @Nullable DiffNode getCurrentDiffTree() {
     return mCurrentDiffTree;
   }
 
-  // Measure
   void setNestedTreeDiffNode(@Nullable DiffNode diff) {
     mCurrentNestedTreeDiffNode = diff;
   }
 
-  // Measure
   boolean hasNestedTreeDiffNodeSet() {
     return mCurrentNestedTreeDiffNode != null;
   }
 
-  // Measure
   public @Nullable DiffNode consumeNestedTreeDiffNode() {
     final DiffNode node = mCurrentNestedTreeDiffNode;
     mCurrentNestedTreeDiffNode = null;
     return node;
   }
 
-  // Create & measure - split by getting render / layout handlers
   TreeState getTreeState() {
     return Preconditions.checkNotNull(mTreeState);
   }
@@ -183,23 +173,19 @@ public class LayoutStateContext {
     return mCache;
   }
 
-  // Used in bloks
   @Nullable
   public PerfEvent getPerfEvent() {
     return mPerfEvent;
   }
 
-  // Pre-create
   public void setPerfEvent(@Nullable PerfEvent perfEvent) {
     mPerfEvent = perfEvent;
   }
 
-  // Resume
   public void markLayoutResumed() {
     mThreadResumedOn.add(Thread.currentThread().getName());
   }
 
-  // Resume
   public String getLifecycleDebugString() {
     StringBuilder builder = new StringBuilder();
 

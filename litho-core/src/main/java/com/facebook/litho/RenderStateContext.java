@@ -39,9 +39,6 @@ public class RenderStateContext {
     mCache = new RenderPhaseMeasuredResultCache();
   }
 
-  // Create
-  // Component.consumeLayoutCreatedInWillRender
-  // (Component.willRender, Layout.create, LayoutState.calculate)
   @Nullable
   LithoNode consumeLayoutCreatedInWillRender(int componentId) {
     if (mComponentIdToWillRenderLayout != null) {
@@ -51,8 +48,6 @@ public class RenderStateContext {
     }
   }
 
-  // Create
-  // Component.willRender
   @Nullable
   LithoNode getLayoutCreatedInWillRender(int componentId) {
     if (mComponentIdToWillRenderLayout != null) {
@@ -62,8 +57,6 @@ public class RenderStateContext {
     }
   }
 
-  // Create
-  // Component.willRender
   void setLayoutCreatedInWillRender(int componentId, final @Nullable LithoNode node) {
     if (mComponentIdToWillRenderLayout == null) {
       mComponentIdToWillRenderLayout = new HashMap<>();
@@ -84,12 +77,10 @@ public class RenderStateContext {
     return isInterruptible() && isInterruptRequested;
   }
 
-  // Create & Measure
   boolean isLayoutReleased() {
     return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
   }
 
-  // Create / resolve
   public void markLayoutUninterruptible() {
     mIsInterruptible = false;
   }
