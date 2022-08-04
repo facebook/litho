@@ -43,7 +43,7 @@ public class LayoutStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
-
+  private boolean mIsReleased = false;
   private boolean mIsLayoutStarted = false;
 
   private @Nullable PerfEvent mPerfEvent;
@@ -110,6 +110,14 @@ public class LayoutStateContext {
     mRenderStateContext.release();
     mPerfEvent = null;
     mThreadReleasedOn.add(Thread.currentThread().getName());
+    mIsReleased = true;
+  }
+
+  /**
+   * Returns true if this layout associated with this instance is completed and no longer in use.
+   */
+  public boolean isReleased() {
+    return mIsReleased;
   }
 
   static long calculateNextId(

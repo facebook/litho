@@ -282,6 +282,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       final LithoLayoutResult result,
       final @Nullable LithoLayoutResult parent) {
     final @Nullable DiffNode diff;
+    if (current.isReleased()) {
+      return; // Cannot apply diff nodes with a released LayoutStateContext
+    }
 
     if (parent == null) { // If root, then get diff node root from the current layout state
       if (isLayoutSpecWithSizeSpec(getHeadComponent()) && current.hasNestedTreeDiffNodeSet()) {
@@ -417,8 +420,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       final int widthSpec,
       final int heightSpec) {
 
-    if (c.getRenderContext().mLayoutStateContext.getLayoutState() == null) {
-      throw new IllegalStateException("Cannot calculate a layout without a layout state.");
+    if (c.getRenderContext().mLayoutStateContext.isReleased()) {
+      throw new IllegalStateException(
+          "Cannot calculate a layout with a released LayoutStateContext.");
     }
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();

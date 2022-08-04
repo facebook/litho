@@ -60,7 +60,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final LayoutState layoutState = mLayoutContext.getLayoutState();
     final Component component = mNode.getTailComponent();
-    if (layoutState == null) {
+    if (mLayoutContext.isReleased()) {
       throw new IllegalStateException(
           component.getSimpleName()
               + ": To measure a component outside of a layout calculation use"
