@@ -560,13 +560,13 @@ public class ComponentContext implements Cloneable {
       context = null;
     }
 
-    if (context == null || context.getLayoutProcessInfo() == null) {
+    if (context == null) {
       throw new IllegalStateException(
           "LayoutVersion is only available during layout calculation."
               + "Please only invoke getLayoutVersion from OnCreateLayout/OnMeasure/OnPrepare");
     }
 
-    return context.getLayoutProcessInfo().getLayoutVersion();
+    return context.getLayoutVersion();
   }
 
   public ResourceCache getResourceCache() {

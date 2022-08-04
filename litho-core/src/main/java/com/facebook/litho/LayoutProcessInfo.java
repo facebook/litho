@@ -19,10 +19,8 @@ package com.facebook.litho;
 import com.facebook.infer.annotation.Nullsafe;
 
 // TODO: (T128169786) remove this interface in favour of more straight-forward logic to determine
-// these fields.
+// this field.
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface LayoutProcessInfo {
   boolean isCreateLayoutInProgress();
-
-  int getLayoutVersion();
 }

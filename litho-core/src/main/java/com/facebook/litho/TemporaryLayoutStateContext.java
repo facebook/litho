@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentTree.INVALID_LAYOUT_VERSION;
+
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
@@ -33,7 +35,8 @@ public class TemporaryLayoutStateContext extends LayoutStateContext {
         treeState,
         componentTree,
         null,
-        null);
+        null,
+        INVALID_LAYOUT_VERSION);
   }
 
   private static class TempIdGenerator implements LayoutOutputIdGenerator {
@@ -48,11 +51,6 @@ public class TemporaryLayoutStateContext extends LayoutStateContext {
     @Override
     public boolean isCreateLayoutInProgress() {
       return true;
-    }
-
-    @Override
-    public int getLayoutVersion() {
-      return 0;
     }
   }
 }

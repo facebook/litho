@@ -93,6 +93,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private static final boolean DEBUG_LOGS = false;
 
+  public static final int INVALID_LAYOUT_VERSION = -1;
   public static final int INVALID_ID = -1;
   private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
   private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
@@ -330,7 +331,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private @Nullable Component mRoot;
 
   @GuardedBy("this")
-  private int mExternalRootVersion = -1;
+  private int mExternalRootVersion = INVALID_LAYOUT_VERSION;
 
   // Versioning that gets incremented every time we start a new layout computation. This can
   // be useful for stateful objects shared across layouts that need to check whether for example
@@ -339,7 +340,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private int mNextLayoutVersion;
 
   @GuardedBy("this")
-  private int mCommittedLayoutVersion = -1;
+  private int mCommittedLayoutVersion = INVALID_LAYOUT_VERSION;
 
   @GuardedBy("this")
   private @Nullable TreeProps mRootTreeProps;
@@ -1344,7 +1345,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_SYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null);
   }
@@ -1378,7 +1379,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.RELOAD_PREVIOUS_STATE,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null,
         false,
@@ -1462,7 +1463,7 @@ public class ComponentTree implements LithoLifecycleListener {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null);
   }
@@ -1677,7 +1678,7 @@ public class ComponentTree implements LithoLifecycleListener {
         isAsync
             ? CalculateLayoutSource.UPDATE_STATE_ASYNC
             : CalculateLayoutSource.UPDATE_STATE_SYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         attribution,
         rootTreeProps,
         isCreateLayoutInProgress,
@@ -1793,7 +1794,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         output /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC_SYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null,
         false,
@@ -1808,7 +1809,7 @@ public class ComponentTree implements LithoLifecycleListener {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null,
         false,
@@ -1824,7 +1825,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         output /* output */,
         CalculateLayoutSource.MEASURE_SET_SIZE_SPEC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null,
         false,
@@ -1839,7 +1840,7 @@ public class ComponentTree implements LithoLifecycleListener {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null,
         false,
@@ -1855,7 +1856,7 @@ public class ComponentTree implements LithoLifecycleListener {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null);
   }
@@ -1872,7 +1873,7 @@ public class ComponentTree implements LithoLifecycleListener {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         treeProps);
   }
@@ -1886,7 +1887,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_SYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null);
   }
@@ -1900,7 +1901,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT_SYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         null);
   }
@@ -1918,7 +1919,7 @@ public class ComponentTree implements LithoLifecycleListener {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT_SYNC,
-        -1,
+        INVALID_LAYOUT_VERSION,
         null,
         treeProps);
   }

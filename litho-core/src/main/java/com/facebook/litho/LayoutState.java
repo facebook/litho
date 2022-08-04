@@ -21,6 +21,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
+import static com.facebook.litho.ComponentTree.INVALID_LAYOUT_VERSION;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
@@ -180,7 +181,6 @@ public class LayoutState
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
-  int mLayoutVersion;
   private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private final int mPreviousLayoutStateId;
@@ -225,7 +225,14 @@ public class LayoutState
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
-    this(context, Column.create(context).build(), new TreeState(), null, null, null);
+    this(
+        context,
+        Column.create(context).build(),
+        new TreeState(),
+        null,
+        null,
+        null,
+        INVALID_LAYOUT_VERSION);
   }
 
   LayoutState(
@@ -234,7 +241,8 @@ public class LayoutState
       final TreeState treeState,
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable LayoutState current,
-      final @Nullable DiffNode diffTreeRoot) {
+      final @Nullable DiffNode diffTreeRoot,
+      final int layoutVersion) {
     mContext = context;
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
@@ -245,7 +253,12 @@ public class LayoutState
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutStateContext =
         new LayoutStateContext(
-            this, treeState, context.getComponentTree(), layoutStateFuture, diffTreeRoot);
+            this,
+            treeState,
+            context.getComponentTree(),
+            layoutStateFuture,
+            diffTreeRoot,
+            layoutVersion);
     mLithoNodeCacheForLayoutWithSizeSpec =
         ComponentsConfiguration.useResolvedTree ? new HashMap<>() : null;
   }
@@ -262,11 +275,6 @@ public class LayoutState
   @Override
   public boolean isCreateLayoutInProgress() {
     return mIsCreateLayoutInProgress;
-  }
-
-  @Override
-  public int getLayoutVersion() {
-    return mLayoutVersion;
   }
 
   LayoutStateContext getLayoutStateContext() {
@@ -1232,7 +1240,13 @@ public class LayoutState
 
       layoutState =
           new LayoutState(
-              c, component, treeState, layoutStateFuture, currentLayoutState, diffTreeRoot);
+              c,
+              component,
+              treeState,
+              layoutStateFuture,
+              currentLayoutState,
+              diffTreeRoot,
+              layoutVersion);
 
       layoutStateContext = layoutState.getLayoutStateContext();
       if (logLayoutState != null) {
@@ -1253,7 +1267,6 @@ public class LayoutState
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
-      layoutState.mLayoutVersion = layoutVersion;
       layoutState.mAccessibilityManager =
           (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
       layoutState.mAccessibilityEnabled =

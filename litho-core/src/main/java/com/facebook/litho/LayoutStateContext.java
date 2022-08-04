@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentTree.INVALID_LAYOUT_VERSION;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
@@ -40,6 +42,7 @@ public class LayoutStateContext {
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable ComponentContext mRootComponentContext;
+  private final int mLayoutVersion;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mIsReleased = false;
@@ -59,7 +62,8 @@ public class LayoutStateContext {
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, new TreeState(), c.getComponentTree(), null, null);
+        new LayoutStateContext(
+            layoutState, new TreeState(), c.getComponentTree(), null, null, INVALID_LAYOUT_VERSION);
     layoutState.setLayoutStateContextForTest(layoutStateContext);
     return layoutStateContext;
   }
@@ -76,7 +80,7 @@ public class LayoutStateContext {
   @Deprecated
   public LayoutStateContext(
       final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, new TreeState(), componentTree, null, null);
+    this(layoutState, new TreeState(), componentTree, null, null, INVALID_LAYOUT_VERSION);
   }
 
   @Deprecated
@@ -85,7 +89,8 @@ public class LayoutStateContext {
       final TreeState treeState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable DiffNode currentDiffTree) {
+      final @Nullable DiffNode currentDiffTree,
+      final int layoutVersion) {
     // TODO (T128169952): We are passing LayoutState as the ID generator that's going into
     // RenderStateContext. Should be replaced with a dedicated class once RenderUnitIdMap is
     // shipped.
@@ -96,7 +101,8 @@ public class LayoutStateContext {
         treeState,
         componentTree,
         layoutStateFuture,
-        currentDiffTree);
+        currentDiffTree,
+        layoutVersion);
   }
 
   LayoutStateContext(
@@ -106,7 +112,8 @@ public class LayoutStateContext {
       final TreeState treeState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable DiffNode currentDiffTree) {
+      final @Nullable DiffNode currentDiffTree,
+      final int layoutVersion) {
     mLayoutProcessInfo = layoutProcessInfo;
     mComponentTree = componentTree;
     mLayoutStateFuture = layoutStateFuture;
@@ -115,7 +122,7 @@ public class LayoutStateContext {
     mRootComponentContext = rootComponentContext;
     mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, idGenerator);
     mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
-
+    mLayoutVersion = layoutVersion;
     mThreadCreatedOn = Thread.currentThread().getName();
   }
 
@@ -151,6 +158,10 @@ public class LayoutStateContext {
   @Nullable
   LayoutProcessInfo getLayoutProcessInfo() {
     return mLayoutProcessInfo;
+  }
+
+  int getLayoutVersion() {
+    return mLayoutVersion;
   }
 
   @Nullable
