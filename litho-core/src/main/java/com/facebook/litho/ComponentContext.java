@@ -240,18 +240,6 @@ public class ComponentContext implements Cloneable {
     return context.getLayoutProcessInfo().isCreateLayoutInProgress();
   }
 
-  @Nullable
-  LayoutState getLayoutState() {
-    final LayoutStateContext context;
-    if (mLayoutStateContext != null) {
-      context = mLayoutStateContext.get();
-    } else {
-      context = null;
-    }
-
-    return context != null ? context.getLayoutState() : null;
-  }
-
   public final Context getAndroidContext() {
     return mContext;
   }
