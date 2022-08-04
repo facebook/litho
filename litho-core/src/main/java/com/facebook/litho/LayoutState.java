@@ -1254,7 +1254,7 @@ public class LayoutState
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
 
-      final @Nullable LithoLayoutResult root;
+      final @Nullable LithoNode node;
       if (layoutCreatedInWillRender == null) {
 
         final @Nullable ResolvedTree resolvedTree =
@@ -1267,7 +1267,7 @@ public class LayoutState
                 isReconcilable,
                 currentRoot,
                 logLayoutState);
-        final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+        node = resolvedTree == null ? null : resolvedTree.getRoot();
 
         // Check if layout was interrupted.
         if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
@@ -1282,27 +1282,18 @@ public class LayoutState
           return layoutState;
         }
 
-        root =
-            Layout.measureTree(
-                layoutStateContext,
-                c.getAndroidContext(),
-                node,
-                widthSpec,
-                heightSpec,
-                logLayoutState);
-
       } else {
-        root =
-            Layout.measureTree(
-                layoutStateContext,
-                c.getAndroidContext(),
-                layoutCreatedInWillRender,
-                widthSpec,
-                heightSpec,
-                logLayoutState);
+        node = layoutCreatedInWillRender;
       }
 
-      final @Nullable LithoNode node = root != null ? root.getNode() : null;
+      final @Nullable LithoLayoutResult root =
+          Layout.measureTree(
+              layoutStateContext,
+              c.getAndroidContext(),
+              node,
+              widthSpec,
+              heightSpec,
+              logLayoutState);
 
       layoutState.mLayoutResult = root;
       layoutState.mRoot = node;
