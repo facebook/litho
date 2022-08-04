@@ -20,6 +20,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.Layout
 import android.util.SparseArray
+import android.view.MotionEvent
 import android.view.ViewOutlineProvider
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentHost
@@ -172,6 +173,53 @@ class ViewStylesTest {
   }
 
   @Test
+  fun `onClick - when set respects enable check`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("click_me").onClick(
+                            enabled = false) {
+                              error("We should have not executed this code block")
+                            }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTag("click_me").performClick()
+  }
+
+  @Test
+  fun `onClick - when override respects last setup`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px)
+                            .height(100.px)
+                            .viewTag("click_me")
+                            .onClick { error("We should have not executed this code block") }
+                            .onClick(enabled = false) {
+                              error("We should have not executed this code block")
+                            }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTag("click_me").performClick()
+  }
+
+  @Test
   fun onLongClick_whenSet_isDispatchedOnLongClick() {
     val wasLongClicked = AtomicBoolean(false)
 
@@ -192,6 +240,127 @@ class ViewStylesTest {
     assertThat(wasLongClicked.get()).isFalse()
     lithoViewRule.findViewWithTag("click_me").performLongClick()
     assertThat(wasLongClicked.get()).isTrue()
+  }
+
+  @Test
+  fun `onLongClick - when set respects enable check`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("click_me").onLongClick(
+                            enabled = false) {
+                              error("We should have not executed this code block")
+                              true
+                            }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTag("click_me").performLongClick()
+  }
+
+  @Test
+  fun `onTouch - when set is dispatched on touch`() {
+    val wasTouched = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("touch_me").onTouch {
+                          wasTouched.set(true)
+                          true
+                        }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(wasTouched.get()).isFalse()
+    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+    assertThat(wasTouched.get()).isTrue()
+  }
+
+  @Test
+  fun `onTouch - when set respects enable check`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("touch_me").onTouch(
+                            enabled = false) {
+                              error("We should have not executed this code block")
+                              true
+                            }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+  }
+
+  @Test
+  fun `onInterceptTouch - when set is dispatched on touch`() {
+    val wasTouchedIntercepted = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("touch_me").onInterceptTouch {
+                          wasTouchedIntercepted.set(true)
+                          true
+                        }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(wasTouchedIntercepted.get()).isFalse()
+    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
+    assertThat(wasTouchedIntercepted.get()).isTrue()
+  }
+
+  @Test
+  fun `onInterceptTouch - when set respects enable check`() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("touch_me").onInterceptTouch(
+                            enabled = false) {
+                              error("We should have not executed this code block")
+                              true
+                            }))
+          }
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.findViewWithTag("touch_me").dispatchTouchEvent(getMotionEvent())
   }
 
   @Test
@@ -413,4 +582,6 @@ class ViewStylesTest {
         .extracting("color")
         .containsExactly(color)
   }
+
+  private fun getMotionEvent() = MotionEvent.obtain(0L, 1L, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
 }

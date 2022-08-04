@@ -104,22 +104,38 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.CLIP_TO_OUTLINE -> commonProps.clipToOutline(value as Boolean)
       ObjectField.FOCUSABLE -> commonProps.focusable(value as Boolean)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
-      ObjectField.ON_CLICK ->
-          commonProps.clickHandler(
-              eventHandler(value as ((ClickEvent) -> Unit))
-                  .maybeWrapInInputCallbackEventHandler(context))
-      ObjectField.ON_LONG_CLICK ->
-          commonProps.longClickHandler(
-              eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean))
-                  .maybeWrapInInputCallbackEventHandler(context))
-      ObjectField.ON_INTERCEPT_TOUCH ->
-          commonProps.interceptTouchHandler(
-              eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean))
-                  .maybeWrapInInputCallbackEventHandler(context))
-      ObjectField.ON_TOUCH ->
-          commonProps.touchHandler(
-              eventHandler(value as ((TouchEvent) -> Unit))
-                  .maybeWrapInInputCallbackEventHandler(context))
+      ObjectField.ON_CLICK -> {
+        val clickHandler =
+            if (value != null)
+                eventHandler(value as (ClickEvent) -> Unit)
+                    .maybeWrapInInputCallbackEventHandler(context)
+            else null
+        commonProps.clickHandler(clickHandler)
+      }
+      ObjectField.ON_LONG_CLICK -> {
+        val longClickHandler =
+            if (value != null)
+                eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean))
+                    .maybeWrapInInputCallbackEventHandler(context)
+            else null
+        commonProps.longClickHandler(longClickHandler)
+      }
+      ObjectField.ON_INTERCEPT_TOUCH -> {
+        val interceptTouchHandler =
+            if (value != null)
+                eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean))
+                    .maybeWrapInInputCallbackEventHandler(context)
+            else null
+        commonProps.interceptTouchHandler(interceptTouchHandler)
+      }
+      ObjectField.ON_TOUCH -> {
+        val touchHandler =
+            if (value != null)
+                eventHandler(value as ((TouchEvent) -> Unit))
+                    .maybeWrapInInputCallbackEventHandler(context)
+            else null
+        commonProps.touchHandler(touchHandler)
+      }
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
       ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
       ObjectField.TEST_KEY -> commonProps.testKey(value as String?)
@@ -292,36 +308,48 @@ inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
  * already.
  */
 inline fun Style.onClick(noinline onClick: (ClickEvent) -> Unit): Style =
-    this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
+    onClick(enabled = true, onClick)
 
 /**
- * Sets a listener that will invoke the given lambda when this Component is long clicked. Setting
+ * Sets a listener that will invoke the given lambda when this Component is clicked but only if
+ * [enabled] is true. If enabled, setting this property will cause the Component to be represented
+ * as a View at mount time if it wasn't going to already.
+ */
+inline fun Style.onClick(enabled: Boolean = true, noinline action: (ClickEvent) -> Unit): Style =
+    this + ObjectStyleItem(ObjectField.ON_CLICK, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is long clicked but only if
+ * [enabled] is true. If enabled, setting this property will cause the Component to be represented
+ * as a View at mount time if it wasn't going to already.
+ */
+inline fun Style.onLongClick(
+    enabled: Boolean = true,
+    noinline action: (LongClickEvent) -> Boolean
+): Style = this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, if (enabled) action else null)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is touched but only if
+ * [enabled] is true. If enabled, setting this property will cause the Component to be represented
+ * as a View at mount time if it wasn't going to already.
+ */
+inline fun Style.onTouch(enabled: Boolean = true, noinline action: (TouchEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_TOUCH, if (enabled) action else null)
+
+/**
+ * Sets a listener that will intercept all touch screen motion events but only if [enabled] is true.
+ * This allows you to watch events as they are dispatched to your children, and take ownership of
+ * the current gesture at any point. Implementations should return true if they intercepted the
+ * event and wish to receive subsequent events, and false otherwise. If [enabled] is true, setting
  * this property will cause the Component to be represented as a View at mount time if it wasn't
  * going to already.
- */
-inline fun Style.onLongClick(noinline onLongClick: (LongClickEvent) -> Boolean): Style =
-    this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
-
-/**
- * Sets a listener that will invoke the given lambda when this Component is touched. Setting this
- * property will cause the Component to be represented as a View at mount time if it wasn't going to
- * already.
- */
-inline fun Style.onTouch(noinline onTouch: (TouchEvent) -> Boolean): Style =
-    this + ObjectStyleItem(ObjectField.ON_TOUCH, onTouch)
-
-/**
- * Sets a listener that will intercept all touch screen motion events. This allows you to watch
- * events as they are dispatched to your children, and take ownership of the current gesture at any
- * point. Implementations should return true if they intercepted the event and wish to receive
- * subsequent events, and false otherwise. Setting this property will cause the Component to be
- * represented as a View at mount time if it wasn't going to already.
  *
  * See [android.view.ViewGroup.onInterceptTouchEvent]
  */
 inline fun Style.onInterceptTouch(
-    noinline onInterceptTouch: (InterceptTouchEvent) -> Boolean
-): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, onInterceptTouch)
+    enabled: Boolean = true,
+    noinline action: (InterceptTouchEvent) -> Boolean
+): Style = this + ObjectStyleItem(ObjectField.ON_INTERCEPT_TOUCH, if (enabled) action else null)
 
 /**
  * Sets the degree that this component is rotated around the pivot point. Increasing the value
