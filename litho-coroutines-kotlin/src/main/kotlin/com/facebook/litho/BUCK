@@ -32,7 +32,6 @@ litho_android_library(
     srcs = glob(["**/*.kt"]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
-    is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     language = "KOTLIN",
     provided_deps = [
