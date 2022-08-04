@@ -113,6 +113,7 @@ import com.facebook.samples.litho.kotlin.gettingstarted.ClickableText
 import com.facebook.samples.litho.kotlin.gettingstartedsolution.VerticalSpeller
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
+import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
@@ -236,6 +237,13 @@ class Demos {
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),
+                    DemoGrouping(
+                        name = "Mountables",
+                        listOf(
+                            SingleDemo(
+                                name = "BindTo - Dynamic Values API",
+                                component = MountableBindToExampleComponent()),
+                        )),
                     DemoGrouping(
                         name = "Errors",
                         listOf(
