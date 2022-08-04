@@ -89,7 +89,8 @@ public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityExtensionInput,
         TransitionsExtensionInput,
-        EndToEndTestingExtensionInput {
+        EndToEndTestingExtensionInput,
+        LayoutProcessInfo {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
 
@@ -257,8 +258,14 @@ public class LayoutState
     return mIsPartialLayoutState;
   }
 
-  boolean isCreateLayoutInProgress() {
+  @Override
+  public boolean isCreateLayoutInProgress() {
     return mIsCreateLayoutInProgress;
+  }
+
+  @Override
+  public int getLayoutVersion() {
+    return mLayoutVersion;
   }
 
   LayoutStateContext getLayoutStateContext() {

@@ -37,6 +37,7 @@ public class LayoutStateContext {
   private final @Nullable ComponentTree mComponentTree;
 
   private @Nullable LayoutState mLayoutStateRef;
+  private @Nullable LayoutProcessInfo mLayoutProcessInfo;
   private @Nullable TreeState mTreeState;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
@@ -86,6 +87,7 @@ public class LayoutStateContext {
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable DiffNode currentDiffTree) {
     mLayoutStateRef = layoutState;
+    mLayoutProcessInfo = layoutState;
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
     mCurrentDiffTree = currentDiffTree;
@@ -101,6 +103,7 @@ public class LayoutStateContext {
 
   void releaseReference() {
     mLayoutStateRef = null;
+    mLayoutProcessInfo = null;
     mTreeState = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
@@ -126,6 +129,11 @@ public class LayoutStateContext {
   @Deprecated
   LayoutState getLayoutState() {
     return mLayoutStateRef;
+  }
+
+  @Nullable
+  LayoutProcessInfo getLayoutProcessInfo() {
+    return mLayoutProcessInfo;
   }
 
   @Nullable

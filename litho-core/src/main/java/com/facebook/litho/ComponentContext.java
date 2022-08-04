@@ -233,16 +233,11 @@ public class ComponentContext implements Cloneable {
       context = null;
     }
 
-    if (context == null) {
+    if (context == null || context.getLayoutProcessInfo() == null) {
       return false;
     }
 
-    final @Nullable LayoutState state = context.getLayoutState();
-    if (state == null) {
-      return false;
-    }
-
-    return state.isCreateLayoutInProgress();
+    return context.getLayoutProcessInfo().isCreateLayoutInProgress();
   }
 
   @Nullable
@@ -577,13 +572,13 @@ public class ComponentContext implements Cloneable {
       context = null;
     }
 
-    if (context == null || context.getLayoutState() == null) {
+    if (context == null || context.getLayoutProcessInfo() == null) {
       throw new IllegalStateException(
           "LayoutVersion is only available during layout calculation."
               + "Please only invoke getLayoutVersion from OnCreateLayout/OnMeasure/OnPrepare");
     }
 
-    return context.getLayoutState().mLayoutVersion;
+    return context.getLayoutProcessInfo().getLayoutVersion();
   }
 
   public ResourceCache getResourceCache() {
