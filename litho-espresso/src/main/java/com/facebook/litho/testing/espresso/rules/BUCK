@@ -18,7 +18,6 @@ load(
 fb_core_android_library(
     name = "rules",
     srcs = glob(["*.java"]),
-    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
