@@ -1257,8 +1257,6 @@ public class LayoutState
       final @Nullable LithoLayoutResult root;
       if (layoutCreatedInWillRender == null) {
 
-        final LayoutResultHolder holder;
-
         final @Nullable ResolvedTree resolvedTree =
             Layout.createResolvedTree(
                 layoutStateContext,
@@ -1271,19 +1269,10 @@ public class LayoutState
                 logLayoutState);
         final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-        if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
-          holder = LayoutResultHolder.interrupted(node);
-        } else {
-          holder =
-              Layout.measureTree(
-                  layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
-        }
-
         // Check if layout was interrupted.
-        if (holder.wasLayoutInterrupted()) {
-          layoutState.mPartiallyResolvedRoot =
-              Preconditions.checkNotNull(holder.mPartiallyResolvedLayout);
-          layoutState.mRootTransitionId = getTransitionIdForNode(holder.mPartiallyResolvedLayout);
+        if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+          layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
+          layoutState.mRootTransitionId = getTransitionIdForNode(node);
           layoutState.mIsCreateLayoutInProgress = false;
           layoutState.mIsPartialLayoutState = true;
           if (logLayoutState != null) {
@@ -1291,9 +1280,10 @@ public class LayoutState
           }
 
           return layoutState;
-        } else {
-          root = holder.mResult;
         }
+
+        root =
+            Layout.measureTree(layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
 
       } else {
         root =

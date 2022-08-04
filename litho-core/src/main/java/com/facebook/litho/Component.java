@@ -716,8 +716,6 @@ public abstract class Component
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       resultCache.clearCache(this);
 
-      final LayoutResultHolder container;
-
       final @Nullable ResolvedTree resolvedTree =
           Layout.createResolvedTree(
               Preconditions.checkNotNull(layoutStateContext), c, this, widthSpec, heightSpec);
@@ -725,25 +723,14 @@ public abstract class Component
       final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
       if (renderStateContext.isLayoutInterrupted() && node != null) {
-        container = LayoutResultHolder.interrupted(node);
-      } else {
-        container =
-            Layout.measureTree(
-                Preconditions.checkNotNull(layoutStateContext),
-                node,
-                c,
-                widthSpec,
-                heightSpec,
-                null);
-      }
-
-      if (container.wasLayoutInterrupted()) {
         outputSize.width = 0;
         outputSize.height = 0;
         return;
       }
 
-      lastMeasuredLayout = container.mResult;
+      lastMeasuredLayout =
+          Layout.measureTree(
+              Preconditions.checkNotNull(layoutStateContext), node, c, widthSpec, heightSpec, null);
 
       if (lastMeasuredLayout == null) {
         outputSize.width = 0;

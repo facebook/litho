@@ -192,7 +192,7 @@ class Layout {
         layoutStatePerfEvent);
   }
 
-  static LayoutResultHolder measureTree(
+  static @Nullable LithoLayoutResult measureTree(
       final LayoutStateContext layoutStateContext,
       final @Nullable LithoNode node,
       final ComponentContext c,
@@ -200,7 +200,7 @@ class Layout {
       final int heightSpec,
       final @Nullable PerfEvent layoutStatePerfEvent) {
     if (node == null) {
-      return new LayoutResultHolder(null);
+      return null;
     }
 
     final @Nullable LithoLayoutResult result =
@@ -212,7 +212,7 @@ class Layout {
             heightSpec,
             layoutStatePerfEvent);
 
-    return new LayoutResultHolder(result);
+    return result;
   }
 
   private static void applyStateUpdateEarly(

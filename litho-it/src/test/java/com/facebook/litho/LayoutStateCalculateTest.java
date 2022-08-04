@@ -2285,7 +2285,7 @@ public class LayoutStateCalculateTest {
 
     final LithoNode lithoNode = resolvedTree == null ? null : resolvedTree.getRoot();
 
-    final LayoutResultHolder holder =
+    final LithoLayoutResult node =
         Layout.measureTree(
             Preconditions.checkNotNull(layoutStateContext),
             lithoNode,
@@ -2293,8 +2293,6 @@ public class LayoutStateCalculateTest {
             widthSpec,
             heightSpec,
             null);
-
-    final LithoLayoutResult node = holder.mResult;
 
     assertThat(node.getWidth()).isEqualTo(width);
     assertThat(node.getHeight()).isEqualTo(height);

@@ -77,7 +77,6 @@ public class PreloadingUtils {
                         ComponentLayout.class,
                         NodeConfig.class,
                         LithoRenderContext.class,
-                        LayoutResultHolder.class,
                         DefaultDiffNode.class,
                         ViewNodeInfo.class,
                         LithoRenderUnit.class,
