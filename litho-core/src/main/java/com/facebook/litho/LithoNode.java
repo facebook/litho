@@ -281,12 +281,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       final LayoutStateContext current,
       final LithoLayoutResult result,
       final @Nullable LithoLayoutResult parent) {
-
-    final LayoutState state = current.getLayoutState();
-    if (state == null) { // Cannot apply diff nodes without a LayoutState
-      return;
-    }
-
     final @Nullable DiffNode diff;
 
     if (parent == null) { // If root, then get diff node root from the current layout state
