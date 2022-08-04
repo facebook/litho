@@ -75,7 +75,9 @@ public class StateHandler {
 
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
+  @GuardedBy("this")
   private Map<String, List<HookUpdater>> mPendingHookUpdates;
+
   private Map<String, List<HookUpdater>> mAppliedHookUpdates;
 
   private final InitialStateContainer mInitialStateContainer;
@@ -661,7 +663,7 @@ public class StateHandler {
   /**
    * Registers the given block to be run before the next layout calculation to update hook state.
    */
-  void queueHookStateUpdate(String key, HookUpdater updater) {
+  synchronized void queueHookStateUpdate(String key, HookUpdater updater) {
     if (mPendingHookUpdates == null) {
       mPendingHookUpdates = new HashMap<>();
     }
@@ -737,8 +739,11 @@ public class StateHandler {
     List<HookUpdater> hookUpdaters = null;
 
     synchronized (this) {
-      if (mPendingHookUpdates != null && mPendingHookUpdates.containsKey(globalKey)) {
-        hookUpdaters = new ArrayList<>(mPendingHookUpdates.get(globalKey));
+      if (mPendingHookUpdates != null) {
+        final List<HookUpdater> pendingHookUpdatersForKey = mPendingHookUpdates.get(globalKey);
+        if (pendingHookUpdatersForKey != null) {
+          hookUpdaters = new ArrayList<>(pendingHookUpdatersForKey);
+        }
       }
     }
 
@@ -770,17 +775,20 @@ public class StateHandler {
     for (Map.Entry<String, List<HookUpdater>> appliedHookUpdatesForKey :
         appliedHookUpdates.entrySet()) {
       String globalKey = appliedHookUpdatesForKey.getKey();
-      final List<HookUpdater> pendingHookUpdatersForKey = mPendingHookUpdates.get(globalKey);
+      final List<HookUpdater> pendingHookUpdatersForKey;
+      synchronized (this) {
+        pendingHookUpdatersForKey = mPendingHookUpdates.get(globalKey);
 
-      if (pendingHookUpdatersForKey == null) {
-        continue;
-      }
+        if (pendingHookUpdatersForKey == null) {
+          continue;
+        }
 
-      final List<HookUpdater> appliedHookUpdatersForKey = appliedHookUpdatesForKey.getValue();
-      pendingHookUpdatersForKey.removeAll(appliedHookUpdatersForKey);
+        final List<HookUpdater> appliedHookUpdatersForKey = appliedHookUpdatesForKey.getValue();
+        pendingHookUpdatersForKey.removeAll(appliedHookUpdatersForKey);
 
-      if (pendingHookUpdatersForKey.isEmpty()) {
-        mPendingHookUpdates.remove(globalKey);
+        if (pendingHookUpdatersForKey.isEmpty()) {
+          mPendingHookUpdates.remove(globalKey);
+        }
       }
     }
   }
