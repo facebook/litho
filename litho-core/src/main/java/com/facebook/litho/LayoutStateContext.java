@@ -80,21 +80,36 @@ public class LayoutStateContext {
     this(layoutState, new TreeState(), componentTree, null, null);
   }
 
+  @Deprecated
   LayoutStateContext(
       final LayoutState layoutState,
       final TreeState treeState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable DiffNode currentDiffTree) {
+    // TODO (T128169952): We are passing LayoutState as the ID generator that's going into
+    // RenderStateContext. Should be replaced with a dedicated class once RenderUnitIdMap is
+    // shipped.
+    this(layoutState, layoutState, treeState, componentTree, layoutStateFuture, currentDiffTree);
     mLayoutStateRef = layoutState;
-    mLayoutProcessInfo = layoutState;
-    mLayoutStateFuture = layoutStateFuture;
+  }
+
+  LayoutStateContext(
+      final LayoutProcessInfo layoutProcessInfo,
+      final LayoutOutputIdGenerator idGenerator,
+      final TreeState treeState,
+      final @Nullable ComponentTree componentTree,
+      final @Nullable LayoutStateFuture layoutStateFuture,
+      final @Nullable DiffNode currentDiffTree) {
+    mLayoutProcessInfo = layoutProcessInfo;
     mComponentTree = componentTree;
+    mLayoutStateFuture = layoutStateFuture;
     mCurrentDiffTree = currentDiffTree;
     mTreeState = treeState;
-    mThreadCreatedOn = Thread.currentThread().getName();
-    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, layoutState);
+    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, idGenerator);
     mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
+
+    mThreadCreatedOn = Thread.currentThread().getName();
   }
 
   public RenderStateContext getRenderStateContext() {

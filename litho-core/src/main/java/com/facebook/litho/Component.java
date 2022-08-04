@@ -689,12 +689,12 @@ public abstract class Component
       final Size outputSize,
       final boolean shouldCacheResult) {
 
-    final LayoutState layoutState;
+    final LayoutStateContext layoutStateContext;
 
-    if (shouldCacheResult && c.getLayoutState() != null) {
-      layoutState = c.getLayoutState();
+    if (shouldCacheResult && c.getLayoutStateContext() != null) {
+      layoutStateContext = c.getLayoutStateContext();
     } else if (!shouldCacheResult) {
-      layoutState = new LayoutState(c, this, new TreeState(), null, null, null);
+      layoutStateContext = new TemporaryLayoutStateContext(new TreeState(), c.getComponentTree());
     } else {
       throw new IllegalStateException(
           getSimpleName()
@@ -702,8 +702,6 @@ public abstract class Component
               + "If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    final LayoutStateContext layoutStateContext =
-        Preconditions.checkNotNull(layoutState.getLayoutStateContext());
     final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
     final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
 
