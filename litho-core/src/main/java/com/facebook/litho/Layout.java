@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.view.View;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -496,13 +495,18 @@ class Layout {
     // Component.measure API but we could not find the cached layout result or cached layout result
     // was not compatible with given size spec.
     if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
-      return remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec);
+      return layout(
+          layoutStateContext,
+          currentLayout.getContext().getAndroidContext(),
+          currentLayout.getNode(),
+          widthSpec,
+          heightSpec,
+          null);
     }
 
     // 4. If current layout result is not available or component uses OnCreateLayoutWithSizeSpec
     // then resolve the tree and measure it. At this point we know that current layout result and
     // cached layout result are not available or are not compatible with given size spec.
-    final String globalKey = node.getTailComponentKey();
 
     // 4.a Create a new layout
     // This step will eventually go away in the desired end state as we will have LithoNode
@@ -670,21 +674,6 @@ class Layout {
     }
   }
 
-  @VisibleForTesting
-  static @Nullable LithoLayoutResult remeasure(
-      final LayoutStateContext layoutStateContext,
-      final LithoLayoutResult layout,
-      final int widthSpec,
-      final int heightSpec) {
-    return layout(
-        layoutStateContext,
-        layout.getContext().getAndroidContext(),
-        layout.getNode(),
-        widthSpec,
-        heightSpec,
-        null);
-  }
-
   @Nullable
   static LithoLayoutResult consumeCachedLayout(
       final LayoutStateContext layoutStateContext,
@@ -721,7 +710,13 @@ class Layout {
         if (hasCompatibleSizeSpec) {
           return cachedLayout;
         } else if (!isLayoutSpecWithSizeSpec(component)) {
-          return remeasure(layoutStateContext, cachedLayout, widthSpec, heightSpec);
+          return layout(
+              layoutStateContext,
+              cachedLayout.getContext().getAndroidContext(),
+              cachedLayout.getNode(),
+              widthSpec,
+              heightSpec,
+              null);
         }
       }
     }
