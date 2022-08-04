@@ -1283,11 +1283,17 @@ public class LayoutState
         }
 
         root =
-            Layout.measureTree(layoutStateContext, node, c, widthSpec, heightSpec, logLayoutState);
+            Layout.measureTree(
+                layoutStateContext,
+                c.getAndroidContext(),
+                node,
+                widthSpec,
+                heightSpec,
+                logLayoutState);
 
       } else {
         root =
-            Layout.layout(
+            Layout.measureTree(
                 layoutStateContext,
                 c.getAndroidContext(),
                 layoutCreatedInWillRender,

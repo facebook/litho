@@ -117,45 +117,6 @@ class Layout {
     return node == null ? null : new ResolvedTree(node);
   }
 
-  static @Nullable LithoLayoutResult layout(
-      final LayoutStateContext layoutStateContext,
-      final Context androidContext,
-      final @Nullable LithoNode node,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable PerfEvent layoutStatePerfEvent) {
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("start_measure");
-    }
-
-    final @Nullable LithoLayoutResult result;
-
-    if (node != null) {
-      final boolean isTracing = RenderCoreSystrace.isEnabled();
-      if (isTracing) {
-        RenderCoreSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
-      }
-
-      final LayoutContext<LithoRenderContext> context =
-          new LayoutContext<>(
-              androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
-
-      result = node.calculateLayout(context, widthSpec, heightSpec);
-
-      if (isTracing) {
-        RenderCoreSystrace.endSection(/* measureTree */ );
-      }
-    } else {
-      result = null;
-    }
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("end_measure");
-    }
-
-    return result;
-  }
-
   static @Nullable ResolvedTree createResolvedTree(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -194,8 +155,8 @@ class Layout {
 
   static @Nullable LithoLayoutResult measureTree(
       final LayoutStateContext layoutStateContext,
+      final Context androidContext,
       final @Nullable LithoNode node,
-      final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
       final @Nullable PerfEvent layoutStatePerfEvent) {
@@ -203,14 +164,30 @@ class Layout {
       return null;
     }
 
-    final @Nullable LithoLayoutResult result =
-        layout(
-            layoutStateContext,
-            c.getAndroidContext(),
-            node,
-            widthSpec,
-            heightSpec,
-            layoutStatePerfEvent);
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("start_measure");
+    }
+
+    final LithoLayoutResult result;
+
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    if (isTracing) {
+      RenderCoreSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
+    }
+
+    final LayoutContext<LithoRenderContext> context =
+        new LayoutContext<>(
+            androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
+
+    result = node.calculateLayout(context, widthSpec, heightSpec);
+
+    if (isTracing) {
+      RenderCoreSystrace.endSection(/* measureTree */ );
+    }
+
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("end_measure");
+    }
 
     return result;
   }
@@ -495,7 +472,7 @@ class Layout {
     // Component.measure API but we could not find the cached layout result or cached layout result
     // was not compatible with given size spec.
     if (currentLayout != null && !isLayoutSpecWithSizeSpec(component)) {
-      return layout(
+      return measureTree(
           layoutStateContext,
           currentLayout.getContext().getAndroidContext(),
           currentLayout.getNode(),
@@ -535,7 +512,7 @@ class Layout {
     layoutStateContext.setNestedTreeDiffNode(holderResult.getDiffNode());
 
     // 4.b Measure the tree
-    return layout(
+    return measureTree(
         layoutStateContext,
         parentContext.getAndroidContext(),
         newNode,
@@ -648,7 +625,7 @@ class Layout {
     resume(layoutStateContext, root);
 
     final LithoLayoutResult result =
-        layout(
+        measureTree(
             layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, logLayoutState);
 
     if (isTracing) {
@@ -710,7 +687,7 @@ class Layout {
         if (hasCompatibleSizeSpec) {
           return cachedLayout;
         } else if (!isLayoutSpecWithSizeSpec(component)) {
-          return layout(
+          return measureTree(
               layoutStateContext,
               cachedLayout.getContext().getAndroidContext(),
               cachedLayout.getNode(),

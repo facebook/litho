@@ -2288,8 +2288,8 @@ public class LayoutStateCalculateTest {
     final LithoLayoutResult node =
         Layout.measureTree(
             Preconditions.checkNotNull(layoutStateContext),
+            c.getAndroidContext(),
             lithoNode,
-            c,
             widthSpec,
             heightSpec,
             null);

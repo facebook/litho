@@ -730,7 +730,12 @@ public abstract class Component
 
       lastMeasuredLayout =
           Layout.measureTree(
-              Preconditions.checkNotNull(layoutStateContext), node, c, widthSpec, heightSpec, null);
+              Preconditions.checkNotNull(layoutStateContext),
+              c.getAndroidContext(),
+              node,
+              widthSpec,
+              heightSpec,
+              null);
 
       if (lastMeasuredLayout == null) {
         outputSize.width = 0;
