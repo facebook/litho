@@ -126,6 +126,12 @@ public class LayoutStateContext {
     mThreadCreatedOn = Thread.currentThread().getName();
   }
 
+  /**
+   * Returns the RenderStateContext. This method is temporary and access to RSC will be moved to
+   * different places depending on the place its needed from. This method will be removed soon and
+   * LSC will no longer hold a reference to RSC, so do not add usages to this method.
+   */
+  @Deprecated
   public RenderStateContext getRenderStateContext() {
     return mRenderStateContext;
   }
