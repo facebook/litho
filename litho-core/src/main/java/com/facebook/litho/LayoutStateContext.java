@@ -35,12 +35,11 @@ import java.util.List;
 public class LayoutStateContext {
 
   private final @Nullable ComponentTree mComponentTree;
-
-  private @Nullable LayoutState mLayoutStateRef;
   private @Nullable LayoutProcessInfo mLayoutProcessInfo;
   private @Nullable TreeState mTreeState;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
+  private @Nullable ComponentContext mRootComponentContext;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mIsReleased = false;
@@ -90,13 +89,20 @@ public class LayoutStateContext {
     // TODO (T128169952): We are passing LayoutState as the ID generator that's going into
     // RenderStateContext. Should be replaced with a dedicated class once RenderUnitIdMap is
     // shipped.
-    this(layoutState, layoutState, treeState, componentTree, layoutStateFuture, currentDiffTree);
-    mLayoutStateRef = layoutState;
+    this(
+        layoutState,
+        layoutState,
+        layoutState.getComponentContext(),
+        treeState,
+        componentTree,
+        layoutStateFuture,
+        currentDiffTree);
   }
 
   LayoutStateContext(
       final LayoutProcessInfo layoutProcessInfo,
       final LayoutOutputIdGenerator idGenerator,
+      final ComponentContext rootComponentContext,
       final TreeState treeState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
@@ -106,6 +112,7 @@ public class LayoutStateContext {
     mLayoutStateFuture = layoutStateFuture;
     mCurrentDiffTree = currentDiffTree;
     mTreeState = treeState;
+    mRootComponentContext = rootComponentContext;
     mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, idGenerator);
     mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
 
@@ -117,11 +124,11 @@ public class LayoutStateContext {
   }
 
   void releaseReference() {
-    mLayoutStateRef = null;
     mLayoutProcessInfo = null;
     mTreeState = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
+    mRootComponentContext = null;
     mRenderStateContext.release();
     mPerfEvent = null;
     mThreadReleasedOn.add(Thread.currentThread().getName());
@@ -135,11 +142,10 @@ public class LayoutStateContext {
     return mIsReleased;
   }
 
-  /** Returns the LayoutState instance or null if the layout state has been released. */
+  /** Returns the root component-context for the entire tree. */
   @Nullable
-  @Deprecated
-  LayoutState getLayoutState() {
-    return mLayoutStateRef;
+  ComponentContext getRootComponentContext() {
+    return mRootComponentContext;
   }
 
   @Nullable

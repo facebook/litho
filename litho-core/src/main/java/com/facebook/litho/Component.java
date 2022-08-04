@@ -694,7 +694,8 @@ public abstract class Component
     if (shouldCacheResult && c.getLayoutStateContext() != null) {
       layoutStateContext = c.getLayoutStateContext();
     } else if (!shouldCacheResult) {
-      layoutStateContext = new TemporaryLayoutStateContext(new TreeState(), c.getComponentTree());
+      layoutStateContext =
+          new TemporaryLayoutStateContext(new TreeState(), c, c.getComponentTree());
     } else {
       throw new IllegalStateException(
           getSimpleName()

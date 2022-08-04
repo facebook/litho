@@ -22,8 +22,18 @@ import com.facebook.infer.annotation.Nullsafe;
 /** Temporary LayoutStateContext to be used during Component.measure when not caching results. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TemporaryLayoutStateContext extends LayoutStateContext {
-  public TemporaryLayoutStateContext(TreeState treeState, @Nullable ComponentTree componentTree) {
-    super(new TempLayoutProcessInfo(), new TempIdGenerator(), treeState, componentTree, null, null);
+  public TemporaryLayoutStateContext(
+      TreeState treeState,
+      ComponentContext componentContext,
+      @Nullable ComponentTree componentTree) {
+    super(
+        new TempLayoutProcessInfo(),
+        new TempIdGenerator(),
+        componentContext,
+        treeState,
+        componentTree,
+        null,
+        null);
   }
 
   private static class TempIdGenerator implements LayoutOutputIdGenerator {
