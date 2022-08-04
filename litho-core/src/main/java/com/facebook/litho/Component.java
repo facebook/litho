@@ -738,12 +738,16 @@ public abstract class Component
       }
 
       if (container.wasLayoutInterrupted()) {
+        outputSize.width = 0;
+        outputSize.height = 0;
         return;
       }
 
       lastMeasuredLayout = container.mResult;
 
       if (lastMeasuredLayout == null) {
+        outputSize.width = 0;
+        outputSize.height = 0;
         return;
       }
 
@@ -797,43 +801,7 @@ public abstract class Component
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
-    final LayoutState layoutState = new LayoutState(c, this, new TreeState(), null, null, null);
-    final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
-    final ComponentContext contextForLayout =
-        new ComponentContext(c, c.getTreeProps(), layoutStateContext);
-
-    final @Nullable ResolvedTree resolvedTree =
-        Layout.createResolvedTree(
-            Preconditions.checkNotNull(layoutStateContext),
-            contextForLayout,
-            this,
-            widthSpec,
-            heightSpec);
-
-    final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
-
-    final LayoutResultHolder holder;
-    if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
-      holder = LayoutResultHolder.interrupted(node);
-    } else {
-      holder =
-          Layout.measureTree(
-              Preconditions.checkNotNull(layoutStateContext),
-              node,
-              contextForLayout,
-              widthSpec,
-              heightSpec,
-              null);
-    }
-
-    if (holder.wasLayoutInterrupted()) {
-      outputSize.height = 0;
-      outputSize.width = 0;
-    } else {
-      final @Nullable LithoLayoutResult result = holder.mResult;
-      outputSize.height = result != null ? result.getHeight() : 0;
-      outputSize.width = result != null ? result.getWidth() : 0;
-    }
+    measure(c, widthSpec, heightSpec, outputSize, false);
   }
 
   @Nullable
