@@ -36,6 +36,10 @@ module.exports = {
   organizationName: 'facebook',
   projectName: 'litho',
   themeConfig: {
+    algolia: {
+      appId: 'VCOXCXNH2M',
+      apiKey: '2cec419e1116e9c024cd7c810ad473d0',
+    },
     announcementBar: {
           id: 'support_ukraine',
           content:
