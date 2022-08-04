@@ -492,17 +492,22 @@ class Layout {
     // then resolve the tree and measure it. At this point we know that current layout result and
     // cached layout result are not available or are not compatible with given size spec.
 
+    // NestedTree is used for two purposes i.e for components measured using Component.measure API
+    // and for components which are OnCreateLayoutWithSizeSpec.
+    // For components measured with measure API, we want to reuse the same global key calculated
+    // during measure API call and for that we are using the cached node and accessing the global
+    // key from it since NestedTreeHolder will have incorrect global key for it.
+    final String globalKeyToReuse =
+        isLayoutSpecWithSizeSpec(component)
+            ? node.getTailComponentKey()
+            : Preconditions.checkNotNull(node.getCachedNode()).getTailComponentKey();
+
     // 4.a Create a new layout
     // This step will eventually go away in the desired end state as we will have LithoNode
     // resolved for nested tree in the beginning with different size specs.
     final @Nullable LithoNode newNode =
         resolveNestedTreeAndAddToCache(
-            layoutStateContext,
-            parentContext,
-            component,
-            node.getTailComponentKey(),
-            widthSpec,
-            heightSpec);
+            layoutStateContext, parentContext, component, globalKeyToReuse, widthSpec, heightSpec);
 
     if (newNode == null) {
       return null;
