@@ -21,23 +21,25 @@ import org.junit.runners.model.FrameworkMethod;
 
 public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConfiguration {
 
+  private final boolean defaultShouldAlwaysResolveNestedTreeInMeasure =
+      ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure;
+  private final boolean defaultIsSplitStateHandlersEnabled =
+      ComponentsConfiguration.isSplitStateHandlersEnabled;
   private final boolean defaultApplyStateUpdateEarly =
       ComponentsConfiguration.applyStateUpdateEarly;
-  private final boolean defaultIsBuildAndLayoutSplitEnabled =
-      ComponentsConfiguration.isBuildAndLayoutSplitEnabled;
-  private final boolean defaultUseResolvedTree = ComponentsConfiguration.useResolvedTree;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
-    ComponentsConfiguration.isBuildAndLayoutSplitEnabled = true;
+    ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure = true;
+    ComponentsConfiguration.isSplitStateHandlersEnabled = true;
     ComponentsConfiguration.applyStateUpdateEarly = true;
-    ComponentsConfiguration.useResolvedTree = true;
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.isBuildAndLayoutSplitEnabled = defaultIsBuildAndLayoutSplitEnabled;
+    ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure =
+        defaultShouldAlwaysResolveNestedTreeInMeasure;
     ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStateUpdateEarly;
-    ComponentsConfiguration.useResolvedTree = defaultUseResolvedTree;
+    ComponentsConfiguration.isSplitStateHandlersEnabled = defaultIsSplitStateHandlersEnabled;
   }
 }
