@@ -302,7 +302,7 @@ public class LayoutState
       result.measure(layoutContext, exactly(width), exactly(height));
     }
 
-    final @Nullable LithoRenderUnit unit = result.getRenderUnit();
+    final @Nullable LithoRenderUnit unit = result.getContentRenderUnit(layoutState);
     if (unit == null) {
       return null;
     }
@@ -662,7 +662,7 @@ public class LayoutState
       result.setLastMeasuredHeight(result.getHeight());
     }
 
-    final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit();
+    final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit(layoutState);
     final boolean needsHostView = hostRenderUnit != null;
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;
@@ -704,7 +704,7 @@ public class LayoutState
 
     // 2. Add background if defined.
     if (!layoutState.mShouldDisableDrawableOutputs) {
-      final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit();
+      final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit(layoutState);
       if (backgroundRenderUnit != null) {
         final RenderTreeNode backgroundRenderTreeNode =
             addDrawableRenderTreeNode(
@@ -814,7 +814,7 @@ public class LayoutState
     layoutState.mCurrentY -= result.getY();
 
     // 5. Add border color if defined.
-    final LithoRenderUnit borderRenderUnit = result.getBorderRenderUnit();
+    final LithoRenderUnit borderRenderUnit = result.getBorderRenderUnit(layoutState);
     if (borderRenderUnit != null) {
       final RenderTreeNode borderRenderTreeNode =
           addDrawableRenderTreeNode(
@@ -833,7 +833,8 @@ public class LayoutState
 
     // 6. Add foreground if defined.
     if (!layoutState.mShouldDisableDrawableOutputs) {
-      final @Nullable LithoRenderUnit foregroundRenderUnit = result.getForegroundRenderUnit();
+      final @Nullable LithoRenderUnit foregroundRenderUnit =
+          result.getForegroundRenderUnit(layoutState);
       if (foregroundRenderUnit != null) {
         final RenderTreeNode foregroundRenderTreeNode =
             addDrawableRenderTreeNode(

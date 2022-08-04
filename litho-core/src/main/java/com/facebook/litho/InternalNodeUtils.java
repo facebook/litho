@@ -39,7 +39,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.Mountable;
@@ -72,7 +71,8 @@ public class InternalNodeUtils {
   }
 
   /** Creates a {@link LithoRenderUnit} for the content output iff the result mounts content. */
-  static @Nullable LithoRenderUnit createContentRenderUnit(LithoLayoutResult result) {
+  static @Nullable LithoRenderUnit createContentRenderUnit(
+      LithoLayoutResult result, final LayoutState layoutState) {
     final LithoNode node = result.getNode();
     final Component component = node.getTailComponent();
 
@@ -82,8 +82,6 @@ public class InternalNodeUtils {
 
     final String componentKey = node.getTailComponentKey();
     final ComponentContext context = result.getContext();
-    final LayoutState layoutState =
-        Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
     final @Nullable DiffNode diffNode = result.getDiffNode();
     long previousId = -1;
 
@@ -122,9 +120,8 @@ public class InternalNodeUtils {
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
-  static @Nullable LithoRenderUnit createHostRenderUnit(LithoLayoutResult result) {
-    final LayoutState layoutState =
-        Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
+  static @Nullable LithoRenderUnit createHostRenderUnit(
+      LithoLayoutResult result, final LayoutState layoutState) {
     final LithoNode node = result.getNode();
     final boolean isRoot =
         !layoutState.mShouldAddHostViewForRootComponent
@@ -180,14 +177,14 @@ public class InternalNodeUtils {
   /**
    * Creates a {@link LithoRenderUnit} for the background output iff the result has a background.
    */
-  static @Nullable LithoRenderUnit createBackgroundRenderUnit(LithoLayoutResult result) {
-    final LithoNode node = result.getNode();
+  static @Nullable LithoRenderUnit createBackgroundRenderUnit(
+      LithoLayoutResult result, final LayoutState layoutState) {
     final Drawable background = result.getBackground();
 
     // Only create a background output when the component does not mount a View because
     // the background will get set in the output of the component.
     if (background != null && !willMountView(result)) {
-      return createDrawableRenderUnit(result, background, OutputUnitType.BACKGROUND);
+      return createDrawableRenderUnit(result, background, OutputUnitType.BACKGROUND, layoutState);
     }
 
     return null;
@@ -196,24 +193,26 @@ public class InternalNodeUtils {
   /**
    * Creates a {@link LithoRenderUnit} for the foreground output iff the result has a foreground.
    */
-  static @Nullable LithoRenderUnit createForegroundRenderUnit(LithoLayoutResult result) {
+  static @Nullable LithoRenderUnit createForegroundRenderUnit(
+      LithoLayoutResult result, final LayoutState layoutState) {
     final LithoNode node = result.getNode();
     final Drawable foreground = node.getForeground();
 
     /// Only create a foreground output when the component does not mount a View because
     // the foreground has already been set in the output of the component.
     if (foreground != null && (!willMountView(result) || SDK_INT < M)) {
-      return createDrawableRenderUnit(result, foreground, OutputUnitType.FOREGROUND);
+      return createDrawableRenderUnit(result, foreground, OutputUnitType.FOREGROUND, layoutState);
     }
 
     return null;
   }
 
   /** Creates a {@link LithoRenderUnit} for the border output iff the result has borders. */
-  static @Nullable LithoRenderUnit createBorderRenderUnit(LithoLayoutResult result) {
+  static @Nullable LithoRenderUnit createBorderRenderUnit(
+      LithoLayoutResult result, final LayoutState layoutState) {
     if (result.shouldDrawBorders()) {
       final Drawable border = getBorderColorDrawable(result);
-      return createDrawableRenderUnit(result, border, OutputUnitType.BORDER);
+      return createDrawableRenderUnit(result, border, OutputUnitType.BORDER, layoutState);
     }
 
     return null;
@@ -228,11 +227,10 @@ public class InternalNodeUtils {
   static LithoRenderUnit createDrawableRenderUnit(
       final LithoLayoutResult result,
       final Drawable drawable,
-      final @OutputUnitType int outputType) {
+      final @OutputUnitType int outputType,
+      final LayoutState layoutState) {
 
     final Component component = DrawableComponent.create(drawable);
-    final LayoutState layoutState =
-        Preconditions.checkNotNull(result.getLayoutStateContext().getLayoutState());
     final LithoNode node = result.getNode();
     final String componentKey = node.getTailComponentKey();
     final @Nullable DiffNode diffNode = result.getDiffNode();

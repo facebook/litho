@@ -336,57 +336,62 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
   @Override
   public @Nullable LithoRenderUnit getRenderUnit() {
+    // Unimplemented.
+    return null;
+  }
+
+  public @Nullable LithoRenderUnit getContentRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mContentRenderUnit == null) {
-        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this);
+        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this, layoutState);
       }
       return mContentRenderUnit;
     } else {
-      return InternalNodeUtils.createContentRenderUnit(this);
+      return InternalNodeUtils.createContentRenderUnit(this, layoutState);
     }
   }
 
-  public @Nullable LithoRenderUnit getHostRenderUnit() {
+  public @Nullable LithoRenderUnit getHostRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mHostRenderUnit == null) {
-        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this);
+        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this, layoutState);
       }
       return mHostRenderUnit;
     } else {
-      return InternalNodeUtils.createHostRenderUnit(this);
+      return InternalNodeUtils.createHostRenderUnit(this, layoutState);
     }
   }
 
-  public @Nullable LithoRenderUnit getBackgroundRenderUnit() {
+  public @Nullable LithoRenderUnit getBackgroundRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mBackgroundRenderUnit == null) {
-        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this);
+        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this, layoutState);
       }
       return mBackgroundRenderUnit;
     } else {
-      return InternalNodeUtils.createBackgroundRenderUnit(this);
+      return InternalNodeUtils.createBackgroundRenderUnit(this, layoutState);
     }
   }
 
-  public @Nullable LithoRenderUnit getForegroundRenderUnit() {
+  public @Nullable LithoRenderUnit getForegroundRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mForegroundRenderUnit == null) {
-        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this);
+        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this, layoutState);
       }
       return mForegroundRenderUnit;
     } else {
-      return InternalNodeUtils.createForegroundRenderUnit(this);
+      return InternalNodeUtils.createForegroundRenderUnit(this, layoutState);
     }
   }
 
-  public @Nullable LithoRenderUnit getBorderRenderUnit() {
+  public @Nullable LithoRenderUnit getBorderRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mBorderRenderUnit == null) {
-        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this);
+        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this, layoutState);
       }
       return mBorderRenderUnit;
     } else {
-      return InternalNodeUtils.createBorderRenderUnit(this);
+      return InternalNodeUtils.createBorderRenderUnit(this, layoutState);
     }
   }
 
