@@ -90,7 +90,8 @@ public class LayoutState
         VisibilityExtensionInput,
         TransitionsExtensionInput,
         EndToEndTestingExtensionInput,
-        LayoutProcessInfo {
+        LayoutProcessInfo,
+        LayoutOutputIdGenerator {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
 
@@ -1700,6 +1701,15 @@ public class LayoutState
     if (mLayoutStateOutputIdCalculator != null) {
       mLayoutStateOutputIdCalculator.clear();
     }
+  }
+
+  @Override
+  public long calculateLayoutOutputId(
+      Component component,
+      @Nullable String componentKey,
+      @OutputUnitType int type,
+      long previousId) {
+    return calculateLayoutOutputId(component, componentKey, getCurrentLevel(), type, previousId);
   }
 
   long calculateLayoutOutputId(

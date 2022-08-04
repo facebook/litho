@@ -297,8 +297,15 @@ class Layout {
         if (prepareResult != null) {
           Mountable<?> mountable = prepareResult.mountable;
           final String componentKey = scopedComponentInfo.getContext().getGlobalKey();
-          mountable.setId(
-              LayoutStateContext.calculateNextId(layoutStateContext, component, componentKey));
+          final LayoutOutputIdGenerator idGenerator = renderStateContext.getIdGenerator();
+          if (idGenerator == null) {
+            throw new IllegalStateException("Attempt to use a released RenderStateContext");
+          }
+
+          final long id =
+              idGenerator.calculateLayoutOutputId(
+                  component, componentKey, OutputUnitType.CONTENT, -1);
+          mountable.setId(id);
           node.setMountable(mountable);
         }
       }

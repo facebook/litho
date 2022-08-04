@@ -93,7 +93,7 @@ public class LayoutStateContext {
     mCurrentDiffTree = currentDiffTree;
     mTreeState = treeState;
     mThreadCreatedOn = Thread.currentThread().getName();
-    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState);
+    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, layoutState);
     mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
   }
 
@@ -118,18 +118,6 @@ public class LayoutStateContext {
    */
   public boolean isReleased() {
     return mIsReleased;
-  }
-
-  static long calculateNextId(
-      LayoutStateContext layoutStateContext, Component component, String componentKey) {
-    final LayoutState layoutState = Preconditions.checkNotNull(layoutStateContext.getLayoutState());
-
-    return layoutState.calculateLayoutOutputId(
-        component,
-        componentKey,
-        layoutState.getCurrentLevel(),
-        OutputUnitType.CONTENT,
-        -1 /* previousId */);
   }
 
   /** Returns the LayoutState instance or null if the layout state has been released. */
