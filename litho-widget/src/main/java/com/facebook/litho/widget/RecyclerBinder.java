@@ -149,6 +149,7 @@ public class RecyclerBinder
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mRecyclerViewItemPrefetch;
+  private final int mItemViewCacheSize;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
 
@@ -460,6 +461,7 @@ public class RecyclerBinder
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
+    private int itemViewCacheSize = 0;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
@@ -568,6 +570,25 @@ public class RecyclerBinder
      */
     public Builder recyclerViewItemPrefetch(boolean recyclerViewItemPrefetch) {
       this.recyclerViewItemPrefetch = recyclerViewItemPrefetch;
+      return this;
+    }
+
+    /**
+     * Set the number of offscreen views to retain before adding them to the potentially shared
+     * recycled view pool.
+     *
+     * <p>The offscreen view cache stays aware of changes in the attached adapter, allowing a
+     * LayoutManager to reuse those views unmodified without needing to return to the adapter to
+     * rebind them.
+     *
+     * @param size Number of views to cache offscreen before returning them to the general recycled
+     *     view pool
+     */
+    public Builder setItemViewCacheSize(int size) {
+      // We had some issues with `ItemViewCache` before and disabled it in the
+      // [SectionsRecyclerView], but we need this feature to pre-bind offscreen items for
+      // full-screen size surfaces.
+      this.itemViewCacheSize = size;
       return this;
     }
 
@@ -910,6 +931,7 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
+    mItemViewCacheSize = builder.itemViewCacheSize;
     mComponentsConfiguration = builder.componentsConfiguration;
 
     if (mLayoutHandlerFactory == null) {
@@ -2888,6 +2910,9 @@ public class RecyclerBinder
     // optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
     // LithoView while it is still on screen making it render blank or zero height.
     layoutManager.setItemPrefetchEnabled(mRecyclerViewItemPrefetch);
+    if (mRecyclerViewItemPrefetch) {
+      mMountedView.setItemViewCacheSize(mItemViewCacheSize);
+    }
 
     // This will force padding to be resolved on the main thread before the LayoutManager finds out
     // about this view. This will keep padding from trying to be resolved later on from a bg thread.
