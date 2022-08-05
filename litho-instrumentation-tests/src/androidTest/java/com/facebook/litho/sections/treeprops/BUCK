@@ -16,7 +16,6 @@ instrumentation_test(
     srcs = glob(["*Test.java"]),
     apk_under_test = "litho",
     contacts = LITHO_CONTACT_NAME,
-    is_androidx = True,
     language = "JAVA",
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
