@@ -51,7 +51,6 @@ litho_android_test_library(
         exclude = ["Whitebox.java"],
     ),
     autoglob = False,
-    is_androidx = True,
     language = "KOTLIN",
     plugins = [
         LITHO_PROCESSOR_TARGET,

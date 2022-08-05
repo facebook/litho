@@ -34,7 +34,6 @@ litho_android_library(
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
     autoglob = False,
-    is_androidx = True,
     language = "JAVA",
     visibility = ["PUBLIC"],
     deps = [
@@ -57,7 +56,6 @@ litho_android_library(
 
 litho_android_library(
     name = "widget_conditions",
-    is_androidx = True,
     language = "JAVA",
     visibility = [
         "PUBLIC",

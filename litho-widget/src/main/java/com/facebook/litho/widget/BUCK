@@ -43,7 +43,6 @@ litho_android_library(
 litho_android_library(
     name = "widget-bare",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     language = "JAVA",
     plugins = [
