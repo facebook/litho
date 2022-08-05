@@ -20,7 +20,7 @@ class Selectable(val text: String, val selected: Boolean, val onClick: (ClickEve
   override fun ComponentScope.render(): Component? {
     return Row(
         justifyContent = YogaJustify.SPACE_BETWEEN,
-        style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(onClick)) {
+        style = Style.padding(horizontal = 20.dp, vertical = 10.dp).onClick(action = onClick)) {
           child(Text(text))
           child(
               Image(

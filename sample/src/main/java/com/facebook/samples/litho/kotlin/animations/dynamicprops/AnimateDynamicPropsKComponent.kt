@@ -53,7 +53,7 @@ class AnimateDynamicPropsKComponent : KComponent() {
     }
 
     return Column(alignItems = YogaAlign.CENTER, style = Style.padding(all = 20.dp)) {
-      child(Text("Click to Start Animation", style = Style.onClick(startAnimator)))
+      child(Text("Click to Start Animation", style = Style.onClick(action = startAnimator)))
       child(
           ClockFace.create(context)
               .time(time)

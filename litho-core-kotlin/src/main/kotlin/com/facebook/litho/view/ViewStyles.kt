@@ -303,14 +303,6 @@ inline fun Style.foregroundColor(@ColorInt foregroundColor: Int): Style =
     this + ObjectStyleItem(ObjectField.FOREGROUND, ComparableColorDrawable.create(foregroundColor))
 
 /**
- * Sets a listener that will invoke the given lambda when this Component is clicked. Setting this
- * property will cause the Component to be represented as a View at mount time if it wasn't going to
- * already.
- */
-inline fun Style.onClick(noinline onClick: (ClickEvent) -> Unit): Style =
-    onClick(enabled = true, onClick)
-
-/**
  * Sets a listener that will invoke the given lambda when this Component is clicked but only if
  * [enabled] is true. If enabled, setting this property will cause the Component to be represented
  * as a View at mount time if it wasn't going to already.

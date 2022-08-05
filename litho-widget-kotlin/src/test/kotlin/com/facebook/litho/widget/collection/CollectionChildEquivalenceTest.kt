@@ -115,8 +115,8 @@ class CollectionChildEquivalenceTest {
       val onClick = { _: ClickEvent -> }
       assertThat(
               lazyList.isChildEquivalent(
-                  CollectionChild("", Text("Test", style = Style.onClick(onClick))),
-                  CollectionChild("", Text("Test", style = Style.onClick(onClick))),
+                  CollectionChild("", Text("Test", style = Style.onClick(action = onClick))),
+                  CollectionChild("", Text("Test", style = Style.onClick(action = onClick))),
               ))
           .isTrue
 
@@ -135,8 +135,10 @@ class CollectionChildEquivalenceTest {
       val onClick = { _: ClickEvent -> }
       assertThat(
               lazyList.isChildEquivalent(
-                  CollectionChild("", Row { child(Text("Test", style = Style.onClick(onClick))) }),
-                  CollectionChild("", Row { child(Text("Test", style = Style.onClick(onClick))) }),
+                  CollectionChild(
+                      "", Row { child(Text("Test", style = Style.onClick(action = onClick))) }),
+                  CollectionChild(
+                      "", Row { child(Text("Test", style = Style.onClick(action = onClick))) }),
               ))
           .isTrue
 

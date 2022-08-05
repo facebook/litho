@@ -30,5 +30,5 @@ inline fun ResourcesScope.Button(
 ): Text =
     Text.create(context, android.R.attr.buttonStyle, 0)
         .text(text)
-        .kotlinStyle(Style.onClick(onClick))
+        .kotlinStyle(Style.onClick(action = onClick))
         .build()

@@ -124,7 +124,7 @@ class Lambda_UnnecessaryUpdate(val name: String) : KComponent() {
 class Lambda_Fixed(val name: String) : KComponent() {
   override fun ComponentScope.render(): Component {
     val callBack = useCallback { _: ClickEvent -> println("Hello $name") }
-    return LazyList { child(Text("text", style = Style.onClick(callBack))) }
+    return LazyList { child(Text("text", style = Style.onClick(action = callBack))) }
   }
 }
 // end_lambda_fixed

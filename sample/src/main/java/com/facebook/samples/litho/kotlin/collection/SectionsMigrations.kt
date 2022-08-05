@@ -57,7 +57,7 @@ class EventHandlerMigration : KComponent() {
     val onClick = useCallback { _: ClickEvent -> println("Hello World!") }
     return LazyList {
       // Using Style.onClick(..)
-      child(Text("Say Hello", style = Style.onClick(onClick)))
+      child(Text("Say Hello", style = Style.onClick(action = onClick)))
 
       // Or using the Spec api with eventHandler(..)
       child(Text.create(context).text("Say Hello").clickHandler(eventHandler(onClick)).build())
@@ -71,7 +71,9 @@ class StateMigration : KComponent() {
   override fun ComponentScope.render(): Component {
     val counter = useState { 0 }
     val onClick = useCallback { _: ClickEvent -> counter.update { it + 1 } }
-    return LazyList { child(Text("Increment ${counter.value}", style = Style.onClick(onClick))) }
+    return LazyList {
+      child(Text("Increment ${counter.value}", style = Style.onClick(action = onClick)))
+    }
   }
 }
 // end_state

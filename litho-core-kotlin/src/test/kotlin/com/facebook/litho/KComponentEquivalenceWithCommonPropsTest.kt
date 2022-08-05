@@ -56,15 +56,15 @@ class KComponentEquivalenceWithCommonPropsTest {
     val onClick: (ClickEvent) -> Unit = {}
 
     assertThat(
-            ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))
-                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))))
+            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
+                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))))
         .isTrue
     assertThat(
-            ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))
-                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(1f).onClick(onClick))))
+            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
+                .isEquivalentTo(ComponentWithStyleProp(Style.alpha(1f).onClick(action = onClick))))
         .isFalse
     assertThat(
-            ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))
+            ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))
                 .isEquivalentTo(ComponentWithStyleProp(Style.alpha(.5f).onClick {})))
         .isFalse
   }
@@ -83,19 +83,22 @@ class KComponentEquivalenceWithCommonPropsTest {
     val onClick: (ClickEvent) -> Unit = {}
 
     assertThat(
-            ComponentWithComponentProp(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)))
+            ComponentWithComponentProp(
+                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
                 .isEquivalentTo(
                     ComponentWithComponentProp(
-                        ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)))))
+                        ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))))
         .isTrue
     assertThat(
-            ComponentWithComponentProp(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)))
+            ComponentWithComponentProp(
+                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
                 .isEquivalentTo(
                     ComponentWithComponentProp(
-                        ComponentWithStyleProp(Style.alpha(1f).onClick(onClick)))))
+                        ComponentWithStyleProp(Style.alpha(1f).onClick(action = onClick)))))
         .isFalse
     assertThat(
-            ComponentWithComponentProp(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)))
+            ComponentWithComponentProp(
+                    ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
                 .isEquivalentTo(
                     ComponentWithComponentProp(
                         ComponentWithStyleProp(Style.alpha(.5f).onClick {}))))
@@ -113,17 +116,21 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     with(ComponentScope(lithoViewRule.context)) {
       assertThat(
-              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }
+              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
-                      Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }))
+                      Row {
+                        child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
+                      }))
           .isTrue
       assertThat(
-              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }
+              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
-                      Row { child(ComponentWithStyleProp(Style.alpha(.1f).onClick(onClick))) }))
+                      Row {
+                        child(ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)))
+                      }))
           .isFalse
       assertThat(
-              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }
+              Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
                       Row { child(ComponentWithStyleProp(Style.alpha(.5f).onClick {})) }))
           .isFalse
@@ -136,15 +143,15 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     with(ComponentScope(lithoViewRule.context)) {
       assertThat(
-              Row(style = Style.alpha(.5f).onClick(onClick)) {}
-                  .isEquivalentTo(Row(style = Style.alpha(.5f).onClick(onClick)) {}))
+              Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
+                  .isEquivalentTo(Row(style = Style.alpha(.5f).onClick(action = onClick)) {}))
           .isTrue
       assertThat(
-              Row(style = Style.alpha(.5f).onClick(onClick)) {}
-                  .isEquivalentTo(Row(style = Style.alpha(.1f).onClick(onClick)) {}))
+              Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
+                  .isEquivalentTo(Row(style = Style.alpha(.1f).onClick(action = onClick)) {}))
           .isFalse
       assertThat(
-              Row(style = Style.alpha(.5f).onClick(onClick)) {}
+              Row(style = Style.alpha(.5f).onClick(action = onClick)) {}
                   .isEquivalentTo(Row(style = Style.alpha(.5f).onClick {}) {}))
           .isFalse
     }
@@ -161,17 +168,21 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     with(ComponentScope(lithoViewRule.context)) {
       assertThat(
-              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }
+              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
-                      Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }))
+                      Column {
+                        child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)))
+                      }))
           .isTrue
       assertThat(
-              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }
+              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
-                      Column { child(ComponentWithStyleProp(Style.alpha(.1f).onClick(onClick))) }))
+                      Column {
+                        child(ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)))
+                      }))
           .isFalse
       assertThat(
-              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick))) }
+              Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick))) }
                   .isEquivalentTo(
                       Column { child(ComponentWithStyleProp(Style.alpha(.5f).onClick {})) }))
           .isFalse
@@ -184,15 +195,15 @@ class KComponentEquivalenceWithCommonPropsTest {
 
     with(ComponentScope(lithoViewRule.context)) {
       assertThat(
-              Column(style = Style.alpha(.5f).onClick(onClick)) {}
-                  .isEquivalentTo(Column(style = Style.alpha(.5f).onClick(onClick)) {}))
+              Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
+                  .isEquivalentTo(Column(style = Style.alpha(.5f).onClick(action = onClick)) {}))
           .isTrue
       assertThat(
-              Column(style = Style.alpha(.5f).onClick(onClick)) {}
-                  .isEquivalentTo(Column(style = Style.alpha(.1f).onClick(onClick)) {}))
+              Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
+                  .isEquivalentTo(Column(style = Style.alpha(.1f).onClick(action = onClick)) {}))
           .isFalse
       assertThat(
-              Column(style = Style.alpha(.5f).onClick(onClick)) {}
+              Column(style = Style.alpha(.5f).onClick(action = onClick)) {}
                   .isEquivalentTo(Column(style = Style.alpha(.5f).onClick {}) {}))
           .isFalse
     }
@@ -211,17 +222,17 @@ class KComponentEquivalenceWithCommonPropsTest {
         Wrapper.create(lithoViewRule.context).delegate(delegate()).kotlinStyle(style).build()
 
     assertThat(
-            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)) }
+            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
                 .isEquivalentTo(
-                    Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)) }))
+                    Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }))
         .isTrue
     assertThat(
-            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)) }
+            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
                 .isEquivalentTo(
-                    Wrapper { ComponentWithStyleProp(Style.alpha(.1f).onClick(onClick)) }))
+                    Wrapper { ComponentWithStyleProp(Style.alpha(.1f).onClick(action = onClick)) }))
         .isFalse
     assertThat(
-            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(onClick)) }
+            Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick(action = onClick)) }
                 .isEquivalentTo(Wrapper { ComponentWithStyleProp(Style.alpha(.5f).onClick {}) }))
         .isFalse
   }
@@ -234,15 +245,15 @@ class KComponentEquivalenceWithCommonPropsTest {
         Wrapper.create(lithoViewRule.context).delegate(delegate()).kotlinStyle(style).build()
 
     assertThat(
-            Wrapper(Style.alpha(.5f).onClick(onClick)) { null }
-                .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick(onClick)) { null }))
+            Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
+                .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }))
         .isTrue
     assertThat(
-            Wrapper(Style.alpha(.5f).onClick(onClick)) { null }
-                .isEquivalentTo(Wrapper(Style.alpha(.1f).onClick(onClick)) { null }))
+            Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
+                .isEquivalentTo(Wrapper(Style.alpha(.1f).onClick(action = onClick)) { null }))
         .isFalse
     assertThat(
-            Wrapper(Style.alpha(.5f).onClick(onClick)) { null }
+            Wrapper(Style.alpha(.5f).onClick(action = onClick)) { null }
                 .isEquivalentTo(Wrapper(Style.alpha(.5f).onClick {}) { null }))
         .isFalse
   }
