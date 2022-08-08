@@ -88,8 +88,11 @@ public class EventHandlersController {
 
   private static void bindEventHandlerToDispatcher(
       EventHandler<?> eventHandler, HasEventDispatcher dispatcher, @Nullable ComponentContext c) {
-    eventHandler.dispatchInfo.hasEventDispatcher = dispatcher;
-    eventHandler.dispatchInfo.componentContext = c;
+    eventHandler.mHasEventDispatcher = dispatcher;
+
+    if (eventHandler.params != null) {
+      eventHandler.params[0] = c;
+    }
   }
 
   @VisibleForTesting

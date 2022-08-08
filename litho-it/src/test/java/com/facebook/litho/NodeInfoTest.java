@@ -52,8 +52,7 @@ public class NodeInfoTest {
 
   @Test
   public void testClickHandler() {
-    EventHandler<ClickEvent> clickHandler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<ClickEvent> clickHandler = new EventHandler<>(null, 1);
 
     mNodeInfo.setClickHandler(clickHandler);
     assertThat(clickHandler).isSameAs(mNodeInfo.getClickHandler());
@@ -64,8 +63,7 @@ public class NodeInfoTest {
 
   @Test
   public void testTouchHandler() {
-    EventHandler<TouchEvent> touchHandler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<TouchEvent> touchHandler = new EventHandler<>(null, 1);
 
     mNodeInfo.setTouchHandler(touchHandler);
     assertThat(touchHandler).isSameAs(mNodeInfo.getTouchHandler());
@@ -76,8 +74,7 @@ public class NodeInfoTest {
 
   @Test
   public void testFocusChangeHandler() {
-    EventHandler<FocusChangedEvent> focusChangeHandler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<FocusChangedEvent> focusChangeHandler = new EventHandler<>(null, 1);
 
     mNodeInfo.setFocusChangeHandler(focusChangeHandler);
     assertThat(focusChangeHandler).isSameAs(mNodeInfo.getFocusChangeHandler());
@@ -88,8 +85,7 @@ public class NodeInfoTest {
 
   @Test
   public void testInterceptTouchHandler() {
-    EventHandler<InterceptTouchEvent> interceptTouchHandler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<InterceptTouchEvent> interceptTouchHandler = new EventHandler<>(null, 1);
 
     mNodeInfo.setInterceptTouchHandler(interceptTouchHandler);
     assertThat(interceptTouchHandler).isSameAs(mNodeInfo.getInterceptTouchHandler());
@@ -146,8 +142,7 @@ public class NodeInfoTest {
 
   @Test
   public void testDispatchPopulateAccessibilityEventHandler() {
-    EventHandler<DispatchPopulateAccessibilityEventEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<DispatchPopulateAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setDispatchPopulateAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getDispatchPopulateAccessibilityEventHandler());
@@ -158,8 +153,7 @@ public class NodeInfoTest {
 
   @Test
   public void testOnInitializeAccessibilityEventHandler() {
-    EventHandler<OnInitializeAccessibilityEventEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<OnInitializeAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnInitializeAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getOnInitializeAccessibilityEventHandler());
@@ -170,8 +164,7 @@ public class NodeInfoTest {
 
   @Test
   public void testOnPopulateAccessibilityEventHandler() {
-    EventHandler<OnPopulateAccessibilityEventEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<OnPopulateAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnPopulateAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getOnPopulateAccessibilityEventHandler());
@@ -182,8 +175,7 @@ public class NodeInfoTest {
 
   @Test
   public void testOnInitializeAccessibilityNodeInfoHandler() {
-    EventHandler<OnInitializeAccessibilityNodeInfoEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<OnInitializeAccessibilityNodeInfoEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnInitializeAccessibilityNodeInfoHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler());
@@ -194,8 +186,7 @@ public class NodeInfoTest {
 
   @Test
   public void testOnRequestSendAccessibilityEventHandler() {
-    EventHandler<OnRequestSendAccessibilityEventEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<OnRequestSendAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnRequestSendAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getOnRequestSendAccessibilityEventHandler());
@@ -206,8 +197,7 @@ public class NodeInfoTest {
 
   @Test
   public void testPerformAccessibilityActionHandler() {
-    EventHandler<PerformAccessibilityActionEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<PerformAccessibilityActionEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setPerformAccessibilityActionHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getPerformAccessibilityActionHandler());
@@ -218,8 +208,7 @@ public class NodeInfoTest {
 
   @Test
   public void testSendAccessibilityEventHandler() {
-    EventHandler<SendAccessibilityEventEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<SendAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setSendAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getSendAccessibilityEventHandler());
@@ -230,8 +219,7 @@ public class NodeInfoTest {
 
   @Test
   public void testSendAccessibilityEventUncheckedHandler() {
-    EventHandler<SendAccessibilityEventUncheckedEvent> handler =
-        new EventHandler<>(new EventDispatchInfo(null, null), 1);
+    EventHandler<SendAccessibilityEventUncheckedEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setSendAccessibilityEventUncheckedHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getSendAccessibilityEventUncheckedHandler());
@@ -242,19 +230,19 @@ public class NodeInfoTest {
 
   @Test
   public void testClickHandlerFlag() {
-    mNodeInfo.setClickHandler(new EventHandler(new EventDispatchInfo(null, null), 1));
+    mNodeInfo.setClickHandler(new EventHandler(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_CLICK_HANDLER_IS_SET");
   }
 
   @Test
   public void testLongClickHandlerFlag() {
-    mNodeInfo.setLongClickHandler(new EventHandler(new EventDispatchInfo(null, null), 1));
+    mNodeInfo.setLongClickHandler(new EventHandler(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_LONG_CLICK_HANDLER_IS_SET");
   }
 
   @Test
   public void testFocusChangeHandlerFlag() {
-    mNodeInfo.setFocusChangeHandler(new EventHandler(new EventDispatchInfo(null, null), 1));
+    mNodeInfo.setFocusChangeHandler(new EventHandler(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_FOCUS_CHANGE_HANDLER_IS_SET");
   }
 
@@ -279,56 +267,56 @@ public class NodeInfoTest {
   @Test
   public void testDispatchPopulateAccessibilityEventHandlerFlag() {
     mNodeInfo.setDispatchPopulateAccessibilityEventHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<DispatchPopulateAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
   }
 
   @Test
   public void testOnInitializeAccessibilityEventHandlerFlag() {
     mNodeInfo.setOnInitializeAccessibilityEventHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<OnInitializeAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
   }
 
   @Test
   public void testOnPopulateAccessibilityEventHandlerFlag() {
     mNodeInfo.setOnPopulateAccessibilityEventHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<OnPopulateAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
   }
 
   @Test
   public void testOnInitializeAccessibilityNodeInfoHandlerFlag() {
     mNodeInfo.setOnInitializeAccessibilityNodeInfoHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<OnInitializeAccessibilityNodeInfoEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET");
   }
 
   @Test
   public void testOnRequestSendAccessibilityEventHandlerFlag() {
     mNodeInfo.setOnRequestSendAccessibilityEventHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<OnRequestSendAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
   }
 
   @Test
   public void testPerformAccessibilityActionHandlerFlag() {
     mNodeInfo.setPerformAccessibilityActionHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<PerformAccessibilityActionEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET");
   }
 
   @Test
   public void testSendAccessibilityEventHandlerFlag() {
     mNodeInfo.setSendAccessibilityEventHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<SendAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
   }
 
   @Test
   public void testSendAccessibilityEventUncheckedHandlerFlag() {
     mNodeInfo.setSendAccessibilityEventUncheckedHandler(
-        new EventHandler<>(new EventDispatchInfo(null, null), 1));
+        new EventHandler<SendAccessibilityEventUncheckedEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET");
   }
 

@@ -171,7 +171,7 @@ public class EventGenerator {
     }
 
     eventDispatcherMethod.addStatement(
-        "$T _dispatcher = _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher()",
+        "$T _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
         ClassNames.EVENT_DISPATCHER);
 
     if (eventDeclaration.returnType.equals(TypeName.VOID)) {
@@ -400,22 +400,20 @@ public class EventGenerator {
             .returns(ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventInfo.getKey()));
 
     final CodeBlock.Builder paramsBlock = CodeBlock.builder();
-    if (!hasAnyAtParamAnnotatedParams(eventMethodModel.methodParams)) {
-      paramsBlock.add("null");
-    } else {
-      paramsBlock.add("new Object[] {\n");
-      paramsBlock.indent();
 
-      for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
-        if (isAnnotatedWith(methodParamModel, Param.class)) {
-          builder.addParameter(parameter(methodParamModel));
-          paramsBlock.add("$L,\n", methodParamModel.getName());
-        }
+    paramsBlock.add("new Object[] {\n");
+    paramsBlock.indent();
+    paramsBlock.add("c,\n");
+
+    for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
+      if (isAnnotatedWith(methodParamModel, Param.class)) {
+        builder.addParameter(parameter(methodParamModel));
+        paramsBlock.add("$L,\n", methodParamModel.getName());
       }
-
-      paramsBlock.unindent();
-      paramsBlock.add("}");
     }
+
+    paramsBlock.unindent();
+    paramsBlock.add("}");
 
     builder.addStatement(
         "return newEventHandler($L.class, \"$L\", c, $L, $L)",
@@ -425,15 +423,6 @@ public class EventGenerator {
         paramsBlock.build());
 
     return builder.build();
-  }
-
-  private static boolean hasAnyAtParamAnnotatedParams(ImmutableList<MethodParamModel> methods) {
-    for (MethodParamModel methodParamModel : methods) {
-      if (isAnnotatedWith(methodParamModel, Param.class)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private static Map.Entry<TypeName, List<TypeVariableName>> getEventInfo(

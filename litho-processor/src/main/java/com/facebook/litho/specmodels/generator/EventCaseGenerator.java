@@ -67,10 +67,9 @@ public class EventCaseGenerator {
 
   private void writePropagatingErrorCase(MethodSpec.Builder methodBuilder) {
     methodBuilder
-        .addComment(INTERNAL_ON_ERROR_HANDLER_NAME)
         .beginControlFlow("case $L:", INTERNAL_ON_ERROR_HANDLER_NAME.toString().hashCode())
         .addStatement(
-            "dispatchErrorEvent(($L) eventHandler.dispatchInfo.componentContext, ($L) eventState)",
+            "dispatchErrorEvent(($L) eventHandler.params[0], ($L) eventState)",
             mContextClass,
             ClassNames.ERROR_EVENT)
         .addStatement("return null")
@@ -80,9 +79,7 @@ public class EventCaseGenerator {
   private void writeCase(
       MethodSpec.Builder methodBuilder,
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
-    methodBuilder
-        .addComment("$L", eventMethodModel.name.toString())
-        .beginControlFlow("case $L:", eventMethodModel.name.toString().hashCode());
+    methodBuilder.beginControlFlow("case $L:", eventMethodModel.name.toString().hashCode());
 
     final String eventVariableName = "_event";
 
@@ -94,7 +91,7 @@ public class EventCaseGenerator {
         "eventState");
 
     final CodeBlock.Builder eventHandlerParams =
-        CodeBlock.builder().indent().add("\n$L", "eventHandler.dispatchInfo.hasEventDispatcher");
+        CodeBlock.builder().indent().add("\n$L", "eventHandler.mHasEventDispatcher");
 
     int paramIndex = 0;
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
@@ -108,9 +105,8 @@ public class EventCaseGenerator {
         }
         eventHandlerParams.add(
             ",\n($T) $L.$L", type, eventVariableName, methodParamModel.getName());
-      } else if (methodParamModel.getTypeName().equals(mContextClass) && paramIndex == 0) {
-        eventHandlerParams.add(",\n($T) eventHandler.dispatchInfo.componentContext", mContextClass);
-      } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
+      } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)
+          || methodParamModel.getTypeName().equals(mContextClass)) {
         TypeName type = methodParamModel.getTypeName();
         if (type instanceof TypeVariableName) {
           type =

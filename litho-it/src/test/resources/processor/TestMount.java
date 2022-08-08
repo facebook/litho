@@ -432,6 +432,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   protected boolean excludeFromIncrementalMount() {
     boolean _result;
     _result = (boolean) TestMountSpec.enablePrefetch((boolean) prop2);
+
     return _result;
   }
 
@@ -477,8 +478,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _dispatcher =
-        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
+    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
@@ -503,7 +503,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         c,
         1328162206,
         new Object[] {
-          param1,
+          c, param1,
         });
   }
 
@@ -511,22 +511,20 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   protected Object dispatchOnEventImpl(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-        // testLayoutEvent
       case 1328162206:
         {
           ClickEvent _event = (ClickEvent) eventState;
           testLayoutEvent(
-              eventHandler.dispatchInfo.hasEventDispatcher,
-              (ComponentContext) eventHandler.dispatchInfo.componentContext,
+              eventHandler.mHasEventDispatcher,
+              (ComponentContext) eventHandler.params[0],
               (View) _event.view,
-              (int) eventHandler.params[0]);
+              (int) eventHandler.params[1]);
           return null;
         }
-        // __internalOnErrorHandler
       case -1048037474:
         {
           dispatchErrorEvent(
-              (com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext,
+              (com.facebook.litho.ComponentContext) eventHandler.params[0],
               (com.facebook.litho.ErrorEvent) eventState);
           return null;
         }

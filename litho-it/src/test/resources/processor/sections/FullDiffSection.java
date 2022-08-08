@@ -185,8 +185,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
     final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
-    EventDispatcher _dispatcher =
-        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
+    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     return (boolean) _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
@@ -212,10 +211,10 @@ public final class FullDiffSection<T> extends Section implements TestTag {
         {
           ClickEvent _event = (ClickEvent) eventState;
           testEvent(
-              eventHandler.dispatchInfo.hasEventDispatcher,
-              eventHandler.dispatchInfo.componentContext,
+              eventHandler.mHasEventDispatcher,
+              (SectionContext) eventHandler.params[0],
               (View) _event.view,
-              (int) eventHandler.params[0]);
+              (int) eventHandler.params[1]);
           return null;
         }
       default:

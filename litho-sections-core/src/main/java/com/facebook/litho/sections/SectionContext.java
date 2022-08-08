@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.Handle;
@@ -144,7 +143,7 @@ public class SectionContext extends ComponentContext {
       throw new IllegalStateException("Called newEventHandler on a released Section");
     }
 
-    return new EventHandler<>(new EventDispatchInfo(section, this), id, params);
+    return new EventHandler<>(section, id, params);
   }
 
   /** @return New instance of {@link EventTrigger} that is created by the current mScope. */

@@ -48,7 +48,7 @@ public class LithoNodeTouchExpansionTest {
     mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
     mContext.setLayoutStateContext(mLayoutStateContext);
     mNode = Layout.create(mLayoutStateContext, mContext, Column.create(mContext).build());
-    mNode.mutableNodeInfo().setTouchHandler(new EventHandler(new EventDispatchInfo(null, null), 1));
+    mNode.mutableNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
   private LithoNodeTouchExpansionTest setDirection(YogaDirection direction) {

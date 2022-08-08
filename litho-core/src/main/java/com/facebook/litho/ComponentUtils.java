@@ -601,7 +601,7 @@ public class ComponentUtils {
     if (component instanceof SpecGeneratedComponent
         && ((SpecGeneratedComponent) component).hasOwnErrorHandler()) {
       return new EventHandler<>(
-          new EventDispatchInfo(component, scopedContext), Component.ERROR_EVENT_HANDLER_ID, null);
+          component, Component.ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
     } else {
       return parentContext.getErrorEventHandler();
     }

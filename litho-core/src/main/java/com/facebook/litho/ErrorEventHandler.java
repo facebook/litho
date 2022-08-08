@@ -33,8 +33,8 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
 
   public ErrorEventHandler() {
     // sets up HasEventDispatcher immediately after constructing EventHandler
-    super(new EventDispatchInfo(null, null), ERROR_EVENT_HANDLER_ID, null);
-    this.dispatchInfo.hasEventDispatcher = this;
+    super(null, ERROR_EVENT_HANDLER_ID);
+    this.mHasEventDispatcher = this;
   }
 
   @Override

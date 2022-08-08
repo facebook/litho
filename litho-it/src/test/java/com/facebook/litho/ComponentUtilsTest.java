@@ -234,14 +234,11 @@ public class ComponentUtilsTest {
   @Test
   public void hasEquivalentFieldsEventHandlerPropTest() {
     // The first item of the params is skipped as explained in the EventHandler class.
-    mC1.propEventHandler =
-        new EventHandler(new EventDispatchInfo(null, null), 3, new Object[] {"", "1"});
-    mC2.propEventHandler =
-        new EventHandler(new EventDispatchInfo(null, null), 3, new Object[] {"", "1"});
+    mC1.propEventHandler = new EventHandler(null, 3, new Object[] {"", "1"});
+    mC2.propEventHandler = new EventHandler(null, 3, new Object[] {"", "1"});
     assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
 
-    mC2.propEventHandler =
-        new EventHandler(new EventDispatchInfo(null, null), 3, new Object[] {"", "2"});
+    mC2.propEventHandler = new EventHandler(null, 3, new Object[] {"", "2"});
     assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
   }
 

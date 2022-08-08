@@ -251,8 +251,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _dispatcher =
-        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
+    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
@@ -284,36 +283,41 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
         c,
         1328162206,
         new Object[] {
-          param1,
+          c, param1,
         });
   }
 
   public static EventHandler<ErrorEvent> __internalOnErrorHandler(ComponentContext c) {
-    return newEventHandler(TestLayout.class, "TestLayout", c, -1048037474, null);
+    return newEventHandler(
+        TestLayout.class,
+        "TestLayout",
+        c,
+        -1048037474,
+        new Object[] {
+          c,
+        });
   }
 
   @Override
   protected Object dispatchOnEventImpl(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-        // testLayoutEvent
       case 1328162206:
         {
           ClickEvent _event = (ClickEvent) eventState;
           testLayoutEvent(
-              eventHandler.dispatchInfo.hasEventDispatcher,
-              (ComponentContext) eventHandler.dispatchInfo.componentContext,
+              eventHandler.mHasEventDispatcher,
+              (ComponentContext) eventHandler.params[0],
               (View) _event.view,
-              (int) eventHandler.params[0]);
+              (int) eventHandler.params[1]);
           return null;
         }
-        // __internalOnErrorHandler
       case -1048037474:
         {
           ErrorEvent _event = (ErrorEvent) eventState;
           __internalOnErrorHandler(
-              eventHandler.dispatchInfo.hasEventDispatcher,
-              (ComponentContext) eventHandler.dispatchInfo.componentContext,
+              eventHandler.mHasEventDispatcher,
+              (ComponentContext) eventHandler.params[0],
               (Exception) _event.exception);
           return null;
         }
