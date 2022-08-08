@@ -36,8 +36,8 @@ class ComponentClickListener implements View.OnClickListener {
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         String componentClassName = "";
-        if (mEventHandler.mHasEventDispatcher != null) {
-          componentClassName = mEventHandler.mHasEventDispatcher.getClass().getName();
+        if (mEventHandler.dispatchInfo.hasEventDispatcher != null) {
+          componentClassName = mEventHandler.dispatchInfo.hasEventDispatcher.getClass().getName();
           if (componentClassName.length() > 100) {
             componentClassName = "";
           }

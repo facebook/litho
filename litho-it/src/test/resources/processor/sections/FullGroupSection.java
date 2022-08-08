@@ -209,7 +209,8 @@ final class FullGroupSection<T> extends Section {
 
   static void dispatchTestEvent(EventHandler _eventHandler) {
     final TestEvent _eventState = new TestEvent();
-    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
+    EventDispatcher _dispatcher =
+        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
     _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
@@ -241,10 +242,10 @@ final class FullGroupSection<T> extends Section {
         {
           ClickEvent _event = (ClickEvent) eventState;
           testEvent(
-              eventHandler.mHasEventDispatcher,
-              (SectionContext) eventHandler.params[0],
+              eventHandler.dispatchInfo.hasEventDispatcher,
+              eventHandler.dispatchInfo.componentContext,
               (TextView) _event.view,
-              (int) eventHandler.params[1]);
+              (int) eventHandler.params[0]);
           return null;
         }
       default:

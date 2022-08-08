@@ -574,27 +574,19 @@ public class ComponentContext implements Cloneable {
   }
 
   EventHandler newEventHandler(int id) {
-    if (mComponentScope == null) {
-      warnNullScope();
-      return NoOpEventHandler.getNoOpEventHandler();
-    }
-    return new EventHandler(mComponentScope, id);
+    return newEventHandler(id, null);
   }
 
-  public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
+  public <E> EventHandler<E> newEventHandler(int id, @Nullable Object[] params) {
     if (mComponentScope == null) {
-      warnNullScope();
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.FATAL,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
       return NoOpEventHandler.getNoOpEventHandler();
     }
 
-    return new EventHandler<>(mComponentScope, id, params);
-  }
-
-  private static void warnNullScope() {
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.FATAL,
-        NO_SCOPE_EVENT_HANDLER,
-        "Creating event handler without scope.");
+    return new EventHandler<>(new EventDispatchInfo(mComponentScope, this), id, params);
   }
 
   @Nullable

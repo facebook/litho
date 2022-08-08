@@ -19,9 +19,9 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.sections.SectionContext.NO_SCOPE_EVENT_HANDLER;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsReporter;
+import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
@@ -95,8 +95,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     try {
       return dispatchOnEventImpl(eventHandler, eventState);
     } catch (Exception e) {
-      if (eventHandler.params != null && eventHandler.params[0] instanceof ComponentContext) {
-        throw ComponentUtils.wrapWithMetadata((ComponentContext) eventHandler.params[0], e);
+      if (eventHandler.dispatchInfo.componentContext != null) {
+        throw ComponentUtils.wrapWithMetadata(eventHandler.dispatchInfo.componentContext, e);
       } else {
         throw e;
       }
@@ -215,33 +215,28 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       final SectionContext c,
       final int id,
       final Object[] params) {
-    if (c == null || c.getSectionScope() == null) {
+    Section section;
+    if (c == null || (section = c.getSectionScope()) == null) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           NO_SCOPE_EVENT_HANDLER,
           "Creating event handler without scope.");
       return NoOpEventHandler.getNoOpEventHandler();
-    } else if (reference != c.getSectionScope().getClass()) {
+    } else if (reference != section.getClass()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
-          WRONG_CONTEXT_FOR_EVENT_HANDLER + ":" + c.getSectionScope().getSimpleName(),
+          WRONG_CONTEXT_FOR_EVENT_HANDLER + ":" + section.getSimpleName(),
           String.format(
               "A Event handler from %s was created using a context from %s. "
                   + "Event Handlers must be created using a SectionContext from its Section.",
-              className, c.getSectionScope().getSimpleName()));
+              className, section.getSimpleName()));
     }
-    final EventHandler<E> eventHandler = c.newEventHandler(id, params);
-    if (c.getSectionTree() != null) {
-      c.getSectionTree().recordEventHandler(c.getSectionScope(), eventHandler);
+    final EventDispatchInfo eventDispatchInfo = new EventDispatchInfo(section, c);
+    final EventHandler<E> eventHandler = new EventHandler<>(eventDispatchInfo, id, params);
+    final SectionTree sectionTree = c.getSectionTree();
+    if (sectionTree != null) {
+      sectionTree.recordEventHandler(section, eventHandler);
     }
-
-    return eventHandler;
-  }
-
-  protected static <E> EventHandler<E> newEventHandler(Section c, int id, Object[] params) {
-    final EventHandler eventHandler = new EventHandler<E>(c, id, params);
-    recordEventHandler(c, eventHandler);
-
     return eventHandler;
   }
 
@@ -293,10 +288,6 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     }
 
     return trigger;
-  }
-
-  private static void recordEventHandler(Section section, EventHandler eventHandler) {
-    section.getScopedContext().getSectionTree().recordEventHandler(section, eventHandler);
   }
 
   /**

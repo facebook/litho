@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.core.util.Preconditions;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
@@ -55,7 +56,9 @@ class EventDispatcherUtils {
 
     sClickEvent.view = view;
 
-    final EventDispatcher eventDispatcher = clickHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(clickHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
 
     sClickEvent.view = null;
@@ -73,7 +76,8 @@ class EventDispatcherUtils {
     sFocusChangedEvent.hasFocus = hasFocus;
 
     final EventDispatcher eventDispatcher =
-        focusChangeHandler.mHasEventDispatcher.getEventDispatcher();
+        Preconditions.checkNotNull(focusChangeHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
 
     sFocusChangedEvent.view = null;
@@ -89,7 +93,8 @@ class EventDispatcherUtils {
     sLongClickEvent.view = view;
 
     final EventDispatcher eventDispatcher =
-        longClickHandler.mHasEventDispatcher.getEventDispatcher();
+        Preconditions.checkNotNull(longClickHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     final Object returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
 
     sLongClickEvent.view = null;
@@ -108,7 +113,9 @@ class EventDispatcherUtils {
     sTouchEvent.view = view;
     sTouchEvent.motionEvent = event;
 
-    final EventDispatcher eventDispatcher = touchHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(touchHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     final Object returnValue = eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
 
     sTouchEvent.view = null;
@@ -129,7 +136,8 @@ class EventDispatcherUtils {
     sInterceptTouchEvent.view = view;
 
     final EventDispatcher eventDispatcher =
-        interceptTouchHandler.mHasEventDispatcher.getEventDispatcher();
+        Preconditions.checkNotNull(interceptTouchHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     final Object returnValue =
         eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
 
@@ -154,7 +162,9 @@ class EventDispatcherUtils {
     sDispatchPopulateAccessibilityEventEvent.event = event;
     sDispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     final Object returnValue =
         eventDispatcher.dispatchOnEvent(eventHandler, sDispatchPopulateAccessibilityEventEvent);
 
@@ -180,7 +190,9 @@ class EventDispatcherUtils {
     sOnInitializeAccessibilityEventEvent.event = event;
     sOnInitializeAccessibilityEventEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityEventEvent);
 
     sOnInitializeAccessibilityEventEvent.host = null;
@@ -203,7 +215,9 @@ class EventDispatcherUtils {
     sOnInitializeAccessibilityNodeInfoEvent.info = info;
     sOnInitializeAccessibilityNodeInfoEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityNodeInfoEvent);
 
     sOnInitializeAccessibilityNodeInfoEvent.host = null;
@@ -226,7 +240,9 @@ class EventDispatcherUtils {
     sOnPopulateAccessibilityEventEvent.event = event;
     sOnPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(eventHandler, sOnPopulateAccessibilityEventEvent);
 
     sOnPopulateAccessibilityEventEvent.host = null;
@@ -251,7 +267,9 @@ class EventDispatcherUtils {
     sOnRequestSendAccessibilityEventEvent.event = event;
     sOnRequestSendAccessibilityEventEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
 
     final Object returnValue =
         eventDispatcher.dispatchOnEvent(eventHandler, sOnRequestSendAccessibilityEventEvent);
@@ -281,7 +299,9 @@ class EventDispatcherUtils {
     sPerformAccessibilityActionEvent.args = args;
     sPerformAccessibilityActionEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     final Object returnValue =
         eventDispatcher.dispatchOnEvent(eventHandler, sPerformAccessibilityActionEvent);
 
@@ -308,7 +328,9 @@ class EventDispatcherUtils {
     sSendAccessibilityEventEvent.eventType = eventType;
     sSendAccessibilityEventEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(eventHandler, sSendAccessibilityEventEvent);
 
     sSendAccessibilityEventEvent.host = null;
@@ -331,7 +353,9 @@ class EventDispatcherUtils {
     sSendAccessibilityEventUncheckedEvent.event = event;
     sSendAccessibilityEventUncheckedEvent.superDelegate = superDelegate;
 
-    final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
     eventDispatcher.dispatchOnEvent(eventHandler, sSendAccessibilityEventUncheckedEvent);
 
     sSendAccessibilityEventUncheckedEvent.host = null;

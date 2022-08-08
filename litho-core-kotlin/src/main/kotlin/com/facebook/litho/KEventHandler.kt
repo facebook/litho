@@ -30,10 +30,10 @@ inline fun <reified E : Any> eventHandler(noinline onEvent: (E) -> Unit): EventH
  * and [EventDispatcher] together in one object allocation.
  */
 class KEventHandler<E : Any, R>(private val onEvent: (event: E) -> R) :
-    EventHandler<E>(null, -1), HasEventDispatcher, EventDispatcher {
+    EventHandler<E>(EventDispatchInfo(null, null), -1, null), HasEventDispatcher, EventDispatcher {
 
   init {
-    mHasEventDispatcher = this
+    dispatchInfo.hasEventDispatcher = this
   }
 
   override fun dispatchEvent(event: E) {

@@ -28,7 +28,7 @@ public class DelegatingEventHandler<E> extends EventHandler<E> {
   private final List<EventHandler<E>> mEventHandlers;
 
   protected DelegatingEventHandler(EventHandler<E> eventHandler1, EventHandler<E> eventHandler2) {
-    super(null, -1);
+    super(new EventDispatchInfo(null, null), -1);
 
     mEventHandlers = new ArrayList<>();
     mEventHandlers.add(eventHandler1);

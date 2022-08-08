@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 
 /**
@@ -38,9 +39,9 @@ public final class ComponentCallbackLayoutEventHandler<E> extends EventHandler<E
       ComponentCallbackType componentCallbackType,
       EventHandler<E> delegateEventHandler,
       ComponentContext context) {
-    super(null, delegateEventHandler.id);
+    super(new EventDispatchInfo(null, null), delegateEventHandler.id, null);
     mDelegateEventHandler = delegateEventHandler;
-    mHasEventDispatcher = this;
+    dispatchInfo.hasEventDispatcher = this;
     mContext = context;
     mComponentCallbackType = componentCallbackType;
   }
@@ -52,7 +53,8 @@ public final class ComponentCallbackLayoutEventHandler<E> extends EventHandler<E
       mContext.registerComponentCallbackStart(mComponentCallbackType);
 
       EventDispatcher mDelegateEventDispatcher =
-          mDelegateEventHandler.mHasEventDispatcher.getEventDispatcher();
+          Preconditions.checkNotNull(mDelegateEventHandler.dispatchInfo.hasEventDispatcher)
+              .getEventDispatcher();
       return mDelegateEventDispatcher.dispatchOnEvent(eventHandler, eventState);
     } finally {
       mContext.registerComponentCallbackEnd(mComponentCallbackType);
