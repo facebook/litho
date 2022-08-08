@@ -9,7 +9,6 @@ fb_android_library(
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
-    is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     language = "KOTLIN",
     pure_kotlin = False,

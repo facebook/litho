@@ -16,7 +16,6 @@ load(
 litho_android_library(
     name = "config",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     language = "JAVA",
     provided_deps = [
