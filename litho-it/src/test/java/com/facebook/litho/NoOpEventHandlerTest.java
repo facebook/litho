@@ -38,7 +38,8 @@ public class NoOpEventHandlerTest {
     NoOpEventHandler eventHandler = NoOpEventHandler.getNoOpEventHandler();
     assertThat(eventHandler.isEquivalentTo(null)).isFalse();
     assertThat(NoOpEventHandler.sNoOpEventHandler != null).isTrue();
-    assertThat(NoOpEventHandler.getNoOpEventHandler().mHasEventDispatcher != null).isTrue();
+    assertThat(NoOpEventHandler.getNoOpEventHandler().dispatchInfo.hasEventDispatcher != null)
+        .isTrue();
   }
 
   @Test(expected = RuntimeException.class)

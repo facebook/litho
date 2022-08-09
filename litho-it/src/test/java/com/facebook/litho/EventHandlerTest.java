@@ -87,9 +87,26 @@ public class EventHandlerTest {
   }
 
   @Test
-  public void testIsEquivalentToFirstParamCanBeDifferent() {
+  public void testIsEquivalentToWithFirstParamDifferent() {
     EventHandler eventHandler1 = new EventHandler(mHasEventDispatcher, 1, new Object[] {1, 2, 3});
     EventHandler eventHandler2 = new EventHandler(mHasEventDispatcher, 1, new Object[] {2, 2, 3});
+
+    assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isFalse();
+    assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isFalse();
+  }
+
+  @Test
+  public void testIsEquivalentToWithDifferentHasEventDispatchInfos() {
+    EventHandler eventHandler1 =
+        new EventHandler(
+            1,
+            new EventDispatchInfo(mock(HasEventDispatcher.class), mock(ComponentContext.class)),
+            new Object[] {1, 2, 3});
+    EventHandler eventHandler2 =
+        new EventHandler(
+            1,
+            new EventDispatchInfo(mock(HasEventDispatcher.class), mock(ComponentContext.class)),
+            new Object[] {1, 2, 3});
 
     assertThat(eventHandler1.isEquivalentTo(eventHandler2)).isTrue();
     assertThat(eventHandler2.isEquivalentTo(eventHandler1)).isTrue();

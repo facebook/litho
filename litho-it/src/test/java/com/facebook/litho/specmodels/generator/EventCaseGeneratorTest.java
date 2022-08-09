@@ -54,10 +54,11 @@ public class EventCaseGeneratorTest {
     assertThat(methodBuilder.build().toString())
         .isEqualTo(
             "void method() {\n"
+                + "  // event\n"
                 + "  case 96891546: {\n"
                 + "    java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "    event(\n"
-                + "          eventHandler.mHasEventDispatcher);\n"
+                + "          eventHandler.dispatchInfo.hasEventDispatcher);\n"
                 + "    return null;\n"
                 + "  }\n"
                 + "}\n");

@@ -251,7 +251,8 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
+    EventDispatcher _dispatcher =
+        _eventHandler.dispatchInfo.hasEventDispatcher.getEventDispatcher();
     _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
@@ -283,41 +284,36 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
         c,
         1328162206,
         new Object[] {
-          c, param1,
+          param1,
         });
   }
 
   public static EventHandler<ErrorEvent> __internalOnErrorHandler(ComponentContext c) {
-    return newEventHandler(
-        TestLayout.class,
-        "TestLayout",
-        c,
-        -1048037474,
-        new Object[] {
-          c,
-        });
+    return newEventHandler(TestLayout.class, "TestLayout", c, -1048037474, null);
   }
 
   @Override
   protected Object dispatchOnEventImpl(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
+        // testLayoutEvent
       case 1328162206:
         {
           ClickEvent _event = (ClickEvent) eventState;
           testLayoutEvent(
-              eventHandler.mHasEventDispatcher,
-              (ComponentContext) eventHandler.params[0],
+              eventHandler.dispatchInfo.hasEventDispatcher,
+              (ComponentContext) eventHandler.dispatchInfo.componentContext,
               (View) _event.view,
-              (int) eventHandler.params[1]);
+              (int) eventHandler.params[0]);
           return null;
         }
+        // __internalOnErrorHandler
       case -1048037474:
         {
           ErrorEvent _event = (ErrorEvent) eventState;
           __internalOnErrorHandler(
-              eventHandler.mHasEventDispatcher,
-              (ComponentContext) eventHandler.params[0],
+              eventHandler.dispatchInfo.hasEventDispatcher,
+              (ComponentContext) eventHandler.dispatchInfo.componentContext,
               (Exception) _event.exception);
           return null;
         }

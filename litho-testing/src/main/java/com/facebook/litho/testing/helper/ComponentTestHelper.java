@@ -560,7 +560,7 @@ public final class ComponentTestHelper {
 
     lithoView.notifyVisibleBoundsChanged();
 
-    eventHandler.mHasEventDispatcher = component;
+    eventHandler.dispatchInfo.hasEventDispatcher = component;
 
     try {
       Whitebox.invokeMethod(

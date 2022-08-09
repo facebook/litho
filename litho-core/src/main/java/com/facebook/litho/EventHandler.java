@@ -17,23 +17,40 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.rendercore.Function;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
-  public HasEventDispatcher mHasEventDispatcher;
   public final int id;
+  public final EventDispatchInfo dispatchInfo;
   public final @Nullable Object[] params;
 
-  /* TODO: (T81557408) Fix @Nullable issue */
   protected EventHandler(@Nullable HasEventDispatcher hasEventDispatcher, int id) {
     this(hasEventDispatcher, id, null);
   }
 
   public EventHandler(
       @Nullable HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
-    this.mHasEventDispatcher = hasEventDispatcher;
     this.id = id;
+    this.dispatchInfo = new EventDispatchInfo(hasEventDispatcher, null);
+    this.params = params;
+  }
+
+  /**
+   * The EventDispatchInfo ctors are used to construct EventHandlers from generated code. The
+   * HasEventDispatcher ones above are mostly from manual construction of EventHandlers, e.g. in
+   * tests.
+   */
+  public EventHandler(int id, EventDispatchInfo dispatchInfo) {
+    this.id = id;
+    this.dispatchInfo = dispatchInfo;
+    this.params = null;
+  }
+
+  public EventHandler(int id, EventDispatchInfo dispatchInfo, @Nullable Object[] params) {
+    this.id = id;
+    this.dispatchInfo = dispatchInfo;
     this.params = params;
   }
 
@@ -44,7 +61,9 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   }
 
   public void dispatchEvent(E event) {
-    mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
+    Preconditions.checkNotNull(dispatchInfo.hasEventDispatcher)
+        .getEventDispatcher()
+        .dispatchOnEvent(this, event);
   }
 
   @Override
@@ -77,9 +96,7 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       return false;
     }
 
-    // Deliberately skip the first param as it is a ComponentContext which will change between
-    // EventHandlers.
-    for (int i = 1; i < params.length; i++) {
+    for (int i = 0; i < params.length; i++) {
       final Object object1 = params[i];
       final Object object2 = other.params[i];
 
@@ -88,13 +105,15 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
       }
     }
 
+    // Deliberately don't check ComponentContext which will change between EventHandlers.
     return true;
   }
 
   @Override
   public String toString() {
-    return mHasEventDispatcher != null && mHasEventDispatcher != this
-        ? mHasEventDispatcher.toString()
+    final HasEventDispatcher hasEventDispatcher = dispatchInfo.hasEventDispatcher;
+    return hasEventDispatcher != null && hasEventDispatcher != this
+        ? hasEventDispatcher.toString()
         : super.toString();
   }
 }

@@ -234,8 +234,8 @@ public abstract class Component
     try {
       return dispatchOnEventImpl(eventHandler, eventState);
     } catch (Exception e) {
-      if (eventHandler.params != null && eventHandler.params[0] instanceof ComponentContext) {
-        ComponentUtils.handle((ComponentContext) eventHandler.params[0], e);
+      if (eventHandler.dispatchInfo.componentContext != null) {
+        ComponentUtils.handle(eventHandler.dispatchInfo.componentContext, e);
         return null;
       } else {
         throw e;
@@ -252,7 +252,7 @@ public abstract class Component
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       Preconditions.checkNotNull(
               getErrorHandler(
-                  (ComponentContext) Preconditions.checkNotNull(eventHandler.params)[0]))
+                  Preconditions.checkNotNull(eventHandler.dispatchInfo.componentContext)))
           .dispatchEvent((ErrorEvent) eventState);
     }
 
@@ -536,11 +536,12 @@ public abstract class Component
                   + "Event Handlers must be created using a ComponentContext from its Component.",
               className, c.getComponentScope().getSimpleName()));
     }
-    final EventHandler<E> eventHandler = c.newEventHandler(id, params);
-    if (c.getComponentTree() != null) {
-      c.getComponentTree().recordEventHandler(c, eventHandler);
+    final EventDispatchInfo eventDispatchInfo = new EventDispatchInfo(c.getComponentScope(), c);
+    final EventHandler<E> eventHandler = new EventHandler<>(id, eventDispatchInfo, params);
+    final ComponentTree componentTree = c.getComponentTree();
+    if (componentTree != null) {
+      componentTree.recordEventHandler(c, eventHandler);
     }
-
     return eventHandler;
   }
 
