@@ -1407,7 +1407,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   void appendTimeline(
       Component root,
-      String rootGlobalKey,
       TreeState treeState,
       TreeProps props,
       @LayoutState.CalculateLayoutSource int source,
@@ -1415,8 +1414,7 @@ public class ComponentTree implements LithoLifecycleListener {
     assertHoldsLock(this);
     if (mTimeline == null) {
       mTimeline =
-          new DebugComponentTimeMachine.TreeRevisions(
-              root, rootGlobalKey, treeState, props, source, attribution);
+          new DebugComponentTimeMachine.TreeRevisions(root, treeState, props, source, attribution);
     } else {
       mTimeline.setLatest(root, treeState, props, source, attribution);
     }
@@ -2393,26 +2391,13 @@ public class ComponentTree implements LithoLifecycleListener {
 
       final TreeState localTreeState = localLayoutState.consumeTreeState();
       if (committedNewLayout) {
-
         scopedComponentInfos = localLayoutState.consumeScopedComponentInfos();
-
-        if (localTreeState != null && scopedComponentInfos != null) {
+        if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
             if (ComponentsConfiguration.isTimelineEnabled) {
-              ScopedComponentInfo rootScopedComponentInfo = null;
-              for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
-                if (scopedComponentInfo.getComponent().equals(root)) {
-                  rootScopedComponentInfo = scopedComponentInfo;
-                  break;
-                }
-              }
-              final String globalKey =
-                  (rootScopedComponentInfo != null)
-                      ? rootScopedComponentInfo.getContext().getGlobalKey()
-                      : null;
               DebugComponentTimeMachine.saveTimelineSnapshot(
-                  this, root, globalKey, treeState, treeProps, source, extraAttribution);
+                  this, root, treeState, treeProps, source, extraAttribution);
             }
 
             treeState.commitRenderState(localTreeState);
