@@ -2045,7 +2045,9 @@ public class LayoutState
     layoutState.mIncrementalMountOutputs.put(id, incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
-    if (layoutOutput.getComponent().hasChildLithoViews()) {
+    if (layoutOutput.getComponent().hasChildLithoViews()
+        || node.getRenderUnit().doesMountRenderTreeHosts()) {
+
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
     }
 

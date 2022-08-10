@@ -152,6 +152,8 @@ internal class VerticalScrollMountable(
     val componentTree: ComponentTree,
 ) : SimpleMountable<LithoScrollView>(RenderType.VIEW) {
 
+  override fun doesMountRenderTreeHosts(): Boolean = true
+
   override fun createContent(context: Context): LithoScrollView =
       LayoutInflater.from(context).inflate(R.layout.litho_scroll_view, null, false)
           as LithoScrollView

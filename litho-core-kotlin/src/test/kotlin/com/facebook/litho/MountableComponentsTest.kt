@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.facebook.litho.accessibility.ImportantForAccessibility
 import com.facebook.litho.accessibility.accessibilityRole
@@ -32,9 +33,11 @@ import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.animated.alpha
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
+import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.ExperimentalVerticalScroll
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -617,6 +620,67 @@ class MountableComponentsTest {
 
     assertThat(child0.tag).isEqualTo("1")
     assertThat(child1.tag).isEqualTo("1")
+  }
+
+  fun `Mountable that renders tree host notifies them about visibility bounds changes`() {
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+
+    val component =
+        ExperimentalVerticalScroll(
+            incrementalMountEnabled = true,
+            style = Style.width(100.px).height(100.px),
+        ) {
+          TestViewMountableComponent(
+              TextView(lithoViewRule.context.androidContext),
+              steps = steps,
+              style =
+                  Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
+                    steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
+                  })
+        }
+
+    // Create a FrameLayout 100x100
+    val parent = FrameLayout(lithoViewRule.context.androidContext)
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+    parent.layout(0, 0, 1080, 100)
+
+    // Add a new LithoView to that FrameLayout
+    val testView = lithoViewRule.createTestLithoView()
+    parent.addView(testView.lithoView)
+
+    // Render the component
+    lithoViewRule.render(testView.lithoView) { component }
+
+    // Since everything is in the view port everything should mount
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_EVENT_VISIBLE,
+        )
+    steps.clear()
+
+    // should unmount if the component is outside of the visible rect due to the 55px offset
+    testView.lithoView.offsetTopAndBottom(55) // 55 offset from top; the item is 50 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).containsExactly(LifecycleStep.ON_UNMOUNT)
+    steps.clear()
+
+    // should not do anything when no items cross over the view port
+    testView.lithoView.offsetTopAndBottom(5) // 55 + 5 = 60 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).isEmpty()
+    steps.clear()
+
+    // should mount the inner item back when it is back in the view port
+    testView.lithoView.offsetTopAndBottom(-20) // 60 - 20 = 40 offset from top
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_EVENT_VISIBLE,
+        )
   }
 }
 

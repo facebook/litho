@@ -218,6 +218,10 @@ public class IncrementalMountExtension
       return;
     }
 
+    if (!renderUnit.doesMountRenderTreeHosts()) {
+      return;
+    }
+
     if (!state.mInput.renderUnitWithIdHostsRenderTrees(id)
         || state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id)) {
       return;

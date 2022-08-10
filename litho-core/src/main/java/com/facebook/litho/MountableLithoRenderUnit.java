@@ -60,6 +60,11 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
+  public boolean doesMountRenderTreeHosts() {
+    return mMountable.doesMountRenderTreeHosts();
+  }
+
+  @Override
   protected void mountExtensions(Context context, Object o, @Nullable Object layoutData) {
     mMountable.mountExtensions(context, o, layoutData);
   }

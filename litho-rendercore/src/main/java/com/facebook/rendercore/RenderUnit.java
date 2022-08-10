@@ -224,6 +224,18 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     extensions.add(extension);
   }
 
+  /**
+   * Override this method to indicate if a {@link RenderUnit} has nested {@link RenderTreeHost}s, it
+   * will ensure that they are notified when this {@link RenderUnit}'s bounds change and visibility
+   * events are processed correctly for them.
+   *
+   * @return {@code true} to ensure nested {@link RenderTreeHost}s are notified about parent's
+   *     bounds change, otherwise {@code false}
+   */
+  public boolean doesMountRenderTreeHosts() {
+    return false;
+  }
+
   /** Bind all mountUnmount extension functions. */
   protected void mountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
