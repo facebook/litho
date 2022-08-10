@@ -28,8 +28,9 @@ import java.util.Map;
 
 /**
  * A RenderUnit represents a single rendering primitive for RenderCore. Every RenderUnit has to
- * define at least a createContent method to allocate the RenderUnit content (View or Drawable).
- * That content will be automatically recycled by RenderCore based on their concrete type.
+ * define at least a createContent method to allocate the RenderUnit content (View or Drawable) via
+ * the {@link ContentAllocator} it returns from getContentAllocator method. That content will be
+ * automatically recycled by RenderCore based on their concrete type.
  *
  * <p>A RenderUnit should in most cases declare how it intends to bind data returning Binders from
  * its mountUnmountFunctions callback or from the attachDetachFunctions callback.

@@ -23,12 +23,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This represents the rendering primitive. Every {@link Mountable} must define what content it
- * creates, and its type. It should also implement a mechanism to measure itself given arbitrary
- * width and height specs. A {@link Mountable} can also specify a collection of Binders to set and
- * unset properties on the content.
+ * A {@link Mountable} represents a rendering primitive.
  *
- * <p>This abstract class is abstraction of {@link RenderUnit}.
+ * <p>Every {@link Mountable} must define what content it creates via the {@link ContentAllocator}
+ * implementation, and its type. It must also implement a mechanism to measure itself given
+ * arbitrary width and height specs. A {@link Mountable} can also specify a collection of Binders to
+ * set and unset properties on the content via RenderUnit's addMountUnmountExtension and
+ * addAttachDetachExtension methods.
+ *
+ * <p>Experimental. Currently for Litho team internal use only.
  *
  * <ul>
  *   <li>A {@link Mountable} must only create one type of content.
@@ -38,7 +41,8 @@ import java.util.Map;
  * </ul>
  *
  * @param <ContentT> The type of the content.
- *     <p>Experimental. Currently for Litho team internal use only.
+ * @see RenderUnit
+ * @see Node
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implements Node {

@@ -20,14 +20,19 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
-/** Defines a class that can provide mountable content to be pooled. */
+/**
+ * Defines a class that can provide mountable content and have it be pooled.
+ *
+ * <p>Instances must implement at least createContent method to allocate the RenderUnit content
+ * (View or Drawable).
+ */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ContentAllocator {
 
   /** Allocates the mountable content (View or Drawable). */
   Object createContent(Context context);
 
-  /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass */
+  /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass. */
   default Object createPoolableContent(Context context) {
     return createContent(context);
   }
