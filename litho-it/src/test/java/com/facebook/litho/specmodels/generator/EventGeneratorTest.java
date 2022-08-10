@@ -58,7 +58,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +65,6 @@ import org.junit.runners.JUnit4;
 
 /** Tests {@link EventGenerator} */
 @RunWith(JUnit4.class)
-@Ignore
 public class EventGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
@@ -192,7 +190,6 @@ public class EventGeneratorTest {
             "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
                 + "  return newEventHandler(Test.class, \"Test\", c, -1400079064, new Object[] {\n"
-                + "        c,\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
                 + "        arg6,\n"
@@ -202,9 +199,7 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, new Object[] {\n"
-                + "        c,\n"
-                + "      });\n"
+                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, null);\n"
                 + "}\n");
   }
 
@@ -217,25 +212,28 @@ public class EventGeneratorTest {
                 + "    final java.lang.Object eventState) {\n"
                 + "  int id = eventHandler.id;\n"
                 + "  switch (id) {\n"
+                + "    // testEventMethod1\n"
                 + "    case -1400079064: {\n"
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testEventMethod1(\n"
                 + "            eventHandler.dispatchInfo.hasEventDispatcher,\n"
-                + "            eventHandler.dispatchInfo.componentContext,\n"
+                + "            (com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext,\n"
                 + "            (java.lang.Object) eventHandler.params[0],\n"
                 + "            (java.lang.CharSequence) eventHandler.params[1],\n"
                 + "            (java.lang.CharSequence) eventHandler.params[2]);\n"
                 + "      return null;\n"
                 + "    }\n"
+                + "    // testEventMethod2\n"
                 + "    case -1400079063: {\n"
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testEventMethod2(\n"
                 + "            eventHandler.dispatchInfo.hasEventDispatcher,\n"
-                + "            eventHandler.dispatchInfo.componentContext);\n"
+                + "            (com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext);\n"
                 + "      return null;\n"
                 + "    }\n"
+                + "    // __internalOnErrorHandler\n"
                 + "    case -1048037474: {\n"
-                + "      dispatchErrorEvent(eventHandler.dispatchInfo.componentContext, (com.facebook.litho.ErrorEvent) eventState);\n"
+                + "      dispatchErrorEvent((com.facebook.litho.ComponentContext) eventHandler.dispatchInfo.componentContext, (com.facebook.litho.ErrorEvent) eventState);\n"
                 + "      return null;\n"
                 + "    }\n"
                 + "    default:\n"
@@ -407,9 +405,7 @@ public class EventGeneratorTest {
     assertThat(method.toString())
         .isEqualTo(
             "public static <T extends FirstType, T0 extends SecondType> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
-                + "        c,\n"
-                + "      });\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
 
@@ -485,9 +481,7 @@ public class EventGeneratorTest {
     assertThat(method.toString())
         .isEqualTo(
             "public static <T extends FirstType> com.facebook.litho.EventHandler<EventClass<T>> onEvent(com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
-                + "        c,\n"
-                + "      });\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
 
@@ -555,9 +549,7 @@ public class EventGeneratorTest {
     assertThat(method.toString())
         .isEqualTo(
             "public static <T, T0> com.facebook.litho.EventHandler<EventClass<T, T0>> onEvent(com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
-                + "        c,\n"
-                + "      });\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
 
@@ -664,7 +656,6 @@ public class EventGeneratorTest {
             "public static <T, P extends java.util.Set, F extends FirstType, S extends SecondType> com.facebook.litho.EventHandler<EventClass<F, S>> onEvent(com.facebook.litho.ComponentContext c,\n"
                 + "    P param1) {\n"
                 + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
-                + "        c,\n"
                 + "        param1,\n"
                 + "      });\n"
                 + "}\n");
@@ -734,9 +725,7 @@ public class EventGeneratorTest {
     assertThat(method.toString())
         .isEqualTo(
             "public static <T extends java.lang.Integer> com.facebook.litho.EventHandler<EventClass<T>> onEvent(com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
-                + "        c,\n"
-                + "      });\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, null);\n"
                 + "}\n");
   }
 }
