@@ -132,6 +132,9 @@ public class MountStateIncrementalMountTest {
     //   │                  │
     //   └──────────────────┘
 
+    final EventHandler eventHandler1 = mock(EventHandler.class);
+    final EventHandler eventHandler2 = mock(EventHandler.class);
+
     // Component1 without `excludeFromIncrementalMount`
     final LifecycleTracker tracker1 = new LifecycleTracker();
     final Component component1 =
@@ -165,8 +168,10 @@ public class MountStateIncrementalMountTest {
         Wrapper.create(mContext)
             .delegate(
                 Column.create(mContext)
-                    .child(component1)
-                    .child(component2)
+                    .child(
+                        Wrapper.create(mContext).delegate(component1).visibleHandler(eventHandler1))
+                    .child(
+                        Wrapper.create(mContext).delegate(component2).visibleHandler(eventHandler2))
                     .child(component3)
                     .build())
             .wrapInView()
@@ -191,10 +196,14 @@ public class MountStateIncrementalMountTest {
     assertThat(tracker3.isMounted())
         .describedAs("Invisible component WITHOUT excludeFromIM should Not get mounted")
         .isFalse();
+    // verify that the visibility callback of the visible component should be called
+    verify(eventHandler1, times(1)).call(any(VisibleEvent.class));
+    // verify that the visibility callback of the invisible component should not be called
+    verify(eventHandler2, times(0)).call(any(VisibleEvent.class));
 
     // move the view out of visible area and make sure the component that marked as excludeFromIM
     // will not get unmounted
-    lithoView.notifyVisibleBoundsChanged(new Rect(0, -50, 100, -10), false);
+    lithoView.notifyVisibleBoundsChanged(new Rect(0, -50, 100, -10), true);
     assertThat(tracker1.isMounted())
         .describedAs("Invisible component WITHOUT excludeFromIM should get unmounted")
         .isFalse();
@@ -204,6 +213,14 @@ public class MountStateIncrementalMountTest {
     assertThat(tracker3.isMounted())
         .describedAs("Invisible component WITHOUT excludeFromIM should get mounted")
         .isFalse();
+    // verify that the visibility callback of the invisible component should not be called
+    verify(eventHandler1, times(1)).call(any(VisibleEvent.class));
+    verify(eventHandler2, times(0)).call(any(VisibleEvent.class));
+
+    lithoView.notifyVisibleBoundsChanged(new Rect(0, 15, 100, 45), true);
+    // verify that the visibility callback of the visible component should be called
+    verify(eventHandler1, times(2)).call(any(VisibleEvent.class));
+    verify(eventHandler2, times(1)).call(any(VisibleEvent.class));
   }
 
   @Test
