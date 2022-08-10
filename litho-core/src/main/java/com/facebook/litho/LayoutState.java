@@ -989,6 +989,10 @@ public class LayoutState
     return mComponentHandleToBounds;
   }
 
+  Set<Handle> getComponentHandles() {
+    return mComponentHandleToBounds.keySet();
+  }
+
   @Nullable
   List<ScopedComponentInfo> consumeScopedComponentInfos() {
     final List<ScopedComponentInfo> scopedComponentInfos = mScopedComponentInfos;

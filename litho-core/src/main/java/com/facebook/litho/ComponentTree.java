@@ -2409,6 +2409,8 @@ public class ComponentTree implements LithoLifecycleListener {
           rootWidth = localLayoutState.getWidth();
           rootHeight = localLayoutState.getHeight();
         }
+
+        bindHandlesToComponentTree(this, localLayoutState);
       }
 
       if (mTreeState != null && localTreeState != null) {
@@ -2472,10 +2474,6 @@ public class ComponentTree implements LithoLifecycleListener {
       for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
         final ComponentContext scopedContext = scopedComponentInfo.getContext();
         final Component component = scopedComponentInfo.getComponent();
-        final @Nullable Handle componentHandle = component.getHandle();
-        if (componentHandle != null) {
-          componentHandle.setComponentTree(this);
-        }
         if (component instanceof SpecGeneratedComponent) {
           mEventHandlersController.bindEventHandlers(
               scopedContext, component, scopedContext.getGlobalKey());
@@ -2864,6 +2862,13 @@ public class ComponentTree implements LithoLifecycleListener {
               + (mRoot != null ? mRoot.getSimpleName() : null)
               + "] "
               + info);
+    }
+  }
+
+  private static void bindHandlesToComponentTree(
+      ComponentTree componentTree, LayoutState layoutState) {
+    for (Handle handle : layoutState.getComponentHandles()) {
+      handle.setComponentTree(componentTree);
     }
   }
 
