@@ -19,8 +19,6 @@ package com.facebook.rendercore.incrementalmount;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node;
-import com.facebook.rendercore.Node.LayoutResult;
-import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
@@ -81,13 +79,9 @@ public class IncrementalMountRenderCoreExtension
         }
       };
 
-  private final Visitor mLayoutResultVisitor;
+  private final Visitor mLayoutResultVisitor = new Visitor();
   private static final IncrementalMountExtension mMountExtension =
       IncrementalMountExtension.getInstance();
-
-  public IncrementalMountRenderCoreExtension(final InputProvider<?> provider) {
-    mLayoutResultVisitor = new Visitor(provider);
-  }
 
   @Override
   public LayoutResultVisitor<Results> getLayoutVisitor() {
@@ -190,12 +184,6 @@ public class IncrementalMountRenderCoreExtension
 
   public static class Visitor implements LayoutResultVisitor<Results> {
 
-    private final InputProvider provider;
-
-    public Visitor(InputProvider provider) {
-      this.provider = provider;
-    }
-
     @Override
     public void visit(
         final @Nullable RenderTreeNode parent,
@@ -227,20 +215,9 @@ public class IncrementalMountRenderCoreExtension
       final Rect rect = new Rect(x, y, x + bounds.width(), y + bounds.height());
       // TODO(T115614172): implement excludeFromIncrementalMount for RenderCore
       results.addOutput(new IncrementalMountOutput(id, position, rect, false, host));
-      if (provider.hasRenderTreeHosts(result)) {
+      if (unit.doesMountRenderTreeHosts()) {
         results.addRenderTreeHostId(id);
       }
     }
-  }
-
-  /**
-   * The provider that client frameworks must set on {@link IncrementalMountRenderCoreExtension} to
-   * enable the extension to collect the required data from the {@link LayoutResult} during the
-   * layout pass.
-   */
-  public interface InputProvider<R extends LayoutResult> {
-
-    /** Return {@code true} if the {@param result} will host any {@link RenderTreeHost}. */
-    boolean hasRenderTreeHosts(R result);
   }
 }

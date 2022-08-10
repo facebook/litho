@@ -56,7 +56,7 @@ public class IncrementalMountExtensionTest {
   public void whenVisibleBoundsIsEqualToHierarchy_shouldMountEverything() {
     final Context c = mRenderCoreTestRule.getContext();
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -81,7 +81,7 @@ public class IncrementalMountExtensionTest {
   public void whenVisibleBoundsIntersectsHierarchy_shouldMountEverything() {
     final Context c = mRenderCoreTestRule.getContext();
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -106,7 +106,7 @@ public class IncrementalMountExtensionTest {
   public void whenVisibleBoundsIsZero_shouldNotMountAnything() {
     final Context c = mRenderCoreTestRule.getContext();
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -140,7 +140,7 @@ public class IncrementalMountExtensionTest {
     parent.addView(host);
 
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -201,7 +201,7 @@ public class IncrementalMountExtensionTest {
     parent.addView(host);
 
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -253,7 +253,7 @@ public class IncrementalMountExtensionTest {
     parent.addView(host);
 
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -318,7 +318,7 @@ public class IncrementalMountExtensionTest {
     parent.addView(host);
 
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
@@ -415,7 +415,7 @@ public class IncrementalMountExtensionTest {
     parent.addView(host);
 
     final RenderCoreExtension[] extensions =
-        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension()};
 
     final LayoutResult root =
         SimpleLayoutResult.create()
