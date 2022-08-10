@@ -274,7 +274,7 @@ class Layout {
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
         node =
-            InternalNodeUtils.createNestedTreeHolder(
+            new NestedTreeHolder(
                 c, c.getTreeProps(), renderStateContext.getCache().getCachedNode(component));
       }
 
@@ -289,7 +289,7 @@ class Layout {
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = InternalNodeUtils.create(c);
+        node = new LithoNode(c);
         node.flexDirection(YogaFlexDirection.COLUMN);
 
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
@@ -684,7 +684,7 @@ class Layout {
       final boolean isFromCurrentLayout =
           cachedLayout.getLayoutStateContext() == layoutStateContext;
       final boolean hasValidDirection =
-          InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout);
+          hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout);
       final boolean hasCompatibleSizeSpec =
           hasCompatibleSizeSpec(
               cachedLayout.getLastWidthSpec(),
@@ -711,6 +711,16 @@ class Layout {
     }
 
     return null;
+  }
+
+  /**
+   * Check that the root of the nested tree we are going to use, has valid layout directions with
+   * its main tree holder node.
+   */
+  private static boolean hasValidLayoutDirectionInNestedTree(
+      NestedTreeHolderResult holder, LithoLayoutResult nestedTree) {
+    return nestedTree.getNode().isLayoutDirectionInherit()
+        || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
   }
 
   /**

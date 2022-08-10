@@ -49,27 +49,6 @@ import java.util.List;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class InternalNodeUtils {
 
-  static LithoNode create(ComponentContext context) {
-    return new LithoNode(context);
-  }
-
-  static NestedTreeHolder createNestedTreeHolder(
-      final ComponentContext context,
-      final @Nullable TreeProps props,
-      final @Nullable LithoNode cachedNode) {
-    return new NestedTreeHolder(context, props, cachedNode);
-  }
-
-  /**
-   * Check that the root of the nested tree we are going to use, has valid layout directions with
-   * its main tree holder node.
-   */
-  static boolean hasValidLayoutDirectionInNestedTree(
-      NestedTreeHolderResult holder, LithoLayoutResult nestedTree) {
-    return nestedTree.getNode().isLayoutDirectionInherit()
-        || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
-  }
-
   /** Creates a {@link LithoRenderUnit} for the content output iff the result mounts content. */
   static @Nullable LithoRenderUnit createContentRenderUnit(
       LithoLayoutResult result, final LayoutState layoutState) {
