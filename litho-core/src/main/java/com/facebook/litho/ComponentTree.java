@@ -2029,9 +2029,7 @@ public class ComponentTree implements LithoLifecycleListener {
     assertMainThread();
 
     final Map<String, Rect> componentKeysToBounds;
-    synchronized (this) {
-      componentKeysToBounds = mMainThreadLayoutState.getComponentKeyToBounds();
-    }
+    componentKeysToBounds = mMainThreadLayoutState.getComponentKeyToBounds();
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
       ComponentsReporter.emitMessage(
