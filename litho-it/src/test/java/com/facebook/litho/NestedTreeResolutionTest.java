@@ -121,6 +121,37 @@ public class NestedTreeResolutionTest {
   }
 
   @Test
+  public void onRenderComponentWithSizeSpec_shouldTransferLayoutDirectionIfNotExplicitlySet() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final RootComponentWithTreeProps component =
+        RootComponentWithTreeProps.create(c)
+            .shouldNotUpdateState(true)
+            .layoutDirection(YogaDirection.RTL)
+            .build();
+
+    final ExtraProps props = new ExtraProps();
+    props.steps = new ArrayList<>();
+
+    mLegacyLithoViewRule
+        .setTreeProp(ExtraProps.class, props)
+        .attachToWindow()
+        .setSizePx(100, 100)
+        .measure()
+        .setRoot(component)
+        .layout();
+
+    final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
+
+    assertThat(root).isNotNull();
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
+
+    assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.RTL);
+    assertThat(holder.getNestedResult().getYogaNode().getLayoutDirection())
+        .isEqualTo(YogaDirection.RTL);
+  }
+
+  @Test
   public void onReRenderComponentWithSizeSpec_shouldLeverageLayoutDiffing() {
     final ComponentContext c = mLegacyLithoViewRule.getContext();
 
