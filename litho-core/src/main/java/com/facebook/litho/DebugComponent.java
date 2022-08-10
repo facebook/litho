@@ -371,9 +371,9 @@ public final class DebugComponent {
   }
 
   /** @return This component's key or null if none is set. */
-  @Nullable
-  public String getKey() {
-    return mNode.getComponentAt(mComponentIndex).getKey();
+  public @Nullable String getKey() {
+    final Component component = mNode.getComponentAt(mComponentIndex);
+    return component.hasManualKey() ? component.getKey() : null;
   }
 
   /** @return The Component instance this debug component wraps. */
