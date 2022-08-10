@@ -43,8 +43,7 @@ public interface MountDelegateTarget {
 
   boolean isRootItem(int position);
 
-  @Nullable
-  MountItem getRootItem();
+  Host getRootHost();
 
   Object getContentAt(int position);
 

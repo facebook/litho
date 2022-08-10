@@ -792,7 +792,7 @@ public class TransitionsExtension
 
   private static void remountHostToRootIfNeeded(
       ExtensionState<TransitionsExtensionState> extensionState, int index, MountItem mountItem) {
-    final Host rootHost = getMountTarget(extensionState).getRootItem().getHost();
+    final Host rootHost = getMountTarget(extensionState).getRootHost();
     final Host originalHost = mountItem.getHost();
     if (originalHost == null) {
       throw new IllegalStateException(

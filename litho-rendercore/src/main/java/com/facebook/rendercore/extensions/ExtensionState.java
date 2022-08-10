@@ -20,7 +20,6 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import java.util.HashSet;
@@ -41,12 +40,7 @@ public class ExtensionState<State> {
   }
 
   public @Nullable Host getRootHost() {
-    MountItem root = mMountDelegate.getMountDelegateTarget().getRootItem();
-    if (root != null) {
-      return (Host) root.getContent();
-    } else {
-      return null;
-    }
+    return mMountDelegate.getMountDelegateTarget().getRootHost();
   }
 
   public MountExtension<?, State> getExtension() {

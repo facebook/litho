@@ -317,8 +317,8 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public @Nullable MountItem getRootItem() {
-    return mIdToMountedItemMap != null ? mIdToMountedItemMap.get(ROOT_HOST_ID) : null;
+  public Host getRootHost() {
+    return mRootHost;
   }
 
   @Override
@@ -381,6 +381,10 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public @Nullable MountItem getMountItemAt(int position) {
+    if (mRenderTree == null) {
+      return null;
+    }
+
     return mIdToMountedItemMap.get(
         mRenderTree.getRenderTreeNodeAtIndex(position).getRenderUnit().getId());
   }
