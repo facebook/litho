@@ -28,7 +28,6 @@ litho_android_test_library(
         "*.kt",
     ]),
     autoglob = False,
-    language = "KOTLIN",
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,

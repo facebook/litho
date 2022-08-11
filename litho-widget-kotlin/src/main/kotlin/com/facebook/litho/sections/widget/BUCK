@@ -32,7 +32,6 @@ litho_android_library(
     exported_provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
     ],
-    language = "KOTLIN",
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
