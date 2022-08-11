@@ -1453,6 +1453,11 @@ public class LayoutState
 
     root = mMountableOutputs.get(0);
 
+    if (root.getRenderUnit().getId() != ROOT_HOST_ID) {
+      throw new IllegalStateException(
+          "Root render unit has invalid id " + root.getRenderUnit().getId());
+    }
+
     RenderTreeNode[] flatList = new RenderTreeNode[mMountableOutputs.size()];
     for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
       flatList[i] = mMountableOutputs.get(i);
