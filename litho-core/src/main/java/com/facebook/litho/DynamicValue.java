@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.UiThread;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -41,8 +42,12 @@ public class DynamicValue<T> {
   /**
    * Sets current value and notifies all the attached listeners
    *
+   * <p>IMPORTANT: This should only be called from the main thread! If it isn't, it can race with
+   * other set() calls!
+   *
    * @param value the new value
    */
+  @UiThread
   public void set(T value) {
     if (mValue == value || (mValue != null && mValue.equals(value))) {
       return;
@@ -56,10 +61,15 @@ public class DynamicValue<T> {
   }
 
   /**
-   * Retrieves the current value
+   * Retrieves the current value.
+   *
+   * <p>IMPORTANT: This should only be called from the main thread! If it isn't, it can race with
+   * other set() calls! Generally, you shouldn't need to call get() yourself: instead the
+   * DynamicValue should be passed into a property or Style which accepts a DynamicValue.
    *
    * @return the current value
    */
+  @UiThread
   public T get() {
     return mValue;
   }
