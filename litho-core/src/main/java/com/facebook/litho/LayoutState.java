@@ -1681,6 +1681,7 @@ public class LayoutState
             || (treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
                 && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
                     .getMountable()
+                    .getContentAllocator()
                     .canPreallocate()))) {
           continue;
         }

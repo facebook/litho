@@ -422,7 +422,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected MountContentPool onCreateMountContentPool() {
+  public MountContentPool onCreateMountContentPool() {
     MountContentPool _result;
     _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
     return _result;
@@ -441,12 +441,12 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected int poolSize() {
+  public int poolSize() {
     return 3;
   }
 
   @Override
-  protected boolean canPreallocate() {
+  public boolean canPreallocate() {
     return true;
   }
 

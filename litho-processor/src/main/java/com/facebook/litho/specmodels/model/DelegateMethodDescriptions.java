@@ -248,7 +248,7 @@ public final class DelegateMethodDescriptions {
   public static final DelegateMethodDescription ON_CREATE_MOUNT_CONTENT_POOL =
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
-          .accessType(Modifier.PROTECTED)
+          .accessType(Modifier.PUBLIC)
           .returnType(ClassNames.MOUNT_CONTENT_POOL)
           .name("onCreateMountContentPool")
           .definedParameterTypes(ImmutableList.<TypeName>of())

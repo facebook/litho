@@ -128,7 +128,7 @@ internal class ImageMountable(
         !DrawableUtils.isEquivalentTo(newMountable.drawable, currentMountable.drawable))
   }
 
-  override fun getPoolSize(): Int = 30
+  override fun poolSize(): Int = 30
 }
 
 /** The layout data required by the [ImageMountable] to mount, and bind the drawable in the host. */

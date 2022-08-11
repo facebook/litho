@@ -530,19 +530,22 @@ public abstract class SpecGeneratedComponent extends Component
   }
 
   /** @return true if this component can be preallocated. */
-  protected boolean canPreallocate() {
+  @Override
+  public boolean canPreallocate() {
     return false;
   }
 
   /**
    * @return the MountContentPool that should be used to recycle mount content for this mount spec.
    */
-  protected MountContentPool onCreateMountContentPool() {
+  @Override
+  public MountContentPool onCreateMountContentPool() {
     return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
   }
 
   @ThreadSafe
-  protected int poolSize() {
+  @Override
+  public int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
   }
 }

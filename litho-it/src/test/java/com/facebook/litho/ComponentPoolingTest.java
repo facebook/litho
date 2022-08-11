@@ -95,7 +95,7 @@ public class ComponentPoolingTest {
     }
 
     @Override
-    protected int poolSize() {
+    public int poolSize() {
       return POOL_SIZE;
     }
 

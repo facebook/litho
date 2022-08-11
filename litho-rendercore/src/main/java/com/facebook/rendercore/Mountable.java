@@ -118,27 +118,6 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
       final int heightSpec,
       final @Nullable Object previousLayoutData);
 
-  /**
-   * This API informs the framework to fill the content pool for this Mountable ahead of time. The
-   * default value is {@code false}, i.e. content is not pre-allocated. Pre-allocation of the
-   * content can improve performance in some circumstances where creating the content is expensive.
-   *
-   * @return {@code true} to preallocate the content, otherwise {@code false}
-   */
-  public boolean canPreallocate() {
-    return false;
-  }
-
-  /** This API informs the framework about the size of the content pool. The default is 3. */
-  protected int getPoolSize() {
-    return 3;
-  }
-
-  /** Creates the content pool the framework should use for this Mountable. */
-  public MountItemsPool.ItemPool onCreateMountContentPool() {
-    return new MountItemsPool.DefaultItemPool(this, getPoolSize());
-  }
-
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final void mountExtensions(Context context, Object contentT, @Nullable Object layoutData) {

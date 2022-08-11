@@ -29,6 +29,9 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ContentAllocator {
 
+  /** Default size of the content pool. */
+  public static final int DEFAULT_MAX_PREALLOCATION = 3;
+
   /** Allocates the mountable content (View or Drawable). */
   Object createContent(Context context);
 
@@ -55,5 +58,35 @@ public interface ContentAllocator {
   @Nullable
   default MountItemsPool.ItemPool createRecyclingPool() {
     return null;
+  }
+
+  /**
+   * This API informs the framework to fill the content pool for this Mountable ahead of time. The
+   * default value is {@code false}, i.e. content is not pre-allocated. Pre-allocation of the
+   * content can improve performance in some circumstances where creating the content is expensive.
+   *
+   * @return {@code true} to preallocate the content, otherwise {@code false}
+   *     <p>Experimental. Currently for Litho team internal use only.
+   */
+  default boolean canPreallocate() {
+    return false;
+  }
+
+  /**
+   * This API informs the framework about the size of the content pool. The default is 3.
+   *
+   * <p>Experimental. Currently for Litho team internal use only.
+   */
+  default int poolSize() {
+    return DEFAULT_MAX_PREALLOCATION;
+  }
+
+  /**
+   * Creates the content pool the framework should use for this Mountable.
+   *
+   * <p>Experimental. Currently for Litho team internal use only.
+   */
+  default MountItemsPool.ItemPool onCreateMountContentPool() {
+    return new MountItemsPool.DefaultItemPool(this, poolSize());
   }
 }

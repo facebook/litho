@@ -40,7 +40,7 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  protected MountContentPool onCreateMountContentPool() {
+  public MountContentPool onCreateMountContentPool() {
     return new HostMountContentPool(
         "HostComponent",
         ComponentsConfiguration.hostComponentPoolSize,
@@ -118,7 +118,7 @@ class HostComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  protected int poolSize() {
+  public int poolSize() {
     return 45;
   }
 

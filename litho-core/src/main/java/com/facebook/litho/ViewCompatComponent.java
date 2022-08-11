@@ -170,7 +170,7 @@ public class ViewCompatComponent<V extends View> extends SpecGeneratedComponent 
   }
 
   @Override
-  protected int poolSize() {
+  public int poolSize() {
     return mPoolSize == UNSPECIFIED_POOL_SIZE ? super.poolSize() : mPoolSize;
   }
 }
