@@ -166,7 +166,7 @@ class Layout {
       return false;
     }
 
-    if (treeState == null || !treeState.hasUncommittedUpdates()) {
+    if (!treeState.hasUncommittedUpdates()) {
       return false;
     }
 
@@ -180,11 +180,7 @@ class Layout {
       return false;
     }
 
-    if (!ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent)) {
-      return false;
-    }
-
-    return true;
+    return ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent);
   }
 
   static @Nullable LithoLayoutResult measureTree(
