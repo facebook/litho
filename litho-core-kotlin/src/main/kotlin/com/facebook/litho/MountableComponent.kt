@@ -33,9 +33,19 @@ abstract class MountableComponent() : Component() {
   final override fun prepare(c: ComponentContext): PrepareResult {
     val mountableComponentScope = MountableComponentScope(c)
     val mountableWithStyle = mountableComponentScope.render()
+
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
     mountableWithStyle.style?.applyToComponent(c, this)
+
+    // generate ID and set it on the Mountable
+    val idGenerator = c.layoutStateContext?.renderStateContext?.idGenerator
+    if (idGenerator == null) {
+      throw IllegalStateException("Attempt to use a released RenderStateContext")
+    } else {
+      mountableWithStyle.mountable.id =
+          idGenerator.calculateLayoutOutputId(this, c.globalKey, OutputUnitType.CONTENT, -1)
+    }
 
     mountableWithStyle.mountable.addMountUnmountExtension(
         extension(
