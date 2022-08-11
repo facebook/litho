@@ -59,7 +59,8 @@ public class BenchmarkTestHelper {
   }
 
   public static Object getMountContent(ComponentContext c, Component component) {
-    return MountItemsPool.acquireMountContent(c.getAndroidContext(), component);
+    return MountItemsPool.acquireMountContent(
+        c.getAndroidContext(), (SpecGeneratedComponent) component);
   }
 
   public static void setMountStateDirty(LithoView lithoView) {

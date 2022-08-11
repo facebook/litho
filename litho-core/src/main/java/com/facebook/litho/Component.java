@@ -60,8 +60,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.rendercore.ContentAllocator;
-import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -86,11 +84,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Component
-    implements Cloneable,
-        ContentAllocator,
-        HasEventDispatcher,
-        EventDispatcher,
-        Equivalence<Component> {
+    implements Cloneable, HasEventDispatcher, EventDispatcher, Equivalence<Component> {
 
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
@@ -99,8 +93,6 @@ public abstract class Component
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER = "Component:WrongContextForEventHandler";
   static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
-
-  private static final int DEFAULT_MAX_PREALLOCATION = 3;
 
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
@@ -160,38 +152,6 @@ public abstract class Component
    */
   protected Component(int identityHashCode) {
     mTypeId = getOrCreateId(identityHashCode);
-  }
-
-  @Override
-  public Object createContent(Context context) {
-    return createMountContent(context);
-  }
-
-  @Override
-  public Object createPoolableContent(Context context) {
-    final Object content = createMountContent(context);
-    if (content == null) {
-      throw new RuntimeException(
-          "Component created null mount content, but mount content must never be null! Component: "
-              + getSimpleName());
-    }
-    return content;
-  }
-
-  @Override
-  public Object getPoolableContentType() {
-    return getClass();
-  }
-
-  @Override
-  public boolean isRecyclingDisabled() {
-    return poolSize() == 0;
-  }
-
-  @Nullable
-  @Override
-  public MountItemsPool.ItemPool createRecyclingPool() {
-    return onCreateMountContentPool();
   }
 
   @ThreadSafe(enableChecks = false)
@@ -300,11 +260,6 @@ public abstract class Component
     return false;
   }
 
-  /** @return true if this component can be preallocated. */
-  protected boolean canPreallocate() {
-    return false;
-  }
-
   /**
    * @return Boolean indicating whether the component skips Incremental Mount. If this is true then
    *     the Component will not be involved in Incremental Mount.
@@ -358,13 +313,6 @@ public abstract class Component
   }
 
   /**
-   * @return the MountContentPool that should be used to recycle mount content for this mount spec.
-   */
-  protected MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
-  }
-
-  /**
    * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
    *     props.
    */
@@ -411,11 +359,6 @@ public abstract class Component
 
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
-  }
-
-  @ThreadSafe
-  protected int poolSize() {
-    return DEFAULT_MAX_PREALLOCATION;
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */

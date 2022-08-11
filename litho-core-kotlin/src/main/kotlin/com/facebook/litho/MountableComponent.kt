@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit.Extension.extension
 
@@ -83,9 +82,6 @@ abstract class MountableComponent() : Component() {
 
   // All other Component lifecycle methods are final and no-op here as they shouldn't be overridden.
 
-  /** TODO: T115516203 [MountableComponent] solve for pre-allocation */
-  final override fun canPreallocate(): Boolean = false
-
   final override fun canResolve(): Boolean = false
 
   final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
@@ -108,8 +104,6 @@ abstract class MountableComponent() : Component() {
   final override fun makeShallowCopy() = super.makeShallowCopy()
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
-
-  final override fun onCreateMountContentPool() = super.onCreateMountContentPool()
 
   final override fun onCreateTransition(c: ComponentContext) = super.onCreateTransition(c)
 
@@ -140,8 +134,6 @@ abstract class MountableComponent() : Component() {
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
 
-  final override fun poolSize() = super.poolSize()
-
   final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
       super.resolve(layoutContext, c)
 
@@ -156,22 +148,6 @@ abstract class MountableComponent() : Component() {
       previousStateContainer: StateContainer,
       nextStateContainer: StateContainer
   ) = super.transferState(previousStateContainer, nextStateContainer)
-
-  final override fun createPoolableContent(context: Context): Any {
-    return super.createPoolableContent(context)
-  }
-
-  final override fun getPoolableContentType(): Any {
-    return super.getPoolableContentType()
-  }
-
-  final override fun isRecyclingDisabled(): Boolean {
-    return super.isRecyclingDisabled()
-  }
-
-  final override fun createRecyclingPool(): MountItemsPool.ItemPool? {
-    return super.createRecyclingPool()
-  }
 
   final override fun render(c: ComponentContext, widthSpec: Int, heightSpec: Int): RenderResult {
     return super.render(c, widthSpec, heightSpec)

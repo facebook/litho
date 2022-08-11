@@ -48,7 +48,7 @@ public class ComponentPoolingTest {
 
   @Test
   public void testMaybePreallocateContent() {
-    final PooledComponent component = new PooledComponent();
+    final PooledComponent component = new PooledComponent("PooledComponent");
 
     // Preallocate content more times than the defined pool size
     for (int i = 0; i < POOL_SIZE * 2; i++) {
@@ -87,8 +87,12 @@ public class ComponentPoolingTest {
     assertThat(component.getOnCreateMountContentCount()).isEqualTo(POOL_SIZE + 1);
   }
 
-  private static class PooledComponent extends Component {
+  private static class PooledComponent extends SpecGeneratedComponent {
     private int mOnCreateMountContentCount = 0;
+
+    protected PooledComponent(String simpleName) {
+      super(simpleName);
+    }
 
     @Override
     protected int poolSize() {
@@ -103,11 +107,6 @@ public class ComponentPoolingTest {
 
     public int getOnCreateMountContentCount() {
       return mOnCreateMountContentCount;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "PooledComponent";
     }
   }
 }

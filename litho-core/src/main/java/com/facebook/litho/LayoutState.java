@@ -1676,7 +1676,8 @@ public class LayoutState
         final LayoutOutput output = LayoutOutput.getLayoutOutput(treeNode);
         final Component component = output.getComponent();
 
-        if (!(component.canPreallocate()
+        if (!((component instanceof SpecGeneratedComponent
+                && ((SpecGeneratedComponent) component).canPreallocate())
             || (treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
                 && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
                     .getMountable()

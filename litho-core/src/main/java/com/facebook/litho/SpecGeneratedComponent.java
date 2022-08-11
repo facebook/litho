@@ -23,17 +23,21 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.Component.RenderData;
+import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.rendercore.ContentAllocator;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderCoreSystrace;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class SpecGeneratedComponent extends Component
-    implements EventTriggerTarget, HasEventTrigger {
+    implements ContentAllocator, EventTriggerTarget, HasEventTrigger {
+
+  private static final int DEFAULT_MAX_PREALLOCATION = 3;
 
   private final String mSimpleName;
 
@@ -491,5 +495,54 @@ public abstract class SpecGeneratedComponent extends Component
    */
   protected boolean shouldAlwaysRemeasure() {
     return false;
+  }
+
+  @Override
+  public Object createContent(Context context) {
+    return createMountContent(context);
+  }
+
+  @Override
+  public Object createPoolableContent(Context context) {
+    final Object content = createMountContent(context);
+    if (content == null) {
+      throw new RuntimeException(
+          "Component created null mount content, but mount content must never be null! Component: "
+              + getSimpleName());
+    }
+    return content;
+  }
+
+  @Override
+  public Object getPoolableContentType() {
+    return getClass();
+  }
+
+  @Override
+  public boolean isRecyclingDisabled() {
+    return poolSize() == 0;
+  }
+
+  @Nullable
+  @Override
+  public MountItemsPool.ItemPool createRecyclingPool() {
+    return onCreateMountContentPool();
+  }
+
+  /** @return true if this component can be preallocated. */
+  protected boolean canPreallocate() {
+    return false;
+  }
+
+  /**
+   * @return the MountContentPool that should be used to recycle mount content for this mount spec.
+   */
+  protected MountContentPool onCreateMountContentPool() {
+    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
+  }
+
+  @ThreadSafe
+  protected int poolSize() {
+    return DEFAULT_MAX_PREALLOCATION;
   }
 }

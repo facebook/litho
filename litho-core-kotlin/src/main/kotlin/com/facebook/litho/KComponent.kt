@@ -70,8 +70,6 @@ abstract class KComponent : Component() {
 
   final override fun canMeasure() = false
 
-  final override fun canPreallocate() = false
-
   final override fun canResolve() = false
 
   final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
@@ -94,8 +92,6 @@ abstract class KComponent : Component() {
   final override fun makeShallowCopy() = super.makeShallowCopy()
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
-
-  final override fun onCreateMountContentPool() = super.onCreateMountContentPool()
 
   final override fun onCreateTransition(c: ComponentContext) = super.onCreateTransition(c)
 
@@ -125,8 +121,6 @@ abstract class KComponent : Component() {
           interStagePropsContainer)
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
-
-  final override fun poolSize() = super.poolSize()
 
   final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
       super.resolve(layoutContext, c)

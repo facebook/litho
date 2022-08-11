@@ -76,7 +76,10 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   @Nullable
   public MountItemsPool.ItemPool createRecyclingPool() {
     try {
-      return output.getComponent().createRecyclingPool();
+      final Component component = output.getComponent();
+      return (component instanceof SpecGeneratedComponent)
+          ? ((SpecGeneratedComponent) component).createRecyclingPool()
+          : null;
     } catch (Exception e) {
       if (mContext != null) {
         ComponentUtils.handle(mContext, e);
@@ -97,7 +100,9 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   @Override
   public boolean isRecyclingDisabled() {
-    return output.getComponent().isRecyclingDisabled();
+    final Component component = output.getComponent();
+    return (component instanceof SpecGeneratedComponent)
+        && ((SpecGeneratedComponent) component).isRecyclingDisabled();
   }
 
   @Override
