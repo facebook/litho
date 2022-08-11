@@ -118,27 +118,24 @@ module.exports = {
       'codegen/trigger-events',
       'codegen/code-generation',
     ],
-    // TODO: de-dupe content with main concepts
-    ...fbInternalOnly({
-      'Migrating to the Kotlin API': [
-        'kotlin/kotlin-intro',
-        'kotlin/kotlin-api-basics',
-        'kotlin/hooks-for-spec-developers',
-        'kotlin/kotlin-flexbox-containers',
-        'kotlin/event-handling',
-        'kotlin/kotlin-api-cheatsheet',
-        {
-          'Lazy Collections' : [
-           'kotlin/lazycollections/lazycollections',
-           'kotlin/lazycollections/lazycollections-working-with-updates',
-           'kotlin/lazycollections/lazycollections-layout',
-           'kotlin/lazycollections/lazycollections-interactions',
-           'kotlin/lazycollections/lazycollections-sections-migration',
-           ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
-          ],
-        },
-      ],
-    }),
+    'Migrating to the Kotlin API': [
+      'kotlin/kotlin-intro',
+      'kotlin/kotlin-api-basics',
+      'kotlin/hooks-for-spec-developers',
+      'kotlin/kotlin-flexbox-containers',
+      'kotlin/event-handling',
+      'kotlin/kotlin-api-cheatsheet',
+      {
+        'Lazy Collections' : [
+         'kotlin/lazycollections/lazycollections',
+         'kotlin/lazycollections/lazycollections-working-with-updates',
+         'kotlin/lazycollections/lazycollections-layout',
+         'kotlin/lazycollections/lazycollections-interactions',
+         'kotlin/lazycollections/lazycollections-sections-migration',
+         ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
+        ],
+      },
+    ],
     // TODO: clean this section up, add intro page
     'Tooling': [
       {
