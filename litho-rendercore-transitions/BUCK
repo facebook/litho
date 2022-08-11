@@ -1,3 +1,4 @@
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
@@ -12,6 +13,7 @@ fb_android_library(
     name = "rendercore-transitions-stub",
     srcs = glob(["src/main/java/**/*.java"]),
     autoglob = False,
+    feature = FBApp_UIFrameworks_Litho,
     labels = ["supermodule:android/default/rendercore"],
     language = "JAVA",
     provided_deps = [
