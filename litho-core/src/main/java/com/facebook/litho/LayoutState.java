@@ -1203,15 +1203,13 @@ public class LayoutState
     final @Nullable LithoNode currentRoot;
     final @Nullable LayoutStateContext currentLayoutStateContext;
 
-    final boolean isReconcilable;
-
     if (currentLayoutState != null) {
       synchronized (currentLayoutState) {
         diffTreeRoot = currentLayoutState.mDiffTreeRoot;
         currentRoot = currentLayoutState.mRoot;
         currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
-        isReconcilable =
-            isReconcilable(c, component, Preconditions.checkNotNull(treeState), currentRoot);
+        final boolean isReconcilable =
+            Layout.isReconcilable(c, component, Preconditions.checkNotNull(treeState), currentRoot);
         if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
           currentLayoutState.mRoot = null;
           currentLayoutState.mLayoutResult = null;
@@ -1221,7 +1219,6 @@ public class LayoutState
       diffTreeRoot = null;
       currentRoot = null;
       currentLayoutStateContext = null;
-      isReconcilable = false;
     }
 
     final LayoutState layoutState;
@@ -1290,7 +1287,6 @@ public class LayoutState
                 component,
                 widthSpec,
                 heightSpec,
-                isReconcilable,
                 currentRoot,
                 logLayoutState);
         node = resolvedTree == null ? null : resolvedTree.getRoot();
@@ -1602,37 +1598,6 @@ public class LayoutState
 
       throw new IllegalStateException(errorMessage.toString());
     }
-  }
-
-  private static boolean isReconcilable(
-      final ComponentContext c,
-      final Component nextRootComponent,
-      final TreeState treeState,
-      final @Nullable LithoNode currentLayoutResult) {
-
-    if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
-      return false;
-    }
-
-    if (treeState == null || !treeState.hasUncommittedUpdates()) {
-      return false;
-    }
-
-    final Component currentRootComponent = currentLayoutResult.getHeadComponent();
-
-    if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
-      return false;
-    }
-
-    if (!ComponentUtils.isSameComponentType(currentRootComponent, nextRootComponent)) {
-      return false;
-    }
-
-    if (!ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent)) {
-      return false;
-    }
-
-    return true;
   }
 
   static String layoutSourceToString(@CalculateLayoutSource int source) {

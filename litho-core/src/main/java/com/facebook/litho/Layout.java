@@ -122,8 +122,7 @@ class Layout {
       final Component component,
       final int widthSpec,
       final int heightSpec) {
-    return createResolvedTree(
-        layoutStateContext, c, component, widthSpec, heightSpec, false, null, null);
+    return createResolvedTree(layoutStateContext, c, component, widthSpec, heightSpec, null, null);
   }
 
   static @Nullable ResolvedTree createResolvedTree(
@@ -132,9 +131,14 @@ class Layout {
       final Component component,
       final int widthSpec,
       final int heightSpec,
-      final boolean isReconcilable,
       final @Nullable LithoNode current,
       final @Nullable PerfEvent layoutStatePerfEvent) {
+
+    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    final boolean isReconcilable =
+        isReconcilable(
+            c, component, Preconditions.checkNotNull(renderStateContext.getTreeState()), current);
+
     try {
       applyStateUpdateEarly(layoutStateContext, c, component, current);
     } catch (Exception ex) {
@@ -150,6 +154,37 @@ class Layout {
         heightSpec,
         isReconcilable ? current : null,
         layoutStatePerfEvent);
+  }
+
+  static boolean isReconcilable(
+      final ComponentContext c,
+      final Component nextRootComponent,
+      final TreeState treeState,
+      final @Nullable LithoNode currentLayoutResult) {
+
+    if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
+      return false;
+    }
+
+    if (treeState == null || !treeState.hasUncommittedUpdates()) {
+      return false;
+    }
+
+    final Component currentRootComponent = currentLayoutResult.getHeadComponent();
+
+    if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
+      return false;
+    }
+
+    if (!ComponentUtils.isSameComponentType(currentRootComponent, nextRootComponent)) {
+      return false;
+    }
+
+    if (!ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent)) {
+      return false;
+    }
+
+    return true;
   }
 
   static @Nullable LithoLayoutResult measureTree(
