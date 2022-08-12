@@ -1554,8 +1554,6 @@ public class LayoutState
         && !ComponentsConfiguration.keepLithoNodes) {
       layoutState.mRoot = null;
       layoutState.mLayoutResult = null;
-    } else if (!ComponentsConfiguration.keepLayoutResults) {
-      layoutState.mLayoutResult = null;
     }
   }
 
