@@ -368,7 +368,7 @@ class Layout {
     node.appendComponent(scopedComponentInfo);
 
     // 11. Create and add transition to this component's InternalNode.
-    if (areTransitionsEnabled(c)) {
+    if (c.areTransitionsEnabled()) {
       if (component instanceof SpecGeneratedComponent
           && ((SpecGeneratedComponent) component).needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo);
@@ -710,20 +710,6 @@ class Layout {
       NestedTreeHolderResult holder, LithoLayoutResult nestedTree) {
     return nestedTree.getNode().isLayoutDirectionInherit()
         || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
-  }
-
-  /**
-   * This method determine if transitions are enabled for the user. If the experiment is enabled for
-   * the user then they will get cached value else it will be determined using the utility method.
-   *
-   * @param context Component context.
-   * @return true if transitions are enabled.
-   */
-  static boolean areTransitionsEnabled(final @Nullable ComponentContext context) {
-    if (context == null || context.getComponentTree() == null) {
-      return AnimationsDebug.areTransitionsEnabled(null);
-    }
-    return context.getComponentTree().areTransitionsEnabled();
   }
 
   static boolean shouldComponentUpdate(

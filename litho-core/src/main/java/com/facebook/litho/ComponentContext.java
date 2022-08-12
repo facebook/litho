@@ -702,4 +702,17 @@ public class ComponentContext implements Cloneable {
     return getComponentTree() != null
         && getComponentTree().shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation();
   }
+
+  /**
+   * This method determine if transitions are enabled for the user. If the experiment is enabled for
+   * the user then they will get cached value else it will be determined using the utility method.
+   *
+   * @return true if transitions are enabled.
+   */
+  boolean areTransitionsEnabled() {
+    if (getComponentTree() == null) {
+      return AnimationsDebug.areTransitionsEnabled(null);
+    }
+    return getComponentTree().areTransitionsEnabled();
+  }
 }

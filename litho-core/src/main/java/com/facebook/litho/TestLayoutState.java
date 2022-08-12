@@ -22,7 +22,6 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.litho.Layout.applyRenderResultToNode;
-import static com.facebook.litho.Layout.areTransitionsEnabled;
 
 import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
@@ -413,7 +412,7 @@ public class TestLayoutState {
     node.appendComponent(scopedComponentInfo);
 
     // 11. Create and add transition to this component's InternalNode.
-    if (areTransitionsEnabled(c)) {
+    if (c.areTransitionsEnabled()) {
       if (component instanceof SpecGeneratedComponent
           && ((SpecGeneratedComponent) component).needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(globalKey, scopedComponentInfo);
