@@ -351,14 +351,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     }
   }
 
-  public @Nullable LithoRenderUnit getHostRenderUnit(final LayoutState layoutState) {
+  public @Nullable LithoRenderUnit getHostRenderUnit(
+      final LayoutState layoutState, final boolean isRoot) {
     if (mContext.shouldReuseOutputs()) {
       if (mHostRenderUnit == null) {
-        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this, layoutState);
+        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this, layoutState, isRoot);
       }
       return mHostRenderUnit;
     } else {
-      return InternalNodeUtils.createHostRenderUnit(this, layoutState);
+      return InternalNodeUtils.createHostRenderUnit(this, layoutState, isRoot);
     }
   }
 

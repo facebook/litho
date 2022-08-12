@@ -100,13 +100,8 @@ public class InternalNodeUtils {
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
   static @Nullable LithoRenderUnit createHostRenderUnit(
-      LithoLayoutResult result, final LayoutState layoutState) {
+      LithoLayoutResult result, final LayoutState layoutState, final boolean isRoot) {
     final LithoNode node = result.getNode();
-    final boolean isRoot =
-        !layoutState.mShouldAddHostViewForRootComponent
-            && (result.getParent() == null
-                || (result.getParent() instanceof NestedTreeHolderResult
-                    && result.getParent().getParent() == null));
 
     if (!isRoot && !needsHostView(result, layoutState)) {
       return null;
