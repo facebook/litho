@@ -49,73 +49,6 @@ class Layout {
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
-  static @Nullable ResolvedTree resolveTree(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
-      final Component component,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable LithoNode current,
-      final @Nullable PerfEvent layoutStatePerfEvent) {
-
-    if (layoutStatePerfEvent != null) {
-      final String event = current == null ? EVENT_START_CREATE_LAYOUT : EVENT_START_RECONCILE;
-      layoutStatePerfEvent.markerPoint(event);
-    }
-
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
-
-    final @Nullable LithoNode node;
-    if (current == null) {
-      node =
-          create(
-              layoutStateContext,
-              c,
-              widthSpec,
-              heightSpec,
-              component,
-              !c.shouldAlwaysResolveNestedTreeInMeasure(),
-              null);
-
-      // This needs to finish layout on the UI thread.
-      if (node != null && renderStateContext.isLayoutInterrupted()) {
-        if (layoutStatePerfEvent != null) {
-          layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
-        }
-
-        return new ResolvedTree(node);
-      } else {
-        // Layout is complete, disable interruption from this point on.
-        renderStateContext.markLayoutUninterruptible();
-      }
-    } else {
-      final String globalKeyToReuse = current.getHeadComponentKey();
-
-      if (globalKeyToReuse == null) {
-        throw new IllegalStateException("Cannot reuse a null global key");
-      }
-
-      final ComponentContext updatedScopedContext =
-          update(layoutStateContext, c, component, globalKeyToReuse);
-      final Component updated = updatedScopedContext.getComponentScope();
-
-      node =
-          current.reconcile(
-              layoutStateContext,
-              c,
-              updated,
-              updatedScopedContext.getScopedComponentInfo(),
-              globalKeyToReuse);
-    }
-
-    if (layoutStatePerfEvent != null) {
-      final String event = current == null ? EVENT_END_CREATE_LAYOUT : EVENT_END_RECONCILE;
-      layoutStatePerfEvent.markerPoint(event);
-    }
-
-    return node == null ? null : new ResolvedTree(node);
-  }
-
   static @Nullable ResolvedTree createResolvedTree(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -146,14 +79,60 @@ class Layout {
       return null;
     }
 
-    return resolveTree(
-        layoutStateContext,
-        c,
-        component,
-        widthSpec,
-        heightSpec,
-        isReconcilable ? current : null,
-        layoutStatePerfEvent);
+    if (layoutStatePerfEvent != null) {
+      final String event = isReconcilable ? EVENT_START_RECONCILE : EVENT_START_CREATE_LAYOUT;
+      layoutStatePerfEvent.markerPoint(event);
+    }
+
+    final @Nullable LithoNode node;
+    if (!isReconcilable) {
+      node =
+          create(
+              layoutStateContext,
+              c,
+              widthSpec,
+              heightSpec,
+              component,
+              !c.shouldAlwaysResolveNestedTreeInMeasure(),
+              null);
+
+      // This needs to finish layout on the UI thread.
+      if (node != null && renderStateContext.isLayoutInterrupted()) {
+        if (layoutStatePerfEvent != null) {
+          layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
+        }
+
+        return new ResolvedTree(node);
+      } else {
+        // Layout is complete, disable interruption from this point on.
+        renderStateContext.markLayoutUninterruptible();
+      }
+    } else {
+      final String globalKeyToReuse = Preconditions.checkNotNull(current).getHeadComponentKey();
+
+      if (globalKeyToReuse == null) {
+        throw new IllegalStateException("Cannot reuse a null global key");
+      }
+
+      final ComponentContext updatedScopedContext =
+          update(layoutStateContext, c, component, globalKeyToReuse);
+      final Component updated = updatedScopedContext.getComponentScope();
+
+      node =
+          current.reconcile(
+              layoutStateContext,
+              c,
+              updated,
+              updatedScopedContext.getScopedComponentInfo(),
+              globalKeyToReuse);
+    }
+
+    if (layoutStatePerfEvent != null) {
+      final String event = current == null ? EVENT_END_CREATE_LAYOUT : EVENT_END_RECONCILE;
+      layoutStatePerfEvent.markerPoint(event);
+    }
+
+    return node == null ? null : new ResolvedTree(node);
   }
 
   static boolean isReconcilable(
