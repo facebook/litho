@@ -54,15 +54,6 @@ class Layout {
       final ComponentContext c,
       final Component component,
       final int widthSpec,
-      final int heightSpec) {
-    return createResolvedTree(layoutStateContext, c, component, widthSpec, heightSpec, null, null);
-  }
-
-  static @Nullable ResolvedTree createResolvedTree(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
-      final Component component,
-      final int widthSpec,
       final int heightSpec,
       final @Nullable LithoNode current,
       final @Nullable PerfEvent layoutStatePerfEvent) {

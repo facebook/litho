@@ -2281,7 +2281,13 @@ public class LayoutStateCalculateTest {
 
     final @Nullable ResolvedTree resolvedTree =
         Layout.createResolvedTree(
-            Preconditions.checkNotNull(layoutStateContext), c, component, widthSpec, heightSpec);
+            Preconditions.checkNotNull(layoutStateContext),
+            c,
+            component,
+            widthSpec,
+            heightSpec,
+            null,
+            null);
 
     final LithoNode lithoNode = resolvedTree == null ? null : resolvedTree.getRoot();
 

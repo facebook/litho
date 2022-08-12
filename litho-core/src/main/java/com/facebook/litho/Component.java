@@ -661,7 +661,13 @@ public abstract class Component
 
       final @Nullable ResolvedTree resolvedTree =
           Layout.createResolvedTree(
-              Preconditions.checkNotNull(layoutStateContext), c, this, widthSpec, heightSpec);
+              Preconditions.checkNotNull(layoutStateContext),
+              c,
+              this,
+              widthSpec,
+              heightSpec,
+              null,
+              null);
 
       final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
