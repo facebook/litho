@@ -312,6 +312,8 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldReuseOutputs;
 
+  private final boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
+
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -329,10 +331,16 @@ public class ComponentsConfiguration {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
+    mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
+        builder.mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
   public boolean shouldReuseOutputs() {
     return mShouldReuseOutputs;
+  }
+
+  public boolean keepLithoNodeAndLayoutResultTreeWithReconciliation() {
+    return mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
   /**
@@ -376,6 +384,7 @@ public class ComponentsConfiguration {
     boolean mUseCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
     boolean mShouldReuseOutputs = false;
+    boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
 
     protected Builder() {}
 
@@ -388,6 +397,13 @@ public class ComponentsConfiguration {
     public ComponentsConfiguration.Builder ignoreNullLayoutStateError(
         boolean ignoreNullLayoutStateError) {
       this.mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
+      return this;
+    }
+
+    public ComponentsConfiguration.Builder keepLithoNodeAndLayoutResultTreeWithReconciliation(
+        boolean keepLithoNodeAndLayoutResultTreeWithReconciliation) {
+      this.mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
+          keepLithoNodeAndLayoutResultTreeWithReconciliation;
       return this;
     }
 

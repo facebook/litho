@@ -1324,6 +1324,10 @@ public class ComponentTree implements LithoLifecycleListener {
     return mShouldAlwaysResolveNestedTreeInMeasure;
   }
 
+  public boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {
+    return mComponentsConfiguration.keepLithoNodeAndLayoutResultTreeWithReconciliation();
+  }
+
   public ErrorEventHandler getErrorEventHandler() {
     return mErrorEventHandler;
   }

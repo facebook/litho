@@ -1209,11 +1209,15 @@ public class LayoutState
         diffTreeRoot = currentLayoutState.mDiffTreeRoot;
         currentRoot = currentLayoutState.mRoot;
         currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
-        final boolean isReconcilable =
-            Layout.isReconcilable(c, component, Preconditions.checkNotNull(treeState), currentRoot);
-        if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
-          currentLayoutState.mRoot = null;
-          currentLayoutState.mLayoutResult = null;
+
+        if (!c.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation()) {
+          final boolean isReconcilable =
+              Layout.isReconcilable(
+                  c, component, Preconditions.checkNotNull(treeState), currentRoot);
+          if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
+            currentLayoutState.mRoot = null;
+            currentLayoutState.mLayoutResult = null;
+          }
         }
       }
     } else {
