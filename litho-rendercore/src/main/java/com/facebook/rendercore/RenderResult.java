@@ -176,7 +176,7 @@ public class RenderResult<State> {
     return wrapInLazyTree(node, (Void) null);
   }
 
-  public static <T> LazyTree wrapInLazyTree(final Node node, final @Nullable T state) {
+  public static <T> LazyTree<T> wrapInLazyTree(final Node node, final @Nullable T state) {
     return new LazyTree<T>() {
       @Override
       public Pair<Node, T> resolve() {
