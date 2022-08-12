@@ -9,12 +9,12 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-This page covers how to convert existing code from Java Spec API to Kotlin API. For more information, refer to the [Tutorial](../tutorial/overview.md).
+The following cheatsheet provides a set of links for the migration of individual aspects of existing code from the Java Spec API to Kotlin API.
 :::
 
-| Java Spec API | Kotlin API |
-| -- | -- |
-| @LayoutSpec | [KComponent](basics.mdx) |
+| Java Spec API | Kotlin API Link |
+| :-- | :-- |
+| @LayoutSpec | [KComponent and Props](basics.mdx) |
 | @OnCreateLayout | [ComponentScope.render()](basics.mdx) |
 | @OnCreateTransition | [useTransition()](/kotlin/hooks-for-spec-developers.mdx#usetransition) |
 | @OnCreateInitialState / @OnUpdateState | [useState()](/mainconcepts/use-state.mdx) |
@@ -26,11 +26,11 @@ This page covers how to convert existing code from Java Spec API to Kotlin API. 
 | @TreeProp | [getTreeProp()](basics.mdx#treeprops) |
 | @OnCreateTreeProp | [TreePropProvider](basics.mdx#treeprops) |
 | Common Props | [Style](basics.mdx#common-props) |
-| @InjectProp | [use new Static DI API](https://www.internalfb.com/intern/wiki/Ultralight/Static_Injector/) |
-| Column.create(context) | [Column()](flexbox-containers.mdx); see [Flexbox Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
-| Row.create(context) | [Row()](flexbox-containers.mdx); see [Flexbox Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| @InjectProp | Use Ultralight, the [New API](https://www.internalfb.com/intern/wiki/Ultralight/Static_Injector/) |
+| Column.create(context) | [Column()](flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
+| Row.create(context) | [Row()](flexbox-containers.mdx); see [Flexbox Properties Cheatsheet](flexbox-containers.mdx#flexbox-properties-cheatsheet) |
 | Manual Keys | [key()](mainconcepts/coordinate-state-actions/keys-and-identity.md#assigning-manual-keys) |
 | Handle | [handle()](basics.mdx#handles) |
-| @OnCreateLayoutWithSizeSpec | not yet supported: [suggested workaround](../custom-layout.md#kotlin-integration) |
-| @MountSpec / @GroupSectionSpec | not yet supported: use Spec API for now |
-| @OnTrigger | not yet supported; use Spec API for now |
+| @OnCreateLayoutWithSizeSpec | Not yet supported. Suggested [workaround](../custom-layout.md#kotlin-integration) |
+| @MountSpec / @GroupSectionSpec | Not yet supported. For now, use the Spec API. |
+| @OnTrigger | Not yet supported. For now, use the Spec API. |

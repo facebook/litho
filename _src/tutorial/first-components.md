@@ -3,7 +3,7 @@ id: first-components
 title: Components and Props
 ---
 
-In this section of the tutorial, you'll learn the basic Litho building blocks then create your first component that uses [props](../kotlin/basics.mdx#props).
+In this section of the tutorial, you'll learn the basic Litho building blocks then create your first component that uses [props](../mainconcepts/props.mdx).
 
 ## Basic Litho building blocks
 
@@ -55,3 +55,5 @@ To use your component, just replace the Text component in the "Hello, World!" ex
 ## What next?
 
 The next section of the tutorial [Introducing Layout](introducing-layout.md) helps you become familiar with building layouts using Flexbox.
+
+For more information, see the [Components](../mainconcepts/components-basics.mdx) and [Props](../mainconcepts/props.mdx) pages of the 'Main Concepts' section.

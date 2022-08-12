@@ -7,7 +7,9 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-`useEffect` is a hook that allows a component to perform side effects when it's attached and/or detached from the tree, or in response to changes in committed props or state.
+`useEffect` is a hook that allows a component to perform side effects[^1] when it's attached and/or detached from the tree, or in response to changes in committed props or state.
+
+[^1]: Side effects include operations such as fetch requests, subscriptions, using timers, and manually changing the DOM. By using the useEffect hook, you are stating that the component needs to do someting after its rendered.
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
 
@@ -30,7 +32,7 @@ Without any dependency args, these lambdas are invoked **every time** a new layo
 
 You can have a finer-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
 
-## Side Effects with Dependencies
+## Side effects with dependencies
 
 :::note
 Dependencies are checked for equivalence by calling `equals`. If any are not equal, the hook will be cleaned up and called again.
@@ -69,7 +71,7 @@ useEffect {
 }
 ```
 
-### Unconditionally Triggering Side Effects
+### Unconditionally triggering side effects
 
 `useEffect` can be called without dependencies. In such a case, on each new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current useEffect call.
 
@@ -80,10 +82,10 @@ An important functionality that `useEffect` adds is the ability to trigger code 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
 ```
 
-## Known Problems
+## Known issues
 
 ### `useEffect` in Components That Can Return Null from `render`
 
-If you specify an effect via `useEffect` and then return null from `render`, or render to a child, which returns null from render, then the effect won't run.
+If you specify an effect via `useEffect` and then return null from `render`, or render to a child (which returns null from render), then the effect won't run.
 
 Until this is fixed, the workaround is to return an empty `Row()` from render instead of null.

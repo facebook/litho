@@ -1,9 +1,9 @@
 ---
 id: working-ranges
-title: 'Advanced: Prefetch and Pagination'
+title: Prefetch and Pagination
 ---
 
-The Working Ranges API provides the means to perform complex operations such as data prefetching and cache warming.
+The Working Ranges API (see the 'API' menu) provides the means to perform complex operations such as data prefetching and cache warming.
 
 The API extends Sections with a set of appearance and visibility events when a Section enters and exits a given range of positions inside and outside the screen viewport. For example, you can perform a network request to start prefetching data as the last element of a list approaches the viewport.
 

@@ -3,13 +3,13 @@ id: spec-props
 title: Props in Specs
 ---
 
-:::note
-This page covers the old Java Spec API. If you aren't using the Spec API, please refer to [Common Props](mainconcepts/props.mdx/#common-props).
-:::
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::caution
+This page covers the old Java Spec API. If you're not using the Spec API, refer to the [Components](../../mainconcepts/components-basics.mdx) page.
+:::
 
 Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://reactjs.org/docs/components-and-props.html), inputs to a `Component` are known as *props*.
 
@@ -17,9 +17,9 @@ In the Spec API, props for a given `Component` are the union of all arguments an
 
 In the Kotlin API, props are just `val` properties on a Component and can be accessed in the `render` function and its hooks.
 
-## Props Immutability
+## Prop immutability
 
-The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
+The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component, and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
 
 :::important
 Props should be immutable. Due to background layout, props may be accessed on multiple threads. The immutability of props ensures that no thread safety issues can occur during the component's lifecycle.
@@ -44,6 +44,7 @@ Props are just `val` properties of a Component.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/HelloComponent.kt start=start_simple_example end=end_simple_example
 ```
+
   </TabItem>
   <TabItem value="java_props_tab">
 
@@ -51,6 +52,7 @@ Props are defined using the `@Prop` annotation.
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 </Tabs>
 
@@ -76,6 +78,7 @@ You can simply pass the prop by its name in the KComponent.
 ```kotlin
 KotlinApiComponent(name = "Linda")
 ```
+
   </TabItem>
   <TabItem value="java_props_tab">
 
@@ -85,6 +88,7 @@ You pass down values for these props by calling the appropriate methods on the g
 ```java
 FirstComponent.create(c).name("Linda").build();
 ```
+
   </TabItem>
 </Tabs>
 
@@ -105,6 +109,7 @@ In the Kotlin API, default values are always explicit because optional props are
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropDefaultKComponent.kt start=start_example end=end_example
 ```
+
    </TabItem>
   <TabItem value="java_props_tab">
 
@@ -119,6 +124,7 @@ Instead of using the Java defaults, you may want to define an explicit default v
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/PropDefaultComponentSpec.java start=start_example end=end_example
 ```
+
   </TabItem>
 </Tabs>
 
@@ -186,6 +192,7 @@ The following example shows how to define a `PropDefault` with a resource value:
 ```java
 @PropDefault(resType = ResType.DIMEN_SIZE, resId = R.dimen.vertical_spacing) static float spacingVertical;
 ```
+
   </TabItem>
 </Tabs>
 
@@ -211,6 +218,7 @@ It can then be used as follows:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropParentKComponent.kt start=start_var_arg_usage end=end_var_arg_usage
 ```
+
    </TabItem>
 
   <TabItem value="java_props_tab">
@@ -224,6 +232,7 @@ It can then be used as follows:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropParentComponentSpec.java start=start_var_arg_usage end=end_var_arg_usage
 ```
+
   </TabItem>
  </Tabs>
 
@@ -242,6 +251,7 @@ Variable Arguments also work with Android resources as props:
 
   ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropParentKComponent.kt start=start_var_arg_res_type_usage end=end_var_arg_res_type_usage
   ```
+
   </TabItem>
 
   <TabItem value="java_props_tab">
@@ -255,5 +265,6 @@ Variable Arguments also work with Android resources as props:
 
   ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/props/VariableArgumentPropParentComponentSpec.java start=start_var_arg_res_type_usage end=end_var_arg_res_type_usage
   ```
+
  </TabItem>
  </Tabs>

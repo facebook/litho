@@ -12,13 +12,14 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::note
-This page covers how to convert existing Component with `@LayoutSpecs` to Kotlin `KComponent`.
-For information regarding the main Components and Props, refer the [Components and Props Tutorial](../tutorial/first-components.md).
+This page details how to convert existing Component with `@LayoutSpecs` to Kotlin `KComponent`.
+
+For information regarding the main Components and Props, refer the [Components and Props](../tutorial/first-components.md) page of the Tutorial.
 :::
 
-## Basics
+## Code generation
 
-The most fundamental change in the Litho Kotlin API is that code generation is no longer used. This means you don't need to mark your Components as `@LayoutSpecs` or declare any other annotations in the class. Remember to leave off the 'Spec' at the end of the Component name as well!
+The most fundamental change in the Litho Kotlin API is that code generation is no longer used. This means you don't need to mark your Components as `@LayoutSpecs` or declare any other annotations in the class. Remember to leave off the 'Spec' at the end of the Component name!
 
 The static method marked with `@OnCreateLayout` is replaced with a `render` function override, which returns what your component should render.
 
@@ -68,8 +69,8 @@ Text(text = "Hello $name!")
 
 ## Common Props
 
-:::note
-**Definition**: A *Style* object is an immutable, linked-list of properties to apply to a Component.
+:::info
+A *Style* object is an immutable, linked-list of properties to apply to a Component.
 :::
 
 Common props, such as `margin`, `clickHandler`, and `alpha`, are now set using **Style**.
@@ -111,7 +112,7 @@ For an illustration of this process, see the 6-minute YouTube video [Litho Lesso
 This API also gives flexibility to accept multiple Style objects to apply to different children since all common props are passed down explicitly!
 :::
 
-### Java - Kotlin Compatibility
+### Java - Kotlin compatibility
 
 If you need to pass down a `Style` from a Java class to a Kotlin `KComponent`, use `StyleCompat`:
 

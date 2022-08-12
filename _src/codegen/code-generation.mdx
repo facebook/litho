@@ -3,26 +3,22 @@ id: code-generation
 title: "Code generation"
 ---
 
-:::note
-This page covers the old Java Spec API. If you aren't using the Spec API, please refer to [Components](mainconcepts/components-basics.mdx).
+:::caution
+This page covers the old Java Spec API. If you aren't using the Spec API, refer to the [Components](../mainconcepts/components-basics.mdx) page.
 :::
 
-Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called [SpecModels](pathname:///javadoc/com/facebook/litho/specmodels/model/SpecModel.html), which are immutable java objects.
+Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called [SpecModels](pathname:///javadoc/com/facebook/litho/specmodels/model/SpecModel.html), which are immutable Java objects.
 
-Code generation consists of three main steps:
+Code generation consists of three steps, as detailed in the following sections.
 
-1. Creating a Spec Model from a Component Spec.
-2. Spec Model Validation.
-3. Component generation from a given Spec Model.
-
-## Spec Model Creation
+## 1. Spec model creation
 
 Spec models are created at compile time using an annotation processor, which is a tool in javac for scanning and processing annotations. The Litho annotation processor processes the annotations, methods and fields on your Component Specs and creates a Spec Model for each one.
 
-## Spec Model Validation
+## 2. Spec model validation
 
 Spec Models have a method called `validate()` that returns a list of [SpecModelValidationErrors](pathname:///javadoc/com/facebook/litho/specmodels/model/SpecModelValidationError.html). If this list is empty, then the Spec is well-formed and may be used to generate a valid Component. If not, then it will contain a list of errors that need to be fixed before a valid Component is generated.
 
-## Component Generation
+## 3. Component generation
 
 If the validation step on a Spec Model is successful, then the `generate` method may be called. This creates a [Javapoet](https://github.com/square/javapoet) `TypeSpec`, which can then be easily used to create a Component class file.

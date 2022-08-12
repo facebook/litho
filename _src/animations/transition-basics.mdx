@@ -17,7 +17,7 @@ It's important to avoid accessing the underlying view to add animations as these
 Transitions can be used to animate view properties when they change between layouts, which is due to a state update or new props from the parent.
 When changes to a tree occur due to a new state, these changes happen immediately.
 
-The following code and animation show a simple Component that renders a yellow square then aligns it to either the right or left edge of screen based on value of `toRight`:
+The following code and animation show a simple Component that renders a yellow square then aligns it to either the right or left edge of the screen, based on the value of `toRight`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=layout_start end=layout_end
 ```
@@ -64,6 +64,7 @@ The following sample shows the APIs in use:
 ```
 
 The above code features the following:
+
 * `transitionKey`- assigned to the component using the `Style.transitionKey` method.
 * `Transition` - created using [Transition.create()](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and specifies the property of the component using the [.animate()](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method, which takes an [AnimatedProperty](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html). Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), which means multiple `Transition`s may be expressed as follows:
 

@@ -1,7 +1,17 @@
 ---
 id: accessibility-overview
-title: Overview
+title: Making the UI Accessible
 ---
+
+## Why Accessibility is important
+
+The fundamental purpose of an interface is to provide people with access to information. Accessibility is the foundation of an interface. All people experience limitations in their abilities, whether it's temporary, situational or permanent. The aim of accessibility is to remove any obstacles that reduce the experience of using, understanding, and navigating your interface.
+
+This page provides details of the Litho components, methods, nodes, events, and headings available to ensure your interface provides the 'full experience' promoted by Meta.
+
+:::information
+For information on how Meta is committed to creating a full UI experience for **all** people, see the [Meta Accessibility](https://en-gb.facebook.com/accessibility/) site.
+:::
 
 ## Content Description
 
@@ -42,10 +52,10 @@ On more complex mount specs that need to expose extra nodes to the accessibility
 * **GetExtraAccessibilityNodesCount** - returns number of extra accessibility nodes exposed by the component.
 * **OnPopulateExtraAccessibilityNode** - populates the extra accessibility node with the given bounds.
 
-## Accessibility Handling
+## Accessibility handling
 
 All components support a set of events corresponding to [AccessibilityDelegateCompat](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods.
-These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate`, which allows you to explicitly call `View`'s default implementation of accessibility methods where necessary.
+These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate`, which enables you to explicitly call a`View`'s default implementation of accessibility methods where necessary.
 
 The following table provides an overview of the supported events:
 
@@ -64,7 +74,7 @@ Setting a handler for any of these events will result in an `AccessibilityDelega
 
 Whenever a method for which you haven't supplied an event handler is called, the delegate will defer to the Android `View`'s default implementation (equivalent to calling `super` or `superDelegate`'s implementation).
 
-The following steps provide an example of overriding `onInitializeAccessibilityNodeInfo` for a component:
+The following three steps provide an example of overriding `onInitializeAccessibilityNodeInfo` for a component:
 
 1. Implement an event handler:
 

@@ -55,3 +55,5 @@ With the Flexbox style applied, your component should look like the following im
 ## What next?
 
 In the next section of the tutorial, [Adding State](adding-state.md), you'll learn about 'useState', one of Litho's 'hooks'.
+
+For more information, see [Layout System with Flexbox](../mainconcepts/flexbox-yoga.mdx) in the 'Main Concepts' section.

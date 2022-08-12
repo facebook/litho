@@ -4,51 +4,42 @@ title: Debugging Sections
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-## Debugging Litho Sections Surfaces with the Flipper Sections Plugin
+This page acts as a debugging guide that explains how to read the operations performed when an event occurs in a Litho Sections surface with the Flipper Sections plugin. This helps to debug common [issues](#issues) such as unwanted scrolling and items getting re-rendered incorrectly.
 
-This page acts as a debugging guide that explains how to read the operations performed when an event occurs in a Sections surface. This will help debug common issues such as unwanted scrolling and items getting re-rendered incorrectly.
+## Sections hierarchies
 
-### Sections Hierarchies
+In a Litho Sections hierarchy, the common setup is to have a `RecyclerCollectionComponent` as the root of your `LithoView`. This component is the bridge with the Sections hierarchy. You'll use this setup indirectly if you're using `SectionsHelper`.
 
-In a Litho+Sections hierarchy, the common setup is to have a `RecyclerCollectionComponent` as the root of your `LithoView`. This component is the bridge with the Sections hierarchy. You'll use this setup indirectly if you're using `SectionsHelper`.
-
-The `RecyclerCollectionComponent` wraps a `Recycler` component which mounts a `RecyclerView`. All sections surfaces are just APIs to make it easier to work with `RecyclerView` and `RecyclerView.Adapter`.
+The `RecyclerCollectionComponent` wraps a `Recycler` component, which mounts a `RecyclerView`. All sections surfaces are just APIs to make it easier to work with `RecyclerView` and `RecyclerView.Adapter`.
 
 The adapter abstraction used in Sections is called a `RecyclerBinder`.
-All adapter operations are dispatched to the `RecyclerBinder`, which will use the render information implemented by the user in the GroupSectionSpec to transform them into `LithoViews` hosting `ComponentTrees`.  The `LithoViews` represent the items inserted into the `RecyclerView.Adapter`.
+All adapter operations are dispatched to the `RecyclerBinder`, which use the render information implemented by the user in the GroupSectionSpec to transform them into `LithoViews` hosting `ComponentTrees`.  The `LithoViews` represent the items inserted into the `RecyclerView.Adapter`.
 
 Simply put, under the hood, a Sections hierarchy is represented by a `RecyclerView` with a single view type which is the `LithoView`. Each item in the list is its own `ComponentTree`.
 
 ![](/images/debugging-sections-hierarchies.png)
 
-### Sections Terminology
+## Sections terminology
 
-#### Diffing
+### Diffing
 
-Diffing means comparing the existing data on a Section with an updated list passed through props or state. You will accomplish this through special Section Spec types called [DiffSectionSpecs](../sections/start.mdx).
+Diffing means comparing the existing data on a Section with an updated list passed through props or state. You can accomplish this through special Section Spec types called [DiffSectionSpecs](../sections/start.mdx).
 
-#### Changesets
+### Changesets
 
 A `Changeset` is a list of operations that are dispatched to the `RecyclerView Adapter` to update the items in a list. A Changeset consists of the same type of operations supported by a `RecyclerView Adapter`, such as insert, remove and update.
 
-Every time you recreate the Sections hierarchy by setting a new root or updating state, the framework calculates a new `Changeset` which will have the minimal list of operations that should be performed by the `RecyclerView Adapter` to reflect the data changes in the UI.
+Every time you recreate the Sections hierarchy by setting a new root or updating state, the framework calculates a new `Changeset`, which have the minimal list of operations that should be performed by the `RecyclerView Adapter` to reflect the data changes in the UI.
 
 Without using Sections, it’s the Developer’s responsibility to calculate granular operations for efficient updates to send to the Adapter, but the Sections API handles all of that.
 
-### Issues
+## Issues
 
-The following common issues can occur when using Sections, each issue has an accompanying description and walks you through how to debug them:
-
-* [Issue 1: the state of an entire Section surface is getting reset](#issue-1-the-state-of-an-entire-section-surface-is-getting-reset).
-* [Issue 2: the Section content scrolls away from top after loading](#issue-2-the-section-content-scrolls-away-from-top-after-loading).
-* [Issue 3: all items are being re-rendered after a data update](#issue-3-all-items-are-being-re-rendered-after-a-data-update).
-* [Issue 4: the Section is not updating items after a prop update](#issue-4-the-section-is-not-updating-items-after-a-prop-update).
-
-The code for the above issues is located in the [changesetdebug](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/changesetdebug) file.
+The following common issues can occur when using Sections, each issue has an accompanying description and walks you through how to debug them.  The code for the issues is located in the [changesetdebug](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/changesetdebug) file.
 
 To test yourself: `./gradlew installDebug` and navigate to the `Changeset debug` section.
 
-#### Issue 1: the state of an entire Section surface is getting reset
+### Issue 1: the state of an entire Section surface is getting reset
 
 **Code**: [StateResettingActivity](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/changesetdebug/StateResettingActivity.java)
 
@@ -91,7 +82,7 @@ Looking at the implementation of `StateResettingRootComponent` again, you can se
 
 The fix for this issue is to maintain the state after the `setRoot` update, you need to make the hierarchy of components stable.  This involves making sure that the path from the root to any stateful component is preserved after an update. In this case, always wrapping the children in a column and conditionally adding the header as a child would solve the issue.
 
-#### Issue 2: the Section content scrolls away from top after loading
+### Issue 2: the Section content scrolls away from top after loading
 
 **Code**: [ScrollingToBottomActivity](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/changesetdebug/ScrollingToBottomActivity.java)
 
@@ -120,7 +111,7 @@ static void onDataBound(SectionContext c) {
 }
 ```
 
-#### Issue 3: all items are being re-rendered After a data update
+### Issue 3: all items are being re-rendered after a data update
 
 **Code**: [ItemsRerenderingActivity](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/changesetdebug/ItemsRerenderingActivity.java)
 
@@ -194,7 +185,7 @@ After making the above change to [InefficientFavouriteGroupSectionSpec](https://
 
 ![](/images/debugging-sections-issue3.png)
 
-#### Issue 4: the Section is not updating items after a prop update
+### Issue 4: the Section is not updating items after a prop update
 
 **Code**: [PropUpdatingActivity](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/changesetdebug/PropUpdatingActivity.java)
 

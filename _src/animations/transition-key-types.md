@@ -1,11 +1,13 @@
 ---
 id: transition-key-types
-title: 'Advanced: Transitions Key Scoping'
+title: Transition Key Scoping
 ---
 
-Within the other pages of the 'Animations' section, you'll see that a common approach is used when defining transitions: assigning transition keys and creating transitions, all within a single `ComponentSpec`. There are situations where this approach is not suitable, that is, the transition key is assigned within one `ComponentSpec` while the transitions themselves are defined in another.
+Within the other pages of the 'Animations' section, you'll see that a common approach is used when defining transitions: assigning transition keys and creating transitions, all within a single `ComponentSpec`.
 
-If you try to do everything using the approach taken in the 'other' pages, it won't work. It will look like there are no transitions defined, as shown in the following two LayoutSpecs:
+There are situations where this approach is not suitable, such as when the transition key is assigned within one `ComponentSpec` while the transitions themselves are defined in another.
+
+If you try to do everything using the same approach taken in the other pages in the Animations section, it won't work. It will look like there are no transitions defined, as shown in the following two LayoutSpecs:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyParentComponentSpec.java start=not_working_start end=not_working_end
 ```
@@ -13,9 +15,9 @@ If you try to do everything using the approach taken in the 'other' pages, it wo
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyTransitionComponentSpec.java start=not_working_start end=not_working_end
 ```
 
-The reason why it won't work is that, by default, transition keys are only visible within the scope of the component spec where they are used.
+The reason it won't work is that, **by default, transition keys are only visible within the scope of the component spec in which they are used**.
 
-The scope of transition keys is determined by the [TransitionKeyType](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html). There are two options:
+The scope of transition keys is determined by the [TransitionKeyType](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html), for which there are two options:
 
 * [LOCAL](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html#LOCAL) - the default type; only visible within the `ComponentSpec` where it's used.
 * [GLOBAL](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html#GLOBAL) - makes a transition key visible through the whole `ComponentTree`. The drawback here is that the keys should be unique within the tree. It usually takes extra effort to use several components of the same type that assign the `GLOBAL` transition keys within one tree to avoid transition key collisions.

@@ -3,7 +3,7 @@ id: reconciliation
 title: Introduction
 ---
 
-import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
 
 Reconciliation is an implementation detail in Litho’s layout calculation process. Instead of recreating the entire layout tree for every update, reconciliation enables Litho to clone the
 unmodified subtrees and only recreate the subtree that has changed.

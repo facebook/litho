@@ -1,6 +1,6 @@
 ---
 id: kotlin-intro
-title: Setup and Intro
+title: Intoduction and Setup
 keywords:
     - litho
     - litho kotlin
@@ -12,21 +12,17 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-:::note
-This page covers how to convert existing code from Java Spec API to Kotlin API. For the main docs, refer to the [Tutorial](../tutorial/overview.md)
-:::
+## Introduction
 
-## About these Docs
+The 'Migrating to the Kotlin API section' of the Litho docs is aimed at Developers already familiar with the general Java Spec API and Litho concepts. Within its pages, comparisons are made between the use of the Java Spec API and the Kotlin API.
 
-The Kotlin API section of the Litho docs are aimed at Developers already familiar with general Java Spec API and Litho concepts. Within the Kotlin API section, comparisons are made between use of the Java Spec API and the Kotlin API.
+Before continuing, consider the following options:
 
-Your next step:
+* If you aren't familiar with Litho, start with the [Tutorial](../tutorial/overview.md) pages then return here later.
+* If you're new to the Litho Kotlin API, start with [KComponent and Props](basics.mdx).
+* If you just want a reference comparing features in the Spec API to their equivalents in Kotlin, then you'll find the [Cheatsheet](cheatsheet.mdx) useful.
 
-* If you aren't familiar with Litho, start with the [introductory pages](../tutorial/overview.md) then return here later.
-* If you're new to the Litho Kotlin API, start with the [Kotlin API basics](basics.mdx).
-* If you just want a reference comparing features in the Spec API to their equivalents in Kotlin, have a look at the [cheatsheet](cheatsheet.mdx).
-
-## Adding Dependencies
+## Setup - Adding Dependencies
 
 To use the Kotlin Litho API, you'll need to add the following dependencies into your BUCK file:
 

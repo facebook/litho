@@ -1,20 +1,20 @@
 ---
 id: hscrolls
-title: Nested scrolling and measurement
+title: Horizontal Scrolling and Measurement
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-This page details ways of measuring the height of a horizontal scrolling list (h-scroll).
+Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size. Working with horizontal scrolling lists (h-scroll) is not always so trivial because different height settings have different performance implications.
 
-Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size. Working with h-scroll is not always trivial because different height settings have different performance implications.
+To see how to create a h-scroll, using a `RecyclerCollectionComponent`, refer to the 'Horizontal Lists' section of the [Adding and Adapting the RecyclerCollection to your App](recycler-collection-component.md#horizontal-lists) page.
 
-To see how to create a h-scroll, using a `RecyclerCollectionComponent`, refer to the 'Horizontal Lists' section of the [Adding and Adapting RecyclerCollection to your App](recycler-collection-component.md#horizontal-lists) page.
+:::note
+The code samples contained within this page are extracted from the [h-scroll height codelab](https://github.com/facebook/litho/tree/master/codelabs/hscroll-height).
+:::
 
-## Setting the Height of a Horizontal RecyclerCollectionComponent
+## Setting the height of a horizontal RecyclerCollectionComponent
 
-The code samples below are extracted from the [h-scroll height codelab](https://github.com/facebook/litho/tree/master/codelabs/hscroll-height).
-
-You can set the height of a horizontally scrolling `RecyclerCollectionComponent` using three methods:
+You can set the height of a horizontally scrolling `RecyclerCollectionComponent` with the following methods:
 
 * [Fixed height method](#fixed-height-method) - a fixed height is set on the H-Scroll component.  This is the most performant method and is recommended where possible.
 * [Unknown height method](#unknown-height-method) - height is not known when the Component is created so let the h-scroll set its height to the height of the first item.
@@ -22,7 +22,7 @@ You can set the height of a horizontally scrolling `RecyclerCollectionComponent`
 
 Each of these methods is detailed in the following sub-sections.
 
-### Fixed Height Method
+### Fixed height method
 
 Using this method, a fixed height is set on the h-Scroll Component.  The client knows the height of the h-scroll when it creates it, but it cannot be changed once the h-scroll gets measured.
 
@@ -65,7 +65,7 @@ The code produces the structure shown in the following image.
 
 Notice the grey background is the actual bounds of the h-scroll, and the children have smaller heights.
 
-### Unknown Height Method
+### Unknown height method
 
 Using this method, the height is unknown when the Component is created. The height is determined by measuring the first child of the h-scroll and setting that as the height of the h-scroll.
 
@@ -110,6 +110,7 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
     }
 }
 ```
+
 The code produces the structure shown in the following image.
 
 ![canmeasure](/images/canmeasure.png)
@@ -120,13 +121,13 @@ In this case, the first child has a height of 100dip; the second child has a hei
 If you don't set a non-zero height on the `RecyclerCollectionComponent` and `canMeasureRecycler` is not enabled, your RecyclerCollectionComponent will end up with a height of zero.
 :::
 
-### Dynamic Height Method
+### Dynamic height method
 
 :::caution
 This is the least performant (inefficient) method. Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
 :::
 
-Using this method, the H-scroll dynamically changes its height to fit the tallest item.
+Using this method, the h-scroll dynamically changes its height to fit the tallest item.
 
 H-Scrolls can be configured to support items of different height or remeasuring of the height if the height of the children could change after the initial measurement.
 
