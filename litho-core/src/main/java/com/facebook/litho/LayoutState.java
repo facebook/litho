@@ -678,12 +678,7 @@ public class LayoutState
       result.setLastMeasuredHeight(result.getHeight());
     }
 
-    final boolean isRoot =
-        !layoutState.mShouldAddHostViewForRootComponent
-            && (result.getParent() == null
-                || (result.getParent() instanceof NestedTreeHolderResult
-                    && result.getParent().getParent() == null));
-
+    final boolean isRoot = parent == null;
     final @Nullable LithoRenderUnit hostRenderUnit = result.getHostRenderUnit(layoutState, isRoot);
     final boolean needsHostView = hostRenderUnit != null;
 

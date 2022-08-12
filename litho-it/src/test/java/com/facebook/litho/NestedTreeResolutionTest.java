@@ -21,7 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentWithSizeSpecWithMeasureCall;
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
 import com.facebook.litho.widget.NestedTreeComponentSpec.ExtraProps;
@@ -654,5 +656,22 @@ public class NestedTreeResolutionTest {
             // Mount phase
             LifecycleStep.ON_MOUNT, // Because shouldUpdate returns true
             LifecycleStep.ON_BIND);
+  }
+
+  @Test
+  public void LayoutWithSizeSpecUsingMeasureAPIShouldMountCorrectly() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+    final Component text_component = Text.create(c).text("sample_text").build();
+    final Component root =
+        ComponentWithSizeSpecWithMeasureCall.create(c)
+            .component(text_component)
+            .shouldCacheResult(true)
+            .build();
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    ComponentTestHelper.mountComponent(c, root);
+
+    assertThat(mLegacyLithoViewRule.findViewWithText("sample_text")).isNotNull();
   }
 }
