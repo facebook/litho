@@ -36,10 +36,6 @@ module.exports = {
   organizationName: 'facebook',
   projectName: 'litho',
   themeConfig: {
-    algolia: {
-      appId: 'VCOXCXNH2M',
-      apiKey: '2cec419e1116e9c024cd7c810ad473d0',
-    },
     announcementBar: {
           id: 'support_ukraine',
           content:
@@ -148,8 +144,9 @@ module.exports = {
     algolia: fbContent({
       internal: undefined,
       external: {
-        apiKey: '6502239eccd45af18518695c2b743307',
-        indexName: 'fblitho',
+        appId: '5QBCYR8NMZ',
+        apiKey: '770b32556a2f295e844076c56d04da49',
+        indexName: 'fblitho'
       }
     }),
     prism: {
