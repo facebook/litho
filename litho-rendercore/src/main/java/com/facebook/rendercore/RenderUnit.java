@@ -239,13 +239,19 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** Bind all mountUnmount extension functions. */
   protected void mountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
-
     if (mMountUnmountExtensions == null) {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     for (Extension extension : mMountUnmountExtensions) {
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("RenderUnit.mountExtension:" + getId());
+      }
       extension.bind(context, content, layoutData);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
   }
 
@@ -256,9 +262,16 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     for (int i = mMountUnmountExtensions.size() - 1; i >= 0; i--) {
       final Extension extension = mMountUnmountExtensions.get(i);
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("RenderUnit.unmountExtension:" + getId());
+      }
       extension.unbind(context, content, layoutData);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
   }
 
@@ -269,8 +282,15 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     for (Extension extension : mAttachDetachExtensions) {
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("RenderUnit.attachExtension:" + getId());
+      }
       extension.bind(context, content, layoutData);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
   }
 
@@ -281,9 +301,16 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     for (int i = mAttachDetachExtensions.size() - 1; i >= 0; i--) {
       final Extension extension = mAttachDetachExtensions.get(i);
+      if (isTracing) {
+        RenderCoreSystrace.beginSection("RenderUnit.detachExtension:" + getId());
+      }
       extension.unbind(context, content, layoutData);
+      if (isTracing) {
+        RenderCoreSystrace.endSection();
+      }
     }
   }
 
