@@ -754,14 +754,6 @@ class Layout {
     return context.getComponentTree().areTransitionsEnabled();
   }
 
-  /**
-   * Returns true either if the two nodes have the same Component type or if both don't have a
-   * Component.
-   */
-  static boolean hostIsCompatible(final LithoNode node, final DiffNode diffNode) {
-    return ComponentUtils.isSameComponentType(node.getTailComponent(), diffNode.getComponent());
-  }
-
   static boolean shouldComponentUpdate(
       final LithoNode layoutNode, final @Nullable DiffNode diffNode) {
     if (diffNode == null) {

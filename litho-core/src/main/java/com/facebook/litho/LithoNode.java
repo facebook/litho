@@ -21,7 +21,6 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
-import static com.facebook.litho.Layout.hostIsCompatible;
 import static com.facebook.litho.Layout.isLayoutDirectionRTL;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -309,7 +308,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     final Component component = getTailComponent();
 
-    if (!hostIsCompatible(this, diff) && !(parent != null && isLayoutSpecWithSizeSpec(component))) {
+    if (!ComponentUtils.isSameComponentType(component, diff.getComponent())
+        && !(parent != null && isLayoutSpecWithSizeSpec(component))) {
       return;
     }
 
