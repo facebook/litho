@@ -25,7 +25,7 @@ import com.facebook.rendercore.RenderUnit
  * @param binders List of [DynamicPropsBinder] holding reference to DynamicValue and Content
  */
 internal class DynamicValuesBinder<ContentT>(
-    private val binders: MutableList<DynamicPropsHolder<Any?, Mountable<*>>>
+    private val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>>
 ) : RenderUnit.Binder<Mountable<*>, ContentT> {
 
   override fun bind(context: Context?, content: ContentT, model: Mountable<*>?, layoutData: Any?) {

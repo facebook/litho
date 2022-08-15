@@ -21,7 +21,7 @@ import com.facebook.rendercore.Mountable
 /** The implicit receiver for [MountableComponent.render] call. */
 open class MountableComponentScope(override val context: ComponentContext) :
     ComponentScope(context) {
-  internal val binders: MutableList<DynamicPropsHolder<Any?, Mountable<*>>> by lazy { ArrayList(2) }
+  internal val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>> by lazy { ArrayList(2) }
 
   /**
    * Creates a binding between the dynamic value, and the content’s property.

@@ -475,7 +475,7 @@ class MountableComponentsTest {
   }
 
   @Test
-  fun `when dynamic value is set if should update the content`() {
+  fun `when dynamic value is set it should update the content`() {
     val tag = DynamicValue<Any?>("0")
     val root =
         TestViewMountableComponent(
