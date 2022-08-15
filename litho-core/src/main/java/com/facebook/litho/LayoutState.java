@@ -1202,14 +1202,11 @@ public class LayoutState
 
     final @Nullable DiffNode diffTreeRoot;
     final @Nullable LithoNode currentRoot;
-    final @Nullable LayoutStateContext currentLayoutStateContext;
 
     if (currentLayoutState != null) {
       synchronized (currentLayoutState) {
         diffTreeRoot = currentLayoutState.mDiffTreeRoot;
         currentRoot = currentLayoutState.mRoot;
-        currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
-
         if (!c.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation()) {
           final boolean isReconcilable =
               Layout.isReconcilable(
@@ -1223,7 +1220,6 @@ public class LayoutState
     } else {
       diffTreeRoot = null;
       currentRoot = null;
-      currentLayoutStateContext = null;
     }
 
     final LayoutState layoutState;
@@ -1262,13 +1258,6 @@ public class LayoutState
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
 
-      final @Nullable RenderStateContext currentRenderStateContext =
-          currentLayoutStateContext != null
-              ? currentLayoutStateContext.getRenderStateContext()
-              : null;
-      final LithoNode layoutCreatedInWillRender =
-          component.consumeLayoutCreatedInWillRender(currentRenderStateContext, c);
-
       c.setLayoutStateContext(layoutStateContext);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
@@ -1282,35 +1271,22 @@ public class LayoutState
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
 
-      final @Nullable LithoNode node;
-      if (layoutCreatedInWillRender == null) {
+      final @Nullable ResolvedTree resolvedTree =
+          Layout.createResolvedTree(
+              layoutStateContext, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
+      final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-        final @Nullable ResolvedTree resolvedTree =
-            Layout.createResolvedTree(
-                layoutStateContext,
-                c,
-                component,
-                widthSpec,
-                heightSpec,
-                currentRoot,
-                logLayoutState);
-        node = resolvedTree == null ? null : resolvedTree.getRoot();
-
-        // Check if layout was interrupted.
-        if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
-          layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
-          layoutState.mRootTransitionId = getTransitionIdForNode(node);
-          layoutState.mIsCreateLayoutInProgress = false;
-          layoutState.mIsPartialLayoutState = true;
-          if (logLayoutState != null) {
-            Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
-          }
-
-          return layoutState;
+      // Check if layout was interrupted.
+      if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+        layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
+        layoutState.mRootTransitionId = getTransitionIdForNode(node);
+        layoutState.mIsCreateLayoutInProgress = false;
+        layoutState.mIsPartialLayoutState = true;
+        if (logLayoutState != null) {
+          Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
         }
 
-      } else {
-        node = layoutCreatedInWillRender;
+        return layoutState;
       }
 
       final @Nullable LithoLayoutResult root =
