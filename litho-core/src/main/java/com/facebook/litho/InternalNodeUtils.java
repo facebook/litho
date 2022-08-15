@@ -71,13 +71,7 @@ public class InternalNodeUtils {
       }
     }
 
-    final long id =
-        layoutState.calculateLayoutOutputId(
-            component,
-            componentKey,
-            layoutState.getCurrentLevel(),
-            OutputUnitType.CONTENT,
-            previousId);
+    final long id = layoutState.calculateLayoutOutputId(componentKey, OutputUnitType.CONTENT);
 
     return createRenderUnit(
         id,
@@ -123,13 +117,7 @@ public class InternalNodeUtils {
       id = ROOT_HOST_ID;
       updateState = LayoutOutput.STATE_DIRTY;
     } else {
-      id =
-          layoutState.calculateLayoutOutputId(
-              hostComponent,
-              node.getTailComponentKey(),
-              layoutState.getCurrentLevel(),
-              OutputUnitType.HOST,
-              -1);
+      id = layoutState.calculateLayoutOutputId(node.getTailComponentKey(), OutputUnitType.HOST);
       updateState = LayoutOutput.STATE_UNKNOWN;
     }
 
@@ -246,9 +234,7 @@ public class InternalNodeUtils {
     }
 
     final long previousId = recycle != null ? recycle.getId() : -1;
-    final long id =
-        layoutState.calculateLayoutOutputId(
-            component, componentKey, layoutState.getCurrentLevel(), outputType, previousId);
+    final long id = layoutState.calculateLayoutOutputId(componentKey, outputType);
 
     /* Call onBoundsDefined for the DrawableComponent */
     final boolean isTracing = ComponentsSystrace.isTracing();

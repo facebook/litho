@@ -41,8 +41,7 @@ public class TemporaryLayoutStateContext extends LayoutStateContext {
 
   private static class TempIdGenerator implements LayoutOutputIdGenerator {
     @Override
-    public long calculateLayoutOutputId(
-        Component component, @Nullable String componentKey, int type, long previousId) {
+    public long calculateLayoutOutputId(String componentKey, @OutputUnitType int type) {
       return 0;
     }
   }

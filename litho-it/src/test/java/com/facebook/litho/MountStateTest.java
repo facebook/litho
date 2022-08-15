@@ -329,8 +329,7 @@ public class MountStateTest {
                     .child(TextInput.create(c).key("#6").initialText("6").heightPx(100)))
             .build();
 
-    final ComponentTree initialComponentTree =
-        ComponentTree.create(c, initialComponent).useRenderUnitIdMap(true).build();
+    final ComponentTree initialComponentTree = ComponentTree.create(c, initialComponent).build();
 
     LithoView lithoView = new LithoView(c.getAndroidContext());
 

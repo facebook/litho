@@ -550,8 +550,7 @@ public class MountSpecLifecycleTest {
                     .heightPx(100))
             .build();
 
-    final ComponentTree initialComponentTree =
-        ComponentTree.create(c, initialComponent).useRenderUnitIdMap(true).build();
+    final ComponentTree initialComponentTree = ComponentTree.create(c, initialComponent).build();
 
     LithoView lithoView = new LithoView(c.getAndroidContext());
 
@@ -579,7 +578,6 @@ public class MountSpecLifecycleTest {
     // tree so that new ids match the current one
     final ComponentTree newComponentTree =
         ComponentTree.create(c, newComponent)
-            .useRenderUnitIdMap(true)
             .overrideRenderUnitIdMap(initialComponentTree)
             .overrideComponentTreeId(initialComponentTree.mId)
             .build();

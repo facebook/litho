@@ -81,7 +81,6 @@ public class PreloadingUtils {
                         ViewNodeInfo.class,
                         LithoRenderUnit.class,
                         LithoLayoutData.class,
-                        LayoutStateOutputIdCalculator.class,
                         Column.class,
                         Edges.class,
                         Row.class,

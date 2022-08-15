@@ -230,12 +230,6 @@ public class ComponentsConfiguration {
   public static boolean enableTransitionsExtension = true;
 
   /**
-   * For backtesting new method of keeping mount content more consistent between updates, determines
-   * whether render unit id map should be used for the external components in the backtest.
-   */
-  public static boolean useRenderUnitIdMapExternalComponents = true;
-
-  /**
    * These params are part of an experiment to try to re-enable host recycling while avoiding native
    * RenderThread crashes we've seen when trying to reuse ComponentHosts.
    */

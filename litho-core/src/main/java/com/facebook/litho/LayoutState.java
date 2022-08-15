@@ -153,8 +153,6 @@ public class LayoutState
   // will have all the LithoNodes for nested tree resolved before the measure step.
   private final @Nullable Map<String, LithoNode> mLithoNodeCacheForLayoutWithSizeSpec;
 
-  private @Nullable LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
-
   private final @Nullable List<TestOutput> mTestOutputs;
 
   @Nullable LithoNode mRoot;
@@ -170,8 +168,6 @@ public class LayoutState
 
   private int mCurrentX;
   private int mCurrentY;
-
-  private int mCurrentLevel = 0;
 
   // Holds the current host marker in the layout tree.
   private long mCurrentHostMarker = -1L;
@@ -704,7 +700,6 @@ public class LayoutState
 
       parent = layoutState.mMountableOutputs.get(hostLayoutPosition);
 
-      layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
       layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
     }
@@ -973,7 +968,6 @@ public class LayoutState
     if (layoutState.mCurrentHostMarker != currentHostMarker) {
       layoutState.mCurrentHostMarker = currentHostMarker;
       layoutState.mCurrentHostOutputPosition = currentHostOutputPosition;
-      layoutState.mCurrentLevel--;
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
 
@@ -1485,8 +1479,6 @@ public class LayoutState
         break;
     }
 
-    layoutState.clearLayoutStateOutputIdCalculator();
-
     // Reset markers before collecting layout outputs.
     layoutState.mCurrentHostMarker = -1;
 
@@ -1500,7 +1492,6 @@ public class LayoutState
       hierarchy = node != null ? getDebugHierarchy(null, node) : null;
       addRootHostRenderTreeNode(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
-      layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
       layoutState.mCurrentHostOutputPosition = 0;
     }
@@ -1665,48 +1656,24 @@ public class LayoutState
     return getValidActivityForContext(mContext.getAndroidContext()) != null;
   }
 
-  private void clearLayoutStateOutputIdCalculator() {
-    if (mLayoutStateOutputIdCalculator != null) {
-      mLayoutStateOutputIdCalculator.clear();
-    }
-  }
-
   @Override
-  public long calculateLayoutOutputId(
-      Component component,
-      @Nullable String componentKey,
-      @OutputUnitType int type,
-      long previousId) {
-    return calculateLayoutOutputId(component, componentKey, getCurrentLevel(), type, previousId);
-  }
-
-  long calculateLayoutOutputId(
-      Component component,
-      @Nullable String componentKey,
-      int level,
-      @OutputUnitType int type,
-      long previousId) {
+  public long calculateLayoutOutputId(String componentKey, @OutputUnitType int type) {
     final ComponentTree componentTree =
         Preconditions.checkNotNull(
             Preconditions.checkNotNull(mLayoutStateContext).getComponentTree());
-    if (componentTree.useRenderUnitIdMap()) {
-      return addTypeAndComponentTreeToId(
-          componentTree.getRenderUnitIdMap().getId(Preconditions.checkNotNull(componentKey)),
-          type,
-          componentTree.mId);
-    } else {
-      if (mLayoutStateOutputIdCalculator == null) {
-        mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
-      }
-
-      return mLayoutStateOutputIdCalculator.calculateLayoutOutputId(
-          component, level, type, previousId);
-    }
+    return addTypeAndComponentTreeToId(
+        componentTree.getRenderUnitIdMap().getId(componentKey), type, componentTree.mId);
   }
 
   private static long addTypeAndComponentTreeToId(
       int id, @OutputUnitType int type, int componentTreeId) {
     return (long) id | ((long) type) << 32 | ((long) componentTreeId) << 35;
+  }
+
+  @VisibleForTesting
+  static @OutputUnitType int getTypeFromId(long id) {
+    long masked = id & 0x00000000_00000000_FFFFFFFF_00000000L;
+    return (int) (masked >> 32);
   }
 
   @Nullable
@@ -1870,10 +1837,6 @@ public class LayoutState
 
   public ComponentContext getComponentContext() {
     return mContext;
-  }
-
-  int getCurrentLevel() {
-    return mCurrentLevel;
   }
 
   boolean getCurrentShouldDuplicateParentState() {

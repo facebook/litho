@@ -16,14 +16,9 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface LayoutOutputIdGenerator {
-  long calculateLayoutOutputId(
-      Component component,
-      @Nullable String componentKey,
-      @OutputUnitType int type,
-      long previousId);
+  long calculateLayoutOutputId(String componentKey, @OutputUnitType int type);
 }

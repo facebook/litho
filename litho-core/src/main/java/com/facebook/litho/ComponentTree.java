@@ -115,7 +115,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
-  private final boolean mUseRenderUnitIdMap;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @GuardedBy("this")
@@ -193,10 +192,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
     return mLifecycleProvider != null;
-  }
-
-  boolean useRenderUnitIdMap() {
-    return mUseRenderUnitIdMap;
   }
 
   RenderUnitIdMap getRenderUnitIdMap() {
@@ -477,7 +472,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mShouldAlwaysResolveNestedTreeInMeasure =
         ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure;
     mErrorEventHandler = builder.errorEventHandler;
-    mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
 
@@ -3368,8 +3362,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
-    private boolean useRenderUnitIdMap = true;
-
     private @Nullable RenderUnitIdMap mRenderUnitIdMap;
 
     protected Builder(ComponentContext context) {
@@ -3570,12 +3562,6 @@ public class ComponentTree implements LithoLifecycleListener {
     public Builder logger(@Nullable ComponentsLogger logger, @Nullable String logTag) {
       this.logger = logger;
       this.logTag = logTag;
-      return this;
-    }
-
-    /** See {@link ComponentsConfiguration#useRenderUnitIdMapExternalComponents} */
-    public Builder useRenderUnitIdMap(boolean useRenderUnitIdMap) {
-      this.useRenderUnitIdMap = useRenderUnitIdMap;
       return this;
     }
 

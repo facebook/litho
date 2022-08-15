@@ -44,7 +44,7 @@ abstract class MountableComponent() : Component() {
       throw IllegalStateException("Attempt to use a released RenderStateContext")
     } else {
       mountableWithStyle.mountable.id =
-          idGenerator.calculateLayoutOutputId(this, c.globalKey, OutputUnitType.CONTENT, -1)
+          idGenerator.calculateLayoutOutputId(c.globalKey, OutputUnitType.CONTENT)
     }
 
     mountableWithStyle.mountable.addMountUnmountExtension(

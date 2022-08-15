@@ -665,9 +665,7 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldReuseOutputs() {
-    return mComponentTree != null
-        && mComponentTree.useRenderUnitIdMap()
-        && mComponentTree.shouldReuseOutputs();
+    return mComponentTree != null && mComponentTree.shouldReuseOutputs();
   }
 
   boolean isSplitStateHandlersEnabled() {

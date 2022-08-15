@@ -391,8 +391,7 @@ public class TransitionManagerAnimationCreationTest {
         group = new OutputUnitsAffinityGroup<>();
         transitionIdMapping.put(transitionId, group);
       }
-      final @OutputUnitType int type =
-          LayoutStateOutputIdCalculator.getLevelFromId(animatableItem.getId());
+      final @OutputUnitType int type = LayoutState.getTypeFromId(animatableItem.getId());
       group.add(type, animatableItem);
     }
 

@@ -59,7 +59,6 @@ public class ComponentTreeHolder {
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
-  private final boolean mUseRenderUnitIdMap;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -135,7 +134,6 @@ public class ComponentTreeHolder {
     private boolean visibilityProcessingEnabled = true;
     private @Nullable LithoLifecycleProvider parentLifecycle;
     private @Nullable ErrorEventHandler errorEventHandler;
-    private boolean useRenderUnitIdMap = true;
 
     private Builder() {}
 
@@ -211,11 +209,6 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder useRenderUnitIdMap(boolean useRenderUnitIdMap) {
-      this.useRenderUnitIdMap = useRenderUnitIdMap;
-      return this;
-    }
-
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -245,7 +238,6 @@ public class ComponentTreeHolder {
     mParentLifecycle = builder.parentLifecycle;
     mErrorEventHandler = builder.errorEventHandler;
     mComponentsConfiguration = builder.componentsConfiguration;
-    mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
   }
 
   @VisibleForTesting
@@ -486,7 +478,6 @@ public class ComponentTreeHolder {
           .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
           .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
           .componentsConfiguration(mComponentsConfiguration)
-          .useRenderUnitIdMap(mUseRenderUnitIdMap)
           .build();
 
       mComponentTree = builder.build();

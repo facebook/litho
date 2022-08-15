@@ -16,10 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateLayoutOutputId;
-import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
-import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
-import static java.lang.Long.toBinaryString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -76,97 +72,6 @@ public class LayoutOutputTest {
   public void testFlagsSet() {
     LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 1, 0);
     assertThat(layoutOutput.getFlags()).isEqualTo(1);
-  }
-
-  @Test
-  public void testStableIdCalculation() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT);
-
-    long stableId =
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST);
-
-    long stableIdSeq2 =
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST + 1, OutputUnitType.CONTENT, SEQ_TEST + 1);
-
-    assertThat(toBinaryString(stableId))
-        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010000000000000000001");
-    assertThat(toBinaryString(stableIdSeq2))
-        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000100000000000000000010");
-  }
-
-  @Test
-  public void testStableIdBackgroundType() {
-    long stableId =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST);
-    assertThat(toBinaryString(stableId))
-        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010010000000000000001");
-  }
-
-  @Test
-  public void testStableIdForegroundType() {
-    long stableId =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST);
-    assertThat(toBinaryString(stableId))
-        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010100000000000000001");
-  }
-
-  @Test
-  public void testStableIdHostType() {
-    long stableId =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST);
-    assertThat(toBinaryString(stableId))
-        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010110000000000000001");
-  }
-
-  @Test
-  public void testStableIdBorderType() {
-    long stableId =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST);
-    assertThat(toBinaryString(stableId))
-        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000011000000000000000001");
-  }
-
-  @Test
-  public void testGetIdLevel() {
-    final long id_0 =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST);
-    assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(id_0));
-
-    final long id_1 =
-        calculateLayoutOutputId(mTestComponent, MAX_LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST);
-
-    assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(id_1));
-  }
-
-  @Test
-  public void testGetIdSequence() {
-    final long id_0 =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST);
-
-    assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(id_0));
-
-    final long id_1 =
-        calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.CONTENT, MAX_SEQ_TEST);
-
-    assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(id_1));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void levelOutOfRangeTest() {
-    createLayoutOutput(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            mTestComponent, MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST),
-        OutputUnitType.HOST);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void sequenceOutOfRangeTest() {
-    createLayoutOutput(
-        LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            mTestComponent, LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1),
-        OutputUnitType.FOREGROUND);
   }
 
   @Test
