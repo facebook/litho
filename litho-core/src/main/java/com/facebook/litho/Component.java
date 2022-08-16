@@ -754,17 +754,7 @@ public abstract class Component
       return null;
     }
 
-    layout = renderStateContext.consumeLayoutCreatedInWillRender(mId);
-
-    if (layout != null) {
-      assertSameBaseContext(context, layout.getAndroidContext());
-    }
-
-    if (layout == null) {
-      return null;
-    }
-
-    return layout;
+    return renderStateContext.consumeLayoutCreatedInWillRender(mId);
   }
 
   @VisibleForTesting
@@ -1008,20 +998,6 @@ public abstract class Component
 
   protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {
     return dynamicValue != null ? dynamicValue.get() : null;
-  }
-
-  private static void assertSameBaseContext(
-      ComponentContext scopedContext, Context willRenderContext) {
-    if (scopedContext.getAndroidContext() != willRenderContext) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          MISMATCHING_BASE_CONTEXT,
-          "Found mismatching base contexts between the Component's Context ("
-              + scopedContext.getAndroidContext()
-              + ") and the Context used in willRender ("
-              + willRenderContext
-              + ")!");
-    }
   }
 
   private static boolean willRender(

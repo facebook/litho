@@ -113,8 +113,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   private List<LithoNode> mChildren = new ArrayList<>(4);
 
-  protected Context mContext;
-
   @ThreadConfined(ThreadConfined.ANY)
   private final List<ScopedComponentInfo> mScopedComponentInfos = new ArrayList<>(2);
 
@@ -182,7 +180,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   private @Nullable Mountable<?> mMountable;
 
   protected LithoNode(ComponentContext componentContext) {
-    mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
   }
 
@@ -256,11 +253,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     background(ComparableColorDrawable.create(backgroundColor));
   }
 
-  public void backgroundRes(@DrawableRes int resId) {
+  public void backgroundRes(final Context context, @DrawableRes int resId) {
     if (resId == 0) {
       background(null);
     } else {
-      background(ContextCompat.getDrawable(mContext, resId));
+      background(ContextCompat.getDrawable(context, resId));
     }
   }
 
@@ -449,7 +446,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       RenderCoreSystrace.endSection();
     }
 
-    if (isLayoutDirectionInherit() && isLayoutDirectionRTL(mContext)) {
+    if (isLayoutDirectionInherit() && isLayoutDirectionRTL(c.getAndroidContext())) {
       root.setDirection(YogaDirection.RTL);
     }
     if (YogaConstants.isUndefined(root.getWidth().value)) {
@@ -522,11 +519,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     foreground(ComparableColorDrawable.create(foregroundColor));
   }
 
-  public void foregroundRes(@DrawableRes int resId) {
+  public void foregroundRes(final Context context, @DrawableRes int resId) {
     if (resId == 0) {
       foreground(null);
     } else {
-      foreground(ContextCompat.getDrawable(mContext, resId));
+      foreground(ContextCompat.getDrawable(context, resId));
     }
   }
 
@@ -591,10 +588,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   public @Nullable Map<String, ScopedComponentInfo>
       getScopedComponentInfosNeedingPreviousRenderData() {
     return mScopedComponentInfosNeedingPreviousRenderData;
-  }
-
-  public Context getAndroidContext() {
-    return mContext;
   }
 
   public @Nullable EventHandler<FocusedVisibleEvent> getFocusedHandler() {
@@ -954,14 +947,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
             a, com.facebook.litho.R.styleable.ComponentLayout_android_background)) {
           backgroundColor(a.getColor(attr, 0));
         } else {
-          backgroundRes(a.getResourceId(attr, -1));
+          backgroundRes(c, a.getResourceId(attr, -1));
         }
       } else if (attr == com.facebook.litho.R.styleable.ComponentLayout_android_foreground) {
         if (TypedArrayUtils.isColorAttribute(
             a, com.facebook.litho.R.styleable.ComponentLayout_android_foreground)) {
           foregroundColor(a.getColor(attr, 0));
         } else {
-          foregroundRes(a.getResourceId(attr, -1));
+          foregroundRes(c, a.getResourceId(attr, -1));
         }
       } else if (attr
           == com.facebook.litho.R.styleable.ComponentLayout_android_contentDescription) {
