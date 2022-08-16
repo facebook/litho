@@ -53,6 +53,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -1378,18 +1379,43 @@ public class LayoutState
 
       layoutStateContext.markLayoutResumed();
 
-      final LithoLayoutResult result =
-          Layout.resumeCreateAndMeasureComponent(
-              layoutStateContext,
-              c,
-              Preconditions.checkNotNull(layoutState.mPartiallyResolvedRoot),
-              widthSpec,
-              heightSpec,
-              logLayoutState);
+      if (layoutStateContext.getRenderStateContext().isLayoutReleased()) {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            "ReleasedLayoutResumed",
+            layoutStateContext.getLifecycleDebugString());
+        return layoutState;
+      }
 
-      if (result != null) {
-        layoutState.mLayoutResult = result;
-        layoutState.mRoot = result.getNode();
+      final LithoNode partialResolvedRoot =
+          Preconditions.checkNotNull(layoutState.mPartiallyResolvedRoot);
+
+      if (isTracing) {
+        RenderCoreSystrace.beginSection(
+            "resume:" + partialResolvedRoot.getHeadComponent().getSimpleName());
+      }
+
+      try {
+        final ResolvedTree resolvedTree =
+            Layout.resumeResolvingTree(layoutStateContext, partialResolvedRoot);
+        layoutState.mRoot = resolvedTree.getRoot();
+
+        final LithoLayoutResult result =
+            Layout.measureTree(
+                layoutStateContext,
+                c.getAndroidContext(),
+                resolvedTree.getRoot(),
+                widthSpec,
+                heightSpec,
+                logLayoutState);
+
+        if (result != null) {
+          layoutState.mLayoutResult = result;
+        }
+      } finally {
+        if (isTracing) {
+          RenderCoreSystrace.endSection();
+        }
       }
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);

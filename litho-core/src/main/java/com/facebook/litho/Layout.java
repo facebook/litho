@@ -597,46 +597,13 @@ class Layout {
     return c;
   }
 
-  static @Nullable LithoLayoutResult resumeCreateAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext c,
-      final @Nullable LithoNode root,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable PerfEvent logLayoutState) {
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
-
-    if (renderStateContext.isLayoutReleased()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          "ReleasedLayoutResumed",
-          layoutStateContext.getLifecycleDebugString());
-    }
-
-    if (root == null || renderStateContext.isLayoutReleased()) {
-      return null;
-    }
-
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
-
-    if (isTracing) {
-      RenderCoreSystrace.beginSection("resume:" + root.getHeadComponent().getSimpleName());
-    }
-
+  static ResolvedTree resumeResolvingTree(
+      final LayoutStateContext layoutStateContext, final LithoNode root) {
     resume(layoutStateContext, root);
-
-    final LithoLayoutResult result =
-        measureTree(
-            layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, logLayoutState);
-
-    if (isTracing) {
-      RenderCoreSystrace.endSection();
-    }
-
-    return result;
+    return new ResolvedTree(root);
   }
 
-  static void resume(final LayoutStateContext c, final LithoNode root) {
+  private static void resume(final LayoutStateContext c, final LithoNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
