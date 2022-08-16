@@ -57,8 +57,8 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean =
-      EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable) &&
-          currentLayoutData === nextLayoutData
+      currentLayoutData === nextLayoutData &&
+          EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable)
 
   override fun getContentAllocator(): ContentAllocator {
     return this
