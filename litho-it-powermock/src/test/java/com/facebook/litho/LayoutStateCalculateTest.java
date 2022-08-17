@@ -82,6 +82,7 @@ public class LayoutStateCalculateTest {
         calculateLayoutState(
             componentTree.getContext(),
             component,
+            componentTree.getRenderUnitIdGenerator(),
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY));
@@ -103,6 +104,7 @@ public class LayoutStateCalculateTest {
   private static LayoutState calculateLayoutState(
       final ComponentContext context,
       final Component component,
+      final RenderUnitIdGenerator idGenerator,
       final int componentTreeId,
       final int widthSpec,
       final int heightSpec) {
@@ -110,6 +112,7 @@ public class LayoutStateCalculateTest {
     return LayoutState.calculate(
         context,
         component,
+        idGenerator,
         componentTreeId,
         widthSpec,
         heightSpec,

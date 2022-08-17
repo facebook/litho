@@ -91,12 +91,9 @@ public class LayoutStateContext {
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable DiffNode currentDiffTree,
       final int layoutVersion) {
-    // TODO (T128169952): We are passing LayoutState as the ID generator that's going into
-    // RenderStateContext. Should be replaced with a dedicated class once RenderUnitIdMap is
-    // shipped.
     this(
         layoutState,
-        layoutState,
+        layoutState.getIdGenerator(),
         layoutState.getComponentContext(),
         treeState,
         componentTree,
@@ -107,7 +104,7 @@ public class LayoutStateContext {
 
   LayoutStateContext(
       final LayoutProcessInfo layoutProcessInfo,
-      final LayoutOutputIdGenerator idGenerator,
+      final RenderUnitIdGenerator idGenerator,
       final ComponentContext rootComponentContext,
       final TreeState treeState,
       final @Nullable ComponentTree componentTree,

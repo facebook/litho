@@ -65,8 +65,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
@@ -89,8 +88,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
@@ -113,8 +111,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
@@ -136,8 +133,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
@@ -163,8 +159,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(4);
@@ -196,8 +191,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     final LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
@@ -214,11 +208,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            mContext,
-            componentWithNullLayout,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            componentWithNullLayout, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(0);
   }
@@ -238,25 +228,20 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
+        calculateLayoutState(component, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
 
-  private static LayoutState calculateLayoutState(
-      ComponentContext context,
-      Component component,
-      int componentTreeId,
-      int widthSpec,
-      int heightSpec) {
+  private LayoutState calculateLayoutState(Component component, int widthSpec, int heightSpec) {
 
     return LayoutState.calculate(
-        context,
+        mContext,
         component,
         null,
         new TreeState(),
-        componentTreeId,
+        mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
+        -1,
         widthSpec,
         heightSpec,
         -1,

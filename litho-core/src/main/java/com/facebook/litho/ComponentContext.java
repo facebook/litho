@@ -514,6 +514,25 @@ public class ComponentContext implements Cloneable {
     return lithoView.findViewWithTag(tag);
   }
 
+  /**
+   * Calculates a returns a unique ID for a given component key and output type. The IDs will be
+   * unique for components in the ComponentTree this ID generator is linked with. If an ID was
+   * already generated for a given component, the same ID will be returned. Otherwise, a new unique
+   * ID will be generated.
+   *
+   * <p>ComponentContext must have a ComponentTree instance.
+   *
+   * @param componentKey The component key
+   * @param type The output type @see OutputUnitType
+   */
+  public long calculateLayoutOutputId(final String componentKey, final @OutputUnitType int type) {
+    if (mComponentTree == null) {
+      throw new IllegalStateException("Cannot generate IDs with a null Component Tree");
+    }
+
+    return mComponentTree.getRenderUnitIdGenerator().calculateLayoutOutputId(componentKey, type);
+  }
+
   ComponentTree getComponentTree() {
     return mComponentTree;
   }

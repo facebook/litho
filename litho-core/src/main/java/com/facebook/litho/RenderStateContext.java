@@ -26,7 +26,7 @@ public class RenderStateContext {
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
 
   private boolean mIsInterruptible = true;
-  private @Nullable LayoutOutputIdGenerator mIdGenerator;
+  private @Nullable RenderUnitIdGenerator mIdGenerator;
   private @Nullable TreeState mTreeState;
   private RenderPhaseMeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
@@ -34,7 +34,7 @@ public class RenderStateContext {
   public RenderStateContext(
       final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
       final TreeState treeState,
-      final LayoutOutputIdGenerator idGenerator) {
+      final RenderUnitIdGenerator idGenerator) {
     mLayoutStateFuture = layoutStateFuture;
     mTreeState = treeState;
     mCache = new RenderPhaseMeasuredResultCache();
@@ -42,7 +42,7 @@ public class RenderStateContext {
   }
 
   @Nullable
-  public LayoutOutputIdGenerator getIdGenerator() {
+  public RenderUnitIdGenerator getIdGenerator() {
     return mIdGenerator;
   }
 

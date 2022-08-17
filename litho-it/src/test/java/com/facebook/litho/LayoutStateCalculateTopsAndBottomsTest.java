@@ -68,6 +68,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         LayoutState.calculate(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
+            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, AT_MOST),
@@ -125,6 +126,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         LayoutState.calculate(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
+            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             -1,
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, AT_MOST),

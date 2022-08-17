@@ -92,6 +92,7 @@ public class DuplicateParentChildrenStateTest {
         calculate(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
+            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             -1,
             mUnspecifiedSizeSpec,
             mUnspecifiedSizeSpec,

@@ -138,7 +138,7 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
-  private final RenderUnitIdMap mRenderUnitIdMap;
+  private final RenderUnitIdGenerator mRenderUnitIdGenerator;
   private boolean mInAttach = false;
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
@@ -194,8 +194,8 @@ public class ComponentTree implements LithoLifecycleListener {
     return mLifecycleProvider != null;
   }
 
-  RenderUnitIdMap getRenderUnitIdMap() {
-    return mRenderUnitIdMap;
+  RenderUnitIdGenerator getRenderUnitIdGenerator() {
+    return mRenderUnitIdGenerator;
   }
 
   public interface MeasureListener {
@@ -485,10 +485,14 @@ public class ComponentTree implements LithoLifecycleListener {
       mId = generateComponentTreeId();
     }
 
-    if (builder.mRenderUnitIdMap != null) {
-      mRenderUnitIdMap = builder.mRenderUnitIdMap;
+    if (builder.mRenderUnitIdGenerator != null) {
+      mRenderUnitIdGenerator = builder.mRenderUnitIdGenerator;
+      if (mId != mRenderUnitIdGenerator.getComponentTreeId()) {
+        throw new IllegalStateException(
+            "Copying RenderUnitIdGenerator is only allowed if the ComponentTree IDs match");
+      }
     } else {
-      mRenderUnitIdMap = new RenderUnitIdMap();
+      mRenderUnitIdGenerator = new RenderUnitIdGenerator(mId);
     }
 
     mIncrementalMountHelper =
@@ -2972,6 +2976,7 @@ public class ComponentTree implements LithoLifecycleListener {
           root,
           layoutStateFuture,
           treeState,
+          mRenderUnitIdGenerator,
           ComponentTree.this.mId,
           widthSpec,
           heightSpec,
@@ -3362,7 +3367,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private @Nullable ComponentsLogger logger;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
-    private @Nullable RenderUnitIdMap mRenderUnitIdMap;
+    private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3509,7 +3514,7 @@ public class ComponentTree implements LithoLifecycleListener {
      * @param prevComponentTree Previous ComponentTree to override the render unit id map
      */
     public Builder overrideRenderUnitIdMap(ComponentTree prevComponentTree) {
-      this.mRenderUnitIdMap = prevComponentTree.getRenderUnitIdMap();
+      this.mRenderUnitIdGenerator = prevComponentTree.getRenderUnitIdGenerator();
       return this;
     }
 

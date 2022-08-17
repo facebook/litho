@@ -124,7 +124,7 @@ public class PreloadingUtils {
                         ResourceResolver.class,
                         DynamicValue.class,
                         InitialStateContainer.class,
-                        RenderUnitIdMap.class,
+                        RenderUnitIdGenerator.class,
                         EventHandlersController.class,
                         EventTriggersContainer.class,
                         WorkingRangeStatusHandler.class,

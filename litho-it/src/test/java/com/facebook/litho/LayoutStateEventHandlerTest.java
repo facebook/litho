@@ -71,6 +71,7 @@ public class LayoutStateEventHandlerTest {
     LayoutState.calculate(
         new ComponentContext(getApplicationContext()),
         mRootComponent,
+        new RenderUnitIdGenerator(-1),
         -1,
         mUnspecifiedSizeSpec,
         mUnspecifiedSizeSpec,

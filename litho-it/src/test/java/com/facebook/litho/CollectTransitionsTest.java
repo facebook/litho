@@ -82,6 +82,7 @@ public class CollectTransitionsTest {
         LayoutState.calculate(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             mWrappingContentWithTransition,
+            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),

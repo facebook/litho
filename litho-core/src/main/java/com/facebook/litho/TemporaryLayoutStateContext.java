@@ -30,20 +30,13 @@ public class TemporaryLayoutStateContext extends LayoutStateContext {
       @Nullable ComponentTree componentTree) {
     super(
         new TempLayoutProcessInfo(),
-        new TempIdGenerator(),
+        new RenderUnitIdGenerator(-1),
         componentContext,
         treeState,
         componentTree,
         null,
         null,
         INVALID_LAYOUT_VERSION);
-  }
-
-  private static class TempIdGenerator implements LayoutOutputIdGenerator {
-    @Override
-    public long calculateLayoutOutputId(String componentKey, @OutputUnitType int type) {
-      return 0;
-    }
   }
 
   private static class TempLayoutProcessInfo implements LayoutProcessInfo {

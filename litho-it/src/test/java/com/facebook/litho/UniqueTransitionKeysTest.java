@@ -76,6 +76,7 @@ public class UniqueTransitionKeysTest {
         LayoutState.calculate(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             mHasUniqueTransitionKeys,
+            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
@@ -93,6 +94,7 @@ public class UniqueTransitionKeysTest {
         LayoutState.calculate(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             mHasNonUniqueTransitionKeys,
+            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
