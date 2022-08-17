@@ -286,11 +286,21 @@ public final class MatcherGenerator {
 
   private static MethodSpec regularBuilder(
       SpecModel specModel, final PropModel prop, final AnnotationSpec... extraAnnotations) {
+
+    final TypeName param;
+    if (prop.isDynamic()) {
+      final TypeName type = getRawType(prop.getTypeName());
+      param = ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, type);
+    } else {
+      param = getRawType(prop.getTypeName());
+    }
+
     return builder(
         specModel,
         prop,
         prop.getName(),
-        Collections.singletonList(parameter(prop, extraAnnotations)),
+        Collections.singletonList(
+            parameter(param, prop.getName(), prop.getExternalAnnotations(), extraAnnotations)),
         prop.getName());
   }
 
@@ -312,10 +322,16 @@ public final class MatcherGenerator {
   }
 
   private static ParameterizedTypeName getPropMatcherType(PropModel prop) {
-    final TypeName rawType = getRawType(prop.getTypeName());
+    final TypeName propType;
+    if (prop.isDynamic()) {
+      final TypeName type = getRawType(prop.getTypeName()).box();
+      propType = ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, type);
+    } else {
+      propType = getRawType(prop.getTypeName()).box();
+    }
 
     // We can only match against unparameterized (i.e. raw) types. Thanks, Java.
-    return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, rawType.box());
+    return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, propType);
   }
 
   static String getPropComponentMatcherName(final MethodParamModel prop) {
@@ -567,13 +583,21 @@ public final class MatcherGenerator {
 
     final String propMatcherName = getPropMatcherName(prop);
     final CodeBlock formattedStatement = CodeBlock.of(statement, formatObjects);
+
+    final TypeName propType;
+    if (prop.isDynamic()) {
+      final TypeName type = getRawType(prop.getTypeName());
+      propType = ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, type);
+    } else {
+      propType = getRawType(prop.getTypeName());
+    }
     final CodeBlock codeBlock =
         CodeBlock.builder()
             .addStatement(
                 "this.$N = $L.is(($T) $L)",
                 propMatcherName,
                 ClassNames.HAMCREST_CORE_IS,
-                getRawType(prop.getTypeName()),
+                propType,
                 formattedStatement)
             .build();
 
@@ -662,10 +686,18 @@ public final class MatcherGenerator {
   }
 
   private static CodeBlock generateFieldExtractorBlock(FieldExtractorSpec fieldExtractorSpec) {
+    final TypeName propType;
+    if (fieldExtractorSpec.propModel instanceof PropModel
+        && ((PropModel) fieldExtractorSpec.propModel).isDynamic()) {
+      final TypeName type = getRawType(fieldExtractorSpec.propModel.getTypeName());
+      propType = ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, type);
+    } else {
+      propType = fieldExtractorSpec.propModel.getTypeName();
+    }
     return CodeBlock.builder()
         .addStatement(
             "final $T $L = impl.$L",
-            fieldExtractorSpec.propModel.getTypeName(),
+            propType,
             fieldExtractorSpec.varName,
             fieldExtractorSpec.propModel.getName())
         .build();

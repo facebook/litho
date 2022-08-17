@@ -70,6 +70,7 @@ import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnBindDynamicValue;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
@@ -930,6 +931,7 @@ class TextSpec {
       ComponentContext c,
       View host,
       AccessibilityNodeInfoCompat node,
+      @Prop(optional = true, dynamic = true) Integer dynamicTextColor,
       @Prop(resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine) {
     if (ViewCompat.getImportantForAccessibility(host)
@@ -1103,6 +1105,14 @@ class TextSpec {
     }
 
     return INVALID_ID;
+  }
+
+  @OnBindDynamicValue
+  static void onBindTextColor(
+      TextDrawable textDrawable, @Prop(optional = true, dynamic = true) Integer dynamicTextColor) {
+    if (dynamicTextColor != null) {
+      textDrawable.setTextColor(dynamicTextColor);
+    }
   }
 
   private static TextAlignment getTextAlignment(

@@ -37,14 +37,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import androidx.core.text.TextDirectionHeuristicCompat;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.DynamicValue;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -57,6 +60,8 @@ public class TextSpecTest {
   private static final int MINIMAL_TEXT_WIDTH = 95;
   private static final String ARABIC_RTL_TEST_STRING =
       "\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0627\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631";
+
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
@@ -621,6 +626,33 @@ public class TextSpecTest {
         textDrawable.getText().toString(),
         "Simple sentence that should be quite long quite long quite long quite long quite long"
             + " quite long q.");
+  }
+
+  @Test
+  public void whenDynamicTextColorIsChanged_TextColorShouldUpdateWithoutReRendering() {
+
+    final DynamicValue<Integer> textColor = new DynamicValue<>(Color.BLUE);
+
+    LithoView lithoView =
+        mLithoViewRule
+            .render(
+                c ->
+                    Text.create(c.getContext())
+                        .text("hello world")
+                        .dynamicTextColor(textColor)
+                        .build())
+            .getLithoView();
+
+    Object content = lithoView.getMountItemAt(0).getContent();
+    assertThat(content).isInstanceOf(TextDrawable.class);
+    assertThat(((TextDrawable) content).getLayout().getPaint().getColor()).isEqualTo(Color.BLUE);
+
+    textColor.set(Color.GREEN);
+    assertThat(((TextDrawable) content).getLayout().getPaint().getColor()).isEqualTo(Color.GREEN);
+
+    lithoView.setComponentTree(null);
+
+    assertThat(((TextDrawable) content).getLayout()).isNull();
   }
 
   private TextDrawable getMountedDrawableForTextWithMaxLines(

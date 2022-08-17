@@ -253,7 +253,7 @@ public class SpecModelUtils {
       SpecModel specModel, PropModel prop) {
     for (SpecMethodModel<BindDynamicValueMethod, Void> method :
         ((MountSpecModel) specModel).getBindDynamicValueMethods()) {
-      if (prop.equals(method.methodParams.get(1))) {
+      if (prop.getName().equals(method.methodParams.get(1).getName())) {
         return method;
       }
     }

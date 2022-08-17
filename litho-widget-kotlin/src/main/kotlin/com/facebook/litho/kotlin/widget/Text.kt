@@ -26,6 +26,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import androidx.core.text.TextDirectionHeuristicCompat
 import com.facebook.litho.Dimen
+import com.facebook.litho.DynamicValue
 import com.facebook.litho.Handle
 import com.facebook.litho.ResourcesScope
 import com.facebook.litho.Style
@@ -70,9 +71,11 @@ inline fun ResourcesScope.Text(
     textDirection: TextDirectionHeuristicCompat? = null,
     @AttrRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0,
+    dynamicTextColor: DynamicValue<Int>? = null,
 ): Text =
     Text.create(context, defStyleAttr, defStyleRes)
         .text(text)
+        .dynamicTextColor(dynamicTextColor)
         .textColor(textColor)
         .textSizePx(textSize.toPixels())
         .textStyle(textStyle)

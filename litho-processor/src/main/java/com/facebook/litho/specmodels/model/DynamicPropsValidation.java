@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.model;
 import com.facebook.litho.annotations.OnBindDynamicValue;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.Prop;
+import com.google.common.collect.ImmutableList;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -32,6 +33,14 @@ import javax.lang.model.element.TypeElement;
 class DynamicPropsValidation {
 
   static List<SpecModelValidationError> validate(SpecModel specModel) {
+
+    // Do not run validations for Test Specs since
+    // the validation will run for the enclosed spec
+    if (specModel instanceof HasEnclosedSpecModel
+        && specModel.getClass().getSimpleName().equals("TestSpecModel")) {
+      return ImmutableList.of();
+    }
+
     if (!(specModel instanceof MountSpecModel)) {
       return validateHasNoDynamicProps(specModel);
     }
@@ -101,7 +110,8 @@ class DynamicPropsValidation {
               specModel.getSpecName()
                   + " declares dynamic props "
                   + dynamicProp.getName()
-                  + " (only MountSpecs support dynamic props)."));
+                  + " (only MountSpecs support dynamic props). spec: "
+                  + specModel.getClass().getName()));
     }
 
     if (specModel.getRepresentedObject() instanceof TypeElement) {

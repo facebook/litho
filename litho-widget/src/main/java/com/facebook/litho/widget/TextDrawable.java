@@ -39,6 +39,7 @@ import android.text.style.ImageSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
@@ -55,7 +56,7 @@ import javax.annotation.Nullable;
  */
 public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
-  private Layout mLayout;
+  private @Nullable Layout mLayout;
   private float mLayoutTranslationY;
   private boolean mClipToBounds;
   private boolean mShouldHandleTouch;
@@ -412,6 +413,14 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mImageSpans = imageSpans;
     mContextLogTag = contextLogTag;
 
+    invalidateSelf();
+  }
+
+  public void setTextColor(@ColorInt int textColor) {
+    mUserColor = textColor;
+    if (mLayout != null) {
+      mLayout.getPaint().setColor(textColor);
+    }
     invalidateSelf();
   }
 
