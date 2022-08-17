@@ -179,7 +179,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   private @Nullable Mountable<?> mMountable;
 
-  protected LithoNode(ComponentContext componentContext) {
+  protected LithoNode() {
     mDebugComponents = new HashSet<>();
   }
 

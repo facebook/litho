@@ -36,13 +36,12 @@ public class NestedTreeHolder extends LithoNode {
   @Nullable Edges mNestedTreePadding;
   @Nullable boolean[] mNestedIsPaddingPercentage;
 
-  protected NestedTreeHolder(ComponentContext context, @Nullable TreeProps props) {
-    this(context, props, null);
+  protected NestedTreeHolder(@Nullable TreeProps props) {
+    this(props, null);
   }
 
-  protected NestedTreeHolder(
-      ComponentContext context, @Nullable TreeProps props, @Nullable LithoNode cacheNode) {
-    super(context);
+  protected NestedTreeHolder(@Nullable TreeProps props, @Nullable LithoNode cacheNode) {
+    super();
     mPendingTreeProps = TreeProps.copy(props);
     mCachedNode = cacheNode;
   }

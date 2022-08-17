@@ -275,7 +275,7 @@ class Layout {
       if (shouldDeferNestedTreeResolution) {
         node =
             new NestedTreeHolder(
-                c, c.getTreeProps(), renderStateContext.getCache().getCachedNode(component));
+                c.getTreeProps(), renderStateContext.getCache().getCachedNode(component));
       }
 
       // If the component can resolve itself resolve it.
@@ -289,7 +289,7 @@ class Layout {
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = new LithoNode(c);
+        node = new LithoNode();
         node.flexDirection(YogaFlexDirection.COLUMN);
 
         // Call onPrepare for MountSpecs or prepare for MountableComponents.

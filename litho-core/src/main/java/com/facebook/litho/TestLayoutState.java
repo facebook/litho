@@ -91,7 +91,7 @@ public class TestLayoutState {
       return create(layoutStateContext, c, widthSpec, heightSpec, component);
     }
 
-    final LithoNode node = createInternalNode(c);
+    final LithoNode node = createInternalNode();
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(
             layoutStateContext,
@@ -129,7 +129,7 @@ public class TestLayoutState {
     YogaWrap wrap = getInternalState(component, "wrap");
     List<Component> children = getInternalState(component, "children");
 
-    LithoNode node = createInternalNode(c);
+    LithoNode node = createInternalNode();
     node.flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
     if (alignItems != null) {
@@ -209,7 +209,7 @@ public class TestLayoutState {
         node = component.resolve(layoutStateContext, c);
       }
     } else if (isMountSpec(component)) {
-      node = createInternalNode(c);
+      node = createInternalNode();
     } else {
       final RenderResult renderResult = component.render(c, widthSpec, heightSpec);
       final Component root = renderResult.component;
@@ -265,7 +265,7 @@ public class TestLayoutState {
       node = create(layoutStateContext, c, widthSpec, heightSpec, component);
     } else {
 
-      node = createInternalNode(c);
+      node = createInternalNode();
     }
 
     if (node != null) {
@@ -275,13 +275,12 @@ public class TestLayoutState {
     return node;
   }
 
-  private static LithoNode createInternalNode(ComponentContext c) {
-    return new LithoNode(c);
+  private static LithoNode createInternalNode() {
+    return new LithoNode();
   }
 
-  private static LithoNode createNestedTreeHolder(
-      ComponentContext c, @Nullable TreeProps treeProps) {
-    return new NestedTreeHolder(c, treeProps);
+  private static LithoNode createNestedTreeHolder(@Nullable TreeProps treeProps) {
+    return new NestedTreeHolder(treeProps);
   }
 
   // Mimicks implementation of Layout.create but uses a custom InternalNode for shallow child
@@ -329,7 +328,7 @@ public class TestLayoutState {
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = createNestedTreeHolder(c, c.getTreeProps());
+        node = createNestedTreeHolder(c.getTreeProps());
       }
 
       // If the component can resolve itself resolve it.
@@ -347,7 +346,7 @@ public class TestLayoutState {
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = createInternalNode(c);
+        node = createInternalNode();
         node.flexDirection(YogaFlexDirection.COLUMN);
       }
 

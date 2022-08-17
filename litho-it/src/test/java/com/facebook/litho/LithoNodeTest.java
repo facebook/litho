@@ -68,7 +68,7 @@ public class LithoNodeTest {
     final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
 
-    return new NestedTreeHolder(context, null);
+    return new NestedTreeHolder(null);
   }
 
   private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
