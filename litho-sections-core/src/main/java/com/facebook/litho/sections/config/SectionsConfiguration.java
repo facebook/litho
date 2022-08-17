@@ -29,4 +29,6 @@ public class SectionsConfiguration {
   public static boolean useBackgroundChangeSets = false;
 
   public static boolean deepCopySectionChildren = false;
+
+  public static boolean fixAnrInChangeSetState = false;
 }
