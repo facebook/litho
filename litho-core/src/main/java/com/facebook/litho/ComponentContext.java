@@ -80,8 +80,12 @@ public class ComponentContext implements Cloneable {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
+  // TODO (T128179642): Reevaluate the need for weak-refs for LSC & RSC.
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable WeakReference<LayoutStateContext> mLayoutStateContext;
+
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable WeakReference<RenderStateContext> mRenderStateContext;
 
   private @Nullable ScopedComponentInfo mScopedComponentInfo;
 
@@ -123,19 +127,22 @@ public class ComponentContext implements Cloneable {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mTreeProps, context.getLayoutStateContext());
+    this(context, context.mTreeProps);
+
+    if (context.getLayoutStateContext() != null) {
+      setLayoutStateContext(context.getLayoutStateContext());
+    }
+
+    if (context.getRenderStateContext() != null) {
+      setRenderStateContext(context.getRenderStateContext());
+    }
   }
 
-  public ComponentContext(
-      ComponentContext context,
-      @Nullable TreeProps treeProps,
-      @Nullable LayoutStateContext layoutStateContext) {
-
+  public ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
-    mLayoutStateContext = new WeakReference<>(layoutStateContext);
     mLogger = context.mLogger;
     mLogTag =
         context.mLogTag != null || mComponentTree == null
@@ -160,7 +167,7 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentTree(
       ComponentContext context, ComponentTree componentTree) {
-    ComponentContext componentContext = new ComponentContext(context, null, null);
+    ComponentContext componentContext = new ComponentContext(context, null);
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
 
@@ -222,6 +229,11 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public void setLayoutStateContextForTesting() {
     setLayoutStateContext(LayoutStateContext.getTestInstance(this));
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void setRenderStateContext(RenderStateContext renderStateContext) {
+    mRenderStateContext = new WeakReference<>(renderStateContext);
   }
 
   /** Returns true if this method is called during layout creation. */
@@ -648,6 +660,11 @@ public class ComponentContext implements Cloneable {
   @Nullable
   public LayoutStateContext getLayoutStateContext() {
     return mLayoutStateContext != null ? mLayoutStateContext.get() : null;
+  }
+
+  @Nullable
+  public RenderStateContext getRenderStateContext() {
+    return mRenderStateContext != null ? mRenderStateContext.get() : null;
   }
 
   public ScopedComponentInfo getScopedComponentInfo() {

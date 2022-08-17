@@ -2959,7 +2959,7 @@ public class ComponentTree implements LithoLifecycleListener {
                 : new TreeState(ComponentTree.this.mTreeState);
 
         previousLayoutState = mCommittedLayoutState;
-        contextWithStateHandler = new ComponentContext(context, treeProps, null);
+        contextWithStateHandler = new ComponentContext(context, treeProps);
 
         treeState.registerRenderState();
         if (isSplitStateHandlersEnabled()) {
