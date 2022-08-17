@@ -109,7 +109,6 @@ internal class CardShadowMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
+      heightSpec: Int
   ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
 }

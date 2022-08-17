@@ -137,7 +137,6 @@ private class PrepareTrackingMountable(val mountTracking: MutableList<Int>, val 
   override fun measure(
       context: RenderState.LayoutContext<Any>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
+      heightSpec: Int
   ): MeasureResult = MeasureResult(100, 100)
 }

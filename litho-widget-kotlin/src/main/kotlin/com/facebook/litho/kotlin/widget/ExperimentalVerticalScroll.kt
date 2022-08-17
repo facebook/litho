@@ -161,31 +161,13 @@ internal class VerticalScrollMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?,
+      heightSpec: Int
   ): MeasureResult {
 
     val widthMode = SizeSpec.getMode(widthSpec)
     val width = max(0, SizeSpec.getSize(widthSpec))
     val heightMode = SizeSpec.getMode(heightSpec)
     val height = max(0, SizeSpec.getSize(heightSpec))
-
-    // If the component is being remeasured then skip layout calculation
-    // if the previously measured sizes are equal to the current one
-    if (previousLayoutData != null &&
-        widthMode == SizeSpec.EXACTLY &&
-        heightMode == SizeSpec.EXACTLY) {
-      previousLayoutData as VerticalScrollLayoutData
-      if (previousLayoutData.measuredWidth == width &&
-          (!fillViewport || previousLayoutData.measuredHeight == height)) {
-
-        return MeasureResult(
-            previousLayoutData.measuredWidth,
-            previousLayoutData.measuredHeight,
-            previousLayoutData,
-        )
-      }
-    }
 
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     val actualComponent =

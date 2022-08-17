@@ -69,8 +69,7 @@ internal class ImageMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
+      heightSpec: Int
   ): MeasureResult {
     val size = Size()
 

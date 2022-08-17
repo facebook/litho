@@ -75,12 +75,7 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
   @Override
   public final LayoutResult calculateLayout(
       RenderState.LayoutContext context, int widthSpec, int heightSpec) {
-    final MeasureResult measureResult =
-        measure(
-            context,
-            widthSpec,
-            heightSpec,
-            null /* TODO(mkarpinski): either pass in the data or get rid of this param */);
+    final MeasureResult measureResult = measure(context, widthSpec, heightSpec);
 
     return new MountableLayoutResult(
         this,
@@ -96,9 +91,6 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
    * require in {@param size}. In addition this method can return any data that is required to set,
    * and unset properties on the content in the binders.
    *
-   * <p>If measure is called again in the same layout pass, then {@param previousLayoutData} will be
-   * the layout data returned by the previous measure call.
-   *
    * <p>As a performance optimisation the framework will skip this method if this Mountable is equal
    * to the previous Mountable, and if the size specs are compatible. In order to do this the
    * framework will check if every field of the Mountable is equal using reflection.
@@ -113,10 +105,7 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
    * @return a {@link MeasureResult} with the width, height, and optional layout data.
    */
   protected abstract MeasureResult measure(
-      final RenderState.LayoutContext context,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable Object previousLayoutData);
+      final RenderState.LayoutContext context, final int widthSpec, final int heightSpec);
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override

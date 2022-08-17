@@ -79,8 +79,7 @@ internal class CardClipMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
+      heightSpec: Int
   ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
 
   override fun mount(c: Context, content: CardClipDrawable, layoutData: Any?) {

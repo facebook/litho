@@ -719,8 +719,7 @@ open class ViewMountable(
   override fun measure(
       context: RenderState.LayoutContext<Any>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?,
+      heightSpec: Int
   ): MeasureResult {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
     val width =
@@ -784,8 +783,7 @@ class DrawableMountable(
   override fun measure(
       context: RenderState.LayoutContext<Any>,
       widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?,
+      heightSpec: Int
   ): MeasureResult {
     val width =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
