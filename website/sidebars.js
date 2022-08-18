@@ -26,7 +26,7 @@ module.exports = {
       // TODO: add kotlin dep
       'tutorial/project-setup',
       'tutorial/first-components',
-      'tutorial/intoducing-layout',
+      'tutorial/introducing-layout',
       'tutorial/adding-state',
       'tutorial/building-lists',
     ],
