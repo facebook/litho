@@ -189,37 +189,6 @@ public class ComponentsConfiguration {
   public static boolean initStickyHeaderInLayoutWhenComponentTreeIsNull = false;
 
   /**
-   * If set to true a single thread will always be used for background layout calculation by
-   * ThreadPoolLayoutHandler.getNewInstance().
-   */
-  public static boolean layoutCalculationAlwaysUseSingleThread = false;
-
-  /**
-   * If set to true the default layout thread pool will always be used for background layout
-   * calculation by ThreadPoolLayoutHandler.getNewInstance().
-   */
-  public static boolean layoutCalculationAlwaysUseDefaultThreadPool = false;
-
-  /**
-   * If set to true a thread pool with a single thread will always be used for background layout
-   * calculation by ThreadPoolLayoutHandler.getNewInstance().
-   */
-  public static boolean layoutCalculationAlwaysUseSingleThreadedThreadPool = false;
-
-  /**
-   * If set to a positive value, this multiplier will be used to create and enforce a thread pool of
-   * size #CPU_CORES * multiplier for background layout calculation by
-   * ThreadPoolLayoutHandler.getNewInstance().
-   */
-  public static int layoutCalculationThreadPoolCpuCoresMultiplier = 0;
-
-  /**
-   * This subtractor can be used to increase/decrease the size of the background layout calculation
-   * thread pool created when layoutCalculationThreadPoolCpuCoresMultiplier is positive.
-   */
-  public static int layoutCalculationThreadPoolCpuCoresSubtractor = 0;
-
-  /**
    * If true, uses the root ComponentTree's mount content preallocation handler to perform
    * preallocation for nested trees.
    */

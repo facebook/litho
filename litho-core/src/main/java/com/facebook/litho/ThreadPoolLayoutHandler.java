@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.DeviceInfoUtils;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.RejectedExecutionException;
@@ -28,37 +27,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThreadPoolLayoutHandler implements RunnableHandler {
 
-  private static final int CPU_CORES = DeviceInfoUtils.getNumberOfCPUCores();
-
-  private static final int CPU_CORES_MULTIPLIER =
-      ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresMultiplier;
-
   public static final LayoutThreadPoolConfiguration DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION =
       new LayoutThreadPoolConfigurationImpl(
           2, 2, ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY);
 
-  public static final LayoutThreadPoolConfiguration SINGLE_THREADED_THREAD_POOL_CONFIGURATION =
-      new LayoutThreadPoolConfigurationImpl(
-          1, 1, ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY);
-
   private static class DefaultThreadPoolHolder {
     static final ThreadPoolLayoutHandler INSTANCE =
         new ThreadPoolLayoutHandler(DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION);
-  }
-
-  private static class CpuCoresThreadPoolHolder {
-    static final ThreadPoolLayoutHandler INSTANCE =
-        new ThreadPoolLayoutHandler(
-            new LayoutThreadPoolConfigurationImpl(
-                Math.max(
-                    CPU_CORES * CPU_CORES_MULTIPLIER
-                        + ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresSubtractor,
-                    1),
-                Math.max(
-                    CPU_CORES * CPU_CORES_MULTIPLIER
-                        + ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresSubtractor,
-                    1),
-                ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY));
   }
 
   private final ThreadPoolExecutor mLayoutThreadPoolExecutor;
@@ -78,20 +53,6 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
    * @return default {@code ThreadPoolLayoutHandler}.
    */
   public static RunnableHandler getDefaultInstance() {
-    // currently there are clients calling getDefaultInstance() directly, so we need to override
-    // here too, not only in getNewInstance()
-    // at most one of the configuration parameters should be true, otherwise the experiment has been
-    // misconfigured
-    if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThread) {
-      return new DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper());
-    }
-    if (CPU_CORES_MULTIPLIER > 0) {
-      return CpuCoresThreadPoolHolder.INSTANCE;
-    }
-    if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThreadedThreadPool) {
-      return new ThreadPoolLayoutHandler(SINGLE_THREADED_THREAD_POOL_CONFIGURATION);
-    }
-
     return DefaultThreadPoolHolder.INSTANCE;
   }
 
@@ -104,19 +65,7 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
    * @return new instance with a separate {@code ThreadPoolExecutor} with specified configuration.
    */
   public static RunnableHandler getNewInstance(LayoutThreadPoolConfiguration configuration) {
-    // at most one of the configuration parameters should be true, otherwise the experiment has been
-    // misconfigured
-    if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThread) {
-      return new DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper());
-    } else if (ComponentsConfiguration.layoutCalculationAlwaysUseDefaultThreadPool) {
-      return DefaultThreadPoolHolder.INSTANCE;
-    } else if (CPU_CORES_MULTIPLIER > 0) {
-      return CpuCoresThreadPoolHolder.INSTANCE;
-    } else if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThreadedThreadPool) {
-      return new ThreadPoolLayoutHandler(SINGLE_THREADED_THREAD_POOL_CONFIGURATION);
-    } else {
-      return new ThreadPoolLayoutHandler(configuration);
-    }
+    return new ThreadPoolLayoutHandler(configuration);
   }
 
   @Override
