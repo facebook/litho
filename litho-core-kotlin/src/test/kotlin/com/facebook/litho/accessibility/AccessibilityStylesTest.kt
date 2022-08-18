@@ -37,11 +37,11 @@ import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
-import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 
 /** Unit tests for accessibility styles. */
 @RunWith(LithoTestRunner::class)

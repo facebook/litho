@@ -49,7 +49,6 @@ import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
-import com.nhaarman.mockitokotlin2.mock
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
@@ -57,6 +56,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)

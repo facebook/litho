@@ -40,12 +40,12 @@ import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
-import com.nhaarman.mockitokotlin2.mock
 import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 
 /** Unit tests for common styles defined in [Style]. */
 @RunWith(LithoTestRunner::class)
