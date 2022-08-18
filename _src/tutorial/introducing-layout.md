@@ -1,5 +1,5 @@
 ---
-id: intoducing-layout
+id: introducing-layout
 title: Introducing Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
