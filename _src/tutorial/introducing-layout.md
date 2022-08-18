@@ -4,7 +4,7 @@ title: Introducing Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-In this section of the tutorial, you'll become familiar with building layouts using [Flexbox](../kotlin/flexbox-containers.mdx)) in Litho for an Instagram post component.
+In this section of the tutorial, you'll become familiar with building layouts using [Flexbox](../kotlin/flexbox-containers.mdx) in Litho for an Instagram post component.
 
 ## Yoga and Flexbox
 
