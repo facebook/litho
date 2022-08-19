@@ -65,6 +65,7 @@ public class LayoutSpecLifecycleTesterSpec {
       ComponentContext c,
       @Prop List<LifecycleStep.StepInfo> steps,
       @Prop(optional = true) @Nullable Caller caller,
+      @Prop(optional = true) Component body,
       @State String state,
       @CachedValue int expensiveValue) {
     steps.add(new StepInfo(LifecycleStep.ON_CREATE_LAYOUT));
@@ -81,6 +82,7 @@ public class LayoutSpecLifecycleTesterSpec {
         .unfocusedHandler(LayoutSpecLifecycleTester.onUnfocusedVisibleEvent(c))
         .fullImpressionHandler(LayoutSpecLifecycleTester.onFullImpressionVisibleEvent(c))
         .visibilityChangedHandler(LayoutSpecLifecycleTester.onVisibilityChangedEvent(c))
+        .child(body)
         .build();
   }
 

@@ -29,12 +29,16 @@ public class ComponentWithMeasureCallSpec {
 
   @OnCreateLayout
   public static Component onCreateLayout(
-      ComponentContext c, @Prop Component component, @Prop boolean shouldCacheResult) {
+      ComponentContext c,
+      @Prop Component component,
+      @Prop boolean shouldCacheResult,
+      @Prop(optional = true) int widthSpec,
+      @Prop(optional = true) int heightSpec) {
 
     component.measure(
         c,
-        SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY),
+        widthSpec != 0 ? widthSpec : SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
+        heightSpec != 0 ? heightSpec : SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
         new Size(),
         shouldCacheResult);
 
