@@ -89,9 +89,10 @@ public class ComponentPoolingTest {
 
   private static class PooledComponent extends SpecGeneratedComponent {
     private int mOnCreateMountContentCount = 0;
+    private String mSimpleName;
 
     protected PooledComponent(String simpleName) {
-      super(simpleName);
+      this.mSimpleName = simpleName;
     }
 
     @Override
@@ -107,6 +108,11 @@ public class ComponentPoolingTest {
 
     public int getOnCreateMountContentCount() {
       return mOnCreateMountContentCount;
+    }
+
+    @Override
+    public String getSimpleName() {
+      return mSimpleName != null ? mSimpleName : super.getSimpleName();
     }
   }
 }

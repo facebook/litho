@@ -72,7 +72,7 @@ public class TestSectionCreator {
         String key,
         boolean forceShouldUpdate,
         @Nullable final Section... children) {
-      super("ChildrenSectionTest", initialCount, key, forceShouldUpdate);
+      super(initialCount, key, forceShouldUpdate);
       mChildren = children;
     }
 
@@ -134,7 +134,7 @@ public class TestSectionCreator {
         String key,
         boolean forceShouldUpdate,
         @Nullable final Change... changes) {
-      super("ChangeSetSection", initialCount, key, forceShouldUpdate);
+      super(initialCount, key, forceShouldUpdate);
       this.mChanges = changes;
     }
 
@@ -198,9 +198,7 @@ public class TestSectionCreator {
 
     private final StateContainer stateContainer = new TestStateContainer();
 
-    protected TestSection(
-        String simpleName, int initialCount, String key, boolean forceShouldUpdate) {
-      super(simpleName);
+    protected TestSection(int initialCount, String key, boolean forceShouldUpdate) {
       this.forceShouldUpdate = forceShouldUpdate;
       setCount(initialCount);
       setKey(key);

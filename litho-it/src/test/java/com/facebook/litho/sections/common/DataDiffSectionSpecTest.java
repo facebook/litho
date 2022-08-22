@@ -455,7 +455,7 @@ public class DataDiffSectionSpecTest {
     }
     DataDiffSection section =
         DataDiffSection.<String>create(mSectionContext).data(data).renderEventHandler(null).build();
-    assertThat(section.getLogTag()).isEqualTo(section.getClass().getSimpleName());
+    assertThat(section.getLogTag()).contains(section.getClass().getSimpleName());
   }
 
   @Test

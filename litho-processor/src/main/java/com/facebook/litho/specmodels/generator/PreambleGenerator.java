@@ -37,7 +37,7 @@ public class PreambleGenerator {
    */
   static TypeSpecDataHolder generateConstructor(SpecModel specModel) {
     final MethodSpec.Builder constructorBuilder =
-        MethodSpec.constructorBuilder().addStatement("super($S)", specModel.getComponentName());
+        MethodSpec.constructorBuilder().addStatement("super()");
 
     if (specModel.hasInjectedDependencies()) {
       final MethodSpec diConstructor =

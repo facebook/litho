@@ -28,6 +28,7 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.HasEventTrigger;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
@@ -61,14 +62,10 @@ public abstract class Section extends SectionLifecycle
    */
   @Nullable private Map<String, Integer> mChildCounters;
 
-  /** Simple name to identify the generated section. */
-  private final String mSimpleName;
-
   private StateContainer mStateContainer;
 
-  protected Section(String simpleName) {
-    mSimpleName = simpleName;
-    mKey = getLogTag();
+  protected Section() {
+    mKey = getClass().getSimpleName();
     mStateContainer = createStateContainer();
   }
 
@@ -332,7 +329,9 @@ public abstract class Section extends SectionLifecycle
 
   /** Mostly used by logging to provide more readable messages. */
   public final String getSimpleName() {
-    return mSimpleName;
+    return ComponentsConfiguration.isDebugModeEnabled
+        ? getClass().getSimpleName()
+        : "<cls>" + getClass().getName() + "</cls>";
   }
 
   protected boolean isEquivalentProps(Section other, boolean shouldCompareCommonProps) {

@@ -43,9 +43,7 @@ class StateUpdateTestComponent extends SpecGeneratedComponent {
   private final AtomicInteger createInitialStateCount = new AtomicInteger(0);
   private static final AtomicInteger finalCounterValue = new AtomicInteger(0);
 
-  StateUpdateTestComponent() {
-    super("StateUpdateTest");
-  }
+  StateUpdateTestComponent() {}
 
   @Override
   public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {

@@ -43,7 +43,7 @@ public class LithoKeyTestingUtil {
       LithoNode node, Map<String, List<ScopedComponentInfo>> scopedComponentInfos) {
     for (int i = 0, size = node.getComponentCount(); i < size; i++) {
       final Component component = node.getComponentAt(i);
-      final String componentType = component.getSimpleName();
+      final String componentType = component.getClass().getSimpleName();
 
       List<ScopedComponentInfo> sameTypeKeys = scopedComponentInfos.get(componentType);
       if (sameTypeKeys == null) {
