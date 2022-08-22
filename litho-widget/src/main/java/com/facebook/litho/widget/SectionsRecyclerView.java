@@ -108,9 +108,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   public void showStickyHeader() {
     mStickyHeader.setVisibility(View.VISIBLE);
 
-    if (!mStickyHeader.skipNotifyVisibleBoundsChangedCalls()) {
-      mStickyHeader.notifyVisibleBoundsChanged();
-    }
+    layoutStickyHeader();
   }
 
   public void hideStickyHeader() {
@@ -153,24 +151,27 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
     try {
       super.onLayout(changed, left, top, right, bottom);
-
-      if (mStickyHeader.getVisibility() == View.GONE) {
-        return;
-      }
-
-      final int stickyHeaderLeft = getPaddingLeft();
-      final int stickyHeaderTop = getPaddingTop();
-      mStickyHeader.layout(
-          stickyHeaderLeft,
-          stickyHeaderTop,
-          stickyHeaderLeft + mStickyHeader.getMeasuredWidth(),
-          stickyHeaderTop + mStickyHeader.getMeasuredHeight());
+      layoutStickyHeader();
     } finally {
       if (mSectionsRecyclerViewLogger != null) {
         mSectionsRecyclerViewLogger.onLayoutEnded(mIsFirstLayout);
       }
       mIsFirstLayout = false;
     }
+  }
+
+  private void layoutStickyHeader() {
+    if (mStickyHeader.getVisibility() == View.GONE) {
+      return;
+    }
+
+    final int stickyHeaderLeft = getPaddingLeft();
+    final int stickyHeaderTop = getPaddingTop();
+    mStickyHeader.layout(
+        stickyHeaderLeft,
+        stickyHeaderTop,
+        stickyHeaderLeft + mStickyHeader.getMeasuredWidth(),
+        stickyHeaderTop + mStickyHeader.getMeasuredHeight());
   }
 
   static @Nullable SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
