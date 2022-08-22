@@ -1,0 +1,19 @@
+---
+id: overview
+title: Overview
+---
+
+In this section you can find information about Mountable Components, which are a replacement for the old Java Specs API-based [Mount Specs](codegen/mount-specs.md) - components that can render views or drawables.
+
+Mountable Components should only be created when you need to integrate your own views/drawables with Litho. Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a 'View' or a 'Drawable') to be displayed.
+
+The following pages provide additional information:
+
+* [Introduction to RenderCore](overview.mdx) - a Components-based rendering engine responsible for rendering Mountable Components.
+* [Mountable Component](overview.mdx) - how to create a Component responsible for rendering a View or Drawable.
+* [Mountable](overview.mdx) - a reusable building block hosted by a Mountable Component.
+* [Measuring](overview.mdx) - how a Mountable should measure itself given arbitrary width and height specs.
+* [Accessibility](overview.mdx) - how to implement [A11Y](https://www.a11yproject.com/) for your Mountable Components.
+* [Dynamic Values](overview.mdx) - how to use props that are updated without computing a layout or remounting.
+* [Controllers](overview.mdx) - the API used to control the content from outside the Component (typically from an ancestor).
+* [Content pooling](overview.mdx) - a performance optimisation strategy that can be used to populate the content pools to improve first mount performance.
