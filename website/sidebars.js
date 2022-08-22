@@ -189,6 +189,11 @@ module.exports = {
         },
         'fb/experimentation',
         {
+          'Mountable Components': [
+            'mountablecomponents/overview',
+          ],
+        },
+        {
           'Open Source': [
             'fb/open-source',
             'fb/open-source-using-the-open-source-repo',
