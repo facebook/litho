@@ -128,7 +128,7 @@ public class RecyclerEventsController {
     sectionsRecyclerView.setRefreshing(true);
   }
 
-  void setSectionsRecyclerView(@Nullable SectionsRecyclerView sectionsRecyclerView) {
+  public void setSectionsRecyclerView(@Nullable SectionsRecyclerView sectionsRecyclerView) {
     mSectionsRecyclerView = sectionsRecyclerView;
 
     if (mOnRecyclerUpdateListener != null) {
