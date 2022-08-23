@@ -325,6 +325,11 @@ public class LayoutState
       result.measure(layoutContext, exactly(width), exactly(height));
     }
 
+    if (layoutState.getLayoutStateContext().isReleased()) {
+      // back out if layout got released
+      return null;
+    }
+
     final @Nullable LithoRenderUnit unit = result.getContentRenderUnit(layoutState);
     if (unit == null) {
       return null;
