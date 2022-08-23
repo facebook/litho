@@ -329,7 +329,7 @@ public abstract class Section extends SectionLifecycle
 
   /** Mostly used by logging to provide more readable messages. */
   public final String getSimpleName() {
-    return ComponentsConfiguration.isDebugModeEnabled
+    return ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun
         ? getClass().getSimpleName()
         : "<cls>" + getClass().getName() + "</cls>";
   }

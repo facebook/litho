@@ -546,7 +546,7 @@ public abstract class Component
   }
 
   public String getSimpleName() {
-    return ComponentsConfiguration.isDebugModeEnabled
+    return ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun
         ? getClass().getSimpleName()
         : "<cls>" + getClass().getName() + "</cls>";
   }
