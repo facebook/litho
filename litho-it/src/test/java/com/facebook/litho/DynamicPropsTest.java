@@ -373,7 +373,7 @@ public class DynamicPropsTest {
       if (mountItem != null) {
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
 
-        if (layoutOutput.getComponent().getSimpleName().equals("Text")) {
+        if (layoutOutput.getComponent().getSimpleName().contains("Text")) {
           final long hostMarker =
               i != 0 ? mountItem.getRenderTreeNode().getParent().getRenderUnit().getId() : -1;
 

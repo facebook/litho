@@ -360,14 +360,14 @@ public class ComponentWarmerTest {
   public void testLazySyncPrepare() {
     final ComponentWarmer warmer = new ComponentWarmer();
 
-    final TestComponent component1 = new TestComponent("tag1");
+    final TestComponent component1 = new TestComponent();
     final ComponentRenderInfo renderInfo1 =
         ComponentRenderInfo.create()
             .component(component1)
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 
-    final TestComponent component2 = new TestComponent("tag2");
+    final TestComponent component2 = new TestComponent();
     final ComponentRenderInfo renderInfo2 =
         ComponentRenderInfo.create()
             .component(component2)
@@ -404,14 +404,14 @@ public class ComponentWarmerTest {
   public void testLazySyncPrepareWithHandler() {
     final ComponentWarmer warmer = new ComponentWarmer();
 
-    final TestComponent component1 = new TestComponent("tag1");
+    final TestComponent component1 = new TestComponent();
     final ComponentRenderInfo renderInfo1 =
         ComponentRenderInfo.create()
             .component(component1)
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 
-    final TestComponent component2 = new TestComponent("tag2");
+    final TestComponent component2 = new TestComponent();
     final ComponentRenderInfo renderInfo2 =
         ComponentRenderInfo.create()
             .component(component2)
@@ -456,14 +456,14 @@ public class ComponentWarmerTest {
   public void testLazyAsyncPrepare() {
     final ComponentWarmer warmer = new ComponentWarmer();
 
-    final TestComponent component1 = new TestComponent("tag1");
+    final TestComponent component1 = new TestComponent();
     final ComponentRenderInfo renderInfo1 =
         ComponentRenderInfo.create()
             .component(component1)
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 
-    final TestComponent component2 = new TestComponent("tag2");
+    final TestComponent component2 = new TestComponent();
     final ComponentRenderInfo renderInfo2 =
         ComponentRenderInfo.create()
             .component(component2)
@@ -504,7 +504,7 @@ public class ComponentWarmerTest {
 
     final ComponentWarmer.ComponentTreeHolderPreparer preparer = warmer.getFactory();
 
-    final TestComponent testComponentPrepare = new TestComponent("t1");
+    final TestComponent testComponentPrepare = new TestComponent();
     final ComponentRenderInfo renderInfoPrepare =
         ComponentRenderInfo.create().component(testComponentPrepare).build();
 
@@ -517,7 +517,7 @@ public class ComponentWarmerTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
 
-    final TestComponent testComponentInsert = new TestComponent("t2");
+    final TestComponent testComponentInsert = new TestComponent();
     final ComponentRenderInfo renderInfoInsert =
         ComponentRenderInfo.create()
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
@@ -545,13 +545,9 @@ public class ComponentWarmerTest {
   }
 
   final class TestComponent extends Component {
-
-    private final String mSimpleName;
     AtomicBoolean ranLayout = new AtomicBoolean(false);
 
-    protected TestComponent(String simpleName) {
-      mSimpleName = simpleName;
-    }
+    protected TestComponent() {}
 
     @Override
     protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
@@ -569,7 +565,7 @@ public class ComponentWarmerTest {
 
     @Override
     public String getSimpleName() {
-      return mSimpleName;
+      return getClass().getSimpleName();
     }
   }
 }

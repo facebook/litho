@@ -19,6 +19,7 @@ package com.facebook.litho.sections.common;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.facebook.litho.Handle;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
@@ -48,9 +49,13 @@ public class SectionsTriggersTest {
 
   @Test
   public void testTriggerEvent() {
+    final Handle handle = new Handle();
     final String childKey = "childKey";
     final Section section =
-        TestTriggerParentSection.create(mSectionContext).childKey(childKey).build();
+        TestTriggerParentSection.create(mSectionContext)
+            .childKey(childKey)
+            .childHandle(handle)
+            .build();
 
     mSectionContext = SectionContext.withSectionTree(mSectionContext, mSectionTree);
     mSectionContext = SectionContext.withScope(mSectionContext, section);
@@ -62,7 +67,7 @@ public class SectionsTriggersTest {
     mSectionTree.setRoot(section);
 
     final String prefix = "TestTrigger";
-    final String actual = TestTriggerChildSection.onTestTrigger(mSectionContext, childKey, prefix);
+    final String actual = TestTriggerChildSection.onTestTrigger(mSectionContext, handle, prefix);
 
     assertThat(actual).isEqualTo(prefix + parentKey + childKey);
   }

@@ -26,6 +26,10 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   public void beginSection(String name) {
     if (ComponentsConfiguration.IS_INTERNAL_BUILD
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      if (name.length() > 120) {
+        throw new RuntimeException(
+            "debug: " + ComponentsConfiguration.isDebugModeEnabled + " -> " + name);
+      }
       Trace.beginSection(name);
     }
   }

@@ -39,27 +39,22 @@ public abstract class SpecGeneratedComponent extends Component
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
 
-  private final String mSimpleName;
-
-  protected SpecGeneratedComponent(String simpleName) {
-    mSimpleName = simpleName;
-  }
+  protected SpecGeneratedComponent() {}
 
   @VisibleForTesting
-  protected SpecGeneratedComponent(int identityHashCode, String simpleName) {
+  protected SpecGeneratedComponent(int identityHashCode) {
     super(identityHashCode);
-    mSimpleName = simpleName;
   }
 
   /** Should only be used by logging to provide more readable messages. */
   @Override
-  public final String getSimpleName() {
-    final Component delegate = getSimpleNameDelegate();
+  public String getSimpleName() {
+    final @Nullable Component delegate = getSimpleNameDelegate();
     if (delegate == null) {
-      return mSimpleName;
+      return super.getSimpleName();
+    } else {
+      return super.getSimpleName() + "(" + delegate.getSimpleName() + ")";
     }
-
-    return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
   }
 
   final void bind(

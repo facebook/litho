@@ -55,7 +55,7 @@ public class ViewCompatComponent<V extends View> extends SpecGeneratedComponent 
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super(System.identityHashCode(viewCreator), "ViewCompatComponent_" + componentName);
+    super(System.identityHashCode(viewCreator));
     mViewCreator = viewCreator;
     mComponentName = componentName;
   }
@@ -128,6 +128,11 @@ public class ViewCompatComponent<V extends View> extends SpecGeneratedComponent 
   @Override
   public V onCreateMountContent(Context c) {
     return (V) mViewCreator.createView(c, null);
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "ViewCompatComponent(" + mComponentName + ")";
   }
 
   public static final class Builder<V extends View> extends Component.Builder<Builder<V>> {
