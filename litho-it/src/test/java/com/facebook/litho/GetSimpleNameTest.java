@@ -33,6 +33,7 @@ public class GetSimpleNameTest {
     private final Component mDelegate;
 
     protected TestWrapperComponent(Component delegate) {
+      super("TestWrapper");
       mDelegate = delegate;
     }
 
@@ -52,15 +53,14 @@ public class GetSimpleNameTest {
   @Test
   public void testGetSimpleName() {
     final Component testComponent = SimpleMountSpecTester.create(mContext).build();
-    assertThat(testComponent.getSimpleName()).contains("SimpleMountSpecTester");
+    assertThat(testComponent.getSimpleName()).isEqualTo("SimpleMountSpecTester");
   }
 
   @Test
   public void testGetSimpleNameWithOneWrapper() {
     final Component inner = SimpleMountSpecTester.create(mContext).build();
     TestWrapperComponent wrapper = new TestWrapperComponent(inner);
-    assertThat(wrapper.getSimpleName()).contains("TestWrapper");
-    assertThat(wrapper.getSimpleName()).contains("SimpleMountSpecTester");
+    assertThat(wrapper.getSimpleName()).isEqualTo("TestWrapper(SimpleMountSpecTester)");
   }
 
   @Test
@@ -69,7 +69,6 @@ public class GetSimpleNameTest {
     TestWrapperComponent wrapper = new TestWrapperComponent(inner);
     TestWrapperComponent wrapper2 = new TestWrapperComponent(wrapper);
     TestWrapperComponent wrapper3 = new TestWrapperComponent(wrapper2);
-    assertThat(wrapper3.getSimpleName()).contains("TestWrapper");
-    assertThat(wrapper3.getSimpleName()).contains("SimpleMountSpecTester");
+    assertThat(wrapper3.getSimpleName()).isEqualTo("TestWrapper(SimpleMountSpecTester)");
   }
 }

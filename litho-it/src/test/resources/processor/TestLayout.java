@@ -126,7 +126,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   EventTrigger onClickEventTriggerTrigger;
 
   private TestLayout() {
-    super();
+    super("TestLayout");
   }
 
   private TestLayoutStateContainer getStateContainerImpl(ComponentContext c) {

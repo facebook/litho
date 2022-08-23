@@ -111,6 +111,6 @@ public class VerySimpleGroupSectionSpecTest {
     Section s =
         mTester.prepare(
             VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
-    assertThat(s.getLogTag()).contains(s.getClass().getSimpleName());
+    assertThat(s.getLogTag()).isEqualTo(s.getClass().getSimpleName());
   }
 }

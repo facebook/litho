@@ -30,6 +30,7 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
   int mDrawableHeight;
 
   private DrawableComponent(Drawable drawable) {
+    super("DrawableComponent");
     mDrawable = drawable;
   }
 
@@ -107,11 +108,6 @@ class DrawableComponent<T extends Drawable> extends SpecGeneratedComponent {
     DrawableComponent drawableComponent = (DrawableComponent) o;
 
     return DrawableUtils.isEquivalentTo(mDrawable, drawableComponent.mDrawable);
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "DrawableComponent";
   }
 
   private void setDrawableWidth(int drawableWidth) {

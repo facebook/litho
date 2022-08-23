@@ -16,7 +16,6 @@
 
 package com.facebook.litho.testing.sections;
 
-import com.facebook.litho.Handle;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
@@ -27,10 +26,7 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 public class TestTriggerParentSectionSpec {
 
   @OnCreateChildren
-  protected static Children onCreateChildren(
-      SectionContext c, @Prop String childKey, @Prop Handle childHandle) {
-    return Children.create()
-        .child(TestTriggerChildSection.create(c).key(childKey).handle(childHandle).build())
-        .build();
+  protected static Children onCreateChildren(SectionContext c, @Prop String childKey) {
+    return Children.create().child(TestTriggerChildSection.create(c).key(childKey).build()).build();
   }
 }

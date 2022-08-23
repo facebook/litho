@@ -29,7 +29,9 @@ public final class Wrapper extends SpecGeneratedComponent {
 
   @Nullable @Prop Component delegate;
 
-  private Wrapper() {}
+  private Wrapper() {
+    super("Wrapper");
+  }
 
   @Override
   protected boolean canResolve() {
@@ -76,12 +78,6 @@ public final class Wrapper extends SpecGeneratedComponent {
       return false;
     }
     return true;
-  }
-
-  @Override
-  public final String getSimpleName() {
-    final String name = delegate != null ? delegate.getSimpleName() : "null";
-    return "Wrapper(" + name + ")";
   }
 
   @Override

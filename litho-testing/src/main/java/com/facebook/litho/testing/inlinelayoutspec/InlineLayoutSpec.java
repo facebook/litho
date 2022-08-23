@@ -29,7 +29,9 @@ import com.facebook.litho.Transition;
 @Deprecated
 public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
 
-  protected InlineLayoutSpec() {}
+  protected InlineLayoutSpec() {
+    super("InlineLayout");
+  }
 
   /**
    * Provides a way to give a consistent identity to different InlineLayoutSpecs, e.g. treat them as
@@ -39,10 +41,12 @@ public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
    */
   @Deprecated
   protected InlineLayoutSpec(int identityHashCode) {
-    super(identityHashCode);
+    super(identityHashCode, "InlineLayout");
   }
 
-  protected InlineLayoutSpec(ComponentContext c) {}
+  protected InlineLayoutSpec(ComponentContext c) {
+    super("InlineLayout");
+  }
 
   @Override
   public boolean isEquivalentProps(Component other, boolean shouldCompareCommonProps) {
@@ -58,10 +62,5 @@ public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
     return null;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "InlineLayout";
   }
 }
