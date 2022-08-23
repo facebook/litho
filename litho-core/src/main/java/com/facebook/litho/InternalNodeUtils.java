@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.List;
@@ -241,9 +242,9 @@ public class InternalNodeUtils {
     final long id = result.getContext().calculateLayoutOutputId(componentKey, outputType);
 
     /* Call onBoundsDefined for the DrawableComponent */
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
+      RenderCoreSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
     }
 
     try {
@@ -254,7 +255,7 @@ public class InternalNodeUtils {
       ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
     } finally {
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
 
