@@ -20,6 +20,7 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnClick;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.RenderCoreSystrace;
 
 /** Click listener that triggers its underlying event handler. */
 class ComponentClickListener implements View.OnClickListener {
@@ -33,7 +34,7 @@ class ComponentClickListener implements View.OnClickListener {
   @Override
   public void onClick(View view) {
     if (mEventHandler != null) {
-      final boolean isTracing = ComponentsSystrace.isTracing();
+      final boolean isTracing = RenderCoreSystrace.isEnabled();
       if (isTracing) {
         String componentClassName = "";
         if (mEventHandler.dispatchInfo.hasEventDispatcher != null) {
@@ -42,13 +43,13 @@ class ComponentClickListener implements View.OnClickListener {
             componentClassName = "";
           }
         }
-        ComponentsSystrace.beginSection("onClick_<cls>" + componentClassName + "</cls>");
+        RenderCoreSystrace.beginSection("onClick_<cls>" + componentClassName + "</cls>");
       }
       try {
         dispatchOnClick(mEventHandler, view);
       } finally {
         if (isTracing) {
-          ComponentsSystrace.endSection();
+          RenderCoreSystrace.endSection();
         }
       }
     }
