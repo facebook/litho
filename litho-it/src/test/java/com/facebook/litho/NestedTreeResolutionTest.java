@@ -1487,4 +1487,1289 @@ public class NestedTreeResolutionTest {
         .shouldCacheResult(true)
         .build();
   }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void measureComponentUsingMeasureApiInsideAnotherMeasureCallWithCompatibleSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            true,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void measureComponentUsingMeasureApiInsideAnotherMeasureCallWithDifferentSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> lifecycleStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int parentWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int parentHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    int childWidthSpec = SizeSpec.makeSizeSpec(600, SizeSpec.EXACTLY);
+    int childHeightSpec = SizeSpec.makeSizeSpec(600, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            lifecycleStepsInfo,
+            mountableLifecycleTracker,
+            parentWidthSpec,
+            parentHeightSpec,
+            childWidthSpec,
+            childHeightSpec,
+            true,
+            true,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(lifecycleStepsInfo);
+
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void
+      measureComponentWithSizeSpecUsingMeasureApiInsideAnotherMeasureCallWithCompatibleSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            true,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
+              // measured with measure api
+              );
+    }
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void
+      measureComponentWithSizeSpecUsingMeasureApiInsideAnotherMeasureCallWithDifferentSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            true,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Nested Tree Resolution
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void
+      measureComponentWithSizeSpecInsideLayoutWithSizeSpecMeasuringOCLWithCompatibleSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            false,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void
+      measureComponentWithSizeSpecInsideLayoutWithSizeSpecMeasuringOCLWithDifferentSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            false,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_TREE_PROP,
+              ON_ATTACHED,
+              ON_EVENT_VISIBLE,
+              ON_FULL_IMPRESSION_VISIBLE_EVENT,
+              ON_VISIBILITY_CHANGED);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_TREE_PROP,
+              ON_ATTACHED,
+              ON_EVENT_VISIBLE,
+              ON_FULL_IMPRESSION_VISIBLE_EVENT,
+              ON_VISIBILITY_CHANGED);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void measureComponentInsideLayoutWithSizeSpecWithCompatibleSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            false,
+            true,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void measureComponentInsideLayoutWithSizeSpecWithDifferentSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            false,
+            true,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void
+      measureComponentWithSizeSpecWhichMeasuresAnotherComponentWithSizeSpecWithCompatibleSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            false,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
+              // measured with measure api
+              );
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithMeasureCall) is OCL which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void
+      measureComponentWithSizeSpecWhichMeasuresAnotherComponentWithSizeSpecWithDifferentSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            true,
+            false,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
+              // measured with measure api
+              );
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Nested Tree Resolution
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void
+      componentWithSizeSpecMeasuringOCLWhichMeasuresAnotherComponentWithSizeSpecWithCompatibleSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            false,
+            true,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
+              // measured with measure api
+              );
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithMeasureCall) is OCL which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void
+      componentWithSizeSpecMeasuringOCLWhichMeasuresAnotherComponentWithSizeSpecWithDifferentSizeSpecs() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            false,
+            true,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(300, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which  calls Component.measure on Component C
+    Component C (LayoutSpecLifecycleTester) is OCL which has a mountable as a child
+  */
+  @Test
+  public void componentWithSizeSpecMeasuringComponentWithSizeSpecWhichMeasuresOCL() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            false,
+            false,
+            true);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
+
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
+  }
+
+  /*
+          A
+            \
+              B
+                \
+                  C
+
+    A (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which calls Component.measure on Component B passed as prop and simply returns the same component
+    Component B (ComponentWithSizeSpecWithMeasureCall) is OCLWSS which  calls Component.measure on Component C
+    Component C (LayoutWithSizeSpecLifecycleTester) is OCLWSS which has a mountable as a child
+  */
+  @Test
+  public void componentWithSizeSpecMeasuringOCLWSSWhichMeasuresAnotherOCLWSS() {
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
+
+    final List<LifecycleStep.StepInfo> layoutWithSizeSpecStepsInfo = new ArrayList<>();
+    final LifecycleTracker mountableLifecycleTracker = new LifecycleTracker();
+
+    int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    final Component root =
+        createComponent(
+            c,
+            layoutWithSizeSpecStepsInfo,
+            mountableLifecycleTracker,
+            widthSpec,
+            heightSpec,
+            widthSpec,
+            heightSpec,
+            false,
+            false,
+            false);
+
+    int lithoViewWidthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int lithoViewHeightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    mLegacyLithoViewRule.setRoot(root);
+    mLegacyLithoViewRule.setSizeSpecs(lithoViewWidthSpec, lithoViewHeightSpec);
+    mLegacyLithoViewRule.attachToWindow().measure().layout();
+
+    List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
+
+    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+              // measured with measure api
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              // Collect results phase
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              // Mount phase
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    } else {
+      assertThat(stepsInfo)
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
+              // measured with measure api
+              );
+
+      assertThat(mountableLifecycleTracker.getSteps())
+          .describedAs("Should call the lifecycle methods in expected order")
+          .containsExactly(
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND);
+    }
+  }
+
+  /**
+   * Returns component hierarchy Root -> Mid -> Bottom -> Mountable where Root / Mid / Bottom can be
+   * OCL or OCLWSS based on provided params.
+   *
+   * <p>Root and Mid component are using Component.measure API as well in OCL / OCLWSS
+   *
+   * @param c ComponentContext
+   * @param stepsInfo to track lifecycle events on bottom component
+   * @param mountableLifecycleTracker to track lifecycle events on Mountable component
+   * @param rootMeasureWidthSpec width spec used by root component to measure mid component using
+   *     Component.measure API
+   * @param rootMeasureHeightSpec height spec used by root component to measure mid component using
+   *     Component.measure API
+   * @param midMeasureWidthSpec width spec used by mid component to measure bottom component using
+   *     Component.measure API
+   * @param midMeasureHeightSpec height spec used by mid component to measure bottom component using
+   *     * Component.measure API
+   * @param isRootOCL if true, use OCL for root component otherwise OCLWSS
+   * @param isMidOCL if true, use OCL for mid component otherwise OCLWSS
+   * @param isBottomOCL if true, use OCL for end component otherwise OCLWSS
+   * @return
+   */
+  private static Component createComponent(
+      final ComponentContext c,
+      final List<LifecycleStep.StepInfo> stepsInfo,
+      final LifecycleTracker mountableLifecycleTracker,
+      final int rootMeasureWidthSpec,
+      final int rootMeasureHeightSpec,
+      final int midMeasureWidthSpec,
+      final int midMeasureHeightSpec,
+      boolean isRootOCL,
+      boolean isMidOCL,
+      boolean isBottomOCL) {
+
+    final Component mountable =
+        MountSpecPureRenderLifecycleTester.create(c)
+            .lifecycleTracker(mountableLifecycleTracker)
+            .build();
+
+    final Component bottomComponent =
+        isBottomOCL
+            ? LayoutSpecLifecycleTester.create(c).steps(stepsInfo).body(mountable).build()
+            : LayoutWithSizeSpecLifecycleTester.create(c).steps(stepsInfo).body(mountable).build();
+
+    final Component midComponent =
+        isMidOCL
+            ? ComponentWithMeasureCall.create(c)
+                .component(bottomComponent)
+                .widthSpec(midMeasureWidthSpec)
+                .heightSpec(midMeasureHeightSpec)
+                .shouldCacheResult(true)
+                .build()
+            : ComponentWithSizeSpecWithMeasureCall.create(c)
+                .component(bottomComponent)
+                .shouldCacheResult(true)
+                .build();
+
+    return isRootOCL
+        ? ComponentWithMeasureCall.create(c)
+            .component(midComponent)
+            .widthSpec(rootMeasureWidthSpec)
+            .heightSpec(rootMeasureHeightSpec)
+            .shouldCacheResult(true)
+            .build()
+        : ComponentWithSizeSpecWithMeasureCall.create(c)
+            .component(midComponent)
+            .shouldCacheResult(true)
+            .build();
+  }
 }
