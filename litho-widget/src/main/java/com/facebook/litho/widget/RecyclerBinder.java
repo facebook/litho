@@ -55,7 +55,6 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
-import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoLifecycleProvider;
@@ -80,6 +79,7 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RunnableHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1182,9 +1182,9 @@ public class RecyclerBinder
   private void applyReadyBatchesWithRetry(final int retryCount) {
     ThreadUtils.assertMainThread();
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("applyReadyBatches");
+      RenderCoreSystrace.beginSection("applyReadyBatches");
     }
     try {
       // Fast check that doesn't acquire lock -- measure() is locking and will post a call to
@@ -1265,7 +1265,7 @@ public class RecyclerBinder
       }
     } finally {
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
   }
@@ -1891,9 +1891,9 @@ public class RecyclerBinder
    */
   public void notifyChangeSetCompleteAsync(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("notifyChangeSetCompleteAsync");
+      RenderCoreSystrace.beginSection("notifyChangeSetCompleteAsync");
     }
     try {
       if (SectionsDebug.ENABLED) {
@@ -1922,7 +1922,7 @@ public class RecyclerBinder
       clearThreadForChangeSet();
     } finally {
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
   }
@@ -1933,9 +1933,9 @@ public class RecyclerBinder
   @UiThread
   public void notifyChangeSetComplete(
       boolean isDataChanged, @Nullable ChangeSetCompleteCallback changeSetCompleteCallback) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("notifyChangeSetComplete");
+      RenderCoreSystrace.beginSection("notifyChangeSetComplete");
     }
     try {
       if (SectionsDebug.ENABLED) {
@@ -1964,7 +1964,7 @@ public class RecyclerBinder
       }
     } finally {
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
     }
   }
@@ -2425,9 +2425,9 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("fillListViewport");
+      RenderCoreSystrace.beginSection("fillListViewport");
     }
 
     final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
@@ -2447,7 +2447,7 @@ public class RecyclerBinder
     }
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -2464,9 +2464,9 @@ public class RecyclerBinder
       return 0;
     }
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("computeLayoutsToFillListViewport");
+      RenderCoreSystrace.beginSection("computeLayoutsToFillListViewport");
     }
 
     final int widthSpec = SizeSpec.makeSizeSpec(maxWidth, SizeSpec.EXACTLY);
@@ -2509,7 +2509,7 @@ public class RecyclerBinder
     }
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     logFillViewportInserted(numInserted, holders.size());
@@ -2642,9 +2642,9 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void invalidateLayoutData() {
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     if (isTracing) {
-      ComponentsSystrace.beginSection("invalidateLayoutData");
+      RenderCoreSystrace.beginSection("invalidateLayoutData");
     }
 
     if (!mHasManualEstimatedViewportCount) {
@@ -2666,7 +2666,7 @@ public class RecyclerBinder
     }
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -2723,7 +2723,7 @@ public class RecyclerBinder
     if (mHasManualEstimatedViewportCount) {
       return;
     }
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
     final boolean loggingForStartup = LithoStartupLogger.isEnabled(mStartupLogger);
 
     // We can schedule a maximum of number of items minus one (which is being calculated
@@ -2736,11 +2736,11 @@ public class RecyclerBinder
             mTraverseLayoutBackwards);
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("maybeScheduleAsyncLayoutsDuringInitRange");
+      RenderCoreSystrace.beginSection("maybeScheduleAsyncLayoutsDuringInitRange");
     }
     maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
@@ -2752,7 +2752,7 @@ public class RecyclerBinder
           LithoStartupLogger.FIRST_LAYOUT, LithoStartupLogger.START, mStartupLoggerAttribution);
     }
     if (isTracing) {
-      ComponentsSystrace.beginSection("firstLayout");
+      RenderCoreSystrace.beginSection("firstLayout");
     }
     final ComponentsLogger logger;
     final String logTag;
@@ -2786,7 +2786,7 @@ public class RecyclerBinder
         logger.logPerfEvent(logInitRange);
       }
       if (isTracing) {
-        ComponentsSystrace.endSection();
+        RenderCoreSystrace.endSection();
       }
       if (loggingForStartup) {
         mStartupLogger.markPoint(
