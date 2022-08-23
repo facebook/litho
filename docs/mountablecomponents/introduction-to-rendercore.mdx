@@ -1,0 +1,28 @@
+---
+id: introduction-to-rendercore
+title: Introduction to RenderCore
+---
+
+RenderCore is an abstract framework which is agnostic of the user-facing APIs. RenderCore implements a rendering pipeline for Components-based UI frameworks that provides client frameworks the capability to compute layouts ahead of time in the background, and render them efficiently. Litho uses RenderCore to render Mountable Components.
+
+While it’s not necessary to understand how RenderCore works under the hood in order to implement Mountable Components, familiarizing yourself with the basic RenderCore concepts introduced on this page is important to be able to implement a Mountable (a reusable building block hosted by each Mountable Component).
+
+## RenderUnit
+
+A RenderUnit represents a single rendering primitive for RenderCore. It encapsulates information about the content (View or Drawable) to be mounted, and how to set and unset properties on that content using Binders.
+
+Every RenderUnit has to define at least a createContent method to allocate the content via the ContentAllocator it returns from the getContentAllocator method.
+
+Mountable extends RenderUnit.
+
+## ContentAllocator
+
+A ContentAllocator defines a class that can provide mountable content and have that content pooled. In order to optimize mount perfomance, implmentations can override content pooling methods.
+
+Each Mountable needs to return a ContentAllocator implementation from its getContentAllocator method.
+
+## Binder
+
+A Binder is an interface that specifies how to set and unset properties on the mounted content.
+
+Each Mountable can host one or more Binders.
