@@ -26,7 +26,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
-import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LogTreePopulator;
@@ -45,6 +44,7 @@ import com.facebook.litho.widget.RecyclerBinderUpdateCallback;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.rendercore.RenderCoreSystrace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -134,7 +134,7 @@ public class DataDiffSectionSpec<T> {
     final DiffSectionOperationExecutor operationExecutor =
         new DiffSectionOperationExecutor(changeSet);
     final RecyclerBinderUpdateCallback<T> updatesCallback;
-    final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean isTracing = RenderCoreSystrace.isEnabled();
 
     final Callback<T> callback = new Callback<>(c, data.getPrevious(), data.getNext());
 
@@ -148,12 +148,12 @@ public class DataDiffSectionSpec<T> {
       detectDuplicates(nextData, callback);
     }
     if (isTracing) {
-      ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
+      RenderCoreSystrace.beginSection("DiffUtil.calculateDiff");
     }
     final DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
     if (isTracing) {
-      ComponentsSystrace.endSection();
+      RenderCoreSystrace.endSection();
     }
 
     if (logEvent != null) {
