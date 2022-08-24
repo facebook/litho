@@ -110,12 +110,8 @@ public class VisibilityExtension
       if (results != null) {
         Rect absoluteBounds = new Rect(x, y, x + bounds.width(), y + bounds.height());
         results.addOutput(factory.createVisibilityOutput(layoutResult, absoluteBounds));
-        if (factory.hasRenderTreeHosts(layoutResult)) {
-          final RenderUnit<?> unit = layoutResult.getRenderUnit();
-          if (unit == null) {
-            throw new IllegalArgumentException(
-                "Layout results which host RenderTrees must have a RenderUnit");
-          }
+        final RenderUnit<?> unit = layoutResult.getRenderUnit();
+        if (unit != null && unit.doesMountRenderTreeHosts()) {
           results.addRenderUnitIdWhichHostsRenderTree(unit.getId());
         }
       }
