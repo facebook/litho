@@ -113,7 +113,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   EventTrigger onClickEventTriggerTrigger;
 
   private TestMount() {
-    super();
+    super("TestMount");
   }
 
   private TestMountStateContainer getStateContainerImpl(ComponentContext c) {

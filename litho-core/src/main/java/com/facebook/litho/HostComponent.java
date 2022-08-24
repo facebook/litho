@@ -35,7 +35,9 @@ class HostComponent extends SpecGeneratedComponent {
 
   private boolean mImplementsVirtualViews = false;
 
-  protected HostComponent() {}
+  protected HostComponent() {
+    super("HostComponent");
+  }
 
   @Override
   public MountContentPool onCreateMountContentPool() {
@@ -138,11 +140,6 @@ class HostComponent extends SpecGeneratedComponent {
   @Override
   boolean hasCommonDynamicProps() {
     return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "HostComponent";
   }
 
   /**

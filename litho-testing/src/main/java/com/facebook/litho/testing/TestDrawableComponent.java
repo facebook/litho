@@ -63,6 +63,7 @@ public class TestDrawableComponent extends TestComponent {
   private TestComponentListener mTestComponentListener;
 
   private TestDrawableComponent(long properties) {
+    super("TestDrawableComponent");
     mProperties = properties;
   }
 

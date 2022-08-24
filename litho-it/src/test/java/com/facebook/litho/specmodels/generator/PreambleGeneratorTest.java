@@ -72,7 +72,7 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo("private Constructor() {\n  super();\n" + "}\n");
+        .isEqualTo("private Constructor() {\n  super(\"Test\");\n" + "}\n");
   }
 
   @Test
@@ -94,7 +94,7 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "public Constructor() {\n"
-                + "  super();\n  final Object testObject = new TestObject();\n"
+                + "  super(\"Test\");\n  final Object testObject = new TestObject();\n"
                 + "}\n");
   }
 }

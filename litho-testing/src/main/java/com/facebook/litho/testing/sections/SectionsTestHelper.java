@@ -59,6 +59,7 @@ public class SectionsTestHelper extends Section {
   }
 
   public SectionsTestHelper(SectionContext base) {
+    super("SectionComponentTestHelper");
     mSectionTree = SectionTree.create(base, new TestTarget()).build();
     mSectionContext = SectionContext.withSectionTree(base, mSectionTree);
     preparedSections = new HashMap<>();

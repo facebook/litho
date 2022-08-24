@@ -41,6 +41,8 @@ public class TestViewComponent extends TestComponent {
   @Nullable private View mTestView;
 
   private TestViewComponent(boolean isPureRender, boolean canMeasure, boolean hasChildLithoViews) {
+    super("TestViewComponent");
+
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
     mHasChildLithoViews = hasChildLithoViews;

@@ -95,8 +95,7 @@ public class LithoMetadataExceptionWrapperTest {
   @Test
   public void onCreateLayout_onlyRootComponent_exceptionShowsComponentStack() throws Exception {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("layout_stack");
-    mExpectedException.expectMessage("TestCrasherOnCreateLayout");
+    mExpectedException.expectMessage("layout_stack: TestCrasherOnCreateLayout");
 
     final ComponentContext c = mLegacyLithoViewRule.getContext();
 

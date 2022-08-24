@@ -546,9 +546,7 @@ public abstract class Component
   }
 
   public String getSimpleName() {
-    return ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun
-        ? getClass().getSimpleName()
-        : "<cls>" + getClass().getName() + "</cls>";
+    return getClass().getSimpleName();
   }
 
   public final boolean hasClickHandlerSet() {

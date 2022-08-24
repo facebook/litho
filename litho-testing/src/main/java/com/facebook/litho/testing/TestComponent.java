@@ -46,7 +46,13 @@ public abstract class TestComponent extends SpecGeneratedComponent {
   private boolean mOnDetachedCalled;
   private boolean mIsEquivalentToCalled;
 
-  protected TestComponent() {}
+  protected TestComponent(String simpleName) {
+    super(simpleName);
+  }
+
+  protected TestComponent() {
+    super("TestComponent");
+  }
 
   void onMountCalled() {
     mOnMountCalled = true;
