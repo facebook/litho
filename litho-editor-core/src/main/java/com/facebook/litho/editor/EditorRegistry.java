@@ -51,21 +51,10 @@ public final class EditorRegistry {
   private static final Map<Class<?>, Editor> EDITORS = new HashMap<>();
 
   private static @Nullable Editor getEditor(final Class<?> c) {
-    Class<?> clazz = c;
-    while (true) {
-      if (EDITORS.containsKey(clazz)) {
-        return EDITORS.get(clazz);
-      }
-      final Class<?> parent = clazz.getSuperclass();
-      if (parent == null) {
-        break;
-      }
-      clazz = parent;
-    }
 
-    for (Class ifaceClass : c.getInterfaces()) {
-      if (EDITORS.containsKey(ifaceClass)) {
-        return EDITORS.get(ifaceClass);
+    for (Class<?> key : EDITORS.keySet()) {
+      if (key.isAssignableFrom(c)) {
+        return EDITORS.get(key);
       }
     }
 
@@ -199,10 +188,7 @@ public final class EditorRegistry {
     registerEditor(AtomicInteger.class, new AtomicIntegerEditorInstance());
 
     registerEditor(java.util.List.class, new ListEditorInstance());
-    registerEditor(java.util.AbstractList.class, new ListEditorInstance());
-
     registerEditor(java.util.Map.class, MapEditorInstance.Companion.getInstance());
-    registerEditor(java.util.AbstractMap.class, MapEditorInstance.Companion.getInstance());
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
       registerEditor(android.util.Size.class, new UtilSizeEditorInstance());
