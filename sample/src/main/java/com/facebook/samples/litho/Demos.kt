@@ -114,6 +114,7 @@ import com.facebook.samples.litho.kotlin.gettingstartedsolution.VerticalSpeller
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleComponent
+import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
@@ -244,6 +245,9 @@ class Demos {
                             SingleDemo(
                                 name = "Simple ImageView Mountable Component Example",
                                 component = SimpleImageViewExampleComponent()),
+                            SingleDemo(
+                                name = "Simple ImageView Mountable Component With A11Y Example",
+                                component = SimpleImageViewWithAccessibilityExampleComponent()),
                             SingleDemo(
                                 name = "BindTo - Dynamic Values API",
                                 component = MountableBindToExampleComponent()),
