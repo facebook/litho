@@ -28,12 +28,14 @@ import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState.LayoutContext
 import com.facebook.samples.litho.R
 
+// start_simple_mountable_component_example
 class SimpleImageViewComponent(private val style: Style? = null) : MountableComponent() {
 
   override fun MountableComponentScope.render(): MountableWithStyle {
     return MountableWithStyle(SimpleImageViewMountable(), style)
   }
 }
+// end_simple_mountable_component_example
 
 private const val defaultSize: Int = 150
 
