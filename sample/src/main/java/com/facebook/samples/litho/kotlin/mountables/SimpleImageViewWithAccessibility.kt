@@ -42,6 +42,6 @@ class SimpleImageViewWithAccessibility(private val style: Style? = null) : Mount
                       AccessibilityNodeInfoCompat.ACTION_CLICK, "actionDescriptionText"))
             }
 
-    return MountableWithStyle(SimpleImageViewMountable(), style?.plus(a11y))
+    return MountableWithStyle(SimpleImageViewMountable(), style?.plus(a11y) ?: a11y)
   }
 }
