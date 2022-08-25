@@ -143,11 +143,6 @@ public class LayoutState
   private final LongSparseArray<AnimatableItem> mAnimatableItems = new LongSparseArray<>(8);
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
 
-  // Cache to keep LithoNode which was measured with a particular size spec. The key here
-  // represents globalKey + widthSpec + heightSpec. This is temporary, in final desired end state we
-  // will have all the LithoNodes for nested tree resolved before the measure step.
-  private final @Nullable Map<String, LithoNode> mLithoNodeCacheForLayoutWithSizeSpec;
-
   private final @Nullable List<TestOutput> mTestOutputs;
 
   @Nullable LithoNode mRoot;
@@ -256,9 +251,6 @@ public class LayoutState
             layoutStateFuture,
             diffTreeRoot,
             layoutVersion);
-
-    mLithoNodeCacheForLayoutWithSizeSpec =
-        ComponentsConfiguration.useResolvedTree ? new HashMap<>() : null;
   }
 
   @VisibleForTesting
@@ -1648,19 +1640,6 @@ public class LayoutState
   static @OutputUnitType int getTypeFromId(long id) {
     long masked = id & 0x00000000_00000000_FFFFFFFF_00000000L;
     return (int) (masked >> 32);
-  }
-
-  @Nullable
-  LithoNode getCachedLithoNodeForLayoutWithSizeSpec(
-      String globalKey, int widthSpec, int heightSpec) {
-    final String key = globalKey + ":" + widthSpec + ":" + heightSpec;
-    return Preconditions.checkNotNull(mLithoNodeCacheForLayoutWithSizeSpec).get(key);
-  }
-
-  void addLithoNodeForLayoutWithSizeSpecToCache(
-      String globalKey, int widthSpec, int heightSpec, LithoNode lithoNode) {
-    final String key = globalKey + ":" + widthSpec + ":" + heightSpec;
-    Preconditions.checkNotNull(mLithoNodeCacheForLayoutWithSizeSpec).put(key, lithoNode);
   }
 
   static DiffNode createDiffNode(final ScopedComponentInfo tail, final @Nullable DiffNode parent) {
