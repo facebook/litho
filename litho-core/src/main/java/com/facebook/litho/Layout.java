@@ -404,34 +404,6 @@ class Layout {
     return node;
   }
 
-  static @Nullable LithoNode resolveNestedTreeAndAddToCache(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext parentContext,
-      final Component component,
-      final String globalKey,
-      final int widthSpec,
-      final int heightSpec) {
-
-    if (parentContext.isApplyStateUpdateEarlyEnabled()) {
-      layoutStateContext
-          .getTreeState()
-          .applyStateUpdatesEarly(parentContext, component, null, true);
-    }
-
-    // Create a new layout.
-    final @Nullable LithoNode newNode =
-        create(
-            layoutStateContext,
-            parentContext,
-            widthSpec,
-            heightSpec,
-            component,
-            true,
-            Preconditions.checkNotNull(globalKey));
-
-    return newNode;
-  }
-
   private static @Nullable LithoLayoutResult measureNestedTree(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
@@ -491,12 +463,23 @@ class Layout {
             ? node.getTailComponentKey()
             : Preconditions.checkNotNull(node.getCachedNode()).getTailComponentKey();
 
-    // 4.a Create a new layout
-    // This step will eventually go away in the desired end state as we will have LithoNode
-    // resolved for nested tree in the beginning with different size specs.
+    // 4.a Apply state updates early for layout phase
+    if (parentContext.isApplyStateUpdateEarlyEnabled()) {
+      layoutStateContext
+          .getTreeState()
+          .applyStateUpdatesEarly(parentContext, component, null, true);
+    }
+
+    // 4.b Create a new layout.
     final @Nullable LithoNode newNode =
-        resolveNestedTreeAndAddToCache(
-            layoutStateContext, parentContext, component, globalKeyToReuse, widthSpec, heightSpec);
+        create(
+            layoutStateContext,
+            parentContext,
+            widthSpec,
+            heightSpec,
+            component,
+            true,
+            Preconditions.checkNotNull(globalKeyToReuse));
 
     if (newNode == null) {
       return null;
