@@ -154,6 +154,8 @@ LITHO_SOLOADER_TARGET = make_dep_path("lib/soloader:soloader")
 
 LITHO_KOTLIN_STDLIB_TARGET = make_dep_path("lib/kotlin:kotlin-stdlib")
 
+LITHO_KOTLIN_REFLECT_TARGET = make_dep_path("lib/kotlin:kotlin-reflect")
+
 LITHO_ASSERTJ_TARGET = make_dep_path("lib/assertj:assertj")
 
 LITHO_COMPILE_TESTING_TARGET = make_dep_path("lib/compile-testing:compile-testing")
