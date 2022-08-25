@@ -867,10 +867,6 @@ public abstract class Component
     return component;
   }
 
-  static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
-    layoutStateContext.markLayoutStarted();
-  }
-
   /**
    * Indicate that this component implements its own {@link #resolve(LayoutStateContext,
    * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.

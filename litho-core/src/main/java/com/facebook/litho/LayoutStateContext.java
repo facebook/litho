@@ -46,7 +46,6 @@ public class LayoutStateContext {
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mIsReleased = false;
-  private boolean mIsLayoutStarted = false;
 
   private @Nullable PerfEvent mPerfEvent;
 
@@ -175,15 +174,6 @@ public class LayoutStateContext {
 
   public @Nullable LayoutStateFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
-  }
-
-  void markLayoutStarted() {
-    if (mIsLayoutStarted) {
-      throw new IllegalStateException(
-          "Duplicate layout of a component: "
-              + (mComponentTree != null ? mComponentTree.getRoot() : null));
-    }
-    mIsLayoutStarted = true;
   }
 
   public @Nullable DiffNode getCurrentDiffTree() {

@@ -1227,9 +1227,6 @@ public class LayoutState
       layoutStateContext.setPerfEvent(logLayoutState);
     }
 
-    // Detect errors internal to components
-    Component.markLayoutStarted(component, layoutStateContext);
-
     c.setLayoutStateContext(layoutStateContext);
 
     layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
