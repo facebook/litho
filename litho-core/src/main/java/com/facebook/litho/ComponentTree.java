@@ -17,10 +17,17 @@
 package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
@@ -50,6 +57,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
@@ -2990,20 +2998,48 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       try {
-        return LayoutState.calculate(
-            contextWithStateHandler,
-            root,
-            layoutStateFuture,
-            treeState,
-            mRenderUnitIdGenerator,
-            ComponentTree.this.mId,
-            widthSpec,
-            heightSpec,
-            layoutVersion,
-            diffingEnabled,
-            previousLayoutState,
-            source,
-            extraAttribution);
+
+        final ComponentsLogger logger = contextWithStateHandler.getLogger();
+
+        final PerfEvent logLayoutState =
+            logger != null
+                ? LogTreePopulator.populatePerfEventFromLogger(
+                    contextWithStateHandler,
+                    logger,
+                    logger.newPerformanceEvent(
+                        contextWithStateHandler, EVENT_CALCULATE_LAYOUT_STATE))
+                : null;
+        if (logLayoutState != null) {
+          logLayoutState.markerAnnotate(PARAM_COMPONENT, root.getSimpleName());
+          logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
+          logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
+          logLayoutState.markerAnnotate(
+              PARAM_TREE_DIFF_ENABLED,
+              previousLayoutState != null && previousLayoutState.getDiffTree() != null);
+          logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
+          logLayoutState.markerAnnotate(PARAM_LAYOUT_VERSION, layoutVersion);
+        }
+
+        final LayoutState layoutState =
+            LayoutState.calculate(
+                contextWithStateHandler,
+                root,
+                layoutStateFuture,
+                treeState,
+                mRenderUnitIdGenerator,
+                ComponentTree.this.mId,
+                widthSpec,
+                heightSpec,
+                layoutVersion,
+                diffingEnabled,
+                previousLayoutState,
+                logLayoutState);
+
+        if (logLayoutState != null) {
+          Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
+        }
+
+        return layoutState;
       } finally {
         if (isTracing) {
           ComponentsSystrace.endSection();

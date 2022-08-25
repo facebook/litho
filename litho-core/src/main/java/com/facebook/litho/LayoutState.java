@@ -23,14 +23,9 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.ComponentTree.INVALID_LAYOUT_VERSION;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LithoLayoutResult.willMountView;
 import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -1174,7 +1169,6 @@ public class LayoutState
         -1,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        source,
         null);
   }
 
@@ -1190,10 +1184,7 @@ public class LayoutState
       int layoutVersion,
       boolean shouldGenerateDiffTree,
       @Nullable LayoutState currentLayoutState,
-      @CalculateLayoutSource int source,
-      @Nullable String extraAttribution) {
-
-    final ComponentsLogger logger = c.getLogger();
+      final @Nullable PerfEvent logLayoutState) {
 
     final @Nullable DiffNode diffTreeRoot;
     final @Nullable LithoNode currentRoot;
@@ -1219,20 +1210,6 @@ public class LayoutState
 
     final LayoutState layoutState;
     final LayoutStateContext layoutStateContext;
-
-    final PerfEvent logLayoutState =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                c, logger, logger.newPerformanceEvent(c, EVENT_CALCULATE_LAYOUT_STATE))
-            : null;
-    if (logLayoutState != null) {
-      logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
-      logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
-      logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
-      logLayoutState.markerAnnotate(PARAM_TREE_DIFF_ENABLED, diffTreeRoot != null);
-      logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
-      logLayoutState.markerAnnotate(PARAM_LAYOUT_VERSION, layoutVersion);
-    }
 
     layoutState =
         new LayoutState(
@@ -1266,6 +1243,7 @@ public class LayoutState
     layoutState.mRootComponentName = component.getSimpleName();
     layoutState.mIsCreateLayoutInProgress = true;
 
+    // 1. Resolve Tree
     final @Nullable ResolvedTree resolvedTree =
         Layout.createResolvedTree(
             layoutStateContext, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
@@ -1277,34 +1255,34 @@ public class LayoutState
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
       layoutState.mIsCreateLayoutInProgress = false;
       layoutState.mIsPartialLayoutState = true;
-      if (logLayoutState != null) {
-        Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
-      }
-
       return layoutState;
     }
 
+    layoutState.mRoot = node;
+    layoutState.mRootTransitionId = getTransitionIdForNode(node);
+
+    // 2. Measure tree
     final @Nullable LithoLayoutResult root =
         Layout.measureTree(
             layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec, logLayoutState);
 
     layoutState.mLayoutResult = root;
-    layoutState.mRoot = node;
-    layoutState.mRootTransitionId = getTransitionIdForNode(node);
     layoutState.mIsCreateLayoutInProgress = false;
 
+    // 3. Collect Results
     if (logLayoutState != null) {
       logLayoutState.markerPoint("start_collect_results");
     }
 
     setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-    layoutStateContext.releaseReference();
-
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_collect_results");
-      Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
     }
+
+    layoutStateContext.releaseReference();
+
+    // calculate layout count stats
     LithoStats.incrementComponentCalculateLayoutCount();
     if (ThreadUtils.isMainThread()) {
       LithoStats.incrementComponentCalculateLayoutOnUICount();
@@ -1792,7 +1770,7 @@ public class LayoutState
     return mTestOutputs == null ? null : mTestOutputs.get(index);
   }
 
-  public @Nullable DiffNode getDiffTree() {
+  public synchronized @Nullable DiffNode getDiffTree() {
     return mDiffTreeRoot;
   }
 

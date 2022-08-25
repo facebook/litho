@@ -700,7 +700,6 @@ public class TreeDiffingTest {
         -1,
         false,
         null,
-        LayoutState.CalculateLayoutSource.TEST,
         null);
   }
 
@@ -723,7 +722,6 @@ public class TreeDiffingTest {
         -1,
         true,
         previousLayoutState,
-        LayoutState.CalculateLayoutSource.TEST,
         null);
   }
 
