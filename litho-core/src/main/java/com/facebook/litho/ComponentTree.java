@@ -2971,20 +2971,47 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
 
-      return LayoutState.calculate(
-          contextWithStateHandler,
-          root,
-          layoutStateFuture,
-          treeState,
-          mRenderUnitIdGenerator,
-          ComponentTree.this.mId,
-          widthSpec,
-          heightSpec,
-          layoutVersion,
-          diffingEnabled,
-          previousLayoutState,
-          source,
-          extraAttribution);
+      final boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        if (extraAttribution != null) {
+          ComponentsSystrace.beginSection("extra:" + extraAttribution);
+        }
+        ComponentsSystrace.beginSectionWithArgs(
+                new StringBuilder("LayoutState.calculate_")
+                    .append(root.getSimpleName())
+                    .append("_")
+                    .append(layoutSourceToString(source))
+                    .toString())
+            .arg("treeId", ComponentTree.this.mId)
+            .arg("rootId", root.getId())
+            .arg("widthSpec", SizeSpec.toString(widthSpec))
+            .arg("heightSpec", SizeSpec.toString(heightSpec))
+            .flush();
+      }
+
+      try {
+        return LayoutState.calculate(
+            contextWithStateHandler,
+            root,
+            layoutStateFuture,
+            treeState,
+            mRenderUnitIdGenerator,
+            ComponentTree.this.mId,
+            widthSpec,
+            heightSpec,
+            layoutVersion,
+            diffingEnabled,
+            previousLayoutState,
+            source,
+            extraAttribution);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+          if (extraAttribution != null) {
+            ComponentsSystrace.endSection();
+          }
+        }
+      }
     }
 
     @VisibleForTesting

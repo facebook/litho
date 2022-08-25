@@ -1195,24 +1195,6 @@ public class LayoutState
 
     final ComponentsLogger logger = c.getLogger();
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      if (extraAttribution != null) {
-        ComponentsSystrace.beginSection("extra:" + extraAttribution);
-      }
-      ComponentsSystrace.beginSectionWithArgs(
-              new StringBuilder("LayoutState.calculate_")
-                  .append(component.getSimpleName())
-                  .append("_")
-                  .append(layoutSourceToString(source))
-                  .toString())
-          .arg("treeId", componentTreeId)
-          .arg("rootId", component.getId())
-          .arg("widthSpec", SizeSpec.toString(widthSpec))
-          .arg("heightSpec", SizeSpec.toString(heightSpec))
-          .flush();
-    }
-
     final @Nullable DiffNode diffTreeRoot;
     final @Nullable LithoNode currentRoot;
 
@@ -1238,104 +1220,90 @@ public class LayoutState
     final LayoutState layoutState;
     final LayoutStateContext layoutStateContext;
 
-    try {
-      final PerfEvent logLayoutState =
-          logger != null
-              ? LogTreePopulator.populatePerfEventFromLogger(
-                  c, logger, logger.newPerformanceEvent(c, EVENT_CALCULATE_LAYOUT_STATE))
-              : null;
-      if (logLayoutState != null) {
-        logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
-        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
-        logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
-        logLayoutState.markerAnnotate(PARAM_TREE_DIFF_ENABLED, diffTreeRoot != null);
-        logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
-        logLayoutState.markerAnnotate(PARAM_LAYOUT_VERSION, layoutVersion);
-      }
+    final PerfEvent logLayoutState =
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                c, logger, logger.newPerformanceEvent(c, EVENT_CALCULATE_LAYOUT_STATE))
+            : null;
+    if (logLayoutState != null) {
+      logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
+      logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
+      logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
+      logLayoutState.markerAnnotate(PARAM_TREE_DIFF_ENABLED, diffTreeRoot != null);
+      logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
+      logLayoutState.markerAnnotate(PARAM_LAYOUT_VERSION, layoutVersion);
+    }
 
-      layoutState =
-          new LayoutState(
-              c,
-              component,
-              treeState,
-              idGenerator,
-              layoutStateFuture,
-              currentLayoutState,
-              diffTreeRoot,
-              layoutVersion);
+    layoutState =
+        new LayoutState(
+            c,
+            component,
+            treeState,
+            idGenerator,
+            layoutStateFuture,
+            currentLayoutState,
+            diffTreeRoot,
+            layoutVersion);
 
-      layoutStateContext = layoutState.getLayoutStateContext();
-      if (logLayoutState != null) {
-        layoutStateContext.setPerfEvent(logLayoutState);
-      }
+    layoutStateContext = layoutState.getLayoutStateContext();
+    if (logLayoutState != null) {
+      layoutStateContext.setPerfEvent(logLayoutState);
+    }
 
-      // Detect errors internal to components
-      Component.markLayoutStarted(component, layoutStateContext);
+    // Detect errors internal to components
+    Component.markLayoutStarted(component, layoutStateContext);
 
-      c.setLayoutStateContext(layoutStateContext);
+    c.setLayoutStateContext(layoutStateContext);
 
-      layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
-      layoutState.mComponentTreeId = componentTreeId;
-      layoutState.mAccessibilityManager =
-          (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-      layoutState.mAccessibilityEnabled =
-          AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
-      layoutState.mWidthSpec = widthSpec;
-      layoutState.mHeightSpec = heightSpec;
-      layoutState.mRootComponentName = component.getSimpleName();
-      layoutState.mIsCreateLayoutInProgress = true;
+    layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
+    layoutState.mComponentTreeId = componentTreeId;
+    layoutState.mAccessibilityManager =
+        (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+    layoutState.mAccessibilityEnabled =
+        AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
+    layoutState.mWidthSpec = widthSpec;
+    layoutState.mHeightSpec = heightSpec;
+    layoutState.mRootComponentName = component.getSimpleName();
+    layoutState.mIsCreateLayoutInProgress = true;
 
-      final @Nullable ResolvedTree resolvedTree =
-          Layout.createResolvedTree(
-              layoutStateContext, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
-      final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+    final @Nullable ResolvedTree resolvedTree =
+        Layout.createResolvedTree(
+            layoutStateContext, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
+    final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-      // Check if layout was interrupted.
-      if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
-        layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
-        layoutState.mRootTransitionId = getTransitionIdForNode(node);
-        layoutState.mIsCreateLayoutInProgress = false;
-        layoutState.mIsPartialLayoutState = true;
-        if (logLayoutState != null) {
-          Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
-        }
-
-        return layoutState;
-      }
-
-      final @Nullable LithoLayoutResult root =
-          Layout.measureTree(
-              layoutStateContext,
-              c.getAndroidContext(),
-              node,
-              widthSpec,
-              heightSpec,
-              logLayoutState);
-
-      layoutState.mLayoutResult = root;
-      layoutState.mRoot = node;
+    // Check if layout was interrupted.
+    if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+      layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
       layoutState.mIsCreateLayoutInProgress = false;
-
+      layoutState.mIsPartialLayoutState = true;
       if (logLayoutState != null) {
-        logLayoutState.markerPoint("start_collect_results");
-      }
-
-      setSizeAfterMeasureAndCollectResults(c, layoutState);
-
-      layoutStateContext.releaseReference();
-
-      if (logLayoutState != null) {
-        logLayoutState.markerPoint("end_collect_results");
         Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
       }
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-        if (extraAttribution != null) {
-          ComponentsSystrace.endSection();
-        }
-      }
+
+      return layoutState;
+    }
+
+    final @Nullable LithoLayoutResult root =
+        Layout.measureTree(
+            layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec, logLayoutState);
+
+    layoutState.mLayoutResult = root;
+    layoutState.mRoot = node;
+    layoutState.mRootTransitionId = getTransitionIdForNode(node);
+    layoutState.mIsCreateLayoutInProgress = false;
+
+    if (logLayoutState != null) {
+      logLayoutState.markerPoint("start_collect_results");
+    }
+
+    setSizeAfterMeasureAndCollectResults(c, layoutState);
+
+    layoutStateContext.releaseReference();
+
+    if (logLayoutState != null) {
+      logLayoutState.markerPoint("end_collect_results");
+      Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
     }
     LithoStats.incrementComponentCalculateLayoutCount();
     if (ThreadUtils.isMainThread()) {
