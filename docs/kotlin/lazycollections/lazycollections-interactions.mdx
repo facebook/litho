@@ -15,18 +15,20 @@ Scrolling the lazy collection by a given distance, or to a child with a given in
 
 ## Responding to Scroll Events
 
-An [OnNearCallback](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/OnNearCallback.kt) can be applied to the lazy collection's `onNearEnd` parameter, or a child's `onNearViewport` parameter. For example, `onNearEnd = OnNearCallback(offset = 10) { /* callback */ }`.
+An [OnNearCallback](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/OnNearCallback.kt) can be applied to the lazy collection's `onNearEnd` parameter, or a child's `onNearViewport` parameter.
+
+For example, `onNearEnd = OnNearCallback(offset = 10) { /* callback */ }`.
+
+Where:
 
 * `onNearEnd` is invoked when the lazy collection is scrolled to the last position or is scrolled within `offset` items away.
 * `onNearViewport` is invoked when the child enters the viewport or is `offset` items away.
 
-:::note
-For more complex scroll handling (such as for animations), you can access the `RecyclerView` directly via a `LazyCollectionController` and use a `RecyclerView.OnScrollListener` to receive callbacks during scroll:
+For more complex scroll handling (such as for animations), you can access the `RecyclerView` directly via a `LazyCollectionController` and use a `RecyclerView.OnScrollListener` to receive callbacks during scroll. To use this technique, take the following steps:
 
 1. Create a `LazyCollectionController` and attach it to the lazy collection via the `lazyCollectionController` parameter. Note that it should be defined in a `useState` hook.
 2. Access the `RecyclerView` via `LazyCollectionController.recyclerView`
 3. Add a custom `OnScrollListener` using `RecyclerView.addOnScrollListener(..)`
-:::
 
 :::note
 It is currently unsafe to trigger a scroll event inside a `useEffect` callback as it will be invoked before the lazy collection's contents have been mounted.
@@ -42,9 +44,9 @@ Lists of data are often retrieved from the server in pages; additional data is r
 
 ## Pull to refresh
 
-To implement 'pull to refresh' behaviour, provide a callback to the lazy collection's `onPullToRefresh` parameter. This callback will be responsible for fetching fresh data.
+To implement the 'pull to refresh' behaviour, provide a callback to the lazy collection's `onPullToRefresh` parameter. This callback will be responsible for fetching fresh data.
 
-To dismiss the refreshing indicator:
+To dismiss the refreshing indicator, take the following two steps:
 
 1. Create a `LazyCollectionController` and attach it to the lazy collection via the `lazyCollectionController` parameter. Note that it should be defined in a `useState` hook.
 2. Call `LazyCollectionController.setRefreshing(false)`.
