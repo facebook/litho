@@ -116,6 +116,7 @@ import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
+import com.facebook.samples.litho.kotlin.mountables.controllers.ControllersExampleComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
@@ -251,6 +252,8 @@ class Demos {
                             SingleDemo(
                                 name = "BindTo - Dynamic Values API",
                                 component = MountableBindToExampleComponent()),
+                            SingleDemo(
+                                name = "Controllers", component = ControllersExampleComponent()),
                         )),
                     DemoGrouping(
                         name = "Errors",
