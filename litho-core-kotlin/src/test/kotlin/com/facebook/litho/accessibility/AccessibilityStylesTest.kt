@@ -33,11 +33,9 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.testing.unspecified
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,50 +45,40 @@ import org.mockito.kotlin.mock
 @RunWith(LithoTestRunner::class)
 class AccessibilityStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun contentDescription_whenSet_isSetOnView() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoViewRule.render {
           Row(style = Style.width(200.px).height(200.px).contentDescription("Accessibility Test"))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.contentDescription).isEqualTo("Accessibility Test")
+    assertThat(testLithoView.lithoView.contentDescription).isEqualTo("Accessibility Test")
   }
 
   @Test
   fun contentDescription_whenNull_isNotSet() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(200.px).height(200.px).contentDescription(null)) }
-        .measure()
-        .layout()
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule.render {
+          Row(style = Style.width(200.px).height(200.px).contentDescription(null))
+        }
 
-    assertThat(lithoViewRule.lithoView.contentDescription).isNull()
+    assertThat(testLithoView.lithoView.contentDescription).isNull()
   }
 
   @Test
   fun importantForAccessibility_whenSet_isSetOnView() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoViewRule.render {
           Row(
               style =
                   Style.width(200.px)
                       .height(200.px)
                       .importantForAccessibility(ImportantForAccessibility.YES))
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
-    assertThat(lithoViewRule.lithoView.importantForAccessibility)
+    assertThat(testLithoView.lithoView.importantForAccessibility)
         .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
   }
 
@@ -105,7 +93,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNull()
   }
@@ -120,7 +109,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.onInitializeAccessibilityNodeInfo { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
@@ -133,7 +123,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityEventHandler).isNull()
   }
@@ -148,7 +139,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.onInitializeAccessibilityEvent { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onInitializeAccessibilityEventHandler).isNotNull
   }
@@ -161,7 +153,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onPopulateAccessibilityEventHandler).isNull()
   }
@@ -176,7 +169,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.onPopulateAccessibilityEvent { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onPopulateAccessibilityEventHandler).isNotNull
   }
@@ -189,7 +183,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onRequestSendAccessibilityEventHandler).isNull()
   }
@@ -204,7 +199,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.onRequestSendAccessibilityEvent { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onRequestSendAccessibilityEventHandler).isNotNull
   }
@@ -217,7 +213,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.performAccessibilityActionHandler).isNull()
   }
@@ -232,7 +229,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.performAccessibilityAction { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.performAccessibilityActionHandler).isNotNull
   }
@@ -245,7 +243,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.sendAccessibilityEventHandler).isNull()
   }
@@ -260,7 +259,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.sendAccessibilityEvent { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.sendAccessibilityEventHandler).isNotNull
   }
@@ -273,7 +273,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.sendAccessibilityEventUncheckedHandler).isNull()
   }
@@ -288,7 +289,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.sendAccessibilityEventUnchecked { eventHandler })
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.node
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.sendAccessibilityEventUncheckedHandler).isNotNull
   }
@@ -300,7 +302,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px).accessibilityRole(null))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.accessibilityRole).isNull()
   }
@@ -312,7 +315,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px).accessibilityRoleDescription(null))
       }
     }
-    val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.node
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.accessibilityRoleDescription).isNull()
   }
