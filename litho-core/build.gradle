@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
+plugins {
+    id 'kotlin-android'
+    id 'com.android.library'
+}
 
 project.group = GROUP
 version = VERSION_NAME
@@ -25,6 +28,19 @@ android {
 
     // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'
+
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.3.0'
+    }
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -72,6 +88,22 @@ dependencies {
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.supportViewPager
+
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.5.1'
+    // Compose Material Design
+    implementation 'androidx.compose.material:material:1.2.1'
+    // Animations
+    implementation 'androidx.compose.animation:animation:1.2.1'
+    // Tooling support (Previews, etc.)
+    implementation 'androidx.compose.ui:ui-tooling:1.2.1'
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
+    // Runtime
+    implementation 'androidx.compose.runtime:runtime:1.2.1'
+
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.2.1'
 
     // First-party dependencies
     if (project.isRelease()) {
