@@ -51,7 +51,7 @@ public class ComponentContext implements Cloneable {
 
   // Hold a reference to the component which scope we are currently within.
   @ThreadConfined(ThreadConfined.ANY)
-  private Component mComponentScope;
+  public Component mComponentScope;
 
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable String mGlobalKey;
@@ -138,6 +138,18 @@ public class ComponentContext implements Cloneable {
     }
   }
 
+  public ComponentContext(Context context, ComponentTree tree) {
+    mContext = context;
+    mResourceResolver = new ResourceResolver(context, ResourceCache.getLatest(context.getResources().getConfiguration()));
+    mComponentScope = null;
+    mComponentTree = tree;
+    mLogger = null;
+    mLogTag = null;
+    mTreeProps = null;
+    mParentTreeProps = null;
+    mGlobalKey = String.valueOf(Math.random());
+  }
+
   public ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
@@ -174,6 +186,13 @@ public class ComponentContext implements Cloneable {
     return componentContext;
   }
 
+  public static ComponentContext withComponentScope(
+          final ComponentContext parent,
+          final Component scope,
+          final String globalKey) {
+    return withComponentScope(null, parent, scope, globalKey);
+  }
+
   /**
    * Creates a new ComponentContext instance scoped to the given component and sets it on the
    * component.
@@ -182,9 +201,8 @@ public class ComponentContext implements Cloneable {
    * @param scope component associated with the newly created scoped context
    * @return a new ComponentContext instance scoped to the given component
    */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      final LayoutStateContext layoutContext,
+      final @Nullable LayoutStateContext layoutContext,
       final ComponentContext parentContext,
       final Component scope,
       final @Nullable String globalKey) {

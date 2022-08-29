@@ -69,6 +69,10 @@ public class ComponentKeyUtils {
     return sb.toString();
   }
 
+  public static String generateGlobalKey(ComponentContext parent, Component component) {
+    return generateGlobalKey(parent, parent.getComponentScope(), component);
+  }
+
   /**
    * Generate a global key for the given component that is unique among all of this component's
    * children of the same type. If a manual key has been set on the child component using the .key()

@@ -17,24 +17,47 @@
 package com.facebook.samples.litho
 
 import android.os.Bundle
-import com.facebook.litho.LithoView
-import com.facebook.samples.litho.Demos.SingleDemo
-import java.lang.RuntimeException
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Recomposer
+import com.facebook.litho.*
+import kotlinx.coroutines.Dispatchers
 
 class ComponentDemoActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val model = dataModel
-    if (model !is SingleDemo || (model.componentCreator == null && model.component == null)) {
-      throw RuntimeException("Invalid model: $model")
+
+    val composition = initialise()
+
+    composition {
+      Column {  }
     }
-    val lithoView = LithoView(this)
-    val componentCreator = model.componentCreator
-    if (componentCreator != null) {
-      lithoView.setComponent(componentCreator.create(lithoView.componentContext))
-    } else {
-      lithoView.setComponent(model.component)
+  }
+
+  private fun initialise(): (@Composable () -> Unit)->Unit {
+    val activity = ComponentContext(this)
+    val root = RootComponent()
+    val info = ScopedComponentInfo(
+        ComponentContext.withComponentScope(
+            activity,
+            root,
+            ComponentKeyUtils.generateGlobalKey(activity, root),
+        )
+    )
+
+    val node = LithoNode()
+    node.appendComponent(info)
+
+    return fun(content : @Composable ()-> Unit) {
+      Composition(
+          applier = LithoNodeApplier(root = node),
+          parent = Recomposer(Dispatchers.Main)
+      ).setContent {
+        CompositionLocalProvider(LocalParentContext provides info.context) {
+          content()
+        }
+      }
     }
-    setContentView(lithoView)
   }
 }

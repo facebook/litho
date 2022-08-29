@@ -52,7 +52,12 @@ public class ScopedComponentInfo implements Cloneable {
    */
   private @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
-  ScopedComponentInfo(
+  public ScopedComponentInfo(
+          final ComponentContext context) {
+    this(context.mComponentScope, context, null);
+  }
+
+  public ScopedComponentInfo(
       final Component component,
       final ComponentContext context,
       final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
