@@ -88,8 +88,8 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
 
   /**
    * Given a {@param widthSpec} and {@param heightSpec} set the width and height this Mountable will
-   * require in {@param size}. In addition this method can return any data that is required to set,
-   * and unset properties on the content in the binders.
+   * require on {@link MeasureResult}. In addition on {@link MeasureResult} you can put any data
+   * that is required to set, and unset properties on the content in the binders.
    *
    * <p>As a performance optimisation the framework will skip this method if this Mountable is equal
    * to the previous Mountable, and if the size specs are compatible. In order to do this the
