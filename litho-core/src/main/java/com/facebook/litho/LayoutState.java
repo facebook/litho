@@ -772,6 +772,16 @@ public class LayoutState
       }
     }
 
+    // Set the measurements, and the layout data on the diff node
+    if (diffNode != null) {
+      diffNode.setLastWidthSpec(result.getLastWidthSpec());
+      diffNode.setLastHeightSpec(result.getLastHeightSpec());
+      diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
+      diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
+      diffNode.setLayoutData(result.getLayoutData());
+      diffNode.setMountable(result.getNode().getMountable());
+    }
+
     // 4. Extract the Transitions.
     if (context.areTransitionsEnabled()) {
       final ArrayList<Transition> transitions = node.getTransitions();
@@ -852,15 +862,6 @@ public class LayoutState
           diffNode.setForegroundOutput((LithoRenderUnit) foregroundRenderTreeNode.getRenderUnit());
         }
       }
-    }
-
-    if (diffNode != null) {
-      diffNode.setLastWidthSpec(result.getLastWidthSpec());
-      diffNode.setLastHeightSpec(result.getLastHeightSpec());
-      diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
-      diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
-      diffNode.setLayoutData(result.getLayoutData());
-      diffNode.setMountable(result.getNode().getMountable());
     }
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
