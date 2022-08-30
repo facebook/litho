@@ -124,7 +124,16 @@ class TestCollection {
 
   /** Retrieve the visible mounted children. */
   fun getLithoViews(): List<LithoView> {
-    val recyclerView: RecyclerView = Whitebox.getInternalState(recyclerBinder, "mMountedView")
+    val recyclerView: RecyclerView? = Whitebox.getInternalState(recyclerBinder, "mMountedView")
+
+    requireNotNull(recyclerView) {
+      """
+        We could not find a mounted recycler view.  This normally happens if you did not provide an 
+        explicit size when rendering your component for test.  To fix this, add a width and height 
+        when rendering the component: `lithoViewRule.render(widthPx = 100, heightPx = 100) { ... }`.
+      """.trimIndent()
+    }
+
     return (firstVisibleIndex..lastVisibleIndex).mapNotNull {
       recyclerView.layoutManager?.findViewByPosition(it) as? LithoView
     }
