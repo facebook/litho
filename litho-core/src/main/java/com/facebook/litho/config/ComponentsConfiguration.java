@@ -141,8 +141,6 @@ public class ComponentsConfiguration {
    */
   public static boolean boostPerfLayoutStateFuture;
 
-  public static boolean alwaysWriteDiffNodes = false;
-
   /**
    * Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder
    */

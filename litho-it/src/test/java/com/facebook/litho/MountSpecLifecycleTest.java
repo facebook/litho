@@ -25,7 +25,6 @@ import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.Looper;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -606,34 +605,5 @@ public class MountSpecLifecycleTest {
     mLegacyLithoViewRule.attachToWindow().setRoot(root).measure().layout();
 
     mLegacyLithoViewRule.getLithoView().unmountAllItems();
-  }
-
-  @Test
-  public void lifecycle_onComponentWithExactSize_shouldStoreMeasurementsInDiffNode() {
-    final boolean original = ComponentsConfiguration.alwaysWriteDiffNodes;
-    ComponentsConfiguration.alwaysWriteDiffNodes = true;
-
-    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
-
-    mLegacyLithoViewRule
-        .attachToWindow()
-        .setRoot(
-            MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
-                .lifecycleTracker(lifecycleTracker)
-                .widthPx(800)
-                .heightPx(600)
-                .build())
-        .measure()
-        .layout();
-
-    final DiffNode node = mLegacyLithoViewRule.getCommittedLayoutState().getDiffTree();
-
-    assertThat(node).isNotNull();
-    assertThat(node.getLastWidthSpec()).isEqualTo(exactly(800));
-    assertThat(node.getLastHeightSpec()).isEqualTo(exactly(600));
-    assertThat(node.getLastMeasuredWidth()).isEqualTo(800);
-    assertThat(node.getLastMeasuredHeight()).isEqualTo(600);
-
-    ComponentsConfiguration.alwaysWriteDiffNodes = original;
   }
 }
