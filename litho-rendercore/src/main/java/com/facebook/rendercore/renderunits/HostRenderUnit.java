@@ -134,11 +134,11 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
     return mFocusableInTouchMode;
   }
 
-  public void setBackground(Drawable background) {
+  public void setBackground(@Nullable Drawable background) {
     mBackground = background;
   }
 
-  public void setForeground(Drawable foreground) {
+  public void setForeground(@Nullable Drawable foreground) {
     mForeground = foreground;
   }
 
