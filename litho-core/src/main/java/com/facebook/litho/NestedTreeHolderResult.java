@@ -92,7 +92,8 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
           Layout.measure(mLayoutContext, parentContext, this, widthSpec, heightSpec);
 
       if (nestedTree != null) {
-        return new MeasureResult(nestedTree.getWidth(), nestedTree.getHeight());
+        return new MeasureResult(
+            nestedTree.getWidth(), nestedTree.getHeight(), nestedTree.getLayoutData());
       } else {
         return new MeasureResult(0, 0);
       }

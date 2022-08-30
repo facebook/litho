@@ -463,45 +463,48 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       final int widthSpec,
       final int heightSpec) {
 
-    if (mLayoutContext.getRenderStateContext().isLayoutReleased()) {
-      return new MeasureResult(0, 0);
-    }
-
-    final Component component = mNode.getTailComponent();
-
     final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
-          .arg("widthSpec", SizeSpec.toString(widthSpec))
-          .arg("heightSpec", SizeSpec.toString(heightSpec))
-          .arg("componentId", component.getId())
-          .flush();
-    }
-
     MeasureResult size;
 
-    try {
-      size = measureInternal(context, widthSpec, heightSpec);
-      if (size.width < 0 || size.height < 0) {
-        throw new IllegalStateException(
-            "MeasureOutput not set, Component is: "
-                + component
-                + " WidthSpec: "
-                + MeasureSpecUtils.getMeasureSpecDescription(widthSpec)
-                + " HeightSpec: "
-                + MeasureSpecUtils.getMeasureSpecDescription(heightSpec)
-                + " Measured width : "
-                + size.width
-                + " Measured Height: "
-                + size.height);
-      }
-    } catch (Exception e) {
+    if (mLayoutContext.getRenderStateContext().isLayoutReleased()) {
 
-      // Handle then exception
-      ComponentUtils.handle(mNode.getTailComponentContext(), e);
-
-      // If the exception is handled then return 0 size to continue layout.
+      // If layout is released then skip measurement
       size = new MeasureResult(0, 0);
+    } else {
+
+      final Component component = mNode.getTailComponent();
+
+      if (isTracing) {
+        ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
+            .arg("widthSpec", SizeSpec.toString(widthSpec))
+            .arg("heightSpec", SizeSpec.toString(heightSpec))
+            .arg("componentId", component.getId())
+            .flush();
+      }
+
+      try {
+        size = measureInternal(context, widthSpec, heightSpec);
+        if (size.width < 0 || size.height < 0) {
+          throw new IllegalStateException(
+              "MeasureOutput not set, Component is: "
+                  + component
+                  + " WidthSpec: "
+                  + MeasureSpecUtils.getMeasureSpecDescription(widthSpec)
+                  + " HeightSpec: "
+                  + MeasureSpecUtils.getMeasureSpecDescription(heightSpec)
+                  + " Measured width : "
+                  + size.width
+                  + " Measured Height: "
+                  + size.height);
+        }
+      } catch (Exception e) {
+
+        // Handle then exception
+        ComponentUtils.handle(mNode.getTailComponentContext(), e);
+
+        // If the exception is handled then return 0 size to continue layout.
+        size = new MeasureResult(0, 0);
+      }
     }
 
     // Record the last measured width, and height spec
@@ -540,8 +543,12 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         && diffNode.getLastHeightSpec() == heightSpec
         && !shouldAlwaysRemeasure(component)) {
 
+      mLayoutData = diffNode.getLayoutData();
+
       return new MeasureResult(
-          (int) diffNode.getLastMeasuredWidth(), (int) diffNode.getLastMeasuredHeight());
+          (int) diffNode.getLastMeasuredWidth(),
+          (int) diffNode.getLastMeasuredHeight(),
+          mLayoutData);
 
       // Measure the component
     } else {
@@ -554,7 +561,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         if (mountable != null) {
           LayoutResult layoutResult = mountable.calculateLayout(context, widthSpec, heightSpec);
           mLayoutData = layoutResult.getLayoutData();
-          return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight());
+          return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
         } else {
           final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
           ((SpecGeneratedComponent) component)
@@ -566,7 +573,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
                   size,
                   (InterStagePropsContainer) getLayoutData());
 
-          return new MeasureResult(size.width, size.height);
+          return new MeasureResult(size.width, size.height, getLayoutData());
         }
 
       } finally {
