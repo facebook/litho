@@ -71,6 +71,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
   private @Nullable Object mLayoutData;
 
+  private boolean mWasMeasured = false;
+
   public LithoLayoutResult(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -455,7 +457,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   }
 
   boolean wasMeasured() {
-    return mLastMeasuredWidth != DiffNode.UNSPECIFIED;
+    return mWasMeasured;
   }
 
   MeasureResult measure(
@@ -465,6 +467,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     MeasureResult size;
+
+    mWasMeasured = true;
 
     if (mLayoutContext.getRenderStateContext().isLayoutReleased()) {
 
