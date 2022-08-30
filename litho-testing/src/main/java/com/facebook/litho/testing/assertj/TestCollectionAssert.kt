@@ -16,6 +16,9 @@
 
 package com.facebook.litho.testing.assertj
 
+import android.content.Context
+import androidx.annotation.StringRes
+import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.Component
 import com.facebook.litho.LithoView
 import com.facebook.litho.testing.TestCollection
@@ -103,6 +106,32 @@ class TestCollectionAssert(testCollection: TestCollection) :
     return this
   }
 
+  /** Assert visible views within the collection has the [text] as its text. */
+  fun hasVisibleText(text: String): TestCollectionAssert {
+    Assertions.assertThat(actual.getLithoViews().hasVisibleText(text))
+        .overridingErrorMessage("Expected visible text \"<%s>\", but was not found.", text)
+        .isTrue
+    return this
+  }
+
+  /** Assert visible views within the collection has the [textRes]'s text as its text. */
+  fun hasVisibleText(@StringRes textRes: Int): TestCollectionAssert =
+      hasVisibleText(
+          ApplicationProvider.getApplicationContext<Context>().getResources().getString(textRes))
+
+  /** Assert visible views within the collection does not have the [text] as its text. */
+  fun doesNotHaveVisibleText(text: String): TestCollectionAssert {
+    Assertions.assertThat(actual.getLithoViews().hasVisibleText(text))
+        .overridingErrorMessage("Did not expect visible text \"<%s>\"", text)
+        .isFalse
+    return this
+  }
+
+  /** Assert visible views within the collection does not have the [textRes]'s text as its text. */
+  fun doesNotHaveVisibleText(@StringRes textRes: Int): TestCollectionAssert =
+      doesNotHaveVisibleText(
+          ApplicationProvider.getApplicationContext<Context>().getResources().getString(textRes))
+
   private fun LithoView.hasVisibleText(text: String): Boolean {
     val viewTree = ViewTree.of(this)
     val children =
@@ -117,20 +146,6 @@ class TestCollectionAssert(testCollection: TestCollection) :
       }
     }
     return false
-  }
-
-  fun hasVisibleText(text: String): TestCollectionAssert {
-    Assertions.assertThat(actual.getLithoViews().hasVisibleText(text))
-        .overridingErrorMessage("Expected visible text \"<%s>\", but was not found.", text)
-        .isTrue
-    return this
-  }
-
-  fun doesNotHaveVisibleText(text: String): TestCollectionAssert {
-    Assertions.assertThat(actual.getLithoViews().hasVisibleText(text))
-        .overridingErrorMessage("Did not expect visible text \"<%s>\"", text)
-        .isFalse
-    return this
   }
 
   companion object {

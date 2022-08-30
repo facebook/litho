@@ -20,6 +20,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.stringRes
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions
 import com.facebook.litho.testing.exactly
@@ -159,5 +160,27 @@ class LithoViewRuleListExampleTest {
         .containsExactlyComponents(*fullComponentList)
         .hasVisibleText("0")
         .doesNotHaveVisibleText("cheeseburger")
+  }
+
+  @Test
+  fun `test res visible and non-visible text`() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component = LazyList {
+        child(id = "resTextChild", deps = emptyArray()) {
+          Text(text = stringRes(android.R.string.selectAll))
+        }
+      }
+    }
+
+    val testView =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { TestComponent() }
+
+    val listComponent = testView.findCollectionComponent()
+    assertThat(listComponent).isNotNull
+
+    LithoAssertions.assertThat(listComponent)
+        .onFirstChild { it.isVisible }
+        .hasVisibleText(android.R.string.selectAll)
+        .doesNotHaveVisibleText(android.R.string.cancel)
   }
 }
