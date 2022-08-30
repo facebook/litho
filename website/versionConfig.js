@@ -25,5 +25,5 @@ export const site = {
   lithoVersion: '0.42.0',
   lithoSnapshotVersion: '0.43.0-SNAPSHOT',
   soloaderVersion: '0.10.4',
-  flipperVersion: '0.46.0',
+  flipperVersion: '0.142.0',
 };
