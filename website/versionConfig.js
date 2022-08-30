@@ -22,8 +22,8 @@
 // and refer to the version as: e.g. {{site.lithoVersion}}
 
 export const site = {
-  lithoVersion: '0.41.2',
-  lithoSnapshotVersion: '0.41.3-SNAPSHOT',
+  lithoVersion: '0.42.0',
+  lithoSnapshotVersion: '0.43.0-SNAPSHOT',
   soloaderVersion: '0.10.4',
   flipperVersion: '0.46.0',
 };
