@@ -32,6 +32,12 @@ class TestCollectionAssert(testCollection: TestCollection) :
     AbstractAssert<TestCollectionAssert, TestCollection>(
         testCollection, TestCollectionAssert::class.java) {
 
+  /** Assert the number of items in the collection. */
+  fun hasSize(size: Int): TestCollectionAssert {
+    Assertions.assertThat(actual.items).hasSize(size)
+    return this
+  }
+
   /** Assert a condition on a child at a given index. */
   fun onChild(withIndex: Int, condition: (TestCollectionItem) -> Boolean): TestCollectionAssert {
     Assertions.assertThat(condition(actual.items[withIndex])).isTrue

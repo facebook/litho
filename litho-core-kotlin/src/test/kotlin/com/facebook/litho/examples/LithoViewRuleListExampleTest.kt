@@ -153,7 +153,7 @@ class LithoViewRuleListExampleTest {
         .onLastChild { it.component.isEquivalentTo(fourTextComponent) }
         .onChild(withIndex = 2) { it.isVisible }
         .onChild(withId = 3) { !it.isFullyVisible }
-        .onChildren { it.size == 5 }
+        .hasSize(5)
         .onChildren(matching = { it.isSticky }) { it.isEmpty() }
         .containsComponents(zeroTextComponent)
         .doesNotContainComponents(helloTextComponent)
