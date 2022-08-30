@@ -33,15 +33,25 @@ public class MeasureResult {
   public final int width;
   public final int height;
   public final @Nullable Object layoutData;
+  public final boolean mHadExceptions;
 
   public MeasureResult(final int width, final int height, final @Nullable Object layoutData) {
     this.width = width;
     this.height = height;
     this.layoutData = layoutData;
+    this.mHadExceptions = false;
   }
 
   public MeasureResult(final int width, final int height) {
     this(width, height, null);
+  }
+
+  /** This constructor should only be used if there were exceptions during measurement. */
+  private MeasureResult() {
+    this.width = 0;
+    this.height = 0;
+    this.layoutData = null;
+    this.mHadExceptions = true;
   }
 
   /**
@@ -102,5 +112,9 @@ public class MeasureResult {
     }
 
     return new MeasureResult(width, height);
+  }
+
+  public static MeasureResult error() {
+    return new MeasureResult();
   }
 }

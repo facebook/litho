@@ -473,7 +473,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (mLayoutContext.getRenderStateContext().isLayoutReleased()) {
 
       // If layout is released then skip measurement
-      size = new MeasureResult(0, 0);
+      size = MeasureResult.error();
     } else {
 
       final Component component = mNode.getTailComponent();
@@ -507,7 +507,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         ComponentUtils.handle(mNode.getTailComponentContext(), e);
 
         // If the exception is handled then return 0 size to continue layout.
-        size = new MeasureResult(0, 0);
+        size = MeasureResult.error();
       }
     }
 

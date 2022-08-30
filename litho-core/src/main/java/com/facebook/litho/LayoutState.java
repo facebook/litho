@@ -46,6 +46,7 @@ import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderCoreSystrace;
@@ -292,6 +293,7 @@ public class LayoutState
       return null;
     }
 
+    final @Nullable MeasureResult measure;
     final boolean hasExactSize = !result.wasMeasured();
     if (isMountable(node.getTailComponent()) && hasExactSize) {
       final int width =
@@ -309,7 +311,13 @@ public class LayoutState
 
       final RenderState.LayoutContext layoutContext =
           LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
-      result.measure(layoutContext, exactly(width), exactly(height));
+      measure = result.measure(layoutContext, exactly(width), exactly(height));
+    } else {
+      measure = null;
+    }
+
+    if (measure != null && measure.mHadExceptions) {
+      return null;
     }
 
     if (layoutState.getLayoutStateContext().isReleased()) {
