@@ -93,6 +93,22 @@ class TestCollection {
           listOf()
         }
 
+  /** Convenience property for getting the first item */
+  val firstItem: TestCollectionItem
+    get() = items.first()
+
+  /** Convenience property for getting the first visible item */
+  val firstVisibleItem: TestCollectionItem
+    get() = visibleItems.first()
+
+  /** Convenience property for getting the last item */
+  val lastItem: TestCollectionItem
+    get() = items.last()
+
+  /** Convenience property for getting the last visible item */
+  val lastVisibleItem: TestCollectionItem
+    get() = visibleItems.last()
+
   /** Convenience function for getting the item at an index */
   inline fun getItemAtIndex(index: Int): TestCollectionItem = items[index]
 

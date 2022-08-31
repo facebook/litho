@@ -160,6 +160,21 @@ class LithoViewRuleListExampleTest {
         .containsExactlyComponents(*fullComponentList)
         .hasVisibleText("0")
         .doesNotHaveVisibleText("cheeseburger")
+
+    LithoAssertions.assertThat(listComponent.firstItem).isVisible().isFullyVisible()
+
+    LithoAssertions.assertThat(listComponent.firstVisibleItem)
+        .isVisible()
+        .isFullyVisible()
+        .hasIndex(0)
+
+    val secondChild = listComponent.getItemAtIndex(2)
+    LithoAssertions.assertThat(secondChild)
+        .isVisible()
+        .isNotFullyVisible()
+        .isEqualTo(listComponent.lastVisibleItem)
+
+    LithoAssertions.assertThat(listComponent.lastItem).isNotVisible().isNotFullyVisible()
   }
 
   @Test
