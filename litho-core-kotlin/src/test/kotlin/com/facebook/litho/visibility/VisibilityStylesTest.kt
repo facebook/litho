@@ -22,8 +22,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.setRoot
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import java.util.concurrent.atomic.AtomicBoolean
@@ -36,20 +35,15 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class VisibilityStylesTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun onVisible_whenSet_firesWhenVisible() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(style = Style.width(200.px).height(200.px).onVisible { eventFired.set(true) })
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
+    lithoViewRule.render {
+      Row(style = Style.width(200.px).height(200.px).onVisible { eventFired.set(true) })
+    }
 
     assertThat(eventFired.get()).isTrue()
   }
@@ -58,18 +52,14 @@ class VisibilityStylesTest {
   fun onInvisible_whenSet_firesWhenVisibleThenInvisible() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
+    val testLithoView =
+        lithoViewRule.render {
           Row(style = Style.width(200.px).height(200.px).onInvisible { eventFired.set(true) })
         }
-        .measure()
-        .layout()
-        .attachToWindow()
 
     assertThat(eventFired.get()).isFalse()
 
-    lithoViewRule.lithoView.setVisibilityHint(false)
+    testLithoView.lithoView.setVisibilityHint(false)
 
     assertThat(eventFired.get()).isTrue()
   }
@@ -79,27 +69,27 @@ class VisibilityStylesTest {
     val focusFired = AtomicBoolean(false)
     val unfocusFired = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(
-              style =
-                  Style.width(200.px)
-                      .height(200.px)
-                      .onFocusedVisible { focusFired.set(true) }
-                      .onUnfocusedVisible { unfocusFired.set(true) })
-        }
-        .attachToWindow()
+    val testLithoView =
+        lithoViewRule
+            .render {
+              Row(
+                  style =
+                      Style.width(200.px)
+                          .height(200.px)
+                          .onFocusedVisible { focusFired.set(true) }
+                          .onUnfocusedVisible { unfocusFired.set(true) })
+            }
+            .attachToWindow()
 
     // FocusedVisible requires a measured parent
     val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
-    frameLayout.addView(lithoViewRule.lithoView)
+    frameLayout.addView(testLithoView.lithoView)
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
 
     assertThat(focusFired.get()).isTrue()
 
-    lithoViewRule.lithoView.setVisibilityHint(false)
+    testLithoView.lithoView.setVisibilityHint(false)
 
     assertThat(unfocusFired.get()).isTrue()
   }
@@ -108,14 +98,9 @@ class VisibilityStylesTest {
   fun onFullImpression_whenSet_firesWhenVisible() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(style = Style.width(200.px).height(200.px).onFullImpression { eventFired.set(true) })
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
+    lithoViewRule.render {
+      Row(style = Style.width(200.px).height(200.px).onFullImpression { eventFired.set(true) })
+    }
 
     assertThat(eventFired.get()).isTrue()
   }
@@ -124,16 +109,9 @@ class VisibilityStylesTest {
   fun onVisibilityChanged_whenSet_firesWhenVisibilityBoundsChange() {
     val eventFired = AtomicBoolean(false)
 
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(
-              style =
-                  Style.width(200.px).height(200.px).onVisibilityChanged { eventFired.set(true) })
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
+    lithoViewRule.render {
+      Row(style = Style.width(200.px).height(200.px).onVisibilityChanged { eventFired.set(true) })
+    }
 
     assertThat(eventFired.get()).isTrue()
   }
