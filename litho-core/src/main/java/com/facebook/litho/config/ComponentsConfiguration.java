@@ -245,6 +245,8 @@ public class ComponentsConfiguration {
 
   public static boolean requestMountForPrefetchedItems = false;
 
+  public static boolean enableMountableComponents = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

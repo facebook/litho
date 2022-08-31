@@ -117,4 +117,17 @@ public class MeasureResult {
   public static MeasureResult error() {
     return new MeasureResult();
   }
+
+  @Override
+  public String toString() {
+    return "MeasureResult:[width "
+        + width
+        + " height "
+        + height
+        + " layoutData "
+        + layoutData
+        + " mHadExceptions "
+        + mHadExceptions
+        + "]";
+  }
 }

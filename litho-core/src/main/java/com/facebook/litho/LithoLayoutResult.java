@@ -26,6 +26,7 @@ import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node.LayoutResult;
@@ -547,6 +548,15 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         && diffNode.getLastHeightSpec() == heightSpec
         && !shouldAlwaysRemeasure(component)) {
 
+      // TODO(mkarpinski): remove this after investigation
+      if (ComponentsConfiguration.enableMountableComponents
+          && mLayoutData != null
+          && diffNode.getLayoutData() == null) {
+        throw new IllegalStateException(
+            "Setting mLayoutData to null from diffNode, but it wasn't null before for <cls>"
+                + node.getMountable().getClass().getSimpleName()
+                + "</cls>");
+      }
       mLayoutData = diffNode.getLayoutData();
 
       return new MeasureResult(
@@ -565,6 +575,13 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         if (mountable != null) {
           LayoutResult layoutResult = mountable.calculateLayout(context, widthSpec, heightSpec);
           mLayoutData = layoutResult.getLayoutData();
+          // TODO(mkarpinski): remove this after investigation
+          if (ComponentsConfiguration.enableMountableComponents && mLayoutData == null) {
+            throw new IllegalStateException(
+                "mLayoutData should not be null after calculateLayout in Mountables experiment for <cls>"
+                    + mountable.getClass().getSimpleName()
+                    + "</cls>");
+          }
           return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
         } else {
           final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);
