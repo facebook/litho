@@ -17,8 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.LegacyLithoViewRule
-import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicInteger
@@ -31,7 +30,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class UseRefTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun useRef_onMutation_doesNotTriggerLayout() {
@@ -56,19 +55,16 @@ class UseRefTest {
       }
     }
 
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot { UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0) }
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render {
+          UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0)
+        }
 
     assertThat(logCount.get()).isEqualTo(1)
     assertThat(renderCount.get()).isEqualTo(1)
 
-    lithoViewRule.setRoot {
-      UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0)
-    }
+    testLithoView.setRoot(
+        UseRefTestComponent(logCount = logCount, renderCount = renderCount, seq = 0))
 
     assertThat(logCount.get()).isEqualTo(1)
     assertThat(renderCount.get()).isEqualTo(2)
