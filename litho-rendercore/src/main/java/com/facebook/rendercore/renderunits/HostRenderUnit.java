@@ -195,7 +195,7 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
           if (currentBackground == null) {
             return newBackground != null;
           } else {
-            return newBackground != null && !currentBackground.equals(newBackground);
+            return !currentBackground.equals(newBackground);
           }
         }
 
