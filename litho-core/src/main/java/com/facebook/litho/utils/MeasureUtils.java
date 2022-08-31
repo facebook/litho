@@ -198,6 +198,10 @@ public final class MeasureUtils {
   public static void measureWithAspectRatio(
       int widthSpec, int heightSpec, float aspectRatio, Size outputSize) {
 
+    if (aspectRatio < 0) {
+      throw new IllegalArgumentException("The aspect ratio must be a positive number");
+    }
+
     final int widthMode = SizeSpec.getMode(widthSpec);
     final int widthSize = SizeSpec.getSize(widthSpec);
     final int heightMode = SizeSpec.getMode(heightSpec);
