@@ -63,7 +63,7 @@ class ExperimentalRecycler(
     private val contentDescription: CharSequence? = null,
     private val itemAnimator: ItemAnimator = NoUpdateItemAnimator(),
     private val recyclerEventsController: RecyclerEventsController? = null,
-    private val onScrollListeners: List<RecyclerView.OnScrollListener> = emptyList(),
+    private val onScrollListeners: List<RecyclerView.OnScrollListener?> = emptyList(),
     private val snapHelper: SnapHelper? = null,
     private val isPullToRefreshEnabled: Boolean = true,
     private val touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,
@@ -124,7 +124,7 @@ internal class ExperimentalRecyclerMountable(
     private val contentDescription: CharSequence?,
     private val itemAnimator: ItemAnimator,
     private val recyclerEventsController: RecyclerEventsController?,
-    private val onScrollListeners: List<RecyclerView.OnScrollListener>,
+    private val onScrollListeners: List<RecyclerView.OnScrollListener?>,
     private val snapHelper: SnapHelper?,
     private val isPullToRefreshEnabled: Boolean,
     private val touchInterceptor: LithoRecyclerView.TouchInterceptor?,
@@ -195,7 +195,7 @@ internal class ExperimentalRecyclerMountable(
                   else NoUpdateItemAnimator())
               if (onScrollListeners.isNotEmpty()) {
                 for (onScrollListener in onScrollListeners) {
-                  content.recyclerView.addOnScrollListener(onScrollListener)
+                  onScrollListener?.let { content.recyclerView.addOnScrollListener(it) }
                 }
               }
               touchInterceptor?.let {
@@ -236,7 +236,7 @@ internal class ExperimentalRecyclerMountable(
             content.resetItemAnimator()
             if (model.onScrollListeners.isNotEmpty()) {
               for (onScrollListener in model.onScrollListeners) {
-                content.recyclerView.removeOnScrollListener(onScrollListener)
+                onScrollListener?.let { content.recyclerView.removeOnScrollListener(it) }
               }
             }
             model.touchInterceptor?.let {

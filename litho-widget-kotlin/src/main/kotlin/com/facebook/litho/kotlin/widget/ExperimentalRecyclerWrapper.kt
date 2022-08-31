@@ -48,7 +48,7 @@ fun ExperimentalRecyclerWrapper(
     contentDescription: CharSequence? = null,
     itemAnimator: RecyclerView.ItemAnimator? = null,
     recyclerEventsController: RecyclerEventsController? = null,
-    onScrollListeners: List<RecyclerView.OnScrollListener>? = null,
+    onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     snapHelper: SnapHelper? = null,
     pullToRefresh: Boolean? = null,
     touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,

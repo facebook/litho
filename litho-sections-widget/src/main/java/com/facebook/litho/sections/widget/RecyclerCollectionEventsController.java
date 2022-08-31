@@ -247,7 +247,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     }
   }
 
-  void setSectionTree(SectionTree sectionTree) {
+  public void setSectionTree(SectionTree sectionTree) {
     mSectionTree = sectionTree;
   }
 

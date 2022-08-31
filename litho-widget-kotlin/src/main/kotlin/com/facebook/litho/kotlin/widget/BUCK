@@ -19,6 +19,9 @@ load(
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_KOTLIN_SECTIONS_TARGET",
     "LITHO_KOTLIN_TARGET",
+    "LITHO_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_TARGET",
     "LITHO_UTILS_TARGET",
     "LITHO_WIDGET_RES_TARGET",
     "LITHO_WIDGET_TARGET",
@@ -31,6 +34,10 @@ litho_android_library(
     name = "widget",
     feature = FBApp_UIFrameworks_Litho_Litho,
     labels = ["supermodule:android/default/litho.core"],
+    plugins = [
+        LITHO_PROCESSOR_TARGET,
+        LITHO_SECTIONS_PROCESSOR_TARGET,
+    ],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
     ],
@@ -40,6 +47,7 @@ litho_android_library(
     deps = [
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_KOTLIN_SECTIONS_TARGET,
+        LITHO_SECTIONS_TARGET,
         LITHO_UTILS_TARGET,
         LITHO_KOTLIN_TARGET,
         LITHO_WIDGET_RES_TARGET,
