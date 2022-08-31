@@ -48,7 +48,19 @@ Hooks maintain state by using the identity of the current component along with t
 As such, there are **three hooks rules** that you need to remember:
 
  1. Hooks can only be called from `render()` or from another hook.
- 2. Hook cannot be called conditionally, which means they cannot be called from within conditionals (if/for/while/...), or called **after** an "early exit" check (such as `if (...) return null`).
+ 2. Hooks must not be called conditionally.
+ ```kotlin
+ if (something) {
+   val state = useState{ 1 } // INCORRECT. Called inside an if block
+ }
+ ```
+
+ ```kotlin
+ val cachedValue = useCached(dependendency) {
+   val dynamicColor = useBinding{0} // INCORRECT. The useCached block will only be executed if the dependency changes.
+   return false
+ }
+ ```
  3. Hook names should start with `use`.
 
 The reasons for rules 1 and 2 are to preserve hook identity, as mentioned above. Rule 3 is just to make it easier to tell when a function has hook-like behavior.
