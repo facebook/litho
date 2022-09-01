@@ -28,7 +28,7 @@ import com.facebook.litho.useCached
 import com.facebook.samples.litho.kotlin.collection.Button
 
 class ControllersExampleComponent : KComponent() {
-
+  // start_controllers_example
   override fun ComponentScope.render(): Component {
     return Column(style = Style.padding(16.dp)) {
       val initialHour = 14
@@ -43,6 +43,7 @@ class ControllersExampleComponent : KComponent() {
                 controller.setHour((0..24).random())
                 controller.setMinute((0..60).random())
               }))
+      // end_controllers_example
       child(
           Button(
               text = "Get current time",

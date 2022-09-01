@@ -37,20 +37,12 @@ class TimePickerComponent(
     return MountableWithStyle(TimePickerMountable(controller), style)
   }
 }
-
+// mountable_component_start
 internal class TimePickerMountable(
     private val controller: TimePickerController?,
 ) : SimpleMountable<TimePicker>(RenderType.VIEW) {
 
   override fun createContent(context: Context): TimePicker = TimePicker(context)
-
-  override fun measure(
-      context: RenderState.LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int
-  ): MeasureResult {
-    return MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
-  }
 
   override fun mount(c: Context, content: TimePicker, layoutData: Any?) {
     controller?.bind(content)
@@ -58,6 +50,15 @@ internal class TimePickerMountable(
 
   override fun unmount(c: Context, content: TimePicker, layoutData: Any?) {
     controller?.unbind(content)
+  }
+  // mountable_component_end
+
+  override fun measure(
+      context: RenderState.LayoutContext<*>,
+      widthSpec: Int,
+      heightSpec: Int
+  ): MeasureResult {
+    return MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
   }
 
   override fun shouldUpdate(
@@ -72,6 +73,7 @@ internal class TimePickerMountable(
   }
 }
 
+// start_controller_code_example
 class TimePickerController(var currentHour: Int, var currentMinute: Int) {
   private val onTimeChangedListener =
       object : TimePicker.OnTimeChangedListener {
@@ -91,6 +93,17 @@ class TimePickerController(var currentHour: Int, var currentMinute: Int) {
     }
   }
 
+  fun setMinute(minute: Int) {
+    ThreadUtils.assertMainThread()
+    currentMinute = minute
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      content?.minute = minute
+    } else {
+      content?.currentMinute = minute
+    }
+  }
+  // end_controller_code_example
+
   fun getHour(): Int? {
     ThreadUtils.assertMainThread()
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -102,22 +115,14 @@ class TimePickerController(var currentHour: Int, var currentMinute: Int) {
 
   fun setHour(hour: Int) {
     ThreadUtils.assertMainThread()
+    currentHour = hour
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       content?.hour = hour
     } else {
       content?.currentHour = hour
     }
   }
-
-  fun setMinute(minute: Int) {
-    ThreadUtils.assertMainThread()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      content?.minute = minute
-    } else {
-      content?.currentMinute = minute
-    }
-  }
-
+  // start_controller_bind_code_example
   fun bind(content: TimePicker) {
     this.content = content
     setHour(currentHour)
@@ -125,12 +130,13 @@ class TimePickerController(var currentHour: Int, var currentMinute: Int) {
     setTimeChangedListener()
   }
 
-  private fun setTimeChangedListener() {
-    content?.setOnTimeChangedListener(onTimeChangedListener)
-  }
-
   fun unbind(content: TimePicker) {
     this.content?.setOnTimeChangedListener(null)
     this.content = null
+  }
+  // end_controller_unbind_code_example
+
+  private fun setTimeChangedListener() {
+    content?.setOnTimeChangedListener(onTimeChangedListener)
   }
 }

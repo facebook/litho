@@ -193,6 +193,7 @@ module.exports = {
             'mountablecomponents/overview',
             'mountablecomponents/mountable-component',
             'mountablecomponents/accessibility',
+            'mountablecomponents/mountable-controllers',
             'mountablecomponents/introduction-to-rendercore',
           ],
         },
