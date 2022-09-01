@@ -48,6 +48,7 @@ android {
 dependencies {
     // For main targets
     implementation project(':litho-core')
+    implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-sections-annotations')
     implementation project(':litho-sections-core')
@@ -59,6 +60,7 @@ dependencies {
     testImplementation project(':litho-testing')
 
     // Testing deps
+    testImplementation deps.kotlinStandardLib
     testImplementation deps.assertjCore
     testImplementation deps.junit
     testImplementation deps.robolectric
