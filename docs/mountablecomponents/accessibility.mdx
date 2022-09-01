@@ -1,0 +1,45 @@
+---
+id: accessibility
+title: Accessibility
+---
+
+## Why Accessibility is important
+
+The fundamental purpose of an interface is to provide people with access to information. Accessibility is the foundation of an interface. All people experience limitations in their abilities, whether it's temporary, situational or permanent. The aim of accessibility is to remove any obstacles that reduce the experience of using, understanding, and navigating your interface.
+
+This page provides details of the Litho components, methods, nodes, events, and headings available to ensure your interface provides the 'full experience' promoted by Meta.
+
+:::info
+For information on how Meta is committed to creating a full UI experience for **all** people, see the [Meta Accessibility](https://en-gb.facebook.com/accessibility/) site.
+:::
+
+## Implementing Accessibility features for Mountable Components
+
+Accessibility properties and events for Mountable Components can be implemented by adding them to Style object that will be returned on MountableWithStyle object from render() method.
+
+You can see an example of how to combine Style that was passed to Mountable Component with a newly created Style object that implements accessibility properties and events:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewWithAccessibility.kt start=start_simple_mountable_component_with_a11y_example end=end_simple_mountable_component_with_a11y_example
+```
+
+## Supported Accessibility properties and events
+
+The following list provides the supported properties on Style object:
+
+- Style.accessibilityHeading
+- Style.accessibilityRole
+- Style.accessibilityRoleDescription
+- Style.contentDescription
+- Style.importantForAccessibility
+
+The following table provides the supported events on Style object:
+
+| Event | AccessibilityDelegate method
+| ----- | ----------------------------
+| Style.onInitializeAccessibilityEvent | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)">onInitializeAccessibilityEvent</a>
+| Style.onInitializeAccessibilityNodeInfo | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityNodeInfo(android.view.View, android.support.v4.view.accessibility.AccessibilityNodeInfoCompat)">onInitializeAccessibilityNodeInfo</a>
+| Style.onPopulateAccessibilityEvent | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onPopulateAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)">onPopulateAccessibilityEvent</a>
+| Style.onRequestSendAccessibilityEvent | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onRequestSendAccessibilityEvent(android.view.ViewGroup, android.view.View, android.view.accessibility.AccessibilityEvent)">onRequestSendAccessibilityEvent</a>
+| Style.performAccessibilityAction | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#performAccessibilityAction(android.view.View, int, android.os.Bundle)">performAccessibilityAction</a>
+| Style.sendAccessibilityEvent | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int)">sendAccessibilityEvent</a>
+| Style.sendAccessibilityEventUnchecked |  <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a>

@@ -28,6 +28,7 @@ import com.facebook.litho.accessibility.accessibilityRoleDescription
 import com.facebook.litho.accessibility.importantForAccessibility
 import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 
+// start_simple_mountable_component_with_a11y_example
 class SimpleImageViewWithAccessibility(private val style: Style? = null) : MountableComponent() {
 
   override fun MountableComponentScope.render(): MountableWithStyle {
@@ -45,3 +46,4 @@ class SimpleImageViewWithAccessibility(private val style: Style? = null) : Mount
     return MountableWithStyle(SimpleImageViewMountable(), style?.plus(a11y) ?: a11y)
   }
 }
+// end_simple_mountable_component_with_a11y_example
