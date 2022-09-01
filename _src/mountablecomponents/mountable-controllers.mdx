@@ -1,0 +1,39 @@
+---
+id: mountable-controllers
+title: Controllers Pattern
+---
+
+The Controllers Pattern can be used to control the content from outside the component, typically from an ancestor.
+
+## Controllers in Practice
+
+To demonstrate the use of controllers in practice, we will implement a simple TimePicker Component which can be used to show some abritary time.
+
+In the controllers code we implement simple getters and setters of the TimePicker properties.
+:::note
+It is important to remember that the content is necessarily nullable because the **content can get unmounted when it is out of the viewport**. So any operation invoked on the controller should be memoized when the content is unbound so that they can be applied once the content is mounted. (see how we set the minutes and hours to the vars in the setter methods and how in `bind` we set the values back to the content)
+:::
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=start_controller_code_example end=end_controller_code_example
+```
+The Controller must be bound and unbound from the content manually from the `bind`, and `unbind` methods of a SimpleMountable, or from the `bind`, and `unbind` methods of Binder used for the Mountable.
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=start_controller_bind_code_example end=end_controller_unbind_code_example
+```
+
+In the Mountable Component implementation we need to manually `bind` and `unbind` controller with the content:
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=mountable_component_start end=mountable_component_end
+```
+
+The Mountable should pass the `TimePickerController` as a constructor parameter. A small performance improvement can be achieved by putting the controller into the [useCached](/mainconcepts/use-cached.mdx) hook, so it is not recreated in each rerender.
+You can call any other methods on the controller instance easily in the code (see `controller.setHour()`)
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/ControllersExampleComponent.kt start=start_controllers_example end=end_controllers_example
+```
+
+
+## Key points for Controllers
+- The Mountable will take a Controller as a constructor parameter.
+- If the controller is stateful then the developer need to necessary hold the controller in state/cache otherwise state will be lost across re-renders.
+- Should bind and unbind the controllers manually.
+- Should maintain/update/watch state manually.
+- `useCached` should be used to improve performance.
+
