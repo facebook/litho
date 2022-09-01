@@ -29,7 +29,8 @@ import com.facebook.litho.StateCaller;
 import com.facebook.litho.Transition;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
-import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.TestLithoView;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.StateWithTransitionTestComponent;
@@ -54,7 +55,7 @@ import org.robolectric.shadows.ShadowLooper;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TransitionsTest {
-  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
   private final StateCaller mStateCaller = new StateCaller();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
@@ -103,17 +104,16 @@ public class TransitionsTest {
   public void
       transitionAnimations_runTransitionsInSequence_elementsShouldAnimateOneAfterTheOtherOnUpdateStateWithTransition() {
     final StateWithTransitionTestComponent component =
-        StateWithTransitionTestComponent.create(mLegacyLithoViewRule.getContext())
+        StateWithTransitionTestComponent.create(mLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .testComponent(mTestComponent)
             .build();
 
-    mLegacyLithoViewRule.setRoot(component);
-    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    TestLithoView testLithoView = mLithoViewRule.render(ComponentScope -> component);
 
-    View redView = mLegacyLithoViewRule.findViewWithTag(RED_TRANSITION_KEY);
-    View greenView = mLegacyLithoViewRule.findViewWithTag(GREEN_TRANSITION_KEY);
-    View blueView = mLegacyLithoViewRule.findViewWithTag(BLUE_TRANSITION_KEY);
+    View redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY);
+    View greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY);
+    View blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY);
 
     assertThat(redView.getX()).describedAs("redView should be at start position").isEqualTo(1040);
     assertThat(greenView.getX())
@@ -153,7 +153,7 @@ public class TransitionsTest {
   public void
       transitionAnimations_runTransitionsInSequence_elementsShouldAnimateOneAfterTheOther() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.sequence(
@@ -169,12 +169,11 @@ public class TransitionsTest {
             .testComponent(mTestComponent)
             .build();
 
-    mLegacyLithoViewRule.setRoot(component);
-    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    TestLithoView testLithoView = mLithoViewRule.render(ComponentScope -> component);
 
-    View redView = mLegacyLithoViewRule.findViewWithTag(RED_TRANSITION_KEY);
-    View greenView = mLegacyLithoViewRule.findViewWithTag(GREEN_TRANSITION_KEY);
-    View blueView = mLegacyLithoViewRule.findViewWithTag(BLUE_TRANSITION_KEY);
+    View redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY);
+    View greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY);
+    View blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY);
 
     assertThat(redView.getX()).describedAs("redView should be at start position").isEqualTo(1040);
     assertThat(greenView.getX())
@@ -206,7 +205,7 @@ public class TransitionsTest {
   @Test
   public void transitionAnimations_runTransitionsInParallel_elementsShouldAnimateAtTheSameTime() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.parallel(
@@ -221,12 +220,11 @@ public class TransitionsTest {
                         .animate(AnimatedProperties.X)))
             .testComponent(mTestComponent)
             .build();
-    mLegacyLithoViewRule.setRoot(component);
-    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    TestLithoView testLithoView = mLithoViewRule.render(ComponentScope -> component);
 
-    View redView = mLegacyLithoViewRule.findViewWithTag(RED_TRANSITION_KEY);
-    View greenView = mLegacyLithoViewRule.findViewWithTag(GREEN_TRANSITION_KEY);
-    View blueView = mLegacyLithoViewRule.findViewWithTag(BLUE_TRANSITION_KEY);
+    View redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY);
+    View greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY);
+    View blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY);
 
     assertThat(redView.getX()).describedAs("redView should be at start position").isEqualTo(1040);
     assertThat(greenView.getX())
@@ -246,7 +244,7 @@ public class TransitionsTest {
   @Test
   public void transitionAnimations_runTransitionsInStagger_elementsShouldAnimateStaggered() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.stagger(
@@ -262,12 +260,11 @@ public class TransitionsTest {
                         .animate(AnimatedProperties.X)))
             .testComponent(mTestComponent)
             .build();
-    mLegacyLithoViewRule.setRoot(component);
-    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    TestLithoView testLithoView = mLithoViewRule.render(ComponentScope -> component);
 
-    View redView = mLegacyLithoViewRule.findViewWithTag(RED_TRANSITION_KEY);
-    View greenView = mLegacyLithoViewRule.findViewWithTag(GREEN_TRANSITION_KEY);
-    View blueView = mLegacyLithoViewRule.findViewWithTag(BLUE_TRANSITION_KEY);
+    View redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY);
+    View greenView = testLithoView.findViewWithTag(GREEN_TRANSITION_KEY);
+    View blueView = testLithoView.findViewWithTag(BLUE_TRANSITION_KEY);
 
     assertThat(redView.getX()).describedAs("redView should be at start position").isEqualTo(1040);
     assertThat(greenView.getX())
@@ -305,7 +302,7 @@ public class TransitionsTest {
   @Test
   public void transitionAnimations_runDelayedTransition_elementsShouldAnimateAfterDelay() {
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
             .stateCaller(mStateCaller)
             .transition(
                 Transition.delay(
@@ -315,10 +312,9 @@ public class TransitionsTest {
                         .animate(AnimatedProperties.X)))
             .testComponent(mTestComponent)
             .build();
-    mLegacyLithoViewRule.setRoot(component);
-    mLegacyLithoViewRule.attachToWindow().measure().layout();
+    TestLithoView testLithoView = mLithoViewRule.render(ComponentScope -> component);
 
-    View redView = mLegacyLithoViewRule.findViewWithTag(RED_TRANSITION_KEY);
+    View redView = testLithoView.findViewWithTag(RED_TRANSITION_KEY);
 
     assertThat(redView.getX()).describedAs("redView should be at start position").isEqualTo(1040);
     mStateCaller.update();
