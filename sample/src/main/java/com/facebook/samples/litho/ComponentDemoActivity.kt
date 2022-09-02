@@ -28,11 +28,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.facebook.litho.*
 import kotlinx.coroutines.*
 import com.facebook.litho.widget.Text
+import com.facebook.yoga.YogaFlexDirection
 import java.util.concurrent.Executors
 
 class ComponentDemoActivity : NavigatableDemoActivity() {
 
-  lateinit var composition: (component: @Composable  () -> Unit) -> Unit
+  lateinit var composition: (component: @Composable () -> Unit) -> Unit
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -49,13 +50,38 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
   }
 
   @Composable
+  fun Column(content: @Composable () -> Unit) {
+    val parent = LocalParentContext.current
+    val component = Column.create(parent).build()
+    val scope = createScopedContext(component = component, parent = parent)
+
+    // Litho Compose Node is the bridge between LithoNode an Compose
+    LithoComposeNode(scope = scope, content = content) {
+      // This lambda receives the LithoNode
+      flexDirection(YogaFlexDirection.COLUMN)
+    }
+  }
+
+  @Composable
   fun Text(text: String) {
     val parent = LocalParentContext.current
     val component = Text.create(parent).text(text).build()
     LithoComposeNode(scope = createScopedContext(component = component, parent = parent))
   }
 
-  private fun initialise(): (@Composable () -> Unit)->Unit {
+  private fun watch(recomposer: Recomposer, node: LithoNode) {
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        recomposer.currentState.collect {
+          Log.d("recomposer", "current state is: $it.")
+          val component = node.getChildAt(0).getChildAt(0).tailComponent
+          Log.d("recomposer", "Component: $component")
+        }
+      }
+    }
+  }
+
+  private fun initialise(): (@Composable () -> Unit) -> Unit {
 
     // Hard coding a root node for the hack
     val node = createRootNode()
@@ -69,7 +95,7 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     // Watch the Composers current state
     watch(recomposer, node)
 
-    return fun(content : @Composable ()-> Unit) {
+    return fun(content: @Composable () -> Unit) {
       Composition(
           applier = LithoNodeApplier(root = node),
           parent = recomposer
@@ -79,18 +105,6 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
         // The implementation of Column
         CompositionLocalProvider(LocalParentContext provides node.tailComponentContext) {
           content()
-        }
-      }
-    }
-  }
-
-  private fun watch(recomposer: Recomposer, node: LithoNode) {
-    lifecycleScope.launch {
-      repeatOnLifecycle(Lifecycle.State.STARTED) {
-        recomposer.currentState.collect {
-          Log.d("recomposer", "current state is: $it.")
-          val component = node.getChildAt(0).getChildAt(0).tailComponent
-          Log.d("recomposer", "Component: $component")
         }
       }
     }

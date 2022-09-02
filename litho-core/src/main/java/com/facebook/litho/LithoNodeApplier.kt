@@ -62,13 +62,3 @@ fun LithoComposeNode(
     }
   }, update = {}, content = content)
 }
-
-@Composable
-fun Column(content: @Composable () -> Unit) {
-  val parent = LocalParentContext.current
-  val component = Column.create(parent).build()
-  val scope = createScopedContext(component = component, parent = parent)
-  LithoComposeNode(scope = scope, content = content) {
-    flexDirection(YogaFlexDirection.COLUMN)
-  }
-}
