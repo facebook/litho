@@ -17,25 +17,86 @@
 package com.facebook.samples.litho
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Recomposer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.facebook.litho.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import com.facebook.litho.widget.Text
+import java.util.concurrent.Executors
 
 class ComponentDemoActivity : NavigatableDemoActivity() {
+
+  lateinit var composition: (component: @Composable  () -> Unit) -> Unit
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val composition = initialise()
+    // initialise the composition
+    composition = initialise()
 
+    // Set a component on the composition
     composition {
-      Column {  }
+      Column {
+        Text(text = "hello world")
+      }
     }
   }
 
+  @Composable
+  fun Text(text: String) {
+    val parent = LocalParentContext.current
+    val component = Text.create(parent).text(text).build()
+    LithoComposeNode(scope = createScopedContext(component = component, parent = parent))
+  }
+
   private fun initialise(): (@Composable () -> Unit)->Unit {
+
+    // Hard coding a root node for the hack
+    val node = createRootNode()
+
+    // Use a dispatcher which uses a single background thread.
+    val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+
+    // Create Recomposer to watch
+    val recomposer = Recomposer(dispatcher)
+
+    // Watch the Composers current state
+    watch(recomposer, node)
+
+    return fun(content : @Composable ()-> Unit) {
+      Composition(
+          applier = LithoNodeApplier(root = node),
+          parent = recomposer
+      ).setContent {
+        // This akin to a creating a tree prop
+        // LocalParentContext.current will return the info.context
+        // The implementation of Column
+        CompositionLocalProvider(LocalParentContext provides node.tailComponentContext) {
+          content()
+        }
+      }
+    }
+  }
+
+  private fun watch(recomposer: Recomposer, node: LithoNode) {
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        recomposer.currentState.collect {
+          Log.d("recomposer", "current state is: $it.")
+          val component = node.getChildAt(0).getChildAt(0).tailComponent
+          Log.d("recomposer", "Component: $component")
+        }
+      }
+    }
+  }
+
+  private fun createRootNode(): LithoNode {
     val activity = ComponentContext(this)
     val root = RootComponent()
     val info = ScopedComponentInfo(
@@ -49,15 +110,6 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     val node = LithoNode()
     node.appendComponent(info)
 
-    return fun(content : @Composable ()-> Unit) {
-      Composition(
-          applier = LithoNodeApplier(root = node),
-          parent = Recomposer(Dispatchers.Main)
-      ).setContent {
-        CompositionLocalProvider(LocalParentContext provides info.context) {
-          content()
-        }
-      }
-    }
+    return node
   }
 }

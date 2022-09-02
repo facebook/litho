@@ -28,20 +28,47 @@ class LithoNodeApplier(root: LithoNode) : AbstractApplier<LithoNode>(root) {
   }
 }
 
+fun createScopedContext(component: Component, parent: ComponentContext): ScopedComponentInfo {
+  val context = ComponentContext.withComponentScope(
+      parent,
+      component,
+      ComponentKeyUtils.generateGlobalKey(parent, component)
+  )
+  return ScopedComponentInfo(context)
+}
+
+@Composable
+fun LithoComposeNode(scope: ScopedComponentInfo, modifier: (LithoNode.() -> Unit)? = null) {
+  ComposeNode<LithoNode, LithoNodeApplier>(
+      factory = {
+        LithoNode().apply {
+          appendComponent(scope)
+        }
+      },
+      update = {},
+  )
+}
+
+@Composable
+fun LithoComposeNode(
+    scope: ScopedComponentInfo,
+    content: @Composable () -> Unit,
+    modifier: (LithoNode.() -> Unit)? = null,
+) {
+  ComposeNode<LithoNode, LithoNodeApplier>(factory = {
+    LithoNode().apply {
+      modifier?.invoke(this)
+      appendComponent(scope)
+    }
+  }, update = {}, content = content)
+}
+
 @Composable
 fun Column(content: @Composable () -> Unit) {
   val parent = LocalParentContext.current
-  ComposeNode<LithoNode, LithoNodeApplier>(factory = {
-    LithoNode().apply {
-      val component = Column.create(parent).build()
-      val context = ComponentContext.withComponentScope(
-          parent,
-          component,
-          ComponentKeyUtils.generateGlobalKey(parent, component)
-      )
-      val info = ScopedComponentInfo(context)
-      flexDirection(YogaFlexDirection.COLUMN)
-      appendComponent(info)
-    }
-  }, update = {}, content = content)
+  val component = Column.create(parent).build()
+  val scope = createScopedContext(component = component, parent = parent)
+  LithoComposeNode(scope = scope, content = content) {
+    flexDirection(YogaFlexDirection.COLUMN)
+  }
 }
