@@ -17,11 +17,9 @@
 package com.facebook.samples.litho
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Composition
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Recomposer
+import androidx.compose.runtime.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -34,6 +32,7 @@ import java.util.concurrent.Executors
 class ComponentDemoActivity : NavigatableDemoActivity() {
 
   lateinit var composition: (component: @Composable () -> Unit) -> Unit
+  val subscriber = Subscriber()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -44,9 +43,13 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     // Set a component on the composition
     composition {
       Column {
-        Text(text = "hello world")
+        Text(text = "hello world", subscriber = subscriber)
       }
     }
+
+    Handler().postDelayed({
+      subscriber.update(1)
+    }, 1000)
   }
 
   @Composable
@@ -63,19 +66,38 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
   }
 
   @Composable
-  fun Text(text: String) {
+  fun Text(text: String, subscriber: Subscriber? = null) {
     val parent = LocalParentContext.current
-    val component = Text.create(parent).text(text).build()
-    LithoComposeNode(scope = createScopedContext(component = component, parent = parent))
+    val count = remember { mutableStateOf(0) }
+
+    Log.d("jchack", "current count: ${count.value}")
+
+    DisposableEffect(subscriber) {
+      val listener = { c: Int ->
+        Log.d("jchack", "update count: $c")
+        count.value = c
+      }
+      subscriber?.register(listener)
+      onDispose {
+        Log.d("jchack", "on-dispose")
+        subscriber?.unregister(listener)
+      }
+    }
+
+    val component = Text.create(parent).text("$text and count: ${count.value}").build()
+    LithoComposeNode(scope = createScopedContext(component = component, parent = parent)) {
+      testKey("count: ${count.value}")
+    }
   }
 
   private fun watch(recomposer: Recomposer, node: LithoNode) {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
         recomposer.currentState.collect {
-          Log.d("recomposer", "current state is: $it.")
-          val component = node.getChildAt(0).getChildAt(0).tailComponent
-          Log.d("recomposer", "Component: $component")
+          Log.d("jchack", "current state is: $it.")
+          val textNode = node.getChildAt(0).getChildAt(0)
+          val component = textNode.tailComponent
+          Log.d("jchack", "Component: $component [${textNode.testKey}]")
         }
       }
     }
@@ -125,5 +147,24 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     node.appendComponent(info)
 
     return node
+  }
+}
+
+class Subscriber {
+
+  private val listeners = mutableSetOf<(Int) -> Unit>()
+
+  fun register(listener: (Int) -> Unit) {
+    listeners.add(listener)
+  }
+
+  fun unregister(listener: (Int) -> Unit) {
+    listeners.remove(listener)
+  }
+
+  fun update(count: Int) {
+    listeners.forEach {
+      it.invoke(count)
+    }
   }
 }

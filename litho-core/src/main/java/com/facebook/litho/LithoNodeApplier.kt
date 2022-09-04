@@ -42,6 +42,7 @@ fun LithoComposeNode(scope: ScopedComponentInfo, modifier: (LithoNode.() -> Unit
   ComposeNode<LithoNode, LithoNodeApplier>(
       factory = {
         LithoNode().apply {
+          modifier?.invoke(this)
           appendComponent(scope)
         }
       },
