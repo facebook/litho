@@ -302,12 +302,6 @@ public class ComponentsConfiguration {
   }
 
   /**
-   * Defines whether or not we should use orchestrate the focus requests in the SectionTree, so as
-   * to avoid race conditions in the scroll/focus requests.
-   */
-  public static boolean isPendingFocusEnabled = false;
-
-  /**
    * Defines whether or not we should throw an exception when focus requests which happen on threads
    * different than the Main Thread.
    */

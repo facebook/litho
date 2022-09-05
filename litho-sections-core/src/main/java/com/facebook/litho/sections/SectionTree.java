@@ -179,8 +179,6 @@ public class SectionTree {
   private final boolean mUseBackgroundChangeSets;
   private final @Nullable ChangesetDebugListener mChangesetDebug;
 
-  private final @Nullable PendingFocusOrchestrator mPendingFocusOrchestrator;
-  private final boolean mIsPendingFocusEnabled;
   private final boolean mIsNonMainThreadFocusRequestThrowingEnabled;
 
   private LoadEventsHandler mLoadEventsHandler;
@@ -352,12 +350,9 @@ public class SectionTree {
     mTarget = new BatchedTarget(builder.mTarget, mSectionsDebugLogger, mTag);
     mUseBackgroundChangeSets = mTarget.supportsBackgroundChangeSets();
     mFocusDispatcher = new FocusDispatcher(mTarget);
-    mIsPendingFocusEnabled = ComponentsConfiguration.isPendingFocusEnabled;
     mIsNonMainThreadFocusRequestThrowingEnabled =
         ComponentsConfiguration.isNonMainThreadFocusRequestThrowingEnabled();
 
-    mPendingFocusOrchestrator =
-        mIsPendingFocusEnabled ? new PendingFocusOrchestrator(mFocusDispatcher) : null;
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
     mPendingStateUpdates = new StateUpdatesHolder();
@@ -845,16 +840,6 @@ public class SectionTree {
   void requestFocusEnd(final String sectionKey) {
     maybeThrowIfNotMainThread();
 
-    if (mIsPendingFocusEnabled) {
-      synchronized (this) {
-        final SectionLocationInfo locationInfo = findSectionForKey(sectionKey);
-        mPendingFocusOrchestrator.registerPendingFocus(
-            locationInfo.mStartIndex + locationInfo.mSection.getCount() - 1, 0, null);
-      }
-      schedulePendingScrollExecution();
-      return;
-    }
-
     focusRequestOnUiThread(
         mMainThreadHandler,
         new ThreadTracingRunnable() {
@@ -869,18 +854,6 @@ public class SectionTree {
 
   private void requestFocus(final String sectionKey, final int index) {
     maybeThrowIfNotMainThread();
-
-    if (mIsPendingFocusEnabled) {
-      synchronized (this) {
-        final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
-        if (isFocusValid(sectionLocationInfo, index)) {
-          mPendingFocusOrchestrator.registerPendingFocus(
-              sectionLocationInfo.mStartIndex + index, 0, null);
-        }
-      }
-      schedulePendingScrollExecution();
-      return;
-    }
 
     focusRequestOnUiThread(
         mMainThreadHandler,
@@ -906,18 +879,6 @@ public class SectionTree {
   void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
     maybeThrowIfNotMainThread();
 
-    if (mIsPendingFocusEnabled) {
-      synchronized (this) {
-        final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
-        if (isFocusValid(sectionLocationInfo, index)) {
-          mPendingFocusOrchestrator.registerPendingFocus(
-              sectionLocationInfo.mStartIndex + index, offset, null);
-        }
-      }
-      schedulePendingScrollExecution();
-      return;
-    }
-
     focusRequestOnUiThread(
         mMainThreadHandler,
         new ThreadTracingRunnable() {
@@ -934,14 +895,6 @@ public class SectionTree {
 
   void requestFocusWithOffset(final String sectionKey, final Object id, final int offset) {
     maybeThrowIfNotMainThread();
-
-    if (mIsPendingFocusEnabled) {
-      synchronized (this) {
-        mPendingFocusOrchestrator.registerPendingFocus(id, offset, null);
-      }
-      schedulePendingScrollExecution();
-      return;
-    }
 
     focusRequestOnUiThread(
         mMainThreadHandler,
@@ -978,17 +931,6 @@ public class SectionTree {
       final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
 
-    if (mIsPendingFocusEnabled) {
-      synchronized (this) {
-        final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
-        if (isFocusValid(sectionLocationInfo, index)) {
-          mPendingFocusOrchestrator.registerPendingFocus(index, offset, type);
-        }
-        schedulePendingScrollExecution();
-      }
-      return;
-    }
-
     focusRequestOnUiThread(
         mMainThreadHandler,
         new ThreadTracingRunnable() {
@@ -1010,35 +952,12 @@ public class SectionTree {
       final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
 
-    if (mIsPendingFocusEnabled) {
-      synchronized (this) {
-        mPendingFocusOrchestrator.registerPendingFocus(id, offset, type);
-      }
-      schedulePendingScrollExecution();
-      return;
-    }
-
     focusRequestOnUiThread(
         mMainThreadHandler,
         new ThreadTracingRunnable() {
           @Override
           public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
             mFocusDispatcher.requestSmoothFocus(id, offset, type);
-          }
-        });
-  }
-
-  private void schedulePendingScrollExecution() {
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            synchronized (SectionTree.this) {
-              if (mPendingFocusOrchestrator != null) {
-                mPendingFocusOrchestrator.requestFocus();
-              }
-            }
           }
         });
   }
@@ -1735,16 +1654,10 @@ public class SectionTree {
               case Change.INSERT:
                 appliedChanges = true;
                 mTarget.insert(change.getIndex(), change.getRenderInfo());
-                if (mIsPendingFocusEnabled) {
-                  mPendingFocusOrchestrator.registerInsert(change.getIndex(), 1);
-                }
                 break;
               case Change.INSERT_RANGE:
                 appliedChanges = true;
                 mTarget.insertRange(change.getIndex(), change.getCount(), change.getRenderInfos());
-                if (mIsPendingFocusEnabled) {
-                  mPendingFocusOrchestrator.registerInsert(change.getIndex(), change.getCount());
-                }
                 break;
               case Change.UPDATE:
                 appliedChanges = true;
@@ -1757,23 +1670,14 @@ public class SectionTree {
               case Change.DELETE:
                 appliedChanges = true;
                 mTarget.delete(change.getIndex());
-                if (mIsPendingFocusEnabled) {
-                  mPendingFocusOrchestrator.registerDelete(change.getIndex(), 1);
-                }
                 break;
               case Change.DELETE_RANGE:
                 appliedChanges = true;
                 mTarget.deleteRange(change.getIndex(), change.getCount());
-                if (mIsPendingFocusEnabled) {
-                  mPendingFocusOrchestrator.registerDelete(change.getIndex(), change.getCount());
-                }
                 break;
               case Change.MOVE:
                 appliedChanges = true;
                 mTarget.move(change.getIndex(), change.getToIndex());
-                if (mIsPendingFocusEnabled) {
-                  mPendingFocusOrchestrator.registerMove(change.getIndex(), change.getToIndex());
-                }
             }
           }
           mTarget.dispatchLastEvent();
