@@ -33,71 +33,42 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
  */
 class EventDispatcherUtils {
 
-  private static ClickEvent sClickEvent;
-  private static FocusChangedEvent sFocusChangedEvent;
-  private static LongClickEvent sLongClickEvent;
-  private static TouchEvent sTouchEvent;
-  private static InterceptTouchEvent sInterceptTouchEvent;
-  private static DispatchPopulateAccessibilityEventEvent sDispatchPopulateAccessibilityEventEvent;
-  private static OnInitializeAccessibilityEventEvent sOnInitializeAccessibilityEventEvent;
-  private static OnInitializeAccessibilityNodeInfoEvent sOnInitializeAccessibilityNodeInfoEvent;
-  private static OnPopulateAccessibilityEventEvent sOnPopulateAccessibilityEventEvent;
-  private static OnRequestSendAccessibilityEventEvent sOnRequestSendAccessibilityEventEvent;
-  private static PerformAccessibilityActionEvent sPerformAccessibilityActionEvent;
-  private static SendAccessibilityEventEvent sSendAccessibilityEventEvent;
-  private static SendAccessibilityEventUncheckedEvent sSendAccessibilityEventUncheckedEvent;
-
   static void dispatchOnClick(EventHandler<ClickEvent> clickHandler, View view) {
     assertMainThread();
 
-    if (sClickEvent == null) {
-      sClickEvent = new ClickEvent();
-    }
-
-    sClickEvent.view = view;
+    final ClickEvent clickEvent = new ClickEvent();
+    clickEvent.view = view;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(clickHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
-
-    sClickEvent.view = null;
+    eventDispatcher.dispatchOnEvent(clickHandler, clickEvent);
   }
 
   static void dispatchOnFocusChanged(
       EventHandler<FocusChangedEvent> focusChangeHandler, View view, boolean hasFocus) {
     assertMainThread();
 
-    if (sFocusChangedEvent == null) {
-      sFocusChangedEvent = new FocusChangedEvent();
-    }
-
-    sFocusChangedEvent.view = view;
-    sFocusChangedEvent.hasFocus = hasFocus;
+    final FocusChangedEvent focusChangedEvent = new FocusChangedEvent();
+    focusChangedEvent.view = view;
+    focusChangedEvent.hasFocus = hasFocus;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(focusChangeHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
-
-    sFocusChangedEvent.view = null;
+    eventDispatcher.dispatchOnEvent(focusChangeHandler, focusChangedEvent);
   }
 
   static boolean dispatchOnLongClick(EventHandler<LongClickEvent> longClickHandler, View view) {
     assertMainThread();
 
-    if (sLongClickEvent == null) {
-      sLongClickEvent = new LongClickEvent();
-    }
-
-    sLongClickEvent.view = view;
+    final LongClickEvent longClickEvent = new LongClickEvent();
+    longClickEvent.view = view;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(longClickHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    final Object returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
-
-    sLongClickEvent.view = null;
+    final Object returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, longClickEvent);
 
     return returnValue != null && (boolean) returnValue;
   }
@@ -106,20 +77,14 @@ class EventDispatcherUtils {
       EventHandler<TouchEvent> touchHandler, View view, MotionEvent event) {
     assertMainThread();
 
-    if (sTouchEvent == null) {
-      sTouchEvent = new TouchEvent();
-    }
-
-    sTouchEvent.view = view;
-    sTouchEvent.motionEvent = event;
+    final TouchEvent touchEvent = new TouchEvent();
+    touchEvent.view = view;
+    touchEvent.motionEvent = event;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(touchHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    final Object returnValue = eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
-
-    sTouchEvent.view = null;
-    sTouchEvent.motionEvent = null;
+    final Object returnValue = eventDispatcher.dispatchOnEvent(touchHandler, touchEvent);
 
     return returnValue != null && (boolean) returnValue;
   }
@@ -128,21 +93,15 @@ class EventDispatcherUtils {
       EventHandler<InterceptTouchEvent> interceptTouchHandler, View view, MotionEvent event) {
     assertMainThread();
 
-    if (sInterceptTouchEvent == null) {
-      sInterceptTouchEvent = new InterceptTouchEvent();
-    }
-
-    sInterceptTouchEvent.motionEvent = event;
-    sInterceptTouchEvent.view = view;
+    final InterceptTouchEvent interceptTouchEvent = new InterceptTouchEvent();
+    interceptTouchEvent.motionEvent = event;
+    interceptTouchEvent.view = view;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(interceptTouchHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
     final Object returnValue =
-        eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
-
-    sInterceptTouchEvent.motionEvent = null;
-    sInterceptTouchEvent.view = null;
+        eventDispatcher.dispatchOnEvent(interceptTouchHandler, interceptTouchEvent);
 
     return returnValue != null && (boolean) returnValue;
   }
@@ -154,23 +113,17 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sDispatchPopulateAccessibilityEventEvent == null) {
-      sDispatchPopulateAccessibilityEventEvent = new DispatchPopulateAccessibilityEventEvent();
-    }
-
-    sDispatchPopulateAccessibilityEventEvent.host = host;
-    sDispatchPopulateAccessibilityEventEvent.event = event;
-    sDispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
+    final DispatchPopulateAccessibilityEventEvent dispatchPopulateAccessibilityEventEvent =
+        new DispatchPopulateAccessibilityEventEvent();
+    dispatchPopulateAccessibilityEventEvent.host = host;
+    dispatchPopulateAccessibilityEventEvent.event = event;
+    dispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
     final Object returnValue =
-        eventDispatcher.dispatchOnEvent(eventHandler, sDispatchPopulateAccessibilityEventEvent);
-
-    sDispatchPopulateAccessibilityEventEvent.host = null;
-    sDispatchPopulateAccessibilityEventEvent.event = null;
-    sDispatchPopulateAccessibilityEventEvent.superDelegate = null;
+        eventDispatcher.dispatchOnEvent(eventHandler, dispatchPopulateAccessibilityEventEvent);
 
     return returnValue != null && (boolean) returnValue;
   }
@@ -182,22 +135,16 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sOnInitializeAccessibilityEventEvent == null) {
-      sOnInitializeAccessibilityEventEvent = new OnInitializeAccessibilityEventEvent();
-    }
-
-    sOnInitializeAccessibilityEventEvent.host = host;
-    sOnInitializeAccessibilityEventEvent.event = event;
-    sOnInitializeAccessibilityEventEvent.superDelegate = superDelegate;
+    final OnInitializeAccessibilityEventEvent onInitializeAccessibilityEventEvent =
+        new OnInitializeAccessibilityEventEvent();
+    onInitializeAccessibilityEventEvent.host = host;
+    onInitializeAccessibilityEventEvent.event = event;
+    onInitializeAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityEventEvent);
-
-    sOnInitializeAccessibilityEventEvent.host = null;
-    sOnInitializeAccessibilityEventEvent.event = null;
-    sOnInitializeAccessibilityEventEvent.superDelegate = null;
+    eventDispatcher.dispatchOnEvent(eventHandler, onInitializeAccessibilityEventEvent);
   }
 
   static void dispatchOnInitializeAccessibilityNodeInfoEvent(
@@ -207,22 +154,16 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sOnInitializeAccessibilityNodeInfoEvent == null) {
-      sOnInitializeAccessibilityNodeInfoEvent = new OnInitializeAccessibilityNodeInfoEvent();
-    }
-
-    sOnInitializeAccessibilityNodeInfoEvent.host = host;
-    sOnInitializeAccessibilityNodeInfoEvent.info = info;
-    sOnInitializeAccessibilityNodeInfoEvent.superDelegate = superDelegate;
+    final OnInitializeAccessibilityNodeInfoEvent onInitializeAccessibilityNodeInfoEvent =
+        new OnInitializeAccessibilityNodeInfoEvent();
+    onInitializeAccessibilityNodeInfoEvent.host = host;
+    onInitializeAccessibilityNodeInfoEvent.info = info;
+    onInitializeAccessibilityNodeInfoEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(eventHandler, sOnInitializeAccessibilityNodeInfoEvent);
-
-    sOnInitializeAccessibilityNodeInfoEvent.host = null;
-    sOnInitializeAccessibilityNodeInfoEvent.info = null;
-    sOnInitializeAccessibilityNodeInfoEvent.superDelegate = null;
+    eventDispatcher.dispatchOnEvent(eventHandler, onInitializeAccessibilityNodeInfoEvent);
   }
 
   static void dispatchOnPopulateAccessibilityEvent(
@@ -232,22 +173,16 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sOnPopulateAccessibilityEventEvent == null) {
-      sOnPopulateAccessibilityEventEvent = new OnPopulateAccessibilityEventEvent();
-    }
-
-    sOnPopulateAccessibilityEventEvent.host = host;
-    sOnPopulateAccessibilityEventEvent.event = event;
-    sOnPopulateAccessibilityEventEvent.superDelegate = superDelegate;
+    final OnPopulateAccessibilityEventEvent onPopulateAccessibilityEventEvent =
+        new OnPopulateAccessibilityEventEvent();
+    onPopulateAccessibilityEventEvent.host = host;
+    onPopulateAccessibilityEventEvent.event = event;
+    onPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(eventHandler, sOnPopulateAccessibilityEventEvent);
-
-    sOnPopulateAccessibilityEventEvent.host = null;
-    sOnPopulateAccessibilityEventEvent.event = null;
-    sOnPopulateAccessibilityEventEvent.superDelegate = null;
+    eventDispatcher.dispatchOnEvent(eventHandler, onPopulateAccessibilityEventEvent);
   }
 
   static boolean dispatchOnRequestSendAccessibilityEvent(
@@ -258,26 +193,19 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sOnRequestSendAccessibilityEventEvent == null) {
-      sOnRequestSendAccessibilityEventEvent = new OnRequestSendAccessibilityEventEvent();
-    }
-
-    sOnRequestSendAccessibilityEventEvent.host = host;
-    sOnRequestSendAccessibilityEventEvent.child = child;
-    sOnRequestSendAccessibilityEventEvent.event = event;
-    sOnRequestSendAccessibilityEventEvent.superDelegate = superDelegate;
+    final OnRequestSendAccessibilityEventEvent onRequestSendAccessibilityEventEvent =
+        new OnRequestSendAccessibilityEventEvent();
+    onRequestSendAccessibilityEventEvent.host = host;
+    onRequestSendAccessibilityEventEvent.child = child;
+    onRequestSendAccessibilityEventEvent.event = event;
+    onRequestSendAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
 
     final Object returnValue =
-        eventDispatcher.dispatchOnEvent(eventHandler, sOnRequestSendAccessibilityEventEvent);
-
-    sOnRequestSendAccessibilityEventEvent.host = null;
-    sOnRequestSendAccessibilityEventEvent.child = null;
-    sOnRequestSendAccessibilityEventEvent.event = null;
-    sOnRequestSendAccessibilityEventEvent.superDelegate = null;
+        eventDispatcher.dispatchOnEvent(eventHandler, onRequestSendAccessibilityEventEvent);
 
     return returnValue != null && (boolean) returnValue;
   }
@@ -290,25 +218,18 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sPerformAccessibilityActionEvent == null) {
-      sPerformAccessibilityActionEvent = new PerformAccessibilityActionEvent();
-    }
-
-    sPerformAccessibilityActionEvent.host = host;
-    sPerformAccessibilityActionEvent.action = action;
-    sPerformAccessibilityActionEvent.args = args;
-    sPerformAccessibilityActionEvent.superDelegate = superDelegate;
+    final PerformAccessibilityActionEvent performAccessibilityActionEvent =
+        new PerformAccessibilityActionEvent();
+    performAccessibilityActionEvent.host = host;
+    performAccessibilityActionEvent.action = action;
+    performAccessibilityActionEvent.args = args;
+    performAccessibilityActionEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
     final Object returnValue =
-        eventDispatcher.dispatchOnEvent(eventHandler, sPerformAccessibilityActionEvent);
-
-    sPerformAccessibilityActionEvent.host = null;
-    sPerformAccessibilityActionEvent.action = 0;
-    sPerformAccessibilityActionEvent.args = null;
-    sPerformAccessibilityActionEvent.superDelegate = null;
+        eventDispatcher.dispatchOnEvent(eventHandler, performAccessibilityActionEvent);
 
     return returnValue != null && (boolean) returnValue;
   }
@@ -320,22 +241,16 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sSendAccessibilityEventEvent == null) {
-      sSendAccessibilityEventEvent = new SendAccessibilityEventEvent();
-    }
-
-    sSendAccessibilityEventEvent.host = host;
-    sSendAccessibilityEventEvent.eventType = eventType;
-    sSendAccessibilityEventEvent.superDelegate = superDelegate;
+    final SendAccessibilityEventEvent sendAccessibilityEventEvent =
+        new SendAccessibilityEventEvent();
+    sendAccessibilityEventEvent.host = host;
+    sendAccessibilityEventEvent.eventType = eventType;
+    sendAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(eventHandler, sSendAccessibilityEventEvent);
-
-    sSendAccessibilityEventEvent.host = null;
-    sSendAccessibilityEventEvent.eventType = 0;
-    sSendAccessibilityEventEvent.superDelegate = null;
+    eventDispatcher.dispatchOnEvent(eventHandler, sendAccessibilityEventEvent);
   }
 
   static void dispatchSendAccessibilityEventUnchecked(
@@ -345,21 +260,15 @@ class EventDispatcherUtils {
       AccessibilityDelegateCompat superDelegate) {
     assertMainThread();
 
-    if (sSendAccessibilityEventUncheckedEvent == null) {
-      sSendAccessibilityEventUncheckedEvent = new SendAccessibilityEventUncheckedEvent();
-    }
-
-    sSendAccessibilityEventUncheckedEvent.host = host;
-    sSendAccessibilityEventUncheckedEvent.event = event;
-    sSendAccessibilityEventUncheckedEvent.superDelegate = superDelegate;
+    final SendAccessibilityEventUncheckedEvent sendAccessibilityEventUncheckedEvent =
+        new SendAccessibilityEventUncheckedEvent();
+    sendAccessibilityEventUncheckedEvent.host = host;
+    sendAccessibilityEventUncheckedEvent.event = event;
+    sendAccessibilityEventUncheckedEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher =
         Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
             .getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(eventHandler, sSendAccessibilityEventUncheckedEvent);
-
-    sSendAccessibilityEventUncheckedEvent.host = null;
-    sSendAccessibilityEventUncheckedEvent.event = null;
-    sSendAccessibilityEventUncheckedEvent.superDelegate = null;
+    eventDispatcher.dispatchOnEvent(eventHandler, sendAccessibilityEventUncheckedEvent);
   }
 }
