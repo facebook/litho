@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoLayoutData.getInterStageProps;
 import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
-import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -41,8 +40,12 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   private MountSpecLithoRenderUnit(
       long id, LayoutOutput output, @Nullable ComponentContext context) {
     super(id, output, getRenderType(output), context);
-    addMountUnmountExtensions(extension(this, MountSpecLithoRenderUnit.LithoMountBinder.INSTANCE));
-    addAttachDetachExtension(extension(this, MountSpecLithoRenderUnit.LithoBindBinder.INSTANCE));
+    addMountUnmountExtensions(
+        DelegateBinder.createDelegateBinder(
+            this, MountSpecLithoRenderUnit.LithoMountBinder.INSTANCE));
+    addAttachDetachExtension(
+        DelegateBinder.createDelegateBinder(
+            this, MountSpecLithoRenderUnit.LithoBindBinder.INSTANCE));
   }
 
   public static MountSpecLithoRenderUnit create(

@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore.testing;
 
-import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
+import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder;
 
 import android.content.Context;
 import android.view.View;
@@ -61,7 +61,7 @@ public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator
 
   public SimpleViewUnit addBindBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
     for (Binder<SimpleViewUnit, View> binder : binders) {
-      super.addAttachDetachExtension(extension(this, binder));
+      super.addAttachDetachExtension(createDelegateBinder(this, binder));
     }
 
     return this;
@@ -69,7 +69,7 @@ public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator
 
   public SimpleViewUnit addMounBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
     for (Binder<SimpleViewUnit, View> binder : binders) {
-      super.addMountUnmountExtension(extension(this, binder));
+      super.addMountUnmountExtension(createDelegateBinder(this, binder));
     }
 
     return this;

@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore.renderunits;
 
-import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
+import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder;
 import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
@@ -63,10 +63,10 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
     super(VIEW);
     mId = id;
     addMountUnmountExtensions(
-        extension(this, sBackgroundBindFunction),
-        extension(this, sForegroundBindFunction),
-        extension(this, sTouchHandlersBindFunction),
-        extension(this, sLayerTypeBindFunction));
+        createDelegateBinder(this, sBackgroundBindFunction),
+        createDelegateBinder(this, sForegroundBindFunction),
+        createDelegateBinder(this, sTouchHandlersBindFunction),
+        createDelegateBinder(this, sLayerTypeBindFunction));
   }
 
   @Override

@@ -512,7 +512,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
      * Create an Extension with a Model and {@link Binder} which will bind the given Model to the
      * content type which will be provided by the RenderUnit.
      */
-    public static <MODEL, CONTENT> DelegateBinder<MODEL, CONTENT> extension(
+    public static <MODEL, CONTENT> DelegateBinder<MODEL, CONTENT> createDelegateBinder(
         MODEL model, Binder<MODEL, CONTENT> binder) {
       return new DelegateBinder<>(model, binder);
     }

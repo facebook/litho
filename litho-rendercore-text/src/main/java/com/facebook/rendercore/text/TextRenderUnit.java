@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore.text;
 
-import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
+import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder;
 import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
@@ -30,7 +30,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
   public TextRenderUnit(long id) {
     super(VIEW);
     mId = id;
-    addMountUnmountExtension(extension(this, sMountUnmount));
+    addMountUnmountExtension(createDelegateBinder(this, sMountUnmount));
   }
 
   @Override

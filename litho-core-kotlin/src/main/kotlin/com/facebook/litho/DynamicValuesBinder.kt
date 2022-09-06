@@ -21,7 +21,7 @@ import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit
 
 /**
- * Class that will be registered as MountUnmount [RenderUnit.DelegateBinder.extension].
+ * Class that will be registered as MountUnmount [RenderUnit.DelegateBinder.createDelegateBinder].
  * @param binders List of [DynamicPropsBinder] holding reference to DynamicValue and Content
  */
 internal class DynamicValuesBinder<ContentT>(

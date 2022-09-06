@@ -307,9 +307,9 @@ internal class ExperimentalRecyclerMountable(
 
   init {
     addMountUnmountExtensions(
-        DelegateBinder.extension(binder, CONTENT_BINDER),
-        DelegateBinder.extension(this, ITEM_DECORATOR_BINDER),
-        DelegateBinder.extension(this, CONSTANT_PROPS_BINDER),
+        DelegateBinder.createDelegateBinder(binder, CONTENT_BINDER),
+        DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER),
+        DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_BINDER),
     )
   }
   override fun measure(
