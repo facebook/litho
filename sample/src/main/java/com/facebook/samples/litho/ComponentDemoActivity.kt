@@ -20,7 +20,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -49,7 +53,7 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     }
 
     setContent {
-      androidx.compose.material.Text(text = "Hello World")
+      Counter()
     }
 
     Handler().postDelayed({
@@ -171,5 +175,16 @@ class Subscriber {
     listeners.forEach {
       it.invoke(count)
     }
+  }
+}
+
+@Composable
+fun Counter() {
+  val count = remember { mutableStateOf(0) }
+  return Button(onClick = { count.value = count.value + 1 }) {
+    androidx.compose.material.Text(
+        text = "count : ${count.value}",
+        style = MaterialTheme.typography.h5
+    )
   }
 }
