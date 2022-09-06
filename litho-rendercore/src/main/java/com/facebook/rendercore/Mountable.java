@@ -134,27 +134,27 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final @Nullable Map<Class<?>, Extension<?, ContentT>>
+  public final @Nullable Map<Class<?>, DelegateBinder<?, ContentT>>
       getMountUnmountBinderTypeToExtensionMap() {
     return super.getMountUnmountBinderTypeToExtensionMap();
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final @Nullable List<Extension<?, ContentT>> getMountUnmountExtensions() {
+  public final @Nullable List<DelegateBinder<?, ContentT>> getMountUnmountExtensions() {
     return super.getMountUnmountExtensions();
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final @Nullable Map<Class<?>, Extension<?, ContentT>>
+  public final @Nullable Map<Class<?>, DelegateBinder<?, ContentT>>
       getAttachDetachBinderTypeToExtensionMap() {
     return super.getAttachDetachBinderTypeToExtensionMap();
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final @Nullable List<Extension<?, ContentT>> getAttachDetachExtensions() {
+  public final @Nullable List<DelegateBinder<?, ContentT>> getAttachDetachExtensions() {
     return super.getAttachDetachExtensions();
   }
 }

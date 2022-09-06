@@ -19,7 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoLayoutData.getInterStageProps;
 import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
-import static com.facebook.rendercore.RenderUnit.Extension.extension;
+import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

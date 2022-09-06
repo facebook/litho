@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore.renderunits;
 
-import static com.facebook.rendercore.RenderUnit.Extension.extension;
+import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
 import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;

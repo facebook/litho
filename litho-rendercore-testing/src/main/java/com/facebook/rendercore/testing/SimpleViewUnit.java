@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore.testing;
 
-import static com.facebook.rendercore.RenderUnit.Extension.extension;
+import static com.facebook.rendercore.RenderUnit.DelegateBinder.extension;
 
 import android.content.Context;
 import android.view.View;

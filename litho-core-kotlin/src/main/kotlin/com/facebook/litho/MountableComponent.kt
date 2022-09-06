@@ -20,7 +20,7 @@ import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.Mountable
-import com.facebook.rendercore.RenderUnit.Extension.extension
+import com.facebook.rendercore.RenderUnit.DelegateBinder.extension
 
 /**
  * <p>Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec

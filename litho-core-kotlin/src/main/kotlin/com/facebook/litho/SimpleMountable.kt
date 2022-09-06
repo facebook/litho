@@ -32,7 +32,7 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
 
   init {
     addMountUnmountExtension(
-        Extension.extension(this, BINDER as Binder<SimpleMountable<ContentT>, ContentT>))
+        DelegateBinder.extension(this, BINDER as Binder<SimpleMountable<ContentT>, ContentT>))
   }
 
   /**

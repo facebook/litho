@@ -48,37 +48,38 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   private final RenderType mRenderType;
   // These maps are used to match an extension with its Binder class. Every renderUnit should have
   // only one Binder per type.
-  private @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>>
+  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
       mMountUnmountBinderTypeToExtensionMap;
-  private @Nullable List<Extension<?, MOUNT_CONTENT>> mMountUnmountExtensions;
-  private @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>>
+  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mMountUnmountExtensions;
+  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
       mAttachDetachBinderTypeToExtensionMap;
-  private @Nullable List<Extension<?, MOUNT_CONTENT>> mAttachDetachExtensions;
+  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mAttachDetachExtensions;
 
   public RenderUnit(RenderType renderType) {
     this(
         renderType,
-        Collections.<Extension<?, ? super MOUNT_CONTENT>>emptyList(),
-        Collections.<Extension<?, ? super MOUNT_CONTENT>>emptyList());
-  }
-
-  public RenderUnit(
-      RenderType renderType, List<Extension<?, ? super MOUNT_CONTENT>> mountUnmountExtensions) {
-    this(
-        renderType,
-        mountUnmountExtensions,
-        Collections.<Extension<?, ? super MOUNT_CONTENT>>emptyList());
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
   }
 
   public RenderUnit(
       RenderType renderType,
-      List<Extension<?, ? super MOUNT_CONTENT>> mountUnmountExtensions,
-      List<Extension<?, ? super MOUNT_CONTENT>> attachDetachExtensions) {
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountUnmountExtensions) {
+    this(
+        renderType,
+        mountUnmountExtensions,
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
+  }
+
+  public RenderUnit(
+      RenderType renderType,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountUnmountExtensions,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachDetachExtensions) {
     mRenderType = renderType;
-    for (Extension<?, ? super MOUNT_CONTENT> extension : mountUnmountExtensions) {
+    for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : mountUnmountExtensions) {
       addMountUnmountExtension(extension);
     }
-    for (Extension<?, ? super MOUNT_CONTENT> extension : attachDetachExtensions) {
+    for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : attachDetachExtensions) {
       addAttachDetachExtension(extension);
     }
   }
@@ -92,21 +93,21 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
   public abstract long getId();
 
-  protected @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>>
+  protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
       getMountUnmountBinderTypeToExtensionMap() {
     return mMountUnmountBinderTypeToExtensionMap;
   }
 
-  protected @Nullable List<Extension<?, MOUNT_CONTENT>> getMountUnmountExtensions() {
+  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getMountUnmountExtensions() {
     return mMountUnmountExtensions;
   }
 
-  protected @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>>
+  protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
       getAttachDetachBinderTypeToExtensionMap() {
     return mAttachDetachBinderTypeToExtensionMap;
   }
 
-  protected @Nullable List<Extension<?, MOUNT_CONTENT>> getAttachDetachExtensions() {
+  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getAttachDetachExtensions() {
     return mAttachDetachExtensions;
   }
 
@@ -127,13 +128,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /**
-   * Adds an {@link Extension} that will be invoked with the other mount/unmount binders. Can be
-   * used to add generic functionality (e.g. accessibility) to a RenderUnit.
+   * Adds an {@link DelegateBinder} that will be invoked with the other mount/unmount binders. Can
+   * be used to add generic functionality (e.g. accessibility) to a RenderUnit.
    *
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
-  public void addMountUnmountExtension(Extension<?, ? super MOUNT_CONTENT> extension) {
+  public void addMountUnmountExtension(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
     if (mMountUnmountExtensions == null) {
       mMountUnmountExtensions = new ArrayList<>();
 
@@ -148,27 +149,28 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /**
-   * Adds {@link Extension}s that will be invoked with the other mount/unmount binders. Can be used
-   * to add generic functionality (e.g. accessibility) to a RenderUnit.
+   * Adds {@link DelegateBinder}s that will be invoked with the other mount/unmount binders. Can be
+   * used to add generic functionality (e.g. accessibility) to a RenderUnit.
    *
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
   @SafeVarargs
-  public final void addMountUnmountExtensions(Extension<?, ? super MOUNT_CONTENT>... extensions) {
+  public final void addMountUnmountExtensions(
+      DelegateBinder<?, ? super MOUNT_CONTENT>... extensions) {
     for (int i = 0; i < extensions.length; i++) {
       addMountUnmountExtension(extensions[i]);
     }
   }
 
   /**
-   * Adds an {@link Extension} that will be invoked with the other attach/detach binders. Can be
-   * used to add generic functionality (e.g. Dynamic Props) to a RenderUnit
+   * Adds an {@link DelegateBinder} that will be invoked with the other attach/detach binders. Can
+   * be used to add generic functionality (e.g. Dynamic Props) to a RenderUnit
    *
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
-  public void addAttachDetachExtension(Extension<?, ? super MOUNT_CONTENT> extension) {
+  public void addAttachDetachExtension(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
     if (mAttachDetachExtensions == null) {
       mAttachDetachExtensions = new ArrayList<>();
 
@@ -183,14 +185,15 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /**
-   * Adds an {@link Extension}s that will be invoked with the other attach/detach binders. Can be
-   * used to add generic functionality (e.g. Dynamic Props) to a RenderUnit
+   * Adds an {@link DelegateBinder}s that will be invoked with the other attach/detach binders. Can
+   * be used to add generic functionality (e.g. Dynamic Props) to a RenderUnit
    *
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
   @SafeVarargs
-  public final void addAttachDetachExtensions(Extension<?, ? super MOUNT_CONTENT>... extensions) {
+  public final void addAttachDetachExtensions(
+      DelegateBinder<?, ? super MOUNT_CONTENT>... extensions) {
     for (int i = 0; i < extensions.length; i++) {
       addAttachDetachExtension(extensions[i]);
     }
@@ -200,10 +203,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   // If that's the case, remove the old Extension and add the new one at the current list position
   // which is at the end.
   private static <MOUNT_CONTENT> void addExtension(
-      Map<Class<?>, Extension<?, MOUNT_CONTENT>> binderTypeToExtensionMap,
-      List<Extension<?, MOUNT_CONTENT>> extensions,
-      Extension extension) {
-    final @Nullable Extension prevExtension =
+      Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> binderTypeToExtensionMap,
+      List<DelegateBinder<?, MOUNT_CONTENT>> extensions,
+      DelegateBinder extension) {
+    final @Nullable DelegateBinder prevExtension =
         binderTypeToExtensionMap.put(extension.binder.getClass(), extension);
     if (prevExtension != null) {
       // A binder with the same type was already present and we need to clear it from the extension
@@ -244,7 +247,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
-    for (Extension extension : mMountUnmountExtensions) {
+    for (DelegateBinder extension : mMountUnmountExtensions) {
       if (isTracing) {
         RenderCoreSystrace.beginSection("RenderUnit.mountExtension:" + getId());
       }
@@ -264,7 +267,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
     for (int i = mMountUnmountExtensions.size() - 1; i >= 0; i--) {
-      final Extension extension = mMountUnmountExtensions.get(i);
+      final DelegateBinder extension = mMountUnmountExtensions.get(i);
       if (isTracing) {
         RenderCoreSystrace.beginSection("RenderUnit.unmountExtension:" + getId());
       }
@@ -283,7 +286,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
-    for (Extension extension : mAttachDetachExtensions) {
+    for (DelegateBinder extension : mAttachDetachExtensions) {
       if (isTracing) {
         RenderCoreSystrace.beginSection("RenderUnit.attachExtension:" + getId());
       }
@@ -303,7 +306,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     final boolean isTracing = RenderCoreSystrace.isEnabled();
     for (int i = mAttachDetachExtensions.size() - 1; i >= 0; i--) {
-      final Extension extension = mAttachDetachExtensions.get(i);
+      final DelegateBinder extension = mAttachDetachExtensions.get(i);
       if (isTracing) {
         RenderCoreSystrace.beginSection("RenderUnit.detachExtension:" + getId());
       }
@@ -327,13 +330,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       @Nullable MountDelegate mountDelegate,
       boolean isAttached) {
 
-    final List<Extension> attachDetachExtensionsForBind =
+    final List<DelegateBinder> attachDetachExtensionsForBind =
         new ArrayList<>(sizeOrZero(getAttachDetachExtensions()));
-    final List<Extension> attachDetachExtensionsForUnbind =
+    final List<DelegateBinder> attachDetachExtensionsForUnbind =
         new ArrayList<>(sizeOrZero(currentRenderUnit.getAttachDetachExtensions()));
-    final List<Extension> mountUnmountExtensionsForBind =
+    final List<DelegateBinder> mountUnmountExtensionsForBind =
         new ArrayList<>(sizeOrZero(getMountUnmountExtensions()));
-    final List<Extension> mountUnmountExtensionsForUnbind =
+    final List<DelegateBinder> mountUnmountExtensionsForUnbind =
         new ArrayList<>(sizeOrZero(currentRenderUnit.getMountUnmountExtensions()));
 
     // 1. Diff the extensions to resolve what's to bind/unbind.
@@ -376,7 +379,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
             content);
       }
       for (int i = attachDetachExtensionsForUnbind.size() - 1; i >= 0; i--) {
-        final Extension extension = attachDetachExtensionsForUnbind.get(i);
+        final DelegateBinder extension = attachDetachExtensionsForUnbind.get(i);
         extension.unbind(context, content, currentLayoutData);
       }
     }
@@ -392,12 +395,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           content);
     }
     for (int i = mountUnmountExtensionsForUnbind.size() - 1; i >= 0; i--) {
-      final Extension extension = mountUnmountExtensionsForUnbind.get(i);
+      final DelegateBinder extension = mountUnmountExtensionsForUnbind.get(i);
       extension.unbind(context, content, currentLayoutData);
     }
 
     // 4. rebind all mount binder which did update.
-    for (Extension extension : mountUnmountExtensionsForBind) {
+    for (DelegateBinder extension : mountUnmountExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
@@ -411,7 +414,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     // 5. rebind all attach binder which did update.
-    for (Extension extension : attachDetachExtensionsForBind) {
+    for (DelegateBinder extension : attachDetachExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
@@ -431,13 +434,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * ones to bind.
    */
   private static <MOUNT_CONTENT> void resolveExtensionsToUpdate(
-      @Nullable List<Extension<?, MOUNT_CONTENT>> currentExtensions,
-      @Nullable List<Extension<?, MOUNT_CONTENT>> newExtensions,
-      @Nullable Map<Class<?>, Extension<?, MOUNT_CONTENT>> currentBinderTypeToExtensionMap,
+      @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> currentExtensions,
+      @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> newExtensions,
+      @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> currentBinderTypeToExtensionMap,
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData,
-      List<Extension> extensionsToBind,
-      List<Extension> extensionsToUnbind) {
+      List<DelegateBinder> extensionsToBind,
+      List<DelegateBinder> extensionsToUnbind) {
 
     // There's nothing to unbind because there aren't any current extensions, we need to bind all
     // new Extensions.
@@ -457,9 +460,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final Map<Class<?>, Boolean> binderToShouldUpdate = new HashMap<>(newExtensions.size());
 
     // Parse all newExtensions and resolve which ones are to bind.
-    for (Extension newExtension : newExtensions) {
+    for (DelegateBinder newExtension : newExtensions) {
       final Class<?> binderClass = newExtension.binder.getClass();
-      final @Nullable Extension currentExtension = currentBinderTypeToExtensionMap.get(binderClass);
+      final @Nullable DelegateBinder currentExtension =
+          currentBinderTypeToExtensionMap.get(binderClass);
 
       if (currentExtension == null) {
         // Found new Extension, has to be bound.
@@ -477,7 +481,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     // Parse all currentExtensions and resolve which ones are to unbind.
-    for (Extension currentExtension : currentExtensions) {
+    for (DelegateBinder currentExtension : currentExtensions) {
       final Class<?> binderClass = currentExtension.binder.getClass();
       if (!binderToShouldUpdate.containsKey(binderClass) || binderToShouldUpdate.get(binderClass)) {
         // Found a currentExtension which either is not in the new RenderUnit or shouldUpdate is
@@ -495,11 +499,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * An Extension is a pair of data Model and {@link Binder}. The binder will bind the model to a
    * matching content type defined.
    */
-  public static class Extension<MODEL, CONTENT> {
+  public static class DelegateBinder<MODEL, CONTENT> {
     private final MODEL model;
     private final Binder<MODEL, CONTENT> binder;
 
-    private Extension(MODEL model, Binder<MODEL, CONTENT> binder) {
+    private DelegateBinder(MODEL model, Binder<MODEL, CONTENT> binder) {
       this.model = model;
       this.binder = binder;
     }
@@ -508,13 +512,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
      * Create an Extension with a Model and {@link Binder} which will bind the given Model to the
      * content type which will be provided by the RenderUnit.
      */
-    public static <MODEL, CONTENT> Extension<MODEL, CONTENT> extension(
+    public static <MODEL, CONTENT> DelegateBinder<MODEL, CONTENT> extension(
         MODEL model, Binder<MODEL, CONTENT> binder) {
-      return new Extension<>(model, binder);
+      return new DelegateBinder<>(model, binder);
     }
 
     boolean shouldUpdate(
-        final Extension<MODEL, CONTENT> prevExtension,
+        final DelegateBinder<MODEL, CONTENT> prevExtension,
         final @Nullable Object currentLayoutData,
         final @Nullable Object nextLayoutData) {
       return binder.shouldUpdate(prevExtension.model, model, currentLayoutData, nextLayoutData);
