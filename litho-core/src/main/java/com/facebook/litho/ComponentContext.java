@@ -184,7 +184,7 @@ public class ComponentContext implements Cloneable {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      final LayoutStateContext layoutContext,
+      final LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final Component scope,
       final @Nullable String globalKey) {
@@ -192,7 +192,7 @@ public class ComponentContext implements Cloneable {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
-    componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
+    componentContext.mLayoutStateContext = new WeakReference<>(layoutStateContext);
     componentContext.mParentTreeProps = parentContext.mTreeProps;
 
     // TODO: T124275447 make these Component Context fields final

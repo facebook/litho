@@ -50,7 +50,7 @@ class Layout {
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
   static @Nullable ResolvedTree createResolvedTree(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext c,
       final Component component,
       final int widthSpec,
@@ -58,13 +58,12 @@ class Layout {
       final @Nullable LithoNode current,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
     final boolean isReconcilable =
         isReconcilable(
             c, component, Preconditions.checkNotNull(renderStateContext.getTreeState()), current);
 
     try {
-      applyStateUpdateEarly(layoutStateContext, c, component, current);
+      applyStateUpdateEarly(renderStateContext, c, component, current);
     } catch (Exception ex) {
       ComponentUtils.handleWithHierarchy(c, component, ex);
       return null;
@@ -79,7 +78,7 @@ class Layout {
     if (!isReconcilable) {
       node =
           create(
-              layoutStateContext,
+              renderStateContext,
               c,
               widthSpec,
               heightSpec,
@@ -106,12 +105,12 @@ class Layout {
       }
 
       final ComponentContext updatedScopedContext =
-          update(layoutStateContext, c, component, globalKeyToReuse);
+          update(renderStateContext, c, component, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
 
       node =
           current.reconcile(
-              layoutStateContext,
+              renderStateContext,
               c,
               updated,
               updatedScopedContext.getScopedComponentInfo(),
@@ -193,29 +192,29 @@ class Layout {
   }
 
   private static void applyStateUpdateEarly(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext c,
       final Component component,
       final @Nullable LithoNode current) {
     if (c.isApplyStateUpdateEarlyEnabled() && c.getComponentTree() != null) {
-      layoutStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
+      renderStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
     }
   }
 
   public @Nullable static LithoNode create(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext parent,
       final Component component) {
-    return create(layoutStateContext, parent, component, null);
+    return create(renderStateContext, parent, component, null);
   }
 
   static @Nullable LithoNode create(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext parent,
       Component component,
       final @Nullable String globalKeyToReuse) {
     return create(
-        layoutStateContext,
+        renderStateContext,
         parent,
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
@@ -225,7 +224,7 @@ class Layout {
   }
 
   static @Nullable LithoNode create(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext parent,
       final int parentWidthSpec,
       final int parentHeightSpec,
@@ -237,8 +236,6 @@ class Layout {
     if (isTracing) {
       RenderCoreSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
-
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
 
     final LithoNode node;
     final ComponentContext c;
@@ -260,7 +257,7 @@ class Layout {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = update(layoutStateContext, parent, component, globalKeyToReuse);
+      c = update(renderStateContext, parent, component, globalKeyToReuse);
       globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
@@ -282,7 +279,7 @@ class Layout {
       else if (component.canResolve()) {
 
         // Resolve the component into an InternalNode.
-        node = component.resolve(layoutStateContext, c);
+        node = component.resolve(renderStateContext, c);
       }
 
       // If the component is a MountSpec (including MountableComponents).
@@ -308,9 +305,9 @@ class Layout {
         if (root != null) {
           // TODO: (T57741374) this step is required because of a bug in redex.
           if (root == component) {
-            node = root.resolve(layoutStateContext, c);
+            node = root.resolve(renderStateContext, c);
           } else {
-            node = create(layoutStateContext, c, root);
+            node = create(renderStateContext, c, root);
           }
         } else {
           node = null;
@@ -473,7 +470,7 @@ class Layout {
     // 4.b Create a new layout.
     final @Nullable LithoNode newNode =
         create(
-            layoutStateContext,
+            layoutStateContext.getRenderStateContext(),
             parentContext,
             widthSpec,
             heightSpec,
@@ -546,7 +543,7 @@ class Layout {
   }
 
   static ComponentContext update(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext parent,
       final Component component,
       @Nullable final String globalKeyToReuse) {
@@ -557,13 +554,13 @@ class Layout {
     // 2. Get the scoped context from the updated component.
     final ComponentContext c =
         ComponentContext.withComponentScope(
-            layoutStateContext,
+            renderStateContext.getLayoutStateContext(),
             parent,
             component,
             globalKeyToReuse == null
                 ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
                 : globalKeyToReuse);
-    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getTreeState());
+    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
     if (component instanceof SpecGeneratedComponent) {
@@ -581,12 +578,12 @@ class Layout {
   }
 
   static ResolvedTree resumeResolvingTree(
-      final LayoutStateContext layoutStateContext, final LithoNode root) {
-    resume(layoutStateContext, root);
+      final RenderStateContext renderStateContext, final LithoNode root) {
+    resume(renderStateContext, root);
     return new ResolvedTree(root);
   }
 
-  private static void resume(final LayoutStateContext c, final LithoNode root) {
+  private static void resume(final RenderStateContext c, final LithoNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {

@@ -109,7 +109,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Row row = Row.create(mContext).child(child1).child(child2).build();
 
-    final LithoNode result = row.resolve(layoutStateContext, c);
+    final LithoNode result = row.resolve(layoutStateContext.getRenderStateContext(), c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertNull(result);
@@ -149,7 +149,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
-    final LithoNode result = column.resolve(layoutStateContext, c);
+    final LithoNode result = column.resolve(layoutStateContext.getRenderStateContext(), c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertNull(result);

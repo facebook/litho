@@ -47,7 +47,9 @@ public class LithoNodeTouchExpansionTest {
     mContext = new ComponentContext(getApplicationContext());
     mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
     mContext.setLayoutStateContext(mLayoutStateContext);
-    mNode = Layout.create(mLayoutStateContext, mContext, Column.create(mContext).build());
+    mNode =
+        Layout.create(
+            mLayoutStateContext.getRenderStateContext(), mContext, Column.create(mContext).build());
     mNode.mutableNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 

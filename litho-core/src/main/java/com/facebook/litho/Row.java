@@ -105,7 +105,7 @@ public final class Row extends Component {
   }
 
   @Override
-  protected @Nullable LithoNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
+  protected @Nullable LithoNode resolve(RenderStateContext renderStateContext, ComponentContext c) {
     LithoNode node = new LithoNode();
     node.flexDirection(reverse ? YogaFlexDirection.ROW_REVERSE : YogaFlexDirection.ROW);
 
@@ -127,14 +127,14 @@ public final class Row extends Component {
 
     if (children != null) {
       for (Component child : children) {
-        if (layoutContext.getRenderStateContext().isLayoutReleased()) {
+        if (renderStateContext.isLayoutReleased()) {
           return null;
         }
 
-        if (layoutContext.getRenderStateContext().isLayoutInterrupted()) {
+        if (renderStateContext.isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
-          node.child(layoutContext, c, child);
+          node.child(renderStateContext, c, child);
         }
       }
     }

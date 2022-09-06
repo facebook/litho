@@ -80,7 +80,8 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
+    LithoNode node =
+        Layout.create(mLayoutStateContext.getRenderStateContext(), mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getHeadComponent()).isEqualTo(component);
     assertThat(node.getTailComponent()).isInstanceOf(Column.class);
@@ -138,7 +139,8 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
+    LithoNode node =
+        Layout.create(mLayoutStateContext.getRenderStateContext(), mComponentContext, component);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -206,7 +208,8 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
+    LithoNode node =
+        Layout.create(mLayoutStateContext.getRenderStateContext(), mComponentContext, component);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -268,7 +271,8 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
+    LithoNode node =
+        Layout.create(mLayoutStateContext.getRenderStateContext(), mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(SimpleMountSpecTester.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -318,7 +322,8 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
+    LithoNode node =
+        Layout.create(mLayoutStateContext.getRenderStateContext(), mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -456,7 +461,8 @@ public class LayoutStateCreateTreeTest {
             .stateListAnimator(stateListAnimator)
             .build();
 
-    final LithoNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
+    final LithoNode node =
+        Layout.create(mLayoutStateContext.getRenderStateContext(), mComponentContext, component);
     final LayoutProps output = spy(LayoutProps.class);
     component.getCommonProps().copyLayoutProps(output);
 
@@ -549,7 +555,7 @@ public class LayoutStateCreateTreeTest {
     }
 
     @Override
-    protected LithoNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
+    protected LithoNode resolve(RenderStateContext renderStateContext, ComponentContext c) {
       LithoLayoutResult result = mock(LithoLayoutResult.class);
       LithoNode node = mock(LithoNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);

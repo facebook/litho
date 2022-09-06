@@ -30,15 +30,25 @@ public class RenderStateContext {
   private @Nullable TreeState mTreeState;
   private RenderPhaseMeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
+  private LayoutStateContext mLayoutStateContext;
 
   public RenderStateContext(
       final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
       final TreeState treeState,
-      final RenderUnitIdGenerator idGenerator) {
+      final RenderUnitIdGenerator idGenerator,
+      final LayoutStateContext layoutStateContext) { // Temp LSC member
     mLayoutStateFuture = layoutStateFuture;
     mTreeState = treeState;
     mCache = new RenderPhaseMeasuredResultCache();
     mIdGenerator = idGenerator;
+    mLayoutStateContext = layoutStateContext;
+  }
+
+  // Temp workaround for implementing split render and layout. Do not add usages to this method.
+  // It will be removed soon.
+  @Deprecated
+  public LayoutStateContext getLayoutStateContext() {
+    return mLayoutStateContext;
   }
 
   @Nullable

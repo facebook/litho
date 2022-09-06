@@ -487,9 +487,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public void child(
-      LayoutStateContext layoutContext, ComponentContext c, @Nullable Component child) {
+      RenderStateContext renderStateContext, ComponentContext c, @Nullable Component child) {
     if (child != null) {
-      child(Layout.create(layoutContext, c, child));
+      child(Layout.create(renderStateContext, c, child));
     }
   }
 
@@ -1112,12 +1112,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public @Nullable LithoNode reconcile(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext c,
       final Component next,
       final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey) {
-    final TreeState treeState = layoutStateContext.getTreeState();
+    final TreeState treeState = renderStateContext.getTreeState();
     final Set<String> keys;
     if (treeState == null) {
       keys = Collections.emptySet();
@@ -1125,7 +1125,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       keys = treeState.getKeysForPendingRenderStateUpdates();
     }
 
-    return reconcile(layoutStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
+    return reconcile(renderStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
   }
 
   public void setNestedTreeHolder(@Nullable NestedTreeHolder holder) {
@@ -1252,7 +1252,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * Internal method to <b>try</b> and reconcile the {@param current} LithoNode with a new {@link
    * ComponentContext} and an updated head {@link Component}.
    *
-   * @param layoutStateContext The LayoutStateContext.
+   * @param renderStateContext The RenderStateContext.
    * @param parentContext The ComponentContext.
    * @param current The current LithoNode which should be updated.
    * @param next The updated component to be used to reconcile this LithoNode.
@@ -1260,7 +1260,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * @return A new updated LithoNode.
    */
   private static @Nullable LithoNode reconcile(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final ComponentContext parentContext,
       final LithoNode current,
       final Component next,
@@ -1272,16 +1272,16 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     switch (mode) {
       case ReconciliationMode.REUSE:
-        commitToLayoutStateRecursively(layoutStateContext, current);
+        commitToLayoutStateRecursively(renderStateContext, current);
         layout = current;
         break;
       case ReconciliationMode.RECONCILE:
-        layout = reconcile(layoutStateContext, current, next, keys);
+        layout = reconcile(renderStateContext, current, next, keys);
         break;
       case ReconciliationMode.RECREATE:
         layout =
             Layout.create(
-                layoutStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
+                renderStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
@@ -1300,7 +1300,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * @return A new updated LithoNode.
    */
   private static LithoNode reconcile(
-      final LayoutStateContext layoutStateContext,
+      final RenderStateContext renderStateContext,
       final LithoNode current,
       final Component next,
       final Set<String> keys) {
@@ -1316,7 +1316,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     layout = current.clone();
     layout.mChildren = new ArrayList<>(current.getChildCount());
     layout.mDebugComponents = null;
-    commitToLayoutState(layoutStateContext, current);
+    commitToLayoutState(renderStateContext, current);
 
     ComponentContext parentContext = layout.getTailComponentContext();
 
@@ -1334,7 +1334,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       // 3.2 Reconcile child layout.
       final LithoNode copy =
           reconcile(
-              layoutStateContext, parentContext, child, component, scopedComponentInfo, key, keys);
+              renderStateContext, parentContext, child, component, scopedComponentInfo, key, keys);
 
       // 3.3 Add the child to the cloned yoga node
       layout.child(copy);
@@ -1347,7 +1347,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return layout;
   }
 
-  static void commitToLayoutStateRecursively(LayoutStateContext c, LithoNode node) {
+  static void commitToLayoutStateRecursively(RenderStateContext c, LithoNode node) {
     final int count = node.getChildCount();
     commitToLayoutState(c, node);
     for (int i = 0; i < count; i++) {
@@ -1355,7 +1355,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
-  static void commitToLayoutState(LayoutStateContext c, LithoNode node) {
+  static void commitToLayoutState(RenderStateContext c, LithoNode node) {
     final List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
 
     for (ScopedComponentInfo info : scopedComponentInfos) {

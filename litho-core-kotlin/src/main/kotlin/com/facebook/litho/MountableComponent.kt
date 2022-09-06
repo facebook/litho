@@ -144,8 +144,10 @@ abstract class MountableComponent() : Component() {
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
 
-  final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): LithoNode? =
-      super.resolve(layoutContext, c)
+  final override fun resolve(
+      renderStateContext: RenderStateContext,
+      c: ComponentContext
+  ): LithoNode? = super.resolve(renderStateContext, c)
 
   final override fun shouldUpdate(
       previous: Component?,

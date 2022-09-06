@@ -1250,7 +1250,13 @@ public class LayoutState
     // 1. Resolve Tree
     final @Nullable ResolvedTree resolvedTree =
         Layout.createResolvedTree(
-            layoutStateContext, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
+            layoutStateContext.getRenderStateContext(),
+            c,
+            component,
+            widthSpec,
+            heightSpec,
+            currentRoot,
+            logLayoutState);
     final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
     // Check if layout was interrupted.
@@ -1366,7 +1372,8 @@ public class LayoutState
 
       try {
         final ResolvedTree resolvedTree =
-            Layout.resumeResolvingTree(layoutStateContext, partialResolvedRoot);
+            Layout.resumeResolvingTree(
+                layoutStateContext.getRenderStateContext(), partialResolvedRoot);
         layoutState.mRoot = resolvedTree.getRoot();
 
         final LithoLayoutResult result =

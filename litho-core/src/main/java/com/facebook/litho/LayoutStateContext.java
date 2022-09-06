@@ -116,7 +116,7 @@ public class LayoutStateContext {
     mCurrentDiffTree = currentDiffTree;
     mTreeState = treeState;
     mRootComponentContext = rootComponentContext;
-    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, idGenerator);
+    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, idGenerator, this);
     mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
     mLayoutVersion = layoutVersion;
     mThreadCreatedOn = Thread.currentThread().getName();
