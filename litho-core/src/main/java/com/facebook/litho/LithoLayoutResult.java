@@ -45,8 +45,6 @@ import java.util.List;
  * the {@link LithoNode} which created it, its {@link YogaNode}, and a list of its children.
  */
 public class LithoLayoutResult implements ComponentLayout, LayoutResult {
-
-  protected final LayoutStateContext mLayoutContext;
   private final ComponentContext mContext;
 
   protected final LithoNode mNode;
@@ -75,12 +73,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private boolean mWasMeasured = false;
 
   public LithoLayoutResult(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final LithoNode node,
       final YogaNode yogaNode,
       final @Nullable LithoLayoutResult parent) {
-    mLayoutContext = layoutStateContext;
     mContext = c;
     mNode = node;
     mYogaNode = yogaNode;
@@ -101,10 +97,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (component instanceof SpecGeneratedComponent) {
       mLayoutData = ((SpecGeneratedComponent) component).createInterStagePropsContainer();
     }
-  }
-
-  public LayoutStateContext getLayoutStateContext() {
-    return mLayoutContext;
   }
 
   public ComponentContext getContext() {
@@ -471,7 +463,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
     mWasMeasured = true;
 
-    if (mLayoutContext.getRenderStateContext().isLayoutReleased()) {
+    if (context.getRenderContext().mLayoutStateContext.getRenderStateContext().isLayoutReleased()) {
 
       // If layout is released then skip measurement
       size = MeasureResult.error();

@@ -86,10 +86,8 @@ public class NestedTreeHolder extends LithoNode {
 
   @Override
   NestedTreeHolderResult createLayoutResult(
-      final LayoutStateContext context,
-      final YogaNode node,
-      final @Nullable LithoLayoutResult parent) {
-    return new NestedTreeHolderResult(context, getTailComponentContext(), this, node, parent);
+      final YogaNode node, final @Nullable LithoLayoutResult parent) {
+    return new NestedTreeHolderResult(getTailComponentContext(), this, node, parent);
   }
 
   public void copyInto(LithoNode target) {

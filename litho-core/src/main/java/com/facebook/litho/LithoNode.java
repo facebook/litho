@@ -407,8 +407,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     final @Nullable LithoLayoutResult parentLayoutResult =
         parentNode != null ? LithoLayoutResult.getLayoutResultFromYogaNode(parentNode) : null;
-    final LithoLayoutResult layoutResult =
-        currentNode.createLayoutResult(renderContext.mLayoutStateContext, node, parentLayoutResult);
+    final LithoLayoutResult layoutResult = currentNode.createLayoutResult(node, parentLayoutResult);
     currentNode.applyDiffNode(renderContext.mLayoutStateContext, layoutResult, parentLayoutResult);
     node.setData(new Pair(context, layoutResult));
 
@@ -1231,10 +1230,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   LithoLayoutResult createLayoutResult(
-      final LayoutStateContext context,
-      final YogaNode node,
-      final @Nullable LithoLayoutResult parent) {
-    return new LithoLayoutResult(context, getTailComponentContext(), this, node, parent);
+      final YogaNode node, final @Nullable LithoLayoutResult parent) {
+    return new LithoLayoutResult(getTailComponentContext(), this, node, parent);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {

@@ -620,8 +620,6 @@ class Layout {
         resultCache.getCachedResult(holder.getCachedNode());
 
     if (cachedLayout != null) {
-      final boolean isFromCurrentLayout =
-          cachedLayout.getLayoutStateContext() == layoutStateContext;
       final boolean hasValidDirection =
           hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout);
       final boolean hasCompatibleSizeSpec =
@@ -634,7 +632,7 @@ class Layout {
               cachedLayout.getLastMeasuredHeight());
 
       // Transfer the cached layout to the node it if it's compatible.
-      if (isFromCurrentLayout && hasValidDirection) {
+      if (hasValidDirection) {
         if (hasCompatibleSizeSpec) {
           return cachedLayout;
         } else if (!isLayoutSpecWithSizeSpec(component)) {
