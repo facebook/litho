@@ -322,7 +322,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
           && diff.getLayoutData() == null) {
         throw new IllegalStateException(
             "Setting result.layoutData to null from diffNode, but it wasn't null before for <cls>"
-                + mMountable.getClass().getSimpleName()
+                + mMountable.getClass().getName()
                 + "</cls>");
       }
       result.setLayoutData(diff.getLayoutData());

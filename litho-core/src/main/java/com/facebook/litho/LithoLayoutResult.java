@@ -546,7 +546,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           && diffNode.getLayoutData() == null) {
         throw new IllegalStateException(
             "Setting mLayoutData to null from diffNode, but it wasn't null before for <cls>"
-                + node.getMountable().getClass().getSimpleName()
+                + node.getMountable().getClass().getName()
                 + "</cls>");
       }
       mLayoutData = diffNode.getLayoutData();
@@ -571,7 +571,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
           if (ComponentsConfiguration.enableMountableComponents && mLayoutData == null) {
             throw new IllegalStateException(
                 "mLayoutData should not be null after calculateLayout in Mountables experiment for <cls>"
-                    + mountable.getClass().getSimpleName()
+                    + mountable.getClass().getName()
                     + "</cls>");
           }
           return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
