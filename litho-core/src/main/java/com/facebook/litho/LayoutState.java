@@ -339,7 +339,7 @@ public class LayoutState
         && layoutData == null) {
       throw new IllegalStateException(
           "About to create a RenderTreeNode for <cls>"
-              + result.getNode().getMountable().getClass().getSimpleName()
+              + result.getNode().getMountable().getClass().getName()
               + "</cls> Mountable with null layoutData,"
               + " result.wasMeasured(): "
               + result.wasMeasured()
