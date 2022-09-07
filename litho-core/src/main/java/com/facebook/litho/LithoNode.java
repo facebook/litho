@@ -317,9 +317,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
         && EquivalenceUtils.hasEquivalentFields(mMountable, diff.getMountable())) {
 
       // TODO(mkarpinski): remove this after investigation
-      if (ComponentsConfiguration.enableMountableComponents
-          && result.getLayoutData() != null
-          && diff.getLayoutData() == null) {
+      if (ComponentsConfiguration.enableMountableComponents && diff.getLayoutData() == null) {
         throw new IllegalStateException(
             "Setting result.layoutData to null from diffNode, but it wasn't null before for <cls>"
                 + mMountable.getClass().getName()

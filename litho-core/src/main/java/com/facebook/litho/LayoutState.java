@@ -334,7 +334,6 @@ public class LayoutState
 
     // TODO(mkarpinski): remove this after investigation
     if (ComponentsConfiguration.enableMountableComponents
-        && isMountable(node.getTailComponent())
         && result.getNode().getMountable() != null
         && layoutData == null) {
       throw new IllegalStateException(

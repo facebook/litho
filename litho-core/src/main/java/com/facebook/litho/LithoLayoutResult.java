@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -542,13 +543,18 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
       // TODO(mkarpinski): remove this after investigation
       if (ComponentsConfiguration.enableMountableComponents
-          && mLayoutData != null
-          && diffNode.getLayoutData() == null) {
+          && isMountable(component)
+          && (diffNode.getLayoutData() == null || mLayoutData == null)) {
         throw new IllegalStateException(
-            "Setting mLayoutData to null from diffNode, but it wasn't null before for <cls>"
+            "layout data might be null for <cls>"
                 + node.getMountable().getClass().getName()
-                + "</cls>");
+                + "</cls>. mLayoutData = "
+                + mLayoutData
+                + " layout data from diff node = "
+                + diffNode.getLayoutData());
       }
+
+      // layout data should be already set, but set it again anyway.
       mLayoutData = diffNode.getLayoutData();
 
       return new MeasureResult(
