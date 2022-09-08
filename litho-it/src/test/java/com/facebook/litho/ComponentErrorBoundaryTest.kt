@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import android.view.View
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
@@ -30,6 +29,7 @@ import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec
 import com.facebook.litho.testing.error.TestCrasherOnMount
 import com.facebook.litho.testing.error.TestErrorBoundary
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.CrashFromLayoutFromStyle
 import com.facebook.litho.widget.CrashKotlinComponent
@@ -732,11 +732,7 @@ class ComponentErrorBoundaryTest {
                     .component(component)
                     .build())
             .build()
-    lithoViewRule
-        .setRoot(rcc)
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+    lithoViewRule.setRoot(rcc).setSizeSpecs(exactly(100), exactly(100))
     lithoViewRule.attachToWindow().measure().layout()
     if (releaseAfter) {
       lithoViewRule.release()

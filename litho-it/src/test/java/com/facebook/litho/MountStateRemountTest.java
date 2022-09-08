@@ -16,11 +16,10 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -177,17 +176,14 @@ public class MountStateRemountTest {
     final ComponentTree componentTree =
         ComponentTree.create(mContext, Column.create(mContext).child(component1).build()).build();
 
-    mountComponent(
-        lithoView, componentTree, makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mountComponent(lithoView, componentTree, exactly(100), exactly(100));
 
     assertThat(component1.isMounted()).isTrue();
 
     componentTree.setRootAndSizeSpecSync(
-        Column.create(mContext).child(component2).build(),
-        makeMeasureSpec(50, EXACTLY),
-        makeMeasureSpec(50, EXACTLY));
+        Column.create(mContext).child(component2).build(), exactly(50), exactly(50));
 
-    componentTree.setSizeSpec(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    componentTree.setSizeSpec(exactly(100), exactly(100));
 
     assertThat(component2.isMounted()).isTrue();
   }
@@ -249,8 +245,7 @@ public class MountStateRemountTest {
             .layoutDiffing(true)
             .build();
 
-    mountComponent(
-        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    mountComponent(lithoView, componentTree, exactly(400), exactly(400));
 
     final ViewGroup oldHost = (ViewGroup) lithoView.getChildAt(0);
     final View oldView = oldHost.getChildAt(0);
@@ -271,10 +266,9 @@ public class MountStateRemountTest {
                     .contentDescription("some description"))
             .build();
 
-    componentTree.setRootAndSizeSpecSync(
-        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    componentTree.setRootAndSizeSpecSync(newComponent, exactly(400), exactly(400));
 
-    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    componentTree.setSizeSpec(exactly(400), exactly(400));
 
     final ViewGroup newHost = (ViewGroup) lithoView.getChildAt(0);
     View newView = newHost.getChildAt(0);
@@ -312,8 +306,7 @@ public class MountStateRemountTest {
             .layoutDiffing(true)
             .build();
 
-    mountComponent(
-        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    mountComponent(lithoView, componentTree, exactly(400), exactly(400));
 
     final ViewGroup oldHost = (ViewGroup) lithoView.getChildAt(0);
     final View oldView = oldHost.getChildAt(0);
@@ -333,10 +326,9 @@ public class MountStateRemountTest {
                     .enabled(false))
             .build();
 
-    componentTree.setRootAndSizeSpecSync(
-        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    componentTree.setRootAndSizeSpecSync(newComponent, exactly(400), exactly(400));
 
-    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    componentTree.setSizeSpec(exactly(400), exactly(400));
 
     final ViewGroup newHost = (ViewGroup) lithoView.getChildAt(0);
     final View newView = newHost.getChildAt(0);
@@ -370,8 +362,7 @@ public class MountStateRemountTest {
             .layoutDiffing(true)
             .build();
 
-    mountComponent(
-        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    mountComponent(lithoView, componentTree, exactly(400), exactly(400));
 
     final ViewGroup oldHost = (ViewGroup) lithoView.getChildAt(0);
     final View oldView = oldHost.getChildAt(0);
@@ -389,10 +380,9 @@ public class MountStateRemountTest {
                     .backgroundColor(Color.CYAN))
             .build();
 
-    componentTree.setRootAndSizeSpecSync(
-        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    componentTree.setRootAndSizeSpecSync(newComponent, exactly(400), exactly(400));
 
-    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+    componentTree.setSizeSpec(exactly(400), exactly(400));
 
     final ViewGroup newHost = (ViewGroup) lithoView.getChildAt(0);
     final View newView = newHost.getChildAt(0);

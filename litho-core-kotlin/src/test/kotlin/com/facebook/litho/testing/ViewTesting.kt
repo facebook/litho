@@ -22,15 +22,6 @@ import com.facebook.litho.ComponentScope
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.ViewMatchNode
 
-/** Shorthand for creating a [View.MeasureSpec.EXACTLY] measure spec. */
-fun exactly(px: Int) = View.MeasureSpec.makeMeasureSpec(px, View.MeasureSpec.EXACTLY)
-
-/** Shorthand for creating a [View.MeasureSpec.AT_MOST] measure spec. */
-fun atMost(px: Int) = View.MeasureSpec.makeMeasureSpec(px, View.MeasureSpec.AT_MOST)
-
-/** Shorthand for creating a [View.MeasureSpec.UNSPECIFIED] measure spec. */
-fun unspecified() = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-
 /** Shorthand helper to create a root component that needs a ComponentScope. */
 fun LegacyLithoViewRule.setRoot(componentFunction: ComponentScope.() -> Component) =
     setRoot(with(ComponentScope(context)) { componentFunction() })

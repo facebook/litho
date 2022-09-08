@@ -39,6 +39,7 @@ import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.ExperimentalVerticalScroll
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.focusable
@@ -641,9 +642,7 @@ class MountableComponentsTest {
 
     // Create a FrameLayout 100x100
     val parent = FrameLayout(lithoViewRule.context.androidContext)
-    parent.measure(
-        View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+    parent.measure(exactly(1080), exactly(100))
     parent.layout(0, 0, 1080, 100)
 
     // Add a new LithoView to that FrameLayout

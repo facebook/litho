@@ -16,13 +16,13 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.StateContainer.StateUpdate;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 
@@ -114,8 +114,7 @@ public class StateUpdatesTest {
         .attachToWindow()
         .measure()
         .layout()
-        .setSizeSpecs(
-            makeMeasureSpec(1000, View.MeasureSpec.EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
+        .setSizeSpecs(makeMeasureSpec(1000, View.MeasureSpec.EXACTLY), unspecified());
   }
 
   @Test
@@ -139,8 +138,7 @@ public class StateUpdatesTest {
         .attachToWindow()
         .measure()
         .layout()
-        .setSizeSpecs(
-            makeMeasureSpec(1000, View.MeasureSpec.EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
+        .setSizeSpecs(makeMeasureSpec(1000, View.MeasureSpec.EXACTLY), unspecified());
   }
 
   @Test
@@ -182,8 +180,7 @@ public class StateUpdatesTest {
         .attachToWindow()
         .measure()
         .layout()
-        .setSizeSpecs(
-            makeMeasureSpec(1000, View.MeasureSpec.EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
+        .setSizeSpecs(makeMeasureSpec(1000, View.MeasureSpec.EXACTLY), unspecified());
     mComponentTree.updateStateSync(
         "$key", StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
 

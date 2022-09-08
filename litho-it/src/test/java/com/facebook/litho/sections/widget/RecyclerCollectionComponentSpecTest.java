@@ -16,8 +16,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -25,6 +23,7 @@ import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.ERROR;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADING;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
@@ -325,9 +324,7 @@ public class RecyclerCollectionComponentSpecTest {
                     .component(component)
                     .build())
             .build();
-    mLegacyLithoViewRule
-        .setRoot(rcc)
-        .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLegacyLithoViewRule.setRoot(rcc).setSizeSpecs(exactly(100), exactly(100));
 
     mLegacyLithoViewRule.attachToWindow().measure().layout();
 
@@ -350,9 +347,7 @@ public class RecyclerCollectionComponentSpecTest {
                     .component(component)
                     .build())
             .build();
-    mLegacyLithoViewRule
-        .setRoot(rcc)
-        .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLegacyLithoViewRule.setRoot(rcc).setSizeSpecs(exactly(100), exactly(100));
 
     mLegacyLithoViewRule.attachToWindow().measure().layout();
 

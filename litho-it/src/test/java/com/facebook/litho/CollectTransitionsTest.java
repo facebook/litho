@@ -17,9 +17,9 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import android.view.View;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
@@ -84,8 +84,8 @@ public class CollectTransitionsTest {
             mWrappingContentWithTransition,
             mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             ComponentTree.generateComponentTreeId(),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            exactly(100),
+            exactly(100),
             LayoutState.CalculateLayoutSource.TEST);
     assertThat(layoutState.getTransitions()).hasSize(2);
     ComponentsConfiguration.isAnimationDisabled = originalValue;

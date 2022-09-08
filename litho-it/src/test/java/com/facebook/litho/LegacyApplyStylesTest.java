@@ -16,8 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
+
 import android.graphics.Color;
-import android.view.View;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.it.R;
@@ -46,9 +47,7 @@ public class LegacyApplyStylesTest {
   public void
       styles_withAccessibilityAndContentDescriptionStyle_appliesAccessibilityAndContentDescription() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
@@ -76,9 +75,7 @@ public class LegacyApplyStylesTest {
   @Test
   public void styles_withDuplicateParentStateStyle_appliesDuplicateParentState() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
@@ -105,9 +102,7 @@ public class LegacyApplyStylesTest {
   @Test
   public void styles_withBackgroundForegroundStyle_appliesBackgroundAndForeground() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()

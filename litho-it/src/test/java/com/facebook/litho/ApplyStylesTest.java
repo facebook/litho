@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.drawable.ColorDrawable;
@@ -47,9 +49,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withWidthHeightStyle_appliesWidthHeight() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+        .setSizeSpecs(unspecified(), unspecified())
         .setRoot(
             Column.create(mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_WidthHeight)
                 .build())
@@ -64,9 +64,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withMinWidthHeightStyle_appliesMinWidthHeight() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+        .setSizeSpecs(unspecified(), unspecified())
         .setRoot(
             Column.create(
                     mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_MinWidthHeight)
@@ -82,9 +80,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withPaddingLeftTopRightBottomStyle_appliesPadding() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(
                     mLegacyLithoViewRule.getContext(),
@@ -107,9 +103,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withPaddingAllStyle_appliesPadding() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_PaddingAll)
                 .child(Column.create(mLegacyLithoViewRule.getContext()).flexGrow(1).wrapInView())
@@ -130,9 +124,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withPaddingStartEndStyle_appliesPadding() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(
                     mLegacyLithoViewRule.getContext(), 0, R.style.ApplyStylesTest_PaddingStartEnd)
@@ -151,9 +143,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withMarginLeftTopRightBottomStyle_appliesMargin() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .child(
@@ -179,9 +169,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withMarginAllStyle_appliesMargin() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .child(
@@ -206,9 +194,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withMarginStartEndStyle_appliesMargin() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .child(
@@ -232,9 +218,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withBackgroundForegroundStyle_appliesBackgroundAndForeground() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
@@ -265,9 +249,7 @@ public class ApplyStylesTest {
   public void
       styles_withAccessibilityAndContentDescriptionStyle_appliesAccessibilityAndContentDescription() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()
@@ -298,9 +280,7 @@ public class ApplyStylesTest {
   @Test
   public void styles_withDuplicateParentStateStyle_appliesDuplicateParentState() {
     mLegacyLithoViewRule
-        .setSizeSpecs(
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY))
+        .setSizeSpecs(exactly(100), exactly(100))
         .setRoot(
             Row.create(mLegacyLithoViewRule.getContext())
                 .wrapInView()

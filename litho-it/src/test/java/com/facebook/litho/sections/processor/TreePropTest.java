@@ -16,9 +16,8 @@
 
 package com.facebook.litho.sections.processor;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.app.Activity;
@@ -82,7 +81,7 @@ public class TreePropTest {
 
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponent(component);
-    lithoView.measure(makeMeasureSpec(1000, EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
+    lithoView.measure(exactly(1000), unspecified());
 
     assertThat(propALeaf1.mProp).isEqualTo(treePropA);
     // TreePropTestMiddleSpec modifies "propB".

@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import android.view.View;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -78,8 +78,8 @@ public class UniqueTransitionKeysTest {
             mHasUniqueTransitionKeys,
             mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             ComponentTree.generateComponentTreeId(),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            exactly(100),
+            exactly(100),
             LayoutState.CalculateLayoutSource.TEST);
     layoutState.getTransitionIdMapping();
   }
@@ -96,8 +96,8 @@ public class UniqueTransitionKeysTest {
             mHasNonUniqueTransitionKeys,
             mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             ComponentTree.generateComponentTreeId(),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            exactly(100),
+            exactly(100),
             LayoutState.CalculateLayoutSource.TEST);
     assertThat(layoutState.getTransitionIdMapping()).isNotNull();
   }

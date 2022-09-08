@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import static androidx.core.text.TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -310,10 +311,7 @@ public class TextSpecTest {
 
     final int resolvedWidth =
         TextSpec.resolveWidth(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-            layout,
-            false /* minimallyWide */,
-            0 /* minimallyWideThreshold */);
+            unspecified(), layout, false /* minimallyWide */, 0 /* minimallyWideThreshold */);
 
     assertEquals(resolvedWidth, FULL_TEXT_WIDTH);
   }
@@ -324,7 +322,7 @@ public class TextSpecTest {
 
     final int resolvedWidth =
         TextSpec.resolveWidth(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            unspecified(),
             layout,
             true /* minimallyWide */,
             FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH - 1 /* minimallyWideThreshold */);
@@ -338,7 +336,7 @@ public class TextSpecTest {
 
     final int resolvedWidth =
         TextSpec.resolveWidth(
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            unspecified(),
             layout,
             true /* minimallyWide */,
             FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH /* minimallyWideThreshold */);

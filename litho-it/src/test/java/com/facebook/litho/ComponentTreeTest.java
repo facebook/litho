@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.atMost;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -760,9 +761,7 @@ public class ComponentTreeTest {
 
     DoubleMeasureViewGroup parent = new DoubleMeasureViewGroup(mContext.getAndroidContext());
     parent.addView(lithoView);
-    lithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.AT_MOST),
-        View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.AT_MOST));
+    lithoView.measure(atMost(2000), atMost(2000));
 
     final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
         new TestDrawableComponent.BlockInPrepareComponentListener();

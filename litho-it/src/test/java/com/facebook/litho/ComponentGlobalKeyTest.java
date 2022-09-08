@@ -19,10 +19,10 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoRenderUnit.getComponentContext;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.util.Pair;
-import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestViewComponent;
@@ -470,9 +470,7 @@ public class ComponentGlobalKeyTest {
   private LithoView getLithoView(Component component) {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponent(component);
-    lithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.UNSPECIFIED));
+    lithoView.measure(unspecified(640), unspecified(480));
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
     return lithoView;
   }

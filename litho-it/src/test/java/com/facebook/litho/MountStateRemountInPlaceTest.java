@@ -20,11 +20,10 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.atMost;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -245,8 +244,8 @@ public class MountStateRemountInPlaceTest {
             new LithoView(mContext),
             ComponentTree.create(mContext, Column.create(mContext).child(firstComponent).build())
                 .build(),
-            makeMeasureSpec(100, AT_MOST),
-            makeMeasureSpec(100, AT_MOST));
+            atMost(100),
+            atMost(100));
 
     assertThat(firstComponent.wasOnMountCalled()).isTrue();
     assertThat(firstComponent.wasOnBindCalled()).isTrue();
@@ -274,8 +273,8 @@ public class MountStateRemountInPlaceTest {
             new LithoView(mContext),
             ComponentTree.create(mContext, Column.create(mContext).child(firstComponent).build())
                 .build(),
-            makeMeasureSpec(100, EXACTLY),
-            makeMeasureSpec(100, EXACTLY));
+            exactly(100),
+            exactly(100));
 
     assertThat(firstComponent.wasOnMountCalled()).isTrue();
     assertThat(firstComponent.wasOnBindCalled()).isTrue();
@@ -302,8 +301,8 @@ public class MountStateRemountInPlaceTest {
             new LithoView(mContext),
             ComponentTree.create(mContext, Column.create(mContext).child(firstComponent).build())
                 .build(),
-            makeMeasureSpec(100, EXACTLY),
-            makeMeasureSpec(100, EXACTLY));
+            exactly(100),
+            exactly(100));
 
     assertThat(firstComponent.wasOnMountCalled()).isTrue();
     assertThat(firstComponent.wasOnBindCalled()).isTrue();

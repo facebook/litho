@@ -16,11 +16,10 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.atMost;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -37,7 +36,6 @@ import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
@@ -81,7 +79,7 @@ public class LithoViewTest {
 
   @Test
   public void measureBeforeBeingAttached() {
-    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    mLithoView.measure(unspecified(), unspecified());
     mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
 
     // View got measured.
@@ -112,7 +110,7 @@ public class LithoViewTest {
     LithoView nullLithoView = new LithoView(getApplicationContext());
     nullLithoView.setComponent(component);
 
-    nullLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    nullLithoView.measure(unspecified(), unspecified());
     nullLithoView.layout(0, 0, nullLithoView.getMeasuredWidth(), nullLithoView.getMeasuredHeight());
 
     LithoViewAssert.assertThat(nullLithoView).hasMeasuredWidthOf(0).hasMeasuredHeightOf(0);
@@ -126,7 +124,7 @@ public class LithoViewTest {
 
     mLithoView.setComponentTree(mockComponentTree);
     mLithoView.suppressMeasureComponentTree(true);
-    mLithoView.measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, EXACTLY));
+    mLithoView.measure(exactly(width), exactly(height));
 
     verify(mockComponentTree, never()).measure(anyInt(), anyInt(), (int[]) any(), anyBoolean());
     LithoViewAssert.assertThat(mLithoView).hasMeasuredWidthOf(width).hasMeasuredHeightOf(height);
@@ -156,7 +154,7 @@ public class LithoViewTest {
     mLithoView.setComponent(component);
 
     mLithoView.setLayoutParams(new ViewGroup.LayoutParams(0, 200));
-    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(200, EXACTLY));
+    mLithoView.measure(unspecified(), exactly(200));
     mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
 
     // View got measured.
@@ -193,7 +191,7 @@ public class LithoViewTest {
         new RecyclerViewLayoutManagerOverrideParams(
             SizeSpec.makeSizeSpec(100, SizeSpec.AT_MOST),
             SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST)));
-    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    mLithoView.measure(unspecified(), unspecified());
     mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
 
     // View got measured.
@@ -210,7 +208,7 @@ public class LithoViewTest {
   @Test
   public void testCorrectsDoubleMeasureBug() {
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(1079), exactly(100));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -219,7 +217,7 @@ public class LithoViewTest {
   @Test
   public void testCorrectsDoubleMeasureBugWithAtMost() {
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(makeMeasureSpec(1079, AT_MOST), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(atMost(1079), exactly(100));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -228,7 +226,7 @@ public class LithoViewTest {
   @Test
   public void testNoCorrectionWhenBugIsNotMatched() {
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2f, 1080);
-    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(1079), exactly(100));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1079);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -237,7 +235,7 @@ public class LithoViewTest {
   @Test
   public void testNoCorrectionWhenBugIsNotMatched2() {
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(makeMeasureSpec(1078, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(1078), exactly(100));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1078);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -247,7 +245,7 @@ public class LithoViewTest {
   public void testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
     mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(SimpleMountSpecTester.create(mLithoView.getComponentContext()).build());
-    mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -265,7 +263,7 @@ public class LithoViewTest {
     mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(
         SimpleMountSpecTester.create(mLithoView.getComponentContext()).heightPx(100).build());
-    mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(exactly(100), atMost(100));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -274,21 +272,15 @@ public class LithoViewTest {
 
   @Test
   public void forceLayout_whenForceLayoutIsSet_recomputesLayout() {
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(exactly(100), atMost(100));
     mLithoView.forceRelayout();
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(exactly(100), atMost(100));
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs("Should force layout.")
         .isEqualTo(2);
 
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(exactly(100), atMost(100));
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs("Should only force layout one time.")
@@ -297,15 +289,9 @@ public class LithoViewTest {
 
   @Test
   public void forceLayout_whenForceLayoutIsNotSet_doesNotRecomputeLayout() {
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(exactly(100), atMost(100));
+    mLithoView.measure(exactly(100), atMost(100));
+    mLithoView.measure(exactly(100), atMost(100));
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs("Should only compute the first layout as other layouts are not forced.")
@@ -314,25 +300,19 @@ public class LithoViewTest {
 
   @Test
   public void forceLayout_whenForceLayoutIsSetAndHasExactMeasurements_recomputesLayout() {
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
     mLithoView.layout(0, 0, 100, 100);
 
     mLithoView.forceRelayout();
 
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
     mLithoView.layout(0, 0, 100, 100);
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs("Should force layout.")
         .isEqualTo(2);
 
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
     mLithoView.layout(0, 0, 100, 100);
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
@@ -342,19 +322,13 @@ public class LithoViewTest {
 
   @Test
   public void forceLayout_whenForceLayoutIsNotSetAndHasExactMeasurements_doesNotRecomputeLayout() {
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
     mLithoView.layout(0, 0, 100, 100);
 
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
     mLithoView.layout(0, 0, 100, 100);
 
-    mLithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(exactly(100), exactly(100));
     mLithoView.layout(0, 0, 100, 100);
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())

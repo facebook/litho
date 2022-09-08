@@ -16,9 +16,8 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -57,7 +56,7 @@ public class LithoViewTestHelperTest {
 
     final LithoView lithoView = new LithoView(getApplicationContext());
     lithoView.setComponent(component);
-    lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    lithoView.measure(unspecified(), unspecified());
 
     final String string = LithoViewTestHelper.viewToString(lithoView);
 
@@ -86,7 +85,7 @@ public class LithoViewTestHelperTest {
 
     final LithoView lithoView = new LithoView(getApplicationContext());
     lithoView.setComponent(component);
-    lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    lithoView.measure(unspecified(), unspecified());
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
 
     final String string = LithoViewTestHelper.viewToString(lithoView);
@@ -109,8 +108,7 @@ public class LithoViewTestHelperTest {
             .build();
 
     mLegacyLithoViewRule
-        .setRootAndSizeSpecSync(
-            component, makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED))
+        .setRootAndSizeSpecSync(component, unspecified(), unspecified())
         .measure()
         .layout();
     final String string =
