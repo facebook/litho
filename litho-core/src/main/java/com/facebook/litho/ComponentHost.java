@@ -71,16 +71,16 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   private static boolean sHasWarnedAboutPartialAlpha = false;
 
-  private SparseArrayCompat<MountItem> mMountItems;
+  private final SparseArrayCompat<MountItem> mMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapMountItemsArray;
 
-  private SparseArrayCompat<MountItem> mViewMountItems;
+  private final SparseArrayCompat<MountItem> mViewMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapViewMountItemsArray;
 
-  private SparseArrayCompat<MountItem> mDrawableMountItems;
+  private final SparseArrayCompat<MountItem> mDrawableMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapDrawableMountItems;
 
-  private ArrayList<MountItem> mDisappearingItems;
+  private @Nullable ArrayList<MountItem> mDisappearingItems;
 
   private CharSequence mContentDescription;
   private SparseArray<Object> mViewTags;
@@ -102,7 +102,6 @@ public class ComponentHost extends Host implements DisappearingHost {
   private @Nullable EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
-  @Nullable ExceptionLogMessageProvider mExceptionLogMessageProvider;
 
   interface ExceptionLogMessageProvider {
     StringBuilder getLogMessage();
@@ -136,11 +135,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
-
-    mMountItems = new SparseArrayCompat<>();
-    mViewMountItems = new SparseArrayCompat<>();
-    mDrawableMountItems = new SparseArrayCompat<>();
-    mDisappearingItems = new ArrayList<>();
   }
 
   @Override
@@ -162,33 +156,13 @@ public class ComponentHost extends Host implements DisappearingHost {
     if (content instanceof Drawable) {
       mountDrawable(index, mountItem, bounds);
     } else if (content instanceof View) {
-      ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
       mountView((View) content, output.getFlags());
       maybeRegisterTouchExpansion(index, mountItem);
     }
 
-    ensureMountItems();
     mMountItems.put(index, mountItem);
     updateAccessibilityState(output);
-  }
-
-  private void ensureMountItems() {
-    if (mMountItems == null) {
-      mMountItems = new SparseArrayCompat<>();
-    }
-  }
-
-  private void ensureViewMountItems() {
-    if (mViewMountItems == null) {
-      mViewMountItems = new SparseArrayCompat<>();
-    }
-  }
-
-  private void ensureDrawableMountItems() {
-    if (mDrawableMountItems == null) {
-      mDrawableMountItems = new SparseArrayCompat<>();
-    }
   }
 
   private void ensureDisappearingItems() {
@@ -199,7 +173,6 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   @Override
   public void unmount(MountItem item) {
-    ensureMountItems();
     final int index;
     final int indexOfValue = mMountItems.indexOfValue(item);
 
@@ -225,19 +198,15 @@ public class ComponentHost extends Host implements DisappearingHost {
   public void unmount(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
     if (content instanceof Drawable) {
-      ensureDrawableMountItems();
-
       unmountDrawable((Drawable) content);
       ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
     } else if (content instanceof View) {
       unmountView((View) content);
-      ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
       maybeUnregisterTouchExpansion(index, mountItem);
     }
 
-    ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
     updateAccessibilityState(getLayoutOutput(mountItem));
@@ -259,16 +228,12 @@ public class ComponentHost extends Host implements DisappearingHost {
     final Object content = mountItem.getContent();
 
     if (content instanceof Drawable) {
-      ensureDrawableMountItems();
-
       ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
     } else if (content instanceof View) {
-      ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
       maybeUnregisterTouchExpansion(index, mountItem);
     }
-    ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
     ensureDisappearingItems();
@@ -356,7 +321,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   /** @return number of {@link MountItem}s that are currently mounted in the host. */
   @Override
   public int getMountItemCount() {
-    return mMountItems == null ? 0 : mMountItems.size();
+    return mMountItems.size();
   }
 
   /** @return the {@link MountItem} that was mounted with the given index. */
@@ -386,12 +351,13 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   /** @return list of drawables that are mounted on this host. */
   public List<Drawable> getDrawables() {
-    if (mDrawableMountItems == null || mDrawableMountItems.size() == 0) {
+    final int size = mDrawableMountItems.size();
+    if (size == 0) {
       return Collections.emptyList();
     }
 
-    final List<Drawable> drawables = new ArrayList<>(mDrawableMountItems.size());
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    final List<Drawable> drawables = new ArrayList<>(size);
+    for (int i = 0; i < size; i++) {
       Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       drawables.add(drawable);
     }
@@ -401,11 +367,11 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   /** @return list of names of content mounted on this host. */
   public List<String> getContentNames() {
-    if (mMountItems == null || mMountItems.size() == 0) {
+    final int contentSize = mMountItems.size();
+    if (contentSize == 0) {
       return Collections.emptyList();
     }
 
-    final int contentSize = mMountItems.size();
     final List<String> contentNames = new ArrayList<>(contentSize);
     for (int i = 0; i < contentSize; i++) {
       contentNames.add(getMountItemName(getMountItemAt(i)));
@@ -417,13 +383,11 @@ public class ComponentHost extends Host implements DisappearingHost {
   /** @return the text content that is mounted on this host. */
   @DoNotStrip
   public TextContent getTextContent() {
-    ensureMountItems();
     return ComponentHostUtils.extractTextContent(ComponentHostUtils.extractContent(mMountItems));
   }
 
   /** @return the image content that is mounted on this host. */
   public ImageContent getImageContent() {
-    ensureMountItems();
     return ComponentHostUtils.extractImageContent(ComponentHostUtils.extractContent(mMountItems));
   }
 
@@ -526,8 +490,6 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     final Object content = item.getContent();
 
-    ensureViewMountItems();
-
     if (content instanceof Drawable) {
       moveDrawableItem(item, oldIndex, newIndex);
     } else if (content instanceof View) {
@@ -542,7 +504,6 @@ public class ComponentHost extends Host implements DisappearingHost {
       ComponentHostUtils.moveItem(oldIndex, newIndex, mViewMountItems, mScrapViewMountItemsArray);
     }
 
-    ensureMountItems();
     if (mMountItems.get(newIndex) != null) {
       ensureScrapMountItemsArray();
 
@@ -556,7 +517,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   private boolean isIllegalMountItemMove(MountItem mountItem, int moveFromIndex) {
     // If the mount item exists at the given index in the mount items array, this is a legal move.
-    if (mMountItems != null && mountItem == mMountItems.get(moveFromIndex)) {
+    if (mountItem == mMountItems.get(moveFromIndex)) {
       return false;
     }
 
@@ -700,9 +661,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   public List<CharSequence> getContentDescriptions() {
     final List<CharSequence> contentDescriptions = new ArrayList<>();
-    for (int i = 0, size = mDrawableMountItems == null ? 0 : mDrawableMountItems.size();
-        i < size;
-        i++) {
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final NodeInfo nodeInfo = getLayoutOutput(mDrawableMountItems.valueAt(i)).getNodeInfo();
       if (nodeInfo == null) {
         continue;
@@ -840,9 +799,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     if (isEnabled()) {
       // Iterate drawable from last to first to respect drawing order.
-      for (int i = ((mDrawableMountItems == null) ? 0 : mDrawableMountItems.size()) - 1;
-          i >= 0;
-          i--) {
+      for (int i = mDrawableMountItems.size() - 1; i >= 0; i--) {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
         if (item.getContent() instanceof Touchable
@@ -908,9 +865,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   protected void drawableStateChanged() {
     super.drawableStateChanged();
 
-    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
-        i < size;
-        i++) {
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       final LayoutOutput output = getLayoutOutput(mountItem);
       maybeSetDrawableState(
@@ -922,9 +877,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   public void jumpDrawablesToCurrentState() {
     super.jumpDrawablesToCurrentState();
 
-    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
-        i < size;
-        i++) {
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       DrawableCompat.jumpToCurrentState(drawable);
     }
@@ -935,9 +888,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     assertMainThread();
     super.setVisibility(visibility);
 
-    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
-        i < size;
-        i++) {
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       drawable.setVisible(visibility == View.VISIBLE, false);
     }
@@ -1235,9 +1186,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   public @Nullable List<Drawable> getLinkedDrawablesForAnimation() {
     List<Drawable> drawables = null;
 
-    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
-        i < size;
-        i++) {
+    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       if ((getLayoutOutput(mountItem).getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
           != 0) {
@@ -1261,7 +1210,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
 
     int index = 0;
-    final int viewMountItemCount = mViewMountItems == null ? 0 : mViewMountItems.size();
+    final int viewMountItemCount = mViewMountItems.size();
     for (int i = 0; i < viewMountItemCount; i++) {
       final View child = (View) mViewMountItems.valueAt(i).getContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
@@ -1305,7 +1254,6 @@ public class ComponentHost extends Host implements DisappearingHost {
   private void mountDrawable(int index, MountItem mountItem, Rect bounds) {
     assertMainThread();
 
-    ensureDrawableMountItems();
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
 
@@ -1333,8 +1281,6 @@ public class ComponentHost extends Host implements DisappearingHost {
     assertMainThread();
 
     // When something is already present in newIndex position we need to keep track of it.
-    ensureDrawableMountItems();
-
     if (mDrawableMountItems.get(newIndex) != null) {
       ensureScrapDrawableMountItemsArray();
 
