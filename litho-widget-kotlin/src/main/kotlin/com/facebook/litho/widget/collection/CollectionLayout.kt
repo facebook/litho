@@ -63,7 +63,11 @@ abstract class CollectionLayout(
           .build()
 }
 
-/** Specify how a [Collection] will wrap its contents across the main axis. */
+/**
+ * Specifies how a [Collection] will wrap its contents across the cross axis. For example, in a
+ * horizontal list, the cross axis is vertical, meaning this enum controls how the Collection will
+ * determine its height.
+ */
 enum class CrossAxisWrapMode(val canMeasureRecycler: Boolean, val hasDynamicItemHeight: Boolean) {
   /** No wrapping specified. The size should be specified on the [Collection]'s style parameter. */
   NoWrap(false, false),
