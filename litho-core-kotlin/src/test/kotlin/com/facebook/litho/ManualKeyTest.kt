@@ -16,10 +16,13 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.LegacyLithoViewRule
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
+import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.viewTag
+import com.facebook.litho.view.wrapInView
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +32,7 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ManualKeyTest {
 
-  @Rule @JvmField val lithoViewRule = LegacyLithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   private class KeyTestParentComponent(val manualKey: String, val i: Int) : KComponent() {
     override fun ComponentScope.render(): Component? {
@@ -41,41 +44,37 @@ class ManualKeyTest {
     override fun ComponentScope.render(): Component? {
       val state = useState { Object() }
 
-      return Row(style = Style.viewTag(state.value))
+      return Row(style = Style.viewTag(state.value).height(100.dp).width(200.dp).wrapInView())
     }
   }
 
   @Test
   fun useState_createNewLayoutWithSameManualKey_stateIsSame() {
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(KeyTestParentComponent(manualKey = "my_key", i = 0))
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
+          KeyTestParentComponent(manualKey = "my_key", i = 0)
+        }
 
-    val originalTag = lithoViewRule.lithoView.tag
+    val originalTag = testLithoView.lithoView.tag
     assertThat(originalTag).isNotNull()
 
-    lithoViewRule.setRoot(KeyTestParentComponent("my_key", i = 1))
+    testLithoView.setRoot(KeyTestParentComponent("my_key", i = 1))
 
-    assertThat(lithoViewRule.lithoView.tag).isEqualTo(originalTag)
+    assertThat(testLithoView.lithoView.tag).isEqualTo(originalTag)
   }
 
   @Test
   fun useState_createNewLayoutWithDifferentManualKey_stateIsRecreated() {
-    lithoViewRule
-        .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot(KeyTestParentComponent(manualKey = "my_key", i = 0))
-        .attachToWindow()
-        .measure()
-        .layout()
+    val testLithoView =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
+          KeyTestParentComponent(manualKey = "my_key", i = 0)
+        }
 
-    val originalTag = lithoViewRule.lithoView.tag
+    val originalTag = testLithoView.lithoView.tag
     assertThat(originalTag).isNotNull()
 
-    lithoViewRule.setRoot(KeyTestParentComponent("a_different_key", i = 1))
+    testLithoView.setRoot(KeyTestParentComponent("a_different_key", i = 1))
 
-    assertThat(lithoViewRule.lithoView.tag).isNotEqualTo(originalTag)
+    assertThat(testLithoView.lithoView.tag).isNotEqualTo(originalTag)
   }
 }
