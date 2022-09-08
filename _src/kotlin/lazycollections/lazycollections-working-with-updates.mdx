@@ -91,9 +91,7 @@ Here, unnecessary layouts can be avoided using two techniques:
 
 Lambdas do not provide an `equals()`, for example, `{} == {}` is `false`. This means that using a lambda as a prop may cause unnecessary layouts.
 
-Furthermore, lambdas capture values when they are created. For example, in the following lambda, `{ val time = Calendar.getInstance().time }`, the value `time` will contain the time the lambda was created not the time when it was invoked. This means it is not possible to prevent updates using `deps` as the lambda needs to be regenerated to capture the latest state and prop values.
-
-To use a lambda in a Lazy Collection, wrap it in a `useCallback` hook.  This provides equality across layouts, allowing the component to be reused, and the lambda is guaranteed to use the latest prop and state values
+To use a lambda in a Lazy Collection, wrap it in a `useCallback` hook.  This provides equality across layouts, allowing the component to be reused, and the lambda is guaranteed to use the latest captured prop and state values.
 
 Consider the following example where a lambda is passed to a component:
 
