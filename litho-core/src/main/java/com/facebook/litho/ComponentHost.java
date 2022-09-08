@@ -885,12 +885,18 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   @Override
   public void setVisibility(int visibility) {
-    assertMainThread();
     super.setVisibility(visibility);
 
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
-      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
-      drawable.setVisible(visibility == View.VISIBLE, false);
+    final int size = mDrawableMountItems.size();
+    if (size > 0) {
+      // We only do a main thread assert if there are drawable mount items because visibility may
+      // be set on a LithoView during background layout inflation (AsyncLayoutInflater) before
+      // we have any mounted content - we don't want to crash in that case.
+      assertMainThread();
+      for (int i = 0; i < size; i++) {
+        final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
+        drawable.setVisible(visibility == View.VISIBLE, false);
+      }
     }
   }
 
