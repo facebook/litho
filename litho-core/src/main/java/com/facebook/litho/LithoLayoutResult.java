@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Component.isMountable;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -27,7 +26,6 @@ import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node.LayoutResult;
@@ -541,19 +539,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         && diffNode.getLastHeightSpec() == heightSpec
         && !shouldAlwaysRemeasure(component)) {
 
-      // TODO(mkarpinski): remove this after investigation
-      if (ComponentsConfiguration.enableMountableComponents
-          && isMountable(component)
-          && (diffNode.getLayoutData() == null || mLayoutData == null)) {
-        throw new IllegalStateException(
-            "layout data might be null for <cls>"
-                + node.getMountable().getClass().getName()
-                + "</cls>. mLayoutData = "
-                + mLayoutData
-                + " layout data from diff node = "
-                + diffNode.getLayoutData());
-      }
-
       // layout data should be already set, but set it again anyway.
       mLayoutData = diffNode.getLayoutData();
 
@@ -573,13 +558,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
         if (mountable != null) {
           LayoutResult layoutResult = mountable.calculateLayout(context, widthSpec, heightSpec);
           mLayoutData = layoutResult.getLayoutData();
-          // TODO(mkarpinski): remove this after investigation
-          if (ComponentsConfiguration.enableMountableComponents && mLayoutData == null) {
-            throw new IllegalStateException(
-                "mLayoutData should not be null after calculateLayout in Mountables experiment for <cls>"
-                    + mountable.getClass().getName()
-                    + "</cls>");
-          }
           return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
         } else {
           final Size size = new Size(Integer.MIN_VALUE, Integer.MIN_VALUE);

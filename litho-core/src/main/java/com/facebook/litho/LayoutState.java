@@ -332,24 +332,6 @@ public class LayoutState
 
     final @Nullable Object layoutData = result.getLayoutData();
 
-    // TODO(mkarpinski): remove this after investigation
-    if (ComponentsConfiguration.enableMountableComponents
-        && result.getNode().getMountable() != null
-        && layoutData == null) {
-      throw new IllegalStateException(
-          "About to create a RenderTreeNode for <cls>"
-              + result.getNode().getMountable().getClass().getName()
-              + "</cls> Mountable with null layoutData,"
-              + " result.wasMeasured(): "
-              + result.wasMeasured()
-              + " result.getDiffNode(): "
-              + result.getDiffNode()
-              + " result.getDiffNode().getLayoutData(): "
-              + (result.getDiffNode() != null ? result.getDiffNode().getLayoutData() : null)
-              + " measure.toString(): "
-              + (measure != null ? measure.toString() : "null"));
-    }
-
     return createRenderTreeNode(unit, layoutState, result, true, layoutData, parent, hasExactSize);
   }
 
