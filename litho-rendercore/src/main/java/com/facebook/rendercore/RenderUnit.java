@@ -241,78 +241,78 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   /** Bind all mountUnmount extension functions. */
   protected void mountExtensions(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mMountUnmountExtensions == null) {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = tracer.isTracing();
     for (DelegateBinder extension : mMountUnmountExtensions) {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("RenderUnit.mountExtension:" + getId());
+        tracer.beginSection("RenderUnit.mountExtension:" + getId());
       }
       extension.bind(context, content, layoutData);
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        tracer.endSection();
       }
     }
   }
 
   /** Unbind all mountUnmount extension functions. */
   protected void unmountExtensions(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mMountUnmountExtensions == null) {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = tracer.isTracing();
     for (int i = mMountUnmountExtensions.size() - 1; i >= 0; i--) {
       final DelegateBinder extension = mMountUnmountExtensions.get(i);
       if (isTracing) {
-        RenderCoreSystrace.beginSection("RenderUnit.unmountExtension:" + getId());
+        tracer.beginSection("RenderUnit.unmountExtension:" + getId());
       }
       extension.unbind(context, content, layoutData);
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        tracer.endSection();
       }
     }
   }
 
   /** Bind all attachDetach extension functions. */
   protected void attachExtensions(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mAttachDetachExtensions == null) {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = tracer.isTracing();
     for (DelegateBinder extension : mAttachDetachExtensions) {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("RenderUnit.attachExtension:" + getId());
+        tracer.beginSection("RenderUnit.attachExtension:" + getId());
       }
       extension.bind(context, content, layoutData);
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        tracer.endSection();
       }
     }
   }
 
   /** Unbind all attachDetach extension functions. */
   protected void detachExtensions(
-      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mAttachDetachExtensions == null) {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = tracer.isTracing();
     for (int i = mAttachDetachExtensions.size() - 1; i >= 0; i--) {
       final DelegateBinder extension = mAttachDetachExtensions.get(i);
       if (isTracing) {
-        RenderCoreSystrace.beginSection("RenderUnit.detachExtension:" + getId());
+        tracer.beginSection("RenderUnit.detachExtension:" + getId());
       }
       extension.unbind(context, content, layoutData);
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        tracer.endSection();
       }
     }
   }

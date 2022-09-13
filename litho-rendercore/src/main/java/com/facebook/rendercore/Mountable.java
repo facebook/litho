@@ -109,27 +109,30 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final void mountExtensions(Context context, Object contentT, @Nullable Object layoutData) {
-    super.mountExtensions(context, (ContentT) contentT, layoutData);
+  public final void mountExtensions(
+      Context context, Object contentT, @Nullable Object layoutData, Systracer tracer) {
+    super.mountExtensions(context, (ContentT) contentT, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final void unmountExtensions(
-      Context context, Object contentT, @Nullable Object layoutData) {
-    super.unmountExtensions(context, (ContentT) contentT, layoutData);
+      Context context, Object contentT, @Nullable Object layoutData, Systracer tracer) {
+    super.unmountExtensions(context, (ContentT) contentT, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final void attachExtensions(Context context, Object content, @Nullable Object layoutData) {
-    super.attachExtensions(context, (ContentT) content, layoutData);
+  public final void attachExtensions(
+      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
+    super.attachExtensions(context, (ContentT) content, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
-  public final void detachExtensions(Context context, Object content, @Nullable Object layoutData) {
-    super.detachExtensions(context, (ContentT) content, layoutData);
+  public final void detachExtensions(
+      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
+    super.detachExtensions(context, (ContentT) content, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */

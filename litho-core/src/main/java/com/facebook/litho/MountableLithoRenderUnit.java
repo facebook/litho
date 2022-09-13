@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.Systracer;
 import java.util.List;
 import java.util.Map;
 
@@ -65,23 +66,27 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
-  protected void mountExtensions(Context context, Object o, @Nullable Object layoutData) {
-    mMountable.mountExtensions(context, o, layoutData);
+  protected void mountExtensions(
+      Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
+    mMountable.mountExtensions(context, o, layoutData, tracer);
   }
 
   @Override
-  protected void unmountExtensions(Context context, Object o, @Nullable Object layoutData) {
-    mMountable.unmountExtensions(context, o, layoutData);
+  protected void unmountExtensions(
+      Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
+    mMountable.unmountExtensions(context, o, layoutData, tracer);
   }
 
   @Override
-  protected void attachExtensions(Context context, Object content, @Nullable Object layoutData) {
-    mMountable.attachExtensions(context, content, layoutData);
+  protected void attachExtensions(
+      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
+    mMountable.attachExtensions(context, content, layoutData, tracer);
   }
 
   @Override
-  protected void detachExtensions(Context context, Object content, @Nullable Object layoutData) {
-    mMountable.detachExtensions(context, content, layoutData);
+  protected void detachExtensions(
+      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
+    mMountable.detachExtensions(context, content, layoutData, tracer);
   }
 
   @Nullable

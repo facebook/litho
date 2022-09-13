@@ -108,6 +108,10 @@ public final class RenderCoreSystrace {
     sInstance = systraceImpl;
   }
 
+  public static Systracer getInstance() {
+    return sInstance;
+  }
+
   public static boolean isTracing() {
     return sInstance.isTracing();
   }

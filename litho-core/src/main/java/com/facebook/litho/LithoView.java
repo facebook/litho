@@ -274,7 +274,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mIsLithoViewSelfManagingViewPortChanges =
         ComponentsConfiguration.lithoViewSelfManageViewPortChanges;
 
-    mMountState = new MountState(this);
+    mMountState = new MountState(this, ComponentsSystrace.getSystrace());
     mMountState.setEnsureParentMounted(true);
 
     mAccessibilityManager =
