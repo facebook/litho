@@ -264,8 +264,6 @@ def litho_robolectric4_test(
     ]
     kwargs["robolectric_manifest"] = kwargs.pop("robolectric_manifest", LITHO_TEST_MANIFEST)
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
 
     annotation_processor_params = kwargs.pop("annotation_processor_params", [])
