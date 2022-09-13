@@ -421,7 +421,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
           "Cannot calculate a layout with a released LayoutStateContext.");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     applyOverridesRecursive(c.getRenderContext().mLayoutStateContext, this);
 
@@ -1296,7 +1296,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       final Component next,
       final Set<String> keys) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("reconcile:" + next.getSimpleName());
     }

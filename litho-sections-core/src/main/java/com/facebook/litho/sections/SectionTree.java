@@ -1175,7 +1175,7 @@ public class SectionTree {
       attribution = mTag;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       if (attribution != null) {
         RenderCoreSystrace.beginSection("extra:" + attribution);
@@ -1539,7 +1539,7 @@ public class SectionTree {
           "Must use UIThread-only variant when background change sets are not enabled.");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("applyChangeSetsToTargetBackgroundAllowed");
     }
@@ -1589,7 +1589,7 @@ public class SectionTree {
           "Cannot use UIThread-only variant when background change sets are enabled.");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("applyChangeSetsToTargetUIThreadOnly");
     }
@@ -1636,7 +1636,7 @@ public class SectionTree {
       final Section currentSection,
       List<ChangeSet> changeSets,
       @Nullable final ChangesetDebugInfo changesetDebugInfo) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     if (isTracing) {
       RenderCoreSystrace.beginSection("applyChangeSetToTarget");
@@ -1756,7 +1756,7 @@ public class SectionTree {
         SectionsLogEventUtils.getSectionsPerformanceEvent(
             context, EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("createTree");
     }
@@ -1800,7 +1800,7 @@ public class SectionTree {
       throw new IllegalStateException("Can't generate a subtree with a null root");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("createChildren:" + nextRoot.getSimpleName());
     }

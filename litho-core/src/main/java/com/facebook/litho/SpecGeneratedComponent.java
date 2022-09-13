@@ -69,7 +69,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (c != null) {
       c.enterNoStateUpdatesMethod("bind");
     }
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("onBind: " + getSimpleName());
     }
@@ -98,7 +98,7 @@ public abstract class SpecGeneratedComponent extends Component
     if (c != null) {
       c.enterNoStateUpdatesMethod("mount");
     }
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("onMount: " + getSimpleName());
     }
@@ -124,7 +124,7 @@ public abstract class SpecGeneratedComponent extends Component
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("onUnbind: " + getSimpleName());
     }
@@ -141,7 +141,7 @@ public abstract class SpecGeneratedComponent extends Component
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("onUnmount: " + getSimpleName());
     }

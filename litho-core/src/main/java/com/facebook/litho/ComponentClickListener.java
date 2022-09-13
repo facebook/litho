@@ -34,7 +34,7 @@ class ComponentClickListener implements View.OnClickListener {
   @Override
   public void onClick(View view) {
     if (mEventHandler != null) {
-      final boolean isTracing = RenderCoreSystrace.isEnabled();
+      final boolean isTracing = RenderCoreSystrace.isTracing();
       if (isTracing) {
         String componentClassName = "";
         if (mEventHandler.dispatchInfo.hasEventDispatcher != null) {

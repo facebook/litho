@@ -453,7 +453,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     try {
       if (isTracing) {
         RenderCoreSystrace.beginSection("LithoView.onMeasure");
@@ -582,7 +582,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     try {
       if (isTracing) {
         RenderCoreSystrace.beginSection("LithoView.performLayout");
@@ -1137,7 +1137,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   public void draw(Canvas canvas) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     try {
       if (isTracing) {
         RenderCoreSystrace.beginSection("LithoView.draw");
@@ -1405,7 +1405,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("LithoView.notifyVisibleBoundsChangedWithRect");
     }
@@ -1433,7 +1433,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("LithoView.notifyVisibleBoundsChanged");
     }
@@ -1655,7 +1655,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("LithoView.processVisibilityOutputs");
     }

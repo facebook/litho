@@ -242,7 +242,7 @@ public class InternalNodeUtils {
     final long id = result.getContext().calculateLayoutOutputId(componentKey, outputType);
 
     /* Call onBoundsDefined for the DrawableComponent */
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
     }

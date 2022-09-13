@@ -1355,7 +1355,7 @@ public class ComponentHost extends Host implements DisappearingHost {
           continue;
         }
 
-        final boolean isTracing = RenderCoreSystrace.isEnabled();
+        final boolean isTracing = RenderCoreSystrace.isTracing();
         if (isTracing) {
           RenderCoreSystrace.beginSection("draw: " + getMountItemName(mountItem));
         }

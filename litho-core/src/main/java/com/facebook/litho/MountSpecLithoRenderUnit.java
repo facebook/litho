@@ -306,7 +306,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       Component nextComponent,
       ComponentContext nextScopedContext) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     try {
       if (isTracing) {

@@ -48,7 +48,7 @@ public class BoundsUtils {
       @Nullable final Rect padding,
       Object content,
       boolean force) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("applyBoundsToMountContent");
     }

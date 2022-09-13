@@ -62,7 +62,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       Input input,
       @Nullable Rect localVisibleRect) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "beforeMount");
     }
@@ -86,7 +86,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   @Override
   public void afterMount(ExtensionState<VisibilityMountExtensionState> extensionState) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "afterMount");
     }
@@ -111,7 +111,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect) {
     final boolean processVisibilityOutputs = shouldProcessVisibilityOutputs(extensionState);
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(
@@ -176,7 +176,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       @Nullable Rect localVisibleRect,
       boolean isDirty) {
     final VisibilityMountExtensionState state = extensionState.getState();
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     try {
 
       if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
@@ -227,7 +227,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       Log.d(DEBUG_TAG, "Visibility Outputs to process: " + size);
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     final Rect intersection = new Rect();
     for (int j = 0; j < size; j++) {
@@ -438,7 +438,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   @UiThread
   private static void clearVisibilityItemsNonincremental(
       final VisibilityMountExtensionState state) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
     }

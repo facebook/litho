@@ -1182,7 +1182,7 @@ public class RecyclerBinder
   private void applyReadyBatchesWithRetry(final int retryCount) {
     ThreadUtils.assertMainThread();
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("applyReadyBatches");
     }
@@ -1891,7 +1891,7 @@ public class RecyclerBinder
    */
   public void notifyChangeSetCompleteAsync(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("notifyChangeSetCompleteAsync");
     }
@@ -1933,7 +1933,7 @@ public class RecyclerBinder
   @UiThread
   public void notifyChangeSetComplete(
       boolean isDataChanged, @Nullable ChangeSetCompleteCallback changeSetCompleteCallback) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("notifyChangeSetComplete");
     }
@@ -2425,7 +2425,7 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("fillListViewport");
     }
@@ -2464,7 +2464,7 @@ public class RecyclerBinder
       return 0;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("computeLayoutsToFillListViewport");
     }
@@ -2642,7 +2642,7 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void invalidateLayoutData() {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("invalidateLayoutData");
     }
@@ -2723,7 +2723,7 @@ public class RecyclerBinder
     if (mHasManualEstimatedViewportCount) {
       return;
     }
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     final boolean loggingForStartup = LithoStartupLogger.isEnabled(mStartupLogger);
 
     // We can schedule a maximum of number of items minus one (which is being calculated

@@ -109,7 +109,7 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("MountState.mount");
       RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
@@ -285,7 +285,7 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("MountState.unmountAllItems");
     }
@@ -426,7 +426,7 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     if (isTracing) {
       RenderCoreSystrace.beginSection("MountState.bind");
@@ -463,7 +463,7 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("MountState.unbind");
       RenderCoreSystrace.beginSection("MountState.unbindAllContent");
@@ -576,7 +576,7 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     if (isTracing) {
       RenderCoreSystrace.beginSection("unmountOrMoveOldItems");
@@ -663,7 +663,7 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection(
           "MountItem: " + renderTreeNode.getRenderUnit().getDescription());
@@ -748,7 +748,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     // When unmounting use the render unit from the MountItem
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     final RenderTreeNode node = item.getRenderTreeNode();
     final RenderUnit unit = item.getRenderUnit();
     final Object content = item.getContent();
@@ -983,7 +983,7 @@ public class MountState implements MountDelegateTarget {
       RenderTreeNode renderTreeNode,
       MountItem currentMountItem) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     if (isTracing) {
       RenderCoreSystrace.beginSection("updateMountItemIfNeeded");

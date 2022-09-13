@@ -169,7 +169,7 @@ class Layout {
 
     final LithoLayoutResult result;
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
     }
@@ -232,7 +232,7 @@ class Layout {
       final boolean resolveNestedTree,
       final @Nullable String globalKeyToReuse) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("createLayout:" + component.getSimpleName());
     }

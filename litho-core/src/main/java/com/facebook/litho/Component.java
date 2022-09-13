@@ -157,7 +157,7 @@ public abstract class Component
 
   @ThreadSafe(enableChecks = false)
   public final Object createMountContent(Context c) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
     }
@@ -172,7 +172,7 @@ public abstract class Component
 
   @Override
   public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    boolean isTracing = RenderCoreSystrace.isEnabled();
+    boolean isTracing = RenderCoreSystrace.isTracing();
 
     // We don't want to wrap and throw error events
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {

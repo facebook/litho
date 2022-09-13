@@ -58,7 +58,7 @@ public class IncrementalMountExtension
       final IncrementalMountExtensionInput input,
       final Rect localVisibleRect) {
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "beforeMount");
     }
@@ -81,7 +81,7 @@ public class IncrementalMountExtension
 
   @Override
   public void afterMount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "afterMount");
     }
@@ -103,7 +103,7 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final RenderTreeNode renderTreeNode,
       final int index) {
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "beforeMountItem [id=" + renderTreeNode.getRenderUnit().getId() + "]");
     }
@@ -154,7 +154,7 @@ public class IncrementalMountExtension
       final Rect localVisibleRect) {
     assertMainThread();
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "onVisibleBoundsChanged [visibleBounds=" + localVisibleRect + "]");
     }
@@ -285,7 +285,7 @@ public class IncrementalMountExtension
       final long id,
       final Object content) {
     assertMainThread();
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
       Log.d(DEBUG_TAG, "RecursivelyNotify [RenderUnit=" + id + "]");
     }
@@ -371,7 +371,7 @@ public class IncrementalMountExtension
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     if (isTracing) {
       RenderCoreSystrace.beginSection("performIncrementalMount");
     }

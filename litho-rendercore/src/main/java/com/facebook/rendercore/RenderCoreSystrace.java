@@ -37,7 +37,7 @@ public final class RenderCoreSystrace {
 
     void endAsyncSection(String name, int cookie);
 
-    boolean isEnabled();
+    boolean isTracing();
   }
 
   /** Object that accumulates arguments for beginSectionWithArgs. */
@@ -162,8 +162,8 @@ public final class RenderCoreSystrace {
     sInstance = systraceImpl;
   }
 
-  public static boolean isEnabled() {
-    return sInstance.isEnabled();
+  public static boolean isTracing() {
+    return sInstance.isTracing();
   }
 
   private static final class DefaultTrace implements IRenderCoreSystrace {
@@ -209,7 +209,7 @@ public final class RenderCoreSystrace {
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isTracing() {
       return BuildConfig.DEBUG
           && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
           && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled());

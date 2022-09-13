@@ -134,7 +134,7 @@ public class DataDiffSectionSpec<T> {
     final DiffSectionOperationExecutor operationExecutor =
         new DiffSectionOperationExecutor(changeSet);
     final RecyclerBinderUpdateCallback<T> updatesCallback;
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
 
     final Callback<T> callback = new Callback<>(c, data.getPrevious(), data.getNext());
 

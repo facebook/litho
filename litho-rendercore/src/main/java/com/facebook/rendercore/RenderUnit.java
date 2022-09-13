@@ -246,7 +246,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     for (DelegateBinder extension : mMountUnmountExtensions) {
       if (isTracing) {
         RenderCoreSystrace.beginSection("RenderUnit.mountExtension:" + getId());
@@ -265,7 +265,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     for (int i = mMountUnmountExtensions.size() - 1; i >= 0; i--) {
       final DelegateBinder extension = mMountUnmountExtensions.get(i);
       if (isTracing) {
@@ -285,7 +285,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     for (DelegateBinder extension : mAttachDetachExtensions) {
       if (isTracing) {
         RenderCoreSystrace.beginSection("RenderUnit.attachExtension:" + getId());
@@ -304,7 +304,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isEnabled();
+    final boolean isTracing = RenderCoreSystrace.isTracing();
     for (int i = mAttachDetachExtensions.size() - 1; i >= 0; i--) {
       final DelegateBinder extension = mAttachDetachExtensions.get(i);
       if (isTracing) {
