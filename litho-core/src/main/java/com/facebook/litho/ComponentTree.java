@@ -3026,7 +3026,6 @@ public class ComponentTree implements LithoLifecycleListener {
                 root,
                 layoutStateFuture,
                 treeState,
-                mRenderUnitIdGenerator,
                 ComponentTree.this.mId,
                 widthSpec,
                 heightSpec,

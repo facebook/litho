@@ -26,7 +26,6 @@ public class RenderStateContext {
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
 
   private boolean mIsInterruptible = true;
-  private @Nullable RenderUnitIdGenerator mIdGenerator;
   private @Nullable TreeState mTreeState;
   private RenderPhaseMeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
@@ -35,12 +34,10 @@ public class RenderStateContext {
   public RenderStateContext(
       final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
       final TreeState treeState,
-      final RenderUnitIdGenerator idGenerator,
       final LayoutStateContext layoutStateContext) { // Temp LSC member
     mLayoutStateFuture = layoutStateFuture;
     mTreeState = treeState;
     mCache = new RenderPhaseMeasuredResultCache();
-    mIdGenerator = idGenerator;
     mLayoutStateContext = layoutStateContext;
   }
 
@@ -49,11 +46,6 @@ public class RenderStateContext {
   @Deprecated
   public LayoutStateContext getLayoutStateContext() {
     return mLayoutStateContext;
-  }
-
-  @Nullable
-  public RenderUnitIdGenerator getIdGenerator() {
-    return mIdGenerator;
   }
 
   @Nullable
@@ -118,6 +110,5 @@ public class RenderStateContext {
     mComponentIdToWillRenderLayout = null;
     mLayoutStateFuture = null;
     mTreeState = null;
-    mIdGenerator = null;
   }
 }

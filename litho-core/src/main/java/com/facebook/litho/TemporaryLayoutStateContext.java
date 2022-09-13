@@ -30,7 +30,6 @@ public class TemporaryLayoutStateContext extends LayoutStateContext {
       @Nullable ComponentTree componentTree) {
     super(
         new TempLayoutProcessInfo(),
-        new RenderUnitIdGenerator(-1),
         componentContext,
         treeState,
         componentTree,

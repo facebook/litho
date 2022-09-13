@@ -172,7 +172,6 @@ public class LayoutState
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private final int mPreviousLayoutStateId;
   private boolean mIsCreateLayoutInProgress;
-  private final RenderUnitIdGenerator mIdGenerator;
 
   private @Nullable AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
@@ -217,7 +216,6 @@ public class LayoutState
         context,
         Column.create(context).build(),
         new TreeState(),
-        new RenderUnitIdGenerator(0),
         null,
         null,
         null,
@@ -228,14 +226,12 @@ public class LayoutState
       ComponentContext context,
       Component rootComponent,
       final TreeState treeState,
-      final RenderUnitIdGenerator idGenerator,
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable LayoutState current,
       final @Nullable DiffNode diffTreeRoot,
       final int layoutVersion) {
     mContext = context;
     mComponent = rootComponent;
-    mIdGenerator = idGenerator;
     mId = sIdGenerator.getAndIncrement();
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mTreeState = treeState;
@@ -245,7 +241,6 @@ public class LayoutState
     mLayoutStateContext =
         new LayoutStateContext(
             this,
-            mIdGenerator,
             context,
             treeState,
             context.getComponentTree(),
@@ -261,10 +256,6 @@ public class LayoutState
 
   boolean isPartialLayoutState() {
     return mIsPartialLayoutState;
-  }
-
-  RenderUnitIdGenerator getIdGenerator() {
-    return mIdGenerator;
   }
 
   @Override
@@ -1140,7 +1131,6 @@ public class LayoutState
   static LayoutState calculate(
       ComponentContext c,
       Component component,
-      RenderUnitIdGenerator idGenerator,
       int componentTreeId,
       int widthSpec,
       int heightSpec,
@@ -1150,7 +1140,6 @@ public class LayoutState
         component,
         null,
         new TreeState(),
-        idGenerator,
         componentTreeId,
         widthSpec,
         heightSpec,
@@ -1165,7 +1154,6 @@ public class LayoutState
       Component component,
       @Nullable LayoutStateFuture layoutStateFuture,
       TreeState treeState,
-      RenderUnitIdGenerator idGenerator,
       int componentTreeId,
       int widthSpec,
       int heightSpec,
@@ -1204,7 +1192,6 @@ public class LayoutState
             c,
             component,
             treeState,
-            idGenerator,
             layoutStateFuture,
             currentLayoutState,
             diffTreeRoot,

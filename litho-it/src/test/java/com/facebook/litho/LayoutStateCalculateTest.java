@@ -2704,14 +2704,12 @@ public class LayoutStateCalculateTest {
     final ComponentTree componentTree =
         ComponentTree.create(mLegacyLithoViewRule.getContext()).logger(logger, "test").build();
     final LayoutState layoutState =
-        LayoutState.calculate(
+        calculateLayoutState(
             componentTree.getContext(),
             component,
-            componentTree.getRenderUnitIdGenerator(),
             -1,
             makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY),
-            LayoutState.CalculateLayoutSource.TEST);
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
   }
@@ -2892,7 +2890,6 @@ public class LayoutStateCalculateTest {
     return LayoutState.calculate(
         context,
         component,
-        mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
         componentTreeId,
         widthSpec,
         heightSpec,

@@ -93,7 +93,6 @@ public class TreeDiffingTest {
         calculateLayoutState(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY));
 
@@ -118,7 +117,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
@@ -257,7 +255,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
@@ -266,7 +263,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             prevLayoutState);
@@ -311,7 +307,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
@@ -319,7 +314,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             prevLayoutState);
@@ -544,7 +538,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             c,
             layoutComponent,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(100, SizeSpec.EXACTLY),
             makeSizeSpec(100, SizeSpec.EXACTLY),
             null);
@@ -558,7 +551,6 @@ public class TreeDiffingTest {
     calculateLayoutStateWithDiffing(
         c,
         secondLayoutComponent,
-        mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(90, SizeSpec.EXACTLY),
         firstLayoutState);
@@ -577,7 +569,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             c,
             layoutComponent,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(100, SizeSpec.EXACTLY),
             makeSizeSpec(100, SizeSpec.EXACTLY),
             null);
@@ -591,7 +582,6 @@ public class TreeDiffingTest {
     calculateLayoutStateWithDiffing(
         c,
         secondLayoutComponent,
-        mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
         firstLayoutState);
@@ -608,7 +598,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
@@ -617,7 +606,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             prevLayoutState);
@@ -641,7 +629,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component1,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
@@ -650,7 +637,6 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mLegacyLithoViewRule.getComponentTree().getContext(),
             component2,
-            mLegacyLithoViewRule.getComponentTree().getRenderUnitIdGenerator(),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
             prevLayoutState);
@@ -683,17 +669,12 @@ public class TreeDiffingTest {
   }
 
   private static LayoutState calculateLayoutState(
-      ComponentContext context,
-      Component component,
-      RenderUnitIdGenerator idGenerator,
-      int widthSpec,
-      int heightSpec) {
+      ComponentContext context, Component component, int widthSpec, int heightSpec) {
     return calculate(
         context,
         component,
         null,
         new TreeState(),
-        idGenerator,
         -1,
         widthSpec,
         heightSpec,
@@ -706,7 +687,6 @@ public class TreeDiffingTest {
   private static LayoutState calculateLayoutStateWithDiffing(
       ComponentContext context,
       Component component,
-      RenderUnitIdGenerator idGenerator,
       int widthSpec,
       int heightSpec,
       LayoutState previousLayoutState) {
@@ -715,7 +695,6 @@ public class TreeDiffingTest {
         component,
         null,
         new TreeState(),
-        idGenerator,
         -1,
         widthSpec,
         heightSpec,
