@@ -21,63 +21,9 @@ import android.os.Trace;
 
 public final class RenderCoreSystrace {
 
-  public interface IRenderCoreSystrace {
+  public static final Systracer.ArgsBuilder NO_OP_ARGS_BUILDER = new NoOpArgsBuilder();
 
-    void beginSection(String name);
-
-    void beginAsyncSection(String name);
-
-    void beginAsyncSection(String name, int cookie);
-
-    ArgsBuilder beginSectionWithArgs(String name);
-
-    void endSection();
-
-    void endAsyncSection(String name);
-
-    void endAsyncSection(String name, int cookie);
-
-    boolean isTracing();
-  }
-
-  /** Object that accumulates arguments for beginSectionWithArgs. */
-  public interface ArgsBuilder {
-
-    /**
-     * Write the full message to the Systrace buffer.
-     *
-     * <p>You must call this to log the trace message.
-     */
-    void flush();
-
-    /**
-     * Logs an argument whose value is any object. It will be stringified with {@link
-     * String#valueOf(Object)}.
-     */
-    ArgsBuilder arg(String key, Object value);
-
-    /**
-     * Logs an argument whose value is an int. It will be stringified with {@link
-     * String#valueOf(int)}.
-     */
-    ArgsBuilder arg(String key, int value);
-
-    /**
-     * Logs an argument whose value is a long. It will be stringified with {@link
-     * String#valueOf(long)}.
-     */
-    ArgsBuilder arg(String key, long value);
-
-    /**
-     * Logs an argument whose value is a double. It will be stringified with {@link
-     * String#valueOf(double)}.
-     */
-    ArgsBuilder arg(String key, double value);
-  }
-
-  public static final ArgsBuilder NO_OP_ARGS_BUILDER = new NoOpArgsBuilder();
-
-  private static volatile IRenderCoreSystrace sInstance = new DefaultTrace();
+  private static volatile Systracer sInstance = new DefaultTrace();
   private static volatile boolean sHasStarted = false;
 
   /**
@@ -95,8 +41,8 @@ public final class RenderCoreSystrace {
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
-   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
-   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultTrace} it is a no-op.
    */
   public static void beginAsyncSection(String name) {
     sInstance.beginAsyncSection(name);
@@ -108,14 +54,14 @@ public final class RenderCoreSystrace {
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
-   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
-   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultTrace} it is a no-op.
    */
   public static void beginAsyncSection(String name, int cookie) {
     sInstance.beginAsyncSection(name, cookie);
   }
 
-  public static ArgsBuilder beginSectionWithArgs(String name) {
+  public static Systracer.ArgsBuilder beginSectionWithArgs(String name) {
     return sInstance.beginSectionWithArgs(name);
   }
 
@@ -133,8 +79,8 @@ public final class RenderCoreSystrace {
    * Writes a trace message to indicate that the current method has ended. Must be called exactly
    * once for each call to {@link #beginAsyncSection(String)} using the same tag, name and cookie.
    *
-   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
-   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultTrace} it is a no-op.
    */
   public static void endAsyncSection(String name) {
     sInstance.endAsyncSection(name);
@@ -145,14 +91,14 @@ public final class RenderCoreSystrace {
    * once for each call to {@link #beginAsyncSection(String, int)} using the same tag, name and
    * cookie.
    *
-   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
-   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultTrace} it is a no-op.
    */
   public static void endAsyncSection(String name, int cookie) {
     sInstance.endAsyncSection(name, cookie);
   }
 
-  public static void use(IRenderCoreSystrace systraceImpl) {
+  public static void use(Systracer systraceImpl) {
     if (sHasStarted) {
       // We will not switch the implementation if the trace has already been used in the
       // app lifecycle.
@@ -166,7 +112,7 @@ public final class RenderCoreSystrace {
     return sInstance.isTracing();
   }
 
-  private static final class DefaultTrace implements IRenderCoreSystrace {
+  private static final class DefaultTrace implements Systracer {
 
     @Override
     public void beginSection(String name) {
@@ -216,28 +162,28 @@ public final class RenderCoreSystrace {
     }
   }
 
-  private static final class NoOpArgsBuilder implements ArgsBuilder {
+  private static final class NoOpArgsBuilder implements Systracer.ArgsBuilder {
 
     @Override
     public void flush() {}
 
     @Override
-    public ArgsBuilder arg(String key, Object value) {
+    public Systracer.ArgsBuilder arg(String key, Object value) {
       return this;
     }
 
     @Override
-    public ArgsBuilder arg(String key, int value) {
+    public Systracer.ArgsBuilder arg(String key, int value) {
       return this;
     }
 
     @Override
-    public ArgsBuilder arg(String key, long value) {
+    public Systracer.ArgsBuilder arg(String key, long value) {
       return this;
     }
 
     @Override
-    public ArgsBuilder arg(String key, double value) {
+    public Systracer.ArgsBuilder arg(String key, double value) {
       return this;
     }
   }

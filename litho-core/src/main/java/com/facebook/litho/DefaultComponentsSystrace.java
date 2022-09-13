@@ -20,8 +20,9 @@ import android.os.Build;
 import android.os.Trace;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.Systracer;
 
-public class DefaultComponentsSystrace implements RenderCoreSystrace.IRenderCoreSystrace {
+public class DefaultComponentsSystrace implements Systracer {
 
   @Override
   public void beginSection(String name) {
@@ -42,7 +43,7 @@ public class DefaultComponentsSystrace implements RenderCoreSystrace.IRenderCore
   }
 
   @Override
-  public RenderCoreSystrace.ArgsBuilder beginSectionWithArgs(String name) {
+  public ArgsBuilder beginSectionWithArgs(String name) {
     beginSection(name);
     return RenderCoreSystrace.NO_OP_ARGS_BUILDER;
   }

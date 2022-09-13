@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.Systracer;
 
 /**
  * This is intended as a hook into {@code android.os.Trace}, but allows you to provide your own
@@ -24,21 +24,20 @@ import com.facebook.rendercore.RenderCoreSystrace;
  *
  * <p>{@code ComponentsSystrace.beginSection("tag"); ... ComponentsSystrace.endSection(); } As a
  * default, it simply calls {@code android.os.Trace} (see {@link DefaultComponentsSystrace}). You
- * may supply your own with {@link
- * ComponentsSystrace#provide(RenderCoreSystrace.IRenderCoreSystrace)}.
+ * may supply your own with {@link ComponentsSystrace#provide(Systracer)}.
  */
 public class ComponentsSystrace {
 
-  private static RenderCoreSystrace.IRenderCoreSystrace sInstance = new DefaultComponentsSystrace();
+  private static Systracer sInstance = new DefaultComponentsSystrace();
 
   private ComponentsSystrace() {}
 
   /** This should be called exactly once at app startup, before any Litho work happens. */
-  public static void provide(RenderCoreSystrace.IRenderCoreSystrace instance) {
+  public static void provide(Systracer instance) {
     sInstance = instance;
   }
 
-  public static RenderCoreSystrace.IRenderCoreSystrace getSystrace() {
+  public static Systracer getSystrace() {
     return sInstance;
   }
 
@@ -56,8 +55,8 @@ public class ComponentsSystrace {
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
-   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
-   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void beginAsyncSection(String name) {
     sInstance.beginAsyncSection(name);
@@ -69,14 +68,14 @@ public class ComponentsSystrace {
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
-   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
-   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void beginAsyncSection(String name, int cookie) {
     sInstance.beginAsyncSection(name, cookie);
   }
 
-  public static RenderCoreSystrace.ArgsBuilder beginSectionWithArgs(String name) {
+  public static Systracer.ArgsBuilder beginSectionWithArgs(String name) {
     return sInstance.beginSectionWithArgs(name);
   }
 
@@ -94,8 +93,8 @@ public class ComponentsSystrace {
    * Writes a trace message to indicate that the current method has ended. Must be called exactly
    * once for each call to {@link #beginAsyncSection(String)} using the same tag, name and cookie.
    *
-   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
-   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void endAsyncSection(String name) {
     sInstance.endAsyncSection(name);
@@ -106,8 +105,8 @@ public class ComponentsSystrace {
    * once for each call to {@link #beginAsyncSection(String, int)} using the same tag, name and
    * cookie.
    *
-   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
-   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link Systracer} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void endAsyncSection(String name, int cookie) {
     sInstance.endAsyncSection(name, cookie);

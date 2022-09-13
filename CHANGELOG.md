@@ -4,6 +4,10 @@
 
 _release-date_
 
+ * **Breaking:**: If you use `ComponentsSystrace.provide` to provide a custom Systrace implementation, there have been some changes to the types and methods involved:
+   * Instead of implementing `ComponentsSystrace.Systrace`, implementations should implement `com.facebook.rendercore.Systracer`, located in litho-rendercore. The `ArgsBuilder` interface has also moved from ComponentsSystrace to the Systracer interface.
+   * Some method names have been corrected. Specifically start/endSectionAsync have become start/endAsyncSection, aligning them to the Tracer API.
+
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.42.0...master).
 
 ## Version 0.42.0
