@@ -30,8 +30,11 @@ import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
  */
 abstract class MountableComponent() : Component() {
 
-  final override fun prepare(c: ComponentContext): PrepareResult {
-    val mountableComponentScope = MountableComponentScope(c)
+  final override fun prepare(
+      renderStateContext: RenderStateContext,
+      c: ComponentContext
+  ): PrepareResult {
+    val mountableComponentScope = MountableComponentScope(c, renderStateContext)
     val mountableWithStyle = mountableComponentScope.render()
 
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
@@ -161,8 +164,13 @@ abstract class MountableComponent() : Component() {
       nextStateContainer: StateContainer
   ) = super.transferState(previousStateContainer, nextStateContainer)
 
-  final override fun render(c: ComponentContext, widthSpec: Int, heightSpec: Int): RenderResult {
-    return super.render(c, widthSpec, heightSpec)
+  final override fun render(
+      renderStateContext: RenderStateContext,
+      c: ComponentContext,
+      widthSpec: Int,
+      heightSpec: Int
+  ): RenderResult {
+    return super.render(renderStateContext, c, widthSpec, heightSpec)
   }
 
   final override fun isEqualivalentTreeProps(

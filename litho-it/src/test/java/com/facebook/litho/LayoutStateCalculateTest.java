@@ -2661,7 +2661,8 @@ public class LayoutStateCalculateTest {
         -1,
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY));
-    verify(componentSpy, times(1)).render((ComponentContext) any(), eq(0), eq(0));
+    verify(componentSpy, times(1))
+        .render((RenderStateContext) any(), (ComponentContext) any(), eq(0), eq(0));
   }
 
   @Test

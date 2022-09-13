@@ -19,8 +19,9 @@ package com.facebook.litho
 import com.facebook.rendercore.Mountable
 
 /** The implicit receiver for [MountableComponent.render] call. */
-open class MountableComponentScope(override val context: ComponentContext) :
-    ComponentScope(context) {
+class MountableComponentScope
+internal constructor(context: ComponentContext, renderStateContext: RenderStateContext) :
+    ComponentScope(context, renderStateContext) {
   internal val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>> by lazy { ArrayList(2) }
 
   /**
@@ -33,7 +34,7 @@ open class MountableComponentScope(override val context: ComponentContext) :
       defaultValue: ValueT,
       valueSetter: (ContentT, ValueT) -> Unit
   ) {
-    addBinder(DynamicPropsHolder<ContentT, ValueT>(this, defaultValue, valueSetter))
+    addBinder(DynamicPropsHolder(this, defaultValue, valueSetter))
   }
 
   private fun <ValueT, ContentT> addBinder(binder: DynamicPropsHolder<ContentT, ValueT>) {

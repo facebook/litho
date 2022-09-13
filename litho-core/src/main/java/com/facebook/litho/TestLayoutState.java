@@ -212,7 +212,8 @@ public class TestLayoutState {
     } else if (isMountSpec(component)) {
       node = createInternalNode();
     } else {
-      final RenderResult renderResult = component.render(c, widthSpec, heightSpec);
+      final RenderResult renderResult =
+          component.render(renderStateContext, c, widthSpec, heightSpec);
       final Component root = renderResult.component;
       if (root == null || root.getId() <= 0) {
         node = null;
@@ -353,7 +354,8 @@ public class TestLayoutState {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        final RenderResult renderResult = component.render(c, widthSpec, heightSpec);
+        final RenderResult renderResult =
+            component.render(renderStateContext, c, widthSpec, heightSpec);
         final Component root = renderResult.component;
 
         if (root != null) {

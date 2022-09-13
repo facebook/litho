@@ -23,7 +23,8 @@ import com.facebook.infer.annotation.Nullsafe;
 public final class EmptyComponent extends Component {
 
   @Override
-  protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
+  protected RenderResult render(
+      RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
     return new RenderResult(null);
   }
 }

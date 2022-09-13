@@ -289,7 +289,8 @@ class Layout {
         node.flexDirection(YogaFlexDirection.COLUMN);
 
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
-        PrepareResult prepareResult = component.prepare(scopedComponentInfo.getContext());
+        PrepareResult prepareResult =
+            component.prepare(renderStateContext, scopedComponentInfo.getContext());
         if (prepareResult != null) {
           node.setMountable(prepareResult.mountable);
         }
@@ -298,7 +299,8 @@ class Layout {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        final RenderResult renderResult = component.render(c, parentWidthSpec, parentHeightSpec);
+        final RenderResult renderResult =
+            component.render(renderStateContext, c, parentWidthSpec, parentHeightSpec);
         final Component root = renderResult.component;
 
         if (root != null) {

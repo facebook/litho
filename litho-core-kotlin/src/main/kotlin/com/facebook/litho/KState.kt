@@ -31,7 +31,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
   val treeState: TreeState =
-      context.layoutStateContext?.treeState
+      renderStateContext?.treeState
           ?: throw IllegalStateException("Cannot create state outside of layout calculation")
 
   val kState =

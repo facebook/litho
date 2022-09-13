@@ -295,7 +295,8 @@ public abstract class Component
    * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
    * metadata from that render call such as transitions that should be applied.
    */
-  protected RenderResult render(ComponentContext c, int widthSpec, int heightSpec) {
+  protected RenderResult render(
+      RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
     throw new RuntimeException(
         "Render should not be called on a component which hasn't implemented render! "
             + getSimpleName());
@@ -350,7 +351,8 @@ public abstract class Component
       final int componentBoundsY,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
-  protected @Nullable PrepareResult prepare(ComponentContext c) {
+  protected @Nullable PrepareResult prepare(
+      RenderStateContext renderStateContext, ComponentContext c) {
     // default implementation runs onPrepare(), MountableComponents will override to return a
     // Mountable
     onPrepare(c);
