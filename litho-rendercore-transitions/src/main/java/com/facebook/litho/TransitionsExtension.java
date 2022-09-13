@@ -32,10 +32,10 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -209,7 +209,7 @@ public class TransitionsExtension
       state.mLastTransitionsExtensionInput = null;
     }
 
-    updateTransitions(extensionState, input, mDebugTag);
+    updateTransitions(extensionState, input, mDebugTag, input.getTracer());
     extractDisappearingItems(extensionState, input);
   }
 
@@ -278,9 +278,10 @@ public class TransitionsExtension
   private static void updateTransitions(
       ExtensionState<TransitionsExtensionState> extensionState,
       final TransitionsExtensionInput input,
-      final @Nullable String debugTag) {
+      final @Nullable String debugTag,
+      Systracer tracer) {
     final TransitionsExtensionState state = extensionState.getState();
-    RenderCoreSystrace.beginSection("MountState.updateTransitions");
+    tracer.beginSection("MountState.updateTransitions");
 
     try {
       // If this is a new component tree but isn't the first time it's been mounted, then we
@@ -315,7 +316,7 @@ public class TransitionsExtension
         regenerateAnimationLockedIndices(extensionState, input);
       }
     } finally {
-      RenderCoreSystrace.endSection();
+      tracer.endSection();
     }
   }
 
@@ -478,7 +479,8 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
     if (state.mTransitionManager == null) {
       state.mTransitionManager =
-          new TransitionManager(new AnimationCompleteListener(extensionState), debugTag);
+          new TransitionManager(
+              new AnimationCompleteListener(extensionState), debugTag, state.mInput.getTracer());
     }
   }
 
@@ -667,7 +669,8 @@ public class TransitionsExtension
               getMountableOutputCountOfRoot(newTransitionsExtensionInput));
 
       // Moving item to the root if needed.
-      remountHostToRootIfNeeded(extensionState, remountIndex, disappearingItem);
+      remountHostToRootIfNeeded(
+          extensionState, remountIndex, disappearingItem, newTransitionsExtensionInput.getTracer());
 
       mapDisappearingItemWithTransitionId(state, disappearingItem);
 
@@ -791,7 +794,10 @@ public class TransitionsExtension
   }
 
   private static void remountHostToRootIfNeeded(
-      ExtensionState<TransitionsExtensionState> extensionState, int index, MountItem mountItem) {
+      ExtensionState<TransitionsExtensionState> extensionState,
+      int index,
+      MountItem mountItem,
+      Systracer tracer) {
     final Host rootHost = getMountTarget(extensionState).getRootHost();
     final Host originalHost = mountItem.getHost();
     if (originalHost == null) {
@@ -841,7 +847,7 @@ public class TransitionsExtension
     originalHost.unmount(mountItem);
 
     // Apply new bounds to the content as it will be mounted in the root now
-    BoundsUtils.applyBoundsToMountContent(left, top, right, bottom, null, content, false);
+    BoundsUtils.applyBoundsToMountContent(left, top, right, bottom, null, content, false, tracer);
 
     // Mount to the root
     rootHost.mount(index, mountItem);
@@ -857,7 +863,8 @@ public class TransitionsExtension
       return;
     }
 
-    RenderCoreSystrace.beginSection("updateAnimatingMountContent");
+    final Systracer tracer = state.mInput.getTracer();
+    tracer.beginSection("updateAnimatingMountContent");
 
     // Group mount content (represents current LayoutStates only) into groups and pass it to the
     // TransitionManager
@@ -902,7 +909,7 @@ public class TransitionsExtension
       state.mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
     }
 
-    RenderCoreSystrace.endSection();
+    tracer.endSection();
   }
 
   private static void maybeRemoveAnimatingMountContent(

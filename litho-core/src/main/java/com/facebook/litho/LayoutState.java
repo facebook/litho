@@ -52,6 +52,7 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
@@ -142,7 +143,7 @@ public class LayoutState
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final LongSparseArray<AnimatableItem> mAnimatableItems = new LongSparseArray<>(8);
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
-
+  private final Systracer mTracer = ComponentsSystrace.getSystrace();
   private final @Nullable List<TestOutput> mTestOutputs;
 
   @Nullable LithoNode mRoot;
@@ -1982,6 +1983,11 @@ public class LayoutState
     return mContext != null
         && mContext.getComponentTree() != null
         && mContext.getComponentTree().isIncrementalMountEnabled();
+  }
+
+  @Override
+  public Systracer getTracer() {
+    return mTracer;
   }
 
   @Override

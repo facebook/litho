@@ -23,6 +23,7 @@ import com.facebook.litho.Transition;
 import com.facebook.litho.TransitionId;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.Systracer;
 import java.util.List;
 import java.util.Map;
 
@@ -73,4 +74,6 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
   List<Transition> getMountTimeTransitions();
 
   boolean isIncrementalMountEnabled();
+
+  Systracer getTracer();
 }

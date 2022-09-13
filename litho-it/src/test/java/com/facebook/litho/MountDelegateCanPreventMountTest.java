@@ -45,7 +45,8 @@ public class MountDelegateCanPreventMountTest {
     when(lithoRenderUnit2.getId()).thenReturn(2l);
 
     MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
-    MountDelegate mountDelegate = new MountDelegate(mountDelegateTarget);
+    MountDelegate mountDelegate =
+        new MountDelegate(mountDelegateTarget, ComponentsSystrace.getSystrace());
 
     // When no extensions are present, calls to isLockedForMount default to true
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isTrue();
@@ -83,7 +84,8 @@ public class MountDelegateCanPreventMountTest {
     when(lithoRenderUnit.getId()).thenReturn(1l);
 
     MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
-    MountDelegate mountDelegate = new MountDelegate(mountDelegateTarget);
+    MountDelegate mountDelegate =
+        new MountDelegate(mountDelegateTarget, ComponentsSystrace.getSystrace());
     MountExtension mountDelegateExtensionPreventMount = mock(MountExtension.class);
     when(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true);
     mountDelegate.registerMountExtension(mountDelegateExtensionPreventMount);

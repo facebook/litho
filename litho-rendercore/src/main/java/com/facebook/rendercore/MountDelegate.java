@@ -45,9 +45,11 @@ public class MountDelegate {
   private boolean mSkipNotifyVisibleBoundsChanged = false;
   private int mNotifyVisibleBoundsChangedNestCount = 0;
   private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
+  private final Systracer mTracer;
 
-  public MountDelegate(MountDelegateTarget mountDelegateTarget) {
+  public MountDelegate(MountDelegateTarget mountDelegateTarget, Systracer tracer) {
     mMountDelegateTarget = mountDelegateTarget;
+    mTracer = tracer;
   }
 
   public void setCollectVisibleBoundsChangedCalls(boolean value) {
@@ -189,7 +191,7 @@ public class MountDelegate {
     }
 
     if (!mCollectVisibleBoundsChangedCalls) {
-      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item);
+      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, mTracer);
       return;
     }
 
@@ -217,7 +219,7 @@ public class MountDelegate {
 
     if (mNotifyVisibleBoundsChangedNestCount == 0) {
       for (Object item : mNotifyVisibleBoundsChangedItems) {
-        RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item);
+        RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, mTracer);
       }
 
       mNotifyVisibleBoundsChangedItems.clear();

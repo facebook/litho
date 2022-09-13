@@ -34,7 +34,7 @@ import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -199,11 +199,15 @@ public class TransitionManager {
   private AnimationBinding mRootAnimationToRun;
   private final String mDebugTag;
   private final Map<Host, Boolean> mOverriddenClipChildrenFlags = new LinkedHashMap<>();
+  private final Systracer mTracer;
 
   public TransitionManager(
-      OnAnimationCompleteListener onAnimationCompleteListener, @Nullable final String debugTag) {
+      OnAnimationCompleteListener onAnimationCompleteListener,
+      @Nullable final String debugTag,
+      Systracer systracer) {
     mOnAnimationCompleteListener = onAnimationCompleteListener;
     mDebugTag = debugTag;
+    mTracer = systracer;
   }
 
   void setupTransitions(
@@ -233,7 +237,7 @@ public class TransitionManager {
       Log.d(mDebugTag, "=== SetupTransitions ===");
     }
 
-    RenderCoreSystrace.beginSection("TransitionManager.setupTransition");
+    mTracer.beginSection("TransitionManager.setupTransition");
 
     for (AnimationState animationState : mAnimationStates.values()) {
       animationState.seenInLastTransition = false;
@@ -288,7 +292,7 @@ public class TransitionManager {
     // that transition id, clean them up now.
     cleanupNonAnimatingAnimationStates();
 
-    RenderCoreSystrace.endSection();
+    mTracer.endSection();
   }
 
   /**
@@ -321,7 +325,7 @@ public class TransitionManager {
    * the corresponding animations.
    */
   void runTransitions() {
-    RenderCoreSystrace.beginSection("runTransitions");
+    mTracer.beginSection("runTransitions");
 
     restoreInitialStates();
 
@@ -335,7 +339,7 @@ public class TransitionManager {
       mRootAnimationToRun = null;
     }
 
-    RenderCoreSystrace.endSection();
+    mTracer.endSection();
   }
 
   /**
@@ -903,7 +907,7 @@ public class TransitionManager {
 
       final String traceName = mTraceNames.get(binding.hashCode());
       if (!TextUtils.isEmpty(traceName)) {
-        RenderCoreSystrace.beginAsyncSection(traceName, binding.hashCode());
+        mTracer.beginAsyncSection(traceName, binding.hashCode());
       }
     }
 
@@ -1082,7 +1086,7 @@ public class TransitionManager {
 
       final String traceName = mTraceNames.get(binding.hashCode());
       if (!TextUtils.isEmpty(traceName)) {
-        RenderCoreSystrace.endAsyncSection(traceName, binding.hashCode());
+        mTracer.endAsyncSection(traceName, binding.hashCode());
         mTraceNames.delete(binding.hashCode());
       }
     }

@@ -23,17 +23,22 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.Systracer;
 
 public class BoundsUtils {
 
   public static void applyBoundsToMountContent(
       RenderTreeNode renderTreeNode, Object content, boolean force) {
+    applyBoundsToMountContent(renderTreeNode, content, force, null);
+  }
+
+  public static void applyBoundsToMountContent(
+      RenderTreeNode renderTreeNode, Object content, boolean force, @Nullable Systracer tracer) {
     final Rect bounds = renderTreeNode.getBounds();
     final Rect padding = renderTreeNode.getResolvedPadding();
     BoundsUtils.applyBoundsToMountContent(
-        bounds.left, bounds.top, bounds.right, bounds.bottom, padding, content, force);
+        bounds.left, bounds.top, bounds.right, bounds.bottom, padding, content, force, tracer);
   }
 
   /**
@@ -48,9 +53,25 @@ public class BoundsUtils {
       @Nullable final Rect padding,
       Object content,
       boolean force) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    applyBoundsToMountContent(left, top, right, bottom, padding, content, force, null);
+  }
+
+  /**
+   * Sets the bounds on the given content if the content doesn't already have those bounds (or if
+   * 'force' * is supplied).
+   */
+  public static void applyBoundsToMountContent(
+      int left,
+      int top,
+      int right,
+      int bottom,
+      @Nullable final Rect padding,
+      Object content,
+      boolean force,
+      @Nullable Systracer tracer) {
+    final boolean isTracing = tracer != null && tracer.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("applyBoundsToMountContent");
+      tracer.beginSection("applyBoundsToMountContent");
     }
     try {
       if (content instanceof View) {
@@ -68,7 +89,7 @@ public class BoundsUtils {
       }
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        tracer.endSection();
       }
     }
   }

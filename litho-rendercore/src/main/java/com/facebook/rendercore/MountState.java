@@ -371,7 +371,7 @@ public class MountState implements MountDelegateTarget {
   @Override
   public ExtensionState registerMountExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
-      mMountDelegate = new MountDelegate(this);
+      mMountDelegate = new MountDelegate(this, mTracer);
     }
     return mMountDelegate.registerMountExtension(mountExtension);
   }
@@ -458,7 +458,7 @@ public class MountState implements MountDelegateTarget {
           && ((View) content).isLayoutRequested()) {
         final View view = (View) content;
 
-        BoundsUtils.applyBoundsToMountContent(mountItem.getRenderTreeNode(), view, true);
+        BoundsUtils.applyBoundsToMountContent(mountItem.getRenderTreeNode(), view, true, mTracer);
       }
     }
 
@@ -527,7 +527,7 @@ public class MountState implements MountDelegateTarget {
     final boolean forceTraversal = content instanceof View && ((View) content).isLayoutRequested();
 
     BoundsUtils.applyBoundsToMountContent(
-        item.getRenderTreeNode(), item.getContent(), forceTraversal /* force */);
+        item.getRenderTreeNode(), item.getContent(), forceTraversal /* force */, mTracer);
 
     if (mountDelegate != null) {
       mountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
@@ -729,7 +729,8 @@ public class MountState implements MountDelegateTarget {
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
-    BoundsUtils.applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
+    BoundsUtils.applyBoundsToMountContent(
+        renderTreeNode, item.getContent(), true /* force */, mTracer);
 
     if (isTracing) {
       mTracer.endSection();
@@ -910,7 +911,7 @@ public class MountState implements MountDelegateTarget {
   private void addExtensions(@Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {
     if (extensions != null) {
       if (mMountDelegate == null) {
-        mMountDelegate = new MountDelegate(this);
+        mMountDelegate = new MountDelegate(this, mTracer);
       }
       mMountDelegate.registerExtensions(extensions);
     }

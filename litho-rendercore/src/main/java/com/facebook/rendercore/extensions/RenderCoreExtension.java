@@ -26,6 +26,7 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.Systracer;
 import java.util.List;
 import java.util.Stack;
 
@@ -138,8 +139,14 @@ public class RenderCoreExtension<Input, State> {
     return false;
   }
 
-  public static void recursivelyNotifyVisibleBoundsChanged(final @Nullable Object content) {
-    RenderCoreSystrace.beginSection("recursivelyNotifyVisibleBoundsChanged");
+  public static void recursivelyNotifyVisibleBoundsChanged(@Nullable Object content) {
+    recursivelyNotifyVisibleBoundsChanged(content, null);
+  }
+
+  public static void recursivelyNotifyVisibleBoundsChanged(
+      final @Nullable Object content, @Nullable Systracer tracer) {
+    final Systracer systracer = tracer != null ? tracer : RenderCoreSystrace.getInstance();
+    systracer.beginSection("recursivelyNotifyVisibleBoundsChanged");
 
     if (content != null) {
       final Stack<Object> contentStack = new Stack<>();
@@ -159,6 +166,6 @@ public class RenderCoreExtension<Input, State> {
       }
     }
 
-    RenderCoreSystrace.endSection();
+    systracer.endSection();
   }
 }
