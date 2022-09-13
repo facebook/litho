@@ -35,6 +35,7 @@ android {
         compileOnly deps.jsr305
         compileOnly deps.proguardAnnotations
         compileOnly deps.supportAnnotations
+        api project(':litho-core')
     }
 }
 

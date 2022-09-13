@@ -27,7 +27,6 @@ import com.facebook.litho.StateContainer
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
-import com.facebook.litho.drawable.ComparableColorDrawable
 import java.util.ArrayList
 
 object DataUtils {
@@ -122,15 +121,11 @@ object DataUtils {
   }
 
   @JvmStatic
-  fun fromDrawable(d: Drawable?): InspectorValue<*> {
-    var color = 0
-    if (d is ColorDrawable) {
-      color = d.color
-    } else if (d is ComparableColorDrawable) {
-      color = d.color
-    }
-    return InspectorValue.mutable(Color, color)
-  }
+  fun fromDrawable(d: Drawable?): InspectorValue<*> =
+      when (d) {
+        is ColorDrawable -> InspectorValue.immutable(Color, d.color)
+        else -> InspectorValue.immutable(d)
+      }
 
   @JvmStatic fun fromColor(color: Int): InspectorValue<*> = InspectorValue.mutable(Color, color)
 }

@@ -25,6 +25,7 @@ import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.litho.editor.EditorRegistry;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
+import com.facebook.litho.editor.model.EditorColor;
 import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorPick;
 import com.facebook.litho.editor.model.EditorShape;
@@ -210,6 +211,11 @@ public class FlipperEditor {
           @Override
           public Object isNumber(EditorNumber number) {
             return InspectorValue.mutable(number.value);
+          }
+
+          @Override
+          public Object isColor(EditorColor number) {
+            return InspectorValue.mutable(InspectorValue.Type.Color, number.value.intValue());
           }
 
           @Override

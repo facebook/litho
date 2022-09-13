@@ -19,6 +19,7 @@ package com.facebook.litho.editor;
 import com.facebook.litho.editor.instances.EditorUtils;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
+import com.facebook.litho.editor.model.EditorColor;
 import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorPick;
 import com.facebook.litho.editor.model.EditorShape;
@@ -103,6 +104,13 @@ public final class SimpleEditor {
                     public boolean isNumber(String[] path, EditorNumber number) {
                       propertyEditor.writeNumberProperty(
                           value, updatedProperty.getKey(), number.value);
+                      return true;
+                    }
+
+                    @Override
+                    public boolean isColor(String[] path, EditorColor color) {
+                      propertyEditor.writeNumberProperty(
+                          value, updatedProperty.getKey(), color.value);
                       return true;
                     }
 
@@ -226,6 +234,12 @@ public final class SimpleEditor {
       }
 
       @Override
+      public boolean isColor(String[] path, EditorColor color) {
+        numberProperties.put(key, color.value);
+        return false;
+      }
+
+      @Override
       public boolean isString(String[] path, EditorString string) {
         stringProperties.put(key, string.value);
         return false;
@@ -308,6 +322,10 @@ public final class SimpleEditor {
       return new SimpleEditorValue(new EditorNumber(n), PRIMITIVE_TYPE_NUMBER);
     }
 
+    public static SimpleEditorValue color(Number n) {
+      return new SimpleEditorValue(new EditorNumber(n), PRIMITIVE_TYPE_NUMBER);
+    }
+
     public static SimpleEditorValue string(String s) {
       return new SimpleEditorValue(new EditorString(s), PRIMITIVE_TYPE_STRING);
     }
@@ -344,6 +362,11 @@ public final class SimpleEditor {
           @Override
           public @Nullable SimpleEditorValue isNumber(EditorNumber number) {
             return SimpleEditorValue.number(number.value);
+          }
+
+          @Override
+          public @Nullable SimpleEditorValue isColor(EditorColor color) {
+            return SimpleEditorValue.color(color.value);
           }
 
           @Override

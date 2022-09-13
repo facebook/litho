@@ -33,6 +33,10 @@ public abstract class EditorValue {
     return new EditorNumber(n);
   }
 
+  public static EditorValue color(Number n) {
+    return new EditorColor(n);
+  }
+
   public static EditorValue string(String s) {
     return new EditorString(s);
   }
@@ -72,6 +76,8 @@ public abstract class EditorValue {
 
     R isNumber(EditorNumber number);
 
+    R isColor(EditorColor number);
+
     R isString(EditorString string);
 
     R isBool(EditorBool bool);
@@ -96,6 +102,10 @@ public abstract class EditorValue {
       return null;
     }
 
+    public @Nullable Void isColor(EditorColor color) {
+      return null;
+    }
+
     public @Nullable Void isString(EditorString string) {
       return null;
     }
@@ -114,6 +124,8 @@ public abstract class EditorValue {
 
     boolean isNumber(String[] path, EditorNumber number);
 
+    boolean isColor(String[] path, EditorColor color);
+
     boolean isString(String[] path, EditorString string);
 
     boolean isBool(String[] path, EditorBool bool);
@@ -125,6 +137,11 @@ public abstract class EditorValue {
 
     @Override
     public boolean isNumber(String[] path, EditorNumber number) {
+      return false;
+    }
+
+    @Override
+    public boolean isColor(String[] path, EditorColor color) {
       return false;
     }
 
@@ -184,6 +201,11 @@ public abstract class EditorValue {
           }
 
           @Override
+          public Boolean isColor(EditorColor color) {
+            return visitor.isColor(path.toArray(new String[] {}), color);
+          }
+
+          @Override
           public Boolean isString(EditorString string) {
             return visitor.isString(path.toArray(new String[] {}), string);
           }
@@ -226,6 +248,12 @@ public abstract class EditorValue {
           }
 
           @Override
+          public Boolean isColor(EditorColor color) {
+            ref.set(aggregator.addColor(ref.get(), color));
+            return false;
+          }
+
+          @Override
           public Boolean isString(EditorString string) {
             ref.set(aggregator.addString(ref.get(), string));
             return false;
@@ -247,6 +275,8 @@ public abstract class EditorValue {
     R addArray(R aggregator, EditorArray array);
 
     R addNumber(R aggregator, EditorNumber number);
+
+    R addColor(R aggregator, EditorColor color);
 
     R addString(R aggregator, EditorString string);
 

@@ -121,7 +121,6 @@ class PropDataTest {
     assertThat(flipperObject.getObject("singleDescription").getString("value"))
         .isEqualTo("Hello World!")
 
-    // Map values are added directly ot the prop list
     val mapDescription = flipperObject.getObject("mapDescription")
     assertThat(mapDescription.getObject("Hello").getInt("value")).isEqualTo(1)
     assertThat(mapDescription.getObject("World").getInt("value")).isEqualTo(2)
