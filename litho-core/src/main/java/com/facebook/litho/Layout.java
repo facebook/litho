@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaFlexDirection;
@@ -169,9 +168,9 @@ class Layout {
 
     final LithoLayoutResult result;
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
+      ComponentsSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
     }
 
     final LayoutContext<LithoRenderContext> context =
@@ -181,7 +180,7 @@ class Layout {
     result = node.calculateLayout(context, widthSpec, heightSpec);
 
     if (isTracing) {
-      RenderCoreSystrace.endSection(/* measureTree */ );
+      ComponentsSystrace.endSection(/* measureTree */ );
     }
 
     if (layoutStatePerfEvent != null) {
@@ -232,9 +231,9 @@ class Layout {
       final boolean resolveNestedTree,
       final @Nullable String globalKeyToReuse) {
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("createLayout:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
     final LithoNode node;
@@ -333,12 +332,12 @@ class Layout {
       return null;
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
 
     if (isTracing) {
-      RenderCoreSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
     }
 
     // 8. Set the measure function
@@ -395,7 +394,7 @@ class Layout {
     scopedComponentInfo.addWorkingRangeToNode(node);
 
     if (isTracing) {
-      RenderCoreSystrace.endSection();
+      ComponentsSystrace.endSection();
     }
 
     return node;

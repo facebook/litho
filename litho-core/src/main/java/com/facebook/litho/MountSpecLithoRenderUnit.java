@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderUnit;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
@@ -306,11 +305,11 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       Component nextComponent,
       ComponentContext nextScopedContext) {
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
     try {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("MountState.shouldUpdate");
+        ComponentsSystrace.beginSection("MountState.shouldUpdate");
       }
       return currentComponent.shouldComponentUpdate(
           currentScopedContext, currentComponent, nextScopedContext, nextComponent);
@@ -319,7 +318,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       return true;
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }

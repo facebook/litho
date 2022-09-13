@@ -39,7 +39,6 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountState;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RootHost;
@@ -453,15 +452,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("LithoView.onMeasure");
+        ComponentsSystrace.beginSection("LithoView.onMeasure");
       }
       onMeasureInternal(widthMeasureSpec, heightMeasureSpec);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -582,15 +581,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("LithoView.performLayout");
+        ComponentsSystrace.beginSection("LithoView.performLayout");
       }
       performLayoutInternal(changed, left, top, right, bottom);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1137,15 +1136,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   public void draw(Canvas canvas) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("LithoView.draw");
+        ComponentsSystrace.beginSection("LithoView.draw");
       }
       drawInternal(canvas);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1405,9 +1404,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("LithoView.notifyVisibleBoundsChangedWithRect");
+      ComponentsSystrace.beginSection("LithoView.notifyVisibleBoundsChangedWithRect");
     }
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
@@ -1415,7 +1414,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       processVisibilityOutputs(visibleRect);
     }
     if (isTracing) {
-      RenderCoreSystrace.endSection();
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -1433,9 +1432,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("LithoView.notifyVisibleBoundsChanged");
+      ComponentsSystrace.beginSection("LithoView.notifyVisibleBoundsChanged");
     }
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.incrementalMountComponent();
@@ -1443,7 +1442,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       processVisibilityOutputs();
     }
     if (isTracing) {
-      RenderCoreSystrace.endSection();
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -1655,9 +1654,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("LithoView.processVisibilityOutputs");
+      ComponentsSystrace.beginSection("LithoView.processVisibilityOutputs");
     }
     try {
       final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
@@ -1677,7 +1676,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       mPreviousMountVisibleRectBounds.set(currentVisibleArea);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }

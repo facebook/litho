@@ -49,7 +49,6 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -1334,7 +1333,7 @@ public class LayoutState
           Preconditions.checkNotNull(layoutState.mPartiallyResolvedRoot);
 
       if (isTracing) {
-        RenderCoreSystrace.beginSection(
+        ComponentsSystrace.beginSection(
             "resume:" + partialResolvedRoot.getHeadComponent().getSimpleName());
       }
 
@@ -1358,7 +1357,7 @@ public class LayoutState
         }
       } finally {
         if (isTracing) {
-          RenderCoreSystrace.endSection();
+          ComponentsSystrace.endSection();
         }
       }
 

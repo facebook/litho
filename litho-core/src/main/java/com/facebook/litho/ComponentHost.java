@@ -48,7 +48,6 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.MountState;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.transitions.DisappearingHost;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1355,13 +1354,13 @@ public class ComponentHost extends Host implements DisappearingHost {
           continue;
         }
 
-        final boolean isTracing = RenderCoreSystrace.isTracing();
+        final boolean isTracing = ComponentsSystrace.isTracing();
         if (isTracing) {
-          RenderCoreSystrace.beginSection("draw: " + getMountItemName(mountItem));
+          ComponentsSystrace.beginSection("draw: " + getMountItemName(mountItem));
         }
         ((Drawable) content).draw(mCanvas);
         if (isTracing) {
-          RenderCoreSystrace.endSection();
+          ComponentsSystrace.endSection();
         }
       }
 

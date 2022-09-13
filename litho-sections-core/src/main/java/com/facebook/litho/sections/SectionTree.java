@@ -38,6 +38,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
+import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
@@ -62,7 +63,6 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import java.util.ArrayList;
@@ -1175,16 +1175,16 @@ public class SectionTree {
       attribution = mTag;
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       if (attribution != null) {
-        RenderCoreSystrace.beginSection("extra:" + attribution);
+        ComponentsSystrace.beginSection("extra:" + attribution);
       }
       final String name;
       synchronized (this) {
         name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
       }
-      RenderCoreSystrace.beginSection(
+      ComponentsSystrace.beginSection(
           name
               + "_applyNewChangeSet_"
               + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
@@ -1243,7 +1243,7 @@ public class SectionTree {
       // re-assign nextRoot.
       while (nextRoot != null) {
         if (isTracing) {
-          RenderCoreSystrace.beginSection("calculateNewChangeSet");
+          ComponentsSystrace.beginSection("calculateNewChangeSet");
         }
         final ChangeSetState changeSetState =
             calculateNewChangeSet(
@@ -1255,7 +1255,7 @@ public class SectionTree {
                 mTag,
                 enableStats);
         if (isTracing) {
-          RenderCoreSystrace.endSection();
+          ComponentsSystrace.endSection();
         }
 
         final boolean changeSetIsValid;
@@ -1339,9 +1339,9 @@ public class SectionTree {
       }
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
         if (attribution != null) {
-          RenderCoreSystrace.endSection();
+          ComponentsSystrace.endSection();
         }
       }
       LithoStats.incrementSectionCalculateNewChangesetCount();
@@ -1539,9 +1539,9 @@ public class SectionTree {
           "Must use UIThread-only variant when background change sets are not enabled.");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("applyChangeSetsToTargetBackgroundAllowed");
+      ComponentsSystrace.beginSection("applyChangeSetsToTargetBackgroundAllowed");
     }
 
     try {
@@ -1575,7 +1575,7 @@ public class SectionTree {
       }
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1589,9 +1589,9 @@ public class SectionTree {
           "Cannot use UIThread-only variant when background change sets are enabled.");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("applyChangeSetsToTargetUIThreadOnly");
+      ComponentsSystrace.beginSection("applyChangeSetsToTargetUIThreadOnly");
     }
 
     try {
@@ -1611,7 +1611,7 @@ public class SectionTree {
       maybeDispatchFocusRequests();
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1636,10 +1636,10 @@ public class SectionTree {
       final Section currentSection,
       List<ChangeSet> changeSets,
       @Nullable final ChangesetDebugInfo changesetDebugInfo) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      RenderCoreSystrace.beginSection("applyChangeSetToTarget");
+      ComponentsSystrace.beginSection("applyChangeSetToTarget");
     }
     boolean appliedChanges = false;
     final List<Change> changes = new ArrayList<>();
@@ -1718,13 +1718,13 @@ public class SectionTree {
               }
 
               if (isTracing) {
-                RenderCoreSystrace.beginSection("dataBound");
+                ComponentsSystrace.beginSection("dataBound");
               }
               try {
                 dataBound(currentSection);
               } finally {
                 if (isTracing) {
-                  RenderCoreSystrace.endSection();
+                  ComponentsSystrace.endSection();
                 }
               }
             }
@@ -1736,7 +1736,7 @@ public class SectionTree {
           });
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1756,16 +1756,16 @@ public class SectionTree {
         SectionsLogEventUtils.getSectionsPerformanceEvent(
             context, EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("createTree");
+      ComponentsSystrace.beginSection("createTree");
     }
     try {
       createNewTreeAndApplyStateUpdates(
           context, currentRoot, nextRoot, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
     if (logger != null && logEvent != null) {
@@ -1773,14 +1773,14 @@ public class SectionTree {
     }
 
     if (isTracing) {
-      RenderCoreSystrace.beginSection("ChangeSetState.generateChangeSet");
+      ComponentsSystrace.beginSection("ChangeSetState.generateChangeSet");
     }
     try {
       return ChangeSetState.generateChangeSet(
           context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "", enableStats);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1800,9 +1800,9 @@ public class SectionTree {
       throw new IllegalStateException("Can't generate a subtree with a null root");
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("createChildren:" + nextRoot.getSimpleName());
+      ComponentsSystrace.beginSection("createChildren:" + nextRoot.getSimpleName());
     }
 
     try {
@@ -1918,7 +1918,7 @@ public class SectionTree {
       }
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }

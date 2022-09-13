@@ -30,7 +30,6 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
-import com.facebook.rendercore.RenderCoreSystrace;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -69,9 +68,9 @@ public abstract class SpecGeneratedComponent extends Component
     if (c != null) {
       c.enterNoStateUpdatesMethod("bind");
     }
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("onBind: " + getSimpleName());
+      ComponentsSystrace.beginSection("onBind: " + getSimpleName());
     }
     try {
       onBind(c, mountedContent, interStagePropsContainer);
@@ -86,7 +85,7 @@ public abstract class SpecGeneratedComponent extends Component
         c.exitNoStateUpdatesMethod();
       }
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -98,9 +97,9 @@ public abstract class SpecGeneratedComponent extends Component
     if (c != null) {
       c.enterNoStateUpdatesMethod("mount");
     }
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("onMount: " + getSimpleName());
+      ComponentsSystrace.beginSection("onMount: " + getSimpleName());
     }
     try {
       onMount(c, convertContent, interStagePropsContainer);
@@ -115,7 +114,7 @@ public abstract class SpecGeneratedComponent extends Component
         c.exitNoStateUpdatesMethod();
       }
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -124,16 +123,16 @@ public abstract class SpecGeneratedComponent extends Component
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("onUnbind: " + getSimpleName());
+      ComponentsSystrace.beginSection("onUnbind: " + getSimpleName());
     }
     try {
       onUnbind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       ComponentUtils.handle(c, e);
     } finally {
-      RenderCoreSystrace.endSection();
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -141,16 +140,16 @@ public abstract class SpecGeneratedComponent extends Component
       final ComponentContext c,
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("onUnmount: " + getSimpleName());
+      ComponentsSystrace.beginSection("onUnmount: " + getSimpleName());
     }
     try {
       onUnmount(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       ComponentUtils.handle(c, e);
     } finally {
-      RenderCoreSystrace.endSection();
+      ComponentsSystrace.endSection();
     }
   }
 

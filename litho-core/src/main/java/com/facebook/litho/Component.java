@@ -60,7 +60,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -157,40 +156,40 @@ public abstract class Component
 
   @ThreadSafe(enableChecks = false)
   public final Object createMountContent(Context c) {
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      RenderCoreSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
+      ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
     }
     try {
       return onCreateMountContent(c);
     } finally {
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
 
   @Override
   public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    boolean isTracing = RenderCoreSystrace.isTracing();
+    boolean isTracing = ComponentsSystrace.isTracing();
 
     // We don't want to wrap and throw error events
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       if (isTracing) {
-        RenderCoreSystrace.beginSection("dispatchErrorEvent");
+        ComponentsSystrace.beginSection("dispatchErrorEvent");
       }
       try {
         return dispatchOnEventImpl(eventHandler, eventState);
       } finally {
         if (isTracing) {
-          RenderCoreSystrace.endSection();
+          ComponentsSystrace.endSection();
         }
       }
     }
 
     final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
     if (isTracing) {
-      RenderCoreSystrace.beginSection("dispatchOnEvent");
+      ComponentsSystrace.beginSection("dispatchOnEvent");
     }
     try {
       return dispatchOnEventImpl(eventHandler, eventState);
@@ -204,7 +203,7 @@ public abstract class Component
     } finally {
       EventDispatcherInstrumenter.onEndWork(token);
       if (isTracing) {
-        RenderCoreSystrace.endSection();
+        ComponentsSystrace.endSection();
       }
     }
   }
