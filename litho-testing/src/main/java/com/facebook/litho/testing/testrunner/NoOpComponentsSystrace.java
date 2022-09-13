@@ -16,9 +16,9 @@
 
 package com.facebook.litho.testing.testrunner;
 
-import com.facebook.litho.ComponentsSystrace;
+import com.facebook.rendercore.RenderCoreSystrace;
 
-public class NoOpComponentsSystrace implements ComponentsSystrace.Systrace {
+public class NoOpComponentsSystrace implements RenderCoreSystrace.IRenderCoreSystrace {
 
   public static final NoOpComponentsSystrace sInstance = new NoOpComponentsSystrace();
 
@@ -32,8 +32,8 @@ public class NoOpComponentsSystrace implements ComponentsSystrace.Systrace {
   public void beginAsyncSection(String name, int cookie) {}
 
   @Override
-  public ComponentsSystrace.ArgsBuilder beginSectionWithArgs(String name) {
-    return ComponentsSystrace.NO_OP_ARGS_BUILDER;
+  public RenderCoreSystrace.ArgsBuilder beginSectionWithArgs(String name) {
+    return RenderCoreSystrace.NO_OP_ARGS_BUILDER;
   }
 
   @Override

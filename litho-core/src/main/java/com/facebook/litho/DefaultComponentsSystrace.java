@@ -19,8 +19,9 @@ package com.facebook.litho;
 import android.os.Build;
 import android.os.Trace;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.RenderCoreSystrace;
 
-public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
+public class DefaultComponentsSystrace implements RenderCoreSystrace.IRenderCoreSystrace {
 
   @Override
   public void beginSection(String name) {
@@ -41,13 +42,9 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   }
 
   @Override
-  public ComponentsSystrace.ArgsBuilder beginSectionWithArgs(String name) {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      return new DefaultArgsBuilder(name);
-    }
-
-    return ComponentsSystrace.NO_OP_ARGS_BUILDER;
+  public RenderCoreSystrace.ArgsBuilder beginSectionWithArgs(String name) {
+    beginSection(name);
+    return RenderCoreSystrace.NO_OP_ARGS_BUILDER;
   }
 
   @Override
@@ -73,43 +70,5 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
     return ComponentsConfiguration.IS_INTERNAL_BUILD
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
         && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled());
-  }
-
-  /**
-   * Ignores args. This functionality has a more intelligent implementation when using a tracer that
-   * writes directly to ftrace instead of using Android's Trace class.
-   */
-  private static final class DefaultArgsBuilder implements ComponentsSystrace.ArgsBuilder {
-
-    private final String mName;
-
-    public DefaultArgsBuilder(String name) {
-      mName = name;
-    }
-
-    @Override
-    public void flush() {
-      Trace.beginSection(mName);
-    }
-
-    @Override
-    public ComponentsSystrace.ArgsBuilder arg(String key, Object value) {
-      return this;
-    }
-
-    @Override
-    public ComponentsSystrace.ArgsBuilder arg(String key, int value) {
-      return this;
-    }
-
-    @Override
-    public ComponentsSystrace.ArgsBuilder arg(String key, long value) {
-      return this;
-    }
-
-    @Override
-    public ComponentsSystrace.ArgsBuilder arg(String key, double value) {
-      return this;
-    }
   }
 }

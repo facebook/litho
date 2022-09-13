@@ -16,82 +16,29 @@
 
 package com.facebook.litho;
 
+import com.facebook.rendercore.RenderCoreSystrace;
+
 /**
  * This is intended as a hook into {@code android.os.Trace}, but allows you to provide your own
  * functionality. Use it as
  *
  * <p>{@code ComponentsSystrace.beginSection("tag"); ... ComponentsSystrace.endSection(); } As a
  * default, it simply calls {@code android.os.Trace} (see {@link DefaultComponentsSystrace}). You
- * may supply your own with {@link ComponentsSystrace#provide(Systrace)}.
+ * may supply your own with {@link
+ * ComponentsSystrace#provide(RenderCoreSystrace.IRenderCoreSystrace)}.
  */
 public class ComponentsSystrace {
 
-  /** Convenience implementation of ArgsBuilder to use when we aren't tracing. */
-  public static final ArgsBuilder NO_OP_ARGS_BUILDER = new NoOpArgsBuilder();
-
-  private static Systrace sInstance = new DefaultComponentsSystrace();
-
-  public interface Systrace {
-    void beginSection(String name);
-
-    void beginAsyncSection(String name);
-
-    void beginAsyncSection(String name, int cookie);
-
-    ArgsBuilder beginSectionWithArgs(String name);
-
-    void endSection();
-
-    void endAsyncSection(String name);
-
-    void endAsyncSection(String name, int cookie);
-
-    boolean isTracing();
-  }
-
-  /** Object that accumulates arguments. */
-  public interface ArgsBuilder {
-
-    /**
-     * Write the full message to the Systrace buffer.
-     *
-     * <p>You must call this to log the trace message.
-     */
-    void flush();
-
-    /**
-     * Logs an argument whose value is any object. It will be stringified with {@link
-     * String#valueOf(Object)}.
-     */
-    ArgsBuilder arg(String key, Object value);
-
-    /**
-     * Logs an argument whose value is an int. It will be stringified with {@link
-     * String#valueOf(int)}.
-     */
-    ArgsBuilder arg(String key, int value);
-
-    /**
-     * Logs an argument whose value is a long. It will be stringified with {@link
-     * String#valueOf(long)}.
-     */
-    ArgsBuilder arg(String key, long value);
-
-    /**
-     * Logs an argument whose value is a double. It will be stringified with {@link
-     * String#valueOf(double)}.
-     */
-    ArgsBuilder arg(String key, double value);
-  }
+  private static RenderCoreSystrace.IRenderCoreSystrace sInstance = new DefaultComponentsSystrace();
 
   private ComponentsSystrace() {}
 
   /** This should be called exactly once at app startup, before any Litho work happens. */
-  public static void provide(Systrace instance) {
+  public static void provide(RenderCoreSystrace.IRenderCoreSystrace instance) {
     sInstance = instance;
   }
 
-  public static Systrace getSystrace() {
+  public static RenderCoreSystrace.IRenderCoreSystrace getSystrace() {
     return sInstance;
   }
 
@@ -109,8 +56,8 @@ public class ComponentsSystrace {
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
-   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
-   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
+   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void beginAsyncSection(String name) {
     sInstance.beginAsyncSection(name);
@@ -122,14 +69,14 @@ public class ComponentsSystrace {
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
-   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
-   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
+   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void beginAsyncSection(String name, int cookie) {
     sInstance.beginAsyncSection(name, cookie);
   }
 
-  public static ArgsBuilder beginSectionWithArgs(String name) {
+  public static RenderCoreSystrace.ArgsBuilder beginSectionWithArgs(String name) {
     return sInstance.beginSectionWithArgs(name);
   }
 
@@ -147,8 +94,8 @@ public class ComponentsSystrace {
    * Writes a trace message to indicate that the current method has ended. Must be called exactly
    * once for each call to {@link #beginAsyncSection(String)} using the same tag, name and cookie.
    *
-   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
-   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
+   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void endAsyncSection(String name) {
     sInstance.endAsyncSection(name);
@@ -159,8 +106,8 @@ public class ComponentsSystrace {
    * once for each call to {@link #beginAsyncSection(String, int)} using the same tag, name and
    * cookie.
    *
-   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
-   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   * <p class="note">Depending on provided {@link RenderCoreSystrace.IRenderCoreSystrace} instance,
+   * this method could vary in behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void endAsyncSection(String name, int cookie) {
     sInstance.endAsyncSection(name, cookie);
@@ -168,31 +115,5 @@ public class ComponentsSystrace {
 
   public static boolean isTracing() {
     return sInstance.isTracing();
-  }
-
-  private static final class NoOpArgsBuilder implements ArgsBuilder {
-
-    @Override
-    public void flush() {}
-
-    @Override
-    public ArgsBuilder arg(String key, Object value) {
-      return this;
-    }
-
-    @Override
-    public ArgsBuilder arg(String key, int value) {
-      return this;
-    }
-
-    @Override
-    public ArgsBuilder arg(String key, long value) {
-      return this;
-    }
-
-    @Override
-    public ArgsBuilder arg(String key, double value) {
-      return this;
-    }
   }
 }
