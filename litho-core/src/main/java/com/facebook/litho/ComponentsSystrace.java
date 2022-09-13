@@ -34,17 +34,17 @@ public class ComponentsSystrace {
   public interface Systrace {
     void beginSection(String name);
 
-    void beginSectionAsync(String name);
+    void beginAsyncSection(String name);
 
-    void beginSectionAsync(String name, int cookie);
+    void beginAsyncSection(String name, int cookie);
 
     ArgsBuilder beginSectionWithArgs(String name);
 
     void endSection();
 
-    void endSectionAsync(String name);
+    void endAsyncSection(String name);
 
-    void endSectionAsync(String name, int cookie);
+    void endAsyncSection(String name, int cookie);
 
     boolean isTracing();
   }
@@ -105,28 +105,28 @@ public class ComponentsSystrace {
 
   /**
    * Writes a trace message to indicate that a given section of code has begun. Must be followed by
-   * a call to {@link #endSectionAsync(String)} using the same tag. Unlike {@link
+   * a call to {@link #endAsyncSection(String)} using the same tag. Unlike {@link
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
    * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
-  public static void beginSectionAsync(String name) {
-    sInstance.beginSectionAsync(name);
+  public static void beginAsyncSection(String name) {
+    sInstance.beginAsyncSection(name);
   }
 
   /**
    * Writes a trace message to indicate that a given section of code has begun. Must be followed by
-   * a call to {@link #endSectionAsync(String, int)} using the same tag. Unlike {@link
+   * a call to {@link #endAsyncSection(String, int)} using the same tag. Unlike {@link
    * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
    * The name and cookie used to begin an event must be used to end it.
    *
    * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
-  public static void beginSectionAsync(String name, int cookie) {
-    sInstance.beginSectionAsync(name, cookie);
+  public static void beginAsyncSection(String name, int cookie) {
+    sInstance.beginAsyncSection(name, cookie);
   }
 
   public static ArgsBuilder beginSectionWithArgs(String name) {
@@ -145,25 +145,25 @@ public class ComponentsSystrace {
 
   /**
    * Writes a trace message to indicate that the current method has ended. Must be called exactly
-   * once for each call to {@link #beginSectionAsync(String)} using the same tag, name and cookie.
+   * once for each call to {@link #beginAsyncSection(String)} using the same tag, name and cookie.
    *
    * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
-  public static void endSectionAsync(String name) {
-    sInstance.endSectionAsync(name);
+  public static void endAsyncSection(String name) {
+    sInstance.endAsyncSection(name);
   }
 
   /**
    * Writes a trace message to indicate that the current method has ended. Must be called exactly
-   * once for each call to {@link #beginSectionAsync(String, int)} using the same tag, name and
+   * once for each call to {@link #beginAsyncSection(String, int)} using the same tag, name and
    * cookie.
    *
    * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
-  public static void endSectionAsync(String name, int cookie) {
-    sInstance.endSectionAsync(name, cookie);
+  public static void endAsyncSection(String name, int cookie) {
+    sInstance.endAsyncSection(name, cookie);
   }
 
   public static boolean isTracing() {

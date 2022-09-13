@@ -31,12 +31,12 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   }
 
   @Override
-  public void beginSectionAsync(String name) {
+  public void beginAsyncSection(String name) {
     // no-op
   }
 
   @Override
-  public void beginSectionAsync(String name, int cookie) {
+  public void beginAsyncSection(String name, int cookie) {
     // no-op
   }
 
@@ -59,12 +59,12 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   }
 
   @Override
-  public void endSectionAsync(String name) {
+  public void endAsyncSection(String name) {
     // no-op
   }
 
   @Override
-  public void endSectionAsync(String name, int cookie) {
+  public void endAsyncSection(String name, int cookie) {
     // no-op
   }
 

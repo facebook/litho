@@ -26,10 +26,10 @@ public class NoOpComponentsSystrace implements ComponentsSystrace.Systrace {
   public void beginSection(String name) {}
 
   @Override
-  public void beginSectionAsync(String name) {}
+  public void beginAsyncSection(String name) {}
 
   @Override
-  public void beginSectionAsync(String name, int cookie) {}
+  public void beginAsyncSection(String name, int cookie) {}
 
   @Override
   public ComponentsSystrace.ArgsBuilder beginSectionWithArgs(String name) {
@@ -40,10 +40,10 @@ public class NoOpComponentsSystrace implements ComponentsSystrace.Systrace {
   public void endSection() {}
 
   @Override
-  public void endSectionAsync(String name) {}
+  public void endAsyncSection(String name) {}
 
   @Override
-  public void endSectionAsync(String name, int cookie) {}
+  public void endAsyncSection(String name, int cookie) {}
 
   @Override
   public boolean isTracing() {
