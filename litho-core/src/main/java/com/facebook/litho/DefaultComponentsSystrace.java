@@ -71,7 +71,8 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   @Override
   public boolean isTracing() {
     return ComponentsConfiguration.IS_INTERNAL_BUILD
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+        && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled());
   }
 
   /**
