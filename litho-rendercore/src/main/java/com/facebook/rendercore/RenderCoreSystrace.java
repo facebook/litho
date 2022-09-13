@@ -18,52 +18,138 @@ package com.facebook.rendercore;
 
 import android.os.Build;
 import android.os.Trace;
-import androidx.annotation.Nullable;
 
 public final class RenderCoreSystrace {
 
   public interface IRenderCoreSystrace {
-    void beginSection(String name, Class value);
+
+    void beginSection(String name);
+
+    void beginAsyncSection(String name);
+
+    void beginAsyncSection(String name, int cookie);
+
+    ArgsBuilder beginSectionWithArgs(String name);
 
     void endSection();
 
-    void beginAsyncSection(String name, Class value, int cookie);
+    void endAsyncSection(String name);
 
-    void endAsyncSection(String name, Class value, int cookie);
+    void endAsyncSection(String name, int cookie);
 
     boolean isEnabled();
   }
 
+  /** Object that accumulates arguments for beginSectionWithArgs. */
+  public interface ArgsBuilder {
+
+    /**
+     * Write the full message to the Systrace buffer.
+     *
+     * <p>You must call this to log the trace message.
+     */
+    void flush();
+
+    /**
+     * Logs an argument whose value is any object. It will be stringified with {@link
+     * String#valueOf(Object)}.
+     */
+    ArgsBuilder arg(String key, Object value);
+
+    /**
+     * Logs an argument whose value is an int. It will be stringified with {@link
+     * String#valueOf(int)}.
+     */
+    ArgsBuilder arg(String key, int value);
+
+    /**
+     * Logs an argument whose value is a long. It will be stringified with {@link
+     * String#valueOf(long)}.
+     */
+    ArgsBuilder arg(String key, long value);
+
+    /**
+     * Logs an argument whose value is a double. It will be stringified with {@link
+     * String#valueOf(double)}.
+     */
+    ArgsBuilder arg(String key, double value);
+  }
+
+  public static final ArgsBuilder NO_OP_ARGS_BUILDER = new NoOpArgsBuilder();
+
   private static volatile IRenderCoreSystrace sInstance = new DefaultTrace();
   private static volatile boolean sHasStarted = false;
 
+  /**
+   * Writes a trace message to indicate that a given section of code has begun. This call must be
+   * followed by a corresponding call to {@link #endSection()} on the same thread.
+   */
   public static void beginSection(String name) {
     sHasStarted = true;
-    sInstance.beginSection(name, null);
+    sInstance.beginSection(name);
   }
 
-  public static void beginSection(String name, @Nullable Class value) {
-    sInstance.beginSection(name, value);
+  /**
+   * Writes a trace message to indicate that a given section of code has begun. Must be followed by
+   * a call to {@link #endAsyncSection(String)} using the same tag. Unlike {@link
+   * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
+   * The name and cookie used to begin an event must be used to end it.
+   *
+   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
+   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   */
+  public static void beginAsyncSection(String name) {
+    sInstance.beginAsyncSection(name);
   }
 
+  /**
+   * Writes a trace message to indicate that a given section of code has begun. Must be followed by
+   * a call to {@link #endAsyncSection(String, int)} using the same tag. Unlike {@link
+   * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
+   * The name and cookie used to begin an event must be used to end it.
+   *
+   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
+   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   */
+  public static void beginAsyncSection(String name, int cookie) {
+    sInstance.beginAsyncSection(name, cookie);
+  }
+
+  public static ArgsBuilder beginSectionWithArgs(String name) {
+    return sInstance.beginSectionWithArgs(name);
+  }
+
+  /**
+   * Writes a trace message to indicate that a given section of code has ended. This call must be
+   * preceded by a corresponding call to {@link #beginSection(String)}. Calling this method will
+   * mark the end of the most recently begun section of code, so care must be taken to ensure that
+   * beginSection / endSection pairs are properly nested and called from the same thread.
+   */
   public static void endSection() {
     sInstance.endSection();
   }
 
-  public static void beginAsyncSection(String name, int cookie) {
-    sInstance.beginAsyncSection(name, null, cookie);
+  /**
+   * Writes a trace message to indicate that the current method has ended. Must be called exactly
+   * once for each call to {@link #beginAsyncSection(String)} using the same tag, name and cookie.
+   *
+   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
+   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   */
+  public static void endAsyncSection(String name) {
+    sInstance.endAsyncSection(name);
   }
 
-  public static void beginAsyncSection(String name, @Nullable Class value, int cookie) {
-    sInstance.beginAsyncSection(name, value, cookie);
-  }
-
+  /**
+   * Writes a trace message to indicate that the current method has ended. Must be called exactly
+   * once for each call to {@link #beginAsyncSection(String, int)} using the same tag, name and
+   * cookie.
+   *
+   * <p class="note">Depending on provided {@link IRenderCoreSystrace} instance, this method could
+   * vary in behavior and in {@link DefaultTrace} it is a no-op.
+   */
   public static void endAsyncSection(String name, int cookie) {
-    sInstance.endAsyncSection(name, null, cookie);
-  }
-
-  public static void endAsyncSection(String name, @Nullable Class value, int cookie) {
-    sInstance.endAsyncSection(name, value, cookie);
+    sInstance.endAsyncSection(name, cookie);
   }
 
   public static void use(IRenderCoreSystrace systraceImpl) {
@@ -83,10 +169,26 @@ public final class RenderCoreSystrace {
   private static final class DefaultTrace implements IRenderCoreSystrace {
 
     @Override
-    public void beginSection(String name, Class value) {
+    public void beginSection(String name) {
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        Trace.beginSection(getName(name, value));
+        Trace.beginSection(name);
       }
+    }
+
+    @Override
+    public void beginAsyncSection(String name) {
+      // no-op
+    }
+
+    @Override
+    public void beginAsyncSection(String name, int cookie) {
+      // no-op
+    }
+
+    @Override
+    public ArgsBuilder beginSectionWithArgs(String name) {
+      beginSection(name);
+      return NO_OP_ARGS_BUILDER;
     }
 
     @Override
@@ -97,28 +199,46 @@ public final class RenderCoreSystrace {
     }
 
     @Override
-    public void beginAsyncSection(String name, Class value, int cookie) {
-      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        Trace.beginAsyncSection(getName(name, value), cookie);
-      }
+    public void endAsyncSection(String name) {
+      // no-op
     }
 
     @Override
-    public void endAsyncSection(String name, Class value, int cookie) {
-      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        Trace.endAsyncSection(getName(name, value), cookie);
-      }
+    public void endAsyncSection(String name, int cookie) {
+      // no-op
     }
 
     @Override
     public boolean isEnabled() {
-      return (BuildConfig.DEBUG
-          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-          && Trace.isEnabled());
+      return BuildConfig.DEBUG
+          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
+          && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled());
+    }
+  }
+
+  private static final class NoOpArgsBuilder implements ArgsBuilder {
+
+    @Override
+    public void flush() {}
+
+    @Override
+    public ArgsBuilder arg(String key, Object value) {
+      return this;
     }
 
-    private static String getName(String name, Class value) {
-      return value != null ? name + value.getSimpleName() : name;
+    @Override
+    public ArgsBuilder arg(String key, int value) {
+      return this;
+    }
+
+    @Override
+    public ArgsBuilder arg(String key, long value) {
+      return this;
+    }
+
+    @Override
+    public ArgsBuilder arg(String key, double value) {
+      return this;
     }
   }
 }
