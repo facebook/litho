@@ -57,10 +57,12 @@ private const val defaultSize: Int = 150
 
 internal class ImageViewMountable() : SimpleMountable<ImageView>(RenderType.VIEW) {
 
+  // create_content_example_start
   override fun createContent(context: Context): ImageView = ImageView(context)
+  // create_content_example_end
 
+  // measure_example_start
   override fun measure(context: LayoutContext<*>, widthSpec: Int, heightSpec: Int): MeasureResult {
-
     return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       MeasureResult(defaultSize, defaultSize)
@@ -68,7 +70,9 @@ internal class ImageViewMountable() : SimpleMountable<ImageView>(RenderType.VIEW
       MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
     }
   }
+  // measure_example_end
 
+  // mount_unmount_example_start
   override fun mount(c: Context, content: ImageView, layoutData: Any?) {
     content.setImageDrawable(c.getResources().getDrawable(R.drawable.ic_launcher))
   }
@@ -80,6 +84,7 @@ internal class ImageViewMountable() : SimpleMountable<ImageView>(RenderType.VIEW
     content.scaleY = 1f
     content.setBackgroundColor(Color.BLACK)
   }
+  // mount_unmount_example_end
 }
 
 fun evaluate(fraction: Float, start: Float, end: Float): Float = start + fraction * (end - start)

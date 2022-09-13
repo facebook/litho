@@ -39,6 +39,7 @@ class SimpleImageViewComponent(private val style: Style? = null) : MountableComp
 
 private const val defaultSize: Int = 150
 
+// start_simple_mountable_example
 internal class SimpleImageViewMountable() : SimpleMountable<ImageView>(RenderType.VIEW) {
 
   override fun createContent(context: Context): ImageView = ImageView(context)
@@ -60,3 +61,4 @@ internal class SimpleImageViewMountable() : SimpleMountable<ImageView>(RenderTyp
     content.setImageResource(0)
   }
 }
+// end_simple_mountable_example
