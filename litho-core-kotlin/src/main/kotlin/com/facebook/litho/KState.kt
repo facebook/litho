@@ -44,7 +44,11 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
             globalKey, hookIndex, initializer, context.isNestedTreeContext())
     treeState.addStateContainer(globalKey, state, context.isNestedTreeContext())
 
+    context.scopedComponentInfo.stateContainer = state
+
     return State(context, hookIndex, state.mStates[hookIndex] as T)
+  } else {
+    context.scopedComponentInfo.stateContainer = kState
   }
 
   return State(context, hookIndex, kState.mStates[hookIndex] as T)

@@ -47,6 +47,10 @@ public final class KStateContainer extends StateContainer {
     mStates = Collections.unmodifiableList(states);
   }
 
+  List<Object> getStates() {
+    return mStates;
+  }
+
   private KStateContainer(KStateContainer kStateContainer, int index, @Nullable Object newValue) {
     final ArrayList<Object> states = new ArrayList<>(kStateContainer.mStates);
     states.set(index, newValue);

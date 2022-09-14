@@ -82,6 +82,11 @@ public class ScopedComponentInfo implements Cloneable {
     return mStateContainer;
   }
 
+  /** Only used by KState */
+  void setStateContainer(StateContainer state) {
+    mStateContainer = state;
+  }
+
   /**
    * Returns the number of children of a given type {@param component} component has and then
    * increments it by 1.

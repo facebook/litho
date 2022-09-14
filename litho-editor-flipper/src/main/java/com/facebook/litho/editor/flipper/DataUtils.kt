@@ -22,8 +22,10 @@ import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.plugins.inspector.InspectorValue
 import com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color
 import com.facebook.flipper.plugins.inspector.Named
+import com.facebook.litho.KStateContainer
 import com.facebook.litho.SpecGeneratedComponent
 import com.facebook.litho.StateContainer
+import com.facebook.litho.StateDebuggingUtils
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
@@ -109,14 +111,26 @@ object DataUtils {
 
     val state = FlipperObject.Builder()
     var hasState = false
-    for (f in stateContainer.javaClass.declaredFields) {
-      f.isAccessible = true
-      val annotation = f.getAnnotation(State::class.java)
-      if (annotation != null) {
-        state.put(f.name, FlipperEditor.makeFlipperField(stateContainer, f))
-        hasState = true
+    if (stateContainer is KStateContainer) {
+      val states = StateDebuggingUtils.getState(stateContainer)
+      hasState = states.isNotEmpty() == true
+      states?.let {
+        it.forEachIndexed { index, item ->
+          // TODO(T131825073): Replace with Flipper Field to allow editing state
+          state.put(index.toString(), item)
+        }
+      }
+    } else {
+      for (f in stateContainer.javaClass.declaredFields) {
+        f.isAccessible = true
+        val annotation = f.getAnnotation(State::class.java)
+        if (annotation != null) {
+          state.put(f.name, FlipperEditor.makeFlipperField(stateContainer, f))
+          hasState = true
+        }
       }
     }
+
     return if (hasState) state.build() else null
   }
 
