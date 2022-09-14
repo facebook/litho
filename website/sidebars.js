@@ -194,6 +194,7 @@ module.exports = {
             'mountablecomponents/mountable-component',
             'mountablecomponents/mountable',
             'mountablecomponents/accessibility',
+            'mountablecomponents/mountable-bindto',
             'mountablecomponents/mountable-controllers',
             'mountablecomponents/introduction-to-rendercore',
           ],

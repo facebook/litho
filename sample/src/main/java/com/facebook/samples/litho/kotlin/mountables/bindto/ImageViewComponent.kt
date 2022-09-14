@@ -31,14 +31,17 @@ import com.facebook.rendercore.RenderState.LayoutContext
 import com.facebook.samples.litho.R
 import com.facebook.samples.litho.R.drawable.ic_launcher
 
+// start_bindTo_imagecomponent_code
 class ImageViewComponent(
     private val rotation: DynamicValue<Float>,
     private val background: DynamicValue<Float>,
     private val scale: DynamicValue<Float>,
     private val style: Style? = null
 ) : MountableComponent() {
+  // end_bindTo_imagecomponent_code
 
   override fun MountableComponentScope.render(): MountableWithStyle {
+    // start_bindTo_binding_code
     // simple binding
     rotation.bindTo(0f, ImageView::setRotation)
     scale.bindTo(1f, ImageView::setScaleX)
@@ -48,6 +51,8 @@ class ImageViewComponent(
     background.bindTo(0f) { view: ImageView, value ->
       view.setBackgroundColor(Color.HSVToColor(floatArrayOf(evaluate(value, 0f, 360f), 1f, 1f)))
     }
+
+    // end_bindTo_binding_code
 
     return MountableWithStyle(ImageViewMountable(), style)
   }
