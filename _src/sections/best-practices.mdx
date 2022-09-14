@@ -3,6 +3,10 @@ id: best-practices
 title: Best Practice and Performance
 ---
 
+:::caution
+This page covers the older Java codegen-based Sections API. If you're using the Kotlin Lazy Collection API, refer to the [performance docs for Lazy Collection](../kotlin/lazycollections/lazycollections-working-with-updates.mdx).
+:::
+
 When working with Sections, it is not unfrequent to ask yourself whether what you’re doing is performant, efficient, or idiomatic. The API is short and straightforward, which makes you feel like the problems have to be very subtle and hard to find. The reality is much simpler: Sections is built on top of Android’s RecyclerView and inherits all of its properties, which are common knowledge amongst Android developers. You could build your own if you need to, and it won’t be much different from what Sections gives you today.
 
 In this document we’ll introduce the **two key qualities of performance** in Sections: **identity** and **immutability**. These qualities of a data model identity is what is **used by Sections to define whether a section needs to be redrawn**. The more unnecessary redraws, the worse your component will perform. Skipping a redraw for a component that has meaningfully changed is not acceptable.

@@ -1,7 +1,11 @@
 ---
 id: recycler-collection-component
-title: Adding and Adapting the RecyclerCollectionComponent to Your App
+title: RecyclerCollectionComponent
 ---
+
+:::caution
+This page covers the older Java codegen-based Sections API. If you're creating a new list in Kotlin, refer to the [Lazy Collection docs](../kotlin/lazycollections/lazycollections.mdx).
+:::
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks of any Android application that contain a scrolling list of items. Litho recommends using [RecyclerCollectionComponent](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) and [Sections](start.mdx) to build scrolling Lists easily.  These APIs can be used to build apps from simple, homogeneous Lists to complex, heterogeneous Lists backed by multiple data sources, all while taking advantage of features such as background layout and incremental mount.
 

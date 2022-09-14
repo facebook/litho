@@ -3,7 +3,7 @@ id: lazycollections-sections-migration
 title: Sections Migration Guide
 ---
 
-This page provides guidance for migrating an existing list rendered with Sections to [lazy collections](lazycollections.mdx).
+This page provides guidance for migrating an existing list rendered with Sections to [Lazy Collections](lazycollections.mdx).
 
 ## Advantages of migrating to Lazy Collections
 
@@ -19,8 +19,8 @@ The advantages of Lazy Collections over Sections include:
 
 The migration to Lazy Collections involves the following three steps:
 
-1. Replacing the component that renders the section tree with a lazy collection component (see [Replace the RecyclerCollectionComponent](#replace-the-recyclercollectioncomponent), below).
-2. Adding each component from the section tree as a child of the lazy collection (see [Migrating the GroupSectionSpec](#migrating-the-groupsectionspec) and [Migrating the DataDiffSection](#migrating-the-datadiffsection), below).
+1. Replacing the component that renders the section tree with a Lazy Collection component (see [Replace the RecyclerCollectionComponent](#replace-the-recyclercollectioncomponent), below).
+2. Adding each component from the section tree as a child of the Lazy Collection (see [Migrating the GroupSectionSpec](#migrating-the-groupsectionspec) and [Migrating the DataDiffSection](#migrating-the-datadiffsection), below).
 3. Migrating any event handlers or state (see [Migrating Event Handlers](#migrating-event-handlers) and [Migrating Section State](#migrating-section-state), below).
 
 ## Replace the RecyclerCollectionComponent
@@ -33,7 +33,7 @@ val component = RecyclerCollectionComponent.create(c)
   .build()
 ```
 
-This should be replaced with a lazy collection component, such as `LazyList`. For information on migrating the `RecyclerCollectionComponent`'s configuration options, see the [Layout and Styling](lazycollections-layout.mdx) page.
+This should be replaced with a Lazy Collection component, such as `LazyList`. For information on migrating the `RecyclerCollectionComponent`'s configuration options, see the [Layout and Styling](lazycollections-layout.mdx) page.
 
 ```kotlin
 val component = LazyList {
@@ -42,10 +42,10 @@ val component = LazyList {
 ```
 
 :::info
-Lazy collections can only be used inside `KComponent`s. If you are migrating a Spec component then first convert it to a `KComponent` or implement the lazy collection inside a `KComponent` container.
+Lazy Collections can only be used inside `KComponent`s. If you are migrating a Spec component then first convert it to a `KComponent` or implement the Lazy Collection inside a `KComponent` container.
 :::
 
-Next, you need to migrate the content from the Section into the lazy collection, as detailed below.
+Next, you need to migrate the content from the Section into the Lazy Collection, as detailed below.
 
 ## Migrating the GroupSectionSpec
 
@@ -56,7 +56,7 @@ The first step is to migrate each `SingleComponentSection`. The following `Group
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleGroupSectionSpec.kt start=start_example end=end_example
 ```
 
-The component from each `SingleComponentSection` should be added as a child to the lazy collection. Lazy collections support `KComponent` and `Spec` children. `SingleComponentSection` config options are available as parameters on child, such as `isSticky`.
+The component from each `SingleComponentSection` should be added as a child to the Lazy Collection. Lazy Collections support `KComponent` and `Spec` children. `SingleComponentSection` config options are available as parameters on child, such as `isSticky`.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_simple_group end=end_simple_group
 ```
@@ -79,11 +79,11 @@ Consider the following `GroupSectionSpec` that contains a `DataDiffSection` to r
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/ListSectionSpec.kt start=start_example end=end_example
 ```
 
-A component for each list item should be added the lazy collection as a child. The component can be copied from the RenderEvent’s `ComponentRenderInfo` `component` parameter.
+A component for each list item should be added the Lazy Collection as a child. The component can be copied from the RenderEvent’s `ComponentRenderInfo` `component` parameter.
 
 The child `id` parameter should be a unique and consistent across renders and will likely be the value that is compared in `onCheckIsSameItem`. See the [guidelines for child ids](lazycollections-working-with-updates.mdx#child-identity).
 
-It is not necessary to migrate the checks from `onCheckIsSameContent` as the lazy collection will automatically compare the child component props. However, additional steps may be required to eliminate unnecessary layouts if child takes props that do not provide an `equals()`. For more information, see the [Avoiding Unnecessary Layouts](lazycollections-working-with-updates.mdx##avoiding-unecessary-layouts) page.
+It is not necessary to migrate the checks from `onCheckIsSameContent` as the Lazy Collection will automatically compare the child component props. However, additional steps may be required to eliminate unnecessary layouts if child takes props that do not provide an `equals()`. For more information, see the [Avoiding Unnecessary Layouts](lazycollections-working-with-updates.mdx##avoiding-unecessary-layouts) page.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_list end=end_list
 ```
@@ -95,19 +95,19 @@ Event handlers that are defined as `@OnEvent` function (such as visibility or cl
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/EventHandlerSectionSpec.kt start=start_example end=end_example
 ```
 
-Migrating the above Section to a lazy collection's yields:
+Migrating the above Section to a Lazy Collection's yields:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_event_handler end=end_event_handler
 ```
 
 ## Migrating Section State
 
-State managed by a `Section` should be moved into the component that manages the lazy collection. You may consider defining your lazy collection inside a dedicated `KComponent` so that it can maintain its own state.
+State managed by a `Section` should be moved into the component that manages the Lazy Collection. You may consider defining your Lazy Collection inside a dedicated `KComponent` so that it can maintain its own state.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/StateSectionSpec.kt start=start_example end=end_example
 ```
 
-Migrating the above Section to a lazy collection yields the following:
+Migrating the above Section to a Lazy Collection yields the following:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/SectionsMigrations.kt start=start_state end=end_state
 ```

@@ -3,7 +3,11 @@ id: working-ranges
 title: Prefetch and Pagination
 ---
 
-The Working Ranges API (see the 'API' menu) provides the means to perform complex operations such as data prefetching and cache warming.
+:::caution
+This page covers the older Java codegen-based Sections API. If you're using the Kotlin Lazy Collection API, refer to the [interactions docs for Lazy Collection](../kotlin/lazycollections/lazycollections-interactions.mdx) for similar relevant content.
+:::
+
+The Working Ranges API provides the means to perform complex operations such as data prefetching and cache warming.
 
 The API extends Sections with a set of appearance and visibility events when a Section enters and exits a given range of positions inside and outside the screen viewport. For example, you can perform a network request to start prefetching data as the last element of a list approaches the viewport.
 

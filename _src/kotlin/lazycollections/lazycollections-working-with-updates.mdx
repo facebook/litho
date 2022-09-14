@@ -3,7 +3,7 @@ id: lazycollections-working-with-updates
 title: Working with Updates
 ---
 
-A lazy collection is updated by changing the prop/state values from which it is generated.
+A Lazy Collection is updated by changing the prop/state values from which it is generated.
 
 To ensure correctness and performance you must:
 
@@ -14,7 +14,7 @@ The above two points are detailed in the following sections.
 
 ## Child identity
 
-Each child in a lazy collection has an `id`, which is either assigned by the Developer.
+Each child in a Lazy Collection has an `id`, which is either assigned by the Developer.
 
 The `id` is used to determine how a collection changed after an update: children may have been added, removed, changed position, or had their content updated. Since an `id` is unique to a child, it is used to match children across changes to create minimal changeset and apply content update animations, and so on.
 
@@ -43,7 +43,7 @@ It is unacceptable to generate ids using a simple incrementing variable as items
 
 ## Avoiding unnecessary layouts
 
-During a list update, if a child with the same `id` is found in the old and new lists then the lazy collection automatically detects if the content has changed. If an update has not occurred, the subtree will be re-used as-is, otherwise it is re-created.
+During a list update, if a child with the same `id` is found in the old and new lists then the Lazy Collection automatically detects if the content has changed. If an update has not occurred, the subtree will be re-used as-is, otherwise it is re-created.
 
 Content changes are detected by checking the equality of the component's props. **If any component prop does not implement an `equals()` then it cannot be reused**. It is common for classes to not implement `equals()` such as Drawables, Lambdas, and data models. A little bit more work is required to avoid unnecessary layouts when these are used.
 
@@ -112,4 +112,4 @@ Each shopping list item requires a lambda to toggle a checkmark. If an unwrapped
 
 ### Debugging unnecessary layouts
 
-In debug builds, you can enable the `overlayRenderCount` parameter on your lazy collection. This will overlay the render count onto each list item enabling you to see if items are being re-drawn when they have not changed. Simple, static items should only be rendered once. Items should only be re-rendered if their props have changed. If re-renders are being triggered by other items changing, you will likely need to take steps to deal with a prop that does not implement an `equals()`.
+In debug builds, you can enable the `overlayRenderCount` parameter on your Lazy Collection. This will overlay the render count onto each list item enabling you to see if items are being re-drawn when they have not changed. Simple, static items should only be rendered once. Items should only be re-rendered if their props have changed. If re-renders are being triggered by other items changing, you will likely need to take steps to deal with a prop that does not implement an `equals()`.
