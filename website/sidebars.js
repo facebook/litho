@@ -55,9 +55,9 @@ module.exports = {
     ],
     'Building Lists': [
       'kotlin/lazycollections/lazycollections',
-      'kotlin/lazycollections/lazycollections-working-with-updates',
       'kotlin/lazycollections/lazycollections-layout',
       'kotlin/lazycollections/lazycollections-interactions',
+      'kotlin/lazycollections/lazycollections-working-with-updates',
     ],
     // TODO: Kotlin-ify this section
     'Animations': [
