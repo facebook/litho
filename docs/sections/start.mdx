@@ -6,13 +6,13 @@ title: Sections Basics
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
 
-:::info
-The Sections API (see the 'API' menu) is built on top of Litho. It provides a declarative, composable, and thread-safe API for writing highly optimised List screens.
+:::caution
+This page covers the older Java codegen-based Sections API. If you're creating a new list in Kotlin, refer to the [Lazy Collection docs](../kotlin/lazycollections/lazycollections.mdx).
 :::
 
 ## Introduction
 
-The Sections API addresses issues experienced when writing complex Lists, such as maintaining many view types, handling multiple data sources, and composing Lists together.
+The Sections API provides a declarative, composable, and thread-safe API for writing highly optimised List screens. It addresses issues experienced when writing complex Lists, such as maintaining many view types, handling multiple data sources, and composing Lists together.
 
 Litho Components are used for various aspects of the UI. Sections are a way of composing data into a list of Litho Components or Views.
 

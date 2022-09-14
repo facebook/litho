@@ -53,22 +53,11 @@ module.exports = {
       // TODO: Kotlin-ify,
       'mainconcepts/coordinate-state-actions/keys-and-identity',
     ],
-     // TODO: Clean up/update for Collection
-    'Building lists': [
-      'sections/start',
-      'sections/recycler-collection-component',
-      'sections/best-practices',
-      'sections/hscrolls',
-      'sections/api-overview',
-      {
-        'Advanced': [
-          'sections/working-ranges',
-          'sections/services',
-          'sections/view-support',
-          'sections/diff-sections',
-          'sections/architecture',
-        ],
-      },
+    'Building Lists': [
+      'kotlin/lazycollections/lazycollections',
+      'kotlin/lazycollections/lazycollections-working-with-updates',
+      'kotlin/lazycollections/lazycollections-layout',
+      'kotlin/lazycollections/lazycollections-interactions',
     ],
     // TODO: Kotlin-ify this section
     'Animations': [
@@ -108,15 +97,31 @@ module.exports = {
       'codegen/layout-specs',
       'codegen/mount-specs',
       {
-        'Passing Data To Components': [
-          'codegen/passing-data-to-components/spec-props',
-          'codegen/passing-data-to-components/treeprops',
+        'Sections API': [
+          'sections/start',
+          'sections/recycler-collection-component',
+          'sections/best-practices',
+          'sections/hscrolls',
+          {
+            'Advanced': [
+              'sections/working-ranges',
+              'sections/services',
+              'sections/view-support',
+              'sections/diff-sections',
+              'sections/architecture',
+            ],
+          },
         ],
       },
-      'codegen/state-for-specs',
-      'codegen/events-for-specs',
-      'codegen/trigger-events',
-      'codegen/code-generation',
+      {
+        'Props, State, and Events for Specs': [
+          'codegen/passing-data-to-components/spec-props',
+          'codegen/passing-data-to-components/treeprops',
+          'codegen/state-for-specs',
+          'codegen/events-for-specs',
+          'codegen/trigger-events',
+        ],
+      },
     ],
     'Migrating to the Kotlin API': [
       'kotlin/kotlin-intro',
@@ -127,10 +132,7 @@ module.exports = {
       'kotlin/kotlin-api-cheatsheet',
       {
         'Lazy Collections' : [
-         'kotlin/lazycollections/lazycollections',
-         'kotlin/lazycollections/lazycollections-working-with-updates',
-         'kotlin/lazycollections/lazycollections-layout',
-         'kotlin/lazycollections/lazycollections-interactions',
+
          'kotlin/lazycollections/lazycollections-sections-migration',
          ...fbInternalOnly(['kotlin/lazycollections/fb/lazycollections-fb-internal']),
         ],
