@@ -167,7 +167,8 @@ internal constructor(
       return false
     }
 
-    return context.componentTree.treeState?.canSkipStateUpdate(
+    val treeState = context.componentTree.treeState
+    return treeState?.canSkipStateUpdate(
         newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext())
         ?: false
   }

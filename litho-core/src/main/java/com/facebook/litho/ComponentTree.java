@@ -1722,7 +1722,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @Nullable
-  TreeState getTreeState() {
+  synchronized TreeState getTreeState() {
     return mTreeState;
   }
 
