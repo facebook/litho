@@ -91,26 +91,26 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
 
   @Nullable
   @Override
-  public Map<Class<?>, DelegateBinder<?, Object>> getMountUnmountBinderTypeToExtensionMap() {
-    return mMountable.getMountUnmountBinderTypeToExtensionMap();
+  public Map<Class<?>, DelegateBinder<?, Object>> getMountBinderTypeToDelegateMap() {
+    return mMountable.getMountBinderTypeToDelegateMap();
   }
 
   @Nullable
   @Override
-  public List<DelegateBinder<?, Object>> getMountUnmountExtensions() {
-    return mMountable.getMountUnmountExtensions();
+  public List<DelegateBinder<?, Object>> getMountBinders() {
+    return mMountable.getMountBinders();
   }
 
   @Nullable
   @Override
-  public Map<Class<?>, DelegateBinder<?, Object>> getAttachDetachBinderTypeToExtensionMap() {
-    return mMountable.getAttachDetachBinderTypeToExtensionMap();
+  public Map<Class<?>, DelegateBinder<?, Object>> getAttachBinderTypeToDelegateMap() {
+    return mMountable.getAttachBinderTypeToDelegateMap();
   }
 
   @Nullable
   @Override
-  public List<DelegateBinder<?, Object>> getAttachDetachExtensions() {
-    return mMountable.getAttachDetachExtensions();
+  public List<DelegateBinder<?, Object>> getAttachBinders() {
+    return mMountable.getAttachBinders();
   }
 
   @Override

@@ -91,20 +91,20 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   public abstract long getId();
 
   protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
-      getMountUnmountBinderTypeToExtensionMap() {
+      getMountBinderTypeToDelegateMap() {
     return mMountBinderTypeToDelegateMap;
   }
 
-  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getMountUnmountExtensions() {
+  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getMountBinders() {
     return mMountBinders;
   }
 
   protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
-      getAttachDetachBinderTypeToExtensionMap() {
+      getAttachBinderTypeToDelegateMap() {
     return mAttachBinderTypeToDelegateMap;
   }
 
-  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getAttachDetachExtensions() {
+  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getAttachBinders() {
     return mAttachBinders;
   }
 
@@ -328,27 +328,27 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       boolean isAttached) {
 
     final List<DelegateBinder> attachDetachExtensionsForBind =
-        new ArrayList<>(sizeOrZero(getAttachDetachExtensions()));
+        new ArrayList<>(sizeOrZero(getAttachBinders()));
     final List<DelegateBinder> attachDetachExtensionsForUnbind =
-        new ArrayList<>(sizeOrZero(currentRenderUnit.getAttachDetachExtensions()));
+        new ArrayList<>(sizeOrZero(currentRenderUnit.getAttachBinders()));
     final List<DelegateBinder> mountUnmountExtensionsForBind =
-        new ArrayList<>(sizeOrZero(getMountUnmountExtensions()));
+        new ArrayList<>(sizeOrZero(getMountBinders()));
     final List<DelegateBinder> mountUnmountExtensionsForUnbind =
-        new ArrayList<>(sizeOrZero(currentRenderUnit.getMountUnmountExtensions()));
+        new ArrayList<>(sizeOrZero(currentRenderUnit.getMountBinders()));
 
     // 1. Diff the extensions to resolve what's to bind/unbind.
     resolveExtensionsToUpdate(
-        currentRenderUnit.getAttachDetachExtensions(),
-        getAttachDetachExtensions(),
-        currentRenderUnit.getAttachDetachBinderTypeToExtensionMap(),
+        currentRenderUnit.getAttachBinders(),
+        getAttachBinders(),
+        currentRenderUnit.getAttachBinderTypeToDelegateMap(),
         currentLayoutData,
         newLayoutData,
         attachDetachExtensionsForBind,
         attachDetachExtensionsForUnbind);
     resolveExtensionsToUpdate(
-        currentRenderUnit.getMountUnmountExtensions(),
-        getMountUnmountExtensions(),
-        currentRenderUnit.getMountUnmountBinderTypeToExtensionMap(),
+        currentRenderUnit.getMountBinders(),
+        getMountBinders(),
+        currentRenderUnit.getMountBinderTypeToDelegateMap(),
         currentLayoutData,
         newLayoutData,
         mountUnmountExtensionsForBind,
