@@ -246,7 +246,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final boolean isTracing = tracer.isTracing();
     for (DelegateBinder binder : mMountBinders) {
       if (isTracing) {
-        tracer.beginSection("RenderUnit.mountExtension:" + binder.getSimpleName());
+        tracer.beginSection("RenderUnit.mountBinder:" + binder.getSimpleName());
       }
       binder.bind(context, content, layoutData);
       if (isTracing) {
@@ -266,7 +266,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = mMountBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.unmountExtension:" + binder.getSimpleName());
+        tracer.beginSection("RenderUnit.unmountBinder:" + binder.getSimpleName());
       }
       binder.unbind(context, content, layoutData);
       if (isTracing) {
@@ -285,7 +285,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final boolean isTracing = tracer.isTracing();
     for (DelegateBinder binder : mAttachBinders) {
       if (isTracing) {
-        tracer.beginSection("RenderUnit.attachExtension:" + binder.getSimpleName());
+        tracer.beginSection("RenderUnit.attachBinder:" + binder.getSimpleName());
       }
       binder.bind(context, content, layoutData);
       if (isTracing) {
@@ -305,7 +305,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = mAttachBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.detachExtension:" + binder.getSimpleName());
+        tracer.beginSection("RenderUnit.detachBinder:" + binder.getSimpleName());
       }
       binder.unbind(context, content, layoutData);
       if (isTracing) {
