@@ -47,10 +47,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   private final RenderType mRenderType;
-  // These maps are used to match an extension with its Binder class. Every renderUnit should have
-  // only one Binder per type.
+
+  // These maps are used to match a binder with its Binder class.
+  // Every RenderUnit should have only one Binder per type.
   private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mMountBinderTypeToDelegateMap;
   private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mMountBinders;
+
   private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mAttachBinderTypeToDelegateMap;
   private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mAttachBinders;
 
@@ -137,7 +139,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       mMountBinders = new ArrayList<>();
 
       if (mMountBinderTypeToDelegateMap != null) {
-        throw new IllegalStateException("Extension Map and Extension List out of sync!");
+        throw new IllegalStateException("Binder Map and Binder List out of sync!");
       }
 
       mMountBinderTypeToDelegateMap = new HashMap<>();
@@ -172,7 +174,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       mAttachBinders = new ArrayList<>();
 
       if (mAttachBinderTypeToDelegateMap != null) {
-        throw new IllegalStateException("Extension Map and Extension List out of sync!");
+        throw new IllegalStateException("Binder Map and Binder List out of sync!");
       }
 
       mAttachBinderTypeToDelegateMap = new HashMap<>();
@@ -195,8 +197,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  // Make sure an Extension with the same Binder is not already defined in this RenderUnit.
-  // If that's the case, remove the old Extension and add the new one at the current list position
+  // Make sure a binder with the same Binder is not already defined in this RenderUnit.
+  // If that's the case, remove the old binder and add the new one at the current list position
   // which is at the end.
   private static <MOUNT_CONTENT> void addExtension(
       Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> binderTypeToBinderMap,
@@ -205,8 +207,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final @Nullable DelegateBinder prevBinder =
         binderTypeToBinderMap.put(binder.binder.getClass(), binder);
     if (prevBinder != null) {
-      // A binder with the same type was already present and we need to clear it from the extension
-      // list.
+      // A binder with the same type was already present and it should be removed.
       boolean found = false;
       for (int i = binders.size() - 1; i >= 0; i--) {
         if (binders.get(i).binder.getClass() == binder.binder.getClass()) {
@@ -216,7 +217,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
         }
       }
       if (!found) {
-        throw new IllegalStateException("Extension Map and Extension List out of sync!");
+        throw new IllegalStateException("Binder Map and Binder List out of sync!");
       }
     }
 
@@ -235,7 +236,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     return false;
   }
 
-  /** Bind all mountUnmount extension functions. */
+  /** Bind all mountUnmount binder functions. */
   protected void mountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mMountBinders == null) {
@@ -254,7 +255,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  /** Unbind all mountUnmount extension functions. */
+  /** Unbind all mountUnmount binder functions. */
   protected void unmountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mMountBinders == null) {
@@ -274,7 +275,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  /** Bind all attachDetach extension functions. */
+  /** Bind all attachDetach binder functions. */
   protected void attachExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mAttachBinders == null) {
@@ -293,7 +294,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  /** Unbind all attachDetach extension functions. */
+  /** Unbind all attachDetach binder functions. */
   protected void detachExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mAttachBinders == null) {
@@ -314,7 +315,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /**
-   * Unbind and rebind all extensions which should update compared to a previous (i.e. current)
+   * Unbind and rebind all binders which should update compared to a previous (i.e. current)
    * RenderUnit.
    */
   void updateExtensions(
@@ -334,7 +335,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final List<DelegateBinder> mountBindersForUnbind =
         new ArrayList<>(sizeOrZero(currentRenderUnit.getMountBinders()));
 
-    // 1. Diff the extensions to resolve what's to bind/unbind.
+    // 1. Diff the binders to resolve what's to bind/unbind.
     resolveBindersToUpdate(
         currentRenderUnit.getAttachBinders(),
         getAttachBinders(),
@@ -424,9 +425,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /**
-   * This methods diff current and new extensions, calling shouldUpdate if needed, and returning a
-   * list of extensions from the "current" ones to unbind, and a list of extensions from the "new"
-   * ones to bind.
+   * This methods diff current and new binders, calling shouldUpdate if needed, and returning a list
+   * of binders from the "current" ones to unbind, and a list of binders from the "new" ones to
+   * bind.
    */
   private static <MOUNT_CONTENT> void resolveBindersToUpdate(
       @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> currentBinders,
@@ -437,8 +438,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       List<DelegateBinder> bindersToBind,
       List<DelegateBinder> bindersToUnbind) {
 
-    // There's nothing to unbind because there aren't any current extensions, we need to bind all
-    // new Extensions.
+    // There's nothing to unbind because there aren't any current binders, we need to bind all
+    // new binders.
     if (currentBinders == null || currentBinders.isEmpty()) {
       if (newBinders != null) {
         bindersToBind.addAll(newBinders);
@@ -446,7 +447,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       return;
     }
 
-    // There's no new extensions. All current extensions have to be unbound.
+    // There's no new binders. All current binders have to be unbound.
     if (newBinders == null || newBinders.isEmpty()) {
       bindersToUnbind.addAll(currentBinders);
       return;
@@ -454,13 +455,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     final Map<Class<?>, Boolean> binderToShouldUpdate = new HashMap<>(newBinders.size());
 
-    // Parse all newExtensions and resolve which ones are to bind.
+    // Parse all new binders and resolve which ones are to bind.
     for (DelegateBinder newBinder : newBinders) {
       final Class<?> binderClass = newBinder.binder.getClass();
       final @Nullable DelegateBinder currentBinder = currentBinderTypeToBinderMap.get(binderClass);
 
       if (currentBinder == null) {
-        // Found new Extension, has to be bound.
+        // Found new binder, has to be bound.
         bindersToBind.add(newBinder);
         continue;
       }
@@ -474,11 +475,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       }
     }
 
-    // Parse all currentExtensions and resolve which ones are to unbind.
+    // Parse all current binders and resolve which ones are to unbind.
     for (DelegateBinder currentBinder : currentBinders) {
       final Class<?> binderClass = currentBinder.binder.getClass();
       if (!binderToShouldUpdate.containsKey(binderClass) || binderToShouldUpdate.get(binderClass)) {
-        // Found a currentExtension which either is not in the new RenderUnit or shouldUpdate is
+        // Found a current binder which either is not in the new RenderUnit or shouldUpdate is
         // true, therefore we need to unbind it.
         bindersToUnbind.add(currentBinder);
       }
@@ -490,7 +491,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /**
-   * An Extension is a pair of data Model and {@link Binder}. The binder will bind the model to a
+   * A binder is a pair of data Model and {@link Binder}. The binder will bind the model to a
    * matching content type defined.
    */
   public static class DelegateBinder<MODEL, CONTENT> {
@@ -503,7 +504,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     /**
-     * Create an Extension with a Model and {@link Binder} which will bind the given Model to the
+     * Create a binder with a Model and {@link Binder} which will bind the given Model to the
      * content type which will be provided by the RenderUnit.
      */
     public static <MODEL, CONTENT> DelegateBinder<MODEL, CONTENT> createDelegateBinder(
