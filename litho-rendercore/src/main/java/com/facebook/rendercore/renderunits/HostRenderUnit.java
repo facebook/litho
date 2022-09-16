@@ -62,7 +62,7 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
   public HostRenderUnit(long id) {
     super(VIEW);
     mId = id;
-    addMountUnmountExtensions(
+    addMountBinders(
         createDelegateBinder(this, sBackgroundBindFunction),
         createDelegateBinder(this, sForegroundBindFunction),
         createDelegateBinder(this, sTouchHandlersBindFunction),

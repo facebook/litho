@@ -50,7 +50,7 @@ abstract class MountableComponent() : Component() {
           idGenerator.calculateLayoutOutputId(c.globalKey, OutputUnitType.CONTENT)
     }
 
-    mountableWithStyle.mountable.addMountUnmountExtension(
+    mountableWithStyle.mountable.addMountBinder(
         createDelegateBinder(
             mountableWithStyle.mountable, DynamicValuesBinder(mountableComponentScope.binders)))
 

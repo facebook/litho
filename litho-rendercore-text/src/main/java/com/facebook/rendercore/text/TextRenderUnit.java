@@ -30,7 +30,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
   public TextRenderUnit(long id) {
     super(VIEW);
     mId = id;
-    addMountUnmountExtension(createDelegateBinder(this, sMountUnmount));
+    addMountBinder(createDelegateBinder(this, sMountUnmount));
   }
 
   @Override

@@ -28,8 +28,8 @@ import java.util.Map;
  * <p>Every {@link Mountable} must define what content it creates via the {@link ContentAllocator}
  * implementation, and its type. It must also implement a mechanism to measure itself given
  * arbitrary width and height specs. A {@link Mountable} can also specify a collection of Binders to
- * set and unset properties on the content via RenderUnit's addMountUnmountExtension and
- * addAttachDetachExtension methods.
+ * set and unset properties on the content via RenderUnit's addMountBinder and addAttachBinder
+ * methods.
  *
  * <p>Experimental. Currently for Litho team internal use only.
  *

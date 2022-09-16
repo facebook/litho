@@ -74,10 +74,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachBinders) {
     mRenderType = type;
     for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : mountBinders) {
-      addMountUnmountExtension(extension);
+      addMountBinder(extension);
     }
     for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : attachBinders) {
-      addAttachDetachExtension(extension);
+      addAttachBinder(extension);
     }
   }
 
@@ -131,7 +131,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
-  public void addMountUnmountExtension(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
+  public void addMountBinder(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
     if (mMountBinders == null) {
       mMountBinders = new ArrayList<>();
 
@@ -153,10 +153,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * class-level javadocs about immutability.
    */
   @SafeVarargs
-  public final void addMountUnmountExtensions(
-      DelegateBinder<?, ? super MOUNT_CONTENT>... extensions) {
+  public final void addMountBinders(DelegateBinder<?, ? super MOUNT_CONTENT>... extensions) {
     for (int i = 0; i < extensions.length; i++) {
-      addMountUnmountExtension(extensions[i]);
+      addMountBinder(extensions[i]);
     }
   }
 
@@ -167,7 +166,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
    * class-level javadocs about immutability.
    */
-  public void addAttachDetachExtension(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
+  public void addAttachBinder(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
     if (mAttachBinders == null) {
       mAttachBinders = new ArrayList<>();
 
@@ -189,10 +188,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * class-level javadocs about immutability.
    */
   @SafeVarargs
-  public final void addAttachDetachExtensions(
-      DelegateBinder<?, ? super MOUNT_CONTENT>... extensions) {
+  public final void addAttachBinders(DelegateBinder<?, ? super MOUNT_CONTENT>... extensions) {
     for (int i = 0; i < extensions.length; i++) {
-      addAttachDetachExtension(extensions[i]);
+      addAttachBinder(extensions[i]);
     }
   }
 

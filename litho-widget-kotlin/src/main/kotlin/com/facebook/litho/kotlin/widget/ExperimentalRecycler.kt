@@ -306,7 +306,7 @@ internal class ExperimentalRecyclerMountable(
   }
 
   init {
-    addMountUnmountExtensions(
+    addMountBinders(
         DelegateBinder.createDelegateBinder(binder, CONTENT_BINDER),
         DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER),
         DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_BINDER),

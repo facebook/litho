@@ -39,10 +39,10 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   private MountSpecLithoRenderUnit(
       long id, LayoutOutput output, @Nullable ComponentContext context) {
     super(id, output, getRenderType(output), context);
-    addMountUnmountExtensions(
+    addMountBinders(
         DelegateBinder.createDelegateBinder(
             this, MountSpecLithoRenderUnit.LithoMountBinder.INSTANCE));
-    addAttachDetachExtension(
+    addAttachBinder(
         DelegateBinder.createDelegateBinder(
             this, MountSpecLithoRenderUnit.LithoBindBinder.INSTANCE));
   }

@@ -61,7 +61,7 @@ public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator
 
   public SimpleViewUnit addBindBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
     for (Binder<SimpleViewUnit, View> binder : binders) {
-      super.addAttachDetachExtension(createDelegateBinder(this, binder));
+      super.addAttachBinder(createDelegateBinder(this, binder));
     }
 
     return this;
@@ -69,7 +69,7 @@ public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator
 
   public SimpleViewUnit addMounBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
     for (Binder<SimpleViewUnit, View> binder : binders) {
-      super.addMountUnmountExtension(createDelegateBinder(this, binder));
+      super.addMountBinder(createDelegateBinder(this, binder));
     }
 
     return this;
