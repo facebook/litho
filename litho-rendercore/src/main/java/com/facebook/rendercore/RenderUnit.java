@@ -145,7 +145,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       mMountBinderTypeToDelegateMap = new HashMap<>();
     }
 
-    addExtension(mMountBinderTypeToDelegateMap, mMountBinders, binder);
+    addBinder(mMountBinderTypeToDelegateMap, mMountBinders, binder);
   }
 
   /**
@@ -180,7 +180,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       mAttachBinderTypeToDelegateMap = new HashMap<>();
     }
 
-    addExtension(mAttachBinderTypeToDelegateMap, mAttachBinders, binder);
+    addBinder(mAttachBinderTypeToDelegateMap, mAttachBinders, binder);
   }
 
   /**
@@ -200,7 +200,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   // Make sure a binder with the same Binder is not already defined in this RenderUnit.
   // If that's the case, remove the old binder and add the new one at the current list position
   // which is at the end.
-  private static <MOUNT_CONTENT> void addExtension(
+  private static <MOUNT_CONTENT> void addBinder(
       Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> binderTypeToBinderMap,
       List<DelegateBinder<?, MOUNT_CONTENT>> binders,
       DelegateBinder binder) {
@@ -237,7 +237,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Bind all mountUnmount binder functions. */
-  protected void mountExtensions(
+  protected void mountBinders(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mMountBinders == null) {
       return;
@@ -256,7 +256,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Unbind all mountUnmount binder functions. */
-  protected void unmountExtensions(
+  protected void unmountBinders(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mMountBinders == null) {
       return;
@@ -276,7 +276,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Bind all attachDetach binder functions. */
-  protected void attachExtensions(
+  protected void attachBinders(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mAttachBinders == null) {
       return;
@@ -295,7 +295,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   /** Unbind all attachDetach binder functions. */
-  protected void detachExtensions(
+  protected void detachBinders(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
     if (mAttachBinders == null) {
       return;
@@ -318,7 +318,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * Unbind and rebind all binders which should update compared to a previous (i.e. current)
    * RenderUnit.
    */
-  void updateExtensions(
+  void updateBinders(
       Context context,
       MOUNT_CONTENT content,
       RenderUnit<MOUNT_CONTENT> currentRenderUnit,

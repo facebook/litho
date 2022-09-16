@@ -930,7 +930,7 @@ public class MountState implements MountDelegateTarget {
   private void mountRenderUnitToContent(
       final RenderTreeNode node, final RenderUnit unit, final Object content) {
     final MountDelegate mountDelegate = mMountDelegate;
-    unit.mountExtensions(mContext, content, node.getLayoutData(), mTracer);
+    unit.mountBinders(mContext, content, node.getLayoutData(), mTracer);
     if (mountDelegate != null) {
       mountDelegate.onMountItem(unit, content, node.getLayoutData());
     }
@@ -942,14 +942,14 @@ public class MountState implements MountDelegateTarget {
     if (mountDelegate != null) {
       mountDelegate.onUnmountItem(unit, content, node.getLayoutData());
     }
-    unit.unmountExtensions(mContext, content, node.getLayoutData(), mTracer);
+    unit.unmountBinders(mContext, content, node.getLayoutData(), mTracer);
   }
 
   private void bindRenderUnitToContent(MountItem item) {
     final RenderUnit renderUnit = item.getRenderUnit();
     final Object content = item.getContent();
     final Object layoutData = item.getRenderTreeNode().getLayoutData();
-    renderUnit.attachExtensions(mContext, content, layoutData, mTracer);
+    renderUnit.attachBinders(mContext, content, layoutData, mTracer);
     final MountDelegate mountDelegate = mMountDelegate;
     if (mountDelegate != null) {
       mountDelegate.onBindItem(renderUnit, content, layoutData);
@@ -965,7 +965,7 @@ public class MountState implements MountDelegateTarget {
     if (mountDelegate != null) {
       mountDelegate.onUnbindItem(renderUnit, content, layoutData);
     }
-    renderUnit.detachExtensions(mContext, content, layoutData, mTracer);
+    renderUnit.detachBinders(mContext, content, layoutData, mTracer);
     item.setIsBound(false);
   }
 
@@ -999,7 +999,7 @@ public class MountState implements MountDelegateTarget {
         mTracer.beginSection("UpdateItem: " + renderUnit.getDescription());
       }
 
-      renderUnit.updateExtensions(
+      renderUnit.updateBinders(
           mContext,
           content,
           currentRenderUnit,

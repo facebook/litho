@@ -66,27 +66,27 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
-  protected void mountExtensions(
+  protected void mountBinders(
       Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.mountExtensions(context, o, layoutData, tracer);
+    mMountable.mountBinders(context, o, layoutData, tracer);
   }
 
   @Override
-  protected void unmountExtensions(
+  protected void unmountBinders(
       Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.unmountExtensions(context, o, layoutData, tracer);
+    mMountable.unmountBinders(context, o, layoutData, tracer);
   }
 
   @Override
-  protected void attachExtensions(
+  protected void attachBinders(
       Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.attachExtensions(context, content, layoutData, tracer);
+    mMountable.attachBinders(context, content, layoutData, tracer);
   }
 
   @Override
-  protected void detachExtensions(
+  protected void detachBinders(
       Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.detachExtensions(context, content, layoutData, tracer);
+    mMountable.detachBinders(context, content, layoutData, tracer);
   }
 
   @Nullable
