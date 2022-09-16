@@ -48,12 +48,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   private final RenderType mRenderType;
   // These maps are used to match an extension with its Binder class. Every renderUnit should have
   // only one Binder per type.
-  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
-      mMountUnmountBinderTypeToExtensionMap;
-  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mMountUnmountExtensions;
-  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
-      mAttachDetachBinderTypeToExtensionMap;
-  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mAttachDetachExtensions;
+  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mMountBinderTypeToDelegateMap;
+  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mMountBinders;
+  private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mAttachBinderTypeToDelegateMap;
+  private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mAttachBinders;
 
   public RenderUnit(RenderType renderType) {
     this(
@@ -63,23 +61,22 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   }
 
   public RenderUnit(
-      RenderType renderType,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountUnmountExtensions) {
+      RenderType renderType, List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountBinders) {
     this(
         renderType,
-        mountUnmountExtensions,
+        mountBinders,
         Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
   }
 
   public RenderUnit(
-      RenderType renderType,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountUnmountExtensions,
-      List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachDetachExtensions) {
-    mRenderType = renderType;
-    for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : mountUnmountExtensions) {
+      RenderType type,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachBinders) {
+    mRenderType = type;
+    for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : mountBinders) {
       addMountUnmountExtension(extension);
     }
-    for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : attachDetachExtensions) {
+    for (DelegateBinder<?, ? super MOUNT_CONTENT> extension : attachBinders) {
       addAttachDetachExtension(extension);
     }
   }
@@ -95,20 +92,20 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
   protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
       getMountUnmountBinderTypeToExtensionMap() {
-    return mMountUnmountBinderTypeToExtensionMap;
+    return mMountBinderTypeToDelegateMap;
   }
 
   protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getMountUnmountExtensions() {
-    return mMountUnmountExtensions;
+    return mMountBinders;
   }
 
   protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
       getAttachDetachBinderTypeToExtensionMap() {
-    return mAttachDetachBinderTypeToExtensionMap;
+    return mAttachBinderTypeToDelegateMap;
   }
 
   protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getAttachDetachExtensions() {
-    return mAttachDetachExtensions;
+    return mAttachBinders;
   }
 
   public Class<?> getRenderContentType() {
@@ -135,17 +132,17 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * class-level javadocs about immutability.
    */
   public void addMountUnmountExtension(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
-    if (mMountUnmountExtensions == null) {
-      mMountUnmountExtensions = new ArrayList<>();
+    if (mMountBinders == null) {
+      mMountBinders = new ArrayList<>();
 
-      if (mMountUnmountBinderTypeToExtensionMap != null) {
+      if (mMountBinderTypeToDelegateMap != null) {
         throw new IllegalStateException("Extension Map and Extension List out of sync!");
       }
 
-      mMountUnmountBinderTypeToExtensionMap = new HashMap<>();
+      mMountBinderTypeToDelegateMap = new HashMap<>();
     }
 
-    addExtension(mMountUnmountBinderTypeToExtensionMap, mMountUnmountExtensions, extension);
+    addExtension(mMountBinderTypeToDelegateMap, mMountBinders, extension);
   }
 
   /**
@@ -171,17 +168,17 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * class-level javadocs about immutability.
    */
   public void addAttachDetachExtension(DelegateBinder<?, ? super MOUNT_CONTENT> extension) {
-    if (mAttachDetachExtensions == null) {
-      mAttachDetachExtensions = new ArrayList<>();
+    if (mAttachBinders == null) {
+      mAttachBinders = new ArrayList<>();
 
-      if (mAttachDetachBinderTypeToExtensionMap != null) {
+      if (mAttachBinderTypeToDelegateMap != null) {
         throw new IllegalStateException("Extension Map and Extension List out of sync!");
       }
 
-      mAttachDetachBinderTypeToExtensionMap = new HashMap<>();
+      mAttachBinderTypeToDelegateMap = new HashMap<>();
     }
 
-    addExtension(mAttachDetachBinderTypeToExtensionMap, mAttachDetachExtensions, extension);
+    addExtension(mAttachBinderTypeToDelegateMap, mAttachBinders, extension);
   }
 
   /**
@@ -242,12 +239,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** Bind all mountUnmount extension functions. */
   protected void mountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
-    if (mMountUnmountExtensions == null) {
+    if (mMountBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (DelegateBinder extension : mMountUnmountExtensions) {
+    for (DelegateBinder extension : mMountBinders) {
       if (isTracing) {
         tracer.beginSection("RenderUnit.mountExtension:" + getId());
       }
@@ -261,13 +258,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** Unbind all mountUnmount extension functions. */
   protected void unmountExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
-    if (mMountUnmountExtensions == null) {
+    if (mMountBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (int i = mMountUnmountExtensions.size() - 1; i >= 0; i--) {
-      final DelegateBinder extension = mMountUnmountExtensions.get(i);
+    for (int i = mMountBinders.size() - 1; i >= 0; i--) {
+      final DelegateBinder extension = mMountBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.unmountExtension:" + getId());
       }
@@ -281,12 +278,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** Bind all attachDetach extension functions. */
   protected void attachExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
-    if (mAttachDetachExtensions == null) {
+    if (mAttachBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (DelegateBinder extension : mAttachDetachExtensions) {
+    for (DelegateBinder extension : mAttachBinders) {
       if (isTracing) {
         tracer.beginSection("RenderUnit.attachExtension:" + getId());
       }
@@ -300,13 +297,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** Unbind all attachDetach extension functions. */
   protected void detachExtensions(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
-    if (mAttachDetachExtensions == null) {
+    if (mAttachBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (int i = mAttachDetachExtensions.size() - 1; i >= 0; i--) {
-      final DelegateBinder extension = mAttachDetachExtensions.get(i);
+    for (int i = mAttachBinders.size() - 1; i >= 0; i--) {
+      final DelegateBinder extension = mAttachBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.detachExtension:" + getId());
       }
