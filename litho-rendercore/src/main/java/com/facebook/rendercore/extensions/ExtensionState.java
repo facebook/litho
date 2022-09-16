@@ -39,7 +39,7 @@ public class ExtensionState<State> {
     mState = state;
   }
 
-  public @Nullable Host getRootHost() {
+  public Host getRootHost() {
     return mMountDelegate.getMountDelegateTarget().getRootHost();
   }
 
