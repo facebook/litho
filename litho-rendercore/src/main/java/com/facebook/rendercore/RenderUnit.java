@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -244,7 +245,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final boolean isTracing = tracer.isTracing();
     for (DelegateBinder extension : mMountBinders) {
       if (isTracing) {
-        tracer.beginSection("RenderUnit.mountExtension:" + getId());
+        tracer.beginSection("RenderUnit.mountExtension:" + extension.getSimpleName());
       }
       extension.bind(context, content, layoutData);
       if (isTracing) {
@@ -264,7 +265,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = mMountBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder extension = mMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.unmountExtension:" + getId());
+        tracer.beginSection("RenderUnit.unmountExtension:" + extension.getSimpleName());
       }
       extension.unbind(context, content, layoutData);
       if (isTracing) {
@@ -283,7 +284,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final boolean isTracing = tracer.isTracing();
     for (DelegateBinder extension : mAttachBinders) {
       if (isTracing) {
-        tracer.beginSection("RenderUnit.attachExtension:" + getId());
+        tracer.beginSection("RenderUnit.attachExtension:" + extension.getSimpleName());
       }
       extension.bind(context, content, layoutData);
       if (isTracing) {
@@ -303,7 +304,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     for (int i = mAttachBinders.size() - 1; i >= 0; i--) {
       final DelegateBinder extension = mAttachBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.detachExtension:" + getId());
+        tracer.beginSection("RenderUnit.detachExtension:" + extension.getSimpleName());
       }
       extension.unbind(context, content, layoutData);
       if (isTracing) {
@@ -525,6 +526,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     void unbind(final Context context, final CONTENT content, final @Nullable Object layoutData) {
       binder.unbind(context, content, model, layoutData);
+    }
+
+    String getSimpleName() {
+      return CommonUtils.getSectionNameForTracing(binder.getClass());
     }
   }
 
