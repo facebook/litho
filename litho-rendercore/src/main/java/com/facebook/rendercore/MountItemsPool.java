@@ -71,6 +71,9 @@ public class MountItemsPool {
    */
   public static boolean sIsManualCallbacks;
 
+  /** Should be used to disable pooling entirely for debugging, testing, and other use cases. */
+  public static boolean isPoolingDisabled;
+
   public static Object acquireMountContent(Context context, ContentAllocator poolableMountContent) {
 
     final ItemPool pool = getMountContentPool(context, poolableMountContent);
@@ -129,7 +132,7 @@ public class MountItemsPool {
 
   private static @Nullable ItemPool getMountContentPool(
       Context context, ContentAllocator poolableMountContent, int size) {
-    if (poolableMountContent.isRecyclingDisabled()) {
+    if (poolableMountContent.isRecyclingDisabled() || isPoolingDisabled) {
       return null;
     }
 
