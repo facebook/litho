@@ -367,7 +367,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     // 2. unbind all attach binders which should update (only if currently attached).
     if (isAttached) {
       if (mountDelegate != null && extensionStatesToUpdate != null) {
-        mountDelegate.onUnbindItemWhichRequiresUpdate(
+        MountDelegate.onUnbindItemWhichRequiresUpdate(
             extensionStatesToUpdate,
             currentRenderUnit,
             currentLayoutData,
@@ -383,7 +383,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     // 3. unbind all mount binders which should update.
     if (mountDelegate != null && extensionStatesToUpdate != null) {
-      mountDelegate.onUnmountItemWhichRequiresUpdate(
+      MountDelegate.onUnmountItemWhichRequiresUpdate(
           extensionStatesToUpdate,
           currentRenderUnit,
           currentLayoutData,
@@ -396,12 +396,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       extension.unbind(context, content, currentLayoutData);
     }
 
-    // 4. rebind all mount binder which did update.
+    // 4. rebind all mount binders which did update.
     for (DelegateBinder extension : mountUnmountExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
-      mountDelegate.onMountItemWhichRequiresUpdate(
+      MountDelegate.onMountItemWhichRequiresUpdate(
           extensionStatesToUpdate,
           currentRenderUnit,
           currentLayoutData,
@@ -410,12 +410,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           content);
     }
 
-    // 5. rebind all attach binder which did update.
+    // 5. rebind all attach binders which did update.
     for (DelegateBinder extension : attachDetachExtensionsForBind) {
       extension.bind(context, content, newLayoutData);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
-      mountDelegate.onBindItemWhichRequiresUpdate(
+      MountDelegate.onBindItemWhichRequiresUpdate(
           extensionStatesToUpdate,
           currentRenderUnit,
           currentLayoutData,
