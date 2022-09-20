@@ -29,6 +29,7 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.annotations.OnEvent;
@@ -45,6 +46,7 @@ import com.facebook.litho.widget.RecyclerBinderUpdateCallback;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.memory.config.MemoryOptimizationConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -382,6 +384,9 @@ public class DataDiffSectionSpec<T> {
     private final EventHandler<OnCheckIsSameItemEvent<T>> mIsSameItemEventHandler;
     private final EventHandler<OnCheckIsSameContentEvent<T>> mIsSameContentEventHandler;
 
+    private final ThreadLocal<OnCheckIsSameItemEvent> mIsSameItemEventStates;
+    private static final OnCheckIsSameItemEvent sDummy = new OnCheckIsSameItemEvent();
+
     Callback(
         SectionContext sectionContext,
         @Nullable List<? extends T> previousData,
@@ -393,6 +398,17 @@ public class DataDiffSectionSpec<T> {
 
       mPreviousData = previousData;
       mNextData = nextData;
+
+      mIsSameItemEventStates =
+          new ThreadLocal<OnCheckIsSameItemEvent>() {
+            @Override
+            protected OnCheckIsSameItemEvent initialValue() {
+              OnCheckIsSameItemEvent event = new OnCheckIsSameItemEvent();
+              event.previousItem = sDummy.previousItem;
+              event.nextItem = sDummy.nextItem;
+              return event;
+            }
+          };
     }
 
     @Override
@@ -422,8 +438,33 @@ public class DataDiffSectionSpec<T> {
       }
 
       if (mIsSameItemEventHandler != null) {
-        return DataDiffSection.dispatchOnCheckIsSameItemEvent(
-            mIsSameItemEventHandler, previous, next);
+        HasEventDispatcher hasEventDispatcher =
+            mIsSameItemEventHandler.dispatchInfo.hasEventDispatcher;
+        OnCheckIsSameItemEvent isSameItemEventState = mIsSameItemEventStates.get();
+        if (MemoryOptimizationConfig.reduceMemorySpikeDataDiffSection()
+            && hasEventDispatcher != null
+            && isSameItemEventState != null
+            && isSameItemEventState.previousItem == sDummy.previousItem) {
+          isSameItemEventState.previousItem = previous;
+          isSameItemEventState.nextItem = next;
+          try {
+            Object result =
+                hasEventDispatcher
+                    .getEventDispatcher()
+                    .dispatchOnEvent(mIsSameItemEventHandler, isSameItemEventState);
+            if (result == null) {
+              return false;
+            } else {
+              return (Boolean) result;
+            }
+          } finally {
+            isSameItemEventState.previousItem = sDummy.previousItem;
+            isSameItemEventState.nextItem = sDummy.nextItem;
+          }
+        } else {
+          return DataDiffSection.dispatchOnCheckIsSameItemEvent(
+              mIsSameItemEventHandler, previous, next);
+        }
       }
 
       return previous.equals(next);

@@ -38,6 +38,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        "//fbandroid/java/com/facebook/memory/config:config",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
