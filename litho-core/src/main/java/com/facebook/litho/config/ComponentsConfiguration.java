@@ -247,6 +247,25 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableComponents = false;
 
+  private static boolean sReduceMemorySpikeUserSession = false;
+  private static boolean sReduceMemorySpikeDataDiffSection = false;
+
+  public static void setReduceMemorySpikeUserSession() {
+    sReduceMemorySpikeUserSession = true;
+  }
+
+  public static boolean reduceMemorySpikeUserSession() {
+    return sReduceMemorySpikeUserSession;
+  }
+
+  public static void setReduceMemorySpikeDataDiffSection() {
+    sReduceMemorySpikeDataDiffSection = true;
+  }
+
+  public static boolean reduceMemorySpikeDataDiffSection() {
+    return sReduceMemorySpikeDataDiffSection;
+  }
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
