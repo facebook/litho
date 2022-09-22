@@ -210,7 +210,6 @@ internal class VerticalScrollMountable(
         componentTree,
         scrollPosition,
         scrollStateListener,
-        incrementalMountEnabled,
     )
     content.isScrollbarFadingEnabled = scrollbarFadingEnabled
     content.isNestedScrollingEnabled = nestedScrollingEnabled

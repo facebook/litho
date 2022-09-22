@@ -216,8 +216,7 @@ public class VerticalScrollSpec {
           LithoScrollView.OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
       @State final LithoScrollView.ScrollPosition scrollPosition) {
-    lithoScrollView.mount(
-        childComponentTree, scrollPosition, scrollStateListener, incrementalMountEnabled);
+    lithoScrollView.mount(childComponentTree, scrollPosition, scrollStateListener);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
     lithoScrollView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);

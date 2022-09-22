@@ -44,7 +44,6 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
   @Nullable private OnInterceptTouchListener mOnInterceptTouchListener;
   @Nullable private ScrollStateDetector mScrollStateDetector;
-  private boolean mIsIncrementalMountEnabled;
 
   public LithoScrollView(Context context) {
     this(context, null);
@@ -109,9 +108,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
 
-    if (mIsIncrementalMountEnabled) {
-      mLithoView.notifyVisibleBoundsChanged();
-    }
+    mLithoView.notifyVisibleBoundsChanged();
 
     if (mScrollPosition != null) {
       mScrollPosition.y = getScrollY();
@@ -157,11 +154,9 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   public void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
-      ScrollStateListener scrollStateListener,
-      boolean isIncrementalMountEnabled) {
+      ScrollStateListener scrollStateListener) {
     mLithoView.setComponentTree(contentComponentTree);
 
-    mIsIncrementalMountEnabled = isIncrementalMountEnabled;
     mScrollPosition = scrollPosition;
     final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
         new ViewTreeObserver.OnPreDrawListener() {

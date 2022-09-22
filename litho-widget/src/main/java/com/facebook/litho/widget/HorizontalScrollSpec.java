@@ -198,8 +198,7 @@ class HorizontalScrollSpec {
         onScrollChangeListener,
         scrollStateListener,
         componentWidth != null ? componentWidth : 0,
-        componentHeight != null ? componentHeight : 0,
-        incrementalMountEnabled);
+        componentHeight != null ? componentHeight : 0);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -259,8 +258,7 @@ class HorizontalScrollSpec {
     private final LithoView mLithoView;
 
     private int mComponentWidth;
-    private int mComponentHeight;
-    private boolean mIsIncrementalMountEnabled;
+    private int mComponentHeight;;
 
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private HorizontalScrollSpec.OnScrollChangeListener mOnScrollChangeListener;
@@ -294,12 +292,8 @@ class HorizontalScrollSpec {
 
       // We need to notify LithoView about the visibility bounds that has changed when View is
       // scrolled so that correct visibility events are fired for the child components of
-      // HorizontalScroll. Incremental mount is by default false for HorizontalScroll and we want to
-      // notify only when incremental mount is enabled to keep the behaviour similar to what we have
-      // for VerticalScroll.
-      if (mIsIncrementalMountEnabled) {
-        mLithoView.notifyVisibleBoundsChanged();
-      }
+      // HorizontalScroll.
+      mLithoView.notifyVisibleBoundsChanged();
 
       if (mScrollPosition != null) {
         if (mOnScrollChangeListener != null) {
@@ -350,14 +344,12 @@ class HorizontalScrollSpec {
         @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
         ScrollStateListener scrollStateListener,
         int width,
-        int height,
-        boolean incrementalMountEnabled) {
+        int height) {
       mLithoView.setComponentTree(componentTree);
       mScrollPosition = scrollPosition;
       mOnScrollChangeListener = onScrollChangeListener;
       mComponentWidth = width;
       mComponentHeight = height;
-      mIsIncrementalMountEnabled = incrementalMountEnabled;
 
       if (scrollStateListener != null) {
         if (mScrollStateDetector == null) {
