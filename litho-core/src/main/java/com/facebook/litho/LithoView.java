@@ -42,6 +42,7 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
@@ -107,6 +108,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
           maybeRefreshAfterViewPortChange(false);
         }
       };
+
+  private @Nullable MountExtension mUIDebugger;
 
   public interface OnDirtyMountListener {
     /**
@@ -812,6 +815,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mLithoHostListenerCoordinator.setCollectNotifyVisibleBoundsChangedCalls(true);
     mLithoHostListenerCoordinator.setSkipNotifyVisibleBoundsChanged(
         mAreViewTreeObserverListenersRegistered);
+
+    if (mUIDebugger != null) {
+      mLithoHostListenerCoordinator.registerUIDebugger(mUIDebugger);
+    }
+  }
+
+  public void setUIDebugger(MountExtension extension) {
+    if (mUIDebugger != null && mLithoHostListenerCoordinator != null) {
+      mLithoHostListenerCoordinator.unregisterUIDebugger(mUIDebugger);
+    }
+    mUIDebugger = extension;
+    if (mLithoHostListenerCoordinator != null) {
+      mLithoHostListenerCoordinator.registerUIDebugger(mUIDebugger);
+    }
   }
 
   /** Change the root component synchronously. */

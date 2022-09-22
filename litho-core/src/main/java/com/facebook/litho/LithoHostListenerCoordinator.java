@@ -26,6 +26,7 @@ import com.facebook.litho.TransitionsExtension.TransitionsExtensionState;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
@@ -44,6 +45,7 @@ public class LithoHostListenerCoordinator {
   private @Nullable ExtensionState<TransitionsExtensionState> mTransitionsExtensionState;
   private @Nullable ExtensionState<IncrementalMountExtensionState> mIncrementalMountExtensionState;
   private @Nullable ExtensionState<Void> mEndToEndTestingExtensionState;
+  private @Nullable MountExtension mUIDebuggerExtension;
 
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;
@@ -274,6 +276,19 @@ public class LithoHostListenerCoordinator {
   public void clearVisibilityItems() {
     if (mVisibilityExtensionState != null) {
       VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
+    }
+  }
+
+  public void registerUIDebugger(MountExtension extension) {
+    unregisterUIDebugger(mUIDebuggerExtension);
+    mUIDebuggerExtension = extension;
+    mMountDelegateTarget.registerMountExtension(extension);
+  }
+
+  public void unregisterUIDebugger(@Nullable MountExtension extension) {
+    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
+    if (extension != null && mountDelegate != null) {
+      mountDelegate.unregisterMountExtension(extension);
     }
   }
 }
