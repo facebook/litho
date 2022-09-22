@@ -1192,39 +1192,6 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   }
 
   @Test
-  public void testTransientStateDoesNotTriggerVisibilityEvents() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            Column.create(mContext)
-                .child(
-                    Wrapper.create(mContext)
-                        .delegate(content)
-                        .visibleHandler(visibleEventHandler)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build(),
-            false,
-            true);
-
-    lithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);
-    content.getDispatchedEventHandlers().clear();
-
-    lithoView.setHasTransientState(true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    lithoView.setMountStateDirty();
-    lithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    lithoView.setHasTransientState(false);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-  }
-
-  @Test
   public void testRemovingComponentTriggersInvisible() {
     final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);

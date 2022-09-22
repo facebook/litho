@@ -822,12 +822,16 @@ public class ComponentTree implements LithoLifecycleListener {
 
   @UiThread
   void incrementalMountComponent() {
-    assertMainThread();
-
     if (!mIncrementalMountEnabled) {
       throw new IllegalStateException(
           "Calling incrementalMountComponent() but incremental mount is not enabled");
     }
+    notifyVisibleBoundsChanged();
+  }
+
+  @UiThread
+  void notifyVisibleBoundsChanged() {
+    assertMainThread();
 
     if (mLithoView == null) {
       return;

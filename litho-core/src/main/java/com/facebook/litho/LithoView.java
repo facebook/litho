@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityManager;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
@@ -53,7 +54,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
 public class LithoView extends ComponentHost implements RootHost, AnimatedRootHost {
@@ -1453,11 +1453,13 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     if (isTracing) {
       ComponentsSystrace.beginSection("LithoView.notifyVisibleBoundsChanged");
     }
+
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.incrementalMountComponent();
     } else {
-      processVisibilityOutputs();
+      mComponentTree.notifyVisibleBoundsChanged();
     }
+
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1652,17 +1654,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         VisibilityUtils.dispatchOnFullImpression(visibilityOutput.getFullImpressionEventHandler());
       }
     }
-  }
-
-  // This only gets called if extensions are disabled.
-  private void processVisibilityOutputs() {
-    final Rect currentVisibleArea = new Rect();
-    final boolean visible = getCorrectedLocalVisibleRect(currentVisibleArea);
-    if (!visible) {
-      currentVisibleArea.setEmpty();
-    }
-
-    processVisibilityOutputs(currentVisibleArea);
   }
 
   @VisibleForTesting
