@@ -17,10 +17,7 @@
 package com.facebook.litho.visibility
 
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentCallbackLayoutEventHandler
-import com.facebook.litho.ComponentCallbackType
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.EventHandler
 import com.facebook.litho.FocusedVisibleEvent
 import com.facebook.litho.FullImpressionVisibleEvent
 import com.facebook.litho.InvisibleEvent
@@ -29,7 +26,6 @@ import com.facebook.litho.StyleItem
 import com.facebook.litho.UnfocusedVisibleEvent
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.eventHandler
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
@@ -58,42 +54,22 @@ internal data class VisibilityStyleItem(val field: VisibilityField, val value: A
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       VisibilityField.ON_VISIBLE ->
-          commonProps.visibleHandler(
-              eventHandler(value as (VisibleEvent) -> Unit)
-                  .maybeWrapInVisibilityCallbackEventHandler(context))
+          commonProps.visibleHandler(eventHandler(value as (VisibleEvent) -> Unit))
       VisibilityField.ON_INVISIBLE ->
-          commonProps.invisibleHandler(
-              eventHandler(value as (InvisibleEvent) -> Unit)
-                  .maybeWrapInVisibilityCallbackEventHandler(context))
+          commonProps.invisibleHandler(eventHandler(value as (InvisibleEvent) -> Unit))
       VisibilityField.ON_FOCUSED ->
-          commonProps.focusedHandler(
-              eventHandler(value as (FocusedVisibleEvent) -> Unit)
-                  .maybeWrapInVisibilityCallbackEventHandler(context))
+          commonProps.focusedHandler(eventHandler(value as (FocusedVisibleEvent) -> Unit))
       VisibilityField.ON_UNFOCUSED ->
-          commonProps.unfocusedHandler(
-              eventHandler(value as (UnfocusedVisibleEvent) -> Unit)
-                  .maybeWrapInVisibilityCallbackEventHandler(context))
+          commonProps.unfocusedHandler(eventHandler(value as (UnfocusedVisibleEvent) -> Unit))
       VisibilityField.ON_FULL_IMPRESSION ->
           commonProps.fullImpressionHandler(
-              eventHandler(value as (FullImpressionVisibleEvent) -> Unit)
-                  .maybeWrapInVisibilityCallbackEventHandler(context))
+              eventHandler(value as (FullImpressionVisibleEvent) -> Unit))
       VisibilityField.ON_VISIBILITY_CHANGED, ->
           commonProps.visibilityChangedHandler(
-              eventHandler(value as (VisibilityChangedEvent) -> Unit)
-                  .maybeWrapInVisibilityCallbackEventHandler(context))
+              eventHandler(value as (VisibilityChangedEvent) -> Unit))
     }.exhaustive
   }
 }
-
-@PublishedApi
-internal fun <E> EventHandler<E>.maybeWrapInVisibilityCallbackEventHandler(
-    context: ComponentContext
-): EventHandler<E> =
-    if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
-      ComponentCallbackLayoutEventHandler(ComponentCallbackType.VISIBILITY, this, context)
-    } else {
-      this
-    }
 
 @PublishedApi
 internal class VisibilityFloatStyleItem(val field: VisibilityFloatField, val value: Float) :

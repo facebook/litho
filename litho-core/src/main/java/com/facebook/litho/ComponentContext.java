@@ -423,18 +423,6 @@ public class ComponentContext implements Cloneable {
         isNestedTreeContext());
   }
 
-  final void registerComponentCallbackStart(ComponentCallbackType componentCallbackType) {
-    if (mComponentTree == null) return;
-
-    mComponentTree.beginStateUpdateBatch(componentCallbackType);
-  }
-
-  final void registerComponentCallbackEnd(ComponentCallbackType componentCallbackType) {
-    if (mComponentTree == null) return;
-
-    mComponentTree.commitStateUpdateBatch(componentCallbackType);
-  }
-
   public void applyLazyStateUpdatesForContainer(StateContainer container) {
     if (mComponentTree == null) {
       return;

@@ -266,6 +266,8 @@ public class ComponentsConfiguration {
     return sReduceMemorySpikeDataDiffSection;
   }
 
+  public static boolean enableStateUpdatesBatching = true;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
@@ -333,12 +335,6 @@ public class ComponentsConfiguration {
   public static boolean isNonMainThreadFocusRequestThrowingEnabled() {
     return isNonMainThreadFocusRequestThrowingEnabled || isDebugModeEnabled;
   }
-  /**
-   * This configuration will determine which strategy we will try to employ to batch state updates.
-   *
-   * <p>When {@code null} then we will have no specific batching strategy.
-   */
-  @Nullable public static BatchedUpdatesConfiguration sBatchedUpdatesConfiguration = null;
 
   public static ComponentsConfiguration.Builder create() {
     return create(defaultComponentsConfiguration);

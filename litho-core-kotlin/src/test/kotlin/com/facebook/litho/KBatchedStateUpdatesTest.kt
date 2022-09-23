@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.kotlin.widget.Text
@@ -82,13 +81,9 @@ class KBatchedStateUpdatesTest {
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 2")
-    val expectedRenderCount =
-        if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
-          2 /* initial render + render triggered by batched updates */
-        } else {
-          3 /* initial render + 1 render per update */
-        }
 
+    /* initial render + render triggered by batched updates */
+    val expectedRenderCount = 2
     assertThat(renderCount.get()).isEqualTo(expectedRenderCount)
   }
 
@@ -142,12 +137,8 @@ class KBatchedStateUpdatesTest {
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 5")
-    val expectedCount =
-        if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
-          3 /* initial render + render triggered by sync update (which interrupts batching) + render triggered by async update */
-        } else {
-          6 /* initial render + 1 render per update */
-        }
+    /* initial render + render triggered by sync update (which interrupts batching) + render triggered by async update */
+    val expectedCount = 3
 
     assertThat(renderCount.get()).isEqualTo(expectedCount)
   }
@@ -195,12 +186,9 @@ class KBatchedStateUpdatesTest {
     executeAndRunPendingBgTasks { lithoViewRule.act(testLithoView) { clickOnTag("test_view") } }
 
     LithoAssertions.assertThat(testLithoView).hasVisibleText("Counter: 3")
-    val expectedCount =
-        if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
-          2 /* initial render + render triggered by sync update */
-        } else {
-          4 /* initial render + 1 render per update */
-        }
+
+    /* initial render + render triggered by sync update */
+    val expectedCount = 2
     assertThat(renderCount.get()).isEqualTo(expectedCount)
   }
 

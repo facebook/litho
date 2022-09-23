@@ -25,17 +25,13 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentCallbackLayoutEventHandler
-import com.facebook.litho.ComponentCallbackType
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
-import com.facebook.litho.EventHandler
 import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.TouchEvent
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
@@ -105,35 +101,24 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.FOCUSABLE -> commonProps.focusable(value as Boolean)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
       ObjectField.ON_CLICK -> {
-        val clickHandler =
-            if (value != null)
-                eventHandler(value as (ClickEvent) -> Unit)
-                    .maybeWrapInInputCallbackEventHandler(context)
-            else null
+        val clickHandler = if (value != null) eventHandler(value as (ClickEvent) -> Unit) else null
         commonProps.clickHandler(clickHandler)
       }
       ObjectField.ON_LONG_CLICK -> {
         val longClickHandler =
-            if (value != null)
-                eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean))
-                    .maybeWrapInInputCallbackEventHandler(context)
+            if (value != null) eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean))
             else null
         commonProps.longClickHandler(longClickHandler)
       }
       ObjectField.ON_INTERCEPT_TOUCH -> {
         val interceptTouchHandler =
-            if (value != null)
-                eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean))
-                    .maybeWrapInInputCallbackEventHandler(context)
+            if (value != null) eventHandlerWithReturn(value as ((InterceptTouchEvent) -> Boolean))
             else null
         commonProps.interceptTouchHandler(interceptTouchHandler)
       }
       ObjectField.ON_TOUCH -> {
         val touchHandler =
-            if (value != null)
-                eventHandler(value as ((TouchEvent) -> Unit))
-                    .maybeWrapInInputCallbackEventHandler(context)
-            else null
+            if (value != null) eventHandler(value as ((TouchEvent) -> Unit)) else null
         commonProps.touchHandler(touchHandler)
       }
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
@@ -148,16 +133,6 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
     }.exhaustive
   }
 }
-
-@PublishedApi
-internal fun <E> EventHandler<E>.maybeWrapInInputCallbackEventHandler(
-    context: ComponentContext
-): EventHandler<E> =
-    if (ComponentsConfiguration.sBatchedUpdatesConfiguration != null) {
-      ComponentCallbackLayoutEventHandler(ComponentCallbackType.INPUT, this, context)
-    } else {
-      this
-    }
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi

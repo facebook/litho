@@ -45,29 +45,6 @@ public interface BatchedStateUpdatesStrategy {
   void onInternalStateUpdateStart();
 
   /**
-   * This method is used so that the strategy is aware that some of the support Component callbacks
-   * has been started. At this moment, we are able to support input / visibility related callbacks.
-   *
-   * <p>For example, in the example below, this method would be called whenever the {@code onClick}
-   * block starts.
-   *
-   * <pre>{@code
-   * val state = useState { 0 }
-   * Text(
-   *   text = "Hello",
-   *   style = Style.onClick { state.updateCounter { it + 1 } }
-   * )
-   * }</pre>
-   */
-  void onComponentCallbackStart(ComponentCallbackType callbackType);
-
-  /**
-   * In the same way as {@link #onComponentCallbackStart(ComponentCallbackType)}, this method is the
-   * counterpart which registers that a specific component callback has ended.
-   */
-  void onComponentCallbackEnd(ComponentCallbackType callbackType);
-
-  /**
    * This method should be called whenever the resources held by this strategy should be freed or
    * reset.
    *
