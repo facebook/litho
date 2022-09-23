@@ -93,6 +93,7 @@ class DynamicPropsEquivalenceGeneratorTest {
               return true;
             }
             
-            """.trimIndent())
+            """
+                .trimIndent())
   }
 }

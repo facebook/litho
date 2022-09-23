@@ -147,7 +147,8 @@ class TestCollection {
         We could not find a mounted recycler view.  This normally happens if you did not provide an 
         explicit size when rendering your component for test.  To fix this, add a width and height 
         when rendering the component: `lithoViewRule.render(widthPx = 100, heightPx = 100) { ... }`.
-      """.trimIndent()
+      """
+          .trimIndent()
     }
 
     return (firstVisibleIndex..lastVisibleIndex).mapNotNull {

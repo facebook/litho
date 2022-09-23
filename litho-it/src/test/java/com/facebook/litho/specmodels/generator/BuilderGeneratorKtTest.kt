@@ -136,7 +136,8 @@ class BuilderGeneratorKtTest {
                       }
                     }
                     
-                    """.trimIndent())
+                    """
+                .trimIndent())
   }
 
   @Test
@@ -212,6 +213,7 @@ class BuilderGeneratorKtTest {
                       }
                     }
                     
-                """.trimIndent())
+                """
+                .trimIndent())
   }
 }
