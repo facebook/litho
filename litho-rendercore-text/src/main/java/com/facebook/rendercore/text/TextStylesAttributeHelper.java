@@ -179,9 +179,9 @@ public class TextStylesAttributeHelper {
         textStyleInt = a.getInteger(attr, 0);
         textStyle.textStyle = textStyleInt;
       } else if (attr == R.styleable.RenderCoreText_android_lineSpacingExtra) {
-        textStyle.extraSpacing = a.getDimensionPixelOffset(attr, 0);
+        textStyle.lineSpacingExtra = a.getDimensionPixelOffset(attr, 0);
       } else if (attr == R.styleable.RenderCoreText_android_lineSpacingMultiplier) {
-        textStyle.spacingMultiplier = a.getFloat(attr, 0);
+        textStyle.lineHeightMultiplier = a.getFloat(attr, 0);
       } else if (attr == R.styleable.RenderCoreText_android_shadowDx) {
         textStyle.shadowDx = a.getFloat(attr, 0);
       } else if (attr == R.styleable.RenderCoreText_android_shadowDy) {

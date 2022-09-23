@@ -107,11 +107,11 @@ public class TextMeasurementUtils {
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(layout);
     int extraSpacingHeight = 0;
-    if (textStyle.spacingMultiplier > 1f && textStyle.shouldAddExtraSpacingToFistLine) {
+    if (textStyle.lineHeightMultiplier > 1f && textStyle.shouldAddSpacingExtraToFirstLine) {
       final TextPaint paint = layout.getPaint();
 
       final int layoutLineHeight = paint.getFontMetricsInt(null);
-      extraSpacingHeight = (int) (layoutLineHeight * (textStyle.spacingMultiplier - 1.0f));
+      extraSpacingHeight = (int) (layoutLineHeight * (textStyle.lineHeightMultiplier - 1.0f));
       preferredHeight += extraSpacingHeight;
     }
 
@@ -121,7 +121,8 @@ public class TextMeasurementUtils {
 
       final int layoutLineHeight =
           Math.round(
-              paint.getFontMetricsInt(null) * textStyle.spacingMultiplier + textStyle.extraSpacing);
+              paint.getFontMetricsInt(null) * textStyle.lineHeightMultiplier
+                  + textStyle.lineSpacingExtra);
       preferredHeight += layoutLineHeight * (textStyle.minLines - lineCount);
     }
 
@@ -246,8 +247,8 @@ public class TextMeasurementUtils {
         .setTextSize(textStyle.textSize)
         .setWidth(View.MeasureSpec.getSize(widthSpec), textMeasureMode)
         .setIncludeFontPadding(includeFontPadding)
-        .setTextSpacingExtra(textStyle.extraSpacing)
-        .setTextSpacingMultiplier(textStyle.spacingMultiplier)
+        .setTextSpacingExtra(textStyle.lineSpacingExtra)
+        .setTextSpacingMultiplier(textStyle.lineHeightMultiplier)
         .setLinkColor(textStyle.linkColor)
         .setJustificationMode(textStyle.justificationMode)
         .setBreakStrategy(textStyle.breakStrategy)

@@ -44,9 +44,9 @@ public class TextStyle implements Cloneable {
   @Nullable ColorStateList textColorStateList;
   int linkColor = Color.BLUE;
   int textSize = UNSET;
-  float extraSpacing = 0;
-  float spacingMultiplier = 1;
-  boolean shouldAddExtraSpacingToFistLine;
+  boolean shouldAddSpacingExtraToFirstLine;
+  float lineSpacingExtra = 0;
+  float lineHeightMultiplier = 1;
   float letterSpacing = 0;
   int textStyle = Typeface.DEFAULT.getStyle();
   @Nullable Typeface typeface;
@@ -93,12 +93,16 @@ public class TextStyle implements Cloneable {
     this.typeface = typeface;
   }
 
-  public void setShouldAddExtraSpacingToFistLine(boolean shouldAddExtraSpacingToFistLine) {
-    this.shouldAddExtraSpacingToFistLine = shouldAddExtraSpacingToFistLine;
+  public void setShouldAddSpacingExtraToFirstLine(boolean shouldAddSpacingExtraToFirstLine) {
+    this.shouldAddSpacingExtraToFirstLine = shouldAddSpacingExtraToFirstLine;
   }
 
-  public void setSpacingMultiplier(Float lineHeightMultiplier) {
-    this.spacingMultiplier = lineHeightMultiplier;
+  public void setLineSpacingExtra(float lineSpacingExtra) {
+    this.lineSpacingExtra = lineSpacingExtra;
+  }
+
+  public void setLineHeightMultiplier(Float lineHeightMultiplier) {
+    this.lineHeightMultiplier = lineHeightMultiplier;
   }
 
   public void setAlignment(TextAlignment textAlignment) {
@@ -149,10 +153,6 @@ public class TextStyle implements Cloneable {
 
   public void setCustomEllipsisText(CharSequence customEllipsisText) {
     this.customEllipsisText = customEllipsisText;
-  }
-
-  public void setExtraSpacing(float extraSpacing) {
-    this.extraSpacing = extraSpacing;
   }
 
   public void setIncludeFontPadding(boolean includeFontPadding) {
