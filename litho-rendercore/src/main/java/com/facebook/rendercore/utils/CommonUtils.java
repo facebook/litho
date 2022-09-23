@@ -29,4 +29,13 @@ public class CommonUtils {
     final String name = kclass.getName();
     return name.length() > 80 ? kclass.getSimpleName() : "<cls>" + name + "</cls>";
   }
+
+  /** Utility to re-throw exceptions. */
+  public static void rethrow(Exception e) {
+    if (e instanceof RuntimeException) {
+      throw (RuntimeException) e;
+    } else {
+      throw new RuntimeException(e);
+    }
+  }
 }

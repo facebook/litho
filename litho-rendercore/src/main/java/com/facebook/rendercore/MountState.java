@@ -27,6 +27,7 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
+import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -261,6 +262,15 @@ public class MountState implements MountDelegateTarget {
         mTracer.endSection();
       }
 
+    } catch (Exception e) {
+      ErrorReporter.report(
+          LogLevel.ERROR,
+          "MountState:Exception",
+          "Exception while mounting: " + e.getMessage(),
+          e,
+          0,
+          null);
+      CommonUtils.rethrow(e);
     } finally {
       mIsMounting = false;
     }
