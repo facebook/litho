@@ -118,7 +118,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public static final int STATE_UPDATES_IN_LOOP_THRESHOLD = 50;
   private static final String STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD =
-      "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold";
+      "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold:";
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
@@ -1704,7 +1704,9 @@ public class ComponentTree implements LithoLifecycleListener {
         throw new RuntimeException(message);
       } else {
         ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.FATAL, STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD, message);
+            ComponentsReporter.LogLevel.FATAL,
+            STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD + attribution,
+            message);
       }
     }
   }
