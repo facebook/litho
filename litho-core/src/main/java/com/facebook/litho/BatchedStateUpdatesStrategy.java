@@ -33,7 +33,7 @@ public interface BatchedStateUpdatesStrategy {
    * <p>This method should return {@code true} if it is considering this update to its batching
    * strategy; otherwise it should simply return {@code false}.
    */
-  boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress);
+  boolean onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress);
 
   /**
    * This method is called whenever {@link ComponentTree#updateStateInternal(boolean, String,

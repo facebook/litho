@@ -1593,7 +1593,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
     if (mBatchedStateUpdatesStrategy == null
-        || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(isCreateLayoutInProgress)) {
+        || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
+            attribution, isCreateLayoutInProgress)) {
       updateStateInternal(true, attribution, isCreateLayoutInProgress);
     }
   }
@@ -3636,15 +3637,23 @@ public class ComponentTree implements LithoLifecycleListener {
     private final AtomicReference<Choreographer> mMainChoreographer = new AtomicReference<>();
 
     private final AtomicInteger mEnqueuedUpdatesCount = new AtomicInteger(0);
-    private final String mTag;
+    private final AtomicReference<String> mAttribution = new AtomicReference<>("");
 
     private final Choreographer.FrameCallback mFrameCallback =
         new Choreographer.FrameCallback() {
           @Override
           public void doFrame(long l) {
+            // We retrieve the attribution before we reset the enqueuedUpdatesCount. The order here
+            // matters, otherwise there could be an inconsistency in the attribution.
+            String attribution = mAttribution.getAndSet("");
+
             if (mEnqueuedUpdatesCount.getAndSet(0) > 0) {
               updateStateInternal(
-                  true, "Batching Strategy: " + mTag, mContext.isCreateLayoutInProgress());
+                  true,
+                  attribution != null
+                      ? attribution
+                      : "<cls>" + getContext().getComponentScope().getClass().getName() + "</cls>",
+                  mContext.isCreateLayoutInProgress());
             }
           }
         };
@@ -3664,11 +3673,6 @@ public class ComponentTree implements LithoLifecycleListener {
         };
 
     PostStateUpdateToChoreographerCallback() {
-      this("Choreographer");
-    }
-
-    PostStateUpdateToChoreographerCallback(String tag) {
-      mTag = tag;
       initializeMainChoreographer();
     }
     /**
@@ -3693,8 +3697,10 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     @Override
-    public boolean onAsyncStateUpdateEnqueued(boolean isCreateLayoutInProgress) {
+    public boolean onAsyncStateUpdateEnqueued(
+        String attribution, boolean isCreateLayoutInProgress) {
       if (mEnqueuedUpdatesCount.getAndIncrement() == 0 && mMainChoreographer.get() != null) {
+        mAttribution.set(attribution);
         mMainChoreographer.get().postFrameCallback(mFrameCallback);
       }
 
