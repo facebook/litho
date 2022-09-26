@@ -223,6 +223,7 @@ class TextInputSpec {
   @PropDefault static final boolean multiline = false;
   @PropDefault protected static final int minLines = 1;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
+  @PropDefault protected static final int importantForAutofill = 0;
 
   @PropDefault
   protected static final MovementMethod movementMethod = ArrowKeyMovementMethod.getInstance();
@@ -286,6 +287,8 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @Prop(optional = true) @Nullable KeyListener keyListener,
+      @Prop(optional = true) int importantForAutofill,
+      @Prop(optional = true) @Nullable String[] autofillHints,
       @State AtomicReference<CharSequence> savedText) {
     EditText forMeasure =
         TextInputSpec.createAndMeasureEditText(
@@ -320,6 +323,8 @@ class TextInputSpec {
             cursorDrawableRes,
             error,
             errorDrawable,
+            importantForAutofill,
+            autofillHints,
             // onMeasure happens:
             // 1. After initState before onMount: savedText = initText.
             // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -371,6 +376,8 @@ class TextInputSpec {
       int cursorDrawableRes,
       CharSequence error,
       Drawable errorDrawable,
+      int importantForAutofill,
+      @Nullable String[] autofillHints,
       CharSequence text) {
     // The height should be the measured height of EditText with relevant params
     final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
@@ -409,7 +416,9 @@ class TextInputSpec {
         text,
         error,
         errorDrawable,
-        true);
+        true,
+        importantForAutofill,
+        autofillHints);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
     return forMeasure;
@@ -445,7 +454,9 @@ class TextInputSpec {
       @Nullable CharSequence text,
       @Nullable CharSequence error,
       @Nullable Drawable errorDrawable,
-      boolean isForMeasure) {
+      boolean isForMeasure,
+      int importantForAutofill,
+      @Nullable String[] autofillHints) {
 
     if (textSize == TextSpec.UNSET) {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP);
@@ -548,6 +559,8 @@ class TextInputSpec {
         editText.setSelection(editText.getText().toString().length());
       }
     }
+
+    Api26Utils.setAutoFillProps(editText, importantForAutofill, autofillHints);
   }
 
   private static void setInputTypeAndKeyListenerIfChanged(
@@ -787,6 +800,8 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @Prop(optional = true) @Nullable KeyListener keyListener,
+      @Prop(optional = true) int importantForAutofill,
+      @Prop(optional = true) @Nullable String[] autofillHints,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -824,7 +839,9 @@ class TextInputSpec {
         savedText.get(),
         error,
         errorDrawable,
-        false);
+        false,
+        importantForAutofill,
+        autofillHints);
     editText.setTextState(savedText);
   }
 
@@ -1308,6 +1325,16 @@ class TextInputSpec {
         background.mutate();
       }
       super.setBackground(background);
+    }
+  }
+
+  private static class Api26Utils {
+    private static void setAutoFillProps(
+        EditText editText, int importantForAutofill, @Nullable String[] autofillHints) {
+      if (SDK_INT >= Build.VERSION_CODES.O) {
+        editText.setImportantForAutofill(importantForAutofill);
+        editText.setAutofillHints(autofillHints);
+      }
     }
   }
 }

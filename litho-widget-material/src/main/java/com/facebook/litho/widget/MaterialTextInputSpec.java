@@ -112,6 +112,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int editTextTopPadding = UNSET;
   @PropDefault protected static final int editTextEndPadding = UNSET;
   @PropDefault protected static final int editTextBottomPadding = UNSET;
+  @PropDefault protected static final int importantForAutofill = 0;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -169,6 +170,8 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextTopPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
+      @Prop(optional = true) int importantForAutofill,
+      @Prop(optional = true) @Nullable String[] autofillHints,
       @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
@@ -204,6 +207,8 @@ class MaterialTextInputSpec {
             cursorDrawableRes,
             error,
             errorDrawable,
+            importantForAutofill,
+            autofillHints,
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(
@@ -362,6 +367,8 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @Prop(optional = true) @Nullable KeyListener keyListener,
+      @Prop(optional = true) int importantForAutofill,
+      @Prop(optional = true) @Nullable String[] autofillHints,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
@@ -400,7 +407,9 @@ class MaterialTextInputSpec {
         savedText.get(),
         error,
         errorDrawable,
-        false);
+        false,
+        importantForAutofill,
+        autofillHints);
     setParams(
         editText,
         textInputLayout,
