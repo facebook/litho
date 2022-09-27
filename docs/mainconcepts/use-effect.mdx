@@ -9,7 +9,7 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 `useEffect` is a hook that allows a component to perform side effects[^1] when it's attached and/or detached from the tree, or in response to changes in committed props or state.
 
-[^1]: Side effects include operations such as fetch requests, subscriptions, using timers, and manually changing the DOM. By using the useEffect hook, you are stating that the component needs to do someting after its rendered.
+[^1]: Side effects include operations such as fetch requests, subscriptions, using timers, and manually changing the View tree. By using the useEffect hook, you are stating that the component needs to do someting after its rendered.
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
 
@@ -84,8 +84,8 @@ An important functionality that `useEffect` adds is the ability to trigger code 
 
 ## Known issues
 
-### `useEffect` in Components That Can Return Null from `render`
+### `useEffect` in Components that can return `null` or `EmptyComponent` from `render`
 
-If you specify an effect via `useEffect` and then return null from `render`, or render to a child (which returns null from render), then the effect won't run.
+If you specify an effect via `useEffect` and then return null from `render`, or render to a child (which returns null from render, like `EmptyComponent`), then the effect won't run.
 
 Until this is fixed, the workaround is to return an empty `Row()` from render instead of null.
