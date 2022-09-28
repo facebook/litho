@@ -30,7 +30,9 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.isAllowedTypeAndConsume;
 
 import com.facebook.litho.annotations.OnAttached;
+import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -197,8 +199,8 @@ public class DelegateMethodGenerator {
             interStagePropsParamName,
             runMode));
 
-    if (delegateMethod.name.toString().equals("onCreateLayout")
-        || delegateMethod.name.toString().equals("onPrepare")) {
+    if (SpecModelUtils.hasAnnotation(delegateMethod, OnCreateLayout.class)
+        || SpecModelUtils.hasAnnotation(delegateMethod, OnPrepare.class)) {
       SpecMethodModel<EventMethod, Void> registerRangesModel =
           specModel.getWorkingRangeRegisterMethod();
 

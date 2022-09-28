@@ -155,6 +155,16 @@ public class SpecModelUtils {
         "Diff model wasn't annotated with @State or @Prop, some validation failed");
   }
 
+  public static boolean hasAnnotation(SpecMethodModel<?, ?> method, Class<?> annotationClass) {
+    for (Annotation annotation : method.annotations) {
+      if (annotation.annotationType().equals(annotationClass)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public static boolean hasAnnotation(MethodParamModel methodParam, Class<?> annotationClass) {
     for (Annotation annotation : methodParam.getAnnotations()) {
       if (annotation.annotationType().equals(annotationClass)) {
