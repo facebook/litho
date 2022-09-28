@@ -744,4 +744,14 @@ public class HostView extends Host {
       }
     }
   }
+
+  @Override
+  public void setInLayout() {
+    mInLayout = true;
+  }
+
+  @Override
+  public void unsetInLayout() {
+    mInLayout = false;
+  }
 }

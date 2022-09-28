@@ -103,4 +103,8 @@ public abstract class Host extends ViewGroup {
 
   /** Use this API to remove all mounted items from the Host to recover from errors. */
   public void safelyUnmountAll() {}
+
+  public void setInLayout() {}
+
+  public void unsetInLayout() {}
 }

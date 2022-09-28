@@ -309,26 +309,36 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public void unmountAllItems() {
-    if (mRenderTree == null) {
+    try {
+      if (RenderCoreConfig.shouldSetInLayoutDuringUnmountAll) {
+        mRootHost.setInLayout();
+      }
+
+      if (mRenderTree == null) {
+        unregisterAllExtensions();
+        return;
+      }
+
+      final boolean isTracing = mTracer.isTracing();
+      if (isTracing) {
+        mTracer.beginSection("MountState.unmountAllItems");
+      }
+
+      // unmount all the content from the Root node
+      unmountItemRecursively(ROOT_HOST_ID);
+
       unregisterAllExtensions();
-      return;
+
+      if (isTracing) {
+        mTracer.endSection();
+      }
+
+      mNeedsRemount = true;
+    } finally {
+      if (RenderCoreConfig.shouldSetInLayoutDuringUnmountAll) {
+        mRootHost.unsetInLayout();
+      }
     }
-
-    final boolean isTracing = mTracer.isTracing();
-    if (isTracing) {
-      mTracer.beginSection("MountState.unmountAllItems");
-    }
-
-    // unmount all the content from the Root node
-    unmountItemRecursively(ROOT_HOST_ID);
-
-    unregisterAllExtensions();
-
-    if (isTracing) {
-      mTracer.endSection();
-    }
-
-    mNeedsRemount = true;
   }
 
   @Override

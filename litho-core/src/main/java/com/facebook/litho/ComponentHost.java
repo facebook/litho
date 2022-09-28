@@ -1535,4 +1535,14 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
     super.setAlpha(alpha);
   }
+
+  @Override
+  public void setInLayout() {
+    mInLayout = true;
+  }
+
+  @Override
+  public void unsetInLayout() {
+    mInLayout = false;
+  }
 }
