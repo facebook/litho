@@ -194,6 +194,19 @@ public class RecyclerBinder
         }
       };
 
+  private final View.OnAttachStateChangeListener mOnAttachStateChangeListener =
+      new View.OnAttachStateChangeListener() {
+
+        @Override
+        public void onViewAttachedToWindow(View v) {}
+
+        @Override
+        public void onViewDetachedFromWindow(View v) {
+          unregisterDrawListener((RecyclerView) v);
+          v.removeOnAttachStateChangeListener(this);
+        }
+      };
+
   private final Runnable mNotifyDatasetChangedRunnable =
       new Runnable() {
         @Override
@@ -3077,6 +3090,10 @@ public class RecyclerBinder
           .registerPostDispatchDrawListener(mPostDispatchDrawListener);
     } else if (view.getViewTreeObserver() != null) {
       view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
+      if (ComponentsConfiguration.fixMemoryLeakInRecyclerBinder) {
+        // To make sure we unregister the OnPreDrawListener before RecyclerView is detached.
+        view.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
+      }
     }
   }
 

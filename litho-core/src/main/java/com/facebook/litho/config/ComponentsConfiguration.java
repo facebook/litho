@@ -245,6 +245,8 @@ public class ComponentsConfiguration {
 
   public static boolean requestMountForPrefetchedItems = false;
 
+  public static boolean fixMemoryLeakInRecyclerBinder = false;
+
   public static boolean enableMountableComponents = false;
 
   private static boolean sReduceMemorySpikeUserSession = false;
