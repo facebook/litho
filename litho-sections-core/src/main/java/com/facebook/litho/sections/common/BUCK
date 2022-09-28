@@ -22,7 +22,7 @@ load(
 litho_android_library(
     name = "common",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     plugins = [
         LITHO_SECTIONS_PROCESSOR_TARGET,

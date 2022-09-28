@@ -10,7 +10,6 @@ fb_native.android_aar(
     name = "litho-widget-material",
     labels = [
         "pfh:FBApp_UIFrameworks_Litho_Litho",
-        "supermodule:android/default/litho.core",
     ],
     manifest_skeleton = "src/main/AndroidManifest.xml",
     visibility = [

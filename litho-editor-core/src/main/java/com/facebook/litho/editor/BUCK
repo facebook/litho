@@ -9,7 +9,7 @@ fb_android_library(
     ]),
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     pure_kotlin = False,
     visibility = [
         "PUBLIC",

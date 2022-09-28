@@ -17,7 +17,7 @@ load(
 litho_android_library(
     name = "fresco",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     plugins = [
         LITHO_PROCESSOR_TARGET,

@@ -17,7 +17,7 @@ fb_java_library(
     name = "testing",
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     source = "8",
     target = "8",
     tests = [

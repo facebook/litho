@@ -35,7 +35,7 @@ fb_java_library(
         "**/*.java",
     ]),
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     source = "8",
     target = "8",
     visibility = ["PUBLIC"],
@@ -60,7 +60,7 @@ fb_java_library(
         "**/*.java",
     ]),
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

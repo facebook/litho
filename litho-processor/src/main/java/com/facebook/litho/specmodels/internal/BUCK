@@ -17,7 +17,7 @@ fb_java_library(
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
     java_version = "8",
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
@@ -35,7 +35,7 @@ fb_java_library(
     name = "internal4idea",
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

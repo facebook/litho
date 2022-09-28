@@ -9,7 +9,7 @@ load(
 litho_android_library(
     name = "yoga",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     visibility = LITHO_VISIBILITY,
     exported_deps = [

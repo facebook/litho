@@ -81,7 +81,7 @@ litho_android_library(
 fb_core_android_library(
     name = "sections",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     visibility = [
         "PUBLIC",
     ],
@@ -94,7 +94,7 @@ fb_core_android_library(
 fb_core_android_library(
     name = "sections_no_codegen",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     visibility = [
         "PUBLIC",
     ],

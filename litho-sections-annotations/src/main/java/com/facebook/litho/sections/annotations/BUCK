@@ -10,7 +10,7 @@ fb_java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

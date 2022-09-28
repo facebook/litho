@@ -9,7 +9,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "litho_android_library")
 litho_android_library(
     name = "viewcompat",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     visibility = [
         "PUBLIC",

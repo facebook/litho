@@ -15,7 +15,7 @@ load(
 litho_android_library(
     name = "logger",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     visibility = [
         "PUBLIC",

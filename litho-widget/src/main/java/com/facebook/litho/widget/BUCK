@@ -29,7 +29,7 @@ litho_android_library(
     name = "widget",
     autoglob = False,
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     visibility = [
         "PUBLIC",
@@ -43,7 +43,7 @@ litho_android_library(
 litho_android_library(
     name = "widget-bare",
     feature = FBApp_UIFrameworks_Litho_Litho,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     language = "JAVA",
     plugins = [
         LITHO_PROCESSOR_TARGET,
