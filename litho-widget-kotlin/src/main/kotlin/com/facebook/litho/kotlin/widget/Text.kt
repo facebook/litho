@@ -73,6 +73,7 @@ inline fun ResourcesScope.Text(
     @AttrRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0,
     dynamicTextColor: DynamicValue<Int>? = null,
+    testKey: String? = null
 ): Text =
     Text.create(context, defStyleAttr, defStyleRes)
         .text(text)
@@ -103,4 +104,5 @@ inline fun ResourcesScope.Text(
         .apply { highlightColor?.let { highlightColor(it) } }
         .textDirection(textDirection)
         .kotlinStyle(style)
+        .testKey(testKey)
         .build()
