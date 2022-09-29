@@ -516,6 +516,182 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  @Test
+  public void test_OCL_OCL_OCLWSS() {
+    final LifecycleStep[] botStepsPreUpdate =
+        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
+            ? new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_ATTACHED
+            }
+            : new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_ATTACHED
+            };
+    final LifecycleStep[] botStepsForUpdate1 =
+        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
+            ? new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+            }
+            : new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_TREE_PROP
+            };
+
+    final LifecycleStep[] botStepsForUpdate2 =
+        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
+            ? new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_DETACHED,
+              ON_ATTACHED
+            }
+            : new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_DETACHED,
+              ON_ATTACHED
+            };
+
+    // Testing OCL -> OCL -> OCLWSS
+    TestHierarchyBuilder.create(this, true, true, false)
+        .setRootStepsPreUpdate(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_ATTACHED
+            })
+        .setMidStepsPreUpdate(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+              ON_ATTACHED
+            })
+        .setBotStepsPreUpdate(botStepsPreUpdate)
+        .setMountSpecStepsPreUpdate(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .setRootStepsUpdate1(
+            new LifecycleStep[] {
+              // TODO (T133075661) duplicate OCTPs
+              ON_CREATE_TREE_PROP, ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT
+            })
+        .setMidStepsUpdate1(
+            new LifecycleStep[] {
+              // TODO (T133075661) duplicate OCTPs
+              ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
+            })
+        .setBotStepsUpdate1(botStepsForUpdate1)
+        .setMountSpecStepsUpdate1(
+            new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              SHOULD_UPDATE,
+              ON_UNBIND,
+              ON_UNMOUNT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        // TODO (T133075661) expected empty, no OCTP
+        .setRootStepsUpdate2(new LifecycleStep[] {ON_CREATE_TREE_PROP})
+        .setMidStepsUpdate2(
+            new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE, // TODO (T133075661) unexpected OCCV
+              ON_CREATE_LAYOUT,
+              ON_DETACHED,
+              ON_ATTACHED
+            })
+        .setBotStepsUpdate2(botStepsForUpdate2)
+        .setMountSpecStepsUpdate2(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_DETACHED,
+              ON_ATTACHED,
+              ON_UNBIND,
+              ON_UNMOUNT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .setRootStepsUpdate3(new LifecycleStep[] {ON_CREATE_TREE_PROP})
+        .setMidStepsUpdate3(new LifecycleStep[] {}) // empty
+        .setBotStepsUpdate3(
+            new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_DETACHED,
+              ON_ATTACHED
+            })
+        .setMountSpecStepsUpdate3(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              SHOULD_UPDATE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_DETACHED,
+              ON_ATTACHED,
+              ON_UNBIND,
+              ON_UNMOUNT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .test();
+  }
+
   private void testSpecificSetup(
       final boolean isRootOCL,
       final boolean isMidOCL,
