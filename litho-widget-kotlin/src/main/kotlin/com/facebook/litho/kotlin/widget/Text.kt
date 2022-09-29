@@ -52,6 +52,7 @@ inline fun ResourcesScope.Text(
     @ColorInt shadowColor: Int = Color.GRAY,
     shadowRadius: Dimen = 0.dp,
     alignment: TextAlignment = TextAlignment.TEXT_START,
+    breakStrategy: Int = 0,
     verticalGravity: VerticalGravity = VerticalGravity.TOP,
     isSingleLine: Boolean = false,
     ellipsize: TextUtils.TruncateAt? = null,
@@ -83,6 +84,7 @@ inline fun ResourcesScope.Text(
         .shadowColor(shadowColor)
         .shadowRadiusPx(shadowRadius.toPixels().toFloat())
         .alignment(alignment)
+        .breakStrategy(breakStrategy)
         .verticalGravity(verticalGravity)
         .spacingMultiplier(lineSpacingMultiplier)
         .isSingleLine(isSingleLine)
