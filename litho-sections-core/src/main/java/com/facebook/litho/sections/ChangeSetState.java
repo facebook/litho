@@ -36,7 +36,6 @@ import androidx.core.util.Pair;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.PerfEvent;
-import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -265,16 +264,15 @@ public class ChangeSetState {
     final Map<String, Pair<Section, Integer>> currentChildren = acquireChildrenMap(currentRoot);
     final Map<String, Pair<Section, Integer>> newChildren = acquireChildrenMap(newRoot);
 
-    boolean isFixDisabled = !SectionsConfiguration.fixAnrInChangeSetState;
     final List<Section> currentChildrenList;
-    if (currentRoot == null || (isFixDisabled && currentRoot.getChildren() == null)) {
+    if (currentRoot == null || currentRoot.getChildren() == null) {
       currentChildrenList = sEmptyList;
     } else {
       currentChildrenList = new ArrayList<>(currentRoot.getChildren());
     }
 
     final List<Section> newChildrenList;
-    if (isFixDisabled && newRoot.getChildren() == null) {
+    if (newRoot.getChildren() == null) {
       newChildrenList = sEmptyList;
     } else {
       newChildrenList = newRoot.getChildren();
