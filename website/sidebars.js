@@ -195,6 +195,7 @@ module.exports = {
             'mountablecomponents/overview',
             'mountablecomponents/mountable-component',
             'mountablecomponents/mountable',
+            'mountablecomponents/mountable-measuring',
             'mountablecomponents/accessibility',
             'mountablecomponents/mountable-bindto',
             'mountablecomponents/mountable-controllers',

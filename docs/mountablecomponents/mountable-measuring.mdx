@@ -1,0 +1,36 @@
+---
+id: mountable-measuring
+title: Measuring
+---
+
+Mountable should implement a `measure()` function to define how it should measure itself, given width and height specs.
+
+The `measure()` function returns a `MeasureResult` object that contains the width and height of the content and, optionally, any layout data.
+
+:::note
+`measure()` method can be called on any thread, and has the following characteristics:
+- it must not cause any side effects
+- it is guaranteed to be called at least once, and can be called multiple times
+:::
+
+## Measuring in practice
+
+In principle, there are two different ways that measuring can be implemented:
+
+## Mathematical calculations on View.MeasureSpec values
+
+The `widthSpec` and `heightSpec` parameters of the `measure()` method can be used to carry out mathematical calculations and count the final measurements based on `widthMode` and `heightMode` that can be retrieved from [View.MeasureSpec](https://developer.android.com/reference/android/view/View.MeasureSpec), as shown in the following example code:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=measure_example_start end=measure_example_end
+```
+
+## Creating a View, measuring it, and reading the measured sizes
+
+Alternatively, a View can be created that represents the mount content then call the `View.measure()` method on it directly. After `View.measure()` completes, the measured width and height can be retrieved by calling `View.getMeasuredWidth()` and `View.getMeasuredHeight()`:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SampleTextInput.kt start=start_measure_with_view_measurement end=end_measure_with_view_measurement
+```
+
+:::note
+When the width and height can be determined using mathematical calculations, it is preferred over creating a View because the calculations are much more lightweight.
+:::
