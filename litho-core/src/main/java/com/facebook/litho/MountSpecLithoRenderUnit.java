@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoLayoutData.getInterStageProps;
 import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
@@ -92,6 +93,10 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   @Override
   public Object createContent(Context c) {
+    if (isMountable(output.getComponent())) {
+      throw new RuntimeException(
+          "We're about to call createMountContent on a MountableComponent, which should be impossible");
+    }
     return output.getComponent().createMountContent(c);
   }
 
