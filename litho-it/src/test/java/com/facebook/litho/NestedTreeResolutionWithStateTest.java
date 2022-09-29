@@ -54,9 +54,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.LooperMode;
 
 /**
- * In this test class, all tests will test for complex component hierarchies of the following form:
- * Root --> Mid --> Bot Where Root, Mid and Bot can either be an OnCreateLayout component, or an
- * OnCreateLayoutWithSizeSpec component.
+ * IMPORTANT INFORMATION! PLEASE READ!
+ *
+ * <p>In this test class, all tests will test for complex component hierarchies of the following
+ * form: Root --> Mid --> Bot Where Root, Mid and Bot can either be an OnCreateLayout (OCL)
+ * component, or an OnCreateLayoutWithSizeSpec (OCLWSS) component.
  *
  * <p>All 3 components hold an int state value, initialized as zero. Each component will render a
  * Text displaying a prefix ("root", "mid", "bot") + the value of the state value as their 1st
@@ -64,11 +66,23 @@ import org.robolectric.annotation.LooperMode;
  * as it's 2nd child. Mid will accept Bot as a @Prop component, will call Component.measure on it,
  * and use it as it's 2nd child. Bot will accept a MountSpec component and use it as it's 2nd child.
  *
- * <p>All tests will follow the same flow: 1. Build such a hierarchy, each test will have a
- * different variation of OCL / OCLWSS comps 2. Ensure lifecycle steps for each comp + the MountSpec
- * are as expected 3. Ensure all texts are displaying the correct state 4. Update state on the root
- * comp, and repeat #2 and #3 5. Update state on the mid comp, and repeat #2 and #3 6. Update state
- * on the bot comp, and repeat #2 and #3
+ * <p>All tests will follow the same flow:
+ *
+ * <p>1. Build such a hierarchy, each test will have a different variation of OCL / OCLWSS comps
+ *
+ * <p>2. Ensure lifecycle steps for each comp + the MountSpec are as expected
+ *
+ * <p>3. Ensure all texts are displaying the correct state
+ *
+ * <p>4. Update state on the root comp, and repeat #2 and #3
+ *
+ * <p>5. Update state on the mid comp, and repeat #2 and #3
+ *
+ * <p>6. Update state on the bot comp, and repeat #2 and #3
+ *
+ * <p>All tests use a common main test method ("testSpecificSetup") that is accessed via a Builder
+ * class. Since all tests use the same flow, they all funnel into this method with different
+ * component hierarchy setup and different expected LifecycleSteps for each component / phase.
  *
  * <p>The name of each test will indicate the hierarchy being tested. For example, a test named
  * "test_OCLWSS_OCL_OCL" will hold the hierarchy of: Root as OCLWSS, Mid as OCL, Bot as OCL
@@ -83,6 +97,7 @@ public class NestedTreeResolutionWithStateTest {
   @Before
   public void before() {
     defaultIsSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
+    // TODO (T133174239) isSplitStateHandlersEnabled is disabled due to issues with implementation.
     ComponentsConfiguration.isSplitStateHandlersEnabled = false;
     ComponentsConfiguration.isEndToEndTestRun = true;
   }
@@ -92,6 +107,11 @@ public class NestedTreeResolutionWithStateTest {
     ComponentsConfiguration.isSplitStateHandlersEnabled = defaultIsSplitStateHandlersEnabled;
   }
 
+  /**
+   * Tests OCL_OCL_OCL hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCL_OCL_OCL() {
     // Mid and bot steps will be the same on preUpdate
@@ -222,6 +242,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCLWSS_OCL_OCL hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCLWSS_OCL_OCL() {
     final LifecycleStep[] rootStepsPreUpdate =
@@ -317,6 +342,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCL_OCLWSS_OCL hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCL_OCLWSS_OCL() {
     final LifecycleStep[] midStepsPreUpdate =
@@ -516,6 +546,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCL_OCL_OCLWSS hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCL_OCL_OCLWSS() {
     final LifecycleStep[] botStepsPreUpdate =
@@ -692,6 +727,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCLWSS_OCLWSS_OCL hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCLWSS_OCLWSS_OCL() {
     final LifecycleStep[] rootStepsPreUpdate =
@@ -893,6 +933,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCLWSS_OCL_OCLWSS hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCLWSS_OCL_OCLWSS() {
     final LifecycleStep[] rootStepsPreUpdate =
@@ -1026,6 +1071,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCL_OCLWSS_OCLWSS hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCL_OCLWSS_OCLWSS() {
     final LifecycleStep[] midStepsPreUpdate =
@@ -1241,6 +1291,11 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Tests OCLWSS_OCLWSS_OCLWSS hierarchy.
+   *
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   */
   @Test
   public void test_OCLWSS_OCLWSS_OCLWSS() {
     final LifecycleStep[] rootStepsPreUpdate =
@@ -1447,6 +1502,31 @@ public class NestedTreeResolutionWithStateTest {
         .test();
   }
 
+  /**
+   * Consolidated method to test all cases in this test file. Called from the Builder class.
+   *
+   * @see NestedTreeResolutionWithStateTest.TestHierarchyBuilder
+   * @see NestedTreeResolutionWithStateTest class declaration documentation for additional details.
+   * @param isRootOCL True if the Root is OnCreateLayout. False for OnCreateLayoutWithSizeSpec
+   * @param isMidOCL True if the Mid is OnCreateLayout. False for OnCreateLayoutWithSizeSpec
+   * @param isBotOCL True if the Bot is OnCreateLayout. False for OnCreateLayoutWithSizeSpec
+   * @param rootStepsPreStateUpdate Expected LifecycleSteps for root, pre-update
+   * @param midStepsPreStateUpdate Expected LifecycleSteps for mid, pre-update
+   * @param botStepsPreStateUpdate Expected LifecycleSteps for bot, pre-update
+   * @param mountSpecStepsPreStateUpdate Expected LifecycleSteps for mount-spec, pre-update
+   * @param rootStepsStateUpdate1 Expected LifecycleSteps for root, post-update-1
+   * @param midStepsStateUpdate1 Expected LifecycleSteps for mid, post-update-1
+   * @param botStepsStateUpdate1 Expected LifecycleSteps for bot, post-update-1
+   * @param mountSpecStateUpdate1 Expected LifecycleSteps for mount-spec, post-update-1
+   * @param rootStepsStateUpdate2 Expected LifecycleSteps for root, post-update-2
+   * @param midStepsStateUpdate2 Expected LifecycleSteps for mid, post-update-2
+   * @param botStepsStateUpdate2 Expected LifecycleSteps for bot, post-update-2
+   * @param mountSpecStateUpdate2 Expected LifecycleSteps for mount-spec, post-update-2
+   * @param rootStepsStateUpdate3 Expected LifecycleSteps for root, post-update-3
+   * @param midStepsStateUpdate3 Expected LifecycleSteps for mid, post-update-3
+   * @param botStepsStateUpdate3 Expected LifecycleSteps for bot, post-update-3
+   * @param mountSpecStateUpdate3 Expected LifecycleSteps for mount-spec, post-update-3
+   */
   private void testSpecificSetup(
       final boolean isRootOCL,
       final boolean isMidOCL,
@@ -1730,6 +1810,7 @@ public class NestedTreeResolutionWithStateTest {
         mountableLifecycleTracker);
   }
 
+  /** Returns the ComponentContext to be used to trigger state-updates on the Root. */
   private ComponentContext getRootComponentContext() {
     assertThat(mLegacyLithoViewRule.getCurrentRootNode()).isNotNull();
     return getCorrectLayoutResult(mLegacyLithoViewRule.getCurrentRootNode())
@@ -1737,6 +1818,7 @@ public class NestedTreeResolutionWithStateTest {
         .getComponentContextAt(1);
   }
 
+  /** Returns the ComponentContext to be used to trigger state-updates on the Mid */
   private ComponentContext getMidComponentContext() {
     final LithoLayoutResult rootLayoutResult = mLegacyLithoViewRule.getCurrentRootNode();
     assertThat(rootLayoutResult).isNotNull();
@@ -1752,6 +1834,7 @@ public class NestedTreeResolutionWithStateTest {
     }
   }
 
+  /** Returns the ComponentContext to be used to trigger state-updates on the Bot */
   private ComponentContext getBotComponentContext() {
     final LithoLayoutResult rootLayoutResult = mLegacyLithoViewRule.getCurrentRootNode();
     assertThat(rootLayoutResult).isNotNull();
@@ -1778,6 +1861,13 @@ public class NestedTreeResolutionWithStateTest {
     }
   }
 
+  /**
+   * Extracts the Nested-Result from a NestedTreeHolderResult if the provided LithoLayoutResult is
+   * of that type, otherwise simply returns the provided LithoLayoutResult.
+   *
+   * <p>Used as a helper method to extract the correct ComponentContext for state-updates for Root,
+   * Mid or Bot.
+   */
   private static LithoLayoutResult getCorrectLayoutResult(final LithoLayoutResult from) {
     if (from instanceof NestedTreeHolderResult) {
       final LithoLayoutResult nestedResult = ((NestedTreeHolderResult) from).getNestedResult();
@@ -1831,6 +1921,7 @@ public class NestedTreeResolutionWithStateTest {
     }
   }
 
+  /** Builder class used to prepare and trigger each individual test in this file. */
   private static class TestHierarchyBuilder {
     private NestedTreeResolutionWithStateTest testRunner;
     private boolean isRootOCL;
