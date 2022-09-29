@@ -22,6 +22,7 @@ import static com.facebook.litho.LifecycleStep.ON_BOUNDS_DEFINED;
 import static com.facebook.litho.LifecycleStep.ON_CALCULATE_CACHED_VALUE;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_INITIAL_STATE;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT;
+import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_MOUNT_CONTENT;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_TREE_PROP;
 import static com.facebook.litho.LifecycleStep.ON_DETACHED;
@@ -84,14 +85,257 @@ public class NestedTreeResolutionWithStateTest {
 
   @Test
   public void test_OCL_OCL_OCL() {
+    // Mid and bot steps will be the same on preUpdate
+    final LifecycleStep[] expectedStepsForMidAndBotPreUpdate =
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_ATTACHED
+        };
+
+    // Mid and bot steps will be the same on update 1
+    final LifecycleStep[] expectedStepsForMidAndBotUpdate1 =
+        new LifecycleStep[] {
+          // TODO (T133075661) duplicate OCTPs
+          ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
+        };
+
+    // Testing OCL -> OCL -> OCL
+    TestHierarchyBuilder.create(this, true, true, true)
+        .setRootStepsPreUpdate(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_ATTACHED
+            })
+        .setMidStepsPreUpdate(expectedStepsForMidAndBotPreUpdate)
+        .setBotStepsPreUpdate(expectedStepsForMidAndBotPreUpdate)
+        .setMountSpecStepsPreUpdate(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .setRootStepsUpdate1(
+            new LifecycleStep[] {
+              // TODO (T133075661) duplicate OCTPs
+              ON_CREATE_TREE_PROP, ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT
+            })
+        .setMidStepsUpdate1(expectedStepsForMidAndBotUpdate1)
+        .setBotStepsUpdate1(expectedStepsForMidAndBotUpdate1)
+        .setMountSpecStepsUpdate1(
+            new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              SHOULD_UPDATE,
+              ON_UNBIND,
+              ON_UNMOUNT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        // TODO (T133075661) expected empty, no OCTP
+        .setRootStepsUpdate2(new LifecycleStep[] {ON_CREATE_TREE_PROP})
+        .setMidStepsUpdate2(
+            new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE, // TODO (T133075661) unexpected OCCV
+              ON_CREATE_LAYOUT,
+              ON_DETACHED,
+              ON_ATTACHED
+            })
+        .setBotStepsUpdate2(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_DETACHED,
+              ON_ATTACHED
+            })
+        .setMountSpecStepsUpdate2(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_DETACHED,
+              ON_ATTACHED,
+              ON_UNBIND,
+              ON_UNMOUNT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .setRootStepsUpdate3(new LifecycleStep[] {ON_CREATE_TREE_PROP})
+        .setMidStepsUpdate3(new LifecycleStep[] {}) // empty
+        .setBotStepsUpdate3(
+            new LifecycleStep[] {
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT,
+              ON_DETACHED,
+              ON_ATTACHED
+            })
+        .setMountSpecStepsUpdate3(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              SHOULD_UPDATE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_DETACHED,
+              ON_ATTACHED,
+              ON_UNBIND,
+              ON_UNMOUNT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .test();
+  }
+
+  @Test
+  public void test_OCLWSS_OCL_OCL() {
+    final LifecycleStep[] rootStepsPreUpdate =
+        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
+            ? new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_ATTACHED
+            }
+            : new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+              ON_ATTACHED
+            };
+
+    // Mid and bot steps will be the same pre update
+    final LifecycleStep[] expectedStepsForMidAndBotPreUpdate =
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_ATTACHED
+        };
+
+    // Mid and bot steps will be the same for all updates
+    final LifecycleStep[] expectedStepsForMidAndBotAllUpdates =
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
+        };
+
+    // Root steps will be the same for all updates
+    final LifecycleStep[] expectedStepsForRootAllUpdates =
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
+
+    // MountSpec steps will be the same for all updates
+    final LifecycleStep[] expectedStepsForMountSpecAllUpdates =
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          SHOULD_UPDATE,
+          ON_UNBIND,
+          ON_UNMOUNT,
+          ON_MOUNT,
+          ON_BIND
+        };
+
+    // Testing OCLWSS -> OCL -> OCL
+    TestHierarchyBuilder.create(this, false, true, true)
+        .setRootStepsPreUpdate(rootStepsPreUpdate)
+        .setMidStepsPreUpdate(expectedStepsForMidAndBotPreUpdate)
+        .setBotStepsPreUpdate(expectedStepsForMidAndBotPreUpdate)
+        .setMountSpecStepsPreUpdate(
+            new LifecycleStep[] {
+              ON_CREATE_INITIAL_STATE,
+              ON_CREATE_TREE_PROP,
+              ON_CALCULATE_CACHED_VALUE,
+              ON_PREPARE,
+              ON_MEASURE,
+              ON_BOUNDS_DEFINED,
+              ON_ATTACHED,
+              ON_CREATE_MOUNT_CONTENT,
+              ON_MOUNT,
+              ON_BIND
+            })
+        .setRootStepsUpdate1(expectedStepsForRootAllUpdates)
+        .setMidStepsUpdate1(expectedStepsForMidAndBotAllUpdates)
+        .setBotStepsUpdate1(expectedStepsForMidAndBotAllUpdates)
+        .setMountSpecStepsUpdate1(expectedStepsForMountSpecAllUpdates)
+        .setRootStepsUpdate2(expectedStepsForRootAllUpdates)
+        .setMidStepsUpdate2(expectedStepsForMidAndBotAllUpdates)
+        .setBotStepsUpdate2(expectedStepsForMidAndBotAllUpdates)
+        .setMountSpecStepsUpdate2(expectedStepsForMountSpecAllUpdates)
+        .setRootStepsUpdate3(expectedStepsForRootAllUpdates)
+        .setMidStepsUpdate3(expectedStepsForMidAndBotAllUpdates)
+        .setBotStepsUpdate3(expectedStepsForMidAndBotAllUpdates)
+        .setMountSpecStepsUpdate3(expectedStepsForMountSpecAllUpdates)
+        .test();
+  }
+
+  private void testSpecificSetup(
+      final boolean isRootOCL,
+      final boolean isMidOCL,
+      final boolean isBotOCL,
+      final LifecycleStep[] rootStepsPreStateUpdate,
+      final LifecycleStep[] midStepsPreStateUpdate,
+      final LifecycleStep[] botStepsPreStateUpdate,
+      final LifecycleStep[] mountSpecStepsPreStateUpdate,
+      final LifecycleStep[] rootStepsStateUpdate1,
+      final LifecycleStep[] midStepsStateUpdate1,
+      final LifecycleStep[] botStepsStateUpdate1,
+      final LifecycleStep[] mountSpecStateUpdate1,
+      final LifecycleStep[] rootStepsStateUpdate2,
+      final LifecycleStep[] midStepsStateUpdate2,
+      final LifecycleStep[] botStepsStateUpdate2,
+      final LifecycleStep[] mountSpecStateUpdate2,
+      final LifecycleStep[] rootStepsStateUpdate3,
+      final LifecycleStep[] midStepsStateUpdate3,
+      final LifecycleStep[] botStepsStateUpdate3,
+      final LifecycleStep[] mountSpecStateUpdate3) {
     final ComponentContext c = mLegacyLithoViewRule.getContext();
 
     final int widthSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
 
-    // Generate a component + state-update-callers for OCL->OCL->OCL
+    // Generate a component + state-update-callers for requested setup.
     final StateUpdateComponentHolder holder =
-        createComponentHierarchySetup(c, widthSpec, heightSpec, true, true, true);
+        createComponentHierarchySetup(c, widthSpec, heightSpec, isRootOCL, isMidOCL, isBotOCL);
 
     // Set the root and layout
     mLegacyLithoViewRule.setRoot(holder.component);
@@ -109,40 +353,17 @@ public class NestedTreeResolutionWithStateTest {
     List<LifecycleStep> mountableSteps = holder.mountableLifecycleTracker.getSteps();
 
     assertThat(rootSteps)
-        .containsExactly(
-            ON_CREATE_INITIAL_STATE,
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_CREATE_LAYOUT,
-            ON_ATTACHED);
-
-    // Mid and bot steps will be the same
-    LifecycleStep[] expectedStepsForMidAndBot =
-        new LifecycleStep[] {
-          ON_CREATE_INITIAL_STATE,
-          ON_CREATE_TREE_PROP,
-          ON_CALCULATE_CACHED_VALUE,
-          ON_CREATE_LAYOUT,
-          ON_CREATE_INITIAL_STATE,
-          ON_CREATE_TREE_PROP,
-          ON_ATTACHED
-        };
-
-    assertThat(midSteps).containsExactly(expectedStepsForMidAndBot);
-    assertThat(botSteps).containsExactly(expectedStepsForMidAndBot);
+        .describedAs("Root steps pre update")
+        .containsExactly(rootStepsPreStateUpdate);
+    assertThat(midSteps)
+        .describedAs("Mid steps pre update")
+        .containsExactly(midStepsPreStateUpdate);
+    assertThat(botSteps)
+        .describedAs("Bot steps pre update")
+        .containsExactly(botStepsPreStateUpdate);
     assertThat(mountableSteps)
-        .describedAs("Should call the lifecycle methods in expected order")
-        .containsExactly(
-            ON_CREATE_INITIAL_STATE,
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_PREPARE,
-            ON_MEASURE,
-            ON_BOUNDS_DEFINED,
-            ON_ATTACHED,
-            ON_CREATE_MOUNT_CONTENT,
-            ON_MOUNT,
-            ON_BIND);
+        .describedAs("MountSpec steps pre update")
+        .containsExactly(mountSpecStepsPreStateUpdate);
 
     // Ensure all texts showing initial states are as expected
     assertThat(mLegacyLithoViewRule.findViewWithText("root 0")).isNotNull();
@@ -154,8 +375,7 @@ public class NestedTreeResolutionWithStateTest {
     holder.clearAllSteps();
 
     // Extract the root component's context to simulate state updates
-    final ComponentContext rootScopedContext =
-        mLegacyLithoViewRule.getCurrentRootNode().mNode.getComponentContextAt(1);
+    final ComponentContext rootScopedContext = getRootComponentContext();
 
     // Simulate the state update for the root.
     holder.rootStateCaller.increment(rootScopedContext);
@@ -167,30 +387,17 @@ public class NestedTreeResolutionWithStateTest {
     mountableSteps = holder.mountableLifecycleTracker.getSteps();
 
     assertThat(rootSteps)
-        .containsExactly(
-            ON_CREATE_TREE_PROP, ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT);
-
-    // Mid and bot steps will be the same
-    expectedStepsForMidAndBot =
-        new LifecycleStep[] {
-          ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
-        };
-
-    assertThat(midSteps).containsExactly(expectedStepsForMidAndBot);
-    assertThat(botSteps).containsExactly(expectedStepsForMidAndBot);
-
+        .describedAs("Root steps after update 1")
+        .containsExactly(rootStepsStateUpdate1);
+    assertThat(midSteps)
+        .describedAs("Mid steps after update 1")
+        .containsExactly(midStepsStateUpdate1);
+    assertThat(botSteps)
+        .describedAs("Bot steps after update 1")
+        .containsExactly(botStepsStateUpdate1);
     assertThat(mountableSteps)
-        .describedAs("Should call the lifecycle methods in expected order")
-        .containsExactly(
-            ON_CREATE_TREE_PROP,
-            ON_PREPARE,
-            ON_MEASURE,
-            ON_BOUNDS_DEFINED,
-            SHOULD_UPDATE,
-            ON_UNBIND,
-            ON_UNMOUNT,
-            ON_MOUNT,
-            ON_BIND);
+        .describedAs("MountSpec steps after update 1")
+        .containsExactly(mountSpecStateUpdate1);
 
     // Ensure the texts properly reflect the correct values after the state update
     assertThat(mLegacyLithoViewRule.findViewWithText("root 1")).isNotNull(); // Updated!
@@ -202,8 +409,7 @@ public class NestedTreeResolutionWithStateTest {
     holder.clearAllSteps();
 
     // Extract the mid component's context to simulate state updates
-    final ComponentContext midScopedContext =
-        mLegacyLithoViewRule.getCurrentRootNode().mNode.getChildAt(1).getComponentContextAt(0);
+    final ComponentContext midScopedContext = getMidComponentContext();
 
     // Simulate the state update for the mid component.
     holder.midStateCaller.increment(midScopedContext);
@@ -214,41 +420,18 @@ public class NestedTreeResolutionWithStateTest {
     botSteps = getSteps(holder.botLayoutSpecSteps);
     mountableSteps = holder.mountableLifecycleTracker.getSteps();
 
-    assertThat(rootSteps).containsExactly(ON_CREATE_TREE_PROP);
+    assertThat(rootSteps)
+        .describedAs("Root steps after update 2")
+        .containsExactly(rootStepsStateUpdate2);
     assertThat(midSteps)
-        .containsExactly(
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_CREATE_LAYOUT,
-            ON_DETACHED,
-            ON_ATTACHED);
-
+        .describedAs("Mid steps after update 2")
+        .containsExactly(midStepsStateUpdate2);
     assertThat(botSteps)
-        .containsExactly(
-            ON_CREATE_INITIAL_STATE,
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_CREATE_LAYOUT,
-            ON_CREATE_INITIAL_STATE,
-            ON_CREATE_TREE_PROP,
-            ON_DETACHED,
-            ON_ATTACHED);
-
+        .describedAs("Bot steps after update 2")
+        .containsExactly(botStepsStateUpdate2);
     assertThat(mountableSteps)
-        .describedAs("Should call the lifecycle methods in expected order")
-        .containsExactly(
-            ON_CREATE_INITIAL_STATE,
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_PREPARE,
-            ON_MEASURE,
-            ON_BOUNDS_DEFINED,
-            ON_DETACHED,
-            ON_ATTACHED,
-            ON_UNBIND,
-            ON_UNMOUNT,
-            ON_MOUNT,
-            ON_BIND);
+        .describedAs("MountSpec steps after update 2")
+        .containsExactly(mountSpecStateUpdate2);
 
     // Ensure the texts properly reflect the correct values after the state update
     assertThat(mLegacyLithoViewRule.findViewWithText("root 1")).isNotNull();
@@ -260,13 +443,7 @@ public class NestedTreeResolutionWithStateTest {
     holder.clearAllSteps();
 
     // Extract the bottom component's context to simulate state updates
-    final ComponentContext botScopedContext =
-        mLegacyLithoViewRule
-            .getCurrentRootNode()
-            .mNode
-            .getChildAt(1)
-            .getChildAt(1)
-            .getComponentContextAt(0);
+    final ComponentContext botScopedContext = getBotComponentContext();
 
     // Simulate the state update for the bottom component.
     holder.botStateCaller.increment(botScopedContext);
@@ -277,32 +454,18 @@ public class NestedTreeResolutionWithStateTest {
     botSteps = getSteps(holder.botLayoutSpecSteps);
     mountableSteps = holder.mountableLifecycleTracker.getSteps();
 
-    assertThat(rootSteps).containsExactly(ON_CREATE_TREE_PROP);
-    assertThat(midSteps).containsExactly(); // Empty!
+    assertThat(rootSteps)
+        .describedAs("Root steps after update 3")
+        .containsExactly(rootStepsStateUpdate3);
+    assertThat(midSteps)
+        .describedAs("Mid steps after update 3")
+        .containsExactly(midStepsStateUpdate3);
     assertThat(botSteps)
-        .containsExactly(
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_CREATE_LAYOUT,
-            ON_DETACHED,
-            ON_ATTACHED);
-
+        .describedAs("Bot steps after update 3")
+        .containsExactly(botStepsStateUpdate3);
     assertThat(mountableSteps)
-        .describedAs("Should call the lifecycle methods in expected order")
-        .containsExactly(
-            ON_CREATE_INITIAL_STATE,
-            ON_CREATE_TREE_PROP,
-            ON_CALCULATE_CACHED_VALUE,
-            ON_PREPARE,
-            SHOULD_UPDATE,
-            ON_MEASURE,
-            ON_BOUNDS_DEFINED,
-            ON_DETACHED,
-            ON_ATTACHED,
-            ON_UNBIND,
-            ON_UNMOUNT,
-            ON_MOUNT,
-            ON_BIND);
+        .describedAs("MountSpec steps after update 3")
+        .containsExactly(mountSpecStateUpdate3);
 
     // Ensure the texts properly reflect the correct values after the state update
     assertThat(mLegacyLithoViewRule.findViewWithText("root 1")).isNotNull();
@@ -428,6 +591,55 @@ public class NestedTreeResolutionWithStateTest {
         mountableLifecycleTracker);
   }
 
+  private ComponentContext getRootComponentContext() {
+    assertThat(mLegacyLithoViewRule.getCurrentRootNode()).isNotNull();
+    return getCorrectLayoutResult(mLegacyLithoViewRule.getCurrentRootNode())
+        .mNode
+        .getComponentContextAt(1);
+  }
+
+  private ComponentContext getMidComponentContext() {
+    final LithoLayoutResult rootLayoutResult = mLegacyLithoViewRule.getCurrentRootNode();
+    assertThat(rootLayoutResult).isNotNull();
+
+    if (rootLayoutResult instanceof NestedTreeHolderResult) {
+      final LithoLayoutResult nestedResult = getCorrectLayoutResult(rootLayoutResult);
+      final LithoLayoutResult nestedMidResult = getCorrectLayoutResult(nestedResult.getChildAt(1));
+      assertThat(nestedMidResult).isNotNull();
+
+      return nestedMidResult.mNode.getComponentContextAt(1);
+    } else {
+      return rootLayoutResult.mNode.getChildAt(1).getComponentContextAt(0);
+    }
+  }
+
+  private ComponentContext getBotComponentContext() {
+    final LithoLayoutResult rootLayoutResult = mLegacyLithoViewRule.getCurrentRootNode();
+    assertThat(rootLayoutResult).isNotNull();
+
+    if (rootLayoutResult instanceof NestedTreeHolderResult) {
+      final LithoLayoutResult nestedResult = getCorrectLayoutResult(rootLayoutResult);
+      final LithoLayoutResult nestedMidResult = getCorrectLayoutResult(nestedResult.getChildAt(1));
+      assertThat(nestedMidResult).isNotNull();
+      final LithoLayoutResult nestedBotResult =
+          getCorrectLayoutResult(nestedMidResult.getChildAt(1));
+
+      return nestedBotResult.mNode.getComponentContextAt(1);
+    } else {
+      return rootLayoutResult.mNode.getChildAt(1).getChildAt(1).getComponentContextAt(0);
+    }
+  }
+
+  private static LithoLayoutResult getCorrectLayoutResult(final LithoLayoutResult from) {
+    if (from instanceof NestedTreeHolderResult) {
+      final LithoLayoutResult nestedResult = ((NestedTreeHolderResult) from).getNestedResult();
+      assertThat(nestedResult).isNotNull();
+      return nestedResult;
+    } else {
+      return from;
+    }
+  }
+
   /**
    * Holder class for a component hierarchy described above. Holds the root component, state update
    * callers for each 3 components, and step info arrays for each component including the leaf
@@ -468,6 +680,146 @@ public class NestedTreeResolutionWithStateTest {
       this.midLayoutSpecSteps.clear();
       this.botLayoutSpecSteps.clear();
       this.mountableLifecycleTracker.reset();
+    }
+  }
+
+  private static class TestHierarchyBuilder {
+    private NestedTreeResolutionWithStateTest testRunner;
+    private boolean isRootOCL;
+    private boolean isMidOCL;
+    private boolean isBotOCL;
+    private LifecycleStep[] rootStepsPreStateUpdate;
+    private LifecycleStep[] midStepsPreStateUpdate;
+    private LifecycleStep[] botStepsPreStateUpdate;
+    private LifecycleStep[] mountSpecStepsPreStateUpdate;
+    private LifecycleStep[] rootStepsStateUpdate1;
+    private LifecycleStep[] midStepsStateUpdate1;
+    private LifecycleStep[] botStepsStateUpdate1;
+    private LifecycleStep[] mountSpecStateUpdate1;
+    private LifecycleStep[] rootStepsStateUpdate2;
+    private LifecycleStep[] midStepsStateUpdate2;
+    private LifecycleStep[] botStepsStateUpdate2;
+    private LifecycleStep[] mountSpecStateUpdate2;
+    private LifecycleStep[] rootStepsStateUpdate3;
+    private LifecycleStep[] midStepsStateUpdate3;
+    private LifecycleStep[] botStepsStateUpdate3;
+    private LifecycleStep[] mountSpecStateUpdate3;
+
+    static TestHierarchyBuilder create(
+        NestedTreeResolutionWithStateTest testRunner,
+        final boolean isRootOCL,
+        final boolean isMidOCL,
+        final boolean isBotOCL) {
+      final TestHierarchyBuilder builder = new TestHierarchyBuilder();
+      builder.isRootOCL = isRootOCL;
+      builder.isMidOCL = isMidOCL;
+      builder.isBotOCL = isBotOCL;
+      builder.testRunner = testRunner;
+
+      return builder;
+    }
+
+    TestHierarchyBuilder setRootStepsPreUpdate(LifecycleStep[] steps) {
+      this.rootStepsPreStateUpdate = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMidStepsPreUpdate(LifecycleStep[] steps) {
+      this.midStepsPreStateUpdate = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setBotStepsPreUpdate(LifecycleStep[] steps) {
+      this.botStepsPreStateUpdate = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMountSpecStepsPreUpdate(LifecycleStep[] steps) {
+      this.mountSpecStepsPreStateUpdate = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setRootStepsUpdate1(LifecycleStep[] steps) {
+      this.rootStepsStateUpdate1 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMidStepsUpdate1(LifecycleStep[] steps) {
+      this.midStepsStateUpdate1 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setBotStepsUpdate1(LifecycleStep[] steps) {
+      this.botStepsStateUpdate1 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMountSpecStepsUpdate1(LifecycleStep[] steps) {
+      this.mountSpecStateUpdate1 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setRootStepsUpdate2(LifecycleStep[] steps) {
+      this.rootStepsStateUpdate2 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMidStepsUpdate2(LifecycleStep[] steps) {
+      this.midStepsStateUpdate2 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setBotStepsUpdate2(LifecycleStep[] steps) {
+      this.botStepsStateUpdate2 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMountSpecStepsUpdate2(LifecycleStep[] steps) {
+      this.mountSpecStateUpdate2 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setRootStepsUpdate3(LifecycleStep[] steps) {
+      this.rootStepsStateUpdate3 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMidStepsUpdate3(LifecycleStep[] steps) {
+      this.midStepsStateUpdate3 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setBotStepsUpdate3(LifecycleStep[] steps) {
+      this.botStepsStateUpdate3 = steps;
+      return this;
+    }
+
+    TestHierarchyBuilder setMountSpecStepsUpdate3(LifecycleStep[] steps) {
+      this.mountSpecStateUpdate3 = steps;
+      return this;
+    }
+
+    void test() {
+      testRunner.testSpecificSetup(
+          isRootOCL,
+          isMidOCL,
+          isBotOCL,
+          rootStepsPreStateUpdate,
+          midStepsPreStateUpdate,
+          botStepsPreStateUpdate,
+          mountSpecStepsPreStateUpdate,
+          rootStepsStateUpdate1,
+          midStepsStateUpdate1,
+          botStepsStateUpdate1,
+          mountSpecStateUpdate1,
+          rootStepsStateUpdate2,
+          midStepsStateUpdate2,
+          botStepsStateUpdate2,
+          mountSpecStateUpdate2,
+          rootStepsStateUpdate3,
+          midStepsStateUpdate3,
+          botStepsStateUpdate3,
+          mountSpecStateUpdate3);
     }
   }
 }
