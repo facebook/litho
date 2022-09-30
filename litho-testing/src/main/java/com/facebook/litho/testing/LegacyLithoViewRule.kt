@@ -128,6 +128,7 @@ constructor(
         } finally {
           threadLooperController.clean()
           MountItemsPool.clear()
+          context.clearCalculationStateContext()
           _componentTree = null
           _lithoView = null
           widthSpec = DEFAULT_WIDTH_SPEC

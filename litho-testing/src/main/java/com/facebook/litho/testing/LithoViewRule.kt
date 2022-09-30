@@ -81,6 +81,7 @@ constructor(
         } finally {
           threadLooperController.clean()
           MountItemsPool.clear()
+          context.clearCalculationStateContext()
         }
       }
     }

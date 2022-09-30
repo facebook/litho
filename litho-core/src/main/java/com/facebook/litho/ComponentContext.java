@@ -231,7 +231,8 @@ public class ComponentContext implements Cloneable {
     }
   }
 
-  void clearCalculationStateContext() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void clearCalculationStateContext() {
     if (mComponentTree != null) {
       mComponentTree.setCalculationStateContext(null);
     }
