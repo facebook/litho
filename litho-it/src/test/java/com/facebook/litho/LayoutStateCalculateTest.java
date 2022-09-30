@@ -2272,12 +2272,6 @@ public class LayoutStateCalculateTest {
 
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(
-            new LayoutProcessInfo() {
-              @Override
-              public boolean isCreateLayoutInProgress() {
-                return true;
-              }
-            },
             renderStateContext.getCache(),
             c,
             renderStateContext.getTreeState(),
@@ -2567,7 +2561,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
 
-    c = ComponentContext.withComponentScope(null, c, component, "global_key");
+    c = ComponentContext.withComponentScope(c, component, "global_key");
 
     Component.willRender(c, component);
 
@@ -2587,7 +2581,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
 
-    c = ComponentContext.withComponentScope(null, c, component, "global_key");
+    c = ComponentContext.withComponentScope(c, component, "global_key");
 
     Component.willRender(c, component);
 
@@ -2607,7 +2601,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
 
-    c = ComponentContext.withComponentScope(null, c, component, "global_key");
+    c = ComponentContext.withComponentScope(c, component, "global_key");
 
     Component.willRender(c, component);
 

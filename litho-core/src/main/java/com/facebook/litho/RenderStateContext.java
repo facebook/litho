@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,19 +30,7 @@ public class RenderStateContext implements CalculationStateContext {
   private @Nullable TreeState mTreeState;
   private final MeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
-  private @Nullable LayoutStateContext mLayoutStateContext = null;
-  private int mLayoutVersion;
-
-  @Deprecated
-  public RenderStateContext(
-      final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
-      final TreeState treeState,
-      final LayoutStateContext layoutStateContext) { // Temp LSC member
-    mLayoutStateFuture = layoutStateFuture;
-    mTreeState = treeState;
-    mCache = new MeasuredResultCache();
-    mLayoutStateContext = layoutStateContext;
-  }
+  private final int mLayoutVersion;
 
   RenderStateContext(
       final MeasuredResultCache cache,
@@ -54,20 +41,6 @@ public class RenderStateContext implements CalculationStateContext {
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
     mLayoutStateFuture = layoutStateFuture;
-  }
-
-  // Temp workaround for implementing split render and layout. Do not add usages to this method.
-  // It will be removed soon.
-  @Deprecated
-  void setLayoutStateContext(final LayoutStateContext layoutStateContext) {
-    mLayoutStateContext = layoutStateContext;
-  }
-
-  // Temp workaround for implementing split render and layout. Do not add usages to this method.
-  // It will be removed soon.
-  @Deprecated
-  public LayoutStateContext getLayoutStateContext() {
-    return Preconditions.checkNotNull(mLayoutStateContext);
   }
 
   @Override

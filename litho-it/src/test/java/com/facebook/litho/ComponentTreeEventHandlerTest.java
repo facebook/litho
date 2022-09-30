@@ -27,15 +27,11 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class ComponentTreeEventHandlerTest {
-
   private ComponentContext mContext;
-  private LayoutStateContext mLayoutStateContext;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
-    mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
-    mContext.setLayoutStateContext(mLayoutStateContext);
   }
 
   @Test
@@ -43,8 +39,7 @@ public class ComponentTreeEventHandlerTest {
     Component component = mock(Component.class);
     final String componentGlobalKey = "component1";
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(
-            mLayoutStateContext, mContext, component, componentGlobalKey);
+        ComponentContext.withComponentScope(mContext, component, componentGlobalKey);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
@@ -81,8 +76,7 @@ public class ComponentTreeEventHandlerTest {
     final String componentGlobalKey1 = "component1";
     final String componentGlobalKey2 = "component2";
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(
-            mLayoutStateContext, mContext, component, componentGlobalKey1);
+        ComponentContext.withComponentScope(mContext, component, componentGlobalKey1);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
@@ -96,8 +90,7 @@ public class ComponentTreeEventHandlerTest {
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
 
     ComponentContext scopedContext2 =
-        ComponentContext.withComponentScope(
-            mLayoutStateContext, mContext, component, componentGlobalKey2);
+        ComponentContext.withComponentScope(mContext, component, componentGlobalKey2);
 
     componentTree.setRoot(component);
     componentTree.recordEventHandler(scopedContext2, eventHandler1);

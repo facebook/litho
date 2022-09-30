@@ -504,12 +504,6 @@ class Layout {
 
       final LayoutStateContext nestedLsc =
           new LayoutStateContext(
-              new LayoutProcessInfo() {
-                @Override
-                public boolean isCreateLayoutInProgress() {
-                  return true;
-                }
-              },
               nestedRsc.getCache(),
               parentContext,
               nestedRsc.getTreeState(),
@@ -583,7 +577,6 @@ class Layout {
     // 2. Get the scoped context from the updated component.
     final ComponentContext c =
         ComponentContext.withComponentScope(
-            null,
             parent,
             component,
             globalKeyToReuse == null

@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentTree.INVALID_LAYOUT_VERSION;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
@@ -37,7 +35,6 @@ import java.util.List;
 public class LayoutStateContext implements CalculationStateContext {
 
   private final @Nullable ComponentTree mComponentTree;
-  private @Nullable LayoutProcessInfo mLayoutProcessInfo;
   private @Nullable TreeState mTreeState;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
@@ -49,80 +46,19 @@ public class LayoutStateContext implements CalculationStateContext {
 
   private @Nullable PerfEvent mPerfEvent;
 
-  private MeasuredResultCache mCache;
+  private final MeasuredResultCache mCache;
 
   private final String mThreadCreatedOn;
-  private List<String> mThreadReleasedOn = new LinkedList<>();
-  private List<String> mThreadResumedOn = new LinkedList<>();
-
-  private @Nullable RenderStateContext mRenderStateContext = null;
+  private final List<String> mThreadReleasedOn = new LinkedList<>();
+  private final List<String> mThreadResumedOn = new LinkedList<>();
 
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
-    final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(
-            layoutState, new TreeState(), c.getComponentTree(), null, null, INVALID_LAYOUT_VERSION);
-    layoutState.setLayoutStateContextForTest(layoutStateContext);
-    return layoutStateContext;
-  }
-
-  /**
-   * This is only used in tests and marked as {@link Deprecated}. Use {@link
-   * LayoutStateContext(LayoutState, ComponentTree, LayoutStateFuture, DiffNode, StateHandler)}
-   * instead.
-   *
-   * @param layoutState
-   * @param componentTree
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  @Deprecated
-  public LayoutStateContext(
-      final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, new TreeState(), componentTree, null, null, INVALID_LAYOUT_VERSION);
-  }
-
-  @Deprecated
-  LayoutStateContext(
-      final LayoutState layoutState,
-      final TreeState treeState,
-      final @Nullable ComponentTree componentTree,
-      final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable DiffNode currentDiffTree,
-      final int layoutVersion) {
-    this(
-        layoutState,
-        layoutState.getComponentContext(),
-        treeState,
-        componentTree,
-        layoutStateFuture,
-        currentDiffTree,
-        layoutVersion);
-  }
-
-  @Deprecated
-  LayoutStateContext(
-      final LayoutProcessInfo layoutProcessInfo,
-      final ComponentContext rootComponentContext,
-      final TreeState treeState,
-      final @Nullable ComponentTree componentTree,
-      final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable DiffNode currentDiffTree,
-      final int layoutVersion) {
-    mLayoutProcessInfo = layoutProcessInfo;
-    mComponentTree = componentTree;
-    mLayoutStateFuture = layoutStateFuture;
-    mCurrentDiffTree = currentDiffTree;
-    mTreeState = treeState;
-    mRootComponentContext = rootComponentContext;
-    mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, this);
-    mCache = mRenderStateContext.getCache();
-    mLayoutVersion = layoutVersion;
-    mThreadCreatedOn = Thread.currentThread().getName();
+    return new LayoutStateContext(
+        new MeasuredResultCache(), c, new TreeState(), c.getComponentTree(), 0, null, null);
   }
 
   LayoutStateContext(
-      final LayoutProcessInfo layoutProcessInfo,
       final MeasuredResultCache cache,
       final ComponentContext rootComponentContext,
       final TreeState treeState,
@@ -130,7 +66,6 @@ public class LayoutStateContext implements CalculationStateContext {
       final int layoutVersion,
       final @Nullable DiffNode currentDiffTree,
       final @Nullable LayoutStateFuture layoutStateFuture) {
-    mLayoutProcessInfo = layoutProcessInfo;
     mCache = cache;
     mRootComponentContext = rootComponentContext;
     mTreeState = treeState;
@@ -142,31 +77,11 @@ public class LayoutStateContext implements CalculationStateContext {
     mThreadCreatedOn = Thread.currentThread().getName();
   }
 
-  // Temp workaround for implementing split render and layout. Do not add usages to this method.
-  // It will be removed soon.
-  @Deprecated
-  void setRenderStateContext(RenderStateContext renderStateContext) {
-    mRenderStateContext = renderStateContext;
-  }
-
-  // Temp workaround for implementing split render and layout. Do not add usages to this method.
-  // It will be removed soon.
-  @Deprecated
-  public RenderStateContext getRenderStateContext() {
-    return Preconditions.checkNotNull(mRenderStateContext);
-  }
-
   void releaseReference() {
-    mLayoutProcessInfo = null;
     mTreeState = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
     mRootComponentContext = null;
-
-    if (mRenderStateContext != null) {
-      mRenderStateContext.release();
-    }
-
     mPerfEvent = null;
     mThreadReleasedOn.add(Thread.currentThread().getName());
     mIsReleased = true;
@@ -183,11 +98,6 @@ public class LayoutStateContext implements CalculationStateContext {
   @Nullable
   ComponentContext getRootComponentContext() {
     return mRootComponentContext;
-  }
-
-  @Nullable
-  LayoutProcessInfo getLayoutProcessInfo() {
-    return mLayoutProcessInfo;
   }
 
   @Override

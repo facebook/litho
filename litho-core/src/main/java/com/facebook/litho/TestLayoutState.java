@@ -44,7 +44,7 @@ import java.util.List;
 public class TestLayoutState {
 
   public static @Nullable LithoNode createAndMeasureTreeForComponent(
-      LayoutStateContext layoutStateContext,
+      RenderStateContext renderStateContext,
       ComponentContext context,
       Component component,
       int widthSpec,
@@ -52,39 +52,31 @@ public class TestLayoutState {
 
     final ComponentContext c =
         ComponentContext.withComponentScope(
-            layoutStateContext,
             context,
             component,
             ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
 
-    final RenderStateContext rsc = c.setRenderStateContextForTests();
-    rsc.setLayoutStateFuture(layoutStateContext.getLayoutStateFuture());
+    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
+    c.setRenderStateContext(renderStateContext);
 
-    c.getScopedComponentInfo().applyStateUpdates(rsc.getTreeState());
-
-    final LithoNode root = createImmediateLayout(rsc, c, widthSpec, heightSpec, component);
+    final LithoNode root =
+        createImmediateLayout(renderStateContext, c, widthSpec, heightSpec, component);
 
     c.clearCalculationStateContext();
 
-    if (root == null || rsc.isLayoutInterrupted()) {
+    if (root == null || renderStateContext.isLayoutInterrupted()) {
       return root;
     }
 
     final LayoutStateContext lsc =
         new LayoutStateContext(
-            new LayoutProcessInfo() {
-              @Override
-              public boolean isCreateLayoutInProgress() {
-                return true;
-              }
-            },
-            rsc.getCache(),
+            renderStateContext.getCache(),
             c,
-            rsc.getTreeState(),
+            renderStateContext.getTreeState(),
             c.getComponentTree(),
-            rsc.getLayoutVersion(),
-            layoutStateContext.getCurrentDiffTree(),
-            layoutStateContext.getLayoutStateFuture());
+            renderStateContext.getLayoutVersion(),
+            null,
+            null);
 
     c.setLayoutStateContext(lsc);
 
@@ -117,10 +109,7 @@ public class TestLayoutState {
     final LithoNode node = createInternalNode();
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(
-            null,
-            c,
-            component,
-            ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
+            c, component, ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
     c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
 
     node.appendComponent(

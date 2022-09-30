@@ -83,14 +83,11 @@ public class ComponentTreeTest {
   private Component mComponent;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
-  private LayoutStateContext mLayoutStateContext;
   private RootWrapperComponentFactory mOldWrapperConfig;
 
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(getApplicationContext());
-    mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
-    mContext.setLayoutStateContext(mLayoutStateContext);
     mComponent = SimpleMountSpecTester.create(mContext).build();
 
     mLayoutThreadShadowLooper =
@@ -162,8 +159,7 @@ public class ComponentTreeTest {
   @Test
   public void testCreate_ContextIsNotScoped() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(
-            mLayoutStateContext, mContext, Row.create(mContext).build(), "global_key");
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
     ComponentTree componentTree = ComponentTree.create(scopedContext, mComponent).build();
 
     ComponentContext c = componentTree.getContext();
@@ -198,8 +194,7 @@ public class ComponentTreeTest {
   @Test
   public void testLayoutState_ContextIsNotScoped() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(
-            mLayoutStateContext, mContext, Row.create(mContext).build(), "global_key");
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
     Component root = Column.create(scopedContext).key("key").build();
 
     ComponentTree componentTree = ComponentTree.create(scopedContext, root).build();

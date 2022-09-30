@@ -697,19 +697,7 @@ public abstract class Component
 
         final LayoutStateContext nestedLsc =
             new LayoutStateContext(
-                new LayoutProcessInfo() {
-                  @Override
-                  public boolean isCreateLayoutInProgress() {
-                    return true; // temporary
-                  }
-                },
-                resultCache,
-                c,
-                treeState,
-                c.getComponentTree(),
-                layoutVersion,
-                null,
-                null);
+                resultCache, c, treeState, c.getComponentTree(), layoutVersion, null, null);
 
         lastMeasuredLayout =
             Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);

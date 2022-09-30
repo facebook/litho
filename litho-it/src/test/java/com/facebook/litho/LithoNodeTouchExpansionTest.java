@@ -53,12 +53,6 @@ public class LithoNodeTouchExpansionTest {
 
     mLayoutStateContext =
         new LayoutStateContext(
-            new LayoutProcessInfo() {
-              @Override
-              public boolean isCreateLayoutInProgress() {
-                return false;
-              }
-            },
             renderStateContext.getCache(),
             mContext,
             renderStateContext.getTreeState(),

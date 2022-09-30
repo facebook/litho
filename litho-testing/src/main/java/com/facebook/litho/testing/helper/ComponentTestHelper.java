@@ -34,10 +34,9 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InvisibleEvent;
-import com.facebook.litho.LayoutState;
-import com.facebook.litho.LayoutStateContext;
 import com.facebook.litho.LithoNode;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.RenderStateContext;
 import com.facebook.litho.TestComponent;
 import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreeProps;
@@ -402,7 +401,7 @@ public final class ComponentTestHelper {
 
   @Deprecated
   private static LithoNode resolveImmediateSubtree(
-      LayoutStateContext layoutStateContext,
+      RenderStateContext renderStateContext,
       ComponentContext c,
       Component component,
       int widthSpec,
@@ -410,7 +409,7 @@ public final class ComponentTestHelper {
 
     LithoNode node =
         TestLayoutState.createAndMeasureTreeForComponent(
-            layoutStateContext, c, component, widthSpec, heightSpec);
+            renderStateContext, c, component, widthSpec, heightSpec);
 
     return node;
   }
@@ -449,13 +448,9 @@ public final class ComponentTestHelper {
         new ComponentContext(
             ComponentContext.withComponentTree(new ComponentContext(context), tree));
 
-    final LayoutState layoutState = LayoutState.createTestInstance(c);
-    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, tree);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
-    c.setLayoutStateContext(layoutStateContext); // TODO: to be deleted
+    final RenderStateContext rsc = c.setRenderStateContextForTests();
 
-    LithoNode root =
-        resolveImmediateSubtree(layoutStateContext, c, component, widthSpec, heightSpec);
+    LithoNode root = resolveImmediateSubtree(rsc, c, component, widthSpec, heightSpec);
 
     return extractImmediateSubComponents(root);
   }

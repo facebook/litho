@@ -21,7 +21,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
-import static com.facebook.litho.ComponentTree.INVALID_LAYOUT_VERSION;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
@@ -87,8 +86,7 @@ public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityExtensionInput,
         TransitionsExtensionInput,
-        EndToEndTestingExtensionInput,
-        LayoutProcessInfo {
+        EndToEndTestingExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
 
@@ -133,8 +131,6 @@ public class LayoutState
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private @Nullable LayoutStateContext mLayoutStateContext;
-
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
@@ -172,7 +168,6 @@ public class LayoutState
   private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private final int mPreviousLayoutStateId;
-  private boolean mIsCreateLayoutInProgress;
 
   private @Nullable AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
@@ -213,24 +208,14 @@ public class LayoutState
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
-    this(
-        context,
-        Column.create(context).build(),
-        new TreeState(),
-        null,
-        null,
-        null,
-        INVALID_LAYOUT_VERSION);
+    this(context, Column.create(context).build(), new TreeState(), null);
   }
 
   LayoutState(
       ComponentContext context,
       Component rootComponent,
       final TreeState treeState,
-      final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable LayoutState current,
-      final @Nullable DiffNode diffTreeRoot,
-      final int layoutVersion) {
+      final @Nullable LayoutState current) {
     mContext = context;
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
@@ -239,28 +224,6 @@ public class LayoutState
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
-
-    final ComponentTree componentTree = context.getComponentTree();
-    final MeasuredResultCache renderCache = new MeasuredResultCache();
-    final MeasuredResultCache layoutCache = new MeasuredResultCache(renderCache);
-
-    final RenderStateContext renderStateContext =
-        new RenderStateContext(renderCache, treeState, layoutVersion, layoutStateFuture);
-
-    mLayoutStateContext =
-        new LayoutStateContext(
-            this,
-            layoutCache,
-            context,
-            treeState,
-            componentTree,
-            layoutVersion,
-            diffTreeRoot,
-            layoutStateFuture);
-
-    // Temp workaround
-    mLayoutStateContext.setRenderStateContext(renderStateContext);
-    renderStateContext.setLayoutStateContext(mLayoutStateContext);
   }
 
   @VisibleForTesting
@@ -270,15 +233,6 @@ public class LayoutState
 
   boolean isPartialLayoutState() {
     return mIsPartialLayoutState;
-  }
-
-  @Override
-  public boolean isCreateLayoutInProgress() {
-    return mIsCreateLayoutInProgress;
-  }
-
-  LayoutStateContext getLayoutStateContext() {
-    return Preconditions.checkNotNull(mLayoutStateContext);
   }
 
   /**
@@ -322,11 +276,6 @@ public class LayoutState
     }
 
     if (measure != null && measure.mHadExceptions) {
-      return null;
-    }
-
-    if (layoutState.getLayoutStateContext().isReleased()) {
-      // back out if layout got released
       return null;
     }
 
@@ -1208,15 +1157,7 @@ public class LayoutState
 
     final LayoutState layoutState;
 
-    layoutState =
-        new LayoutState(
-            c,
-            component,
-            treeState,
-            layoutStateFuture,
-            currentLayoutState,
-            diffTreeRoot,
-            layoutVersion);
+    layoutState = new LayoutState(c, component, treeState, currentLayoutState);
 
     // Need to save and restore the previous state context is only relevant for tests.
     // In certain tests that update state (sync), the state update triggers a layout calculation
@@ -1241,7 +1182,6 @@ public class LayoutState
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
       layoutState.mRootComponentName = component.getSimpleName();
-      layoutState.mIsCreateLayoutInProgress = true;
 
       // 1. Resolve Tree
       final @Nullable ResolvedTree resolvedTree =
@@ -1257,7 +1197,6 @@ public class LayoutState
         layoutState.mPartialRenderStateContext = rsc;
         layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
         layoutState.mRootTransitionId = getTransitionIdForNode(node);
-        layoutState.mIsCreateLayoutInProgress = false;
         layoutState.mIsPartialLayoutState = true;
         return layoutState;
       }
@@ -1269,7 +1208,6 @@ public class LayoutState
 
       final LayoutStateContext lsc =
           new LayoutStateContext(
-              layoutState,
               new MeasuredResultCache(rsc.getCache()),
               c,
               treeState,
@@ -1290,7 +1228,6 @@ public class LayoutState
               lsc, c.getAndroidContext(), node, widthSpec, heightSpec, logLayoutState);
 
       layoutState.mLayoutResult = root;
-      layoutState.mIsCreateLayoutInProgress = false;
 
       // 3. Collect Results
       if (logLayoutState != null) {
@@ -1395,7 +1332,6 @@ public class LayoutState
 
         final LayoutStateContext lsc =
             new LayoutStateContext(
-                layoutState,
                 new MeasuredResultCache(partialRsc.getCache()),
                 c,
                 partialRsc.getTreeState(),
@@ -1427,8 +1363,6 @@ public class LayoutState
 
         c.setCalculationStateContext(prevContainer);
       }
-
-      layoutState.getLayoutStateContext().releaseReference();
 
       if (logLayoutState != null) {
         Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
@@ -2173,11 +2107,6 @@ public class LayoutState
 
   RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {
     return getMountableOutputAt(output.getIndex());
-  }
-
-  @VisibleForTesting
-  void setLayoutStateContextForTest(LayoutStateContext layoutStateContext) {
-    mLayoutStateContext = layoutStateContext;
   }
 
   /**
