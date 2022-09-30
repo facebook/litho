@@ -391,6 +391,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isSplitStateHandlersEnabled;
 
+  private final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
+
   private final boolean mIsApplyStateUpdateEarlyEnabled;
 
   private final boolean mShouldAlwaysResolveNestedTreeInMeasure;
@@ -462,6 +464,8 @@ public class ComponentTree implements LithoLifecycleListener {
       isReconciliationEnabled = builder.isReconciliationEnabled;
     }
     isSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
+    isReuseLastMeasuredNodeInComponentMeasureEnabled =
+        ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
     mIsApplyStateUpdateEarlyEnabled = ComponentsConfiguration.applyStateUpdateEarly;
     mShouldAlwaysResolveNestedTreeInMeasure =
         ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure;
@@ -1319,6 +1323,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isSplitStateHandlersEnabled() {
     return isSplitStateHandlersEnabled;
+  }
+
+  public boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
+    return isReuseLastMeasuredNodeInComponentMeasureEnabled;
   }
 
   public boolean isApplyStateUpdateEarlyEnabled() {

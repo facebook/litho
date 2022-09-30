@@ -226,6 +226,8 @@ public class ComponentsConfiguration {
 
   public static boolean shouldAlwaysResolveNestedTreeInMeasure = false;
 
+  public static boolean reuseLastMeasuredNodeInComponentMeasure = false;
+
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;

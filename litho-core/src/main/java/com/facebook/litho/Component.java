@@ -672,14 +672,22 @@ public abstract class Component
       final CalculationStateContext prevContext = calculationStateContext;
 
       try {
-        final RenderStateContext nestedRsc =
-            new RenderStateContext(resultCache, treeState, layoutVersion, null);
-        c.setRenderStateContext(nestedRsc);
+        final LithoNode node;
 
-        final @Nullable ResolvedTree resolvedTree =
-            Layout.createResolvedTree(nestedRsc, c, this, widthSpec, heightSpec, null, null);
+        if (c.isReuseLastMeasuredNodeInComponentMeasureEnabled()
+            && lastMeasuredLayout != null
+            && lastMeasuredLayout.mNode != null) {
+          node = lastMeasuredLayout.mNode;
+        } else {
+          final RenderStateContext nestedRsc =
+              new RenderStateContext(resultCache, treeState, layoutVersion, null);
+          c.setRenderStateContext(nestedRsc);
 
-        final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+          final @Nullable ResolvedTree resolvedTree =
+              Layout.createResolvedTree(nestedRsc, c, this, widthSpec, heightSpec, null, null);
+
+          node = resolvedTree == null ? null : resolvedTree.getRoot();
+        }
 
         if (mainRsc != null && mainRsc.isLayoutInterrupted() && node != null) {
           outputSize.width = 0;

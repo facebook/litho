@@ -780,6 +780,14 @@ public class ComponentContext implements Cloneable {
     }
   }
 
+  boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
+    if (getComponentTree() != null) {
+      return getComponentTree().isReuseLastMeasuredNodeInComponentMeasureEnabled();
+    } else {
+      return ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
+    }
+  }
+
   boolean isApplyStateUpdateEarlyEnabled() {
     if (getComponentTree() != null) {
       return getComponentTree().isApplyStateUpdateEarlyEnabled();
