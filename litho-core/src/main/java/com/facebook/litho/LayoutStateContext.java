@@ -49,13 +49,13 @@ public class LayoutStateContext {
 
   private @Nullable PerfEvent mPerfEvent;
 
-  private LayoutPhaseMeasuredResultCache mCache;
+  private MeasuredResultCache mCache;
 
   private final String mThreadCreatedOn;
   private List<String> mThreadReleasedOn = new LinkedList<>();
   private List<String> mThreadResumedOn = new LinkedList<>();
 
-  private final RenderStateContext mRenderStateContext;
+  private @Nullable RenderStateContext mRenderStateContext = null;
 
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
@@ -100,6 +100,7 @@ public class LayoutStateContext {
         layoutVersion);
   }
 
+  @Deprecated
   LayoutStateContext(
       final LayoutProcessInfo layoutProcessInfo,
       final ComponentContext rootComponentContext,
@@ -115,19 +116,44 @@ public class LayoutStateContext {
     mTreeState = treeState;
     mRootComponentContext = rootComponentContext;
     mRenderStateContext = new RenderStateContext(mLayoutStateFuture, mTreeState, this);
-    mCache = mRenderStateContext.getCache().getLayoutPhaseMeasuredResultCache();
+    mCache = mRenderStateContext.getCache();
     mLayoutVersion = layoutVersion;
     mThreadCreatedOn = Thread.currentThread().getName();
   }
 
-  /**
-   * Returns the RenderStateContext. This method is temporary and access to RSC will be moved to
-   * different places depending on the place its needed from. This method will be removed soon and
-   * LSC will no longer hold a reference to RSC, so do not add usages to this method.
-   */
+  LayoutStateContext(
+      final LayoutProcessInfo layoutProcessInfo,
+      final MeasuredResultCache cache,
+      final ComponentContext rootComponentContext,
+      final TreeState treeState,
+      final @Nullable ComponentTree componentTree,
+      final int layoutVersion,
+      final @Nullable DiffNode currentDiffTree,
+      final @Nullable LayoutStateFuture layoutStateFuture) {
+    mLayoutProcessInfo = layoutProcessInfo;
+    mCache = cache;
+    mRootComponentContext = rootComponentContext;
+    mTreeState = treeState;
+    mComponentTree = componentTree;
+    mLayoutVersion = layoutVersion;
+    mCurrentDiffTree = currentDiffTree;
+    mLayoutStateFuture = layoutStateFuture;
+
+    mThreadCreatedOn = Thread.currentThread().getName();
+  }
+
+  // Temp workaround for implementing split render and layout. Do not add usages to this method.
+  // It will be removed soon.
+  @Deprecated
+  void setRenderStateContext(RenderStateContext renderStateContext) {
+    mRenderStateContext = renderStateContext;
+  }
+
+  // Temp workaround for implementing split render and layout. Do not add usages to this method.
+  // It will be removed soon.
   @Deprecated
   public RenderStateContext getRenderStateContext() {
-    return mRenderStateContext;
+    return Preconditions.checkNotNull(mRenderStateContext);
   }
 
   void releaseReference() {
@@ -136,7 +162,11 @@ public class LayoutStateContext {
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
     mRootComponentContext = null;
-    mRenderStateContext.release();
+
+    if (mRenderStateContext != null) {
+      mRenderStateContext.release();
+    }
+
     mPerfEvent = null;
     mThreadReleasedOn.add(Thread.currentThread().getName());
     mIsReleased = true;
@@ -196,7 +226,7 @@ public class LayoutStateContext {
     return Preconditions.checkNotNull(mTreeState);
   }
 
-  LayoutPhaseMeasuredResultCache getCache() {
+  MeasuredResultCache getCache() {
     return mCache;
   }
 

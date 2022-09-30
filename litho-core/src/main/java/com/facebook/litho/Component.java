@@ -650,7 +650,7 @@ public abstract class Component
     }
 
     final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
-    final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
+    final MeasuredResultCache resultCache = renderStateContext.getCache();
 
     LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
 
@@ -904,7 +904,7 @@ public abstract class Component
   }
 
   private boolean hasCachedNode(final RenderStateContext renderStateContext) {
-    final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
+    final MeasuredResultCache resultCache = renderStateContext.getCache();
     return resultCache.hasCachedNode(this);
   }
 

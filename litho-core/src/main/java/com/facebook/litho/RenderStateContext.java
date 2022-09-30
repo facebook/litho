@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,17 +28,37 @@ public class RenderStateContext {
 
   private boolean mIsInterruptible = true;
   private @Nullable TreeState mTreeState;
-  private RenderPhaseMeasuredResultCache mCache;
+  private final MeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
-  private LayoutStateContext mLayoutStateContext;
+  private @Nullable LayoutStateContext mLayoutStateContext = null;
+  private int mLayoutVersion;
 
+  @Deprecated
   public RenderStateContext(
       final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
       final TreeState treeState,
       final LayoutStateContext layoutStateContext) { // Temp LSC member
     mLayoutStateFuture = layoutStateFuture;
     mTreeState = treeState;
-    mCache = new RenderPhaseMeasuredResultCache();
+    mCache = new MeasuredResultCache();
+    mLayoutStateContext = layoutStateContext;
+  }
+
+  RenderStateContext(
+      final MeasuredResultCache cache,
+      final TreeState treeState,
+      final int layoutVersion,
+      final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+    mCache = cache;
+    mTreeState = treeState;
+    mLayoutVersion = layoutVersion;
+    mLayoutStateFuture = layoutStateFuture;
+  }
+
+  // Temp workaround for implementing split render and layout. Do not add usages to this method.
+  // It will be removed soon.
+  @Deprecated
+  void setLayoutStateContext(final LayoutStateContext layoutStateContext) {
     mLayoutStateContext = layoutStateContext;
   }
 
@@ -45,7 +66,11 @@ public class RenderStateContext {
   // It will be removed soon.
   @Deprecated
   public LayoutStateContext getLayoutStateContext() {
-    return mLayoutStateContext;
+    return Preconditions.checkNotNull(mLayoutStateContext);
+  }
+
+  public int getLayoutVersion() {
+    return mLayoutVersion;
   }
 
   @Nullable
@@ -102,7 +127,7 @@ public class RenderStateContext {
     return mTreeState;
   }
 
-  RenderPhaseMeasuredResultCache getCache() {
+  MeasuredResultCache getCache() {
     return mCache;
   }
 

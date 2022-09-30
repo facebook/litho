@@ -27,12 +27,32 @@ import java.util.Map;
  * happen during component-measure. This cache can be accessed via components or litho-nodes.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class RenderPhaseMeasuredResultCache {
+public class MeasuredResultCache {
   private final SparseArrayCompat<LithoNode> mComponentIdToNodeCache = new SparseArrayCompat<>();
   private final Map<LithoNode, LithoLayoutResult> mNodeToResultCache = new HashMap<>();
 
-  private final LayoutPhaseMeasuredResultCache mLayoutPhaseMeasuredResultCache =
-      new LayoutPhaseMeasuredResultCache(mNodeToResultCache);
+  private @Nullable MeasuredResultCache mDelegateCache;
+
+  private boolean mIsFrozen;
+
+  public MeasuredResultCache() {}
+
+  /**
+   * Create a new MeasureResultCache with a delegate cache. When reading caches, if they are not
+   * found in this cache instance, the delegate cache is checked.
+   */
+  public MeasuredResultCache(final MeasuredResultCache delegateCache) {
+    mDelegateCache = delegateCache;
+  }
+
+  /**
+   * Marks this cache as frozen, meaning it is illegal to write new values into it, and should be
+   * used as read-only. Attempting to write to a frozen cache will produce an illegal state
+   * exception.
+   */
+  public void freezeCache() {
+    mIsFrozen = true;
+  }
 
   /**
    * Add a cached result to the cache.
@@ -55,6 +75,10 @@ public class RenderPhaseMeasuredResultCache {
    */
   public void addCachedResult(
       final int componentId, final LithoNode node, final LithoLayoutResult layoutResult) {
+    if (mIsFrozen) {
+      throw new IllegalStateException("Cannot write into a frozen cache.");
+    }
+
     mComponentIdToNodeCache.put(componentId, node);
     mNodeToResultCache.put(node, layoutResult);
   }
@@ -66,12 +90,14 @@ public class RenderPhaseMeasuredResultCache {
 
   /** Return true if there exists a cached layout result for the given component ID. */
   public boolean hasCachedNode(final int componentId) {
-    return mComponentIdToNodeCache.containsKey(componentId);
+    return mComponentIdToNodeCache.containsKey(componentId)
+        || (mDelegateCache != null && mDelegateCache.hasCachedNode(componentId));
   }
 
   /** Return true if there exists a cached layout result for the given LithoNode. */
   public boolean hasCachedNode(final LithoNode node) {
-    return mNodeToResultCache.containsKey(node);
+    return mNodeToResultCache.containsKey(node)
+        || (mDelegateCache != null && mDelegateCache.hasCachedNode(node));
   }
 
   /** Returns the cached LithoNode from a given component. */
@@ -83,7 +109,13 @@ public class RenderPhaseMeasuredResultCache {
   /** Returns the cached LithoNode from a given component ID. */
   @Nullable
   public LithoNode getCachedNode(final int componentId) {
-    return mComponentIdToNodeCache.get(componentId);
+    final LithoNode currentCacheNode = mComponentIdToNodeCache.get(componentId);
+
+    if (currentCacheNode == null && mDelegateCache != null) {
+      return mDelegateCache.getCachedNode(componentId);
+    }
+
+    return currentCacheNode;
   }
 
   /** Returns the cached layout result for the given component, or null if it does not exist. */
@@ -98,6 +130,10 @@ public class RenderPhaseMeasuredResultCache {
     final @Nullable LithoNode node = mComponentIdToNodeCache.get(componentId);
 
     if (node == null) {
+      if (mDelegateCache != null) {
+        return mDelegateCache.getCachedResult(componentId);
+      }
+
       return null;
     }
 
@@ -107,7 +143,13 @@ public class RenderPhaseMeasuredResultCache {
   /** Returns the cached layout result for the given node, or null if it does not exist. */
   @Nullable
   public LithoLayoutResult getCachedResult(final LithoNode node) {
-    return mNodeToResultCache.get(node);
+    final LithoLayoutResult currentLayoutResult = mNodeToResultCache.get(node);
+
+    if (currentLayoutResult == null && mDelegateCache != null) {
+      return mDelegateCache.getCachedResult(node);
+    }
+
+    return currentLayoutResult;
   }
 
   /** Cleares the cache generated for the given component. */
@@ -117,6 +159,10 @@ public class RenderPhaseMeasuredResultCache {
 
   /** Cleares the cache generated for the given component ID. */
   public void clearCache(final int componentId) {
+    if (mIsFrozen) {
+      throw new IllegalStateException("Cannot delete from a frozen cache");
+    }
+
     final @Nullable LithoNode node = mComponentIdToNodeCache.get(componentId);
 
     if (node == null) {
@@ -125,15 +171,5 @@ public class RenderPhaseMeasuredResultCache {
 
     mNodeToResultCache.remove(node);
     mComponentIdToNodeCache.remove(componentId);
-  }
-
-  /** Cleares the cache generated for the given LithoNode. */
-  public void clearCache(final LithoNode node) {
-    mNodeToResultCache.remove(node);
-  }
-
-  /** Returns a read-only cache to be used during layout phase. */
-  public LayoutPhaseMeasuredResultCache getLayoutPhaseMeasuredResultCache() {
-    return mLayoutPhaseMeasuredResultCache;
   }
 }

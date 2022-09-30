@@ -363,8 +363,7 @@ public class LithoNodeTest {
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
     c.setLayoutStateContext(layoutStateContext);
 
-    final RenderPhaseMeasuredResultCache resultCache =
-        layoutStateContext.getRenderStateContext().getCache();
+    final MeasuredResultCache resultCache = layoutStateContext.getRenderStateContext().getCache();
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -393,8 +392,7 @@ public class LithoNodeTest {
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
     c.setLayoutStateContext(layoutStateContext);
 
-    final RenderPhaseMeasuredResultCache resultCache =
-        layoutStateContext.getRenderStateContext().getCache();
+    final MeasuredResultCache resultCache = layoutStateContext.getRenderStateContext().getCache();
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);

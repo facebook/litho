@@ -50,7 +50,7 @@ public class ComponentShallowCopyTest {
     c.setLayoutStateContext(layoutStateContext);
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
 
-    final RenderPhaseMeasuredResultCache resultCache = renderStateContext.getCache();
+    final MeasuredResultCache resultCache = renderStateContext.getCache();
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c, 100, 100, new Size());
@@ -82,8 +82,8 @@ public class ComponentShallowCopyTest {
     Whitebox.setInternalState(layoutState2, "mLayoutStateContext", lsc2);
     c2.setLayoutStateContext(lsc2);
 
-    final RenderPhaseMeasuredResultCache resultCache1 = rsc1.getCache();
-    final RenderPhaseMeasuredResultCache resultCache2 = rsc2.getCache();
+    final MeasuredResultCache resultCache1 = rsc1.getCache();
+    final MeasuredResultCache resultCache2 = rsc2.getCache();
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c1, 100, 100, new Size());

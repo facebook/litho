@@ -238,15 +238,28 @@ public class LayoutState
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
+
+    final ComponentTree componentTree = context.getComponentTree();
+    final MeasuredResultCache renderCache = new MeasuredResultCache();
+    final MeasuredResultCache layoutCache = new MeasuredResultCache(renderCache);
+
+    final RenderStateContext renderStateContext =
+        new RenderStateContext(renderCache, treeState, layoutVersion, layoutStateFuture);
+
     mLayoutStateContext =
         new LayoutStateContext(
             this,
+            layoutCache,
             context,
             treeState,
-            context.getComponentTree(),
-            layoutStateFuture,
+            componentTree,
+            layoutVersion,
             diffTreeRoot,
-            layoutVersion);
+            layoutStateFuture);
+
+    // Temp workaround
+    mLayoutStateContext.setRenderStateContext(renderStateContext);
+    renderStateContext.setLayoutStateContext(mLayoutStateContext);
   }
 
   @VisibleForTesting
@@ -1236,6 +1249,8 @@ public class LayoutState
       return layoutState;
     }
 
+    // Render-phase cache should be locked here.
+
     layoutState.mRoot = node;
     layoutState.mRootTransitionId = getTransitionIdForNode(node);
 
@@ -1343,6 +1358,8 @@ public class LayoutState
             Layout.resumeResolvingTree(
                 layoutStateContext.getRenderStateContext(), partialResolvedRoot);
         layoutState.mRoot = resolvedTree.getRoot();
+
+        // Render phase caches should be locked here.
 
         final LithoLayoutResult result =
             Layout.measureTree(

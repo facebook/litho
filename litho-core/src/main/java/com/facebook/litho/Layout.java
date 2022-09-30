@@ -611,7 +611,7 @@ class Layout {
       return null;
     }
 
-    final LayoutPhaseMeasuredResultCache resultCache = layoutStateContext.getCache();
+    final MeasuredResultCache resultCache = layoutStateContext.getCache();
     final Component component = holder.getTailComponent();
 
     final @Nullable LithoLayoutResult cachedLayout =
