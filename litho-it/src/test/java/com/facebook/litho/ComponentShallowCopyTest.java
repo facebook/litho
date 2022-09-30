@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
@@ -41,14 +40,8 @@ public class ComponentShallowCopyTest {
   public void testShallowCopyCachedLayoutSameLayoutState() {
     mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
 
-    final LayoutState layoutState = new LayoutState(mContext);
-
     final ComponentContext c = new ComponentContext(mContext);
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, c.getComponentTree());
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
-    c.setLayoutStateContext(layoutStateContext);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
+    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
 
     final MeasuredResultCache resultCache = renderStateContext.getCache();
 
@@ -72,18 +65,8 @@ public class ComponentShallowCopyTest {
     final ComponentContext c2 =
         ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
 
-    final LayoutState layoutState1 = new LayoutState(mContext);
-    final LayoutState layoutState2 = new LayoutState(mContext);
-
-    final LayoutStateContext lsc1 = new LayoutStateContext(layoutState1, c1.getComponentTree());
-    final RenderStateContext rsc1 = lsc1.getRenderStateContext();
-    Whitebox.setInternalState(layoutState1, "mLayoutStateContext", lsc1);
-    c1.setLayoutStateContext(lsc1);
-
-    final LayoutStateContext lsc2 = new LayoutStateContext(layoutState2, c2.getComponentTree());
-    final RenderStateContext rsc2 = lsc2.getRenderStateContext();
-    Whitebox.setInternalState(layoutState2, "mLayoutStateContext", lsc2);
-    c2.setLayoutStateContext(lsc2);
+    final RenderStateContext rsc1 = c1.setRenderStateContextForTests();
+    final RenderStateContext rsc2 = c2.setRenderStateContextForTests();
 
     final MeasuredResultCache resultCache1 = rsc1.getCache();
     final MeasuredResultCache resultCache2 = rsc2.getCache();

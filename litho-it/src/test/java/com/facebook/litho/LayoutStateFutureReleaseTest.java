@@ -81,17 +81,8 @@ public class LayoutStateFutureReleaseTest {
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
-
-    final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(
-            layoutState,
-            new TreeState(),
-            null,
-            layoutStateFuture,
-            null,
-            ComponentTree.INVALID_LAYOUT_VERSION);
-    c.setLayoutStateContext(layoutStateContext);
+    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    renderStateContext.setLayoutStateFuture(layoutStateFuture);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -109,7 +100,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Row row = Row.create(mContext).child(child1).child(child2).build();
 
-    final LithoNode result = row.resolve(layoutStateContext.getRenderStateContext(), c);
+    final LithoNode result = row.resolve(renderStateContext, c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertNull(result);
@@ -122,16 +113,8 @@ public class LayoutStateFutureReleaseTest {
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
-    final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(
-            layoutState,
-            new TreeState(),
-            null,
-            layoutStateFuture,
-            null,
-            ComponentTree.INVALID_LAYOUT_VERSION);
-    c.setLayoutStateContext(layoutStateContext);
+    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    renderStateContext.setLayoutStateFuture(layoutStateFuture);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -149,7 +132,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
-    final LithoNode result = column.resolve(layoutStateContext.getRenderStateContext(), c);
+    final LithoNode result = column.resolve(renderStateContext, c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertNull(result);

@@ -65,9 +65,6 @@ public class LithoNodeTest {
   }
 
   private static NestedTreeHolder acquireNestedTreeHolder() {
-    final ComponentContext context = new ComponentContext(getApplicationContext());
-    context.setLayoutStateContextForTesting();
-
     return new NestedTreeHolder(null);
   }
 
@@ -358,13 +355,8 @@ public class LithoNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, c.getComponentTree());
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
-    c.setLayoutStateContext(layoutStateContext);
-
-    final MeasuredResultCache resultCache = layoutStateContext.getRenderStateContext().getCache();
+    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final MeasuredResultCache resultCache = renderStateContext.getCache();
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -388,13 +380,9 @@ public class LithoNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, c.getComponentTree());
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
-    c.setLayoutStateContext(layoutStateContext);
+    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
 
-    final MeasuredResultCache resultCache = layoutStateContext.getRenderStateContext().getCache();
+    final MeasuredResultCache resultCache = renderStateContext.getCache();
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -415,10 +403,7 @@ public class LithoNodeTest {
   @Test
   public void testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
-    final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, null);
-    c.setLayoutStateContext(layoutStateContext);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
+    c.setRenderStateContextForTests();
 
     final Component component =
         Column.create(c)
@@ -437,7 +422,7 @@ public class LithoNodeTest {
   public void
       testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
+    c.setRenderStateContextForTests();
 
     final Component component =
         Column.create(c)

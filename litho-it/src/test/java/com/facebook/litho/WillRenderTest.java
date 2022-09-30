@@ -97,7 +97,7 @@ public class WillRenderTest {
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
+    c.setRenderStateContextForTests();
     assertThat(c, Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
   }
 
@@ -107,14 +107,14 @@ public class WillRenderTest {
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
+    c.setRenderStateContextForTests();
     Component.willRender(c, Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
   }
 
   @Test
   public void testWillRender_withComponentContextWithoutStateHandler_doesntCrash() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
+    c.setRenderStateContextForTests();
     assertThat(Component.willRender(c, ComponentWithState.create(c).build())).isTrue();
   }
 

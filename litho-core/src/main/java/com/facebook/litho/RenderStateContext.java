@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
@@ -145,5 +146,10 @@ public class RenderStateContext implements CalculationStateContext {
     mComponentIdToWillRenderLayout = null;
     mLayoutStateFuture = null;
     mTreeState = null;
+  }
+
+  @VisibleForTesting
+  public void setLayoutStateFuture(@Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+    mLayoutStateFuture = layoutStateFuture;
   }
 }

@@ -36,7 +36,7 @@ public class LayoutStateAddChildWithInputTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
-    mContext.setLayoutStateContextForTesting();
+    mContext.setRenderStateContextForTests();
   }
 
   @Test

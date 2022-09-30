@@ -57,18 +57,40 @@ public class TestLayoutState {
             component,
             ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
 
-    c.getScopedComponentInfo().applyStateUpdates(layoutStateContext.getTreeState());
+    final RenderStateContext rsc = c.setRenderStateContextForTests();
+    rsc.setLayoutStateFuture(layoutStateContext.getLayoutStateFuture());
 
-    final LithoNode root =
-        createImmediateLayout(
-            layoutStateContext.getRenderStateContext(), c, widthSpec, heightSpec, component);
+    c.getScopedComponentInfo().applyStateUpdates(rsc.getTreeState());
 
-    if (root == null || layoutStateContext.getRenderStateContext().isLayoutInterrupted()) {
+    final LithoNode root = createImmediateLayout(rsc, c, widthSpec, heightSpec, component);
+
+    c.clearCalculationStateContext();
+
+    if (root == null || rsc.isLayoutInterrupted()) {
       return root;
     }
 
-    Layout.measureTree(
-        layoutStateContext, c.getAndroidContext(), root, widthSpec, heightSpec, null);
+    final LayoutStateContext lsc =
+        new LayoutStateContext(
+            new LayoutProcessInfo() {
+              @Override
+              public boolean isCreateLayoutInProgress() {
+                return true;
+              }
+            },
+            rsc.getCache(),
+            c,
+            rsc.getTreeState(),
+            c.getComponentTree(),
+            rsc.getLayoutVersion(),
+            layoutStateContext.getCurrentDiffTree(),
+            layoutStateContext.getLayoutStateFuture());
+
+    c.setLayoutStateContext(lsc);
+
+    Layout.measureTree(lsc, c.getAndroidContext(), root, widthSpec, heightSpec, null);
+
+    c.clearCalculationStateContext();
 
     return root;
   }
@@ -95,7 +117,7 @@ public class TestLayoutState {
     final LithoNode node = createInternalNode();
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(
-            renderStateContext.getLayoutStateContext(),
+            null,
             c,
             component,
             ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));

@@ -122,7 +122,6 @@ constructor(
           } else {
             context = ComponentContext(getApplicationContext<Context>())
           }
-          context.setLayoutStateContextForTesting()
           stateHandler = StateHandler()
           threadLooperController.init()
           base.evaluate()

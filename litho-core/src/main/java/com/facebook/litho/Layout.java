@@ -468,39 +468,67 @@ class Layout {
           .applyStateUpdatesEarly(parentContext, component, null, true);
     }
 
-    // 4.b Create a new layout.
-    final @Nullable LithoNode newNode =
-        create(
-            layoutStateContext.getRenderStateContext(),
-            parentContext,
-            widthSpec,
-            heightSpec,
-            component,
-            true,
-            Preconditions.checkNotNull(globalKeyToReuse));
+    final CalculationStateContext prevContext = parentContext.getCalculationStateContext();
 
-    if (newNode == null) {
-      return null;
+    try {
+      final RenderStateContext nestedRsc =
+          new RenderStateContext(
+              layoutStateContext.getCache(),
+              layoutStateContext.getTreeState(),
+              layoutStateContext.getLayoutVersion(),
+              null);
+
+      parentContext.setRenderStateContext(nestedRsc);
+
+      // 4.b Create a new layout.
+      final @Nullable LithoNode newNode =
+          create(
+              nestedRsc,
+              parentContext,
+              widthSpec,
+              heightSpec,
+              component,
+              true,
+              Preconditions.checkNotNull(globalKeyToReuse));
+
+      if (newNode == null) {
+        return null;
+      }
+
+      holderResult.getNode().copyInto(newNode);
+
+      // If the resolved tree inherits the layout direction, then set it now.
+      if (newNode.isLayoutDirectionInherit()) {
+        newNode.layoutDirection(holderResult.getResolvedLayoutDirection());
+      }
+
+      final LayoutStateContext nestedLsc =
+          new LayoutStateContext(
+              new LayoutProcessInfo() {
+                @Override
+                public boolean isCreateLayoutInProgress() {
+                  return true;
+                }
+              },
+              nestedRsc.getCache(),
+              parentContext,
+              nestedRsc.getTreeState(),
+              parentContext.getComponentTree(),
+              nestedRsc.getLayoutVersion(),
+              layoutStateContext.getCurrentDiffTree(),
+              null);
+
+      // Set the DiffNode for the nested tree's result to consume during measurement.
+      nestedLsc.setNestedTreeDiffNode(holderResult.getDiffNode());
+
+      parentContext.setLayoutStateContext(nestedLsc);
+
+      // 4.b Measure the tree
+      return measureTree(
+          nestedLsc, parentContext.getAndroidContext(), newNode, widthSpec, heightSpec, null);
+    } finally {
+      parentContext.setCalculationStateContext(prevContext);
     }
-
-    holderResult.getNode().copyInto(newNode);
-
-    // If the resolved tree inherits the layout direction, then set it now.
-    if (newNode.isLayoutDirectionInherit()) {
-      newNode.layoutDirection(holderResult.getResolvedLayoutDirection());
-    }
-
-    // Set the DiffNode for the nested tree's result to consume during measurement.
-    layoutStateContext.setNestedTreeDiffNode(holderResult.getDiffNode());
-
-    // 4.b Measure the tree
-    return measureTree(
-        layoutStateContext,
-        parentContext.getAndroidContext(),
-        newNode,
-        widthSpec,
-        heightSpec,
-        null);
   }
 
   static @Nullable LithoLayoutResult measure(
@@ -555,7 +583,7 @@ class Layout {
     // 2. Get the scoped context from the updated component.
     final ComponentContext c =
         ComponentContext.withComponentScope(
-            renderStateContext.getLayoutStateContext(),
+            null,
             parent,
             component,
             globalKeyToReuse == null

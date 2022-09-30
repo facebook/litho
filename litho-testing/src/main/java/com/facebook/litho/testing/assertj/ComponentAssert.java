@@ -98,7 +98,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   private ComponentAssert(ComponentContext c, Component actual) {
     super(actual, ComponentAssert.class);
     mComponentContext = c;
-    mComponentContext.setLayoutStateContextForTesting();
+    mComponentContext.setRenderStateContextForTests();
   }
 
   private LithoView mountComponent() {

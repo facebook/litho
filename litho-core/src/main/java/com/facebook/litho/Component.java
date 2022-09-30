@@ -635,22 +635,30 @@ public abstract class Component
       final Size outputSize,
       final boolean shouldCacheResult) {
 
-    final LayoutStateContext layoutStateContext;
+    final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
 
-    if (shouldCacheResult && c.getLayoutStateContext() != null) {
-      layoutStateContext = c.getLayoutStateContext();
-    } else if (!shouldCacheResult) {
-      layoutStateContext =
-          new TemporaryLayoutStateContext(new TreeState(), c, c.getComponentTree());
-    } else {
-      throw new IllegalStateException(
-          getSimpleName()
-              + ": Trying to measure a component outside of a LayoutState calculation. "
-              + "If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    if (calculationStateContext == null) {
+      if (shouldCacheResult) {
+        throw new IllegalStateException(
+            getSimpleName()
+                + ": Trying to measure outside of layout calculation. "
+                + "See Component#measureMightNotCacheInternalNode instead.");
+      } else {
+        // Not caching, so redirect to measureMightNotCacheInternalNode that will setup a temp
+        // state-context and call this method again.
+        measureMightNotCacheInternalNode(c, widthSpec, heightSpec, outputSize);
+        return;
+      }
     }
 
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
-    final MeasuredResultCache resultCache = renderStateContext.getCache();
+    final int layoutVersion = calculationStateContext.getLayoutVersion();
+    final MeasuredResultCache resultCache =
+        shouldCacheResult ? calculationStateContext.getCache() : new MeasuredResultCache();
+    final TreeState treeState = calculationStateContext.getTreeState();
+    final RenderStateContext mainRsc =
+        calculationStateContext instanceof RenderStateContext
+            ? (RenderStateContext) calculationStateContext
+            : null;
 
     LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
 
@@ -661,30 +669,50 @@ public abstract class Component
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       resultCache.clearCache(this);
 
-      final @Nullable ResolvedTree resolvedTree =
-          Layout.createResolvedTree(renderStateContext, c, this, widthSpec, heightSpec, null, null);
+      final CalculationStateContext prevContext = calculationStateContext;
 
-      final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+      try {
+        final RenderStateContext nestedRsc =
+            new RenderStateContext(resultCache, treeState, layoutVersion, null);
+        c.setRenderStateContext(nestedRsc);
 
-      if (renderStateContext.isLayoutInterrupted() && node != null) {
-        outputSize.width = 0;
-        outputSize.height = 0;
-        return;
-      }
+        final @Nullable ResolvedTree resolvedTree =
+            Layout.createResolvedTree(nestedRsc, c, this, widthSpec, heightSpec, null, null);
 
-      lastMeasuredLayout =
-          Layout.measureTree(
-              Preconditions.checkNotNull(layoutStateContext),
-              c.getAndroidContext(),
-              node,
-              widthSpec,
-              heightSpec,
-              null);
+        final LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
-      if (lastMeasuredLayout == null) {
-        outputSize.width = 0;
-        outputSize.height = 0;
-        return;
+        if (mainRsc != null && mainRsc.isLayoutInterrupted() && node != null) {
+          outputSize.width = 0;
+          outputSize.height = 0;
+          return;
+        }
+
+        final LayoutStateContext nestedLsc =
+            new LayoutStateContext(
+                new LayoutProcessInfo() {
+                  @Override
+                  public boolean isCreateLayoutInProgress() {
+                    return true; // temporary
+                  }
+                },
+                resultCache,
+                c,
+                treeState,
+                c.getComponentTree(),
+                layoutVersion,
+                null,
+                null);
+
+        lastMeasuredLayout =
+            Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);
+
+        if (lastMeasuredLayout == null) {
+          outputSize.width = 0;
+          outputSize.height = 0;
+          return;
+        }
+      } finally {
+        c.setCalculationStateContext(prevContext);
       }
 
       // Add the cached result.
@@ -728,16 +756,30 @@ public abstract class Component
   @Deprecated
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+    final CalculationStateContext prevContext = c.getCalculationStateContext();
 
-    if (c.getLayoutStateContext() != null && !c.getLayoutStateContext().isReleased()) {
+    if (prevContext != null && !prevContext.isFutureReleased()) {
       measure(c, widthSpec, heightSpec, outputSize);
       return;
     }
 
-    // At this point we're trying to measure the Component outside of a LayoutState calculation.
-    // The state values are irrelevant in this scenario - outside of a LayoutState they should be
-    // the default/initial values. The LayoutStateContext is not expected to contain any info.
-    measure(c, widthSpec, heightSpec, outputSize, false);
+    try {
+      final RenderStateContext tempRsc =
+          new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null);
+
+      if (c.getComponentTree() == null) {
+        c = ComponentContext.withComponentTree(c, ComponentTree.create(c).build());
+      }
+
+      c.setRenderStateContext(tempRsc);
+
+      // At this point we're trying to measure the Component outside of a layout calculation.
+      // The state values are irrelevant in this scenario - outside of a layout calculation they
+      // should bethe default/initial values.
+      measure(c, widthSpec, heightSpec, outputSize, false);
+    } finally {
+      c.setCalculationStateContext(prevContext);
+    }
   }
 
   @Nullable
@@ -921,9 +963,8 @@ public abstract class Component
       return false;
     }
 
-    final LayoutStateContext layoutStateContext =
-        Preconditions.checkNotNull(c.getLayoutStateContext());
-    final RenderStateContext renderStateContext = layoutStateContext.getRenderStateContext();
+    final RenderStateContext renderStateContext =
+        Preconditions.checkNotNull(c.getRenderStateContext());
 
     final LithoNode componentLayoutCreatedInWillRender =
         component.getLayoutCreatedInWillRender(renderStateContext);

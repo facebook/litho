@@ -176,7 +176,7 @@ public class ComponentContext implements Cloneable {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      final LayoutStateContext layoutStateContext,
+      final @Nullable LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final Component scope,
       final @Nullable String globalKey) {
@@ -184,7 +184,6 @@ public class ComponentContext implements Cloneable {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
-    componentContext.mLayoutStateContext = new WeakReference<>(layoutStateContext);
     componentContext.mParentTreeProps = parentContext.mTreeProps;
 
     // TODO: T124275447 make these Component Context fields final
@@ -241,6 +240,25 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public void setLayoutStateContextForTesting() {
     setLayoutStateContext(LayoutStateContext.getTestInstance(this));
+  }
+
+  /**
+   * For test usage. This method will ensure this ComponentContext has a ComponentTree, and then
+   * generate a RenderStateContext, set it on the ComponentTree, and return the same RSC. This is
+   * critical for tests that trigger layout calculation functionality outside of a LayoutState
+   * calculation (i.e., including willRender, Layout API, caching, etc).
+   */
+  @VisibleForTesting
+  public RenderStateContext setRenderStateContextForTests() {
+    if (mComponentTree == null) {
+      mComponentTree = ComponentTree.create(this).build();
+    }
+
+    final RenderStateContext renderStateContext =
+        new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null);
+    setRenderStateContext(renderStateContext);
+
+    return renderStateContext;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -74,7 +74,6 @@ public class StateUpdatesTest {
   public void setup(boolean enableComponentTreeSpy) {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), LOG_TAG, mComponentsLogger);
-    mContext.setLayoutStateContextForTesting();
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
 

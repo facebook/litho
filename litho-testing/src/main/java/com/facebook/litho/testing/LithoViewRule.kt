@@ -74,7 +74,6 @@ constructor(
           } else {
             context = ComponentContext(getApplicationContext<Context>())
           }
-          context.setLayoutStateContextForTesting()
 
           threadLooperController = ThreadLooperController()
           threadLooperController.init()
