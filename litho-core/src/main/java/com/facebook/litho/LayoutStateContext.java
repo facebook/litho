@@ -34,7 +34,7 @@ import java.util.List;
  * without having to keep track of all these objects to clear out the references.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class LayoutStateContext {
+public class LayoutStateContext implements CalculationStateContext {
 
   private final @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutProcessInfo mLayoutProcessInfo;
@@ -190,8 +190,14 @@ public class LayoutStateContext {
     return mLayoutProcessInfo;
   }
 
-  int getLayoutVersion() {
+  @Override
+  public int getLayoutVersion() {
     return mLayoutVersion;
+  }
+
+  @Override
+  public boolean isFutureReleased() {
+    return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
   }
 
   @Nullable
@@ -200,6 +206,7 @@ public class LayoutStateContext {
     return mComponentTree;
   }
 
+  @Override
   public @Nullable LayoutStateFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
   }
@@ -222,11 +229,13 @@ public class LayoutStateContext {
     return node;
   }
 
-  TreeState getTreeState() {
+  @Override
+  public TreeState getTreeState() {
     return Preconditions.checkNotNull(mTreeState);
   }
 
-  MeasuredResultCache getCache() {
+  @Override
+  public MeasuredResultCache getCache() {
     return mCache;
   }
 

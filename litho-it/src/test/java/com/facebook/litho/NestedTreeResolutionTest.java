@@ -72,6 +72,9 @@ public class NestedTreeResolutionTest {
 
     mLegacyLithoViewRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout();
 
+    // At the end of layout calculation, the render & layout context container should be null
+    assertThat(c.getCalculationStateContext()).isNull();
+
     final LithoLayoutResult root = mLegacyLithoViewRule.getCurrentRootNode();
 
     assertThat(root).isNotNull();

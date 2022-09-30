@@ -598,7 +598,7 @@ public class LayoutState
       final @Nullable DebugHierarchy.Node parentHierarchy) {
     final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
 
-    if (layoutStateContext.getRenderStateContext().isLayoutReleased()) {
+    if (layoutStateContext.getRenderStateContext().isFutureReleased()) {
       return;
     }
 
@@ -1215,62 +1215,80 @@ public class LayoutState
       layoutStateContext.setPerfEvent(logLayoutState);
     }
 
-    c.setLayoutStateContext(layoutStateContext);
+    // Need to save and restore the previous container is only relevant for tests.
+    // In certain tests that update state (sync), the state update triggers a layout calculation
+    // that rather than being posted to happen after the current calculation happens immediately.
+    // In order to be able to resume the main layout calculation, we save, and then restore the
+    // previous container at the end.
+    final CalculationStateContext prevContainer = c.getCalculationStateContext();
+    c.clearCalculationStateContext();
 
-    layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
-    layoutState.mComponentTreeId = componentTreeId;
-    layoutState.mAccessibilityManager =
-        (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-    layoutState.mAccessibilityEnabled =
-        AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
-    layoutState.mWidthSpec = widthSpec;
-    layoutState.mHeightSpec = heightSpec;
-    layoutState.mRootComponentName = component.getSimpleName();
-    layoutState.mIsCreateLayoutInProgress = true;
+    try {
+      c.setLayoutStateContext(layoutStateContext);
 
-    // 1. Resolve Tree
-    final @Nullable ResolvedTree resolvedTree =
-        Layout.createResolvedTree(
-            layoutStateContext.getRenderStateContext(),
-            c,
-            component,
-            widthSpec,
-            heightSpec,
-            currentRoot,
-            logLayoutState);
-    final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+      layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
+      layoutState.mComponentTreeId = componentTreeId;
+      layoutState.mAccessibilityManager =
+          (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+      layoutState.mAccessibilityEnabled =
+          AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
+      layoutState.mWidthSpec = widthSpec;
+      layoutState.mHeightSpec = heightSpec;
+      layoutState.mRootComponentName = component.getSimpleName();
+      layoutState.mIsCreateLayoutInProgress = true;
 
-    // Check if layout was interrupted.
-    if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
-      layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
+      // 1. Resolve Tree
+      final @Nullable ResolvedTree resolvedTree =
+          Layout.createResolvedTree(
+              layoutStateContext.getRenderStateContext(),
+              c,
+              component,
+              widthSpec,
+              heightSpec,
+              currentRoot,
+              logLayoutState);
+      final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+
+      // Check if layout was interrupted.
+      if (layoutStateContext.getRenderStateContext().isLayoutInterrupted() && node != null) {
+        layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
+        layoutState.mRootTransitionId = getTransitionIdForNode(node);
+        layoutState.mIsCreateLayoutInProgress = false;
+        layoutState.mIsPartialLayoutState = true;
+        return layoutState;
+      }
+
+      // Render-phase cache should be locked here.
+
+      layoutState.mRoot = node;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
+
+      // 2. Measure tree
+      final @Nullable LithoLayoutResult root =
+          Layout.measureTree(
+              layoutStateContext,
+              c.getAndroidContext(),
+              node,
+              widthSpec,
+              heightSpec,
+              logLayoutState);
+
+      layoutState.mLayoutResult = root;
       layoutState.mIsCreateLayoutInProgress = false;
-      layoutState.mIsPartialLayoutState = true;
-      return layoutState;
-    }
 
-    // Render-phase cache should be locked here.
+      // 3. Collect Results
+      if (logLayoutState != null) {
+        logLayoutState.markerPoint("start_collect_results");
+      }
 
-    layoutState.mRoot = node;
-    layoutState.mRootTransitionId = getTransitionIdForNode(node);
+      setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-    // 2. Measure tree
-    final @Nullable LithoLayoutResult root =
-        Layout.measureTree(
-            layoutStateContext, c.getAndroidContext(), node, widthSpec, heightSpec, logLayoutState);
-
-    layoutState.mLayoutResult = root;
-    layoutState.mIsCreateLayoutInProgress = false;
-
-    // 3. Collect Results
-    if (logLayoutState != null) {
-      logLayoutState.markerPoint("start_collect_results");
-    }
-
-    setSizeAfterMeasureAndCollectResults(c, layoutState);
-
-    if (logLayoutState != null) {
-      logLayoutState.markerPoint("end_collect_results");
+      if (logLayoutState != null) {
+        logLayoutState.markerPoint("end_collect_results");
+      }
+    } finally {
+      c.clearCalculationStateContext();
+      c.setCalculationStateContext(prevContainer);
     }
 
     layoutStateContext.releaseReference();
@@ -1337,7 +1355,7 @@ public class LayoutState
 
       layoutStateContext.markLayoutResumed();
 
-      if (layoutStateContext.getRenderStateContext().isLayoutReleased()) {
+      if (layoutStateContext.getRenderStateContext().isFutureReleased()) {
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR,
             "ReleasedLayoutResumed",
@@ -1353,13 +1371,18 @@ public class LayoutState
             "resume:" + partialResolvedRoot.getHeadComponent().getSimpleName());
       }
 
+      final CalculationStateContext prevContainer = c.getCalculationStateContext();
+
       try {
+        c.clearCalculationStateContext();
+        c.setLayoutStateContext(layoutStateContext);
+
         final ResolvedTree resolvedTree =
             Layout.resumeResolvingTree(
                 layoutStateContext.getRenderStateContext(), partialResolvedRoot);
         layoutState.mRoot = resolvedTree.getRoot();
 
-        // Render phase caches should be locked here.
+        // Render-phase cache should be locked here.
 
         final LithoLayoutResult result =
             Layout.measureTree(
@@ -1373,13 +1396,16 @@ public class LayoutState
         if (result != null) {
           layoutState.mLayoutResult = result;
         }
+
+        setSizeAfterMeasureAndCollectResults(c, layoutState);
       } finally {
         if (isTracing) {
           ComponentsSystrace.endSection();
         }
-      }
 
-      setSizeAfterMeasureAndCollectResults(c, layoutState);
+        c.clearCalculationStateContext();
+        c.setCalculationStateContext(prevContainer);
+      }
 
       layoutState.getLayoutStateContext().releaseReference();
 
@@ -1430,7 +1456,7 @@ public class LayoutState
 
   private static void setSizeAfterMeasureAndCollectResults(
       ComponentContext c, LayoutState layoutState) {
-    if (layoutState.getLayoutStateContext().getRenderStateContext().isLayoutReleased()) {
+    if (layoutState.getLayoutStateContext().getRenderStateContext().isFutureReleased()) {
       return;
     }
 

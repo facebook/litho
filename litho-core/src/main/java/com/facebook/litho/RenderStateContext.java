@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class RenderStateContext {
+public class RenderStateContext implements CalculationStateContext {
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
 
   private boolean mIsInterruptible = true;
@@ -69,6 +69,7 @@ public class RenderStateContext {
     return Preconditions.checkNotNull(mLayoutStateContext);
   }
 
+  @Override
   public int getLayoutVersion() {
     return mLayoutVersion;
   }
@@ -111,15 +112,23 @@ public class RenderStateContext {
     return isInterruptible() && isInterruptRequested;
   }
 
-  boolean isLayoutReleased() {
+  @Override
+  public boolean isFutureReleased() {
     return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
+  }
+
+  @Nullable
+  @Override
+  public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+    return mLayoutStateFuture;
   }
 
   public void markLayoutUninterruptible() {
     mIsInterruptible = false;
   }
 
-  TreeState getTreeState() {
+  @Override
+  public TreeState getTreeState() {
     if (mTreeState == null) {
       throw new IllegalStateException("Attempt to fetch TreeState after release");
     }
@@ -127,7 +136,8 @@ public class RenderStateContext {
     return mTreeState;
   }
 
-  MeasuredResultCache getCache() {
+  @Override
+  public MeasuredResultCache getCache() {
     return mCache;
   }
 

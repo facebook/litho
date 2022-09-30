@@ -561,6 +561,7 @@ public class TreeDiffingTest {
   @Test
   public void testDiffTreeUsedIfMeasureSpecsAreSame() {
     ComponentContext c = mLegacyLithoViewRule.getComponentTree().getContext();
+
     final TestComponent component = TestDrawableComponent.create(c).color(BLACK).build();
 
     final Component layoutComponent = new TestSimpleContainerLayout(component, 0);

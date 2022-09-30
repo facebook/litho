@@ -1022,6 +1022,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());
@@ -1076,6 +1077,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());
@@ -1130,6 +1132,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());
@@ -1182,6 +1185,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());
@@ -2704,6 +2708,7 @@ public class LayoutStateCalculateTest {
 
     final ComponentTree componentTree =
         ComponentTree.create(mLegacyLithoViewRule.getContext()).logger(logger, "test").build();
+
     final LayoutState layoutState =
         calculateLayoutState(
             componentTree.getContext(),
@@ -2798,6 +2803,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void onMountHierarchyWithParentDisabled_shouldDisableDescendants() {
     final ComponentContext c = mLegacyLithoViewRule.getContext();
+
     final ItemCardComponentSpec.TreeProps props = new ItemCardComponentSpec.TreeProps();
     final Output<View> view = new Output<>();
     final Output<Boolean> clicked = new Output<>();
@@ -2830,6 +2836,7 @@ public class LayoutStateCalculateTest {
 
     mLegacyLithoViewRule
         .setTreeProp(ItemCardComponentSpec.TreeProps.class, props)
+        .useComponentTree(ComponentTree.create(c).build())
         .setRoot(root)
         .attachToWindow()
         .measure()

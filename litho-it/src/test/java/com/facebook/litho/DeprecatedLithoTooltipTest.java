@@ -75,11 +75,7 @@ public class DeprecatedLithoTooltipTest {
     mComponentTree = ComponentTree.create(mContext, mComponent).build();
 
     mContext = ComponentContext.withComponentTree(mContext, mComponentTree);
-    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(mContext);
-    mContext.setLayoutStateContext(layoutStateContext);
-    mContext =
-        ComponentContext.withComponentScope(
-            layoutStateContext, mContext, mComponent, mComponent.getKey());
+    mContext = ComponentContext.withComponentScope(null, mContext, mComponent, mComponent.getKey());
     mLithoView = getLithoView(mComponentTree);
 
     mAnchorGlobalKey =

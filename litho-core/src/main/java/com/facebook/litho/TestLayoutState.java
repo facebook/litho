@@ -151,7 +151,7 @@ public class TestLayoutState {
 
     if (children != null) {
       for (Component child : children) {
-        if (renderStateContext.isLayoutReleased()) {
+        if (renderStateContext.isFutureReleased()) {
           return null;
         }
 

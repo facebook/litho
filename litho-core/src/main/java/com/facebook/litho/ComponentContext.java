@@ -128,14 +128,6 @@ public class ComponentContext implements Cloneable {
 
   public ComponentContext(ComponentContext context) {
     this(context, context.mTreeProps);
-
-    if (context.getLayoutStateContext() != null) {
-      setLayoutStateContext(context.getLayoutStateContext());
-    }
-
-    if (context.getRenderStateContext() != null) {
-      setRenderStateContext(context.getRenderStateContext());
-    }
   }
 
   public ComponentContext(ComponentContext context, @Nullable TreeProps treeProps) {
@@ -221,9 +213,29 @@ public class ComponentContext implements Cloneable {
         parentTreeContext.getTreePropsCopy());
   }
 
+  /** Returns the current calculate state context */
+  @Nullable
+  CalculationStateContext getCalculationStateContext() {
+    if (mComponentTree != null) {
+      return mComponentTree.getCalculationStateContext();
+    }
+
+    return null;
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContext(LayoutStateContext layoutStateContext) {
     mLayoutStateContext = new WeakReference<>(layoutStateContext);
+
+    if (mComponentTree != null) {
+      mComponentTree.setCalculationStateContext(layoutStateContext);
+    }
+  }
+
+  void clearCalculationStateContext() {
+    if (mComponentTree != null) {
+      mComponentTree.setCalculationStateContext(null);
+    }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -234,10 +246,28 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setRenderStateContext(RenderStateContext renderStateContext) {
     mRenderStateContext = new WeakReference<>(renderStateContext);
+
+    if (mComponentTree != null) {
+      mComponentTree.setCalculationStateContext(renderStateContext);
+    }
+  }
+
+  /**
+   * Sets the calculation state context (either a RenderStateContext or LayoutStateContext) on a
+   * thread local, making it unique per ComponentTree, per Thread.
+   */
+  void setCalculationStateContext(@Nullable CalculationStateContext context) {
+    if (mComponentTree != null) {
+      mComponentTree.setCalculationStateContext(context);
+    }
   }
 
   /** Returns true if this method is called during layout creation. */
   boolean isCreateLayoutInProgress() {
+    if (mComponentTree != null) {
+      return mComponentTree.getCalculationStateContext() != null;
+    }
+
     if (mLayoutStateContext == null) {
       return false;
     }
@@ -329,6 +359,11 @@ public class ComponentContext implements Cloneable {
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+    if (mComponentTree != null) {
+      return Preconditions.checkNotNull(mComponentTree.getCalculationStateContext())
+          .getLayoutStateFuture();
+    }
+
     final LayoutStateContext context;
     if (mLayoutStateContext != null) {
       context = mLayoutStateContext.get();
@@ -575,6 +610,11 @@ public class ComponentContext implements Cloneable {
   }
 
   public int getLayoutVersion() {
+    if (mComponentTree != null) {
+      return Preconditions.checkNotNull(mComponentTree.getCalculationStateContext())
+          .getLayoutVersion();
+    }
+
     final LayoutStateContext context;
     if (mLayoutStateContext != null) {
       context = mLayoutStateContext.get();
@@ -669,11 +709,29 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public LayoutStateContext getLayoutStateContext() {
+    if (mComponentTree != null) {
+      final CalculationStateContext stateContext = mComponentTree.getCalculationStateContext();
+      if (stateContext instanceof LayoutStateContext) {
+        return (LayoutStateContext) stateContext;
+      } else {
+        return null;
+      }
+    }
+
     return mLayoutStateContext != null ? mLayoutStateContext.get() : null;
   }
 
   @Nullable
   public RenderStateContext getRenderStateContext() {
+    if (mComponentTree != null) {
+      final CalculationStateContext stateContext = mComponentTree.getCalculationStateContext();
+      if (stateContext instanceof RenderStateContext) {
+        return (RenderStateContext) stateContext;
+      } else {
+        return null;
+      }
+    }
+
     return mRenderStateContext != null ? mRenderStateContext.get() : null;
   }
 

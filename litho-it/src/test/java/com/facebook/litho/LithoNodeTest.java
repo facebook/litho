@@ -357,6 +357,7 @@ public class LithoNodeTest {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());
@@ -386,6 +387,7 @@ public class LithoNodeTest {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(layoutState, c.getComponentTree());

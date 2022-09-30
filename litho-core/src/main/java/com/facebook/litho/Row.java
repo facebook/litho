@@ -127,7 +127,7 @@ public final class Row extends Component {
 
     if (children != null) {
       for (Component child : children) {
-        if (renderStateContext.isLayoutReleased()) {
+        if (renderStateContext.isFutureReleased()) {
           return null;
         }
 

@@ -67,16 +67,19 @@ public class ComponentShallowCopyTest {
   public void testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
     mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
 
+    final ComponentContext c1 =
+        ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+    final ComponentContext c2 =
+        ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+
     final LayoutState layoutState1 = new LayoutState(mContext);
     final LayoutState layoutState2 = new LayoutState(mContext);
 
-    final ComponentContext c1 = new ComponentContext(mContext);
     final LayoutStateContext lsc1 = new LayoutStateContext(layoutState1, c1.getComponentTree());
     final RenderStateContext rsc1 = lsc1.getRenderStateContext();
     Whitebox.setInternalState(layoutState1, "mLayoutStateContext", lsc1);
     c1.setLayoutStateContext(lsc1);
 
-    final ComponentContext c2 = new ComponentContext(mContext);
     final LayoutStateContext lsc2 = new LayoutStateContext(layoutState2, c2.getComponentTree());
     final RenderStateContext rsc2 = lsc2.getRenderStateContext();
     Whitebox.setInternalState(layoutState2, "mLayoutStateContext", lsc2);

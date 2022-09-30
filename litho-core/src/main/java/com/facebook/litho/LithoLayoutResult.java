@@ -462,7 +462,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
     mWasMeasured = true;
 
-    if (context.getRenderContext().mLayoutStateContext.getRenderStateContext().isLayoutReleased()) {
+    if (context.getRenderContext().mLayoutStateContext.getRenderStateContext().isFutureReleased()) {
 
       // If layout is released then skip measurement
       size = MeasureResult.error();
