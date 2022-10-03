@@ -184,6 +184,13 @@ public abstract class SpecGeneratedComponent extends Component
     }
   }
 
+  @Nullable
+  @Override
+  protected final PrepareResult prepare(RenderStateContext renderStateContext, ComponentContext c) {
+    onPrepare(c);
+    return null;
+  }
+
   @Override
   public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
     // Do nothing by default
@@ -202,6 +209,10 @@ public abstract class SpecGeneratedComponent extends Component
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
     return Column.create(c).build();
+  }
+
+  protected void onPrepare(ComponentContext c) {
+    // do nothing, by default
   }
 
   @Override

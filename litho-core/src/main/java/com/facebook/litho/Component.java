@@ -355,12 +355,7 @@ public abstract class Component
       RenderStateContext renderStateContext, ComponentContext c) {
     // default implementation runs onPrepare(), MountableComponents will override to return a
     // Mountable
-    onPrepare(c);
     return null;
-  }
-
-  protected void onPrepare(ComponentContext c) {
-    // do nothing, by default
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */

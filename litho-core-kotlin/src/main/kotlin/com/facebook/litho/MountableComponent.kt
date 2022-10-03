@@ -145,8 +145,6 @@ abstract class MountableComponent() : Component() {
           componentBoundsY,
           interStagePropsContainer)
 
-  final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
-
   final override fun resolve(
       renderStateContext: RenderStateContext,
       c: ComponentContext

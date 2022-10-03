@@ -250,7 +250,7 @@ public class TestLayoutState {
     }
 
     node.appendComponent(c.getScopedComponentInfo());
-    component.onPrepare(c);
+    component.prepare(renderStateContext, c);
 
     return node;
   }
@@ -453,7 +453,7 @@ public class TestLayoutState {
     // 13. Call onPrepare for MountSpecs.
     if (isMountSpec(component)) {
       try {
-        component.onPrepare(c);
+        component.prepare(renderStateContext, c);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(parent, component, e);
       }
