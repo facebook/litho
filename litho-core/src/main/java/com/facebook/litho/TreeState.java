@@ -135,6 +135,12 @@ public class TreeState {
     return getKeysForPendingStateUpdates(mLayoutStateHandler);
   }
 
+  Set<String> getKeysForPendingStateUpdates() {
+    Set<String> keys = getKeysForPendingStateUpdates(mRenderStateHandler);
+    keys.addAll(getKeysForPendingStateUpdates(mLayoutStateHandler));
+    return keys;
+  }
+
   void addStateContainer(String key, StateContainer stateContainer, boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     stateHandler.addStateContainer(key, stateContainer);

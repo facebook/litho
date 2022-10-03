@@ -46,8 +46,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,20 +90,6 @@ import org.robolectric.annotation.LooperMode;
 public class NestedTreeResolutionWithStateTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
-  private boolean defaultIsSplitStateHandlersEnabled;
-
-  @Before
-  public void before() {
-    defaultIsSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
-    // TODO (T133174239) isSplitStateHandlersEnabled is disabled due to issues with implementation.
-    ComponentsConfiguration.isSplitStateHandlersEnabled = false;
-    ComponentsConfiguration.isEndToEndTestRun = true;
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.isSplitStateHandlersEnabled = defaultIsSplitStateHandlersEnabled;
-  }
 
   /**
    * Tests OCL_OCL_OCL hierarchy.

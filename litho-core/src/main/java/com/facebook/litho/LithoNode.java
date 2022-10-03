@@ -1112,7 +1112,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     if (treeState == null) {
       keys = Collections.emptySet();
     } else {
-      keys = treeState.getKeysForPendingRenderStateUpdates();
+      keys = treeState.getKeysForPendingStateUpdates();
     }
 
     return reconcile(renderStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
