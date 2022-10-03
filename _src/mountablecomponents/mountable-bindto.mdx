@@ -4,41 +4,47 @@ title: BindTo - Dynamic Values API
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-## Dynamic Mount Props
+**Dynamic Mount Props** property types enable the value of the property on the content mounted by the Mountable to be updated, without triggering a new layout (such as when animating the text colour of a Text component).
 
-**Dynamic Mount Props** property types that allow updating the value of the property on the content mounted by the Mountable without triggering a new layout, for example: to animate the text colour of a Text component
+## BindTo API in Practice
 
-## BintTo API in Practice
+To illustrate the use of BindTo API in practice, we will implement a simple `ImageViewComponent` that will have `background`, `rotation` and `scale` properties animated, based on the `SeekBar` value.
 
-To demonstrate the use of BindTo API in practice, you will implement a simple `ImageViewComponent` that will have `background`, `rotation` and `scale` properties animated based on the `SeekBar` value.
-You will start by defining DynamicValues by using 'useBinding' hooks:
+We start off by defining each `DynamicValue` by using `useBinding` hooks:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/MountableBindToExampleComponent.kt start=start_bindTo_useBinding_code end=end_bindTo_useBinding_code
 ```
 
-All of the values will be attached to the `SeekBar` and the value will change accordingly:
+All of the values will be attached to the `SeekBar` and will change accordingly:
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/MountableBindToExampleComponent.kt start=start_bindTo_seekbar_code end=end_bindTo_seekbar_code
 ```
 
-Our `ImageViewComponent` will take the DynamicValues as a constructor parameters:
+Our `ImageViewComponent` will take each `DynamicValue` as a constructor parameter:
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=start_bindTo_imagecomponent_code end=end_bindTo_imagecomponent_code
 ```
 
-And use `bindTo` API to bind the DynamicValues to the ImageView properties. You can see two different ways of using the 'bindTo', the first one creates a binding between the DynamicValue, and function reference to the setter of the property. The setter will be invoked for every update of the DynamicValue.
-The more complex binding can be achieved by using lambda and accessing the view directly.
+Now, use the `bindTo` API to bind each `DynamicValue` to the `ImageView` properties.
+
+There are two ways of using `BindTo`:
+
+1. The simpler way is to create a binding between the `DynamicValue` and function reference to the setter of the property.
+   * The setter will be invoked for every update of the DynamicValue.
+1. The more complex binding can be achieved by using a lambda and accessing the view directly, as shown in the following snippet.
+
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=start_bindTo_binding_code end=end_bindTo_binding_code
 ```
 
-## BintTo API in Action
+The following short video shows the BindTo API in action:
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
   <source type="video/webm" src={useBaseUrl("/videos/bindToAPI.mov")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
+## Key points for the BindTo API
 
-## Key points for BindTo API
-
-- A DynamicValue has to be bound to the Mountable in `MountableComponentScope.render()`. 
-- A Mountable can have several dynamic props.
-- The Binder will automatically unbind by setting the default value.
+* A `DynamicValue` has to be bound to the Mountable in `MountableComponentScope.render()`.
+* A Mountable can have several dynamic props.
+* The Binder will automatically unbind by setting the default value.
