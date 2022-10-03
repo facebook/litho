@@ -74,35 +74,41 @@ inline fun ResourcesScope.Text(
     @StyleRes defStyleRes: Int = 0,
     dynamicTextColor: DynamicValue<Int>? = null,
     testKey: String? = null
-): Text =
-    Text.create(context, defStyleAttr, defStyleRes)
-        .text(text)
-        .dynamicTextColor(dynamicTextColor)
-        .textColor(textColor)
-        .textSizePx(textSize.toPixels())
-        .textStyle(textStyle)
-        .typeface(typeface)
-        .shadowColor(shadowColor)
-        .shadowRadiusPx(shadowRadius.toPixels().toFloat())
-        .alignment(alignment)
-        .breakStrategy(breakStrategy)
-        .verticalGravity(verticalGravity)
-        .spacingMultiplier(lineSpacingMultiplier)
-        .isSingleLine(isSingleLine)
-        .minLines(minLines)
-        .maxLines(maxLines)
-        .apply { lineHeight?.let { lineHeightPx(it.toPixels().toFloat()) } }
-        .apply { extraSpacing?.let { extraSpacingPx(it.toPixels().toFloat()) } }
-        .letterSpacing(letterSpacing)
-        .shouldIncludeFontPadding(includeFontPadding)
-        .accessibleClickableSpans(accessibleClickableSpans)
-        .clipToBounds(clipToBounds)
-        .apply { customEllipsisText?.let { customEllipsisText(customEllipsisText) } }
-        .apply { ellipsize?.let { ellipsize(it) } }
-        .handle(handle)
-        .apply { backgroundColor?.let { backgroundColor(backgroundColor) } }
-        .apply { highlightColor?.let { highlightColor(it) } }
-        .textDirection(textDirection)
-        .kotlinStyle(style)
-        .testKey(testKey)
-        .build()
+): Text {
+  val builder =
+      Text.create(context, defStyleAttr, defStyleRes)
+          .text(text)
+          .dynamicTextColor(dynamicTextColor)
+          .textColor(textColor)
+          .textSizePx(textSize.toPixels())
+          .textStyle(textStyle)
+          .typeface(typeface)
+          .shadowColor(shadowColor)
+          .shadowRadiusPx(shadowRadius.toPixels().toFloat())
+          .alignment(alignment)
+          .breakStrategy(breakStrategy)
+          .verticalGravity(verticalGravity)
+          .spacingMultiplier(lineSpacingMultiplier)
+          .isSingleLine(isSingleLine)
+          .minLines(minLines)
+          .maxLines(maxLines)
+          .apply { lineHeight?.let { lineHeightPx(it.toPixels().toFloat()) } }
+          .apply { extraSpacing?.let { extraSpacingPx(it.toPixels().toFloat()) } }
+          .letterSpacing(letterSpacing)
+          .shouldIncludeFontPadding(includeFontPadding)
+          .accessibleClickableSpans(accessibleClickableSpans)
+          .clipToBounds(clipToBounds)
+          .apply { customEllipsisText?.let { customEllipsisText(customEllipsisText) } }
+          .apply { ellipsize?.let { ellipsize(it) } }
+          .handle(handle)
+          .apply { backgroundColor?.let { backgroundColor(backgroundColor) } }
+          .apply { highlightColor?.let { highlightColor(it) } }
+          .textDirection(textDirection)
+          .kotlinStyle(style)
+
+  if (testKey != null) {
+    builder.testKey(testKey)
+  }
+
+  return builder.build()
+}
