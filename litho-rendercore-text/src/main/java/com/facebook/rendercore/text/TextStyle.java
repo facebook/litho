@@ -46,6 +46,7 @@ public class TextStyle implements Cloneable {
   int textSize = UNSET;
   boolean shouldAddSpacingExtraToFirstLine;
   float lineSpacingExtra = 0;
+  float lineHeight = Float.MAX_VALUE;
   float lineHeightMultiplier = 1;
   float letterSpacing = 0;
   int textStyle = Typeface.DEFAULT.getStyle();
@@ -55,7 +56,6 @@ public class TextStyle implements Cloneable {
   int hyphenationFrequency = 0;
   int justificationMode = 0;
   TextDirectionHeuristicCompat textDirection;
-  float lineHeight = Float.MAX_VALUE;
   boolean clipToBounds = true;
   VerticalGravity verticalGravity = VerticalGravity.TOP;
   int highlightColor = Color.TRANSPARENT;
@@ -99,6 +99,10 @@ public class TextStyle implements Cloneable {
 
   public void setLineSpacingExtra(float lineSpacingExtra) {
     this.lineSpacingExtra = lineSpacingExtra;
+  }
+
+  public void setLineHeight(float lineHeight) {
+    this.lineHeight = lineHeight;
   }
 
   public void setLineHeightMultiplier(Float lineHeightMultiplier) {
