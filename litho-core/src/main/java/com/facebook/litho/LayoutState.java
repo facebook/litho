@@ -1155,10 +1155,6 @@ public class LayoutState
       currentRoot = null;
     }
 
-    final LayoutState layoutState;
-
-    layoutState = new LayoutState(c, component, treeState, currentLayoutState);
-
     // Need to save and restore the previous state context is only relevant for tests.
     // In certain tests that update state (sync), the state update triggers a layout calculation
     // that rather than being posted to happen after the current calculation happens immediately.
@@ -1167,11 +1163,26 @@ public class LayoutState
     final @Nullable CalculationStateContext prevContextInTests = c.getCalculationStateContext();
 
     try {
+
+      /* ** Resolve: Start ** */
+
       final RenderStateContext rsc =
           new RenderStateContext(
               new MeasuredResultCache(), treeState, layoutVersion, layoutStateFuture);
 
       c.setRenderStateContext(rsc);
+
+      // 1. Resolve Tree
+      final @Nullable ResolvedTree resolvedTree =
+          Layout.createResolvedTree(
+              rsc, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
+      final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+
+      c.clearCalculationStateContext();
+
+      /* ** Resolve: End ** */
+
+      final LayoutState layoutState = new LayoutState(c, component, treeState, currentLayoutState);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
@@ -1183,15 +1194,6 @@ public class LayoutState
       layoutState.mHeightSpec = heightSpec;
       layoutState.mRootComponentName = component.getSimpleName();
 
-      // 1. Resolve Tree
-      final @Nullable ResolvedTree resolvedTree =
-          Layout.createResolvedTree(
-              rsc, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
-
-      c.clearCalculationStateContext();
-
-      final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
-
       // Check if layout was interrupted.
       if (rsc.isLayoutInterrupted() && node != null) {
         layoutState.mPartialRenderStateContext = rsc;
@@ -1201,7 +1203,10 @@ public class LayoutState
         return layoutState;
       }
 
+      // cache should be frozen for a completely resolved tree
       rsc.getCache().freezeCache();
+
+      /* ** Layout: Start ** */
 
       layoutState.mRoot = node;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
@@ -1239,18 +1244,19 @@ public class LayoutState
       if (logLayoutState != null) {
         logLayoutState.markerPoint("end_collect_results");
       }
+
+      // calculate layout count stats
+      LithoStats.incrementComponentCalculateLayoutCount();
+      if (ThreadUtils.isMainThread()) {
+        LithoStats.incrementComponentCalculateLayoutOnUICount();
+      }
+
+      return layoutState;
+
     } finally {
       // Restore the previous context. Should only be non-null in test cases.
       c.setCalculationStateContext(prevContextInTests);
     }
-
-    // calculate layout count stats
-    LithoStats.incrementComponentCalculateLayoutCount();
-    if (ThreadUtils.isMainThread()) {
-      LithoStats.incrementComponentCalculateLayoutOnUICount();
-    }
-
-    return layoutState;
   }
 
   static LayoutState resumeCalculate(
