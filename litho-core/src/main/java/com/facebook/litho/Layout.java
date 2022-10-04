@@ -104,14 +104,13 @@ class Layout {
       }
 
       final ComponentContext updatedScopedContext =
-          update(renderStateContext, c, component, globalKeyToReuse);
-      final Component updated = updatedScopedContext.getComponentScope();
+          createScopedContext(renderStateContext, c, component, globalKeyToReuse);
 
       node =
           current.reconcile(
               renderStateContext,
               c,
-              updated,
+              component,
               updatedScopedContext.getScopedComponentInfo(),
               globalKeyToReuse);
     }
@@ -256,10 +255,8 @@ class Layout {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = update(renderStateContext, parent, component, globalKeyToReuse);
+      c = createScopedContext(renderStateContext, parent, component, globalKeyToReuse);
       globalKey = c.getGlobalKey();
-
-      component = c.getComponentScope();
 
       scopedComponentInfo = c.getScopedComponentInfo();
       // 6. Resolve the component into an InternalNode tree.
@@ -565,13 +562,11 @@ class Layout {
     }
   }
 
-  static ComponentContext update(
+  static ComponentContext createScopedContext(
       final RenderStateContext renderStateContext,
       final ComponentContext parent,
       final Component component,
       @Nullable final String globalKeyToReuse) {
-
-    final TreeProps ancestor = parent.getTreeProps();
 
     // 1. Update the internal state of the component wrt the parent.
     // 2. Get the scoped context from the updated component.
@@ -586,6 +581,7 @@ class Layout {
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
     if (component instanceof SpecGeneratedComponent) {
+      final TreeProps ancestor = parent.getTreeProps();
       final TreeProps descendants =
           ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);
       c.setParentTreeProps(ancestor);

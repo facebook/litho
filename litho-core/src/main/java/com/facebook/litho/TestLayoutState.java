@@ -328,10 +328,8 @@ public class TestLayoutState {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = Layout.update(renderStateContext, parent, component, null);
+      c = Layout.createScopedContext(renderStateContext, parent, component, null);
       globalKey = c.getGlobalKey();
-
-      component = c.getComponentScope();
 
       scopedComponentInfo = c.getScopedComponentInfo();
       // 6. Resolve the component into an InternalNode tree.
