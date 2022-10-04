@@ -253,6 +253,7 @@ public class ComponentsConfiguration {
 
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
+  private static boolean sReduceMemorySpikeGetUri = false;
 
   public static void setReduceMemorySpikeUserSession() {
     sReduceMemorySpikeUserSession = true;
@@ -268,6 +269,14 @@ public class ComponentsConfiguration {
 
   public static boolean reduceMemorySpikeDataDiffSection() {
     return sReduceMemorySpikeDataDiffSection;
+  }
+
+  public static void setReduceMemorySpikeGetUri() {
+    sReduceMemorySpikeGetUri = true;
+  }
+
+  public static boolean reduceMemorySpikeGetUri() {
+    return sReduceMemorySpikeGetUri;
   }
 
   public static boolean enableStateUpdatesBatching = true;
