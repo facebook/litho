@@ -146,7 +146,7 @@ public final class DelegateMethodDescriptions {
           .name("createInitialState")
           .lifecycleMethodArguments(ImmutableList.of(LifecycleMethodArgumentType.COMPONENT_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE, INJECT_PROP))
-          .createsState(true)
+          .createsLegacyState(true)
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_TRANSITION =

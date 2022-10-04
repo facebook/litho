@@ -73,7 +73,7 @@ public class DelegateMethodDescriptions {
           .name("createInitialState")
           .definedParameterTypes(ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE, INJECT_PROP))
-          .createsState(true)
+          .createsLegacyState(true)
           .build();
 
   private static final DelegateMethodDescription ON_REFRESH =

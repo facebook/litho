@@ -279,11 +279,11 @@ public class DelegateMethodGenerator {
           interStagePropsParamName != null ? interStagePropsParamName : "null");
     }
 
-    final boolean requiresState =
-        (methodDescription.createsState && !specModel.getStateValues().isEmpty())
+    final boolean requiresGetStateContainer =
+        (methodDescription.createsLegacyState && !specModel.getStateValues().isEmpty())
             || delegateMethod.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE);
 
-    if (requiresState && contextParamName != null) {
+    if (requiresGetStateContainer && contextParamName != null) {
       acquireStatements.addStatement(
           "$L $L = $L",
           StateContainerGenerator.getStateContainerClassName(specModel),

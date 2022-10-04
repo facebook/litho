@@ -71,7 +71,7 @@ public final class DelegateMethodDescription {
   public final InterStagePropsTarget mInterStagePropsTarget;
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
-  public final boolean createsState;
+  public final boolean createsLegacyState;
 
   private DelegateMethodDescription(Builder builder) {
     annotations = builder.annotations;
@@ -84,7 +84,7 @@ public final class DelegateMethodDescription {
     interStageInputAnnotations = builder.interStageInputAnnotations;
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
-    createsState = builder.createsState;
+    createsLegacyState = builder.createsLegacyState;
     mInterStagePropsTarget = builder.mInterStagePropsTarget;
   }
 
@@ -125,7 +125,7 @@ public final class DelegateMethodDescription {
     private InterStagePropsTarget mInterStagePropsTarget = InterStagePropsTarget.MEASURE;
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
-    private boolean createsState = false;
+    private boolean createsLegacyState = false;
 
     private Builder() {}
 
@@ -207,8 +207,13 @@ public final class DelegateMethodDescription {
       return this;
     }
 
-    public Builder createsState(boolean createsState) {
-      this.createsState = createsState;
+    /**
+     * Whether this method creates state in a legacy manner, writing to a StateContainer on the
+     * Section/Surface/etc, obtained via a call to getStateContainer. Relevant to Sections and
+     * Surfaces at the time of writing.
+     */
+    public Builder createsLegacyState(boolean createsLegacyState) {
+      this.createsLegacyState = createsLegacyState;
       return this;
     }
 
