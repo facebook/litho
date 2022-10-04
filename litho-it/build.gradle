@@ -99,6 +99,7 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
     implementation project(':litho-testing')
+    implementation deps.inferAnnotations
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh

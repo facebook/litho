@@ -202,7 +202,7 @@ public abstract class SpecGeneratedComponent extends Component
    *
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
-  protected Component onCreateLayout(ComponentContext c) {
+  protected @Nullable Component onCreateLayout(ComponentContext c) {
     return Column.create(c).build();
   }
 
