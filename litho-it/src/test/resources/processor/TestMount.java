@@ -646,10 +646,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestMount component) {
-    TestMountStateContainer _stateContainer = new TestMountStateContainer();
-    transferState(getStateContainerImpl(c), _stateContainer);
-    c.applyLazyStateUpdatesForContainer(_stateContainer);
-    return _stateContainer;
+    TestMountStateContainer _stateContainer = (TestMountStateContainer) getStateContainerImpl(c);
+    return (TestMountStateContainer) c.applyLazyStateUpdatesForContainer(_stateContainer);
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {

@@ -354,10 +354,8 @@ public class StateGeneratorTest {
         .isEqualTo(
             "private TestWithStateStateContainer getStateContainerWithLazyStateUpdatesApplied(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState component) {\n"
-                + "  TestWithStateStateContainer _stateContainer = new TestWithStateStateContainer();\n"
-                + "  transferState(getStateContainerImpl(c), _stateContainer);\n"
-                + "  c.applyLazyStateUpdatesForContainer(_stateContainer);\n"
-                + "  return _stateContainer;\n"
+                + "  TestWithStateStateContainer _stateContainer = (TestWithStateStateContainer) getStateContainerImpl(c);\n"
+                + "  return (TestWithStateStateContainer) c.applyLazyStateUpdatesForContainer(_stateContainer);\n"
                 + "}\n");
   }
 

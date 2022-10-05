@@ -92,10 +92,10 @@ public class TreeState {
     stateHandler.queueHookStateUpdate(key, updater);
   }
 
-  void applyLazyStateUpdatesForContainer(
+  StateContainer applyLazyStateUpdatesForContainer(
       String componentKey, StateContainer container, boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
-    stateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
+    return stateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
   }
 
   boolean hasUncommittedUpdates() {

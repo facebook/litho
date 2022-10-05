@@ -434,10 +434,8 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
 
   private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestLayout component) {
-    TestLayoutStateContainer _stateContainer = new TestLayoutStateContainer();
-    transferState(getStateContainerImpl(c), _stateContainer);
-    c.applyLazyStateUpdatesForContainer(_stateContainer);
-    return _stateContainer;
+    TestLayoutStateContainer _stateContainer = (TestLayoutStateContainer) getStateContainerImpl(c);
+    return (TestLayoutStateContainer) c.applyLazyStateUpdatesForContainer(_stateContainer);
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {

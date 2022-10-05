@@ -1499,14 +1499,18 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  synchronized void applyLazyStateUpdatesForContainer(
+  /**
+   * @return a StateContainer with lazy state updates applied. This may be the same container passed
+   *     in if there were no updates to apply. This method won't mutate the passed container.
+   */
+  synchronized StateContainer applyLazyStateUpdatesForContainer(
       String componentKey, StateContainer container, boolean isNestedTree) {
 
     if (mRoot == null || mTreeState == null) {
-      return;
+      return container;
     }
 
-    mTreeState.applyLazyStateUpdatesForContainer(componentKey, container, isNestedTree);
+    return mTreeState.applyLazyStateUpdatesForContainer(componentKey, container, isNestedTree);
   }
 
   @VisibleForTesting

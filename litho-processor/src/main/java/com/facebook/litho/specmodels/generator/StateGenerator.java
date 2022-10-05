@@ -140,13 +140,14 @@ public class StateGenerator {
             .addParameter(
                 ParameterSpec.builder(specModel.getComponentTypeName(), "component").build())
             .addStatement(
-                "$L $L = new $L()",
+                "$L $L = ($L) getStateContainerImpl(c)",
                 stateContainerClassName,
                 STATE_CONTAINER_NAME,
                 stateContainerClassName)
-            .addStatement("transferState(getStateContainerImpl(c), $L)", STATE_CONTAINER_NAME)
-            .addStatement("c.applyLazyStateUpdatesForContainer($L)", STATE_CONTAINER_NAME)
-            .addStatement("return $L", STATE_CONTAINER_NAME)
+            .addStatement(
+                "return ($L) c.applyLazyStateUpdatesForContainer($L)",
+                stateContainerClassName,
+                STATE_CONTAINER_NAME)
             .build();
 
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec).build();

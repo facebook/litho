@@ -378,7 +378,7 @@ public class StateHandler {
     return null;
   }
 
-  void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
+  StateContainer applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
     final List<StateUpdate> stateUpdatesForKey;
 
     synchronized (this) {
@@ -386,11 +386,15 @@ public class StateHandler {
           mPendingLazyStateUpdates == null ? null : mPendingLazyStateUpdates.get(componentKey);
     }
 
-    if (stateUpdatesForKey != null) {
-      for (StateUpdate update : stateUpdatesForKey) {
-        container.applyStateUpdate(update);
-      }
+    if (stateUpdatesForKey == null || stateUpdatesForKey.isEmpty()) {
+      return container;
     }
+
+    final StateContainer containerWithUpdatesApplied = container.clone();
+    for (StateUpdate update : stateUpdatesForKey) {
+      containerWithUpdatesApplied.applyStateUpdate(update);
+    }
+    return containerWithUpdatesApplied;
   }
 
   /**

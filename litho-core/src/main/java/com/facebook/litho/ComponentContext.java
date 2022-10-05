@@ -443,12 +443,16 @@ public class ComponentContext implements Cloneable {
         isNestedTreeContext());
   }
 
-  public void applyLazyStateUpdatesForContainer(StateContainer container) {
+  /**
+   * @return A StateContainer with lazy state updates applied. This may be the same container passed
+   *     in if there were no updates to apply. This method won't mutate the passed container.
+   */
+  public StateContainer applyLazyStateUpdatesForContainer(StateContainer container) {
     if (mComponentTree == null) {
-      return;
+      return container;
     }
 
-    mComponentTree.applyLazyStateUpdatesForContainer(
+    return mComponentTree.applyLazyStateUpdatesForContainer(
         getGlobalKey(), container, isNestedTreeContext());
   }
 
