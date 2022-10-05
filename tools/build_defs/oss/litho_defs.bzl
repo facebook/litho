@@ -289,16 +289,12 @@ litho_robolectric4_powermock_test = litho_robolectric4_test
 def fb_java_test(*args, **kwargs):
     """Uses native java_test for OSS project."""
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
     native.java_test(*args, **kwargs)
 
 def litho_android_library(name, srcs = None, *args, **kwargs):
     srcs = srcs or []
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
     native.android_library(name = name, srcs = srcs, *args, **kwargs)
 
@@ -320,15 +316,11 @@ def litho_android_test_library(**kwargs):
 def fb_xplat_android_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     native.cxx_library(*args, **kwargs)
 
 def fb_android_resource(**kwargs):
     """Delegates to native android_resource rule."""
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     native.android_resource(**kwargs)
 
 def fb_java_binary(**kwargs):
@@ -338,16 +330,12 @@ def fb_java_binary(**kwargs):
 def fb_java_library(**kwargs):
     """Delegates to native java_library rule."""
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
     native.java_library(**kwargs)
 
 def fb_android_library(**kwargs):
     """Delegates to native android_library rule."""
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
     native.android_library(**kwargs)
 
@@ -361,15 +349,11 @@ def instrumentation_test(**kwargs):
     Please use Gradle instead.
     """
 
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
     _ignore = kwargs
     pass
 
 def fb_core_android_library(**kwargs):
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
     native.android_library(**kwargs)
 
