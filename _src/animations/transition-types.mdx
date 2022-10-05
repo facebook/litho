@@ -5,34 +5,39 @@ title: Types of Transitions
 
 import useBaseUrl from '@docusaurus/useBaseUrl'
 
-Litho APIs enable you to create animated transitions between two consecutive `LayoutStates` of the UI. Within this page, those states are referred to as *before* and *after*.
+Litho supports animated transitions between two consecutive states of the UI (`LayoutStates`), which, on this page, are called:
 
-When defining transitions, you need to indicate to the framework what `Component`/`AnimatedProperty` pairs you want it to animate. Based on presence of the `Component` in *before* and *after* states, you can define three types of transitions: [changing](#change-transitions), [appearing](#appear-transitions), and [disappearing](#disappear-transitions).
+* **Before** - the state of the UI before the updates, prior to the start of the transition.
+* **After** - the state of the UI after the update, after the transition has ended.
 
-### Change Transitions
+When defining transitions, you need to indicate to the framework what `Component`/`AnimatedProperty` pairs you want it to animate. Based on the presence of the Component in *before* and *after* states, we can define 3 types of transitions: [Change](#change-transitions), [Appear](#appear-transitions), and [Disappear](#disappear-transitions).
 
-A transition where the target `Component` is present in both *before* and *after* layouts is called a *change* transition.
+## Change Transitions
 
-The sample in the [Animation Basics](/docs/animations/transition-basics) page features a *change* transition, since the `'square'` `Component` is always present in the layout, but it changes its position (`X` property).
+A transition where the target Component is present in both *before* and *after* `LayoutState`s is called a *Change* transition.
 
-<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+The SimpleAllLayoutTransitionComponentSpec featured in the [Animation Basics](transition-basics.mdx) page features a *Change* transition, since the 'square' Component is always present in the layout but changes its position (`X` property). The 'square' is illustrated in the following animation.
+
+<video height="150" loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics2.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-From a user's perspective, change transitions are the simplest type. Following is the explanation of how change type transitions work internally.
+### How the Change Type Functions Internally
 
-Imagine layout *A* (*before*) is mounted (rendered on the screen) and there is a blueprint of the layout *B* (*after*), which the framework is ready to render. The transition is defined for a  `AnimatedProperty.P` of a `ComponentC`, where `ComponentC` is present in both layouts.
+Imagine a scenario in which layout *A* (the *before* state) is mounted (rendered on the screen) and there exists a blueprint of layout *B* (the *after* state), which the framework is ready to render. In this scenario, the transition is defined for a `AnimatedProperty.P` of a `ComponentC`, where `ComponentC` is present in both layouts.
 
 The framework needs to take the following steps in order to run *change* animations:
 
-1. Pick the current value of the `AnimatedProperty.P` from the mounted UI element (normally, a `View`) that represents `ComponentC` on the screen; this is going to be the *start* value for animation.
+1. Pick the current value of the `AnimatedProperty.P` from the mounted UI element (a `View` or 'Drawable') that represents `ComponentC` on the screen. This is the *start* value for the animation.
 2. Pick the animation *end* value of `AnimatedProperty.P` from the blueprint of layout *B*.
-3. When the layout *B* is mounted to the screen, new value of `P` is not applied right away, as normally occurs. Instead, keep the previous value in place, but subscribe to the [`Choreographer`](pathname:///javadoc/com/facebook/litho/choreographercompat/ChoreographerCompat.html), and start changing the value of `P` for the new mounted UI element on every frame until it reaches the end value.
+3. When the layout *B* is mounted to the screen, instead of applying the new value of 'P' immediately, keep the previous value in place, subscribe to the [Choreographer](pathname:///javadoc/com/facebook/litho/choreographercompat/ChoreographerCompat.html), then start changing the value of `P` for the new mounted UI element on every frame until it reaches the end value.
 
-Following is how the returned trees look like on both layout passes (`ComponentC` is present in both trees):
+:::note
+`ComponentC` is present in both trees.
+:::
 
-**Before**
+Before:
 
 ```java
 Column.create(c)
@@ -46,7 +51,7 @@ Column.create(c)
     .build();
 ```
 
-**After**
+After:
 
 ```java
 Column.create(c)
@@ -62,27 +67,30 @@ Column.create(c)
 
 ### Appear Transitions
 
-In certain situations, you may want to animate how a certain UI element appears on screen.
+A transition where the target Component appears on screen is called an *Appear* transition. The target Component is not present in the *before* `LayoutState` and is present in the *after* `LayoutState`.
 
-In this case of *Appearing* transitions, a `Component` is present in the *after* `LayoutState`, but wasn't seen in the *before* `LayoutState`. In order to run transitions, *start* and *end* values of the `AnimatedProperty` are needed. While the framework can only get the latter from the layout, it is the responsibility of the user to supply the *start* value. You can do this using `.appearFrom()` method when building a `Transition`, as shown in the folloiwng snippet:
+In order to run transitions, you need the *start* and *end* values of the `AnimatedProperty`. The framework provides the *end* value and the user provides the *start* value.
+The *start* value can be specified by using the `.appearFrom()` method when building a `Transition`, as shown in the following LayoutSpec:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/AppearTransitionComponentSpec.java start=start end=end
 ```
 
-<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+The following animation shows the *Appear* transition in action.
+
+<video height="150" loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/appear.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-Following are the details of how the framework handles these transitions internally:
+### How the Appear Type Functions Internally
 
-1. Pick the `appearFrom` value of the `AnimatedProperty.P` from `Transition` object - this is going to be the *start* value for the animation.
-2. As before, pick the animation *end* value of `AnimatedProperty.P` from the blueprint of layout *B*.
-3. When the layout *B* is mounted to the screen, instead of applying the *end* value from that layout to the mounted item immediately, we set the user-provided *appearFrom* value and drive that to the *end* value from the layout.
+Using the same scenario described for the [Change](#how-the-change-type-functions-internally) type:
 
-`ComponentC` is only present in the *after* tree.
+1. Pick the `appearFrom` value of `AnimatedProperty.P` from the `Transition` object.  This is the *start* value for the animation.
+2. Pick the animation *end* value of `AnimatedProperty.P` from the blueprint of layout *B*.
+3. When layout *B* is mounted to the screen, instead of applying the *end* value from that layout to the mounted item immediately, set the user-provided *appearFrom* value and drive that to the *end* value from the layout.
 
-**Before**
+Before:
 
 ```java
 child = null;
@@ -93,7 +101,7 @@ Column.create(c)
     .build();
 ```
 
-**After**:
+After:
 
 ```java
 child = SolidColor.create(c)
@@ -110,9 +118,11 @@ Column.create(c)
 
 ### Disappear Transitions
 
-The opposite of *Appearing* type of transitions is *Disappearing*: when the `Component` is present in *before* layout, but is gone in the *after* layout. Following the same logic as before, now the responsibility of providing the *end* value falls on the user, which is done by using `.disappearTo()`, as shown in the following snippet.
+The *Disappear* transition type is the opposite of the [Appear](#appear-transitions) transition type.
 
-Following is how you should add the disappearing animation to the sample:
+A transition where the target Component disappears from the screen is called a *Disappear* transition. The target Component is present in the *before* `LayoutState` and is not present in the *after* `LayoutState`.
+
+In order to configure a *Disappear* transition, you need to provide an *end* value for the property that is disappearing. The *end* value can be specified by using the `.disappearTo()` method when building a `Transition`, as shown in the following code:
 
 ```java
 @OnCreateTransition
@@ -128,20 +138,24 @@ static Transition onCreateTransition(ComponentContext c) {
 }
 ```
 
-<video loop="true" autoplay="true" class="video" width="100%" height="500px" >
+The following animation shows the *Disappear* transition in action.
+
+<video height="150" loop="true" autoplay="true" class="video" width="100%" height="500px" >
   <source type="video/webm" src={useBaseUrl("/videos/transitions/disappear.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
-Under the hood, in order to run a disappearing animation, the framework takes the following algorithm:
+### How the Disappear Type Functions Internally
 
-1. Pick up the *start* value from the mounted UI element that represents the `Component`.
-2. Retrieve the *end* from the user-provided `disappearTo` value of transition definition.
-3. Render the *after* layout, but instead of removing the UI element from screen right away, drive the value of `AnimatedProperty` to the *end*, and only then remove the UI element.
+1. Pick the *start* value from the mounted UI element that represents the `Component`.
+2. Retrieve the *end* value from the user-provided `disappearTo` value of the transition definition.
+3. Render the *after* layout, but instead of removing the UI element from the screen immediately, drive the value of `AnimatedProperty` to the *end* value then remove the UI element.
 
-`ComponentC` is only present in the *before* tree.
+:::note
+The disappearing component no longer exists in the Component Tree, but must still exist in the view hierarchy in order to be rendered for the duration of the animation. To achieve this, the component that's being animated out is moved from its current container in the before state to the root component of the after state, and rendered above all other content. Once the animation ends, the disappearing component (and its associated View / Drawable) is fully removed.
+:::
 
-**After**
+Before:
 
 ```java
 child = SolidColor.create(c)
@@ -156,7 +170,7 @@ Column.create(c)
     .build();
 ```
 
-**Before**
+After:
 
 ```java
 child = null;
@@ -168,5 +182,4 @@ Column.create(c)
 ```
 
 :::info
-It is important to understand that once the layout has been mounted (on step 3) a disappearing `Component` isn't a part of layout tree anymore. However the drawing order of all the UI element is defined by the layout tree. Hence the UI element for the disappearing `Component` will be drawn the last. In some rare cases (normally involving cross-fading elements), this may result in the rendering being different from what you would expect. In such cases, a change animation should be used instead.
-:::
+During a transition, a disappearing `Component` is not part of the layout tree. Instead, it is drawn on top of all the remaining components. This may cause visual glitches in the component's z-order.
