@@ -251,6 +251,10 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableComponents = false;
 
+  public static boolean enableMountableRecycler = false;
+
+  public static boolean enableMountableTwoBindersRecycler = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;

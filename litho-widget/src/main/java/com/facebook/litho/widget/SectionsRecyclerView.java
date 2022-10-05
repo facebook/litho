@@ -187,11 +187,11 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     mHasBeenDetachedFromWindow = true;
   }
 
-  boolean hasBeenDetachedFromWindow() {
+  public boolean hasBeenDetachedFromWindow() {
     return mHasBeenDetachedFromWindow;
   }
 
-  void setHasBeenDetachedFromWindow(boolean hasBeenDetachedFromWindow) {
+  public void setHasBeenDetachedFromWindow(boolean hasBeenDetachedFromWindow) {
     mHasBeenDetachedFromWindow = hasBeenDetachedFromWindow;
   }
 

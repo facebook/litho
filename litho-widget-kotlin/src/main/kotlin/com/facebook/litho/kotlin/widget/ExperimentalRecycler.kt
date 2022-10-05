@@ -70,6 +70,7 @@ class ExperimentalRecycler(
     private val onItemTouchListener: RecyclerView.OnItemTouchListener? = null,
     private val onRefresh: (() -> Unit)? = null,
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger? = null,
+    private val useTwoBindersRecycler: Boolean = false,
     private val style: Style? = null
 ) : MountableComponent() {
 
@@ -101,6 +102,7 @@ class ExperimentalRecycler(
             onItemTouchListener = onItemTouchListener,
             onRefresh = onRefresh,
             sectionsViewLogger = sectionsViewLogger,
+            useTwoBindersRecycler = useTwoBindersRecycler,
             onRemeasure = { measureVersion.update { m -> m + 1 } }),
         style)
   }
@@ -131,31 +133,20 @@ internal class ExperimentalRecyclerMountable(
     private val onItemTouchListener: RecyclerView.OnItemTouchListener?,
     private val onRefresh: (() -> Unit)?,
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger?,
+    private val useTwoBindersRecycler: Boolean,
     private val onRemeasure: () -> Unit
 ) : Mountable<SectionsRecyclerView>(RenderType.VIEW), ContentAllocator {
 
   companion object {
-    private val CONSTANT_PROPS_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+    private val CONSTANT_PROPS_ATTACH_BINDER:
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
         object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
           override fun shouldUpdate(
               currentModel: ExperimentalRecyclerMountable,
               newModel: ExperimentalRecyclerMountable,
               currentLayoutData: Any?,
               nextLayoutData: Any?
-          ): Boolean =
-              currentModel.hasFixedSize != newModel.hasFixedSize &&
-                  currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
-                  currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
-                  currentModel.scrollBarStyle != newModel.scrollBarStyle &&
-                  currentModel.refreshProgressBarBackgroundColor !=
-                      newModel.refreshProgressBarBackgroundColor &&
-                  currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
-                  currentModel.isHorizontalFadingEdgeEnabled !=
-                      newModel.isHorizontalFadingEdgeEnabled &&
-                  currentModel.isVerticalFadingEdgeEnabled !=
-                      newModel.isVerticalFadingEdgeEnabled &&
-                  currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
-                  currentModel.itemAnimator != newModel.itemAnimator
+          ): Boolean = true
 
           override fun bind(
               context: Context,
@@ -164,35 +155,14 @@ internal class ExperimentalRecyclerMountable(
               layoutData: Any?
           ) {
             with(model) {
-              contentDescription?.let { content.contentDescription = contentDescription }
               sectionsViewLogger?.let { content.setSectionsRecyclerViewLogger(sectionsViewLogger) }
-              content.recyclerView.setHasFixedSize(hasFixedSize)
-              content.recyclerView.clipToPadding = isClipToPaddingEnabled
-              content.recyclerView.clipChildren = isClipChildrenEnabled
-              content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
-              content.recyclerView.scrollBarStyle = scrollBarStyle
-              content.recyclerView.id = recyclerViewId
-              if (refreshProgressBarBackgroundColor != null) {
-                content.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
-              }
-              content.setColorSchemeColors(refreshProgressBarColor)
+              // contentDescription should be set on the recyclerView itself, and not the
+              // sectionsRecycler.
+              content.contentDescription = null
               content.setEnabled(isPullToRefreshEnabled && onRefresh != null)
               content.setOnRefreshListener(
                   if (onRefresh != null) SwipeRefreshLayout.OnRefreshListener { onRefresh.invoke() }
                   else null)
-              // We cannot detach the snap helper in unbind, so it may be possible for it to get
-              // attached twice which causes SnapHelper to raise an exception.
-              if (snapHelper != null && content.recyclerView.getOnFlingListener() == null) {
-                snapHelper.attachToRecyclerView(content.recyclerView)
-              }
-              content.recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
-              content.recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
-              content.recyclerView.setFadingEdgeLength(fadingEdgeLength)
-              content.recyclerView.overScrollMode = overScrollMode
-              recyclerEventsController?.setSectionsRecyclerView(content)
-              content.setItemAnimator(
-                  if (itemAnimator != content.recyclerView.itemAnimator) itemAnimator
-                  else NoUpdateItemAnimator())
               if (onScrollListeners.isNotEmpty()) {
                 for (onScrollListener in onScrollListeners) {
                   onScrollListener?.let { content.recyclerView.addOnScrollListener(it) }
@@ -203,6 +173,16 @@ internal class ExperimentalRecyclerMountable(
               }
               onItemTouchListener?.let {
                 content.recyclerView.addOnItemTouchListener(onItemTouchListener)
+              }
+              // We cannot detach the snap helper in unbind, so it may be possible for it to get
+              // attached twice which causes SnapHelper to raise an exception.
+              if (snapHelper != null && content.recyclerView.getOnFlingListener() == null) {
+                snapHelper.attachToRecyclerView(content.recyclerView)
+              }
+              recyclerEventsController?.setSectionsRecyclerView(content)
+              if (content.hasBeenDetachedFromWindow()) {
+                content.recyclerView.requestLayout()
+                content.setHasBeenDetachedFromWindow(false)
               }
             }
           }
@@ -215,25 +195,12 @@ internal class ExperimentalRecyclerMountable(
           ) {
             content.contentDescription = null
             content.setSectionsRecyclerViewLogger(null)
-            content.recyclerView.setHasFixedSize(false)
-            content.recyclerView.clipToPadding = false
-            content.recyclerView.clipChildren = false
-            content.recyclerView.isNestedScrollingEnabled = false
-            content.recyclerView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
-            content.recyclerView.id = 0
-            content.setProgressBackgroundColorSchemeColor(0)
-            content.setColorSchemeColors(0)
             content.setEnabled(false)
             content.setOnRefreshListener(null)
             if (model.snapHelper != null) {
               model.snapHelper.attachToRecyclerView(null)
             }
-            content.recyclerView.isHorizontalFadingEdgeEnabled = false
-            content.recyclerView.isVerticalFadingEdgeEnabled = false
-            content.recyclerView.setFadingEdgeLength(0)
-            content.recyclerView.overScrollMode = View.OVER_SCROLL_ALWAYS
             model.recyclerEventsController?.setSectionsRecyclerView(null)
-            content.resetItemAnimator()
             if (model.onScrollListeners.isNotEmpty()) {
               for (onScrollListener in model.onScrollListeners) {
                 onScrollListener?.let { content.recyclerView.removeOnScrollListener(it) }
@@ -245,6 +212,87 @@ internal class ExperimentalRecyclerMountable(
             model.onItemTouchListener?.let {
               content.recyclerView.removeOnItemTouchListener(model.onItemTouchListener)
             }
+          }
+        }
+
+    private val CONSTANT_PROPS_MOUNT_BINDER:
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+          override fun shouldUpdate(
+              currentModel: ExperimentalRecyclerMountable,
+              newModel: ExperimentalRecyclerMountable,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?
+          ): Boolean =
+              currentModel.hasFixedSize != newModel.hasFixedSize &&
+                  currentModel.contentDescription != newModel.contentDescription &&
+                  currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
+                  currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
+                  currentModel.scrollBarStyle != newModel.scrollBarStyle &&
+                  currentModel.refreshProgressBarBackgroundColor !=
+                      newModel.refreshProgressBarBackgroundColor &&
+                  currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
+                  currentModel.isHorizontalFadingEdgeEnabled !=
+                      newModel.isHorizontalFadingEdgeEnabled &&
+                  currentModel.isVerticalFadingEdgeEnabled !=
+                      newModel.isVerticalFadingEdgeEnabled &&
+                  currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
+                  currentModel.itemAnimator != newModel.itemAnimator &&
+                  currentModel.overScrollMode != newModel.overScrollMode
+
+          override fun bind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            with(model) {
+              contentDescription?.let { content.contentDescription = contentDescription }
+              content.recyclerView.setHasFixedSize(hasFixedSize)
+              content.recyclerView.clipToPadding = isClipToPaddingEnabled
+              content.clipToPadding = isClipToPaddingEnabled
+              content.recyclerView.clipChildren = isClipChildrenEnabled
+              content.clipChildren = isClipChildrenEnabled
+              content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
+              content.isNestedScrollingEnabled = isNestedScrollingEnabled
+              content.recyclerView.scrollBarStyle = scrollBarStyle
+              content.recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
+              content.recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
+              content.recyclerView.setFadingEdgeLength(fadingEdgeLength)
+              content.recyclerView.id = recyclerViewId
+              content.recyclerView.overScrollMode = overScrollMode
+              if (refreshProgressBarBackgroundColor != null) {
+                content.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
+              }
+              content.setColorSchemeColors(refreshProgressBarColor)
+              content.setItemAnimator(
+                  if (itemAnimator != content.recyclerView.itemAnimator) itemAnimator
+                  else NoUpdateItemAnimator())
+            }
+          }
+
+          override fun unbind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            content.contentDescription = null
+            content.recyclerView.setHasFixedSize(false)
+            content.recyclerView.clipToPadding = false
+            content.clipToPadding = false
+            content.recyclerView.clipChildren = false
+            content.clipChildren = false
+            content.recyclerView.isNestedScrollingEnabled = false
+            content.recyclerView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+            content.recyclerView.id = 0
+            content.recyclerView.isHorizontalFadingEdgeEnabled = false
+            content.recyclerView.isVerticalFadingEdgeEnabled = false
+            content.recyclerView.setFadingEdgeLength(0)
+            content.setProgressBackgroundColorSchemeColor(0)
+            content.setColorSchemeColors(0)
+            content.recyclerView.overScrollMode = View.OVER_SCROLL_ALWAYS
+            content.resetItemAnimator()
           }
         }
 
@@ -276,7 +324,7 @@ internal class ExperimentalRecyclerMountable(
           }
         }
 
-    private val CONTENT_BINDER: Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> =
+    private val CONTENT_MOUNT_BINDER: Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> =
         object : Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> {
           override fun shouldUpdate(
               currentModel: LithoBinder<RecyclerView>,
@@ -303,14 +351,214 @@ internal class ExperimentalRecyclerMountable(
             binder.unmount(content.recyclerView)
           }
         }
+
+    private val CONTENT_ATTACH_BINDER: Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> =
+        object : Binder<LithoBinder<RecyclerView>, SectionsRecyclerView> {
+          override fun shouldUpdate(
+              currentModel: LithoBinder<RecyclerView>,
+              newModel: LithoBinder<RecyclerView>,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?
+          ): Boolean = true
+
+          override fun bind(
+              context: Context,
+              content: SectionsRecyclerView,
+              binder: LithoBinder<RecyclerView>,
+              layoutData: Any?
+          ) {
+            binder.bind(content.recyclerView)
+          }
+
+          override fun unbind(
+              context: Context,
+              content: SectionsRecyclerView,
+              binder: LithoBinder<RecyclerView>,
+              layoutData: Any?
+          ) {
+            binder.unbind(content.recyclerView)
+          }
+        }
+
+    private val MOUNT_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+          override fun shouldUpdate(
+              currentModel: ExperimentalRecyclerMountable,
+              newModel: ExperimentalRecyclerMountable,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?
+          ): Boolean =
+              currentModel.hasFixedSize != newModel.hasFixedSize &&
+                  currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
+                  currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
+                  currentModel.scrollBarStyle != newModel.scrollBarStyle &&
+                  currentModel.refreshProgressBarBackgroundColor !=
+                      newModel.refreshProgressBarBackgroundColor &&
+                  currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
+                  currentModel.isHorizontalFadingEdgeEnabled !=
+                      newModel.isHorizontalFadingEdgeEnabled &&
+                  currentModel.isVerticalFadingEdgeEnabled !=
+                      newModel.isVerticalFadingEdgeEnabled &&
+                  currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
+                  currentModel.itemAnimator != newModel.itemAnimator &&
+                  currentModel.contentDescription != newModel.contentDescription &&
+                  currentModel.isNestedScrollingEnabled != newModel.isNestedScrollingEnabled &&
+                  currentModel.contentDescription != newModel.contentDescription &&
+                  currentModel.recyclerViewId != newModel.recyclerViewId &&
+                  currentModel.overScrollMode != newModel.overScrollMode &&
+                  currentModel.itemDecoration != newModel.itemDecoration
+
+          override fun bind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            with(model) {
+              contentDescription?.let { content.contentDescription = contentDescription }
+              content.recyclerView.setHasFixedSize(hasFixedSize)
+              content.recyclerView.clipToPadding = isClipToPaddingEnabled
+              content.clipToPadding = isClipToPaddingEnabled
+              content.recyclerView.clipChildren = isClipChildrenEnabled
+              content.clipChildren = isClipChildrenEnabled
+              content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
+              content.isNestedScrollingEnabled = isNestedScrollingEnabled
+              content.recyclerView.scrollBarStyle = scrollBarStyle
+              content.recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
+              content.recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
+              content.recyclerView.setFadingEdgeLength(fadingEdgeLength)
+              content.recyclerView.id = recyclerViewId
+              content.recyclerView.overScrollMode = overScrollMode
+              if (refreshProgressBarBackgroundColor != null) {
+                content.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
+              }
+              content.setColorSchemeColors(refreshProgressBarColor)
+              itemDecoration?.let { content.recyclerView.addItemDecoration(it) }
+              content.setItemAnimator(
+                  if (itemAnimator != content.recyclerView.itemAnimator) itemAnimator
+                  else NoUpdateItemAnimator())
+              binder.mount(content.recyclerView)
+            }
+          }
+
+          override fun unbind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            content.recyclerView.id = 0
+            content.setProgressBackgroundColorSchemeColor(0)
+            model.itemDecoration?.let {
+              content.recyclerView.removeItemDecoration(model.itemDecoration)
+            }
+            model.binder.unmount(content.recyclerView)
+            if (model.snapHelper != null) {
+              model.snapHelper.attachToRecyclerView(null)
+            }
+            content.resetItemAnimator()
+          }
+        }
+
+    private val ATTACH_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+          override fun shouldUpdate(
+              currentModel: ExperimentalRecyclerMountable,
+              newModel: ExperimentalRecyclerMountable,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?
+          ): Boolean =
+              currentModel.sectionsViewLogger != newModel.sectionsViewLogger &&
+                  currentModel.contentDescription != newModel.contentDescription &&
+                  currentModel.isPullToRefreshEnabled != newModel.isPullToRefreshEnabled &&
+                  currentModel.onScrollListeners != newModel.onScrollListeners &&
+                  currentModel.touchInterceptor != newModel.touchInterceptor &&
+                  currentModel.onItemTouchListener != newModel.onItemTouchListener &&
+                  currentModel.snapHelper != newModel.snapHelper &&
+                  currentModel.binder != newModel.binder &&
+                  currentModel.recyclerEventsController != newModel.recyclerEventsController
+
+          override fun bind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            with(model) {
+              sectionsViewLogger?.let { content.setSectionsRecyclerViewLogger(sectionsViewLogger) }
+              content.contentDescription = null
+              content.setEnabled(isPullToRefreshEnabled && onRefresh != null)
+              content.setOnRefreshListener(
+                  if (onRefresh != null) SwipeRefreshLayout.OnRefreshListener { onRefresh.invoke() }
+                  else null)
+              if (onScrollListeners.isNotEmpty()) {
+                for (onScrollListener in onScrollListeners) {
+                  onScrollListener?.let { content.recyclerView.addOnScrollListener(it) }
+                }
+              }
+              touchInterceptor?.let {
+                (content.recyclerView as LithoRecyclerView).setTouchInterceptor(touchInterceptor)
+              }
+              onItemTouchListener?.let {
+                content.recyclerView.addOnItemTouchListener(onItemTouchListener)
+              }
+              // attached twice which causes SnapHelper to raise an exception.
+              if (snapHelper != null && content.recyclerView.getOnFlingListener() == null) {
+                snapHelper.attachToRecyclerView(content.recyclerView)
+              }
+              binder.bind(content.recyclerView)
+              recyclerEventsController?.setSectionsRecyclerView(content)
+              if (content.hasBeenDetachedFromWindow()) {
+                content.recyclerView.requestLayout()
+                content.setHasBeenDetachedFromWindow(false)
+              }
+            }
+          }
+
+          override fun unbind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            content.setSectionsRecyclerViewLogger(null)
+            model.binder.unbind(content.recyclerView)
+            model.recyclerEventsController?.setSectionsRecyclerView(null)
+            if (model.onScrollListeners.isNotEmpty()) {
+              for (onScrollListener in model.onScrollListeners) {
+                onScrollListener?.let { content.recyclerView.removeOnScrollListener(it) }
+              }
+            }
+            model.onItemTouchListener?.let {
+              content.recyclerView.removeOnItemTouchListener(model.onItemTouchListener)
+            }
+            model.touchInterceptor?.let {
+              (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
+            }
+            content.setOnRefreshListener(null)
+          }
+        }
   }
 
   init {
-    addMountBinders(
-        DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER),
-        DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_BINDER),
-        DelegateBinder.createDelegateBinder(binder, CONTENT_BINDER),
-    )
+    if (useTwoBindersRecycler) {
+      addMountBinders(
+          DelegateBinder.createDelegateBinder(this, MOUNT_BINDER),
+      )
+      addAttachBinder(
+          DelegateBinder.createDelegateBinder(this, ATTACH_BINDER),
+      )
+    } else {
+      addMountBinders(
+          DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER),
+          DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER),
+          DelegateBinder.createDelegateBinder(binder, CONTENT_MOUNT_BINDER),
+      )
+      addAttachBinders(
+          DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_ATTACH_BINDER),
+          DelegateBinder.createDelegateBinder(binder, CONTENT_ATTACH_BINDER),
+      )
+    }
   }
   override fun measure(
       context: RenderState.LayoutContext<*>,

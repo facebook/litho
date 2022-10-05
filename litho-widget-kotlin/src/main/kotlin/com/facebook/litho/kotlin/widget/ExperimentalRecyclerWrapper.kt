@@ -55,6 +55,7 @@ fun ExperimentalRecyclerWrapper(
     onItemTouchListener: RecyclerView.OnItemTouchListener? = null,
     onRefresh: (() -> Unit)? = null,
     sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger? = null,
+    useTwoBindersRecycler: Boolean = false,
     style: Style? = null
 ): ExperimentalRecycler =
     ExperimentalRecycler(
@@ -82,4 +83,5 @@ fun ExperimentalRecyclerWrapper(
         onItemTouchListener = onItemTouchListener,
         onRefresh = onRefresh,
         sectionsViewLogger = sectionsViewLogger,
+        useTwoBindersRecycler = useTwoBindersRecycler,
         style = style)
