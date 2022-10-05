@@ -20,7 +20,7 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.Icon;
 
 public interface LithoPluginIcons {
-  Icon BASE_ACTION = IconLoader.getIcon("/icons/lithoLogo.svg");
-  Icon TOOLWINDOW = IconLoader.getIcon("/icons/toolwindow.svg");
-  Icon ERROR_ACTION = IconLoader.getIcon("/icons/lithoErrorLogo.svg");
+  Icon BASE_ACTION = IconLoader.getIcon("/icons/lithoLogo.svg", LithoPluginIcons.class);
+  Icon TOOLWINDOW = IconLoader.getIcon("/icons/toolwindow.svg", LithoPluginIcons.class);
+  Icon ERROR_ACTION = IconLoader.getIcon("/icons/lithoErrorLogo.svg", LithoPluginIcons.class);
 }
