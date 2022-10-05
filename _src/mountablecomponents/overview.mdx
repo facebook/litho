@@ -3,17 +3,17 @@ id: overview
 title: Overview
 ---
 
-In this section you can find information about Mountable Components, which are a replacement for the old Java Specs API-based [Mount Specs](codegen/mount-specs.md) - components that can render views or drawables.
+Mountable Components are used to render views or drawables and are a replacement for the old Java Specs API-based [Mount Specs](../codegen/mount-specs.md).
 
 Mountable Components should only be created when you need to integrate your own views/drawables with Litho. Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a 'View' or a 'Drawable') to be displayed.
 
-The following pages provide additional information:
+The Mountable Components section contains the following pages:
 
-* [Mountable Component](mountable-component.mdx) - how to create a Component responsible for rendering a View or Drawable.
-* [Mountable](mountable.mdx) - the object responsible for hosting the logic to create, measure, and bind the content the Mountable Component will render.
-* [Measuring](mountable-measuring.mdx) - learn different strategies to measure the content the Mountable Component will render.
-* [Accessibility](accessibility.mdx) - how to implement [A11Y](https://www.a11yproject.com/) for your Mountable Components.
-* [Dynamic Values](mountable-bindto.mdx) - how to use props that are updated without computing a layout or remounting.
-* [Controllers](mountable-controllers.mdx) - the pattern used to control the content from outside the Component (typically from an ancestor).
-* [Content pooling](overview.mdx) - a performance optimisation strategy that can be used to populate the content pools to improve first mount performance.
-* Advanced: [RenderCore](introduction-to-rendercore.mdx) - overview of the engine responsible for rendering Mountable Components.
+* [Creating a Mountable Component](mountable-component.mdx) - details how to create a Component responsible for rendering a View or Drawable. Also, compares Mountable Components with KComponents.
+* [Mountable](mountable.mdx) - covers the purpose and creation of a Mountable in addition to how to create and bind its content.
+* [Measuring](mountable-measuring.mdx) - shows different strategies to measure the content the Mountable Component will render.
+* [Accessibility](accessibility.mdx) - explains why accessibility is importanta and how to implement accessibility features, and lists the supported accessibility events of the `Style` object.
+* [BindTo - Dynamic Values API](mountable-bindto.mdx) - illustrates the use of the BindTo API by implementing a simple `ImageViewComponent` with specific properties, which are animated based on the values of a `SeekBar`.
+* [Controllers Pattern](mountable-controllers.mdx) - illustrates the use of controllers by implementing a simple TimePicker that shows an arbitrary time.
+* [Content Pooling](overview.mdx) - details a strategy that can be used to populate the content pools to optimise first mount performance.
+* [Introduction to RenderCore](introduction-to-rendercore.mdx) - introduces the engine responsible for rendering Mountable Components.
