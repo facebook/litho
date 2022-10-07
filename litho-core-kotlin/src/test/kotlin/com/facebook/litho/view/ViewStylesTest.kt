@@ -41,7 +41,7 @@ import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import java.util.concurrent.atomic.AtomicBoolean
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -119,6 +119,64 @@ class ViewStylesTest {
         .attachToWindow()
 
     assertThat(lithoViewRule.lithoView.clipChildren).isFalse
+  }
+
+  @Test
+  fun `duplicateChildrenStates - when set to true enables node to duplicate children states`() {
+    class DuplicateChildrenStatesComponent : KComponent() {
+      override fun ComponentScope.render(): Component? =
+          Row(style = Style.width(200.px).height(200.px).duplicateChildrenStates(true)) {
+            child(Row(style = Style.width(100.px).height(100.px)))
+          }
+    }
+
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
+    assertThat(node?.isDuplicateChildrenStatesEnabled).isTrue
+  }
+
+  @Test
+  fun `duplicateChildrenStates - when set to false disables node from duplicating children states`() {
+    class DuplicateChildrenStatesComponent : KComponent() {
+      override fun ComponentScope.render(): Component? =
+          Row(style = Style.width(200.px).height(200.px).duplicateChildrenStates(false)) {
+            child(Row(style = Style.width(100.px).height(100.px)))
+          }
+    }
+
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateChildrenStatesComponent())?.node
+    assertThat(node?.isDuplicateChildrenStatesEnabled).isFalse
+  }
+
+  @Test
+  fun `duplicateParentState - when set to true sets node enabled to duplicate parent state`() {
+    class DuplicateParentStateComponent : KComponent() {
+      override fun ComponentScope.render(): Component? =
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(Row(style = Style.width(100.px).height(100.px).duplicateParentState(true)))
+          }
+    }
+
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
+    val childNode = node?.getChildAt(0)
+    assertThat(childNode?.isDuplicateParentStateEnabled).isTrue
+  }
+
+  @Test
+  fun `duplicateParentState - when set to false sets node disabled from duplicating parent state`() {
+    class DuplicateParentStateComponent : KComponent() {
+      override fun ComponentScope.render(): Component? =
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(Row(style = Style.width(100.px).height(100.px).duplicateParentState(false)))
+          }
+    }
+
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, DuplicateParentStateComponent())?.node
+    val childNode = node?.getChildAt(0)
+    assertThat(childNode?.isDuplicateParentStateEnabled).isFalse
   }
 
   @Test

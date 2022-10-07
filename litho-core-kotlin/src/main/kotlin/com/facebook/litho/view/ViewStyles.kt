@@ -46,6 +46,8 @@ internal enum class ObjectField {
   CLICKABLE,
   CLIP_CHILDREN,
   CLIP_TO_OUTLINE,
+  DUPLICATE_CHILDREN_STATES,
+  DUPLICATE_PARENT_STATE,
   FOCUSABLE,
   FOREGROUND,
   ON_CLICK,
@@ -98,6 +100,8 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.CLICKABLE -> commonProps.clickable(value as Boolean)
       ObjectField.CLIP_CHILDREN -> commonProps.clipChildren(value as Boolean)
       ObjectField.CLIP_TO_OUTLINE -> commonProps.clipToOutline(value as Boolean)
+      ObjectField.DUPLICATE_CHILDREN_STATES -> commonProps.duplicateChildrenStates(value as Boolean)
+      ObjectField.DUPLICATE_PARENT_STATE -> commonProps.duplicateParentState(value as Boolean)
       ObjectField.FOCUSABLE -> commonProps.focusable(value as Boolean)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
       ObjectField.ON_CLICK -> {
@@ -237,6 +241,27 @@ inline fun Style.clipChildren(clipChildren: Boolean): Style =
  */
 inline fun Style.clipToOutline(clipToOutline: Boolean): Style =
     this + ObjectStyleItem(ObjectField.CLIP_TO_OUTLINE, clipToOutline)
+
+/**
+ * Sets whether this ViewGroup's drawable states also include its children's drawable states. This
+ * is used, for example, to make a group appear to be focused when its child EditText or button is
+ * focused. Setting this property will cause the Component to be represented as a View at mount time
+ * if it wasn't going to already.
+ *
+ * See [android.view.ViewGroup.setAddStatesFromChildren]
+ */
+inline fun Style.duplicateChildrenStates(duplicateChildrenStates: Boolean): Style =
+    this + ObjectStyleItem(ObjectField.DUPLICATE_CHILDREN_STATES, duplicateChildrenStates)
+
+/**
+ * Sets whether the View gets its drawable state (focused, pressed, etc.) from its direct parent
+ * rather than from itself. Setting this property will cause the Component to be represented as a
+ * View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setDuplicateParentStateEnabled]
+ */
+inline fun Style.duplicateParentState(duplicateParentState: Boolean): Style =
+    this + ObjectStyleItem(ObjectField.DUPLICATE_PARENT_STATE, duplicateParentState)
 
 /**
  * Sets an elevation on the View this Component mounts to. Setting this property will cause the
