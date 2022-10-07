@@ -288,6 +288,12 @@ class Layout {
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
         PrepareResult prepareResult =
             component.prepare(renderStateContext, scopedComponentInfo.getContext());
+
+        if (isMountable(component) && prepareResult == null) {
+          throw new RuntimeException(
+              "PrepareResult is null for a MountableComponent in Layout.create()");
+        }
+
         if (prepareResult != null) {
           node.setMountable(prepareResult.mountable);
         }
