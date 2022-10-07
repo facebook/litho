@@ -187,7 +187,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
   public static LithoView create(Context context, Component component) {
-    return create(context, component, null);
+    final LithoView lithoView = new LithoView(context);
+    lithoView.setComponentTree(
+        ComponentTree.create(new ComponentContext(context), component).build());
+    return lithoView;
   }
 
   public static LithoView create(
@@ -226,7 +229,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
   public static LithoView create(ComponentContext context, Component component) {
-    return create(context, component, null);
+    final LithoView lithoView = new LithoView(context);
+    lithoView.setComponentTree(ComponentTree.create(context, component).build());
+    return lithoView;
   }
 
   /**
@@ -234,14 +239,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * the given LithoLifecycleProvider instance.
    */
   public static LithoView create(
-      ComponentContext context,
-      Component component,
-      @Nullable LithoLifecycleProvider lifecycleProvider) {
+      ComponentContext context, Component component, LithoLifecycleProvider lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
     lithoView.setComponentTree(ComponentTree.create(context, component, lifecycleProvider).build());
     return lithoView;
   }
-
   /**
    * Create a new {@link LithoView} instance and initialize it with a custom {@link ComponentTree}.
    */
