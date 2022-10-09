@@ -245,7 +245,7 @@ public class ComponentContext implements Cloneable {
     }
 
     final RenderStateContext renderStateContext =
-        new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null);
+        new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null);
     setRenderStateContext(renderStateContext);
 
     return renderStateContext;

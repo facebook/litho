@@ -148,6 +148,7 @@ class Layout {
               layoutStateContext.getCache(),
               layoutStateContext.getTreeState(),
               layoutStateContext.getLayoutVersion(),
+              null,
               null);
 
       parentContext.setRenderStateContext(nestedRsc);

@@ -24,23 +24,28 @@ import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class RenderStateContext implements CalculationStateContext {
-  private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
+
+  private final int mLayoutVersion;
+  private final MeasuredResultCache mCache;
 
   private boolean mIsInterruptible = true;
   private @Nullable TreeState mTreeState;
-  private final MeasuredResultCache mCache;
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
-  private final int mLayoutVersion;
+
+  private final @Nullable LithoNode mCurrentRoot;
+  private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
 
   RenderStateContext(
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,
-      final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+      final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
+      final @Nullable LithoNode currentRoot) {
     mCache = cache;
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
     mLayoutStateFuture = layoutStateFuture;
+    mCurrentRoot = currentRoot;
   }
 
   @Override
@@ -108,6 +113,10 @@ public class RenderStateContext implements CalculationStateContext {
     }
 
     return mTreeState;
+  }
+
+  public @Nullable LithoNode getCurrentRoot() {
+    return mCurrentRoot;
   }
 
   @Override

@@ -2263,7 +2263,7 @@ public class LayoutStateCalculateTest {
     int heightSpec = makeSizeSpec(height, AT_MOST);
 
     final @Nullable ResolvedTree resolvedTree =
-        ResolvedTree.createResolvedTree(renderStateContext, c, component, null, null);
+        ResolvedTree.createResolvedTree(renderStateContext, c, component, null);
 
     c.clearCalculationStateContext();
 

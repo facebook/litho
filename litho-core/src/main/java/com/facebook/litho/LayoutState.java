@@ -1168,13 +1168,13 @@ public class LayoutState
 
       final RenderStateContext rsc =
           new RenderStateContext(
-              new MeasuredResultCache(), treeState, layoutVersion, layoutStateFuture);
+              new MeasuredResultCache(), treeState, layoutVersion, layoutStateFuture, currentRoot);
 
       c.setRenderStateContext(rsc);
 
       // 1. Resolve Tree
       final @Nullable ResolvedTree resolvedTree =
-          ResolvedTree.createResolvedTree(rsc, c, component, currentRoot, logLayoutState);
+          ResolvedTree.createResolvedTree(rsc, c, component, logLayoutState);
       final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
       c.clearCalculationStateContext();
