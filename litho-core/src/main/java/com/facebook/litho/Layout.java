@@ -25,6 +25,7 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.unspecified;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -52,8 +53,6 @@ class Layout {
       final RenderStateContext renderStateContext,
       final ComponentContext c,
       final Component component,
-      final int widthSpec,
-      final int heightSpec,
       final @Nullable LithoNode current,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
@@ -75,7 +74,7 @@ class Layout {
 
     final @Nullable LithoNode node;
     if (!isReconcilable) {
-      node = create(renderStateContext, c, widthSpec, heightSpec, component, false, null);
+      node = create(renderStateContext, c, unspecified(), unspecified(), component, false, null);
 
       // This needs to finish layout on the UI thread.
       if (node != null && renderStateContext.isLayoutInterrupted()) {

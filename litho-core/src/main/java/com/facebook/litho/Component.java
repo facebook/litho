@@ -679,7 +679,7 @@ public abstract class Component
           c.setRenderStateContext(nestedRsc);
 
           final @Nullable ResolvedTree resolvedTree =
-              Layout.createResolvedTree(nestedRsc, c, this, widthSpec, heightSpec, null, null);
+              Layout.createResolvedTree(nestedRsc, c, this, null, null);
 
           node = resolvedTree == null ? null : resolvedTree.getRoot();
         }

@@ -1174,8 +1174,7 @@ public class LayoutState
 
       // 1. Resolve Tree
       final @Nullable ResolvedTree resolvedTree =
-          Layout.createResolvedTree(
-              rsc, c, component, widthSpec, heightSpec, currentRoot, logLayoutState);
+          Layout.createResolvedTree(rsc, c, component, currentRoot, logLayoutState);
       final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
 
       c.clearCalculationStateContext();
