@@ -39,17 +39,8 @@ public class ResolvedTree {
   private static final String EVENT_END_CREATE_LAYOUT = "end_create_layout";
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
-  private LithoNode root;
 
-  public ResolvedTree(LithoNode root) {
-    this.root = root;
-  }
-
-  public LithoNode getRoot() {
-    return root;
-  }
-
-  static @Nullable ResolvedTree createResolvedTree(
+  static @Nullable LithoNode createResolvedTree(
       final RenderStateContext renderStateContext,
       final ComponentContext c,
       final Component component) {
@@ -83,7 +74,7 @@ public class ResolvedTree {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
 
-        return new ResolvedTree(node);
+        return node;
       } else {
         // Layout is complete, disable interruption from this point on.
         renderStateContext.markLayoutUninterruptible();
@@ -112,7 +103,7 @@ public class ResolvedTree {
       layoutStatePerfEvent.markerPoint(event);
     }
 
-    return node == null ? null : new ResolvedTree(node);
+    return node;
   }
 
   public @Nullable static LithoNode resolve(
@@ -321,26 +312,22 @@ public class ResolvedTree {
     return node;
   }
 
-  static ResolvedTree resumeResolvingTree(
+  static LithoNode resumeResolvingTree(
       final RenderStateContext renderStateContext, final LithoNode root) {
-    resume(renderStateContext, root);
-    return new ResolvedTree(root);
-  }
-
-  private static void resume(final RenderStateContext c, final LithoNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
       final ComponentContext context = root.getTailComponentContext();
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(c, context, unresolved.get(i));
+        root.child(renderStateContext, context, unresolved.get(i));
       }
       unresolved.clear();
     }
 
     for (int i = 0, size = root.getChildCount(); i < size; i++) {
-      resume(c, root.getChildAt(i));
+      resumeResolvingTree(renderStateContext, root.getChildAt(i));
     }
+    return root;
   }
 
   static ComponentContext createScopedContext(

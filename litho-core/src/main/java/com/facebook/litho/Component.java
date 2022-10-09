@@ -678,10 +678,7 @@ public abstract class Component
               new RenderStateContext(resultCache, treeState, layoutVersion, null, null, null);
           c.setRenderStateContext(nestedRsc);
 
-          final @Nullable ResolvedTree resolvedTree =
-              ResolvedTree.createResolvedTree(nestedRsc, c, this);
-
-          node = resolvedTree == null ? null : resolvedTree.getRoot();
+          node = ResolvedTree.createResolvedTree(nestedRsc, c, this);
         }
 
         if (mainRsc != null && mainRsc.isLayoutInterrupted() && node != null) {

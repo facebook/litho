@@ -1178,9 +1178,7 @@ public class LayoutState
       c.setRenderStateContext(rsc);
 
       // 1. Resolve Tree
-      final @Nullable ResolvedTree resolvedTree =
-          ResolvedTree.createResolvedTree(rsc, c, component);
-      final @Nullable LithoNode node = resolvedTree == null ? null : resolvedTree.getRoot();
+      final @Nullable LithoNode node = ResolvedTree.createResolvedTree(rsc, c, component);
 
       c.clearCalculationStateContext();
 
@@ -1333,10 +1331,7 @@ public class LayoutState
       try {
         c.setRenderStateContext(partialRsc);
 
-        final ResolvedTree resolvedTree =
-            ResolvedTree.resumeResolvingTree(partialRsc, partialResolvedRoot);
-
-        layoutState.mRoot = resolvedTree.getRoot();
+        layoutState.mRoot = ResolvedTree.resumeResolvingTree(partialRsc, partialResolvedRoot);
 
         partialRsc.getCache().freezeCache();
 
@@ -1356,7 +1351,7 @@ public class LayoutState
             Layout.measureTree(
                 lsc,
                 c.getAndroidContext(),
-                resolvedTree.getRoot(),
+                layoutState.mRoot,
                 widthSpec,
                 heightSpec,
                 logLayoutState);
