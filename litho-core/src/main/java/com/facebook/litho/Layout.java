@@ -115,82 +115,6 @@ class Layout {
     return node == null ? null : new ResolvedTree(node);
   }
 
-  static boolean isReconcilable(
-      final ComponentContext c,
-      final Component nextRootComponent,
-      final TreeState treeState,
-      final @Nullable LithoNode currentLayoutResult) {
-
-    if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
-      return false;
-    }
-
-    if (!treeState.hasUncommittedUpdates()) {
-      return false;
-    }
-
-    final Component currentRootComponent = currentLayoutResult.getHeadComponent();
-
-    if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
-      return false;
-    }
-
-    if (!ComponentUtils.isSameComponentType(currentRootComponent, nextRootComponent)) {
-      return false;
-    }
-
-    return ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent);
-  }
-
-  static @Nullable LithoLayoutResult measureTree(
-      final LayoutStateContext layoutStateContext,
-      final Context androidContext,
-      final @Nullable LithoNode node,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable PerfEvent layoutStatePerfEvent) {
-    if (node == null) {
-      return null;
-    }
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("start_measure");
-    }
-
-    final LithoLayoutResult result;
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
-    }
-
-    final LayoutContext<LithoRenderContext> context =
-        new LayoutContext<>(
-            androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
-
-    result = node.calculateLayout(context, widthSpec, heightSpec);
-
-    if (isTracing) {
-      ComponentsSystrace.endSection(/* measureTree */ );
-    }
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("end_measure");
-    }
-
-    return result;
-  }
-
-  private static void applyStateUpdateEarly(
-      final RenderStateContext renderStateContext,
-      final ComponentContext c,
-      final Component component,
-      final @Nullable LithoNode current) {
-    if (c.isApplyStateUpdateEarlyEnabled() && c.getComponentTree() != null) {
-      renderStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
-    }
-  }
-
   public @Nullable static LithoNode resolve(
       final RenderStateContext renderStateContext,
       final ComponentContext parent,
@@ -397,6 +321,150 @@ class Layout {
     return node;
   }
 
+  static ResolvedTree resumeResolvingTree(
+      final RenderStateContext renderStateContext, final LithoNode root) {
+    resume(renderStateContext, root);
+    return new ResolvedTree(root);
+  }
+
+  private static void resume(final RenderStateContext c, final LithoNode root) {
+    final List<Component> unresolved = root.getUnresolvedComponents();
+
+    if (unresolved != null) {
+      final ComponentContext context = root.getTailComponentContext();
+      for (int i = 0, size = unresolved.size(); i < size; i++) {
+        root.child(c, context, unresolved.get(i));
+      }
+      unresolved.clear();
+    }
+
+    for (int i = 0, size = root.getChildCount(); i < size; i++) {
+      resume(c, root.getChildAt(i));
+    }
+  }
+
+  static ComponentContext createScopedContext(
+      final RenderStateContext renderStateContext,
+      final ComponentContext parent,
+      final Component component,
+      @Nullable final String globalKeyToReuse) {
+
+    // 1. Update the internal state of the component wrt the parent.
+    // 2. Get the scoped context from the updated component.
+    final ComponentContext c =
+        ComponentContext.withComponentScope(
+            parent,
+            component,
+            globalKeyToReuse == null
+                ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
+                : globalKeyToReuse);
+    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
+
+    // 3. Set the TreeProps which will be passed to the descendants of the component.
+    if (component instanceof SpecGeneratedComponent) {
+      final TreeProps ancestor = parent.getTreeProps();
+      final TreeProps descendants =
+          ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);
+      c.setParentTreeProps(ancestor);
+      c.setTreeProps(descendants);
+    }
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(c, component, c.getGlobalKey());
+    }
+
+    return c;
+  }
+
+  private static void applyStateUpdateEarly(
+      final RenderStateContext renderStateContext,
+      final ComponentContext c,
+      final Component component,
+      final @Nullable LithoNode current) {
+    if (c.isApplyStateUpdateEarlyEnabled() && c.getComponentTree() != null) {
+      renderStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
+    }
+  }
+
+  static void applyRenderResultToNode(RenderResult renderResult, LithoNode node) {
+    if (renderResult.transitions != null) {
+      for (Transition t : renderResult.transitions) {
+        node.addTransition(t);
+      }
+    }
+    if (renderResult.useEffectEntries != null) {
+      for (Attachable attachable : renderResult.useEffectEntries) {
+        node.addAttachable(attachable);
+      }
+    }
+  }
+
+  static boolean isReconcilable(
+      final ComponentContext c,
+      final Component nextRootComponent,
+      final TreeState treeState,
+      final @Nullable LithoNode currentLayoutResult) {
+
+    if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
+      return false;
+    }
+
+    if (!treeState.hasUncommittedUpdates()) {
+      return false;
+    }
+
+    final Component currentRootComponent = currentLayoutResult.getHeadComponent();
+
+    if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
+      return false;
+    }
+
+    if (!ComponentUtils.isSameComponentType(currentRootComponent, nextRootComponent)) {
+      return false;
+    }
+
+    return ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent);
+  }
+
+  static @Nullable LithoLayoutResult measureTree(
+      final LayoutStateContext layoutStateContext,
+      final Context androidContext,
+      final @Nullable LithoNode node,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable PerfEvent layoutStatePerfEvent) {
+    if (node == null) {
+      return null;
+    }
+
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("start_measure");
+    }
+
+    final LithoLayoutResult result;
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
+    }
+
+    final LayoutContext<LithoRenderContext> context =
+        new LayoutContext<>(
+            androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
+
+    result = node.calculateLayout(context, widthSpec, heightSpec);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection(/* measureTree */ );
+    }
+
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("end_measure");
+    }
+
+    return result;
+  }
+
   private static @Nullable LithoLayoutResult measureNestedTree(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
@@ -545,74 +613,6 @@ class Layout {
     }
 
     return layout;
-  }
-
-  static void applyRenderResultToNode(RenderResult renderResult, LithoNode node) {
-    if (renderResult.transitions != null) {
-      for (Transition t : renderResult.transitions) {
-        node.addTransition(t);
-      }
-    }
-    if (renderResult.useEffectEntries != null) {
-      for (Attachable attachable : renderResult.useEffectEntries) {
-        node.addAttachable(attachable);
-      }
-    }
-  }
-
-  static ComponentContext createScopedContext(
-      final RenderStateContext renderStateContext,
-      final ComponentContext parent,
-      final Component component,
-      @Nullable final String globalKeyToReuse) {
-
-    // 1. Update the internal state of the component wrt the parent.
-    // 2. Get the scoped context from the updated component.
-    final ComponentContext c =
-        ComponentContext.withComponentScope(
-            parent,
-            component,
-            globalKeyToReuse == null
-                ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
-                : globalKeyToReuse);
-    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
-
-    // 3. Set the TreeProps which will be passed to the descendants of the component.
-    if (component instanceof SpecGeneratedComponent) {
-      final TreeProps ancestor = parent.getTreeProps();
-      final TreeProps descendants =
-          ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);
-      c.setParentTreeProps(ancestor);
-      c.setTreeProps(descendants);
-    }
-
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(c, component, c.getGlobalKey());
-    }
-
-    return c;
-  }
-
-  static ResolvedTree resumeResolvingTree(
-      final RenderStateContext renderStateContext, final LithoNode root) {
-    resume(renderStateContext, root);
-    return new ResolvedTree(root);
-  }
-
-  private static void resume(final RenderStateContext c, final LithoNode root) {
-    final List<Component> unresolved = root.getUnresolvedComponents();
-
-    if (unresolved != null) {
-      final ComponentContext context = root.getTailComponentContext();
-      for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(c, context, unresolved.get(i));
-      }
-      unresolved.clear();
-    }
-
-    for (int i = 0, size = root.getChildCount(); i < size; i++) {
-      resume(c, root.getChildAt(i));
-    }
   }
 
   @Nullable
