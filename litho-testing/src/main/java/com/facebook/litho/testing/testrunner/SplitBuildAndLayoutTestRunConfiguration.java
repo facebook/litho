@@ -21,8 +21,6 @@ import org.junit.runners.model.FrameworkMethod;
 
 public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConfiguration {
 
-  private final boolean defaultShouldAlwaysResolveNestedTreeInMeasure =
-      ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure;
   private final boolean defaultIsSplitStateHandlersEnabled =
       ComponentsConfiguration.isSplitStateHandlersEnabled;
   private final boolean defaultApplyStateUpdateEarly =
@@ -32,16 +30,14 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
 
   @Override
   public void beforeTest(FrameworkMethod method) {
-    ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure = true;
-    ComponentsConfiguration.isSplitStateHandlersEnabled = true;
-    ComponentsConfiguration.applyStateUpdateEarly = true;
-    ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure = true;
+    ComponentsConfiguration.isSplitStateHandlersEnabled = !defaultIsSplitStateHandlersEnabled;
+    ComponentsConfiguration.applyStateUpdateEarly = !defaultApplyStateUpdateEarly;
+    ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
+        !defaultReuseLastMeasuredNodeInComponentMeasure;
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure =
-        defaultShouldAlwaysResolveNestedTreeInMeasure;
     ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStateUpdateEarly;
     ComponentsConfiguration.isSplitStateHandlersEnabled = defaultIsSplitStateHandlersEnabled;
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =

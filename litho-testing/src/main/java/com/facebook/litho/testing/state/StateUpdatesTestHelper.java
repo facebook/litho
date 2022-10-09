@@ -16,6 +16,8 @@
 
 package com.facebook.litho.testing.state;
 
+import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
+
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -183,6 +185,9 @@ public final class StateUpdatesTestHelper {
     Whitebox.setInternalState(context, "mGlobalKey", "$bogusKeyForTest");
     Whitebox.setInternalState(context, "mComponentScope", component);
     Whitebox.setInternalState(context, "mComponentTree", componentTree);
+    if (isLayoutSpecWithSizeSpec(component)) {
+      Whitebox.setInternalState(context, "isNestedTreeContext", true);
+    }
 
     final LithoViewTestHelper.InternalNodeRef rootLayoutNode =
         LithoViewTestHelper.getRootLayoutRef(lithoView);

@@ -35,7 +35,6 @@ import static com.facebook.litho.LifecycleStep.SHOULD_UPDATE;
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stateupdates.BaseIncrementStateCaller;
 import com.facebook.litho.stateupdates.ComponentWithMeasureCallAndState;
 import com.facebook.litho.stateupdates.ComponentWithMeasureCallAndStateSpec;
@@ -234,22 +233,14 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCLWSS_OCL_OCL() {
     final LifecycleStep[] rootStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     // Mid and bot steps will be the same pre update
     final LifecycleStep[] expectedStepsForMidAndBotPreUpdate =
@@ -334,146 +325,63 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCL_OCLWSS_OCL() {
     final LifecycleStep[] midStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
     final LifecycleStep[] botStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_ATTACHED
+        };
     final LifecycleStep[] mountSpecStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          ON_ATTACHED,
+          ON_CREATE_MOUNT_CONTENT,
+          ON_MOUNT,
+          ON_BIND
+        };
     final LifecycleStep[] midStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
     final LifecycleStep[] botStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
+        };
     final LifecycleStep[] mountSpecStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          SHOULD_UPDATE,
+          ON_UNBIND,
+          ON_UNMOUNT,
+          ON_MOUNT,
+          ON_BIND
+        };
     final LifecycleStep[] rootStepsForUpdate2And3 = new LifecycleStep[] {ON_CREATE_TREE_PROP};
     final LifecycleStep[] midStepsForUpdate2And3 =
         new LifecycleStep[] {
@@ -538,65 +446,37 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCL_OCL_OCLWSS() {
     final LifecycleStep[] botStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
     final LifecycleStep[] botStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
 
     final LifecycleStep[] botStepsForUpdate2 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_DETACHED,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_DETACHED,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_DETACHED,
+          ON_ATTACHED
+        };
 
     // Testing OCL -> OCL -> OCLWSS
     TestHierarchyBuilder.create(this, true, true, false)
@@ -719,106 +599,51 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCLWSS_OCLWSS_OCL() {
     final LifecycleStep[] rootStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] midStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] botStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] mountSpecStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          ON_ATTACHED,
+          ON_CREATE_MOUNT_CONTENT,
+          ON_MOUNT,
+          ON_BIND
+        };
 
     // Root steps will be the same for all updates
     final LifecycleStep[] expectedStepsForRootAllUpdates =
@@ -832,69 +657,33 @@ public class NestedTreeResolutionWithStateTest {
 
     // Mid steps will be the same for all updates
     final LifecycleStep[] expectedStepsForMidAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
 
     // Bot steps will be the same for all updates
     final LifecycleStep[] expectedStepsForBotAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP, ON_CALCULATE_CACHED_VALUE, ON_CREATE_LAYOUT, ON_CREATE_TREE_PROP
+        };
 
     // MountSpec steps will be the same for all updates
     final LifecycleStep[] expectedStepsForMountSpecAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          SHOULD_UPDATE,
+          ON_UNBIND,
+          ON_UNMOUNT,
+          ON_MOUNT,
+          ON_BIND
+        };
 
     // Testing OCLWSS -> OCLWSS -> OCL
     TestHierarchyBuilder.create(this, false, false, true)
@@ -925,44 +714,26 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCLWSS_OCL_OCLWSS() {
     final LifecycleStep[] rootStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] botStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs & OCISs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs & OCISs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] mountSpecStepsPreUpdate =
         new LifecycleStep[] {
@@ -996,20 +767,13 @@ public class NestedTreeResolutionWithStateTest {
 
     // Bot steps will be the same for all updates
     final LifecycleStep[] expectedStepsForBotAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
 
     // MountSpec steps will be the same for all updates
     final LifecycleStep[] expectedStepsForMountSpecAllUpdates =
@@ -1063,151 +827,68 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCL_OCLWSS_OCLWSS() {
     final LifecycleStep[] midStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
     final LifecycleStep[] botStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
     final LifecycleStep[] mountSpecStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          ON_ATTACHED,
+          ON_CREATE_MOUNT_CONTENT,
+          ON_MOUNT,
+          ON_BIND
+        };
     final LifecycleStep[] midStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
     final LifecycleStep[] botStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
     final LifecycleStep[] mountSpecStepsForUpdate1 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          SHOULD_UPDATE,
+          ON_UNBIND,
+          ON_UNMOUNT,
+          ON_MOUNT,
+          ON_BIND
+        };
     final LifecycleStep[] rootStepsForUpdate2And3 = new LifecycleStep[] {ON_CREATE_TREE_PROP};
     final LifecycleStep[] midStepsForUpdate2And3 =
         new LifecycleStep[] {
@@ -1217,20 +898,13 @@ public class NestedTreeResolutionWithStateTest {
           ON_CREATE_LAYOUT_WITH_SIZE_SPEC
         };
     final LifecycleStep[] botStepsForUpdate2And3 =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
     final LifecycleStep[] mountSpecStepsForUpdate2And3 =
         new LifecycleStep[] {
           ON_CREATE_TREE_PROP,
@@ -1283,107 +957,52 @@ public class NestedTreeResolutionWithStateTest {
   @Test
   public void test_OCLWSS_OCLWSS_OCLWSS() {
     final LifecycleStep[] rootStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] midStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] botStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_ATTACHED
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+          ON_ATTACHED
+        };
 
     final LifecycleStep[] mountSpecStepsPreUpdate =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_INITIAL_STATE,
+          ON_CREATE_TREE_PROP,
+          ON_CALCULATE_CACHED_VALUE,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          ON_ATTACHED,
+          ON_CREATE_MOUNT_CONTENT,
+          ON_MOUNT,
+          ON_BIND
+        };
 
     // Root steps will be the same for all updates
     final LifecycleStep[] expectedStepsForRootAllUpdates =
@@ -1397,73 +1016,37 @@ public class NestedTreeResolutionWithStateTest {
 
     // Mid steps will be the same for all updates
     final LifecycleStep[] expectedStepsForMidAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
 
     // Bot steps will be the same for all updates
     final LifecycleStep[] expectedStepsForBotAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_TREE_PROP
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP,
+          ON_CREATE_TREE_PROP, // TODO (T133075661) duplicate OCTPs
+          ON_CALCULATE_CACHED_VALUE,
+          ON_CREATE_LAYOUT_WITH_SIZE_SPEC
+        };
 
     // MountSpec steps will be the same for all updates
     final LifecycleStep[] expectedStepsForMountSpecAllUpdates =
-        ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure
-            ? new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            }
-            : new LifecycleStep[] {
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_TREE_PROP,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              SHOULD_UPDATE,
-              ON_UNBIND,
-              ON_UNMOUNT,
-              ON_MOUNT,
-              ON_BIND
-            };
+        new LifecycleStep[] {
+          ON_CREATE_TREE_PROP,
+          ON_PREPARE,
+          ON_MEASURE,
+          ON_BOUNDS_DEFINED,
+          SHOULD_UPDATE,
+          ON_UNBIND,
+          ON_UNMOUNT,
+          ON_MOUNT,
+          ON_BIND
+        };
 
     // Testing OCLWSS -> OCLWSS -> OCLWSS
     TestHierarchyBuilder.create(this, false, false, false)

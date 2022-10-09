@@ -979,7 +979,7 @@ public abstract class Component
     return (component != null && component.getMountType() == MountType.NONE);
   }
 
-  static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
+  public static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
     return component != null
         && component.getMountType() == MountType.NONE
         && component.canMeasure();

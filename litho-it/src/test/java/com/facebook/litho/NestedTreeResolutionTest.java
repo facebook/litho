@@ -881,61 +881,29 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> layoutWithSizeSpecSteps = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(layoutWithSizeSpecSteps)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // OCLWSS gets resolved in measure phase, since
-      // we are resolving OCLWSS in measure phase it
-      // gets resolved only once
+    assertThat(layoutWithSizeSpecSteps)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // OCLWSS gets resolved in measure phase, since
+    // we are resolving OCLWSS in measure phase it
+    // gets resolved only once
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(layoutWithSizeSpecSteps)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // Width and height specs are different, cache
-      // is not reused
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Nested tree resolution
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -969,21 +937,12 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> layoutWithSizeSpecSteps = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      // Width and height specs are same, cache is reused and we don't see second OCLWSS call
-      assertThat(layoutWithSizeSpecSteps)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // OCLWSS gets resolved in measure phase,since
-      // we are resolving OCLWSS in measure phase it
-      // gets resolved only once
-    } else {
-      // Width and height specs are same, cache is reused and we don't see second OCLWSS call
-      assertThat(layoutWithSizeSpecSteps)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE, ON_CREATE_LAYOUT_WITH_SIZE_SPEC, ON_CREATE_INITIAL_STATE);
-    }
+    // Width and height specs are same, cache is reused and we don't see second OCLWSS call
+    assertThat(layoutWithSizeSpecSteps)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // OCLWSS gets resolved in measure phase,since
 
     assertThat(mountableLifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods in expected order")
@@ -1327,54 +1286,29 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> layoutWithSizeSpecSteps = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(layoutWithSizeSpecSteps)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // OCLWSS gets resolved in measure phase, since
-      // we are resolving OCLWSS in measure phase it
-      // gets resolved only once
+    assertThat(layoutWithSizeSpecSteps)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC); // OCLWSS gets resolved in measure phase, since
+    // we are resolving OCLWSS in measure phase it
+    // gets resolved only once
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(layoutWithSizeSpecSteps)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE); // Width and height specs are different, cache
-      // is not reused
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   private static Component createComponentWithSizeSpecMeasuringComponentWithSizeSpecAsRoot(
@@ -1687,22 +1621,12 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
-              // measured with measure api
-              );
-    }
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
     assertThat(mountableLifecycleTracker.getSteps())
         .describedAs("Should call the lifecycle methods in expected order")
@@ -1765,59 +1689,28 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Nested Tree Resolution
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -1939,75 +1832,33 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED,
-              ON_EVENT_VISIBLE,
-              ON_FULL_IMPRESSION_VISIBLE_EVENT,
-              ON_VISIBILITY_CHANGED);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_TREE_PROP,
+            ON_ATTACHED,
+            ON_EVENT_VISIBLE,
+            ON_FULL_IMPRESSION_VISIBLE_EVENT,
+            ON_VISIBILITY_CHANGED);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_TREE_PROP,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_CREATE_LAYOUT,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_TREE_PROP,
-              ON_ATTACHED,
-              ON_EVENT_VISIBLE,
-              ON_FULL_IMPRESSION_VISIBLE_EVENT,
-              ON_VISIBILITY_CHANGED);
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -2203,52 +2054,28 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
-              // measured with measure api
-              );
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -2295,64 +2122,28 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
-              // measured with measure api
-              );
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Nested Tree Resolution
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -2399,52 +2190,28 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
-              // measured with measure api
-              );
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -2491,56 +2258,28 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /*
@@ -2658,52 +2397,28 @@ public class NestedTreeResolutionTest {
 
     List<LifecycleStep> stepsInfo = getSteps(layoutWithSizeSpecStepsInfo);
 
-    if (ComponentsConfiguration.shouldAlwaysResolveNestedTreeInMeasure) {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
-              // measured with measure api
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(stepsInfo)
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_INITIAL_STATE, // because of different global keys generated for component
+            // measured with measure api
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              // Collect results phase
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              // Mount phase
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    } else {
-      assertThat(stepsInfo)
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-              ON_CREATE_INITIAL_STATE // because of different global keys generated for component
-              // measured with measure api
-              );
-
-      assertThat(mountableLifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              ON_CREATE_INITIAL_STATE,
-              ON_CREATE_TREE_PROP,
-              ON_CALCULATE_CACHED_VALUE,
-              ON_PREPARE,
-              ON_MEASURE,
-              ON_BOUNDS_DEFINED,
-              ON_ATTACHED,
-              ON_CREATE_MOUNT_CONTENT,
-              ON_MOUNT,
-              ON_BIND);
-    }
+    assertThat(mountableLifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_PREPARE,
+            ON_MEASURE,
+            // Collect results phase
+            ON_BOUNDS_DEFINED,
+            ON_ATTACHED,
+            // Mount phase
+            ON_CREATE_MOUNT_CONTENT,
+            ON_MOUNT,
+            ON_BIND);
   }
 
   /**
