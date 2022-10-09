@@ -201,7 +201,7 @@ class Layout {
   static @Nullable LithoNode resolveWithGlobalKey(
       final RenderStateContext renderStateContext,
       final ComponentContext parent,
-      Component component,
+      final Component component,
       final @Nullable String globalKeyToReuse) {
     return resolveImpl(
         renderStateContext,
