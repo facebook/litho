@@ -52,10 +52,10 @@ public class ResolvedTree {
   static @Nullable ResolvedTree createResolvedTree(
       final RenderStateContext renderStateContext,
       final ComponentContext c,
-      final Component component,
-      final @Nullable PerfEvent layoutStatePerfEvent) {
+      final Component component) {
 
     final @Nullable LithoNode current = renderStateContext.getCurrentRoot();
+    final @Nullable PerfEvent layoutStatePerfEvent = renderStateContext.getPerfEventLogger();
 
     final boolean isReconcilable =
         isReconcilable(

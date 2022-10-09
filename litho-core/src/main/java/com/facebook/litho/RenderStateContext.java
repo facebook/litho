@@ -35,17 +35,21 @@ public class RenderStateContext implements CalculationStateContext {
   private final @Nullable LithoNode mCurrentRoot;
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
 
+  private final @Nullable PerfEvent mPerfEventLogger;
+
   RenderStateContext(
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,
       final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
-      final @Nullable LithoNode currentRoot) {
+      final @Nullable LithoNode currentRoot,
+      final @Nullable PerfEvent perfEventLogger) {
     mCache = cache;
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
     mLayoutStateFuture = layoutStateFuture;
     mCurrentRoot = currentRoot;
+    mPerfEventLogger = perfEventLogger;
   }
 
   @Override
@@ -133,5 +137,9 @@ public class RenderStateContext implements CalculationStateContext {
   @VisibleForTesting
   public void setLayoutStateFuture(@Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
     mLayoutStateFuture = layoutStateFuture;
+  }
+
+  public @Nullable PerfEvent getPerfEventLogger() {
+    return mPerfEventLogger;
   }
 }

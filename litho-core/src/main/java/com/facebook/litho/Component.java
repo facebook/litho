@@ -675,11 +675,11 @@ public abstract class Component
           node = lastMeasuredLayout.mNode;
         } else {
           final RenderStateContext nestedRsc =
-              new RenderStateContext(resultCache, treeState, layoutVersion, null, null);
+              new RenderStateContext(resultCache, treeState, layoutVersion, null, null, null);
           c.setRenderStateContext(nestedRsc);
 
           final @Nullable ResolvedTree resolvedTree =
-              ResolvedTree.createResolvedTree(nestedRsc, c, this, null);
+              ResolvedTree.createResolvedTree(nestedRsc, c, this);
 
           node = resolvedTree == null ? null : resolvedTree.getRoot();
         }
@@ -756,7 +756,7 @@ public abstract class Component
 
     try {
       final RenderStateContext tempRsc =
-          new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null);
+          new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
 
       if (c.getComponentTree() == null) {
         c = ComponentContext.withComponentTree(c, ComponentTree.create(c).build());
