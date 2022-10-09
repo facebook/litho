@@ -74,7 +74,8 @@ class Layout {
 
     final @Nullable LithoNode node;
     if (!isReconcilable) {
-      node = create(renderStateContext, c, unspecified(), unspecified(), component, false, null);
+      node =
+          resolveImpl(renderStateContext, c, unspecified(), unspecified(), component, false, null);
 
       // This needs to finish layout on the UI thread.
       if (node != null && renderStateContext.isLayoutInterrupted()) {
@@ -190,19 +191,19 @@ class Layout {
     }
   }
 
-  public @Nullable static LithoNode create(
+  public @Nullable static LithoNode resolve(
       final RenderStateContext renderStateContext,
       final ComponentContext parent,
       final Component component) {
-    return create(renderStateContext, parent, component, null);
+    return resolveWithGlobalKey(renderStateContext, parent, component, null);
   }
 
-  static @Nullable LithoNode create(
+  static @Nullable LithoNode resolveWithGlobalKey(
       final RenderStateContext renderStateContext,
       final ComponentContext parent,
       Component component,
       final @Nullable String globalKeyToReuse) {
-    return create(
+    return resolveImpl(
         renderStateContext,
         parent,
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
@@ -212,7 +213,7 @@ class Layout {
         globalKeyToReuse);
   }
 
-  static @Nullable LithoNode create(
+  private static @Nullable LithoNode resolveImpl(
       final RenderStateContext renderStateContext,
       final ComponentContext parent,
       final int parentWidthSpec,
@@ -302,7 +303,7 @@ class Layout {
           if (root == component) {
             node = root.resolve(renderStateContext, c);
           } else {
-            node = create(renderStateContext, c, root);
+            node = resolve(renderStateContext, c, root);
           }
         } else {
           node = null;
@@ -476,7 +477,7 @@ class Layout {
 
       // 4.b Create a new layout.
       final @Nullable LithoNode newNode =
-          create(
+          resolveImpl(
               nestedRsc,
               parentContext,
               widthSpec,

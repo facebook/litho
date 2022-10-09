@@ -57,7 +57,7 @@ public final class Wrapper extends SpecGeneratedComponent {
       return null;
     }
 
-    return Layout.create(renderStateContext, c, delegate);
+    return Layout.resolve(renderStateContext, c, delegate);
   }
 
   @Override
