@@ -20,7 +20,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.litho.AccessibilityRole
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.Style
 import com.facebook.litho.accessibility.ImportantForAccessibility
 import com.facebook.litho.accessibility.accessibilityRole
@@ -31,7 +31,7 @@ import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 // start_simple_mountable_component_with_a11y_example
 class SimpleImageViewWithAccessibility(private val style: Style? = null) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableRenderResult {
     val a11y =
         Style.accessibilityRole(AccessibilityRole.IMAGE)
             .accessibilityRoleDescription("Image View")
@@ -43,7 +43,7 @@ class SimpleImageViewWithAccessibility(private val style: Style? = null) : Mount
                       AccessibilityNodeInfoCompat.ACTION_CLICK, "actionDescriptionText"))
             }
 
-    return MountableWithStyle(SimpleImageViewMountable(), style?.plus(a11y) ?: a11y)
+    return MountableRenderResult(SimpleImageViewMountable(), style?.plus(a11y) ?: a11y)
   }
 }
 // end_simple_mountable_component_with_a11y_example

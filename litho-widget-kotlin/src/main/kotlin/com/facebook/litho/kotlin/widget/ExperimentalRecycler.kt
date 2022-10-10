@@ -29,7 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.litho.Dimen
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.Size
 import com.facebook.litho.Style
 import com.facebook.litho.dp
@@ -74,9 +74,9 @@ class ExperimentalRecycler(
     private val style: Style? = null
 ) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableRenderResult {
     val measureVersion = useState { 0 }
-    return MountableWithStyle(
+    return MountableRenderResult(
         ExperimentalRecyclerMountable(
             binder = binder,
             hasFixedSize = hasFixedSize,

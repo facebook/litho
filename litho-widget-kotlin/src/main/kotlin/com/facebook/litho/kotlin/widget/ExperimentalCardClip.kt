@@ -20,7 +20,7 @@ import android.content.Context
 import android.graphics.Color
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.widget.CardClipDrawable
@@ -53,8 +53,8 @@ class ExperimentalCardClip(
     private val style: Style? = null
 ) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle =
-      MountableWithStyle(
+  override fun MountableComponentScope.render(): MountableRenderResult =
+      MountableRenderResult(
           CardClipMountable(
               clippingColor = clippingColor,
               cornerRadius = cornerRadius,

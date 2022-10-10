@@ -21,7 +21,7 @@ import android.os.Build
 import android.widget.TimePicker
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.ThreadUtils
@@ -33,8 +33,8 @@ class TimePickerComponent(
     private val style: Style? = null
 ) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
-    return MountableWithStyle(TimePickerMountable(controller), style)
+  override fun MountableComponentScope.render(): MountableRenderResult {
+    return MountableRenderResult(TimePickerMountable(controller), style)
   }
 }
 // mountable_component_start

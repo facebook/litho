@@ -23,7 +23,7 @@ import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
@@ -49,8 +49,8 @@ class ExperimentalImage(
     val style: Style? = null,
 ) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle =
-      MountableWithStyle(ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY), style)
+  override fun MountableComponentScope.render(): MountableRenderResult =
+      MountableRenderResult(ImageMountable(drawable, scaleType ?: ScaleType.FIT_XY), style)
 }
 
 /**

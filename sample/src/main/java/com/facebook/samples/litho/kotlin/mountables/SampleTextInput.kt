@@ -24,7 +24,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
@@ -44,8 +44,9 @@ class SampleTextInput(
     private val style: Style? = null
 ) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
-    return MountableWithStyle(SampleTextInputMountable(initialText, hint, inputBackground), style)
+  override fun MountableComponentScope.render(): MountableRenderResult {
+    return MountableRenderResult(
+        SampleTextInputMountable(initialText, hint, inputBackground), style)
   }
 }
 

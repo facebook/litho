@@ -22,7 +22,7 @@ import android.widget.ImageView
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
@@ -40,7 +40,7 @@ class ImageViewComponent(
 ) : MountableComponent() {
   // end_bindTo_imagecomponent_code
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableRenderResult {
     // start_bindTo_binding_code
     // simple binding
     rotation.bindTo(0f, ImageView::setRotation)
@@ -54,7 +54,7 @@ class ImageViewComponent(
 
     // end_bindTo_binding_code
 
-    return MountableWithStyle(ImageViewMountable(), style)
+    return MountableRenderResult(ImageViewMountable(), style)
   }
 }
 

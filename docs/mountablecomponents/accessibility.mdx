@@ -15,7 +15,7 @@ For information on how Meta is committed to creating a full UI experience for **
 
 ## Implementing Accessibility features for Mountable Components
 
-Accessibility properties and events for mountable components can be implemented by adding them to the `Style` object that will be returned by the `MountableWithStyle` object from the `render()` method.
+Accessibility properties and events for mountable components can be implemented by adding them to the `Style` object that will be returned by the `MountableRenderResult` object from the `render()` method.
 
 Following is example of how to combine a `Style`, that was passed to a mountable component, with a newly created `Style` object that implements accessibility properties and events:
 
@@ -23,7 +23,7 @@ Following is example of how to combine a `Style`, that was passed to a mountable
 ```
 
 :::note
-In the above example, the returned `MountableWithStyle` object includes `a11y`. This is a reference to the [A11Y Project](https://www.a11yproject.com/), which A11Y describes as a "*a community-driven effort to make digital accessibility easier.*"
+In the above example, the returned `MountableRenderResult` object includes `a11y`. This is a reference to the [A11Y Project](https://www.a11yproject.com/), which A11Y describes as a "*a community-driven effort to make digital accessibility easier.*"
 :::
 
 ## Supported Accessibility properties and events

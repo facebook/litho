@@ -198,10 +198,10 @@ class MountableComponentsTest {
     lateinit var stateRef: AtomicReference<String>
 
     class TestComponent(val view: View) : MountableComponent() {
-      override fun MountableComponentScope.render(): MountableWithStyle {
+      override fun MountableComponentScope.render(): MountableRenderResult {
         val testState: State<String> = useState { "initial" }
         stateRef = AtomicReference(testState.value)
-        return MountableWithStyle(
+        return MountableRenderResult(
             ViewMountable(view = view, updateState = { testState.update { s -> s + "_" + it } }),
             style = null)
       }
@@ -691,14 +691,14 @@ class TestViewMountableComponent(
     val style: Style? = null
 ) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
+  override fun MountableComponentScope.render(): MountableRenderResult {
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
 
     // using tag for convenience of tests
     dynamicTag?.let { dynamicTag.bindTo("default_value", View::setTag) }
 
-    return MountableWithStyle(ViewMountable(identity, view, steps), style)
+    return MountableRenderResult(ViewMountable(identity, view, steps), style)
   }
 }
 
@@ -765,8 +765,8 @@ open class ViewMountable(
 class TestDrawableMountableComponent(val drawable: Drawable, val style: Style? = null) :
     MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
-    return MountableWithStyle(
+  override fun MountableComponentScope.render(): MountableRenderResult {
+    return MountableRenderResult(
         DrawableMountable(drawable), Style.accessibilityRole(AccessibilityRole.IMAGE) + style)
   }
 }

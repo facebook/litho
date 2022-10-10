@@ -35,33 +35,33 @@ abstract class MountableComponent() : Component() {
       c: ComponentContext
   ): PrepareResult {
     val mountableComponentScope = MountableComponentScope(c, renderStateContext)
-    val mountableWithStyle = mountableComponentScope.render()
+    val mountableRenderResult = mountableComponentScope.render()
 
     // TODO(mkarpinski): currently we apply style to the MountableComponent here, but in the future
     // we want to add it onto PrepareResult and translate to Binders in MountableLithoRenderUnit
-    mountableWithStyle.style?.applyToComponent(c, this)
+    mountableRenderResult.style?.applyToComponent(c, this)
 
     // generate ID and set it on the Mountable
     val idGenerator = c.componentTree.renderUnitIdGenerator
     if (idGenerator == null) {
       throw IllegalStateException("Attempt to use a released RenderStateContext")
     } else {
-      mountableWithStyle.mountable.id =
+      mountableRenderResult.mountable.id =
           idGenerator.calculateLayoutOutputId(c.globalKey, OutputUnitType.CONTENT)
     }
 
-    mountableWithStyle.mountable.addMountBinder(
+    mountableRenderResult.mountable.addMountBinder(
         createDelegateBinder(
-            mountableWithStyle.mountable, DynamicValuesBinder(mountableComponentScope.binders)))
+            mountableRenderResult.mountable, DynamicValuesBinder(mountableComponentScope.binders)))
 
     return PrepareResult(
-        mountableWithStyle.mountable,
+        mountableRenderResult.mountable,
         mountableComponentScope.transitions,
         mountableComponentScope.useEffectEntries)
   }
 
   /** This function must return [Mountable] which are immutable. */
-  abstract fun MountableComponentScope.render(): MountableWithStyle
+  abstract fun MountableComponentScope.render(): MountableRenderResult
 
   final override fun getMountType(): MountType = MountType.MOUNTABLE
 
@@ -182,4 +182,4 @@ abstract class MountableComponent() : Component() {
 /**
  * A class that holds a [Mountable] and [Style] that should be applied to the [MountableComponent].
  */
-data class MountableWithStyle(val mountable: Mountable<*>, val style: Style?)
+data class MountableRenderResult(val mountable: Mountable<*>, val style: Style?)

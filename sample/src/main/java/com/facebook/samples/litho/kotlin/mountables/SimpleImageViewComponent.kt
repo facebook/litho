@@ -20,7 +20,7 @@ import android.content.Context
 import android.widget.ImageView
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
-import com.facebook.litho.MountableWithStyle
+import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
@@ -31,8 +31,8 @@ import com.facebook.samples.litho.R
 // start_simple_mountable_component_example
 class SimpleImageViewComponent(private val style: Style? = null) : MountableComponent() {
 
-  override fun MountableComponentScope.render(): MountableWithStyle {
-    return MountableWithStyle(SimpleImageViewMountable(), style)
+  override fun MountableComponentScope.render(): MountableRenderResult {
+    return MountableRenderResult(SimpleImageViewMountable(), style)
   }
 }
 // end_simple_mountable_component_example
