@@ -86,7 +86,8 @@ public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityExtensionInput,
         TransitionsExtensionInput,
-        EndToEndTestingExtensionInput {
+        EndToEndTestingExtensionInput,
+        PotentiallyPartialResult {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
 
@@ -115,6 +116,19 @@ public class LayoutState
     int MEASURE_SET_SIZE_SPEC = 6;
     int MEASURE_SET_SIZE_SPEC_ASYNC = 7;
     int RELOAD_PREVIOUS_STATE = 8;
+  }
+
+  public static boolean isFromSyncLayout(@CalculateLayoutSource int source) {
+    switch (source) {
+      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+      case CalculateLayoutSource.SET_ROOT_SYNC:
+      case CalculateLayoutSource.UPDATE_STATE_SYNC:
+      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
+        return true;
+      default:
+        return false;
+    }
   }
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
@@ -231,7 +245,8 @@ public class LayoutState
     return mComponent;
   }
 
-  boolean isPartialLayoutState() {
+  @Override
+  public boolean isPartialResult() {
     return mIsPartialLayoutState;
   }
 

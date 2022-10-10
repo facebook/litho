@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
@@ -29,6 +28,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
+import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
@@ -36,10 +36,6 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
-import static com.facebook.litho.WorkContinuationInstrumenter.markFailure;
-import static com.facebook.litho.WorkContinuationInstrumenter.onBeginWorkContinuation;
-import static com.facebook.litho.WorkContinuationInstrumenter.onEndWorkContinuation;
-import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForContinuation;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
@@ -69,18 +65,13 @@ import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
-import com.facebook.rendercore.instrumentation.FutureInstrumenter;
+import com.facebook.rendercore.Systracer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
@@ -2888,32 +2879,17 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
-  class LayoutStateFuture {
-
-    private static final int INTERRUPTIBLE = 0;
-    private static final int INTERRUPTED = 1;
-    private static final int NON_INTERRUPTIBLE = 2;
-
-    private final AtomicInteger runningThreadId = new AtomicInteger(-1);
+  class LayoutStateFuture extends TreeFuture<LayoutState> {
     private final ComponentContext context;
     private final Component root;
     private final int widthSpec;
     private final int heightSpec;
     private final boolean diffingEnabled;
     private final @Nullable TreeProps treeProps;
-    private final RunnableFuture<LayoutState> futureTask;
-    private final AtomicInteger refCount = new AtomicInteger(0);
     private final int layoutVersion;
-    private final AtomicInteger interruptState = new AtomicInteger(INTERRUPTIBLE);
     @CalculateLayoutSource private final int source;
     private final String extraAttribution;
-
-    private volatile @Nullable Object interruptToken;
-    private volatile @Nullable Object continuationToken;
-
-    @GuardedBy("LayoutStateFuture.this")
-    private volatile boolean released = false;
+    @Nullable PerfEvent logFutureTaskGetWaiting = null;
 
     private LayoutStateFuture(
         final ComponentContext context,
@@ -2925,6 +2901,10 @@ public class ComponentTree implements LithoLifecycleListener {
         final @Nullable TreeProps treeProps,
         @CalculateLayoutSource final int source,
         final @Nullable String extraAttribution) {
+      super(
+          ComponentTree.this.mMoveLayoutsBetweenThreads
+              || ComponentTree.this.mComponentsConfiguration.getUseCancelableLayoutFutures());
+
       this.context = context;
       this.root = root;
       this.widthSpec = widthSpec;
@@ -2934,38 +2914,14 @@ public class ComponentTree implements LithoLifecycleListener {
       this.source = source;
       this.extraAttribution = extraAttribution;
       this.layoutVersion = layoutVersion;
-
-      this.futureTask =
-          FutureInstrumenter.instrument(
-              new FutureTask<>(
-                  new Callable<LayoutState>() {
-                    @Override
-                    public @Nullable LayoutState call() {
-                      synchronized (LayoutStateFuture.this) {
-                        if (released) {
-                          return null;
-                        }
-                      }
-                      final LayoutState result = calculateLayoutStateInternal();
-                      synchronized (LayoutStateFuture.this) {
-                        if (released) {
-                          return null;
-                        } else {
-                          return result;
-                        }
-                      }
-                    }
-                  }),
-              "LayoutStateFuture_calculateLayout");
     }
 
-    private LayoutState calculateLayoutStateInternal() {
+    @Override
+    protected LayoutState calculate() {
       @Nullable
       LayoutStateFuture layoutStateFuture =
-          ComponentTree.this.mMoveLayoutsBetweenThreads
-                  || ComponentTree.this.mComponentsConfiguration.getUseCancelableLayoutFutures()
-              ? LayoutStateFuture.this
-              : null;
+          mMoveOperationsBetweenThreads ? LayoutStateFuture.this : null;
+
       final ComponentContext contextWithStateHandler;
       final LayoutState previousLayoutState;
 
@@ -3004,9 +2960,7 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       try {
-
         final ComponentsLogger logger = contextWithStateHandler.getLogger();
-
         final PerfEvent logLayoutState =
             logger != null
                 ? LogTreePopulator.populatePerfEventFromLogger(
@@ -3055,233 +3009,65 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    @VisibleForTesting
-    synchronized void release() {
-      if (released) {
-        return;
-      }
-      interruptToken = continuationToken = null;
-      released = true;
+    @Override
+    protected Systracer.ArgsBuilder addSystraceArgs(Systracer.ArgsBuilder argsBuilder) {
+      return argsBuilder.arg("treeId", ComponentTree.this.mId).arg("root", root.getSimpleName());
     }
 
-    boolean isReleased() {
-      return released;
-    }
+    @Override
+    protected void onWaitStart(boolean isTracing) {
+      super.onWaitStart(isTracing);
 
-    boolean isInterruptRequested() {
-      return interruptState.get() == INTERRUPTED;
-    }
-
-    void unregisterForResponse() {
-      final int newRefCount = refCount.decrementAndGet();
-
-      if (newRefCount < 0) {
-        throw new IllegalStateException("LayoutStateFuture ref count is below 0");
-      }
-    }
-
-    /**
-     * We want to prevent a sync layout in the background from waiting on an interrupted layout
-     * (which will return a null layout state). To handle this, we make sure that a sync bg layout
-     * can only wait on a NON_INTERRUPTIBLE LSF, and that a NON_INTERRUPTIBLE LSF can't be
-     * interrupted.
-     *
-     * <p>The usage of AtomicInteger for interrupt state is just to make it lockless.
-     */
-    boolean tryRegisterForResponse(boolean waitingFromSyncLayout) {
-      if (waitingFromSyncLayout && mMoveLayoutsBetweenThreads && !isMainThread()) {
-        int state = interruptState.get();
-        if (state == INTERRUPTED) {
-          return false;
-        }
-        if (state == INTERRUPTIBLE) {
-          if (!interruptState.compareAndSet(INTERRUPTIBLE, NON_INTERRUPTIBLE)
-              && interruptState.get() != NON_INTERRUPTIBLE) {
-            return false;
-          }
-        }
-      }
-
-      // If we haven't returned false by now, we are now marked NON_INTERRUPTIBLE so we're good to
-      // wait on this LSF
-      refCount.incrementAndGet();
-      return true;
-    }
-
-    /** We only want to interrupt an INTERRUPTIBLE layout. */
-    private boolean tryMoveToInterruptedState() {
-      int state = interruptState.get();
-      if (state == NON_INTERRUPTIBLE) {
-        return false;
-      }
-      if (state == INTERRUPTIBLE) {
-        if (!interruptState.compareAndSet(INTERRUPTIBLE, INTERRUPTED)
-            && interruptState.get() != INTERRUPTED) {
-          return false;
-        }
-      }
-
-      // If we haven't returned false by now, we are now marked INTERRUPTED so we're good to
-      // interrupt.
-      return true;
-    }
-
-    public int getWaitingCount() {
-      return refCount.get();
-    }
-
-    @VisibleForTesting
-    @Nullable
-    LayoutState runAndGet(@CalculateLayoutSource final int source) {
-
-      if (runningThreadId.compareAndSet(-1, Process.myTid())) {
-        futureTask.run();
-      }
-
-      final int runningThreadId = this.runningThreadId.get();
-      final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
-      final int originalThreadPriority;
-      final boolean didRaiseThreadPriority;
-
-      final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
-
-      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
-        return null;
-      }
-
-      if (isMainThread() && shouldWaitForResult) {
-        // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
-        // the bg task is interrupted.
-        if (mMoveLayoutsBetweenThreads) {
-          if (tryMoveToInterruptedState()) {
-            interruptToken =
-                WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
-          }
-        }
-
-        originalThreadPriority =
-            ThreadUtils.tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
-        didRaiseThreadPriority = true;
-      } else {
-        originalThreadPriority = THREAD_PRIORITY_DEFAULT;
-        didRaiseThreadPriority = false;
-      }
-
-      LayoutState result;
-      PerfEvent logFutureTaskGetWaiting = null;
       final ComponentsLogger logger = getContextLogger();
-      final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
-      try {
-        if (shouldTrace) {
-          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
-              .arg("treeId", ComponentTree.this.mId)
-              .arg("root", root.getSimpleName())
-              .arg("runningThreadId", runningThreadId)
-              .flush();
 
-          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.wait")
-              .arg("treeId", ComponentTree.this.mId)
-              .arg("root", root.getSimpleName())
-              .arg("runningThreadId", runningThreadId)
-              .flush();
-        }
+      logFutureTaskGetWaiting =
+          logger != null
+              ? LogTreePopulator.populatePerfEventFromLogger(
+                  mContext,
+                  logger,
+                  logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
+              : null;
+    }
 
-        logFutureTaskGetWaiting =
-            logger != null
-                ? LogTreePopulator.populatePerfEventFromLogger(
-                    mContext,
-                    logger,
-                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
-                : null;
-        result = futureTask.get();
+    @Override
+    protected void onWaitEnd(boolean isTracing, boolean errorOccurred) {
+      super.onWaitEnd(isTracing, errorOccurred);
 
-        if (shouldTrace) {
-          ComponentsSystrace.endSection();
-        }
+      if (!errorOccurred && logFutureTaskGetWaiting != null) {
+        logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
+      }
+    }
 
-        if (logFutureTaskGetWaiting != null) {
-          logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
-        }
+    @Override
+    protected void onGetEnd(boolean isTracing) {
+      super.onGetEnd(isTracing);
 
-        if (didRaiseThreadPriority) {
-          // Reset the running thread's priority after we're unblocked.
-          try {
-            Process.setThreadPriority(runningThreadId, originalThreadPriority);
-          } catch (IllegalArgumentException | SecurityException ignored) {
-          }
-        }
+      if (logFutureTaskGetWaiting != null) {
+        final boolean notRunningOnMyThread = mRunningThreadId.get() != Process.myTid();
+        final boolean shouldWaitForResult = !mFutureTask.isDone() && notRunningOnMyThread;
 
-        if (interruptState.get() == INTERRUPTED && result.isPartialLayoutState()) {
-          if (ThreadUtils.isMainThread()) {
-            // This means that the bg task was interrupted and it returned a partially resolved
-            // InternalNode. We need to finish computing this LayoutState.
-            final Object token =
-                onBeginWorkContinuation("continuePartialLayoutState", continuationToken);
-            continuationToken = null;
-            try {
-              result = resolvePartialInternalNodeAndCalculateLayout(result);
-            } catch (Throwable th) {
-              markFailure(token, th);
-              throw th;
-            } finally {
-              onEndWorkContinuation(token);
-            }
-          } else {
-            // This means that the bg task was interrupted and the UI thread will pick up the rest
-            // of
-            // the work. No need to return a LayoutState.
-            result = null;
-            continuationToken =
-                onOfferWorkForContinuation("offerPartialLayoutState", interruptToken);
-            interruptToken = null;
-          }
-        }
-      } catch (ExecutionException | InterruptedException | CancellationException e) {
+        logFutureTaskGetWaiting.markerAnnotate(
+            PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
+        logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
+        final ComponentsLogger logger = getContextLogger();
 
-        if (shouldTrace) {
-          ComponentsSystrace.endSection();
-        }
-
-        final Throwable cause = e.getCause();
-        if (cause instanceof RuntimeException) {
-          throw (RuntimeException) cause;
-        } else {
-          throw new RuntimeException(e.getMessage(), e);
-        }
-      } finally {
-        if (shouldTrace) {
-          ComponentsSystrace.endSection();
-        }
-        if (logFutureTaskGetWaiting != null) {
-          logFutureTaskGetWaiting.markerAnnotate(
-              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
-          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
+        if (logger != null) {
           logger.logPerfEvent(logFutureTaskGetWaiting);
         }
       }
-
-      if (result == null) {
-        return null;
-      }
-      synchronized (LayoutStateFuture.this) {
-        if (released) {
-          return null;
-        }
-        return result;
-      }
     }
 
-    private @Nullable LayoutState resolvePartialInternalNodeAndCalculateLayout(
-        final LayoutState partialLayoutState) {
-      if (released) {
+    @Nullable
+    @Override
+    protected LayoutState resumeCalculation(LayoutState partialResult) {
+      if (mReleased) {
         return null;
       }
-
       final LayoutState result =
-          LayoutState.resumeCalculate(source, extraAttribution, partialLayoutState);
+          LayoutState.resumeCalculate(source, extraAttribution, partialResult);
 
       synchronized (LayoutStateFuture.this) {
-        return released ? null : result;
+        return mReleased ? null : result;
       }
     }
 
@@ -3306,19 +3092,6 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       return true;
-    }
-  }
-
-  private static boolean isFromSyncLayout(@CalculateLayoutSource int source) {
-    switch (source) {
-      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
-      case CalculateLayoutSource.SET_ROOT_SYNC:
-      case CalculateLayoutSource.UPDATE_STATE_SYNC:
-      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
-      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
-        return true;
-      default:
-        return false;
     }
   }
 
