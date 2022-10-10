@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class LayoutStateContext implements CalculationStateContext {
 
   private final @Nullable ComponentTree mComponentTree;
   private @Nullable TreeState mTreeState;
-  private @Nullable LayoutStateFuture mLayoutStateFuture;
+  private @Nullable TreeFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable ComponentContext mRootComponentContext;
   private final int mLayoutVersion;
@@ -65,7 +64,7 @@ public class LayoutStateContext implements CalculationStateContext {
       final @Nullable ComponentTree componentTree,
       final int layoutVersion,
       final @Nullable DiffNode currentDiffTree,
-      final @Nullable LayoutStateFuture layoutStateFuture) {
+      final @Nullable TreeFuture layoutStateFuture) {
     mCache = cache;
     mRootComponentContext = rootComponentContext;
     mTreeState = treeState;
@@ -117,7 +116,7 @@ public class LayoutStateContext implements CalculationStateContext {
   }
 
   @Override
-  public @Nullable LayoutStateFuture getLayoutStateFuture() {
+  public @Nullable TreeFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
   }
 

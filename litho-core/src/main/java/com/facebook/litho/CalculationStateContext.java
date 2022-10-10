@@ -28,5 +28,5 @@ public interface CalculationStateContext {
   boolean isFutureReleased();
 
   @Nullable
-  ComponentTree.LayoutStateFuture getLayoutStateFuture();
+  TreeFuture getLayoutStateFuture();
 }

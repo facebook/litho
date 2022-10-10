@@ -350,7 +350,7 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   @VisibleForTesting
-  public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+  public TreeFuture getLayoutStateFuture() {
     if (mComponentTree != null) {
       return Preconditions.checkNotNull(mComponentTree.getCalculationStateContext())
           .getLayoutStateFuture();

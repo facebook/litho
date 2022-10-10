@@ -30,18 +30,16 @@ public class RenderStateContext implements CalculationStateContext {
 
   private boolean mIsInterruptible = true;
   private @Nullable TreeState mTreeState;
-  private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
-
+  private @Nullable TreeFuture mLayoutStateFuture;
   private final @Nullable LithoNode mCurrentRoot;
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
-
   private final @Nullable PerfEvent mPerfEventLogger;
 
   RenderStateContext(
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,
-      final @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
+      final @Nullable TreeFuture layoutStateFuture,
       final @Nullable LithoNode currentRoot,
       final @Nullable PerfEvent perfEventLogger) {
     mCache = cache;
@@ -102,7 +100,7 @@ public class RenderStateContext implements CalculationStateContext {
 
   @Nullable
   @Override
-  public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+  public TreeFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
   }
 
@@ -135,7 +133,7 @@ public class RenderStateContext implements CalculationStateContext {
   }
 
   @VisibleForTesting
-  public void setLayoutStateFuture(@Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+  public void setLayoutStateFuture(@Nullable TreeFuture layoutStateFuture) {
     mLayoutStateFuture = layoutStateFuture;
   }
 

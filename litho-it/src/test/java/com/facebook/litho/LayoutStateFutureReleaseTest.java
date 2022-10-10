@@ -76,8 +76,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Test
   public void testStopResolvingRowChildrenIfLsfReleased() {
-    final ComponentTree.LayoutStateFuture layoutStateFuture =
-        mock(ComponentTree.LayoutStateFuture.class);
+    final TreeFuture layoutStateFuture = mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
@@ -91,7 +90,7 @@ public class LayoutStateFutureReleaseTest {
             null,
             new WaitActions() {
               @Override
-              public void unblock(ComponentTree.LayoutStateFuture lsf) {
+              public void unblock(TreeFuture lsf) {
                 when(layoutStateFuture.isReleased()).thenReturn(true);
               }
             });
@@ -108,8 +107,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Test
   public void testStopResolvingColumnChildrenIfLsfReleased() {
-    final ComponentTree.LayoutStateFuture layoutStateFuture =
-        mock(ComponentTree.LayoutStateFuture.class);
+    final TreeFuture layoutStateFuture = mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
@@ -123,7 +121,7 @@ public class LayoutStateFutureReleaseTest {
             null,
             new WaitActions() {
               @Override
-              public void unblock(ComponentTree.LayoutStateFuture lsf) {
+              public void unblock(TreeFuture lsf) {
                 when(layoutStateFuture.isReleased()).thenReturn(true);
               }
             });
@@ -167,8 +165,7 @@ public class LayoutStateFutureReleaseTest {
 
     componentTree.setLithoView(new LithoView(mContext));
 
-    final ComponentTree.LayoutStateFuture[] layoutStateFutures =
-        new ComponentTree.LayoutStateFuture[2];
+    final TreeFuture[] layoutStateFutures = new TreeFuture[2];
 
     // Testing scenario: we schedule a LSF on bg thread which gets released before compat UI thread
     // layout
@@ -176,7 +173,7 @@ public class LayoutStateFutureReleaseTest {
     child1.waitActions =
         new WaitActions() {
           @Override
-          public void unblock(ComponentTree.LayoutStateFuture lsf) {
+          public void unblock(TreeFuture lsf) {
             // Something happens here which releases the ongoing lsf, such as a state update
             // triggered from onCreateLayout.
             if (layoutStateFutures[0] == null) {
@@ -224,7 +221,7 @@ public class LayoutStateFutureReleaseTest {
   }
 
   private interface WaitActions {
-    void unblock(ComponentTree.LayoutStateFuture layoutStateFuture);
+    void unblock(TreeFuture layoutStateFuture);
   }
 
   class TestChildComponent extends Component {
@@ -233,7 +230,7 @@ public class LayoutStateFutureReleaseTest {
     boolean hasRunLayout;
     CountDownLatch wait;
     CountDownLatch unlockFinishedLayout;
-    List<ComponentTree.LayoutStateFuture> mLayoutStateFutureList;
+    List<TreeFuture> mLayoutStateFutureList;
 
     protected TestChildComponent() {
       this(null, null, null);
