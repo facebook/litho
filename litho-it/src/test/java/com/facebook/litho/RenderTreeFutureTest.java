@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.RenderTree;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -127,6 +128,44 @@ public class RenderTreeFutureTest {
     assertThat(renderResult.node.getChildCount()).isEqualTo(1);
     assertThat(renderResult.node.getChildAt(0).getChildCount()).isEqualTo(1);
     assertThat(renderResult.node.getChildAt(0).getChildAt(0).getChildCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void testRenderAndLayoutFutures() {
+    final Component component =
+        Row.create(mComponentContext)
+            .child(Text.create(mComponentContext).text("Hello World"))
+            .build();
+
+    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+
+    final RenderTreeFuture renderTreeFuture =
+        new RenderTreeFuture(mComponentContext, component, new TreeState(), null, null, 0);
+
+    final LithoResolutionResult renderResult =
+        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+
+    final LayoutTreeFuture layoutTreeFuture =
+        new LayoutTreeFuture(
+            renderResult,
+            mComponentContext,
+            component,
+            null,
+            null,
+            null,
+            widthSpec,
+            heightSpec,
+            mComponentContext.getComponentTree().mId,
+            0);
+
+    final LayoutState layoutState =
+        layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+
+    final RenderTree renderTree = layoutState.toRenderTree();
+
+    assertThat(renderTree).isNotNull();
+    assertThat(renderTree.getMountableOutputCount()).isEqualTo(2);
   }
 
   /**

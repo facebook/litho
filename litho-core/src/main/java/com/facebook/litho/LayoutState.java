@@ -238,6 +238,44 @@ public class LayoutState
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
+
+    mAccessibilityManager =
+        (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+    mAccessibilityEnabled = AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager);
+  }
+
+  LayoutState(
+      ComponentContext context,
+      Component rootComponent,
+      TreeState treeState,
+      LayoutState current,
+      int widthSpec,
+      int heightSpec,
+      int componentTreeId) {
+    mContext = context;
+    mComponent = rootComponent;
+    mId = sIdGenerator.getAndIncrement();
+    mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
+    mTreeState = treeState;
+    mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
+    mScopedComponentInfos = new ArrayList<>();
+    mVisibilityOutputs = new ArrayList<>(8);
+
+    mTreeState = treeState;
+    mWidthSpec = widthSpec;
+    mHeightSpec = heightSpec;
+    mComponentTreeId = componentTreeId;
+    mRootComponentName = rootComponent.getSimpleName();
+    mShouldGenerateDiffTree = true;
+
+    mAccessibilityManager =
+        (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+    mAccessibilityEnabled = AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager);
+  }
+
+  void setNode(final LithoNode node) {
+    mRoot = node;
+    mRootTransitionId = getTransitionIdForNode(node);
   }
 
   @VisibleForTesting
@@ -1429,7 +1467,7 @@ public class LayoutState
     return renderTree;
   }
 
-  private static void setSizeAfterMeasureAndCollectResults(
+  static void setSizeAfterMeasureAndCollectResults(
       ComponentContext c, LayoutStateContext layoutStateContext, LayoutState layoutState) {
     if (layoutStateContext.isFutureReleased()) {
       return;
