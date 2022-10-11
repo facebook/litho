@@ -5,11 +5,11 @@ title: Making the UI Accessible
 
 ## Why Accessibility is important
 
-The fundamental purpose of an interface is to provide people with access to information. Accessibility is the foundation of an interface. All people experience limitations in their abilities, whether it's temporary, situational or permanent. The aim of accessibility is to remove any obstacles that reduce the experience of using, understanding, and navigating your interface.
+The fundamental purpose of an interface is to provide people with access to information. Accessibility is the foundation of an interface. All people experience limitations in their abilities, whether it's temporary, situational or permanent. The aim of accessibility is to remove any obstacles that reduce the experience of using, understanding, and navigating the interface.
 
-This page provides details of the Litho components, methods, nodes, events, and headings available to ensure your interface provides the 'full experience' promoted by Meta.
+This page provides details of the Litho components, methods, nodes, events, and headings available to ensure the interface provides the 'full experience' promoted by Meta.
 
-:::information
+:::info
 For information on how Meta is committed to creating a full UI experience for **all** people, see the [Meta Accessibility](https://en-gb.facebook.com/accessibility/) site.
 :::
 
@@ -55,7 +55,7 @@ On more complex mount specs that need to expose extra nodes to the accessibility
 ## Accessibility handling
 
 All components support a set of events corresponding to [AccessibilityDelegateCompat](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html)'s methods.
-These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate`, which enables you to explicitly call a`View`'s default implementation of accessibility methods where necessary.
+These events have attributes for each parameter of the corresponding `AccessibilityDelegateCompat` method *and* an additional parameter of type `AccessibilityDelegateCompat` called `superDelegate`, which enable a `View`'s default implementation of accessibility methods to be called explicitly where necessary.
 
 The following table provides an overview of the supported events:
 
@@ -70,9 +70,9 @@ The following table provides an overview of the supported events:
 | SendAccessibilityEventEvent | <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int)">sendAccessibilityEvent</a>
 | SendAccessibilityUncheckedEvent |  <a href="https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent)">sendAccessibilityEventUnchecked</a>
 
-Setting a handler for any of these events will result in an `AccessibilityDelegate` being set on the mounted `View`, which will call your event handler when the corresponding method is called.
+Setting a handler for any of these events will result in an `AccessibilityDelegate` being set on the mounted `View`, which will call the event handler when the corresponding method is called.
 
-Whenever a method for which you haven't supplied an event handler is called, the delegate will defer to the Android `View`'s default implementation (equivalent to calling `super` or `superDelegate`'s implementation).
+Whenever a method with no supplied event handler is called, the delegate will defer to the Android `View`'s default implementation (equivalent to calling `super` or `superDelegate`'s implementation).
 
 The following three steps provide an example of overriding `onInitializeAccessibilityNodeInfo` for a component:
 
@@ -129,7 +129,7 @@ class PoliteComponentWrapper {
 }
 ```
 
-3. Replace any uses of your component with `PoliteComponentWrapper`:
+3. Replace any uses of a component with `PoliteComponentWrapper`:
 
 ```java
 @OnCreateLayout
