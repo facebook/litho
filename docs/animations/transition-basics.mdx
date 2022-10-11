@@ -22,7 +22,7 @@ The following code and animation show a simple Component that renders a yellow s
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/SimpleAllLayoutTransitionComponent.kt start=layout_start end=layout_end
 ```
 
-<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+<video loop="true" autoplay="true" class="video" width="100%" height="200px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics1.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
@@ -39,7 +39,7 @@ To add bounds animations to all transitioning components between tree changes, u
 
 [`Transition.allLayout()`](https://staticdocs.thefacebook.com/litho/javadoc/com/facebook/litho/Transition.html#allLayout--) creates a transition that automatically animates any changes to position, width, or height, as shown in the following animation.
 
-<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+<video loop="true" autoplay="true" class="video" width="100%" height="200px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics2.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
@@ -51,11 +51,11 @@ This method only works when changing the bounds of a component.  It does not wor
 
 ## Transitions
 
-For greater control over the transitions, you can use the following APIs:
+For greater control over the transitions, use the following APIs:
 
 * **`useTransition`** - a hook that is used to define the transition animations. It accepts a [Transition](pathname:///javadoc/com/facebook/litho/Transition.html) as its parameter.
-* **`Transition`** - a description of the Component/Property (mandatory) and how (optional) you want to animate it. Instead of using a Constructor to create `Transition` instances, you'll use one of the provided `Builder`s.
-* **`transitionKey`** - an identifier that you'd normally assign to a `Component` that you want to animate.  The key is then used when defining `Transition`.
+* **`Transition`** - a description of the Component/Property (mandatory) and how (optional) to animate it. Instead of using a Constructor to create `Transition` instances, use one of the provided `Builder`s.
+* **`transitionKey`** - an identifier normally assigned to a `Component` that is to be animated. The key is then used when defining `Transition`.
 * **`AnimatedProperties`** - used to target the property of a `Component` that should be animated when its value changes.
 
 The following sample shows the APIs in use:
@@ -82,7 +82,7 @@ useTransition(
 
 The following animation shows the AlphaTransitionComponentSpec in action.
 
-<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+<video loop="true" autoplay="true" class="video" width="100%" height="200px">
   <source type="video/webm" src={useBaseUrl("/videos/transitions/basics3.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>

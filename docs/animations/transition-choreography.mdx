@@ -76,7 +76,7 @@ The following animation shows the above ComponentSpec in action.
 
 ### Transition End Callback
 
-A Listener can be added to receive a callback when an individual transition has ended. This is done through Litho event dispatcher methods (see [Events Overview](/codegen/events-for-specs.md).
+A Listener can be added to receive a callback when an individual transition has ended. This is done through Litho event dispatcher methods (see [Events Overview](../codegen/events-for-specs.md)).
 
 The `TransitionEndEvent` will be called with the transition key and the specific `AnimatedProperty` that has been animated for that key. If multiple instances of `AnimatedProperty` are added to the same transition, and all of them run at the same time, a callback will be executed for each. This callback may be useful to loop animations by updating the tree.
 
@@ -87,7 +87,7 @@ The `TransitionEndEvent` will be called with the transition key and the specific
 Many examples can be found in the Litho Sample app: `API Demos`->`Animation Callbacks`.
 :::
 
-You can also add the transition end handler to `Transition.allLayout()` where the same logic applies:
+A transition end handler (`transitionEndHandler`) can be added to `Transition.allLayout()` where the same logic applies:
 
 ```java
 @OnCreateTransition

@@ -3,11 +3,11 @@ id: transition-key-types
 title: Transition Key Scoping
 ---
 
-Within the other pages of the 'Animations' section, you'll see that a common approach is used when defining transitions: assigning transition keys and creating transitions, all within a single `ComponentSpec`.
+Within the other pages of the 'Animations' section, a common approach is used when defining transitions: assigning transition keys and creating transitions, all within a single `ComponentSpec`.
 
 There are situations where this approach is not suitable, such as when the transition key is assigned within one `ComponentSpec` while the transitions themselves are defined in another.
 
-If you try to do everything using the same approach taken in the other pages in the Animations section, it won't work. It will look like there are no transitions defined, as shown in the following two LayoutSpecs:
+If an attempt to try to do everything using the same approach contained in the other pages of the Animations section is taken, it won't work. It will look like there are no transitions defined, as shown in the following two LayoutSpecs:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyParentComponentSpec.java start=not_working_start end=not_working_end
 ```
