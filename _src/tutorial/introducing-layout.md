@@ -10,7 +10,7 @@ In this section of the tutorial, you'll become familiar with building layouts us
 
 To **measure** and **layout** on-screen components, Litho uses the [Yoga](https://yogalayout.com/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/).
 
-To learn more about Flexbox, see the [Layout with Flexbox](../mainconcepts/flexbox-yoga.mdx) page of the 'Main Concepts' section.
+To learn more about Flexbox, see the [Layout System with Flexbox](../mainconcepts/flexbox-yoga.mdx) page in the 'Main Concepts' section.
 
 ## Preparatory data model classes
 
@@ -22,8 +22,6 @@ Before you start with the main content of this section of the tutorial, add two 
 ## The PostComponent
 
 With the data models prepared, it's time to build a component for a post that features two images and one item of text laid out in a tabular format.
-
-To learn more about different layout options, see the [Layout with Flexbox](../mainconcepts/flexbox-yoga.mdx) page.
 
 For now, as far as layout is concerned, it's enough to know that the component uses **Column** and **Row** (known as 'containers'). These containers are used to arrange the images and text (known as 'primitives') vertically and horizontally, respectively.
 

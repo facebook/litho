@@ -3,16 +3,16 @@ id: troubleshooting
 title: Flexbox Troubleshooting
 ---
 
-There are few issues you may face while using flexbox. This section discusses the more common of those issues, which may prove useful when debugging and finding issues in layout.
+A few issues may be encountered while using flexbox. This section discusses the more common of those issues, which may prove useful when debugging and finding issues in layout.
 
-For debugging, you can also refer to the [Flipper layout inspector plugin](/docs/debugging/debugging-tips#layout-inspector-plugin) to see the component hierarchy and you can update the flex properties in the plugin itself to understand how it affects layout.
+For debugging, the [Flipper layout inspector plugin](/docs/debugging/debugging-tips#layout-inspector-plugin) can be used to see the component hierarchy, and the flex properties can be updated in the plugin itself to understand how it affects layout.
 
 Another tool that can be used for understanding and playing around with flexbox properties is [Yoga Playground](https://yogalayout.com/playground).
 
 ## Why is my text truncated?
 
 One common problem is that there is not enough space for content to be visible on the screen and therefore text gets truncated.
-The default value of flexShrink is 1.0f. So, if there is not enough space available for the text to render completely then text will shrink and you will see truncated text on the screen. Changing the flexShrink value to zero makes sure that text component is not shrinked.
+The default value of flexShrink is 1.0f. So, if there is not enough space available for the text to render completely then text will shrink and and will be shown truncated on the screen. Changing the flexShrink value to zero makes sure that text component is not shrinked.
 
 Imagine there are two text components in a Row. If no flex properties are defined on either of the text components, then they both will take equal space and text will be truncated if text is too long to fit into available space.
 Now, if flexShrink = 0f is added to the first text, then it won't shrink and take up the whole space to render itself completely; the second text will take up the remaining space.
@@ -20,52 +20,53 @@ Now, if flexShrink = 0f is added to the first text, then it won't shrink and tak
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/flexbox/TextInRow.kt start=start_example end=end_example
 ```
 
-However, if the second text is still truncated, based on your requirements, then either you can make it multiline text or display the two texts inside a Column.
+However, if the second text is still truncated, based on the requirements, then either make it multiline text or display the two texts inside a Column.
 
-Another scenario where text can get truncated is if you have exact width and height defined on a sibling component which is taking up all the available space and not allowing other children to grow.
-In this case, you can either remove the exact width / height defined so that both siblings can grow and take up the available space or set flexShrink to zero on sibling component.
+Another scenario where text can get truncated is if there is an exact width and height defined on a sibling component, which is taking up all the available space and not allowing other children to grow.
+In this case, either remove the exact width / height defined so that both siblings can grow and take up the available space or set flexShrink to zero on sibling component.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/flexbox/TextInsideContainer.kt start=start_example end=end_example
 ```
 
 ## How to build overlapping components?
 
-You can achieve this by using position type as YogaPositionType.ABSOLUTE. You can also set exact position left/right coordinates for the starting position of the absolute child.
-For information on making components overlap each other, refer to the [Absolutely positioned items](#absolutely-positioned-items) section, above.
+This can be achieved by using position type as YogaPositionType.ABSOLUTE. Also, the exact left/right coordinates for the starting position of the absolute child can be set.
+For information on making components overlap each other, see [Absolutely positioned items](yoga-playground.mdx#absolutely-positioned-items).
 
-## How to centre components?
+## How to center components?
 
-Use the following to centre your components:
+Use the following to center components:
 
-* [alignItems](#distribution-along-the-cross-axis) `CENTER` - example usage: you want to centre component inside Row along the vertical axis.
-* [justifyContent](/docs/mainconcepts/flexbox-yoga#distribution-along-the-main-axis) `CENTER` - example usage: you want to centre component inside Row along the horizontal axis.
+* [alignItems](#distribution-along-the-cross-axis) `CENTER` - to center components inside the Row along the vertical axis.
+* [justifyContent](/docs/mainconcepts/flexbox-yoga#distribution-along-the-main-axis) `CENTER` - to center components inside the Row along the horizontal axis.
 
-If it is specific to Text then consider using verticalGravity / horizontalGravity on the Text component to keep it centre aligned:
+If it is specific to Text, then consider using verticalGravity / horizontalGravity on the Text component to keep it center-aligned:
 
 ```kotlin
   Text(
-    text = "Align this text at centre vertically using vertical gravity",
+    text = "Align this text at center vertically using vertical gravity",
     verticalGravity = VerticalGravity.CENTER,
     textSize = 20.sp))
 ```
 
-## If you've defined flexGrow/flexShrink but it doesn't do anything
+## If flexGrow/flexShrink has been defined but doesn't do anything
 
-If the parent has fixed width/height then flexGrow/flexshrink is not expected to work correctly since there is not enough space for it to work with. Check in your component hierarchy if the component which is getting clipped has enough width/height needed to render it completely.
+If the parent has fixed width/height then flexGrow/flexshrink is not expected to work correctly since there is not enough space for it to work with. Check in the component hierarchy if the component that is getting clipped has enough width/height needed to render it completely.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/flexbox/TextInColumnWithExactHeight.kt start=start_example end=end_example
 ```
 
-## When keyboard opens then the content is cut off
+## When the keyboard opens, the content is cut off
 
-When you have a screen where in different scenarios the keyboard is open as layout contains a TextInput. The same layout now needs to fit inside lesser space (height in this case).
+When there is a screen for which input is required (such as when the layout contains a TextInput), then the layout now needs to fit inside a small space (here, height is the concern).
+
 There are multiple ways to solve this:
 
-1. Check if your text is not cut off due to [flex shrink issues](#why-is-my-text-truncated) or maybe you are setting [exact width / height on parent components](#if-youve-defined-flexgrowflexshrink-but-it-doesnt-do-anything) in the hierarchy.
+1. Check if the text is cut off due to [flex shrink issues](#why-is-my-text-truncated) or check the setting for [exact width / height on parent components](#if-flexgrowflexshrink-has-been-defined-but-doesnt-do-anything) in the hierarchy.
 
-2. Make your content scrollable by placing your content in a VerticalScroll.
+2. Make the content scrollable by placing it in a VerticalScroll.
 
   ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/flexbox/ContentInVerticalScroll.kt start=start_example end=end_example
   ```
 
-3. Keep a state value that informs you if the keyboard is open or not, then change your layout depending on the state.
+3. Keep a state value that tracks whether the keyboard is open or not, then change the layout accordingly, depending on the state.

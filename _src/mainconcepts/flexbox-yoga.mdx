@@ -7,7 +7,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Litho uses the [Yoga](https://yogalayout.com/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/), to measure and layout on-screen components. If you have used Flexbox on the web before then this should be very familiar. If you are more familiar with how Android normally performs Layout then Flexbox will remind you of `LinearLayout`.
+Litho uses the [Yoga](https://yogalayout.com/) library, which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/), to measure and layout on-screen components. Users familiar with Flexbox on the web should have no problems. For users familiar with how Android normally performs Layout, Flexbox will remind them of `LinearLayout`.
 
 ## Flexbox attributes
 
@@ -17,9 +17,9 @@ This section shows how various attributes of Flexbox are used for on-screen layo
 
 Flexbox is a **one-dimensional layout model**, which means all elements are placed along one line.
 
-The following information may help you decide whether to layout your elements horizontally or vertically.
+The following information may help assist in deciding whether to layout elements horizontally or vertically.
 
-The primary axis of layout is called the **Main Axis**, and the direction perpendicular to it is called the **Cross Axis**. For example, if you wanted your children to be laid out left to right, then the Main Axis would be the horizontal axis, and the Cross Axis would be the vertical axis.
+The primary axis of layout is called the **Main Axis**, and the direction perpendicular to it is called the **Cross Axis**. For example, if children are to be laid out left to right, then the Main Axis would be the horizontal axis, and the Cross Axis would be the vertical axis.
 
 Litho uses special container components to define the direction of the layout, as shown in the following table.
 
@@ -73,7 +73,7 @@ The `YogaAlign` values are illustrated below.
 
 ### Wrapping to multiple lines
 
-In addition to the one-dimensional Flexbox laying out its children in one line, Flexboxes can also wrap their children onto multiple lines, much like text wraps. You specify wrapping behavior with the `Wrap` method, which takes a `YogaWrap` enum value that has the following possible values:
+In addition to the one-dimensional Flexbox laying out its children in one line, Flexboxes can also wrap their children onto multiple lines, much like text wraps. Wrapping behavior is specified with the `Wrap` method, which takes a `YogaWrap` enum value that has the following possible values:
 
 * `NO_WRAP` *(default)* - there is no wrapping. Children are forced into a single line; if they cannot fit, they will overflow.
 * `WRAP` - elements that overflow a single line will be moved to the next line. If the main axis is horizontal, then the next line will be **below** the previous line.
@@ -85,7 +85,7 @@ The `YogaWrap` values are illustrated below.
 
 #### Line distribution
 
-If your container has extra space in the Cross Axis direction, then the way lines are distributed in that space needs to be considered.
+If the container has extra space in the Cross Axis direction, then the way lines are distributed in that space needs to be considered.
 
 The `alignContent` method specifies how lines are distributed along the Cross Axis. It takes a `YogaAlign` enum value, which has the following possible values:
 

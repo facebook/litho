@@ -11,7 +11,7 @@ A component becomes an error boundary when it declares a `useErrorBoundary` hook
 
 ## Example: Showing an Error State in UI
 
-The code sample below shows how a component can handle an error in one of its child components and render an error state instead of crashing the app:
+The following code shows how a component can handle an error in one of its child components and render an error state instead of crashing the app:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/errors/KErrorBoundary.kt start=start_example end=end_example
 ```
@@ -24,11 +24,11 @@ An error boundary may choose to only handle certain classes of errors. You can r
 
 You may be asking why all this additional infrastructure is necessary when you could just use try/catch. The problem is that there's no easily accessible place to wrap your component code using try/catch.
 
-The following example shows the use of try/catch:
+The following snippet shows the use of try/catch:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/errors/KIncorrectErrorHandlingComponent.kt start=start_example end=end_example
 ```
 
 When using try/catch (as in the above code), if `PossiblyCrashingSubTitleComponent` throws an exception in `onCreateLayout`, it wouldn't be caught! The reason for this is that you are just returning a declaration of your layout here and don't actually execute any code.
 
-This is the responsibility of the Litho framework, hence the need to provide higher-level infrastructure to give you access to those errors.
+This is the responsibility of the Litho framework, hence the need to provide higher-level infrastructure to give access to those errors.
