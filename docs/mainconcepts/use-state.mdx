@@ -34,7 +34,7 @@ class CounterComponent : KComponent() {
 `update` causes the re-render to be **async by default**. If you need to perform a synchronous state update (that is, one which will cause a re-render synchronously on the current thread), use `updateSync`.
 :::
 
-To update state, use the `update` method on the `State<T>` returned from `useState`: this will trigger a render pass with the new state value:
+To update state, use the `update` method on the `State<T>` returned from `useState`. This will trigger a render pass with the new state value:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/CheckboxComponent.kt start=start_example end=end_example
 ```

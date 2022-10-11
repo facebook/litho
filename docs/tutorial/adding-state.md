@@ -38,9 +38,9 @@ For this, you need to declare a component State using the `useState` hook (you n
 You can use the val `isLiked` for the following:
 
 * To access the state, use `isLiked.value`.
-* To update the state, use a lambda variant: `isLiked.update { isLiked -> !isLiked }`. See the following code for an example of how to update the state.
+* To update the state, use a [lambda](../mainconcepts/use-state.mdx#value-vs-lambda-variants) variant: `isLiked.update { isLiked -> !isLiked }`. See the following code for an example of how to update the state.
 
-  * To learn more about the update options, see the [useState](../mainconcepts/use-state.mdx#value-vs-lambda-variants) page in the 'Main Concepts' section.
+  * To learn more about the update options, see the [useState](../mainconcepts/use-state.mdx#updating-state) page in the 'Main Concepts' section.
 
 The following code uses a click (.onClick) on the `Image` component to update the state:
 

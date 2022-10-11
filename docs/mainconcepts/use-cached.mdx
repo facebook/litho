@@ -11,9 +11,9 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 To familiarize yourself with the concept and rules for hooks, see the [Introduction to Hooks](hooks-intro.mdx) page.
 
-In the following code examples, `useCached` is used to create and maintain an expensive to calculate value, which can be used multiple times across renders without repeating the expensive calculation.
-
 ## Example: Cached value with dependencies
+
+In the following code, `useCached` is used to create and maintain an expensive-to-calculate value, which can be used multiple times across renders without repeating the expensive calculation.
 
 Since the `useCached` declaration defines a dependency, the value will be calculated when the component is attached to the ComponentTree, and then recalculated every time the dependency changes.
 
@@ -22,7 +22,7 @@ Since the `useCached` declaration defines a dependency, the value will be calcul
 
 ## Example: Cached value without dependencies
 
-In the example below, since `useCached` does not declare a dependency, the value will be calculated only once when the component is attached to the ComponentTree, but will not be recalculated when the state value changes. The initial value of the state will always be used.
+In the code below, since `useCached` does not declare a dependency, the value will be calculated only once when the component is attached to the ComponentTree but will not be recalculated when the state value changes. The initial value of the state will always be used.
 
 :::note
 It's a common mistake to use the state in `useCached` without defining it as a dependency then expect the cached value to be recalculated when the state is updated.
