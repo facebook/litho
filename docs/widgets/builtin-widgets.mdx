@@ -3,7 +3,7 @@ id: builtin-widgets
 title: Built-in widgets
 ---
 
-This page covers the basic built-in widgets. You can find the full list of components and APIs within the [com.facebook.litho.widget](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html) package in javadocs.
+This page covers the basic built-in widgets. For the full list of components and APIs, see the [com.facebook.litho.widget](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html) package in javadocs.
 
 ## Text
 
@@ -15,7 +15,7 @@ Shows simple text (the equivalent of an Android `TextView` within Litho).
 
 ### Usage
 
-`Text` has numerous optional props you can use to style your text, just as with `TextView` since both use `android.text.Layout` under the hood.
+`Text` has numerous optional props that can be used style text, just as with `TextView` since both use `android.text.Layout` under the hood.
 
 A full list of the optional props is available in the [javadocs](pathname:///javadoc/com/facebook/litho/widget/Text.html).
 
@@ -45,7 +45,7 @@ As this component is backed by Android's `EditText`, many native capabilities ar
 
 * Use an `android.text.InputFilter ` to set a text length limit or modify text input.
 * Change the input representation by passing an `android.text.InputType` constant.
-* For performance reasons, avoid recreating the Component with different props to change its configuration. Instead, you can use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
+* For performance reasons, avoid recreating the Component with different props to change its configuration. Instead, use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
 
 ```java
 private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
@@ -191,6 +191,6 @@ Component component =
 
 ## Recycler
 
-`Recycler` is the equivalent of Android's `RecyclerView`. It's recommended that you use [Sections](../sections/start.mdx) for efficient list rendering, which uses `Recycler` under the hood.
+`Recycler` is the equivalent of Android's `RecyclerView`. It's recommended to use [Sections](../sections/start.mdx) for efficient list rendering, which uses `Recycler` under the hood.
 
-If you  want to use `Recycler` directly, see the [Adding and adapting the RecyclerCollection to your app](../sections/recycler-collection-component.md) page.
+To use the `Recycler` directly, see the [RecyclerCollectionComponent](../sections/recycler-collection-component.md) page.
