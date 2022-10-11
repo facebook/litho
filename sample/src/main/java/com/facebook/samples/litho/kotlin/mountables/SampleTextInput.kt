@@ -64,7 +64,8 @@ internal class SampleTextInputMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
+      previousLayoutData: Any?
   ): MeasureResult {
     // The height should be the measured height of EditText with relevant params
     val editTextForMeasure: EditText = AppCompatEditText(context.androidContext)

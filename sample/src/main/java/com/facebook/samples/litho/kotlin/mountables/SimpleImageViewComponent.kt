@@ -44,7 +44,12 @@ internal class SimpleImageViewMountable() : SimpleMountable<ImageView>(RenderTyp
 
   override fun createContent(context: Context): ImageView = ImageView(context)
 
-  override fun measure(context: LayoutContext<*>, widthSpec: Int, heightSpec: Int): MeasureResult {
+  override fun measure(
+      context: LayoutContext<*>,
+      widthSpec: Int,
+      heightSpec: Int,
+      previousLayoutData: Any?
+  ): MeasureResult {
     return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       MeasureResult(defaultSize, defaultSize)

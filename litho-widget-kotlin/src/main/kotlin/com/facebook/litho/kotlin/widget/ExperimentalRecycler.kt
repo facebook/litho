@@ -563,7 +563,8 @@ internal class ExperimentalRecyclerMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
+      previousLayoutData: Any?
   ): MeasureResult {
     val size = Size()
     binder.measure(

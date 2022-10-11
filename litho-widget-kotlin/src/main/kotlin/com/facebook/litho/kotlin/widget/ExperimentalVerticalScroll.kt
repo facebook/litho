@@ -161,7 +161,8 @@ internal class VerticalScrollMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
+      previousLayoutData: Any?
   ): MeasureResult {
 
     val widthMode = SizeSpec.getMode(widthSpec)

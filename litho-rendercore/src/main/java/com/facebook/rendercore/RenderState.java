@@ -389,6 +389,7 @@ public class RenderState<State, RenderContext> {
     private @Nullable LayoutCache layoutCache;
     private final @Nullable RenderContext mRenderContext;
     private final @Nullable RenderCoreExtension<?, ?>[] extensions;
+    private @Nullable Object previousLayoutData;
 
     public LayoutContext(
         final Context androidContext,
@@ -431,6 +432,17 @@ public class RenderState<State, RenderContext> {
     @Nullable
     public RenderCoreExtension<?, ?>[] getExtensions() {
       return extensions;
+    }
+
+    public void setPreviousLayoutDataForCurrentNode(@Nullable Object previousLayoutData) {
+      this.previousLayoutData = previousLayoutData;
+    }
+
+    @Nullable
+    Object consumePreviousLayoutDataForCurrentNode() {
+      final Object data = previousLayoutData;
+      previousLayoutData = null;
+      return data;
     }
   }
 }

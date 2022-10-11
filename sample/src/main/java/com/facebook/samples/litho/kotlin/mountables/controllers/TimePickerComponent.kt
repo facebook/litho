@@ -56,7 +56,8 @@ internal class TimePickerMountable(
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
-      heightSpec: Int
+      heightSpec: Int,
+      previousLayoutData: Any?
   ): MeasureResult {
     return MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
   }

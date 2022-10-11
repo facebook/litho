@@ -556,6 +556,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
         if (mountable != null) {
+          context.setPreviousLayoutDataForCurrentNode(mLayoutData);
           LayoutResult layoutResult = mountable.calculateLayout(context, widthSpec, heightSpec);
           mLayoutData = layoutResult.getLayoutData();
           return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
