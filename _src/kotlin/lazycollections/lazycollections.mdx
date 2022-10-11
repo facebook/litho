@@ -4,10 +4,10 @@ title: Introduction
 ---
 
 :::note
-Lazy Collections are a Kotlin-only API. If you're using Java or looking for docs on the older Java codegen-based Sections API, see [here](../../sections/start.mdx).
+Lazy Collections are a Kotlin-only API. If using Java or looking for docs on the older Java codegen-based Sections API, see [Sections Basics](../../sections/start.mdx) in the 'Codegen APIs' section.
 :::
 
-**Lazy Collections** are components that can efficiently render a scrollable list of child components using Android's `RecyclerView`. The 'lazy' in the name refers to the fact that not all children need to be immediately resolved to put content on the screen. Instead, a Lazy Collection maintains a window of resolved children which is dynamically updated while scrolling.
+**Lazy Collections** are components that can efficiently render a scrollable list of child components using Android's `RecyclerView`. The 'lazy' in the name refers to the fact that not all children need to be immediately resolved to put content on the screen. Instead, a Lazy Collection maintains a window of resolved children, which is dynamically updated while scrolling.
 
 Lazy Collections are available as follows:
 
@@ -17,7 +17,7 @@ Lazy Collections are available as follows:
 
 ### Lazy Collection Basics
 
-The following example creates a `LazyList` and adds a child `Text` component for each list item.
+The following code creates a `LazyList` and adds a child `Text` component for each list item.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/FriendsCollectionKComponent.kt start=start_lazy_list_example end=end_lazy_list_example
 ```
@@ -27,8 +27,9 @@ The following example creates a `LazyList` and adds a child `Text` component for
 An important difference from adding children in a normal container like `Column` is that each child needs a consistent and unique id. This id is used to detect moves, insertions, deletions, and updates across render passes.
 
 There are two primary ways to add children to a Lazy Collection:
-- `child`: takes a component and an *optional* `id` parameter - if `id` is null or not provided, an id will be generated based on the sequence and type of this child in the list (i.e. 'third Text'). This auto-generated id may be fine, but an explicit one is safer!
-- `children`: takes a lambda mapping a list of data to a list of components and a *mandataory* `id` function that maps data to an id for that component.
+
+* `child` - takes a component and an *optional* `id` parameter - if `id` is null or not provided, an id will be generated based on the sequence and type of this child in the list (i.e. 'third Text'). This auto-generated id may be fine, but an explicit one is safer!
+* `children` - takes a lambda mapping a list of data to a list of components and a *mandataory* `id` function that maps data to an id for that component.
 
 For more information on how to make sure updates are applied to your Lazy List correctly and efficiently, see the [Working with Updates docs](lazycollections-working-with-updates.mdx).
 
@@ -43,13 +44,13 @@ The above component creates a `Column` and adds a child `Text` component for eac
 
 **This approach is inefficient and inflexible when dealing with many items.**
 
-Consider if there were 100 friends. During the resolution of the `Column`, you would also eagerly resolve 100 `Text` components, despite only a few being initially visible on the screen. Additionally, if one of the names was updated or changed position, all 100 `Text` components would be resolved again.
+Consider a user with 100 friends. During the resolution of the `Column`, the associated 100 `Text` components would also be resolved despite only a few being visible on the screen initially. Additionally, if one of the names was updated or changed position, all 100 `Text` components would be resolved again.
 
 A more efficient and flexible approach is to use Lazy Collections.
 
 ### Next Steps
 
-- **Layouts**: check out the [next page](lazycollections-layout) to learn about how to customize the rendering of your list.
-- **Interactions**: check out docs on [list interactions](lazycollections-interactions) to learn about how to interact with and listen to events on your list.
-- **Performance**: check out the docs on [working with updates](lazycollections-working-with-updates) to learn about how to make sure your list handles updates efficiently.
-- **Migrating from Sections**: if you're migrating an existing list from the Sections API, checkout [docs to aid your migration](lazycollections-sections-migration).
+* **Layouts** - for information on how to customize the rendering of a list, see the [Layout and Styling](lazycollections-layout.mdx) page.
+* **Interactions** - to learn how to interact with and listen to events on a list, see the [Interactions](lazycollections-interactions.mdx) page.
+* **Performance** - for details on how to make sure a list handles updates efficiently, refer to the [Working with Updates](lazycollections-working-with-updates.mdx) page.
+* **Migrating from Sections** - if you're migrating an existing list from the Sections API, have a look at the [Sections Migration Guide](lazycollections-sections-migration.mdx).

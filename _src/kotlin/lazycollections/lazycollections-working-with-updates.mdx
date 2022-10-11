@@ -5,7 +5,7 @@ title: Working with Updates
 
 A Lazy Collection is updated by changing the prop/state values from which it is generated.
 
-To ensure correctness and performance you must:
+For correctness and performance, ensure the following:
 
 1. [Provide Child identity](#child-identity) for all children that can be updated.
 2. [Avoid unnecessary layouts](#avoiding-unnecessary-layouts) by making sure that props of children don't unnecessarily change.
@@ -14,7 +14,7 @@ The above two points are detailed in the following sections.
 
 ## Child identity
 
-Each child in a Lazy Collection has an `id`, which is either assigned by the Developer.
+Each child in a Lazy Collection has an `id`, which is assigned by the Developer.
 
 The `id` is used to determine how a collection changed after an update: children may have been added, removed, changed position, or had their content updated. Since an `id` is unique to a child, it is used to match children across changes to create minimal changeset and apply content update animations, and so on.
 
@@ -23,7 +23,7 @@ If no `id` parameter is assigned by a Developer, then it's generated using the c
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_static_id_example end=end_static_id_example
 ```
 
-If the list contents can be updated, you must provide unique ids that are consistent across renders.
+If the list contents can be updated, then provide unique ids that are consistent across renders.
 
 In the following example, there are two `Text` components, one is added conditionally based on `shouldShowGreeting`, the other is unconditional. If generated ids are used, the first child is always assigned the id "Text:0", so the id would be inconsistent across renders. On Android, you can fix this by manually assigning an `id`.
 
@@ -48,7 +48,7 @@ During a list update, if a child with the same `id` is found in the old and new 
 Content changes are detected by checking the equality of the component's props. **If any component prop does not implement an `equals()` then it cannot be reused**. It is common for classes to not implement `equals()` such as Drawables, Lambdas, and data models. A little bit more work is required to avoid unnecessary layouts when these are used.
 
 :::info
-**The behaviour will be functionally correct by default.** If you use props that do not provide an `equals()` the UI will still use the most up-to-date prop and state values. However, there will be unnecessary layouts which will impact performance.
+**The behaviour will be functionally correct by default.** If using props that do not provide an `equals()`, the UI will still use the most up-to-date prop and state values. However, there will be unnecessary layouts, which will impact performance.
 :::
 
 ### Using classes without `equals()` as Props
@@ -64,7 +64,7 @@ In the above example, `NameComponent` will be laid out on any update because it 
 
 Unnecessary layouts can be avoided using two methods:
 
-1. Add an `equals()` to the `Name` class, such as by making it a `data` class. This approach will not be possible if you're using an object provided by a framework you don't control.
+1. Add an `equals()` to the `Name` class, such as by making it a `data` class. This approach will not be possible if using an uncontrolled object provided by a framework.
 2. Manually specify the dependencies that, if changed, should trigger an update.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/ApplyingUpdates.kt start=start_name_list_fixed end=end_name_list_fixed
@@ -112,4 +112,4 @@ Each shopping list item requires a lambda to toggle a checkmark. If an unwrapped
 
 ### Debugging unnecessary layouts
 
-In debug builds, you can enable the `overlayRenderCount` parameter on your Lazy Collection. This will overlay the render count onto each list item enabling you to see if items are being re-drawn when they have not changed. Simple, static items should only be rendered once. Items should only be re-rendered if their props have changed. If re-renders are being triggered by other items changing, you will likely need to take steps to deal with a prop that does not implement an `equals()`.
+In debug builds, `overlayRenderCount` parameter can be enabled on the Lazy Collection. This will overlay the render count onto each list item enabling the user the ability to see if items are being re-drawn when they have not changed. Simple, static items should only be rendered once. Items should only be re-rendered if their props have changed. If re-renders are being triggered by other items changing, then steps might need to be taken to deal with a prop that does not implement an `equals()`.
