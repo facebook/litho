@@ -21,7 +21,7 @@ This page covers the old Java Spec API. If you're not using the Spec API, refer 
 
 A *layout spec* is the logical equivalent of a composite view on Android; it simply groups existing components together in an immutable layout tree.
 
-Implementing a layout spec is very simple: you only need to write one method annotated with `@OnCreateLayout` which returns an immutable tree of [Component](pathname:///javadoc/com/facebook/litho/Component.html) objects.
+Implementing a layout spec is very simple: just write one method annotated with `@OnCreateLayout`, which returns an immutable tree of [Component](pathname:///javadoc/com/facebook/litho/Component.html) objects.
 
 Following is a simple example:
 
@@ -51,7 +51,7 @@ public class MyComponentSpec {
 }
 ```
 
-As you can see, layout spec classes use the `@LayoutSpec` annotation.
+As can be seen from the example above, layout spec classes use the `@LayoutSpec` annotation.
 
 The method annotated with `@OnCreateLayout` must have [ComponentContext](pathname:///javadoc/com/facebook/litho/ComponentContext.html) as its first argument followed by a list of arguments annotated with `@Prop`. The annotation processor will validate this and other invariants in the API at build time.
 
@@ -85,8 +85,6 @@ To see all the layout features that the framework exposes, refer to the [Yoga](h
   <TabItem value="kotlin">
 
 A *layout spec* is the logical equivalent of a composite view on Android. It simply groups existing components together in an immutable layout tree.
-
-Implementing a layout spec is very simple: you only need to write one method annotated with `@OnCreateLayout` which returns an immutable tree of [Component](pathname:///javadoc/com/facebook/litho/Component.html) objects.
 
 Let's start with a simple example:
 

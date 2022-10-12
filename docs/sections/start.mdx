@@ -7,7 +7,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import {FbInternalOnly, OssOnly} from 'docusaurus-plugin-internaldocs-fb/internal';
 
 :::caution
-This page covers the older Java codegen-based Sections API. If you're creating a new list in Kotlin, refer to the [Lazy Collection docs](../kotlin/lazycollections/lazycollections.mdx).
+This page covers the older Java codegen-based Sections API. If creating a new list in Kotlin, refer to the [Lazy Collection docs](../kotlin/lazycollections/lazycollections.mdx).
 :::
 
 ## Introduction
@@ -16,7 +16,7 @@ The Sections API provides a declarative, composable, and thread-safe API for wri
 
 Litho Components are used for various aspects of the UI. Sections are a way of composing data into a list of Litho Components or Views.
 
-If you visualize your screen as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen. The following diagram shows the relationship between Sections and Litho components.
+If the screen is visualized as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen. The following diagram shows the relationship between Sections and Litho components.
 
 <img src={useBaseUrl("/images/sections-intro.png")} width="800px" />
 
@@ -24,7 +24,7 @@ Sections use the same hierarchical declarative data model as Components. Under t
 
 ## List building blocks
 
-This section details the parts necessary to build a list: a [RecyclerCollectionComponent](#recyclercollectioncomponent) for your layout, which sets several `DiffSection`s that are either [SingleComponentSection](#singlecomponentsection) or [DataDiffSection](#datadiffsection), all contained inside [GroupSection](#groupsection) hierarchies.
+This section details the parts necessary to build a list: a [RecyclerCollectionComponent](#recyclercollectioncomponent) for layout, which sets several `DiffSection`s that are either [SingleComponentSection](#singlecomponentsection) or [DataDiffSection](#datadiffsection), all contained inside [GroupSection](#groupsection) hierarchies.
 
 As preparation, the following 10-minute video 'Litho Lessons: Diffing in Sections' covers the basics of how diffing operates.
 
@@ -32,7 +32,7 @@ As preparation, the following 10-minute video 'Litho Lessons: Diffing in Section
 
 ### RecyclerCollectionComponent
 
-You can use the `RecyclerCollectionComponent`, as you would use any other component in the framework, by building it and adding it as a child in your layout, as shown in the following code:
+As with any other component, the `RecyclerCollectionComponent` can be used by building it and adding it as a child in the layout:
 
 ```java
 RecyclerCollectionComponent.create(c)
@@ -40,8 +40,7 @@ RecyclerCollectionComponent.create(c)
     .build();
 ```
 
-For now, this is all you need to know about adding Sections to your layout.
-For advanced use cases, such as snapping and horizontal Lists, see the [RecyclerCollectionComponent](recycler-collection-component.md) page.
+For now, this is all that needs to be known about adding Sections to a layout.  For advanced use cases, such as snapping and horizontal Lists, see the [RecyclerCollectionComponent](recycler-collection-component.md) page.
 
 ### DiffSection
 
@@ -51,7 +50,7 @@ Following this model, the Sections API ships two `DiffSectionSpec` implementatio
 
 #### SingleComponentSection
 
-A `SingleComponentSection` is used to represent a **one-off row** in a complex list. As the name suggests, you can use this Section to render a single Component, which is passed to this Section as its only prop.
+A `SingleComponentSection` is used to represent a **one-off row** in a complex list. As the name suggests, Section can be used to render a single Component, which is passed to this Section as its only prop.
 
 One of the typical use cases of a `SingleComponentSection` is to add a loading spinner at the end of a list:
 
@@ -72,7 +71,7 @@ SingleComponentSection.create(c)
 #### DataDiffSection
 
 A `DataDiffSection` is used to represent a **homogeneous list of immutable data**.
-The minimal information that you must pass to a `DataDiffSection` is the list of items that it needs to render and a callback for rendering each item in this list.
+The minimal information that must be passed to a `DataDiffSection` is the list of items that it needs to render and a callback for rendering each item in this list.
 
 ```java
 DataDiffSection.<MyModel>create(c)
@@ -105,9 +104,9 @@ For a deep dive into how to build performant and accurate diffing, including dif
 
 A `GroupSectionSpec` is used to **structure your Sections into a hierarchy**, each one responsible for rendering its own chunk of data.
 
-Group section specs are classes annotated with `@GroupSectionSpec`. Implementing a `GroupSectionSpec` is very simple: you only need to write one method annotated with `@OnCreateChildren`. This method returns a tree of Sections that will have root in this `GroupSectionSpec`.
+Group section specs are classes annotated with `@GroupSectionSpec`. Implementing a `GroupSectionSpec` is very simple: just write one method annotated with `@OnCreateChildren`. This method returns a tree of Sections that will have root in this `GroupSectionSpec`.
 
-The following code shows how you could declare a simple List that contains a header followed by a list of `String` items:
+The following code shows how to declare a simple List that contains a header followed by a list of `String` items:
 
 ```java
 @GroupSectionSpec
@@ -178,7 +177,7 @@ The following image is a representation of the tree of Sections that has its roo
 
 <img src={useBaseUrl("/images/group-section-spec.png")} width="800" />
 
-The Sections hierarchy becomes a data source for the `RecyclerCollectionComponent`.  You only have to pass the data that the `ContactsSection` will use to create each `SimpleListSection`, as shown in the following code.
+The Sections hierarchy becomes a data source for the `RecyclerCollectionComponent`. To create each `SimpleListSection`, it's only necessary to pass the data that the `ContactsSection` will use, as shown in the following code.
 
 ```java
 @OnCreateLayout
@@ -194,7 +193,7 @@ static Component onCreateLayout(
 ```
 
 :::note
-The complexity of handling operations on your list, such as inserts or removes, is hidden away and handled by the infrastructure.
+The complexity of handling operations on a list, such as inserts or removes, is hidden away and handled by the infrastructure.
 :::
 
 ## Further reading
@@ -202,10 +201,8 @@ The complexity of handling operations on your list, such as inserts or removes, 
 * [Best Practices and Performance](best-practices.mdx) (start here)
 * [Adding and Adapting RecyclerCollection to your App](recycler-collection-component.md)
 * [Advanced Topic: Granular Dependency Injection](services.md)
-* [Advanced Topic: Prefetch and pagination](working-ranges.md)
+* [Advanced Topic: Prefetch and Pagination](working-ranges.md)
 
 <FbInternalOnly>
-
-If you need assistance, consult the internal wiki page [Debugging Litho Sections Surfaces with the Flipper Sections Plugin](https://fburl.com/wiki/sr02b53q).
-
+If you need assistance, consult the internal Wiki page [Debugging Litho Sections Surfaces with the Flipper Sections Plugin](https://fburl.com/wiki/sr02b53q).
 </FbInternalOnly>

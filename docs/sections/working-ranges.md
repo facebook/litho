@@ -4,12 +4,12 @@ title: Prefetch and Pagination
 ---
 
 :::caution
-This page covers the older Java codegen-based Sections API. If you're using the Kotlin Lazy Collection API, refer to the [interactions docs for Lazy Collection](../kotlin/lazycollections/lazycollections-interactions.mdx) for similar relevant content.
+This page covers the older Java codegen-based Sections API. If using the Kotlin Lazy Collection API, refer to the [interactions docs for Lazy Collection](../kotlin/lazycollections/lazycollections-interactions.mdx) for similar relevant content.
 :::
 
 The Working Ranges API provides the means to perform complex operations such as data prefetching and cache warming.
 
-The API extends Sections with a set of appearance and visibility events when a Section enters and exits a given range of positions inside and outside the screen viewport. For example, you can perform a network request to start prefetching data as the last element of a list approaches the viewport.
+The API extends Sections with a set of appearance and visibility events when a Section enters and exits a given range of positions inside and outside the screen viewport. For example, a network request can be performed to start prefetching data as the last element of a list approaches the viewport.
 
 The API is split into two parts:
 
@@ -18,7 +18,7 @@ The API is split into two parts:
 
 ## Defining a range
 
-To use the Working Range API, you first need to define your own WorkingRange class that implements the [WorkingRange](pathname:///javadoc/com/facebook/litho/WorkingRange.html) interface. This is achieved with the following:
+To use the Working Range API, first, define a WorkingRange class that implements the [WorkingRange](pathname:///javadoc/com/facebook/litho/WorkingRange.html) interface. This is achieved with the following:
 
 ```java
 public class AtLeastPartiallyVisibleRange implements WorkingRange { ... }
@@ -63,12 +63,12 @@ public boolean shouldExitRange(
 ```
 
 :::caution
-For working ranges, the granularity in the [ComponentKit](https://componentkit.org/) is measured with pixels whereas with Litho its positions. This means you can only tell if the component is within a range of positions instead of how many pixels are in the range.
+For working ranges, the granularity in the [ComponentKit](https://componentkit.org/) is measured with pixels whereas with Litho its positions. This means it's only possible to tell if the component is within a range of positions instead of how many pixels are in the range.
 :::
 
 ## Receiving Range Events
 
-After defining a working range, you implement the callback functions inside the components that should receive the exit and enter range events on the `@LayoutSpec` that contains your `RecyclerComponent`, as follows:
+After defining a working range, the callback functions are implemented inside the components that should receive the exit and enter range events on the `@LayoutSpec` that contains the `RecyclerComponent`, as follows:
 
 ```java
 @LayoutSpec
