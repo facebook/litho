@@ -251,6 +251,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableTwoBindersRecycler = false;
 
+  public static boolean enableMountableInNewsFeed = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;
