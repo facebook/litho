@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import com.facebook.litho.annotations.Hook
-import com.facebook.litho.config.ComponentsConfiguration
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
@@ -61,10 +60,6 @@ internal constructor(
     private val hookStateIndex: Int,
     val value: T
 ) {
-
-  private val isSkipEqualValueStateUpdatesEnabled =
-      if (context.componentTree == null) ComponentsConfiguration.skipEqualValueStateUpdates
-      else context.componentTree.skipEqualValueStateUpdatesEnabled()
 
   /**
    * Updates this state value and enqueues a new layout calculation reflecting it to execute in the
@@ -153,20 +148,12 @@ internal constructor(
   }
 
   private fun canSkip(newValue: T): Boolean {
-    if (!isSkipEqualValueStateUpdatesEnabled) {
-      return false
-    }
-
     return context.componentTree.treeState?.canSkipStateUpdate(
         context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext())
         ?: false
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
-    if (!isSkipEqualValueStateUpdatesEnabled) {
-      return false
-    }
-
     val treeState = context.componentTree.treeState
     return treeState?.canSkipStateUpdate(
         newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext())

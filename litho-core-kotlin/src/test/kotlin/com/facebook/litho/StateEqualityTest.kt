@@ -114,25 +114,6 @@ class StateEqualityTest {
     assertThat(stateBox1.get()).isNotEqualTo(stateBox2.get())
   }
 
-  @Test
-  fun `same state with equal value is equal`() {
-    val stateBox = AtomicReference<State<DataClassDemo>>()
-    lithoViewRule.render {
-      StateBoxComponent(
-          initialState1 = DataClassDemo(1), initialState2 = DataClassDemo(1), stateBox1 = stateBox)
-    }
-
-    val firstState = stateBox.get()
-    stateBox.set(null)
-
-    // Note: this may break when we skip updates that have equal values...
-    firstState.updateSync(DataClassDemo(1))
-
-    val secondState = stateBox.get()
-
-    assertThat(firstState).isEqualTo(secondState)
-  }
-
   private data class DataClassDemo(val i: Int)
 
   private class StateBoxComponent<T>(

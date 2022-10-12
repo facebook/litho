@@ -62,11 +62,11 @@ class LithoViewRuleTest {
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         val randomState = useState { false }
+        if (randomState.value) {
+          throw Exception("Hi There!")
+        }
         return Row(style = Style.width(100.px).height(100.px)) {
-          child(
-              Text(
-                  text = "some_other_text",
-                  style = Style.onClick { randomState.update { throw Exception("Hi There!") } }))
+          child(Text(text = "some_other_text", style = Style.onClick { randomState.update(true) }))
         }
       }
     }

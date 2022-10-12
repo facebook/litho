@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert
@@ -25,8 +24,6 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,16 +35,6 @@ import org.robolectric.shadows.ShadowLooper
 @RunWith(LithoTestRunner::class)
 class KStateSkipSameValueTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
-
-  @Before
-  fun setUp() {
-    ComponentsConfiguration.skipEqualValueStateUpdates = true
-  }
-
-  @After
-  fun cleanup() {
-    ComponentsConfiguration.skipEqualValueStateUpdates = false
-  }
 
   @Test
   fun `skip state update if new value is the same as old value during layout`() {

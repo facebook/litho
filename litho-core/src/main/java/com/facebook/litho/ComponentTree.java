@@ -365,9 +365,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   protected final int mId;
 
-  private final boolean mSkipEqualValueStateUpdates =
-      ComponentsConfiguration.skipEqualValueStateUpdates;
-
   private final ErrorEventHandler mErrorEventHandler;
 
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
@@ -494,10 +491,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
-  }
-
-  public boolean skipEqualValueStateUpdatesEnabled() {
-    return mSkipEqualValueStateUpdates;
   }
 
   private static boolean incrementalMountGloballyDisabled() {

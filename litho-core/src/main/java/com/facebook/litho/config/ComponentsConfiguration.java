@@ -239,8 +239,6 @@ public class ComponentsConfiguration {
 
   public static boolean crashIfExceedingStateUpdateThreshold = false;
 
-  public static boolean skipEqualValueStateUpdates = false;
-
   public static boolean enableRecyclerBinderStableId = false;
 
   public static boolean requestMountForPrefetchedItems = false;
