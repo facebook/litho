@@ -1,78 +1,93 @@
 ---
 id: mountable
-title: Mountable
+title: Lifecycle of a Mountable
 ---
 
-A Mountable hosts all the logic to create, measure, and bind the content the Mountable Component will render.
+A `Mountable` represents a reusable unit responsible for hosting the logic to create, measure, and bind the content that the mountable component will render.
 
-`MountableComponent.render()` method should return a `Mountable` implementation and any `Style` object you want to apply to the component on the `MountableRenderResult` object.
+As illustrated in the [Creating a Mountable Component](mountable-component.mdx#creating-a-mountable-component) page, the `MountableComponent.render()` method should return a `Mountable` implementation and any `Style` object to be applied to the component on the `MountableWithStyle` object.
 
 :::note
-Mountable extends [RenderUnit](introduction-to-rendercore.mdx/#renderunit) - a rendering primitive. You can [learn more about RenderUnit and RenderCore](introduction-to-rendercore.mdx).
+Mountable extends `RenderUnit`, which is a rendering primitive. For more information, see the [Introduction to RenderCore](introduction-to-rendercore.mdx/#renderunit) page.
 :::
 
-## The lifecycle of a Mountable
+## Lifecycle of a Mountable
 
-A Mountable has four important phases in its lifecycle, which happen in the following order:
+A Mountable has four important stages in its lifecycle, which must occur in the following order:
 
-1. measuring the size of the content (can happen on any thread)
-2. creating content (can only happen on the main thread)
-3. binding (setting) content properties (can only happen on the main thread)
-4. unbinding (unsetting) content properties (can only happen on the main thread)
+1. [Content size measurement](#content-size-measurement)
+1. [Creation](#creation-of-a-mountable)
+1. [Content creation](#content-creation)
+1. [Binding and unbinding content properties](#binding-and-unbinding-content-properties)
 
-You can learn more about each of these phases in the sections below.
+Each of these stages is detailed in the following sub-sections.
 
-## Creating a Mountable
+### Content size measurement
 
-In order to create a Mountable you should write an class that extends the [Mountable](pathname:///javadoc/com/facebook/rendercore/Mountable.html) abstract class. Implementations directly extending the `Mountable` class allow you to specify multiple [Binders](introduction-to-rendercore.mdx/#binder) to set and unset properties on the mounted content.
+:::note
+This stage of the mountable's lifecycle can occur on any thread.
+:::
 
-In the majority of cases a single `Binder` will be enough to implement the binding required for your `MountableComponent`.
-
-For this reason a `SimpleMountable` abstract class has been created for you to implement. It encapsulates the logic of the `Binder` creation and addition, and you should just override `mount()`, `unmount()` and optionally `shouldUpdate()` method to implement setting and unsetting the properties on the content.
-
-You can see an example implementation of a SimpleMountable below:
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewComponent.kt start=start_simple_mountable_example end=end_simple_mountable_example
-```
-
-## Measuring the size of the content
-
-Each Mountable should implement a `measure()` function to define how a Mountable should measure itself given arbitrary width and height specs. A `MeasureResult` object it returns should contain the width and height of the content, and optionally any layout data.
+Each Mountable should implement a `measure()` function to define how it measures itself given arbitrary width and height specs. The `MeasureResult` object it returns contains the width and height of the content, and optionally any layout data, as shown in the following example:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=measure_example_start end=measure_example_end
 ```
 
-You can [learn different strategies to measure the content](mountable-measuring.mdx).
+To learn about the different strategies to measure content, see the [Measuring](mountable-measuring.mdx) page.
 
-## Content creation
+### Creation of a Mountable
+
+In order to create a Mountable, write a class that extends the [Mountable](pathname:///javadoc/com/facebook/rendercore/Mountable.html) abstract class. Implementations directly extending the `Mountable` class enable multiple [Binders](introduction-to-rendercore.mdx/#binder) to be specified to set and unset properties on the mounted content (see [Binding and unbinding content properties](#binding-and-unbinding-content-properties)).
+
+In the majority of cases, a single `Binder` will be enough to implement the binding required for the `MountableComponent`.
+
+For this reason, a `SimpleMountable` abstract class has been created, which encapsulates the logic of the `Binder` creation and addition. To implement setting and unsetting the properties of the content, just override `mount()`, `unmount()`, and, optionally, the `shouldUpdate()` method.
+
+The following example provides an implementation of `SimpleMountable` in an `ImageView`:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewComponent.kt start=start_simple_mountable_example end=end_simple_mountable_example
+```
+
+### Content creation
+
+:::note
+This stage of the mountable's lifecycle can only occur on the main thread.
+:::
 
 Each Mountable needs to create the content it hosts (either a `View` or a `Drawable`) via a [ContentAllocator](introduction-to-rendercore.mdx/#contentallocator).
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=create_content_example_start end=create_content_example_end
 ```
 
-You should also pass the type of the created content to the `Mountable` super constructor, either `RenderType.VIEW` for Views or `RenderType.DRAWABLE` for Drawables.
+You should also pass the type of the created content to the `Mountable` super constructor, either `RenderType.VIEW` for views or `RenderType.DRAWABLE` for drawables.
 
 :::note
 The content should not be mutated based on props passed from MountableComponent to the Mountable.
 :::
 
-In order to optimize the mount performance, the `ContentAllocator` can also be used to define a content pooling strategy. You can [follow dedicated documentation page to implement this concept](mountable.mdx).
+In order to optimize the mount performance, the `ContentAllocator` can also be used to define [content pooling](mountable.mdx).
 
-## Binding the content
+### Binding and unbinding content properties
 
-A Mountable uses one or more [Binders](introduction-to-rendercore.mdx/#binder) to set and unset properties on the mounted content.
+:::note
+This stage of the mountable's lifecycle can only occur on the main thread.
+:::
+
+A Mountable uses one or more [Binders](introduction-to-rendercore.mdx/#binder) to `bind()` and `unbind()` properties on the mounted content.
 
 Each Binder should implement 3 methods:
-- bind() - used to set properties
-- unbind() - used to unset properties
-- shouldUpdate() - used to decide whether properties need resetting
+
+- `bind()` - used to set properties.
+- `unbind()` - used to unset properties.
+- `shouldUpdate()` - used to decide whether properties need resetting.
+
+The following code shows a simple mountable, where mount() is the equivalent of bind() and unmount() is the equivalent of unbind():
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=mount_unmount_example_start end=mount_unmount_example_end
 ```
 
 Each `Binder` should be added to the `Mountable` using the `addMountUnmountExtension()` method.
 
-:::note
-It is important that once set, a property should be unset in the matching `unbind()` method to ensure correctness when the content is reused.
+:::note Important
+Once set, a property should be unset in the matching `unbind()` method to ensure correctness when the content is reused.
 :::
