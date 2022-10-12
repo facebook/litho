@@ -4,10 +4,10 @@ title: "Mount Specs"
 ---
 
 :::info
-A *mount spec* defines a component that can render views or drawables.
+A *mount spec* defines a component that can render views or drawables; it should only be created when there is a need to integrate views/drawables with Litho.
 :::
 
-Mount specs should only be created when you need to integrate your own views/drawables with Litho. Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a 'View' or a 'Drawable') to be displayed.
+Here, *Mount* refers to the operation performed by all components in a layout tree to extract their rendered state (a 'View' or a 'Drawable') to be displayed.
 
 Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
 
@@ -22,7 +22,7 @@ The following abbreviations are used in the lifecycle
 The lifecycle of mount spec components is as follows:
 
 1. Run `@OnPrepare` once, before the layout calculation [BG/UI].
-2. Run `@OnMeasure` optionally during layout calculation. This will **not** be called if Yoga has already determined your component's bounds (for example, a static width/height was set on the component) [BG/UI].
+2. Run `@OnMeasure` during layout calculation [optional]. This will **not** be called if Yoga has already determined the component's bounds (for example, if a static width/height was set on the component) [BG/UI].
 3. Run `@OnBoundsDefined` once, after layout calculation. This will be called whether or not `@OnMeasure` was called [BG/UI].
 4. Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. **It must not return null** [UI].
 5. Run `@OnMount` before the component is attached to a hosting view. This will happen when the component is about to become visible when incremental mount is enabled (it is enabled by default) [UI/PC].
@@ -63,9 +63,9 @@ Within the above code snippet:
 
 ## Inter-stage inputs and outputs
 
-You can move heavy operations off the UI thread by performing them in the `@OnPrepare` method, which runs only once before the layout calculation is performed and can be executed in a background thread.
+Heavy operations can be moved off the UI thread by performing them in the `@OnPrepare` method, which runs just once before the layout calculation is performed and can be executed in a background thread.
 
-If you want to perform the color name parsing off the UI thread in the `ColorComponent` above then you need a way to pass values generated in the `@OnPrepare` method to the `@OnMount` implementation. Litho provides 'inter-stage inputs and outputs' to enable you to do exactly that.
+To perform the color name parsing off the UI thread in the `ColorComponent` above, there needs to be a way to pass values generated in the `@OnPrepare` method to the `@OnMount` implementation: Litho provides a way with 'inter-stage inputs and outputs'.
 
 The following snippet uses a `ColorComponent` with the described `@OnPrepare` method:
 
@@ -98,13 +98,13 @@ public class ColorComponentSpec {
 
 Using `Output<?>` in any of the `@MountSpec` methods automatically creates an input for the following stages. In this case, an `@OnPrepare` output creates an input for `@OnMount`.
 
-The annotation processor will ensure inter-stage invariants are respected at build time. For example, you cannot use outputs from `@OnMeasure` in `@OnPrepare` as `@OnPrepare` always runs before `@OnMeasure`.
+The annotation processor ensures inter-stage invariants are respected at build time. For example, outputs from `@OnMeasure` cannot be used in `@OnPrepare` because `@OnPrepare` always runs before `@OnMeasure`.
 
 ## Measurement
 
-You should implement an `@OnMeasure` method whenever you want to define how your component should be measured during the layout calculation.
+Whenever there is a need to define how a component should be measured during the layout calculation, implement an `@OnMeasure` method.
 
-The following assigns the `ColorComponent` a default width and enforces a certain aspect ratio when its height is undefined.
+The following snippet assigns `ColorComponent` a default width and enforces a certain aspect ratio when its height is undefined.
 
 ```java
 @OnMeasure
@@ -131,7 +131,7 @@ static void onMeasure(
 }
 ```
 
-You can access component props with the `@Prop` annotation as usual in `@OnMeasure`. SizeSpec's API is analogous to Android's [MeasureSpec](http://developer.android.com/reference/android/view/View.MeasureSpec.html).
+Component props can be accessed with the `@Prop` annotation as usual in `@OnMeasure`. SizeSpec's API is analogous to Android's [MeasureSpec](http://developer.android.com/reference/android/view/View.MeasureSpec.html).
 
 Just like `@OnPrepare`, the `@OnMeasure` method can also generate inter-stage outputs (accessible via the `@FromMeasure` argument annotation) and may be performed in a background thread.
 

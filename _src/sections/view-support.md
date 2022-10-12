@@ -3,7 +3,7 @@ id: view-support
 title: Mixing with Android Views
 ---
 
-Sections work best when combined with the rendering optimisations that Litho Components offer. However, the API also provides **support for rendering Android** `View`s instead of (or along with) Components. This makes the transition to Sections easier; you can still take advantage of the performance benefits regardless of your product's UI using traditional Android Views, Litho Components or a mix of the two.
+Sections work best when combined with the rendering optimisations that Litho components offer. However, the API also provides **support for rendering Android** `View`s instead of (or along with) components. This makes the transition to Sections easier. The advantages of the improved performance are still available regardless of the product's UI using traditional Android Views, Litho components or a mix of the two.
 
 View support is available only through [DataDiffSection](start.mdx#datadiffsection).
 
@@ -40,7 +40,7 @@ When an item needs to be rendered on-screen, the framework dispatches a `RenderE
 
 ### ViewRenderInfo
 
-The most commonly used implementation of `RenderInfo` is [ComponentRenderInfo](pathname:///javadoc/com/facebook/litho/widget/ComponentRenderInfo.html). The GroupSectionSpec above shows how it can be used to declare an item to be rendered using Litho Components. If you want to render items with Views instead, all you have to do is to return a different `RenderInfo` implementation, namely a [`ViewRenderInfo`](pathname:///javadoc/com/facebook/litho/widget/ViewRenderInfo.html) instance, from the `RenderEvent` handler, as shown in the following code:
+The most commonly used implementation of `RenderInfo` is [ComponentRenderInfo](pathname:///javadoc/com/facebook/litho/widget/ComponentRenderInfo.html). The GroupSectionSpec above shows how it can be used to declare an item to be rendered using Litho Components. To render items with views instead, just return a different `RenderInfo` implementation, namely a [`ViewRenderInfo`](pathname:///javadoc/com/facebook/litho/widget/ViewRenderInfo.html) instance, from the `RenderEvent` handler, as shown in the following code:
 
 ```java
 @OnEvent(RenderEvent.class)
@@ -57,7 +57,7 @@ static RenderInfo onRenderEvent(
 
 `ViewRenderInfo` has two mandatory props that need to be passed to it: a [ViewCreator](pathname:///javadoc/com/facebook/litho/viewcompat/ViewCreator.html) and a [ViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/ViewBinder.html). These props are the logical equivalent of the `onCreateViewHolder()` and `onBindViewHolder()` methods of the `RecyclerView.Adapter`.
 
-The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if you only need to implement one of the `ViewBinder` methods, typically `bind(View)`:
+The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](pathname:///javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that can be used if there is a need to implement only one of the `ViewBinder` methods, typically `bind(View)`:
 
 ```java
 private static SimpleViewBinder VIEW_BINDER =
@@ -82,9 +82,9 @@ private static ViewCreator VIEW_CREATOR =
     };
 ```
 
-### Mixing Components and Views
+### Mixing components and views
 
-If your Section needs to render items with a mixture of Litho Components and Views, you can do that by returning the appropriate `RenderInfo` implementation from the `RenderEvent` handler, as shown in the following code:
+If the Section needs to render items with a mixture of Litho components and views, it can be achieved by returning the appropriate `RenderInfo` implementation from the `RenderEvent` handler, as shown in the following code:
 
 ```java
 @OnEvent(RenderEvent.class)
