@@ -121,4 +121,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   protected LayoutState resumeCalculation(LayoutState partialResult) {
     throw new UnsupportedOperationException("LayoutTreeFuture cannot be resumed.");
   }
+
+  @Override
+  public boolean isEquivalentTo(TreeFuture that) {
+    throw new UnsupportedOperationException(
+        "isEquivalentTo should not be invoked for LayoutTreeFuture.");
+  }
 }

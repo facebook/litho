@@ -88,6 +88,9 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   @Nullable
   protected abstract T resumeCalculation(T partialResult);
 
+  /** Returns true if the provided TreeFuture is equivalent to this one. */
+  public abstract boolean isEquivalentTo(TreeFuture that);
+
   /** Releases this TreeFuture */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   synchronized void release() {

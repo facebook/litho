@@ -3064,21 +3064,28 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    public boolean isEquivalentTo(LayoutStateFuture that) {
+    @Override
+    public boolean isEquivalentTo(TreeFuture that) {
+      if (!(that instanceof LayoutStateFuture)) {
+        return false;
+      }
+
       if (this == that) {
         return true;
       }
 
-      if (widthSpec != that.widthSpec) {
+      final LayoutStateFuture thatLsf = (LayoutStateFuture) that;
+
+      if (widthSpec != thatLsf.widthSpec) {
         return false;
       }
-      if (heightSpec != that.heightSpec) {
+      if (heightSpec != thatLsf.heightSpec) {
         return false;
       }
-      if (!context.equals(that.context)) {
+      if (!context.equals(thatLsf.context)) {
         return false;
       }
-      if (root.getId() != that.root.getId()) {
+      if (root.getId() != thatLsf.root.getId()) {
         // We only care that the root id is the same since the root is shallow copied before
         // it's passed to us and will never be the same object.
         return false;

@@ -107,4 +107,22 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
 
     return new LithoResolutionResult(node, partialResult.cache, partialResult.treeState, false);
   }
+
+  @Override
+  public boolean isEquivalentTo(TreeFuture that) {
+    if (!(that instanceof RenderTreeFuture)) {
+      return false;
+    }
+
+    final RenderTreeFuture thatRtf = (RenderTreeFuture) that;
+
+    if (!mComponentContext.equals(thatRtf.mComponentContext)) {
+      return false;
+    }
+    if (mComponent.getId() != thatRtf.mComponent.getId()) {
+      return false;
+    }
+
+    return true;
+  }
 }
