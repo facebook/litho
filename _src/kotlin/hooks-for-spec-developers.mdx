@@ -10,14 +10,14 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 :::note
 This page covers how to convert existing code from lifecycle methods in the Java Specs API to hooks in the Kotlin API.
 
-To familiarize yourself with the concept and rules for Hooks, see the [Introduction to Hooks](../mainconcepts/hooks-intro.mdx) page.
+For information on the concept and rules for Hooks, see the [Introduction to Hooks](../mainconcepts/hooks-intro.mdx) page.
 :::
 
 One of the biggest changes in the Litho Kotlin API is the introduction of hooks: most of the APIs implemented with lifecycle methods in the Java Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
 
 ## useState
 
-`useState` allows a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The following code shows a comparison of Spec API and Kotlin API code for the same component:
+`useState` enables a component to persist a variable across renders and replaces the `@State`, `@OnCreateInitialState`, and `@OnUpdateState` APIs. The following code shows a comparison of Spec API and Kotlin API code for the same component:
 
 <Tabs
   groupId="state"
@@ -62,13 +62,13 @@ In addition to the existing `@OnAttached`/`@OnDetached` functionality, it provid
 
 ### Changes to Attach/Detach Contract
 
-In the Java Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the component was first attached to/detached from the tree. This could lead to bugs where, for example, your component subscribes to a data store using a userId prop, and then that prop changes.
+In the Java Spec API, `@OnAttached`/`@OnDetached` would be called only once, when the component was first attached to/detached from the tree. This could lead to bugs where, for example, when a component subscribes to a data store using a userId prop, and then that prop changes.
 
 `useEffect` tries to solve this by taking a var-arg list of *dependencies*: any time any of these dependencies changes, the cleanup lambda (previously `@OnDetached`) will be called followed by the new effect lambda. If no dependencies are provided, the previous cleanup and new effect lambdas will be invoked again **every time a new layout is committed**.
 
 ### Listening to Prop/State Changes
 
-An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached` is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever some prop changes:
+An important functionality that `useEffect` adds over `@OnAttached`/`@OnDetached` is the ability to trigger code when props/state change. For example, this can be used to trigger an animation as a side-effect whenever a prop changes:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/animatedcounter/AnimatedCounter.kt start=start_example end=end_example
 ```
@@ -79,7 +79,7 @@ For more information, see the [useEffect](../mainconcepts/use-effect.mdx) page i
 
 The `useRef` hook allows a component to maintain a mutable reference that doesn't trigger a re-render when updated.
 
-It returns an instance of `Ref` which has a single mutable `value` property which should only be read/written on the UI thread. `useRef` can be used as a replacement for [lazy state](/docs/codegen/state-for-specs#lazy-state-updates) from the Spec API, though it has more uses beyond that.
+It returns an instance of `Ref` that has a single mutable `value` property, which should only be read/written on the UI thread. `useRef` can be used as a replacement for [lazy state](/docs/codegen/state-for-specs#lazy-state-updates) from the Spec API, though it has additional uses.
 
 ### Example: logging 'seen' state
 
