@@ -10,7 +10,7 @@ The `measure()` function returns a `MeasureResult` object that contains the widt
 :::note
 `measure()` method can be called on any thread, and has the following characteristics:
 - it must not cause any side effects
-- it is guaranteed to be called at least once, and can be called multiple times
+- it is guaranteed to be called at least once, and can be called multiple times (if `measure()` is called again in the same layout pass, `previousLayoutData` parameter will contain the layout data returned by the previous `measure()` call)
 :::
 
 ## Measuring in practice
