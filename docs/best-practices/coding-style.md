@@ -3,20 +3,20 @@ id: coding-style
 title: Coding Style
 ---
 
-This page contains Best Practice guidelines for styling your code.
+This page contains Best Practice guidelines for styling code.
 
 ## Guidelines
 
 * **Components**:
-  * Name your specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.
-  * The *ComponentContext* argument should be simply called `c` to make your layout code less verbose and more readable.
+  * Name specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.
+  * The *ComponentContext* argument should be simply called `c` to make the layout code less verbose and more readable.
 * **Resource Types** - where appropriate, use resource types, such as `ResType.STRING`, `ResType.COLOR`, `ResType.DIMEN_SIZE`, to make it easier to set prop values from Android resources.
 * **Props**:
   * Declare all required props first then the optional ones (`optional = true`).
   * Declare common props (props defined for all Components on `Component.Builder`) after the component's own props.
-* **Enums** - use static imports on all layout enums (such as `YogaEdge`, `YogaAlign`, `YogaJustify`) to reduce your layout code and make it more readable.
+* **Enums** - use static imports on all layout Enums (such as `YogaEdge`, `YogaAlign`, `YogaJustify`) to reduce layout code and make it more readable.
 * **Conditionals** - use inline conditionals on optional children to keep the layout construction code fluent if possible.
-* **Child Container** - if you are constructing a child container, add the container in the following line. This gives the code a layout like construction.
+* **Child Container** - if constructing a child container, add the container in the following line. This gives the code a layout like construction.
 * **Lifecycle methods** - such as `@OnCreateLayout`, should be static and package-private.
 
 The following snippet is an example of an application of the Litho Best Practice coding style:

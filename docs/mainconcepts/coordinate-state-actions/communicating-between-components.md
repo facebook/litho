@@ -76,7 +76,7 @@ As shown in the following code, the parent component can:
 
 New data can be passed to a component from outside a Litho hierarchy by simply creating a new root component with new props.
 
-There are multiple ways you can perform an action on a component from outside a Litho hierarchy.  The preferred method to pass new information to a component is by recreating it with new props; sometimes, it's necessary to trigger an action from non-Litho systems.
+There are multiple ways to perform an action on a component from outside a Litho hierarchy. The preferred method to pass new information to a component is by recreating it with new props; sometimes, it's necessary to trigger an action from non-Litho systems.
 
 #### With an observer
 
@@ -92,14 +92,14 @@ The Component implements the callback and dispatches a state update on itself wh
 
 #### With a handle
 
-You can create a Handle reference and pass it to a Component, then use the reference to invoke a trigger defined in the component:
+A Handle reference can be created and passed to a Component, then used to invoke a trigger defined in the component:
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/stateupdates/StateUpdateFromOutsideTreeActivity.java start=start_external_handle end=end_external_handle
 ```
 
 ### Communicating externally from a Component
 
-To send events from a component to a listener outside of the Litho hierarchy, you can define an observer externally and invoke it from a component lifecycle method.
+To send events from a component to a listener outside of the Litho hierarchy, define an observer externally and invoke it from a component lifecycle method.
 
 ```java file=sample/src/main/java/com/facebook/samples/litho/java/communicating/CommunicatingFromChildToParent.java start=start_define_observer end=end_define_observer
 ```
