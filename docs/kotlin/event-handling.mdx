@@ -10,7 +10,7 @@ import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 There are three scenarios in which the use of Event Handlers is different in the Kotlin API:
 
 1. [Events in common props](#events-in-common-props) - `clickHandlers` are replaced by `lambdas`.
-2. [Custom events in specs](#custom-events-in-specs) - accepts EventHandlers, where you can use `eventHandler` or `eventHandlerWithReturn`.
+2. [Custom events in specs](#custom-events-in-specs) - accepts EventHandlers, where `eventHandler` or `eventHandlerWithReturn` can be used.
 3. [Accepting event handlers](#accepting-event-handlers) - custom `Event` classes are replaced by `lambdas` passed as props.
 
 Each of these scenarios is detailed in the following sections.
@@ -19,7 +19,9 @@ Each of these scenarios is detailed in the following sections.
 
 ### Events in common props
 
-Events that were exposed in common props in the Java Spec API (such as `clickHandler`) are now exposed on `Style`. Style properties accept [lambdas](https://kotlinlang.org/docs/lambdas.html) instead of a reference to a generated `EventHandler`.
+Events that were exposed in common props in the Java Spec API (such as `clickHandler`) are now exposed on `Style`.
+
+Style properties accept [lambdas](https://kotlinlang.org/docs/lambdas.html) instead of a reference to a generated `EventHandler`.
 
 <Tabs
   groupId="event-handling"
@@ -45,7 +47,7 @@ Events that were exposed in common props in the Java Spec API (such as `clickHan
 
 ### Custom events in specs
 
-When using pre-existing Spec Components or Sections that accept custom events (such as RenderEvent in DataDiffSection), you'll still need to pass in an `EventHandler` for compatibility. You should use either `eventHandler` or `eventHandlerWithReturn`, depending on whether the code handling the event needs to return a value. Both of these functions accept a lambda, which is invoked when the event happens.
+When using pre-existing Spec Components or Sections that accept custom events (such as RenderEvent in DataDiffSection), there is still a need to pass in an `EventHandler` for compatibility. Use either `eventHandler` or `eventHandlerWithReturn`, depending on whether the code handling the event needs to return a value. Both of these functions accept a lambda, which is invoked when the event occurs.
 
 <Tabs
   groupId="event-handling"
@@ -71,7 +73,7 @@ When using pre-existing Spec Components or Sections that accept custom events (s
 
 ## Accepting event handlers
 
-In the Java Spec API, you could declare your Spec accepted custom event handlers by creating an Event class, and then either providing a value to the `events` param in the `@LayoutSpec` annotation, or accept an `EventHandler` as a prop, as detailed in the [Events for Specs](/codegen/events-for-specs.md) page. In the Kotlin API, you can simply accept a lambda as a prop to be invoked when the event happens:
+In the Java Spec API, Spec-accepted custom event handlers could be accepted by creating an Event class, and then either providing a value to the `events` param in the `@LayoutSpec` annotation or accepting an `EventHandler` as a prop, as detailed in the [Events for Specs](/codegen/events-for-specs.md) page. In the Kotlin API, simply accept a lambda as a prop to be invoked when the event happens:
 
 <Tabs
   groupId="event-handling"

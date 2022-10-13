@@ -19,9 +19,11 @@ The advantages of Lazy Collections over Sections include:
 
 The migration to Lazy Collections involves the following three steps:
 
-1. Replacing the component that renders the section tree with a Lazy Collection component (see [Replace the RecyclerCollectionComponent](#replace-the-recyclercollectioncomponent), below).
-2. Adding each component from the section tree as a child of the Lazy Collection (see [Migrating the GroupSectionSpec](#migrating-the-groupsectionspec) and [Migrating the DataDiffSection](#migrating-the-datadiffsection), below).
-3. Migrating any event handlers or state (see [Migrating Event Handlers](#migrating-event-handlers) and [Migrating Section State](#migrating-section-state), below).
+1. Replacing the component that renders the section tree with a Lazy Collection component - see [Replace the RecyclerCollectionComponent](#replace-the-recyclercollectioncomponent).
+2. Adding each component from the section tree as a child of the Lazy Collection - see [Migrating the GroupSectionSpec](#migrating-the-groupsectionspec) and [Migrating the DataDiffSection](#migrating-the-datadiffsection).
+3. Migrating any event handlers or state - see [Migrating Event Handlers](#migrating-event-handlers) and [Migrating Section State](#migrating-section-state).
+
+Each of the above steps is detailed in the following sections.
 
 ## Replace the RecyclerCollectionComponent
 
@@ -42,10 +44,10 @@ val component = LazyList {
 ```
 
 :::info
-Lazy Collections can only be used inside `KComponent`s. If you are migrating a Spec component then first convert it to a `KComponent` or implement the Lazy Collection inside a `KComponent` container.
+Lazy Collections can only be used inside `KComponent`s. If migrating a Spec component then first convert it to a `KComponent` or implement the Lazy Collection inside a `KComponent` container.
 :::
 
-Next, you need to migrate the content from the Section into the Lazy Collection, as detailed below.
+Next, migrate the content from the Section into the Lazy Collection, as detailed below.
 
 ## Migrating the GroupSectionSpec
 
@@ -102,7 +104,7 @@ Migrating the above Section to a Lazy Collection's yields:
 
 ## Migrating Section State
 
-State managed by a `Section` should be moved into the component that manages the Lazy Collection. You may consider defining your Lazy Collection inside a dedicated `KComponent` so that it can maintain its own state.
+State managed by a `Section` should be moved into the component that manages the Lazy Collection. It may beneficial to consider defining the Lazy Collection inside a dedicated `KComponent` so that it can maintain its own state.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/StateSectionSpec.kt start=start_example end=end_example
 ```
