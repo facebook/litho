@@ -5,7 +5,7 @@ title: Events for Specs
 
 The framework provides a general-purpose API to connect components through events. Events are declared as a POJO (Plain Old Java Object) with an `@Event` annotation. By convention, Event class names are suffixed with *Event*.
 
-Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
+Event declarations may not be inner classes of a `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
 
 ```java
 @Event
@@ -38,7 +38,7 @@ class ColorComponentSpec {
 
 For an event of type `FooEvent`, this will auto-generate a matching `dispatchFooEvent` method and an event identifier that will used by event callbacks.
 
-The `dispatchFooEvent` method takes an [EventHandler](pathname:///javadoc/com/facebook/litho/EventHandler.html) as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic listener interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component.
+The `dispatchFooEvent` method takes an [EventHandler](pathname:///javadoc/com/facebook/litho/EventHandler.html) as the first argument followed by the list of attributes defined in the `@Event` class. An `EventHandler` is essentially a generic listener interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by the component.
 
 In the example above, `ColorComponent` takes a `colorChangedHandler` as prop and dispatches the `ColorChangedEvent` to it with the generated `dispatchColorChangedEvent()` method.
 
@@ -46,9 +46,9 @@ In the example above, `ColorComponent` takes a `colorChangedHandler` as prop and
 
 In order to handle events dispatched by other components, you'll need an `EventHandler` instance and a matching callback.
 
-You can create `EventHandler` instances by using your generated component's corresponding event handler factory method. This method will have the same name as your event callback method.
+`EventHandler` instances can be created by using the generated component's corresponding event handler factory method. This method will have the same name as the event callback method.
 
-You define the event callback using the `@OnEvent` annotation. `@OnEvent` takes one argument: the event class. The first parameter of a method annotated with `@OnEvent` has to be a ComponentContext that the framework will populate for you.
+The event callback can be defined using the `@OnEvent` annotation. `@OnEvent` takes one argument: the event class. The first parameter of a method annotated with `@OnEvent` has to be a ComponentContext that the framework will populate.
 
 For example, the following code shows how a component would define a handler for the `ColorChangedEvent` declared above:
 
@@ -82,9 +82,9 @@ class MyComponentSpec {
 }
 ```
 
-Using the `@Param` annotation on one or more of the parameters of the callback method, you can define dynamic event parameters. This is useful if you'd like to define a callback for a certain type of event (such as `onAvatarClicked()`) but would like to know what avatar was clicked. The avatar parameter in this case would be passed to the event handler factory method.
+By using the `@Param` annotation on one or more of the parameters of the callback method, dynamic event parameters can be defined. This is useful for defining a callback for a certain type of event (such as `onAvatarClicked()`) where there is a need to know which avatar was clicked. The avatar parameter in this case would be passed to the event handler factory method.
 
-As you can see, `@OnEvent` callbacks have access to all component props just like the other spec methods.
+`@OnEvent` callbacks have access to all component props just like the other spec methods:
 
 ```java
 @LayoutSpec

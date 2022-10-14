@@ -50,9 +50,9 @@ public class ClearTextTriggerExampleComponentSpec {
 
 ## Trigger custom events
 
-You can trigger your own custom events by taking the following three steps:
+Custom events can be triggered by taking the following three steps:
 
-### 1. Declare your event class
+### 1. Declare the event class
 
 ```java
 @Event
@@ -61,7 +61,7 @@ public class CustomEvent {
 }
 ```
 
-### 2. Create a trigger for your event inside your spec using the `@OnTrigger` annotation
+### 2. Create a trigger for the event inside the spec using the `@OnTrigger` annotation
 
 This method has access to the event's parameters using @FromTrigger, as well as the component's Props and State:
 
@@ -80,7 +80,7 @@ public class ComponentWithCustomEventTriggerComponentSpec {
 
 ### 3. Assign a handle
 
-Uses of your component must be assigned a Handle. The event can be triggered anywhere there is a reference to the `Handle`:
+Uses of the component must be assigned a Handle. The event can be triggered anywhere there is a reference to the `Handle`:
 
 ```java
 @LayoutSpec
