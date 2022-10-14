@@ -200,10 +200,10 @@ module.exports = {
             'mountablecomponents/mountable-bindto',
             'mountablecomponents/mountable-controllers',
             'mountablecomponents/introduction-to-rendercore',
-            'mountablecomponents/mountable-cheatsheet',
             {
               'Migrating to Mountable Components': [
                 'mountablecomponents/migrating-from-mountspecs',
+                'mountablecomponents/mountable-cheatsheet',
               ],
             },
           ]
