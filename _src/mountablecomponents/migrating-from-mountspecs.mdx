@@ -1,0 +1,57 @@
+---
+id: migrating-from-mountspecs
+title: Migrating from MountSpecs
+---
+
+This page outlines the process of migrating from [MountSpecs](../codegen/mount-specs.md) to [Mountable Components](mountable-component.mdx).
+
+Unlike MountSpecs, Mountable Components consist of two separate pieces:
+
+* `MountableComponent.render()` - a method that returns a `Mountable` and `Style` that will be applied to it.
+* `Mountable` - an object that hosts the logic for measuring, creation, and setting properties on the mount content (a view or a drawable).
+
+The following two sections contain information on how to migrate MountSpec static lifecycle methods into a Mountable Component `render()` and the `Mountable` it returns. The [Cheatsheet](mountable-cheatsheet.mdx) can also be consulted for a set of links for the migration of individual aspects of existing code.
+
+:::note
+Before you start migrating your MountSpec, make sure to go through the setup steps outlined [here](../kotlin/setup-and-intro.mdx).
+:::
+
+## Migrating parts belonging to Mountable Component `render()` method
+
+The subsections below outline how to migrate the parts of a MountSpec that will be hosted by the Mountable Component. This includes Props and Common Props, useState and other [Hooks](../kotlin/hooks-for-spec-developers.mdx), Accessibility, Event Handling, and some other MountSpec static lifecycle methods.
+
+### Migrating Props and Common Props
+
+Similar to [KComponents](../kotlin/setup-and-intro.mdx/#props), Props are now just `val` properties on the `MountableComponent`, and `@PropDefaults` become default values of those `val` properties.
+
+Common Props can be set using the `Style` object which the `MountableComponent` returns from `render()` method on the `MountableRenderResult` object. You can find more information on `Style` and how to work with it [here](../kotlin/setup-and-intro.mdx/#common-props).
+
+### Migrating State and some other lifecycle methods
+
+As with KComponents, most of the APIs implemented with lifecycle methods in the Mount Specs API (such as @OnCreateInitialState and @OnAttached) have hooks equivalents in the Kotlin API.
+
+Those Hooks can be used in the `render()` method of the `MountableComponent`.
+
+More information on how to migrate Hooks can be found [here](../kotlin/hooks-for-spec-developers.mdx).
+
+### Migrating Accessibility
+
+Accessibility for Mountable Components is implemented using the `Style` object. You can find out more about how to implement A11Y for Mountable Components [here](accessibility.mdx).
+
+### Migrating event handling
+
+Event Handling migration works in the same way as for KComponents (for details, see the [Event Handling](../kotlin/event-handling.mdx) page).
+
+### Migrating @OnPrepare and @OnLoadStyle lifecycle methods
+
+MountableComponents do not provide a `@OnPrepare` lifecycle method to move heavy operations off the UI thread before the layout calculation is performed. Instead, such operations should take place in the Mountable Component's `render()` method: the result can be passed to the `Mountable` as its `val` property. Therefore, in MountableComponents, there's no equivalent of [inter-stage inputs and outputs](../codegen/mount-specs.md/#inter-stage-inputs-and-outputs).
+
+Similar to `@OnPrepare`, `@OnLoadStyle` lifecycle method's content should also migrate to be a part of MountableComponent's `render()` method.
+
+## Migrating parts belonging to the `Mountable` object
+
+The subsections below outline how to migrate the parts of a MountSpec that will be hosted by the `Mountable`. This includes logic to measure, create (and optionally pool), and bind the content, as well as `DynamicValues` and `Controllers` - a mechanism that replaces `@OnTrigger` static lifecycle method.
+
+:::note
+🚧   UNDER CONSTRUCTION
+:::
