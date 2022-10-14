@@ -201,7 +201,12 @@ module.exports = {
             'mountablecomponents/mountable-controllers',
             'mountablecomponents/introduction-to-rendercore',
             'mountablecomponents/mountable-cheatsheet',
-          ],
+            {
+              'Migrating to Mountable Components': [
+                'mountablecomponents/migrating-from-mountspecs',
+              ],
+            },
+          ]
         },
         {
           'Open Source': [
