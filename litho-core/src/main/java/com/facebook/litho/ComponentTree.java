@@ -1941,6 +1941,25 @@ public class ComponentTree implements LithoLifecycleListener {
         treeProps);
   }
 
+  public void setVersionedRootAndSizeSpecAsync(
+      @Nullable Component root,
+      int widthSpec,
+      int heightSpec,
+      Size output,
+      @Nullable TreeProps treeProps,
+      int externalRootVersion) {
+    setRootAndSizeSpecAndWrapper(
+        root,
+        widthSpec,
+        heightSpec,
+        true /* isAsync */,
+        output,
+        CalculateLayoutSource.SET_ROOT_ASYNC,
+        externalRootVersion,
+        null,
+        treeProps);
+  }
+
   /**
    * @return the {@link LithoView} associated with this ComponentTree if any. Since this is modified
    *     on the main thread, it is racy to get the current LithoView off the main thread.
