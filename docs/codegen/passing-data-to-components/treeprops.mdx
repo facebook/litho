@@ -9,12 +9,12 @@ import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
 :::caution
-This page covers the old Java Spec API. If you aren't using the Spec API, refer to the [TreeProps](../../mainconcepts/props.mdx#tree-props) section of the 'Types of Props' page.
+This page covers the old Java Spec API. If the Spec API is not being used, refer to the [TreeProps](../../mainconcepts/props.mdx#tree-props) section of the 'Types of Props' page.
 :::
 
-A TreeProp is a special type of [prop](props.md) that is transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass props to every component in your hierarchy.
+A TreeProp is a special type of [prop](props.md) that is transparently passed from a parent component to its children. It provides a convenient way to share contextual data or utilities in a tree without having to explicitly pass props to every component in a hierarchy.
 
-A good example of a TreeProp is a 'prefetcher', which fetches network images ahead of render time. Since images are commonplace, the prefetcher is widely used. The prefetcher implementation might be defined for any Component that needs to use it, without having to pass it as a prop in the entire component hierarchy.
+A good example of a TreeProp is a 'prefetcher', which fetches network images ahead of render time. Since images are commonplace, the prefetcher is widely used. The prefetcher implementation might be defined for any component that needs to use it, without having to pass it as a prop in the entire component hierarchy.
 
 ## Declaring a TreeProp
 
@@ -27,7 +27,7 @@ A good example of a TreeProp is a 'prefetcher', which fetches network images ahe
   ]}>
   <TabItem value="kotlin">
 
-In order to declare a TreeProp you need to use `TreePropProvider`:
+In order to declare a TreeProp, use `TreePropProvider`:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ParentKComponent.kt start=start_example end=end_example
 ```
@@ -44,7 +44,7 @@ Each TreeProp is declared and created from a method annotated with `@OnCreateTre
 </Tabs>
 
 :::note
-You can only declare one TreeProp for any one given type. If a child of `ParentComponent` also defines a TreeProp of type `Prefetcher`, it will override the value of that TreeProp for all its children (but not for itself).
+Only one TreeProp can be declared for any one given type. If a child of `ParentComponent` also defines a TreeProp of type `Prefetcher`, it will override the value of that TreeProp for all its children (but not for itself).
 :::
 
 ## Using a TreeProp
@@ -58,7 +58,7 @@ You can only declare one TreeProp for any one given type. If a child of `ParentC
   ]}>
   <TabItem value="kotlin">
 
-The child component can access the TreeProp value through a `ComponentScope.getTreeProp<Type>()` method call, where `Type` is the same type which was provided in `TreePropProvider` call in one of its parents.
+The child component can access the TreeProp value through a `ComponentScope.getTreeProp<Type>()` method call, where `Type` is the same type that was provided in the `TreePropProvider` call in one of its parents.
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/ChildKComponent.kt start=start_example end=end_example
 ```
@@ -79,7 +79,7 @@ The child component can access the TreeProp value through a parameter annotated 
 Once created, the TreeProp value is passed down to all children but isn't accessible from the component that created the TreeProp.
 :::
 
-If you want to access a TreeProp from the component that created it, you can transform it into [State](../state-for-specs.md) as follows:
+To access a TreeProp from the component that created it, transform it into [State](../state-for-specs.md) as follows:
 
 <Tabs
   groupId="tree_prop_tab_group"
@@ -104,7 +104,7 @@ If you want to access a TreeProp from the component that created it, you can tra
 
 ## TreeProps with Lists
 
-TreeProps can be used in Components, Sections and Lazy Collections. They can even be modified between them.
+TreeProps can be used in components, sections and lazy collections. They can even be modified between them.
 
 The following code is an example of a logging data structure that is passed down from the root component to capture information about the hierarchy.
 
@@ -138,7 +138,7 @@ The TopGroupKComponent takes in the root TreeProp and adds its `"top"` tag to it
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/TopGroupKComponent.kt start=start_example end=end_example
 ```
 
-The bottom part here has been omitted for brevity, but you can find it in the repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
+The bottom part here has been omitted for brevity, but it can be found in the repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
 
 The leaf node renders the TreeProp as text in the example case but would normally perform some sort of logging based on the context:
 
@@ -158,7 +158,7 @@ The TopGroupSection takes in the root TreeProp and adds its `"top"` tag to it:
 ```java file=sample/src/main/java/com/facebook/samples/litho/documentation/treeprops/TopGroupSectionSpec.java start=start_example end=end_example
 ```
 
-The bottom part has been omitted here for brevity, but you can find it in the repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
+The bottom part has been omitted here for brevity, but it can be found in the repository under [samples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/documentation/treeprops).
 
 The leaf node simply renders the TreeProp as text in our example case here, but would normally perform some sort of logging based on the context:
 
