@@ -2873,6 +2873,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   class LayoutStateFuture extends TreeFuture<LayoutState> {
+    private final Object loggerMutex = new Object();
     private final ComponentContext context;
     private final Component root;
     private final int widthSpec;
@@ -3013,21 +3014,25 @@ public class ComponentTree implements LithoLifecycleListener {
 
       final ComponentsLogger logger = getContextLogger();
 
-      logFutureTaskGetWaiting =
-          logger != null
-              ? LogTreePopulator.populatePerfEventFromLogger(
-                  mContext,
-                  logger,
-                  logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
-              : null;
+      synchronized (loggerMutex) {
+        logFutureTaskGetWaiting =
+            logger != null
+                ? LogTreePopulator.populatePerfEventFromLogger(
+                    mContext,
+                    logger,
+                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
+                : null;
+      }
     }
 
     @Override
     protected void onWaitEnd(boolean isTracing, boolean errorOccurred) {
       super.onWaitEnd(isTracing, errorOccurred);
 
-      if (!errorOccurred && logFutureTaskGetWaiting != null) {
-        logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
+      synchronized (loggerMutex) {
+        if (!errorOccurred && logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
+        }
       }
     }
 
@@ -3035,17 +3040,19 @@ public class ComponentTree implements LithoLifecycleListener {
     protected void onGetEnd(boolean isTracing) {
       super.onGetEnd(isTracing);
 
-      if (logFutureTaskGetWaiting != null) {
-        final boolean notRunningOnMyThread = mRunningThreadId.get() != Process.myTid();
-        final boolean shouldWaitForResult = !mFutureTask.isDone() && notRunningOnMyThread;
+      synchronized (loggerMutex) {
+        if (logFutureTaskGetWaiting != null) {
+          final boolean notRunningOnMyThread = mRunningThreadId.get() != Process.myTid();
+          final boolean shouldWaitForResult = !mFutureTask.isDone() && notRunningOnMyThread;
 
-        logFutureTaskGetWaiting.markerAnnotate(
-            PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
-        logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
-        final ComponentsLogger logger = getContextLogger();
+          logFutureTaskGetWaiting.markerAnnotate(
+              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
+          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
+          final ComponentsLogger logger = getContextLogger();
 
-        if (logger != null) {
-          logger.logPerfEvent(logFutureTaskGetWaiting);
+          if (logger != null) {
+            logger.logPerfEvent(logFutureTaskGetWaiting);
+          }
         }
       }
     }
