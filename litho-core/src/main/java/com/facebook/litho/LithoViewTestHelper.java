@@ -146,12 +146,29 @@ public class LithoViewTestHelper {
   @DoNotStrip
   public static String viewToString(LithoView view, boolean embedded) {
     DebugComponent root = DebugComponent.getRootInstance(view);
+    return rootInstanceToString(root, embedded, 0);
+  }
+
+  /**
+   * Provides a nested string representation of a DebugComponent and its nested components for
+   * debugging.
+   *
+   * @param root A root DebugComponent
+   * @param embedded if the call is embedded in "adb dumpsys activity"
+   * @param startingDepth the starting depth of the true for printing components (normally defaults
+   *     to 0)
+   */
+  @DoNotStrip
+  public static String rootInstanceToString(
+      @Nullable final DebugComponent root, final boolean embedded, final int startingDepth) {
     if (root == null) {
       return "";
     }
 
+    @Nullable final LithoView view = root.getLithoView();
+
     final StringBuilder sb = new StringBuilder();
-    int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
+    int depth = embedded && view != null ? getLithoViewDepthInAndroid(view) : startingDepth;
     sb.append("\n");
     viewToString(root, sb, embedded, false, depth, 0, 0, null);
     return sb.toString();

@@ -67,6 +67,31 @@ public class LithoViewTestHelperTest {
   }
 
   @Test
+  public void testBasicRootInstanceToStringWithDepth() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
+          }
+        };
+
+    final LithoView lithoView = new LithoView(getApplicationContext());
+    lithoView.setComponent(component);
+    lithoView.measure(unspecified(), unspecified());
+
+    final DebugComponent root = DebugComponent.getRootInstance(lithoView);
+
+    final String string =
+        LithoViewTestHelper.rootInstanceToString(root, false /* embedded */, 1 /* string depth */);
+
+    assertThat(string)
+        .containsPattern(
+            "  litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,100\\}\n"
+                + "    litho.SimpleMountSpecTester\\{\\w+ V.E..... .. 0,0-100,100\\}");
+  }
+
+  @Test
   public void viewToStringWithText() {
     final Component component =
         new InlineLayoutSpec() {
