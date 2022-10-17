@@ -195,7 +195,6 @@ internal class ExperimentalRecyclerMountable(
           ) {
             content.contentDescription = null
             content.setSectionsRecyclerViewLogger(null)
-            content.setEnabled(false)
             content.setOnRefreshListener(null)
             if (model.snapHelper != null) {
               model.snapHelper.attachToRecyclerView(null)
@@ -206,9 +205,9 @@ internal class ExperimentalRecyclerMountable(
                 onScrollListener?.let { content.recyclerView.removeOnScrollListener(it) }
               }
             }
-            model.touchInterceptor?.let {
-              (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
-            }
+
+            (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
+
             model.onItemTouchListener?.let {
               content.recyclerView.removeOnItemTouchListener(model.onItemTouchListener)
             }
@@ -277,7 +276,6 @@ internal class ExperimentalRecyclerMountable(
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
           ) {
-            content.contentDescription = null
             content.recyclerView.setHasFixedSize(false)
             content.recyclerView.clipToPadding = false
             content.clipToPadding = false
@@ -285,7 +283,7 @@ internal class ExperimentalRecyclerMountable(
             content.clipChildren = false
             content.recyclerView.isNestedScrollingEnabled = false
             content.recyclerView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
-            content.recyclerView.id = 0
+            content.recyclerView.id = View.NO_ID
             content.recyclerView.isHorizontalFadingEdgeEnabled = false
             content.recyclerView.isVerticalFadingEdgeEnabled = false
             content.recyclerView.setFadingEdgeLength(0)
@@ -447,7 +445,7 @@ internal class ExperimentalRecyclerMountable(
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
           ) {
-            content.recyclerView.id = 0
+            content.recyclerView.id = View.NO_ID
             content.setProgressBackgroundColorSchemeColor(0)
             model.itemDecoration?.let {
               content.recyclerView.removeItemDecoration(model.itemDecoration)
@@ -532,9 +530,9 @@ internal class ExperimentalRecyclerMountable(
             model.onItemTouchListener?.let {
               content.recyclerView.removeOnItemTouchListener(model.onItemTouchListener)
             }
-            model.touchInterceptor?.let {
-              (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
-            }
+
+            (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
+
             content.setOnRefreshListener(null)
           }
         }
