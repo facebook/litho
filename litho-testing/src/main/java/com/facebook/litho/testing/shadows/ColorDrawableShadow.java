@@ -32,23 +32,8 @@ public class ColorDrawableShadow extends ShadowDrawable {
 
   @RealObject private ColorDrawable mRealColorDrawable;
 
-  private int mAlpha;
-
   @Implementation
   public void draw(Canvas canvas) {
     canvas.drawColor(mRealColorDrawable.getColor());
-  }
-
-  @Override
-  @Implementation
-  public void setAlpha(int alpha) {
-    mAlpha = alpha;
-    mRealColorDrawable.setAlpha(alpha);
-  }
-
-  @Override
-  @Implementation
-  public int getAlpha() {
-    return mAlpha;
   }
 }
