@@ -587,4 +587,28 @@ class FlexboxStylesTest {
     assertThat(lithoViewRule.currentRootNode?.yogaNode?.getMargin(YogaEdge.TOP).toString())
         .isEqualTo("auto")
   }
+
+  @Test
+  fun isReferenceBaseline_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(200, 200)
+        .setRoot { Row(style = Style.isReferenceBaseline(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.currentRootNode?.yogaNode?.isReferenceBaseline).isEqualTo(true)
+  }
+
+  @Test
+  fun useHeightAsBaseline_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(200, 200)
+        .setRoot { Row(style = Style.useHeightAsBaseline(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.currentRootNode?.yogaNode?.isBaselineDefined).isEqualTo(true)
+  }
 }

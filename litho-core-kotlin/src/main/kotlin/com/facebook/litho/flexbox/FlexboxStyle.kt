@@ -62,6 +62,8 @@ internal enum class FlexboxObjectField {
   LAYOUT_DIRECTION,
   MARGIN_AUTO,
   POSITION_TYPE,
+  IS_REFERENCE_BASELINE,
+  USE_HEIGHT_AS_BASELINE,
 }
 
 /** Common style item for all dimen styles. See note on [FlexboxDimenField] about this pattern. */
@@ -114,6 +116,10 @@ internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: 
       FlexboxObjectField.POSITION_TYPE ->
           value?.let { commonProps.positionType(it as YogaPositionType) }
       FlexboxObjectField.MARGIN_AUTO -> value?.let { commonProps.marginAuto(it as YogaEdge) }
+      FlexboxObjectField.IS_REFERENCE_BASELINE ->
+          value?.let { commonProps.isReferenceBaseline(it as Boolean) }
+      FlexboxObjectField.USE_HEIGHT_AS_BASELINE ->
+          value?.let { commonProps.useHeightAsBaseline(it as Boolean) }
     }.exhaustive
   }
 }
@@ -239,3 +245,9 @@ inline fun Style.layoutDirection(layoutDirection: YogaDirection): Style =
  */
 inline fun Style.marginAuto(edge: YogaEdge): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.MARGIN_AUTO, edge)
+
+inline fun Style.isReferenceBaseline(isReferenceBaseline: Boolean): Style =
+    this + FlexboxObjectStyleItem(FlexboxObjectField.IS_REFERENCE_BASELINE, isReferenceBaseline)
+
+inline fun Style.useHeightAsBaseline(useHeightAsBaseline: Boolean): Style =
+    this + FlexboxObjectStyleItem(FlexboxObjectField.USE_HEIGHT_AS_BASELINE, useHeightAsBaseline)
