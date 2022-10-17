@@ -109,8 +109,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         }
       };
 
-  private @Nullable MountExtension mUIDebugger;
-
   public interface OnDirtyMountListener {
     /**
      * Called when finishing a mount where the mount state was dirty. This indicates that there were
@@ -778,19 +776,18 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mLithoHostListenerCoordinator.setCollectNotifyVisibleBoundsChangedCalls(true);
     mLithoHostListenerCoordinator.setSkipNotifyVisibleBoundsChanged(
         mAreViewTreeObserverListenersRegistered);
-
-    if (mUIDebugger != null) {
-      mLithoHostListenerCoordinator.registerUIDebugger(mUIDebugger);
-    }
   }
 
-  public void setUIDebugger(MountExtension extension) {
-    if (mUIDebugger != null && mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.unregisterUIDebugger(mUIDebugger);
+  public void registerUIDebugger(MountExtension extension) {
+    if (mLithoHostListenerCoordinator == null) {
+      setupMountExtensions();
     }
-    mUIDebugger = extension;
+    mLithoHostListenerCoordinator.registerUIDebugger(extension);
+  }
+
+  public void unregisterUIDebugger() {
     if (mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.registerUIDebugger(mUIDebugger);
+      mLithoHostListenerCoordinator.unregisterUIDebugger();
     }
   }
 

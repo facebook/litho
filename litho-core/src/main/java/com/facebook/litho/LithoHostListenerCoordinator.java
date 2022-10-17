@@ -280,15 +280,20 @@ public class LithoHostListenerCoordinator {
   }
 
   public void registerUIDebugger(MountExtension extension) {
-    unregisterUIDebugger(mUIDebuggerExtension);
-    mUIDebuggerExtension = extension;
+    if (mUIDebuggerExtension == extension) {
+      return;
+    }
+
+    unregisterUIDebugger();
     mMountDelegateTarget.registerMountExtension(extension);
+    mUIDebuggerExtension = extension;
   }
 
-  public void unregisterUIDebugger(@Nullable MountExtension extension) {
+  public void unregisterUIDebugger() {
     final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
-    if (extension != null && mountDelegate != null) {
-      mountDelegate.unregisterMountExtension(extension);
+    if (mUIDebuggerExtension != null && mountDelegate != null) {
+      mountDelegate.unregisterMountExtension(mUIDebuggerExtension);
+      mUIDebuggerExtension = null;
     }
   }
 }
