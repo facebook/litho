@@ -24,7 +24,7 @@ import android.view.View
  */
 open class ComponentScope(
     override val context: ComponentContext,
-    internal val renderStateContext: RenderStateContext? = null
+    internal var renderStateContext: RenderStateContext? = null
 ) : ResourcesScope {
   // TODO: Extract into more generic container to track hooks when needed
   internal var useStateIndex = 0
@@ -48,5 +48,9 @@ open class ComponentScope(
    */
   fun <T : View> findViewWithTag(tag: Any): T? {
     return context.findViewWithTag(tag)
+  }
+
+  internal fun cleanUp() {
+    renderStateContext = null
   }
 }

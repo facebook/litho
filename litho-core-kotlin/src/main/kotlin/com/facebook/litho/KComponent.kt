@@ -40,6 +40,7 @@ abstract class KComponent : Component() {
   ): RenderResult {
     val componentScope = ComponentScope(c, renderStateContext)
     val componentResult = componentScope.render()
+    componentScope.cleanUp()
     return RenderResult(
         componentResult, componentScope.transitions, componentScope.useEffectEntries)
   }
