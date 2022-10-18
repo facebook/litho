@@ -155,43 +155,49 @@ public final class DebugComponent {
    * @return A list of child components.
    */
   public List<DebugComponent> getChildComponents() {
-    if (!isLayoutNode()) {
-      final int nextComponentIndex = mComponentIndex - 1;
-      DebugComponent component = getInstance(mResult, nextComponentIndex, mXOffset, mYOffset);
-      if (component != null) {
-        return Collections.singletonList(component);
-      } else {
-        return Collections.emptyList();
-      }
-    }
 
-    final List<DebugComponent> children = new ArrayList<>();
+    if (isNotTailComponent()) {
+      return getImmediateDescendantAsChild();
+    } else {
+      if (mResult instanceof NestedTreeHolderResult) {
+        final LithoLayoutResult nestedResult = ((NestedTreeHolderResult) mResult).getNestedResult();
 
-    for (int i = 0, count = mResult.getChildCount(); i < count; i++) {
-      final LithoLayoutResult childNode = mResult.getChildAt(i);
-      final int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
-      DebugComponent component = getInstance(childNode, index, getXFromRoot(), getYFromRoot());
-      if (component != null) {
-        children.add(component);
-      }
-    }
-
-    final LithoLayoutResult nestedTree =
-        mResult instanceof NestedTreeHolderResult
-            ? ((NestedTreeHolderResult) mResult).getNestedResult()
-            : null;
-    if (nestedTree != null) {
-      for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
-        final LithoLayoutResult childNode = nestedTree.getChildAt(i);
-        int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
-        DebugComponent component = getInstance(childNode, index, getXFromRoot(), getYFromRoot());
-        if (component != null) {
-          children.add(component);
+        if (nestedResult == null
+            || (nestedResult.mNode.getComponentCount() == 1 && nestedResult.getChildCount() == 0)) {
+          return Collections.emptyList();
         }
+
+        if (nestedResult.mNode.getComponentCount() == 1 && nestedResult.getChildCount() > 0) {
+          return getInstance(nestedResult, 0, mXOffset, mYOffset).getChildComponents();
+        }
+
+        final int index = Math.max(0, nestedResult.getNode().getComponentCount() - 2);
+        final DebugComponent component = getInstance(nestedResult, index, mXOffset, mYOffset);
+        return Collections.singletonList(component);
+
+      } else {
+        final List<DebugComponent> children = new ArrayList<>();
+        for (int i = 0, count = mResult.getChildCount(); i < count; i++) {
+          final LithoLayoutResult childNode = mResult.getChildAt(i);
+          final int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
+          DebugComponent component = getInstance(childNode, index, getXFromRoot(), getYFromRoot());
+          if (component != null) {
+            children.add(component);
+          }
+        }
+        return children;
       }
     }
+  }
 
-    return children;
+  private boolean isNotTailComponent() {
+    return mComponentIndex != 0;
+  }
+
+  private List<DebugComponent> getImmediateDescendantAsChild() {
+    final int index = mComponentIndex - 1;
+    DebugComponent component = getInstance(mResult, index, mXOffset, mYOffset);
+    return component != null ? Collections.singletonList(component) : Collections.emptyList();
   }
 
   /** @return A mounted view or null if this component does not mount a view. */

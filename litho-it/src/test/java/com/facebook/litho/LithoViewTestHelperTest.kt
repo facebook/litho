@@ -19,10 +19,13 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
+import com.facebook.litho.view.testKey
+import com.facebook.litho.widget.ComponentContainerWithSize
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
@@ -58,8 +61,9 @@ class LithoViewTestHelperTest {
     val string = LithoViewTestHelper.viewToString(lithoView)
     assertThat(string)
         .containsPattern(
-            """litho.InlineLayout\{\w+ V.E..... .. 0,0-100,100\}
-  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100\}""")
+            """|litho.InlineLayout\{\w+ V.E..... .. 0,0-100,100\}
+               |  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100\}
+               |""")
   }
 
   @Test
@@ -78,8 +82,9 @@ class LithoViewTestHelperTest {
         LithoViewTestHelper.rootInstanceToString(root, false /* embedded */, 1 /* string depth */)
     assertThat(string)
         .containsPattern(
-            """  litho.InlineLayout\{\w+ V.E..... .. 0,0-100,100\}
-    litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100\}""")
+            """|litho.InlineLayout\{\w+ V.E..... .. 0,0-100,100\}
+               |  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100\}
+               |""")
   }
 
   @Test
@@ -104,10 +109,11 @@ class LithoViewTestHelperTest {
     val string = LithoViewTestHelper.viewToString(lithoView)
     assertThat(string)
         .containsPattern(
-            """litho.InlineLayout\{\w+ V.E..... .. 0,0-100,200\}
-  litho.Column\{\w+ V.E..... .. 0,0-100,200\}
-    litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\}
-    litho.Text\{\w+ V.E..... .. 0,100-100,200 text="Hello, World"\}""")
+            """|litho.InlineLayout\{\w+ V.E..... .. 0,0-100,200\}
+               |  litho.Column\{\w+ V.E..... .. 0,0-100,200\}
+               |  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\}
+               |litho.Text\{\w+ V.E..... .. 0,100-100,200 text="Hello, World"\}
+               |""")
   }
 
   @Test
@@ -127,9 +133,290 @@ class LithoViewTestHelperTest {
             }
     assertThat(string)
         .containsPattern(
-            """litho.Column\{\w+ V.E..... .. 0,0-1080,200, key=column}
-  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100, key=simple}
-  litho.Text\{\w+ V.E..... .. 0,100-100,200 text="Hello, World", key=text}
-""")
+            """|litho.Column\{\w+ V.E..... .. 0,0-1080,200, key=column}
+               |  litho.SimpleMountSpecTester\{\w+ V.E..... .. 0,0-100,100, key=simple}
+               |    litho.Text\{\w+ V.E..... .. 0,100-100,200 text="Hello, World", key=text}
+               |""")
+  }
+
+  @Test
+  fun `when root Component uses sizes then TestHelper toString should contain nested tree with children`() {
+    val view =
+        lithoViewRule
+            .render {
+              ComponentContainerWithSize.create(context)
+                  .component(
+                      Column {
+                        child(TextHolderComponent())
+                        child(TextHolderComponent())
+                      })
+                  .build()
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,82, key=null}
+               |  litho.Column\{\w+ V.E..... .. 0,0-1080,82, key=null}
+               |    litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |    litho.TextHolderComponent\{\w+ V.E..... .. 0,41-1080,82, key=null}
+               |      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when root Component uses sizes then TestHelper toString should contain delegated nested tree with children`() {
+    val view =
+        lithoViewRule
+            .render {
+              ComponentContainerWithSize.create(context)
+                  .component(
+                      DelegatingComponent(
+                          component =
+                              Column {
+                                child(TextHolderComponent())
+                                child(TextHolderComponent())
+                              }))
+                  .build()
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,82, key=null}
+               |  litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,82, key=null}
+               |    litho.Column\{\w+ V.E..... .. 0,0-1080,82, key=null}
+               |      litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |        litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |       litho.TextHolderComponent\{\w+ V.E..... .. 0,41-1080,82, key=null}
+               |         litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when root Component uses sizes then TestHelper toString should contain nested tree`() {
+    val view =
+        lithoViewRule
+            .render {
+              ComponentContainerWithSize.create(context).component(ParentComponent()).build()
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |  litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |    litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |      litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when child Component uses sizes then TestHelper toString should contain nested tree`() {
+    val view =
+        lithoViewRule
+            .render {
+              Column {
+                child(
+                    ComponentContainerWithSize.create(context).component(ParentComponent()).build())
+              }
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.Column\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |  litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |    litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |      litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |        litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when delegated root Component uses sizes then TestHelper toString should contain nested tree`() {
+    val view =
+        lithoViewRule
+            .render {
+              DelegatingComponent(
+                  component =
+                      ComponentContainerWithSize.create(context)
+                          .component(ParentComponent())
+                          .build())
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |    litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |      litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |        litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when delegated child Component uses sizes then TestHelper toString should contain nested tree`() {
+    val view =
+        lithoViewRule
+            .render {
+              Column {
+                child(
+                    DelegatingComponent(
+                        component =
+                            ComponentContainerWithSize.create(context)
+                                .component(ParentComponent())
+                                .build()))
+              }
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.Column\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |  litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |    litho.ComponentContainerWithSize\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |      litho.ParentComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |        litho.TextHolderComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |          litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when leaf component is measured then TestHelper toString should contain the leaf node`() {
+    val view =
+        lithoViewRule
+            .render {
+              MeasuringComponent(
+                  component = Text(text = "hello", style = Style.testKey("test-key")))
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |  litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when delegated leaf component is measured then TestHelper toString should contain the leaf node`() {
+    val view =
+        lithoViewRule
+            .render {
+              MeasuringComponent(
+                  component =
+                      DelegatingComponent(
+                          component = Text(text = "hello", style = Style.testKey("test-key"))))
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |  litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |    litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  @Test
+  fun `when leaf component is delegated measured then TestHelper toString should contain the leaf node`() {
+    val view =
+        lithoViewRule
+            .render {
+              DelegatingComponent(
+                  component =
+                      MeasuringComponent(
+                          component = Text(text = "hello", style = Style.testKey("test-key"))))
+            }
+            .lithoView
+
+    val string =
+        LithoViewTestHelper.viewToStringForE2E(view, 0, false) { debugComponent, sb ->
+          sb.append(", key=").append(debugComponent.key)
+        }
+
+    assertThat(string)
+        .containsPattern(
+            """|litho.DelegatingComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |  litho.MeasuringComponent\{\w+ V.E..... .. 0,0-1080,41, key=null}
+               |    litho.Text\{\w+ V.E..... .. 0,0-1080,41 litho:id/test-key text="hello", key=null}
+               |"""
+                .trimIndent())
+  }
+
+  class DelegatingComponent(val component: Component) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return component
+    }
+  }
+
+  class ParentComponent : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return TextHolderComponent()
+    }
+  }
+
+  class TextHolderComponent : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return Text(text = "hello", style = Style.testKey("test-key"))
+    }
+  }
+
+  class MeasuringComponent(val component: Component) : KComponent() {
+    override fun ComponentScope.render(): Component {
+      component.measure(context, unspecified(), unspecified(), Size())
+      return component
+    }
   }
 }
