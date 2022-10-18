@@ -24,7 +24,7 @@ import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayoutContext;
 
-public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator {
+public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAllocator<RCTextView> {
   private long mId;
 
   public TextRenderUnit(long id) {
@@ -39,7 +39,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
   }
 
   @Override
-  public ContentAllocator getContentAllocator() {
+  public ContentAllocator<RCTextView> getContentAllocator() {
     return this;
   }
 

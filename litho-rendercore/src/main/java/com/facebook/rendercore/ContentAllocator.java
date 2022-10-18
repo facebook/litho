@@ -27,16 +27,16 @@ import com.facebook.infer.annotation.Nullsafe;
  * (View or Drawable).
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public interface ContentAllocator {
+public interface ContentAllocator<Content> {
 
   /** Default size of the content pool. */
   public static final int DEFAULT_MAX_PREALLOCATION = 3;
 
   /** Allocates the mountable content (View or Drawable). */
-  Object createContent(Context context);
+  Content createContent(Context context);
 
   /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass. */
-  default Object createPoolableContent(Context context) {
+  default Content createPoolableContent(Context context) {
     return createContent(context);
   }
 

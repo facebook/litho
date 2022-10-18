@@ -88,7 +88,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     return mRenderType;
   }
 
-  public abstract ContentAllocator getContentAllocator();
+  public abstract ContentAllocator<MOUNT_CONTENT> getContentAllocator();
 
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
   public abstract long getId();

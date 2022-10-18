@@ -28,7 +28,7 @@ import com.facebook.rendercore.RenderUnit
  * <p>Experimental. Currently for Litho team internal use only.</p>
  */
 abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
-    Mountable<ContentT>(renderType), ContentAllocator {
+    Mountable<ContentT>(renderType), ContentAllocator<ContentT> {
 
   init {
     addMountBinder(
@@ -61,7 +61,7 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
       currentLayoutData === nextLayoutData &&
           EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable)
 
-  override fun getContentAllocator(): ContentAllocator {
+  override fun getContentAllocator(): ContentAllocator<ContentT> {
     return this
   }
 }

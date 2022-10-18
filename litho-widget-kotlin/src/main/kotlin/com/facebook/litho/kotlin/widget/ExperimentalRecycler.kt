@@ -135,7 +135,7 @@ internal class ExperimentalRecyclerMountable(
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger?,
     private val useTwoBindersRecycler: Boolean,
     private val onRemeasure: () -> Unit
-) : Mountable<SectionsRecyclerView>(RenderType.VIEW), ContentAllocator {
+) : Mountable<SectionsRecyclerView>(RenderType.VIEW), ContentAllocator<SectionsRecyclerView> {
 
   companion object {
     private val CONSTANT_PROPS_ATTACH_BINDER:
@@ -578,5 +578,5 @@ internal class ExperimentalRecyclerMountable(
 
   override fun doesMountRenderTreeHosts(): Boolean = true
 
-  override fun getContentAllocator(): ContentAllocator = this
+  override fun getContentAllocator(): ContentAllocator<SectionsRecyclerView> = this
 }

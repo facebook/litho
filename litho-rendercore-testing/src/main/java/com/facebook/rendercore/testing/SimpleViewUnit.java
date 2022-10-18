@@ -23,7 +23,7 @@ import android.view.View;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
-public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator {
+public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator<View> {
 
   private final View view;
   private final long id;
@@ -45,7 +45,7 @@ public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator
   }
 
   @Override
-  public ContentAllocator getContentAllocator() {
+  public ContentAllocator<View> getContentAllocator() {
     return this;
   }
 

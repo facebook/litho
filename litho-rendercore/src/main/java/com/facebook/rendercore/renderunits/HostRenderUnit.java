@@ -35,7 +35,7 @@ import com.facebook.rendercore.RenderUnit;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class HostRenderUnit extends RenderUnit<HostView> implements ContentAllocator {
+public class HostRenderUnit extends RenderUnit<HostView> implements ContentAllocator<HostView> {
 
   private static final int UNSET = -1;
   private static final int SET_FALSE = 0;
@@ -75,7 +75,7 @@ public class HostRenderUnit extends RenderUnit<HostView> implements ContentAlloc
   }
 
   @Override
-  public ContentAllocator getContentAllocator() {
+  public ContentAllocator<HostView> getContentAllocator() {
     return this;
   }
 

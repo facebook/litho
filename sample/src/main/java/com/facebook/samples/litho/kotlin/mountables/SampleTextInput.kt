@@ -56,7 +56,7 @@ internal class SampleTextInputMountable(
     private val inputBackground: Drawable,
 ) : SimpleMountable<EditText>(RenderType.VIEW) {
 
-  override fun createContent(context: Context): Any {
+  override fun createContent(context: Context): EditText {
     return EditText(context)
   }
 

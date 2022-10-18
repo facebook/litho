@@ -21,7 +21,7 @@ import android.graphics.drawable.Drawable;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
-public class SimpleDrawableUnit extends RenderUnit<Drawable> implements ContentAllocator {
+public class SimpleDrawableUnit extends RenderUnit<Drawable> implements ContentAllocator<Drawable> {
 
   private final Drawable drawable;
   private final long id;
@@ -43,7 +43,7 @@ public class SimpleDrawableUnit extends RenderUnit<Drawable> implements ContentA
   }
 
   @Override
-  public ContentAllocator getContentAllocator() {
+  public ContentAllocator<Drawable> getContentAllocator() {
     return this;
   }
 

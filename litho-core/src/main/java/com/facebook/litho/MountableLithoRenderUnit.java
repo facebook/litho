@@ -56,7 +56,7 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   }
 
   @Override
-  public ContentAllocator getContentAllocator() {
+  public ContentAllocator<Object> getContentAllocator() {
     return mMountable.getContentAllocator();
   }
 

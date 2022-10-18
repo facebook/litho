@@ -213,7 +213,7 @@ public class Reducer {
     }
   }
 
-  private static class RootHostRenderUnit extends RenderUnit implements ContentAllocator {
+  private static class RootHostRenderUnit extends RenderUnit implements ContentAllocator<Object> {
 
     public RootHostRenderUnit() {
       super(RenderUnit.RenderType.VIEW);
@@ -230,7 +230,7 @@ public class Reducer {
     }
 
     @Override
-    public ContentAllocator getContentAllocator() {
+    public ContentAllocator<Object> getContentAllocator() {
       return this;
     }
 

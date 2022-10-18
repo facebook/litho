@@ -31,7 +31,7 @@ import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
-public class MountSpecLithoRenderUnit extends LithoRenderUnit implements ContentAllocator {
+public class MountSpecLithoRenderUnit extends LithoRenderUnit implements ContentAllocator<Object> {
 
   private boolean mIsShouldUpdateCachingEnabled;
   private boolean mIsShouldUpdateResultCached;
@@ -118,7 +118,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   }
 
   @Override
-  public ContentAllocator getContentAllocator() {
+  public ContentAllocator<Object> getContentAllocator() {
     return this;
   }
 
