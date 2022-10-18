@@ -3,6 +3,10 @@ id: lazycollections-layout
 title: Layout and Styling
 ---
 
+:::note
+Within Litho, lists are implemented using the Lazy Collection API.
+:::
+
 ## Layouts
 
 Lazy Collections are available as follows:
@@ -11,14 +15,14 @@ Lazy Collections are available as follows:
 * [LazyGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyGrid.kt) - arranged as a grid with the number of columns specified by the `columns` parameter.
 * [LazyStaggeredGrid](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/LazyStaggeredGrid.kt) - arranged into columns where children are inserted into the first column that has space.
 
-## Horizontal Lists
+## Horizontal lists
 
 To make a Lazy Collection horizontal, set the parameter `orientation = RecyclerView.HORIZONTAL`. By default, it's necessary to specify a height, such as `style = Style.height(100.dp)`, as follows:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_fixed_height_hscroll_example end=end_fixed_height_hscroll_example
 ```
 
-### Defining Height Behavior
+### Defining height behavior
 
 The height behavior of a horizontal list is determined by the `crossAxisWrapMode` parameter.
 
@@ -39,7 +43,7 @@ To add spacing around and between items, use `LinearSpacing`. This will create a
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/LayoutAndStyling.kt start=start_linear_spacing_example end=end_linear_spacing_example
 ```
 
-## Sticky Headers
+## Sticky headers
 
 To make a child 'sticky', specify the parameter `isSticky = true`. This will cause the child to stick to the top of the Lazy Collection rather than being scrolled out of the viewport.
 

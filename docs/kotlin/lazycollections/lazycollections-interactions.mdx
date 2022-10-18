@@ -3,6 +3,10 @@ id: lazycollections-interactions
 title: Interactions
 ---
 
+:::note
+Within Litho, lists are implemented using the Lazy Collection API.
+:::
+
 ## Scrolling the Lazy Collection
 
 Scrolling the Lazy Collection by a given distance, or to a child with a given index/id, is a two-step process:
@@ -13,7 +17,7 @@ Scrolling the Lazy Collection by a given distance, or to a child with a given in
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/collection/Interactions.kt start=start_scrolling_example end=end_scrolling_example
 ```
 
-## Responding to Scroll Events
+## Responding to scroll events
 
 An [OnNearCallback](https://github.com/facebook/litho/blob/master/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget/collection/OnNearCallback.kt) can be applied to the Lazy Collection's `onNearEnd` parameter, or a child's `onNearViewport` parameter.
 
