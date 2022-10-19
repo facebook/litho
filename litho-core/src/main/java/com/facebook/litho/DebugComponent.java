@@ -162,30 +162,25 @@ public final class DebugComponent {
       if (mResult instanceof NestedTreeHolderResult) {
         final LithoLayoutResult nestedResult = ((NestedTreeHolderResult) mResult).getNestedResult();
 
-        if (nestedResult == null
-            || (nestedResult.mNode.getComponentCount() == 1 && nestedResult.getChildCount() == 0)) {
+        if (nestedResult == null) {
           return Collections.emptyList();
         }
 
-        if (nestedResult.mNode.getComponentCount() == 1 && nestedResult.getChildCount() > 0) {
-          return getInstance(nestedResult, 0, mXOffset, mYOffset).getChildComponents();
+        if (nestedResult.mNode.getComponentCount() == 1) {
+          if (nestedResult.getChildCount() == 0) {
+            return Collections.emptyList();
+          } else {
+            getChildren(nestedResult, getXFromRoot(), getYFromRoot());
+          }
         }
 
         final int index = Math.max(0, nestedResult.getNode().getComponentCount() - 2);
-        final DebugComponent component = getInstance(nestedResult, index, mXOffset, mYOffset);
+        final DebugComponent component =
+            getInstance(nestedResult, index, getXFromRoot(), getYFromRoot());
         return Collections.singletonList(component);
 
       } else {
-        final List<DebugComponent> children = new ArrayList<>();
-        for (int i = 0, count = mResult.getChildCount(); i < count; i++) {
-          final LithoLayoutResult childNode = mResult.getChildAt(i);
-          final int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
-          DebugComponent component = getInstance(childNode, index, getXFromRoot(), getYFromRoot());
-          if (component != null) {
-            children.add(component);
-          }
-        }
-        return children;
+        return getChildren(mResult, getXFromRoot(), getYFromRoot());
       }
     }
   }
@@ -196,8 +191,24 @@ public final class DebugComponent {
 
   private List<DebugComponent> getImmediateDescendantAsChild() {
     final int index = mComponentIndex - 1;
+    if (index < 0) {
+      return Collections.emptyList();
+    }
     DebugComponent component = getInstance(mResult, index, mXOffset, mYOffset);
     return component != null ? Collections.singletonList(component) : Collections.emptyList();
+  }
+
+  private static List<DebugComponent> getChildren(LithoLayoutResult result, int x, int y) {
+    final List<DebugComponent> children = new ArrayList<>();
+    for (int i = 0, count = result.getChildCount(); i < count; i++) {
+      final LithoLayoutResult childNode = result.getChildAt(i);
+      final int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
+      DebugComponent component = getInstance(childNode, index, x, y);
+      if (component != null) {
+        children.add(component);
+      }
+    }
+    return children;
   }
 
   /** @return A mounted view or null if this component does not mount a view. */
