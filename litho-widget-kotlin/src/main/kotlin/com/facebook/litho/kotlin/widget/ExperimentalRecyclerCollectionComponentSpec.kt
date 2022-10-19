@@ -207,12 +207,11 @@ object ExperimentalRecyclerCollectionComponentSpec {
             recyclerViewId = recyclerViewId,
             overScrollMode = overScrollMode,
             recyclerEventsController = internalEventsController,
-            onRefresh = {
-              if (!canPTR) null
-              else {
-                sectionTree.refresh()
-              }
-            },
+            onRefresh =
+                if (!canPTR) null
+                else {
+                  { sectionTree.refresh() }
+                },
             pullToRefresh = canPTR,
             itemDecoration = itemDecoration,
             horizontalFadingEdgeEnabled = horizontalFadingEdgeEnabled,
