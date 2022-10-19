@@ -105,6 +105,7 @@ object ExperimentalRecyclerCollectionComponentSpec {
   @get:PropDefault val incrementalMount: Boolean = true
   @get:PropDefault val refreshProgressBarColor: Int = -0xbd984e // blue
   @get:PropDefault val useTwoBindersRecycler: Boolean = false
+  @get:PropDefault val enableSeparateAnimatorBinder: Boolean = false
 
   @OnCreateLayout
   fun onCreateLayout(
@@ -142,6 +143,7 @@ object ExperimentalRecyclerCollectionComponentSpec {
       @Prop(optional = true) recyclerConfiguration: RecyclerConfiguration,
       @Prop(optional = true) sectionsViewLogger: SectionsRecyclerViewLogger?,
       @Prop(optional = true) useTwoBindersRecycler: Boolean,
+      @Prop(optional = true) enableSeparateAnimatorBinder: Boolean,
       @State(canUpdateLazily = true) hasSetSectionTreeRoot: Boolean,
       @State internalEventsController: RecyclerCollectionEventsController,
       @State layoutInfo: LayoutInfo,
@@ -226,7 +228,8 @@ object ExperimentalRecyclerCollectionComponentSpec {
             binder = binder,
             itemAnimator = itemAnimator,
             sectionsViewLogger = sectionsViewLogger,
-            useTwoBindersRecycler = useTwoBindersRecycler)
+            useTwoBindersRecycler = useTwoBindersRecycler,
+            enableSeparateAnimatorBinder = enableSeparateAnimatorBinder)
     val containerBuilder: ContainerBuilder<*> =
         Column.create(c).flexShrink(0f).alignContent(YogaAlign.FLEX_START).child(recycler)
     if (loadingState == LoadingState.LOADING && loadingComponent != null) {

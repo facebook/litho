@@ -56,6 +56,7 @@ fun ExperimentalRecyclerWrapper(
     onRefresh: (() -> Unit)? = null,
     sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger? = null,
     useTwoBindersRecycler: Boolean = false,
+    enableSeparateAnimatorBinder: Boolean = false,
     style: Style? = null
 ): ExperimentalRecycler =
     ExperimentalRecycler(
@@ -84,4 +85,5 @@ fun ExperimentalRecyclerWrapper(
         onRefresh = onRefresh,
         sectionsViewLogger = sectionsViewLogger,
         useTwoBindersRecycler = useTwoBindersRecycler,
+        enableSeparateAnimatorBinder = enableSeparateAnimatorBinder,
         style = style)

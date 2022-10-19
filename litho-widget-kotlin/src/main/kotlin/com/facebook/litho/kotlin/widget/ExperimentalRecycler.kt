@@ -71,6 +71,7 @@ class ExperimentalRecycler(
     private val onRefresh: (() -> Unit)? = null,
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger? = null,
     private val useTwoBindersRecycler: Boolean = false,
+    private val enableSeparateAnimatorBinder: Boolean = false,
     private val style: Style? = null
 ) : MountableComponent() {
 
@@ -103,6 +104,7 @@ class ExperimentalRecycler(
             onRefresh = onRefresh,
             sectionsViewLogger = sectionsViewLogger,
             useTwoBindersRecycler = useTwoBindersRecycler,
+            enableSeparateAnimatorBinder = enableSeparateAnimatorBinder,
             onRemeasure = { measureVersion.update { m -> m + 1 } }),
         style)
   }
@@ -134,6 +136,7 @@ internal class ExperimentalRecyclerMountable(
     private val onRefresh: (() -> Unit)?,
     private val sectionsViewLogger: SectionsRecyclerView.SectionsRecyclerViewLogger?,
     private val useTwoBindersRecycler: Boolean,
+    private val enableSeparateAnimatorBinder: Boolean,
     private val onRemeasure: () -> Unit
 ) : Mountable<SectionsRecyclerView>(RenderType.VIEW), ContentAllocator<SectionsRecyclerView> {
 
@@ -538,6 +541,111 @@ internal class ExperimentalRecyclerMountable(
         }
   }
 
+  private val ANIMATOR_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+      object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+        override fun shouldUpdate(
+            currentModel: ExperimentalRecyclerMountable,
+            newModel: ExperimentalRecyclerMountable,
+            currentLayoutData: Any?,
+            nextLayoutData: Any?
+        ): Boolean = currentModel.itemAnimator != newModel.itemAnimator
+
+        override fun bind(
+            context: Context,
+            content: SectionsRecyclerView,
+            model: ExperimentalRecyclerMountable,
+            layoutData: Any?
+        ) {
+          content.setItemAnimator(
+              if (model.itemAnimator != content.recyclerView.itemAnimator) model.itemAnimator
+              else NoUpdateItemAnimator())
+        }
+
+        override fun unbind(
+            context: Context,
+            content: SectionsRecyclerView,
+            model: ExperimentalRecyclerMountable,
+            layoutData: Any?
+        ) {
+          content.resetItemAnimator()
+        }
+      }
+
+  private val CONSTANT_PROPS_MOUNT_BINDER_WITHOUT_ANIMATOR:
+      Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+      object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+        override fun shouldUpdate(
+            currentModel: ExperimentalRecyclerMountable,
+            newModel: ExperimentalRecyclerMountable,
+            currentLayoutData: Any?,
+            nextLayoutData: Any?
+        ): Boolean =
+            currentModel.hasFixedSize != newModel.hasFixedSize &&
+                currentModel.contentDescription != newModel.contentDescription &&
+                currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
+                currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
+                currentModel.scrollBarStyle != newModel.scrollBarStyle &&
+                currentModel.refreshProgressBarBackgroundColor !=
+                    newModel.refreshProgressBarBackgroundColor &&
+                currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
+                currentModel.isHorizontalFadingEdgeEnabled !=
+                    newModel.isHorizontalFadingEdgeEnabled &&
+                currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled &&
+                currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
+                currentModel.overScrollMode != newModel.overScrollMode
+
+        override fun bind(
+            context: Context,
+            content: SectionsRecyclerView,
+            model: ExperimentalRecyclerMountable,
+            layoutData: Any?
+        ) {
+          with(model) {
+            contentDescription?.let { content.contentDescription = contentDescription }
+            content.recyclerView.setHasFixedSize(hasFixedSize)
+            content.recyclerView.clipToPadding = isClipToPaddingEnabled
+            content.clipToPadding = isClipToPaddingEnabled
+            content.recyclerView.clipChildren = isClipChildrenEnabled
+            content.clipChildren = isClipChildrenEnabled
+            content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
+            content.isNestedScrollingEnabled = isNestedScrollingEnabled
+            content.recyclerView.scrollBarStyle = scrollBarStyle
+            content.recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
+            content.recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
+            content.recyclerView.setFadingEdgeLength(fadingEdgeLength)
+            content.recyclerView.id = recyclerViewId
+            content.recyclerView.overScrollMode = overScrollMode
+            if (refreshProgressBarBackgroundColor != null) {
+              content.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
+            }
+            content.setColorSchemeColors(refreshProgressBarColor)
+          }
+        }
+
+        override fun unbind(
+            context: Context,
+            content: SectionsRecyclerView,
+            model: ExperimentalRecyclerMountable,
+            layoutData: Any?
+        ) {
+          content.contentDescription = null
+          content.recyclerView.setHasFixedSize(false)
+          content.recyclerView.clipToPadding = false
+          content.clipToPadding = false
+          content.recyclerView.clipChildren = false
+          content.clipChildren = false
+          content.recyclerView.isNestedScrollingEnabled = false
+          content.recyclerView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+          content.recyclerView.id = 0
+          content.recyclerView.isHorizontalFadingEdgeEnabled = false
+          content.recyclerView.isVerticalFadingEdgeEnabled = false
+          content.recyclerView.setFadingEdgeLength(0)
+          content.setProgressBackgroundColorSchemeColor(0)
+          content.setColorSchemeColors(0)
+          content.recyclerView.overScrollMode = View.OVER_SCROLL_ALWAYS
+        }
+      }
+
   init {
     if (useTwoBindersRecycler) {
       addMountBinders(
@@ -547,9 +655,15 @@ internal class ExperimentalRecyclerMountable(
           DelegateBinder.createDelegateBinder(this, ATTACH_BINDER),
       )
     } else {
-      addMountBinders(
-          DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER),
-          DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER),
+      addMountBinder(DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER))
+      if (enableSeparateAnimatorBinder) {
+        addMountBinders(
+            DelegateBinder.createDelegateBinder(this, ANIMATOR_BINDER),
+            DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER_WITHOUT_ANIMATOR))
+      } else {
+        addMountBinder(DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER))
+      }
+      addMountBinder(
           DelegateBinder.createDelegateBinder(binder, CONTENT_MOUNT_BINDER),
       )
       addAttachBinders(
@@ -558,6 +672,7 @@ internal class ExperimentalRecyclerMountable(
       )
     }
   }
+
   override fun measure(
       context: RenderState.LayoutContext<*>,
       widthSpec: Int,
