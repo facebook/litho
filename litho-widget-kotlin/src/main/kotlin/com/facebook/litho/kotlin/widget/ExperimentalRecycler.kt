@@ -110,6 +110,10 @@ class ExperimentalRecycler(
   }
 }
 
+// This is the default value for refresh spinner background from
+// SwipeRefreshLayout.CIRCLE_BG_LIGHT which is unfortunately private.
+private const val DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = -0x50506
+
 internal class ExperimentalRecyclerMountable(
     private val binder: LithoBinder<RecyclerView>,
     private val hasFixedSize: Boolean,
@@ -196,19 +200,15 @@ internal class ExperimentalRecyclerMountable(
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
           ) {
-            content.contentDescription = null
             content.setSectionsRecyclerViewLogger(null)
             content.setOnRefreshListener(null)
-            if (model.snapHelper != null) {
-              model.snapHelper.attachToRecyclerView(null)
-            }
+            model.snapHelper?.attachToRecyclerView(null)
             model.recyclerEventsController?.setSectionsRecyclerView(null)
             if (model.onScrollListeners.isNotEmpty()) {
               for (onScrollListener in model.onScrollListeners) {
                 onScrollListener?.let { content.recyclerView.removeOnScrollListener(it) }
               }
             }
-
             (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
 
             model.onItemTouchListener?.let {
@@ -287,20 +287,11 @@ internal class ExperimentalRecyclerMountable(
               model: ExperimentalRecyclerMountable,
               layoutData: Any?
           ) {
-            content.recyclerView.setHasFixedSize(false)
-            content.recyclerView.clipToPadding = false
-            content.clipToPadding = false
-            content.recyclerView.clipChildren = false
-            content.clipChildren = false
-            content.recyclerView.isNestedScrollingEnabled = false
-            content.recyclerView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
             content.recyclerView.id = View.NO_ID
-            content.recyclerView.isHorizontalFadingEdgeEnabled = false
-            content.recyclerView.isVerticalFadingEdgeEnabled = false
-            content.recyclerView.setFadingEdgeLength(0)
-            content.setProgressBackgroundColorSchemeColor(0)
-            content.setColorSchemeColors(0)
-            content.recyclerView.overScrollMode = View.OVER_SCROLL_ALWAYS
+            model.refreshProgressBarBackgroundColor?.let {
+              content.setProgressBackgroundColorSchemeColor(
+                  DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+            }
             content.resetItemAnimator()
           }
         }
@@ -470,7 +461,10 @@ internal class ExperimentalRecyclerMountable(
               layoutData: Any?
           ) {
             content.recyclerView.id = View.NO_ID
-            content.setProgressBackgroundColorSchemeColor(0)
+            model.refreshProgressBarBackgroundColor?.let {
+              content.setProgressBackgroundColorSchemeColor(
+                  DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+            }
             model.itemDecoration?.let {
               content.recyclerView.removeItemDecoration(model.itemDecoration)
             }
@@ -545,9 +539,7 @@ internal class ExperimentalRecyclerMountable(
             model.onItemTouchListener?.let {
               content.recyclerView.removeOnItemTouchListener(model.onItemTouchListener)
             }
-
             (content.recyclerView as LithoRecyclerView).setTouchInterceptor(null)
-
             content.setOnRefreshListener(null)
           }
         }
@@ -648,21 +640,10 @@ internal class ExperimentalRecyclerMountable(
             model: ExperimentalRecyclerMountable,
             layoutData: Any?
         ) {
-          content.contentDescription = null
-          content.recyclerView.setHasFixedSize(false)
-          content.recyclerView.clipToPadding = false
-          content.clipToPadding = false
-          content.recyclerView.clipChildren = false
-          content.clipChildren = false
-          content.recyclerView.isNestedScrollingEnabled = false
-          content.recyclerView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
-          content.recyclerView.id = 0
-          content.recyclerView.isHorizontalFadingEdgeEnabled = false
-          content.recyclerView.isVerticalFadingEdgeEnabled = false
-          content.recyclerView.setFadingEdgeLength(0)
-          content.setProgressBackgroundColorSchemeColor(0)
-          content.setColorSchemeColors(0)
-          content.recyclerView.overScrollMode = View.OVER_SCROLL_ALWAYS
+          content.recyclerView.id = View.NO_ID
+          model.refreshProgressBarBackgroundColor?.let {
+            content.setProgressBackgroundColorSchemeColor(DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+          }
         }
       }
 
