@@ -22,7 +22,6 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.WildcardTypeName;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -169,10 +168,7 @@ public class PropValidation {
               "positionType", ClassName.bestGuess("com.facebook.yoga.YogaPositionType")),
           new CommonPropModel("widthPx", TypeName.INT),
           new CommonPropModel("heightPx", TypeName.INT),
-          new CommonPropModel(
-              "background",
-              ParameterizedTypeName.get(
-                  ClassNames.COMPARABLE_DRAWABLE, WildcardTypeName.subtypeOf(ClassNames.DRAWABLE))),
+          new CommonPropModel("background", ClassNames.DRAWABLE),
           new CommonPropModel("testKey", ClassNames.STRING),
           new CommonPropModel("componentTag", ClassNames.OBJECT),
           new CommonPropModel(
