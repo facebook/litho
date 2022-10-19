@@ -225,22 +225,30 @@ internal class ExperimentalRecyclerMountable(
               newModel: ExperimentalRecyclerMountable,
               currentLayoutData: Any?,
               nextLayoutData: Any?
-          ): Boolean =
-              currentModel.hasFixedSize != newModel.hasFixedSize &&
-                  currentModel.contentDescription != newModel.contentDescription &&
-                  currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
-                  currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
-                  currentModel.scrollBarStyle != newModel.scrollBarStyle &&
-                  currentModel.refreshProgressBarBackgroundColor !=
-                      newModel.refreshProgressBarBackgroundColor &&
-                  currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
-                  currentModel.isHorizontalFadingEdgeEnabled !=
-                      newModel.isHorizontalFadingEdgeEnabled &&
-                  currentModel.isVerticalFadingEdgeEnabled !=
-                      newModel.isVerticalFadingEdgeEnabled &&
-                  currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
-                  currentModel.itemAnimator != newModel.itemAnimator &&
-                  currentModel.overScrollMode != newModel.overScrollMode
+          ): Boolean {
+            if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
+            if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+            if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
+            if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
+            if (currentModel.isHorizontalFadingEdgeEnabled !=
+                newModel.isHorizontalFadingEdgeEnabled)
+                return true
+            if (currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled)
+                return true
+            if (currentModel.fadingEdgeLength != newModel.fadingEdgeLength) return true
+            if (currentModel.refreshProgressBarBackgroundColor !=
+                newModel.refreshProgressBarBackgroundColor)
+                return true
+            if (currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor)
+                return true
+            val previousItemAnimator = currentModel.itemAnimator
+            val nextItemAnimator = newModel.itemAnimator
+            if (previousItemAnimator == null && nextItemAnimator != null ||
+                previousItemAnimator != null &&
+                    previousItemAnimator.javaClass != nextItemAnimator.javaClass)
+                return true
+            return false
+          }
 
           override fun bind(
               context: Context,
@@ -304,7 +312,12 @@ internal class ExperimentalRecyclerMountable(
               newModel: ExperimentalRecyclerMountable,
               currentLayoutData: Any?,
               nextLayoutData: Any?
-          ): Boolean = currentModel.itemDecoration != newModel.itemDecoration
+          ): Boolean {
+            val previous = currentModel.itemDecoration
+            val next = newModel.itemDecoration
+            val itemDecorationIsEqual = if (previous == null) next == null else previous == next
+            return !itemDecorationIsEqual
+          }
 
           override fun bind(
               context: Context,
@@ -388,26 +401,34 @@ internal class ExperimentalRecyclerMountable(
               newModel: ExperimentalRecyclerMountable,
               currentLayoutData: Any?,
               nextLayoutData: Any?
-          ): Boolean =
-              currentModel.hasFixedSize != newModel.hasFixedSize &&
-                  currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
-                  currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
-                  currentModel.scrollBarStyle != newModel.scrollBarStyle &&
-                  currentModel.refreshProgressBarBackgroundColor !=
-                      newModel.refreshProgressBarBackgroundColor &&
-                  currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
-                  currentModel.isHorizontalFadingEdgeEnabled !=
-                      newModel.isHorizontalFadingEdgeEnabled &&
-                  currentModel.isVerticalFadingEdgeEnabled !=
-                      newModel.isVerticalFadingEdgeEnabled &&
-                  currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
-                  currentModel.itemAnimator != newModel.itemAnimator &&
-                  currentModel.contentDescription != newModel.contentDescription &&
-                  currentModel.isNestedScrollingEnabled != newModel.isNestedScrollingEnabled &&
-                  currentModel.contentDescription != newModel.contentDescription &&
-                  currentModel.recyclerViewId != newModel.recyclerViewId &&
-                  currentModel.overScrollMode != newModel.overScrollMode &&
-                  currentModel.itemDecoration != newModel.itemDecoration
+          ): Boolean {
+            if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
+            if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+            if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
+            if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
+            if (currentModel.isHorizontalFadingEdgeEnabled !=
+                newModel.isHorizontalFadingEdgeEnabled)
+                return true
+            if (currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled)
+                return true
+            if (currentModel.fadingEdgeLength != newModel.fadingEdgeLength) return true
+            if (currentModel.refreshProgressBarBackgroundColor !=
+                newModel.refreshProgressBarBackgroundColor)
+                return true
+            if (currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor)
+                return true
+            val previousItemAnimator = currentModel.itemAnimator
+            val nextItemAnimator = newModel.itemAnimator
+            if (previousItemAnimator == null && nextItemAnimator != null ||
+                previousItemAnimator != null &&
+                    previousItemAnimator.javaClass != nextItemAnimator.javaClass)
+                return true
+            val previous = currentModel.itemDecoration
+            val next = newModel.itemDecoration
+            val itemDecorationIsEqual = if (previous == null) next == null else previous == next
+
+            return !itemDecorationIsEqual
+          }
 
           override fun bind(
               context: Context,
@@ -468,16 +489,7 @@ internal class ExperimentalRecyclerMountable(
               newModel: ExperimentalRecyclerMountable,
               currentLayoutData: Any?,
               nextLayoutData: Any?
-          ): Boolean =
-              currentModel.sectionsViewLogger != newModel.sectionsViewLogger &&
-                  currentModel.contentDescription != newModel.contentDescription &&
-                  currentModel.isPullToRefreshEnabled != newModel.isPullToRefreshEnabled &&
-                  currentModel.onScrollListeners != newModel.onScrollListeners &&
-                  currentModel.touchInterceptor != newModel.touchInterceptor &&
-                  currentModel.onItemTouchListener != newModel.onItemTouchListener &&
-                  currentModel.snapHelper != newModel.snapHelper &&
-                  currentModel.binder != newModel.binder &&
-                  currentModel.recyclerEventsController != newModel.recyclerEventsController
+          ): Boolean = currentModel.binder != newModel.binder
 
           override fun bind(
               context: Context,
@@ -548,7 +560,13 @@ internal class ExperimentalRecyclerMountable(
             newModel: ExperimentalRecyclerMountable,
             currentLayoutData: Any?,
             nextLayoutData: Any?
-        ): Boolean = currentModel.itemAnimator != newModel.itemAnimator
+        ): Boolean {
+          val previousItemAnimator = currentModel.itemAnimator
+          val nextItemAnimator = newModel.itemAnimator
+
+          return (if (previousItemAnimator == null) nextItemAnimator != null
+          else previousItemAnimator.javaClass != nextItemAnimator.javaClass)
+        }
 
         override fun bind(
             context: Context,
@@ -579,20 +597,22 @@ internal class ExperimentalRecyclerMountable(
             newModel: ExperimentalRecyclerMountable,
             currentLayoutData: Any?,
             nextLayoutData: Any?
-        ): Boolean =
-            currentModel.hasFixedSize != newModel.hasFixedSize &&
-                currentModel.contentDescription != newModel.contentDescription &&
-                currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled &&
-                currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled &&
-                currentModel.scrollBarStyle != newModel.scrollBarStyle &&
-                currentModel.refreshProgressBarBackgroundColor !=
-                    newModel.refreshProgressBarBackgroundColor &&
-                currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor &&
-                currentModel.isHorizontalFadingEdgeEnabled !=
-                    newModel.isHorizontalFadingEdgeEnabled &&
-                currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled &&
-                currentModel.fadingEdgeLength != newModel.fadingEdgeLength &&
-                currentModel.overScrollMode != newModel.overScrollMode
+        ): Boolean {
+          if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
+          if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+          if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
+          if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
+          if (currentModel.isHorizontalFadingEdgeEnabled != newModel.isHorizontalFadingEdgeEnabled)
+              return true
+          if (currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled)
+              return true
+          if (currentModel.fadingEdgeLength != newModel.fadingEdgeLength) return true
+          if (currentModel.refreshProgressBarBackgroundColor !=
+              newModel.refreshProgressBarBackgroundColor)
+              return true
+          if (currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor) return true
+          return false
+        }
 
         override fun bind(
             context: Context,
