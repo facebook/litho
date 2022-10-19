@@ -49,6 +49,7 @@ import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A {@link DiffSectionSpec} that creates a changeSet diffing a generic {@link List<T>} of data.
@@ -384,6 +385,8 @@ public class DataDiffSectionSpec<T> {
     private final EventHandler<OnCheckIsSameContentEvent<T>> mIsSameContentEventHandler;
 
     private final ThreadLocal<OnCheckIsSameItemEvent> mIsSameItemEventStates;
+    private final OnCheckIsSameItemEvent mIsSameItemEventSingleton;
+    private final AtomicBoolean mIsSameItemEventSingletonUsed;
     private static final OnCheckIsSameItemEvent sDummy = new OnCheckIsSameItemEvent();
 
     Callback(
@@ -408,6 +411,8 @@ public class DataDiffSectionSpec<T> {
               return event;
             }
           };
+      mIsSameItemEventSingleton = new OnCheckIsSameItemEvent();
+      mIsSameItemEventSingletonUsed = new AtomicBoolean(false);
     }
 
     @Override
@@ -439,7 +444,13 @@ public class DataDiffSectionSpec<T> {
       if (mIsSameItemEventHandler != null) {
         HasEventDispatcher hasEventDispatcher =
             mIsSameItemEventHandler.dispatchInfo.hasEventDispatcher;
-        OnCheckIsSameItemEvent isSameItemEventState = mIsSameItemEventStates.get();
+        boolean owned = mIsSameItemEventSingletonUsed.compareAndSet(false, true);
+        OnCheckIsSameItemEvent isSameItemEventState;
+        if (owned) {
+          isSameItemEventState = mIsSameItemEventSingleton;
+        } else {
+          isSameItemEventState = mIsSameItemEventStates.get();
+        }
         if (ComponentsConfiguration.reduceMemorySpikeDataDiffSection()
             && hasEventDispatcher != null
             && isSameItemEventState != null
@@ -459,6 +470,9 @@ public class DataDiffSectionSpec<T> {
           } finally {
             isSameItemEventState.previousItem = sDummy.previousItem;
             isSameItemEventState.nextItem = sDummy.nextItem;
+            if (owned) {
+              mIsSameItemEventSingletonUsed.set(false);
+            }
           }
         } else {
           return DataDiffSection.dispatchOnCheckIsSameItemEvent(
