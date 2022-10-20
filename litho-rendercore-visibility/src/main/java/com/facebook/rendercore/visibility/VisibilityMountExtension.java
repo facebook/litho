@@ -171,7 +171,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @UiThread
-  private static void processVisibilityOutputs(
+  public static void processVisibilityOutputs(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect,
       boolean isDirty) {
@@ -491,7 +491,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
   }
 
-  private static boolean shouldProcessVisibilityOutputs(
+  public static boolean shouldProcessVisibilityOutputs(
       ExtensionState<VisibilityMountExtensionState> extensionState) {
     final VisibilityMountExtensionState state = extensionState.getState();
 

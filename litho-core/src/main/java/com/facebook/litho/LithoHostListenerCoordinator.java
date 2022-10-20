@@ -119,7 +119,13 @@ public class LithoHostListenerCoordinator {
 
     if (mVisibilityExtensionState != null) {
       if (isDirty) {
-        mVisibilityExtensionState.afterMount();
+        final boolean processVisibilityOutputs =
+            VisibilityMountExtension.shouldProcessVisibilityOutputs(mVisibilityExtensionState);
+
+        if (processVisibilityOutputs) {
+          VisibilityMountExtension.processVisibilityOutputs(
+              mVisibilityExtensionState, localVisibleRect, true);
+        }
       } else {
         mVisibilityExtensionState.onVisibleBoundsChanged(localVisibleRect);
       }
