@@ -17,8 +17,8 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MeasureResult;
-import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaNode;
 
 /**
@@ -55,7 +55,7 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
 
   @Override
   protected MeasureResult measureInternal(
-      RenderState.LayoutContext<LithoRenderContext> context, int widthSpec, int heightSpec) {
+      LayoutContext<LithoRenderContext> context, int widthSpec, int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final Component component = mNode.getTailComponent();
     if (context.getRenderContext().mLayoutStateContext.isReleased()) {

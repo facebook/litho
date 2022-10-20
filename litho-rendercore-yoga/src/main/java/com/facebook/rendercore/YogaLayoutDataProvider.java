@@ -28,12 +28,10 @@ public interface YogaLayoutDataProvider<RenderContext> {
 
   boolean nodeCanMeasure(Node node);
 
-  void applyYogaPropsFromNode(
-      Node node, RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
+  void applyYogaPropsFromNode(Node node, LayoutContext<RenderContext> context, YogaNode yogaNode);
 
   @Nullable
-  RenderUnit getRenderUnitForNode(
-      Node node, RenderState.LayoutContext<RenderContext> layoutContext);
+  RenderUnit getRenderUnitForNode(Node node, LayoutContext<RenderContext> layoutContext);
 
   List<? extends Node> getYogaChildren(Node node);
 

@@ -24,8 +24,8 @@ import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.collection.LazyList
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.utils.MeasureSpecUtils.atMost
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import org.assertj.core.api.Assertions.assertThat
@@ -135,7 +135,7 @@ private class PrepareTrackingMountable(val mountTracking: MutableList<Int>, val 
   override fun createContent(context: Context): View = View(context)
 
   override fun measure(
-      context: RenderState.LayoutContext<Any>,
+      context: LayoutContext<Any>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

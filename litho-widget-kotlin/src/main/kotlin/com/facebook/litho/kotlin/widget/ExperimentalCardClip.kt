@@ -29,8 +29,8 @@ import com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT
 import com.facebook.litho.widget.CardClipDrawable.NONE
 import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
 import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 /**
  * A component that paints rounded edges to mimic a clipping operation on the component being
@@ -77,7 +77,7 @@ internal class CardClipMountable(
   override fun createContent(context: Context): CardClipDrawable = CardClipDrawable()
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

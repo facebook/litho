@@ -23,8 +23,8 @@ import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.widget.CardShadowDrawable
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 /**
  * A component that is able to render the card's shadow.
@@ -107,7 +107,7 @@ internal class CardShadowMountable(
   }
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

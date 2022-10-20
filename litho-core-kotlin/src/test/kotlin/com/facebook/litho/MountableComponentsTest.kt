@@ -46,8 +46,8 @@ import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
@@ -716,7 +716,7 @@ open class ViewMountable(
   }
 
   override fun measure(
-      context: RenderState.LayoutContext<Any>,
+      context: LayoutContext<Any>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?,
@@ -781,7 +781,7 @@ class DrawableMountable(
   }
 
   override fun measure(
-      context: RenderState.LayoutContext<Any>,
+      context: LayoutContext<Any>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?,

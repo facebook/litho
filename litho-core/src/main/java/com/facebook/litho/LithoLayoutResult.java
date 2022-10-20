@@ -26,10 +26,10 @@ import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node.LayoutResult;
-import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
@@ -440,12 +440,12 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mYogaNode;
   }
 
-  public static RenderState.LayoutContext getLayoutContextFromYogaNode(YogaNode yogaNode) {
-    return ((Pair<RenderState.LayoutContext, LithoLayoutResult>) yogaNode.getData()).first;
+  public static LayoutContext getLayoutContextFromYogaNode(YogaNode yogaNode) {
+    return ((Pair<LayoutContext, LithoLayoutResult>) yogaNode.getData()).first;
   }
 
   public static LithoLayoutResult getLayoutResultFromYogaNode(YogaNode yogaNode) {
-    return ((Pair<RenderState.LayoutContext, LithoLayoutResult>) yogaNode.getData()).second;
+    return ((Pair<LayoutContext, LithoLayoutResult>) yogaNode.getData()).second;
   }
 
   boolean wasMeasured() {
@@ -453,9 +453,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   }
 
   MeasureResult measure(
-      final RenderState.LayoutContext<LithoRenderContext> context,
-      final int widthSpec,
-      final int heightSpec) {
+      final LayoutContext<LithoRenderContext> context, final int widthSpec, final int heightSpec) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     MeasureResult size;
@@ -524,9 +522,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   }
 
   protected MeasureResult measureInternal(
-      final RenderState.LayoutContext<LithoRenderContext> context,
-      final int widthSpec,
-      final int heightSpec) {
+      final LayoutContext<LithoRenderContext> context, final int widthSpec, final int heightSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     final LithoNode node = mNode;
     final Component component = node.getTailComponent();

@@ -28,8 +28,8 @@ import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.theming.getTheme
 import com.facebook.litho.widget.ProgressView
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 /**
  * Renders an infinitely spinning progress bar.
@@ -62,7 +62,7 @@ internal class ProgressMountable(
   override fun createContent(context: Context): ProgressView = ProgressView(context)
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

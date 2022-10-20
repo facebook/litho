@@ -30,8 +30,8 @@ import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.utils.MeasureUtils
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 /**
  * This class is an oversimplified version of a TextInput MountableComponent. It was created for the
@@ -62,7 +62,7 @@ internal class SampleTextInputMountable(
 
   // start_measure_with_view_measurement
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

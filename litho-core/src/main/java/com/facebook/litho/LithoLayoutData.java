@@ -19,8 +19,8 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LayoutOutput.UpdateState;
+import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.Node;
-import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderTreeNode;
 
 /**

@@ -41,9 +41,9 @@ import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SectionsRecyclerView
 import com.facebook.rendercore.ContentAllocator
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Mountable
-import com.facebook.rendercore.RenderState
 
 class ExperimentalRecycler(
     private val binder: LithoBinder<RecyclerView>,
@@ -675,7 +675,7 @@ internal class ExperimentalRecyclerMountable(
   }
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?
