@@ -45,10 +45,10 @@ import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
-import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.Systracer;
@@ -321,7 +321,7 @@ public class LayoutState
               - result.getLayoutBorder(YogaEdge.TOP)
               - result.getLayoutBorder(YogaEdge.BOTTOM);
 
-      final LayoutContext layoutContext =
+      final RenderState.LayoutContext layoutContext =
           LithoLayoutResult.getLayoutContextFromYogaNode(result.getYogaNode());
       measure = result.measure(layoutContext, exactly(width), exactly(height));
     } else {

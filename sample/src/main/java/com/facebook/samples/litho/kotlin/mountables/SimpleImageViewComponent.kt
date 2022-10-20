@@ -24,8 +24,8 @@ import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState.LayoutContext
 import com.facebook.samples.litho.R
 
 // start_simple_mountable_component_example

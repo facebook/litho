@@ -60,9 +60,9 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -387,7 +387,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    */
   @SuppressLint("LongLogTag")
   private static YogaNode buildYogaTree(
-      LayoutContext<LithoRenderContext> context,
+      RenderState.LayoutContext<LithoRenderContext> context,
       LithoNode currentNode,
       @Nullable YogaNode parentNode) {
     final LithoRenderContext renderContext = context.getRenderContext();
@@ -414,7 +414,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public LithoLayoutResult calculateLayout(
-      final LayoutContext<LithoRenderContext> c, final int widthSpec, final int heightSpec) {
+      final RenderState.LayoutContext<LithoRenderContext> c,
+      final int widthSpec,
+      final int heightSpec) {
 
     if (c.getRenderContext().mLayoutStateContext.isReleased()) {
       throw new IllegalStateException(

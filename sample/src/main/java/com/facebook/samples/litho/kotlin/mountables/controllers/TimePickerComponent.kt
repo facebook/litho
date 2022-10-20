@@ -25,8 +25,8 @@ import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.ThreadUtils
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.RenderState
 
 class TimePickerComponent(
     private val controller: TimePickerController? = null,
@@ -54,7 +54,7 @@ internal class TimePickerMountable(
   // mountable_component_end
 
   override fun measure(
-      context: LayoutContext<*>,
+      context: RenderState.LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

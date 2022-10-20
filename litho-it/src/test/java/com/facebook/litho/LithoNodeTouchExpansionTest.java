@@ -28,7 +28,7 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.rendercore.LayoutContext;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
@@ -73,8 +73,8 @@ public class LithoNodeTouchExpansionTest {
   }
 
   private LithoLayoutResult calculateLayout() {
-    final LayoutContext<LithoRenderContext> context =
-        new LayoutContext<>(
+    final RenderState.LayoutContext<LithoRenderContext> context =
+        new RenderState.LayoutContext<>(
             mContext.getAndroidContext(),
             new LithoRenderContext(mLayoutStateContext),
             0,

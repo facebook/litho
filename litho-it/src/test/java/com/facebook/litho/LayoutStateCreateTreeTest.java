@@ -40,7 +40,7 @@ import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
-import com.facebook.rendercore.LayoutContext;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -553,7 +553,8 @@ public class LayoutStateCreateTreeTest {
       LithoNode node = mock(LithoNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.mutableNodeInfo()).thenReturn(nodeInfo);
-      when(node.calculateLayout(any(LayoutContext.class), anyInt(), anyInt())).thenReturn(result);
+      when(node.calculateLayout(any(RenderState.LayoutContext.class), anyInt(), anyInt()))
+          .thenReturn(result);
       when(result.getNode()).thenReturn(node);
       return node;
     }
