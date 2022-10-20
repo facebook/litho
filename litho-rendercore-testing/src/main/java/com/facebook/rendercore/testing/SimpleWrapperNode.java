@@ -16,8 +16,8 @@
 
 package com.facebook.rendercore.testing;
 
+import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.Node;
-import com.facebook.rendercore.RenderState.LayoutContext;
 
 public class SimpleWrapperNode implements Node {
 
