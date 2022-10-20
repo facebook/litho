@@ -16,8 +16,8 @@
 
 package com.facebook.rendercore.testing;
 
-import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;

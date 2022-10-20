@@ -38,8 +38,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
-import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MountableLayoutResult;
+import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.utils.LayoutUtils;
 
 public class TextMeasurementUtils {
@@ -76,7 +76,7 @@ public class TextMeasurementUtils {
   }
 
   public static MountableLayoutResult layout(
-      LayoutContext context,
+      RenderState.LayoutContext context,
       int widthSpec,
       int heightSpec,
       CharSequence text,
