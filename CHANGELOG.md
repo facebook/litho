@@ -2,7 +2,7 @@
 
 ## Version 0.43.0
 
-_2022-10-18_
+_2022-10-21_
 
  * **Breaking:**: If you use `ComponentsSystrace.provide` to provide a custom Systrace implementation, there have been some changes to the types and methods involved:
    * Instead of implementing `ComponentsSystrace.Systrace`, implementations should implement `com.facebook.rendercore.Systracer`, located in litho-rendercore. The `ArgsBuilder` interface has also moved from ComponentsSystrace to the Systracer interface.
