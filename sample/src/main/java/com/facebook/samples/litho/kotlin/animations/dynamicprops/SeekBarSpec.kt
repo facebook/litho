@@ -32,7 +32,6 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.kotlinStyle
 
 @MountSpec
 object SeekBarSpec {
@@ -86,9 +85,8 @@ fun ResourcesScope.SeekBar(
 ): Component = Row {
   label?.let { child(Text(label, style = Style.margin(end = 10.dp))) }
   child(
-      SeekBar.create(context)
-          .initialValue(initialValue)
-          .onProgressChanged { progress -> onProgressChanged(progress) }
-          .kotlinStyle(Style.height(14.dp).flex(grow = 1f) + style)
-          .build())
+      SeekBarMountable(
+          initialValue = initialValue,
+          onProgressChange = onProgressChanged,
+          style = Style.height(14.dp).flex(grow = 1f) + style))
 }
