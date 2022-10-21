@@ -203,6 +203,8 @@ public class ResolvedTree {
 
         if (prepareResult != null) {
           node.setMountable(prepareResult.mountable);
+          applyTransitionsAndEseEffectEntriesToNode(
+              prepareResult.transitions, prepareResult.useEffectEntries, node);
         }
       }
 
@@ -225,7 +227,8 @@ public class ResolvedTree {
         }
 
         if (renderResult != null && node != null) {
-          applyRenderResultToNode(renderResult, node);
+          applyTransitionsAndEseEffectEntriesToNode(
+              renderResult.transitions, renderResult.useEffectEntries, node);
         }
       }
 
@@ -373,14 +376,17 @@ public class ResolvedTree {
     }
   }
 
-  static void applyRenderResultToNode(RenderResult renderResult, LithoNode node) {
-    if (renderResult.transitions != null) {
-      for (Transition t : renderResult.transitions) {
+  static void applyTransitionsAndEseEffectEntriesToNode(
+      @Nullable List<Transition> transitions,
+      @Nullable List<Attachable> useEffectEntries,
+      LithoNode node) {
+    if (transitions != null) {
+      for (Transition t : transitions) {
         node.addTransition(t);
       }
     }
-    if (renderResult.useEffectEntries != null) {
-      for (Attachable attachable : renderResult.useEffectEntries) {
+    if (useEffectEntries != null) {
+      for (Attachable attachable : useEffectEntries) {
         node.addAttachable(attachable);
       }
     }
