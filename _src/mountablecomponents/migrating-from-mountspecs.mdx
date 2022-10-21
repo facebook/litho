@@ -52,6 +52,69 @@ Similar to `@OnPrepare`, `@OnLoadStyle` lifecycle method's content should also m
 
 The subsections below outline how to migrate the parts of a MountSpec that will be hosted by the `Mountable`. This includes logic to measure, create (and optionally pool), and bind the content, as well as `DynamicValues` and `Controllers` - a mechanism that replaces `@OnTrigger` static lifecycle method.
 
+### Migrating @OnMeasure and @OnBoundsDefined
+
+For MountSpecs, there are 2 measurement-related methods that are optional - @OnMeasure and @OnBoundsDefined.
+
+Static annotated @OnMeasure method could be used to define how a component should be measured during layout calculation. If width and height was explicitly set on the component, it would not be run at all.
+
+The second method, @OnBoundsDefined could [receive outputs](../codegen/mount-specs.md/#inter-stage-inputs-and-outputs) from @OnMeasure and would run after layout calculation, in order to carry out additional operations after final size of the component is known, but before the component is mounted. If @OnBoundsDefined method is included in the MountSpec, it is guaranteed to run once the sizes of the component has been calculated.
+
+Mountable measuring works in a significantly different way - there's only 1 method, `Mountable.measure()`, which runs at least one time, and can be run multiple times in a single layout pass (similarly to Android's `View.measure()`).
+
+Additionally, `Mountable.measure()` receives the `LayoutContext`, width and height constraints, and any previously calculated layout data. The method should return a `MeasureResult` that tells the Litho framework the width and height the content requires and, optionally, any layout data which will be passed to `mount()` and `unmount()` methods and to all the `Binders`. This is different from @OnMeasure static annotated method, where the sizes needed to be set on Size parameter object instead.
+
+When translating a MountSpec containing both @OnMeasure and @OnBoundsDefined, the logic needs to be merged into a single `measure()` method - there's no need to pass outputs from @OnMeasure to @OnBoundsDefined.
+
+:::note
+For MountSpecs that did not implement @OnMeasure or @OnBoundsDefined at all, `Mountable.measure()` can leverage [MeasureResult.withEqualDimensions()](https://fburl.com/measureresultwithequaldimensions) method to set return the appropriate sizes.
+:::
+
+For more information, see the [Measuring](mountable-measuring.mdx) page.
+
+### Migrating @OnCreateContent
+
+`@OnCreateMountContent` lifecycle method's equivalent for Mountable is the `createContent()` method.
+
+More information on Mountable content creation can be found [here](mountable.mdx/#content-creation).
+
+### Migrating content pooling and pre-allocation
+
+For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the [ContentAllocator](introduction-to-rendercore.mdx/#contentallocator) returned from Mountable's `getContentAllocator()` method that can be used to configure the recycling pool and pre-allocation for content.
+
+Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, `getContentAllocator()` method should be overridden to return an implementation of the `ContentAllocator` interface and overridden 'canPreallocate()' and 'poolSize()' methods. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling. It is recommended to return a constant instance.
+
+More information on Mountable content pooling can be found [here](mountable.mdx).
+
+### Migrating Binding (properties setting) - @OnMount, @OnBind, @OnUnbind, @OnUnmount, and @OnShouldUpdate
+
+For MountSpecs, @OnMount and @OnBind static annotated methods [could be used to set properties on content](../codegen/mount-specs.md/#mount-spec-component-lifecycle), along with matching @OnUnmount and @OnUnbind to unset properties.
+
+Mountable uses [Binders](introduction-to-rendercore.mdx/#binder) to set properties on the content, and the equivalent of those 2 methods is a single `Binder.bind()` method to set the properties, and matching `Binder.unbind()` method to unset them.
+
+Therefore, the contents of @OnMount and @OnBind should be merged into single `bind()` method when migrating to Mountable (or `SimpleMountable.mount()` when using `SimpleMountable`). Similarly, @OnUnbind and @OnUnmount should be merged to form `unbind()` method (in that particular order).
+
+:::note
+In MountSpecs it was impossible to implement granular binding - only one pair of @OnMount and/or @OnBind could be used. Mountable allows for multiple Binders, so it is possible to implement granular binding (only resetting properties that changed), which can allow for performance gains.
+:::
+
+More information on binding and unbinding content properties can be found [here](mountable.mdx/#binding-and-unbinding-content-properties).
+
+Each [Binder](introduction-to-rendercore.mdx/#binder) contains `shouldUpdate()` method, which can help to avoid remeasuring and remounting upon updates if the properties of interest have not changed. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs.
+
+:::note
+Each individual `shouldUpdate()` should compare old and new properties that are set in `mount()` method of the same Binder.
+:::
+
+### Migrating @OnBindDynamicValue using bindTo API
+
+For Mountable, [DynamicValues](../animations/dynamic-props.mdx) can be implemented using the BindTo API.
+
+For more information and a step-by-step example, see the [BindTo - Dynamic Values API](mountable-bindto.mdx) page.
+
+### Migrating @OnTrigger using Controllers
+
 :::note
 🚧   UNDER CONSTRUCTION
 :::
+
