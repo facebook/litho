@@ -134,11 +134,7 @@ class Layout {
             : Preconditions.checkNotNull(node.getCachedNode()).getTailComponentKey();
 
     // 4.a Apply state updates early for layout phase
-    if (parentContext.isApplyStateUpdateEarlyEnabled()) {
-      layoutStateContext
-          .getTreeState()
-          .applyStateUpdatesEarly(parentContext, component, null, true);
-    }
+    layoutStateContext.getTreeState().applyStateUpdatesEarly(parentContext, component, null, true);
 
     final CalculationStateContext prevContext = parentContext.getCalculationStateContext();
 

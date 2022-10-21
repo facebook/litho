@@ -747,14 +747,6 @@ public class ComponentContext implements Cloneable {
     }
   }
 
-  boolean isApplyStateUpdateEarlyEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isApplyStateUpdateEarlyEnabled();
-    } else {
-      return ComponentsConfiguration.applyStateUpdateEarly;
-    }
-  }
-
   boolean isNestedTreeContext() {
     return isSplitStateHandlersEnabled() && this.isNestedTreeContext;
   }

@@ -220,8 +220,6 @@ public class ComponentsConfiguration {
 
   public static boolean isBuildAndLayoutSplitEnabled = false;
 
-  public static boolean applyStateUpdateEarly = false;
-
   public static boolean isSplitStateHandlersEnabled = false;
 
   public static boolean reuseLastMeasuredNodeInComponentMeasure = false;

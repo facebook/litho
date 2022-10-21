@@ -53,7 +53,7 @@ public class ResolvedTree {
             c, component, Preconditions.checkNotNull(renderStateContext.getTreeState()), current);
 
     try {
-      applyStateUpdateEarly(renderStateContext, c, component, current);
+      renderStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
     } catch (Exception ex) {
       ComponentUtils.handleWithHierarchy(c, component, ex);
       return null;
@@ -364,16 +364,6 @@ public class ResolvedTree {
     }
 
     return c;
-  }
-
-  private static void applyStateUpdateEarly(
-      final RenderStateContext renderStateContext,
-      final ComponentContext c,
-      final Component component,
-      final @Nullable LithoNode current) {
-    if (c.isApplyStateUpdateEarlyEnabled() && c.getComponentTree() != null) {
-      renderStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
-    }
   }
 
   static void applyTransitionsAndEseEffectEntriesToNode(

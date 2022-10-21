@@ -200,10 +200,7 @@ public class StateHandler {
     }
   }
 
-  private void applyStateUpdates(
-      final ComponentContext scopedContext,
-      final String key,
-      final StateContainer newStateContainer) {
+  private void applyStateUpdates(final String key, final StateContainer newStateContainer) {
     final List<StateUpdate> stateUpdatesForKey;
 
     synchronized (this) {
@@ -229,9 +226,6 @@ public class StateHandler {
       LithoStats.incrementComponentAppliedStateUpdateCountBy(stateUpdatesForKey.size());
 
       synchronized (this) {
-        if (!scopedContext.isApplyStateUpdateEarlyEnabled()) {
-          mPendingStateUpdates.remove(key); // remove from pending
-        }
         if (mPendingLazyStateUpdates != null) {
           mPendingLazyStateUpdates.remove(key); // remove from pending lazy
         }
@@ -274,7 +268,7 @@ public class StateHandler {
             final StateContainer newStateContainer = stateContainer.clone();
             mNeededStateContainers.add(key);
             mStateContainers.put(key, newStateContainer);
-            applyStateUpdates(context, key, newStateContainer);
+            applyStateUpdates(key, newStateContainer);
           } catch (Exception ex) {
 
             // Remove pending state update from ComponentTree's state handler since we don't want to
@@ -352,15 +346,11 @@ public class StateHandler {
 
     addStateContainer(key, newStateContainer);
 
-    if (!scopedContext.isApplyStateUpdateEarlyEnabled()) {
-      applyStateUpdates(scopedContext, key, newStateContainer);
-    } else {
-      // We maintain a HashSet of global keys for which we could not find the StateContainer while
-      // applying state updates early.
-      // Here, we are checking if component for that global key was part of component tree then
-      // throwing exception.
-      thowSoftErrorIfStateContainerWasNotFound(key, component);
-    }
+    // We maintain a HashSet of global keys for which we could not find the StateContainer while
+    // applying state updates early.
+    // Here, we are checking if component for that global key was part of component tree then
+    // throwing exception.
+    thowSoftErrorIfStateContainerWasNotFound(key, component);
   }
 
   public synchronized void addStateContainer(String key, StateContainer state) {

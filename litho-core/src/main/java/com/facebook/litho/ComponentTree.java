@@ -381,8 +381,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
 
-  private final boolean mIsApplyStateUpdateEarlyEnabled;
-
   private final boolean mMoveLayoutsBetweenThreads;
 
   private final @Nullable String mLogTag;
@@ -452,7 +450,6 @@ public class ComponentTree implements LithoLifecycleListener {
     isSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
     isReuseLastMeasuredNodeInComponentMeasureEnabled =
         ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
-    mIsApplyStateUpdateEarlyEnabled = ComponentsConfiguration.applyStateUpdateEarly;
     mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
@@ -1307,10 +1304,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
     return isReuseLastMeasuredNodeInComponentMeasureEnabled;
-  }
-
-  public boolean isApplyStateUpdateEarlyEnabled() {
-    return mIsApplyStateUpdateEarlyEnabled;
   }
 
   public boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {

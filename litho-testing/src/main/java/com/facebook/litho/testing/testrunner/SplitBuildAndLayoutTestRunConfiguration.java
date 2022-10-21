@@ -23,22 +23,18 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
 
   private final boolean defaultIsSplitStateHandlersEnabled =
       ComponentsConfiguration.isSplitStateHandlersEnabled;
-  private final boolean defaultApplyStateUpdateEarly =
-      ComponentsConfiguration.applyStateUpdateEarly;
   private final boolean defaultReuseLastMeasuredNodeInComponentMeasure =
       ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
     ComponentsConfiguration.isSplitStateHandlersEnabled = !defaultIsSplitStateHandlersEnabled;
-    ComponentsConfiguration.applyStateUpdateEarly = !defaultApplyStateUpdateEarly;
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
         !defaultReuseLastMeasuredNodeInComponentMeasure;
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.applyStateUpdateEarly = defaultApplyStateUpdateEarly;
     ComponentsConfiguration.isSplitStateHandlersEnabled = defaultIsSplitStateHandlersEnabled;
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
         defaultReuseLastMeasuredNodeInComponentMeasure;
