@@ -54,9 +54,23 @@ The subsections below outline how to migrate the parts of a MountSpec that will 
 
 ### Migrating @OnMeasure and @OnBoundsDefined
 
+For MountSpecs, there are 2 measurement-related methods that are optional - @OnMeasure and @OnBoundsDefined.
+
+Static annotated @OnMeasure method could be used to define how a component should be measured during layout calculation. If width and height was explicitly set on the component, it would not be run at all.
+
+The second method, @OnBoundsDefined could [receive outputs](../codegen/mount-specs.md/#inter-stage-inputs-and-outputs) from @OnMeasure and would run after layout calculation, in order to carry out additional operations after final size of the component is known, but before the component is mounted. If @OnBoundsDefined method is included in the MountSpec, it is guaranteed to run once the sizes of the component has been calculated.
+
+Mountable measuring works in a significantly different way - there's only 1 method, `Mountable.measure()`, which runs at least one time, and can be run multiple times in a single layout pass (similarly to Android's `View.measure()`).
+
+Additionally, `Mountable.measure()` receives the `LayoutContext`, width and height constraints, and any previously calculated layout data. The method should return a `MeasureResult` that tells the Litho framework the width and height the content requires and, optionally, any layout data which will be passed to `mount()` and `unmount()` methods and to all the `Binders`. This is different from @OnMeasure static annotated method, where the sizes needed to be set on Size parameter object instead.
+
+When translating a MountSpec containing both @OnMeasure and @OnBoundsDefined, the logic needs to be merged into a single `measure()` method - there's no need to pass outputs from @OnMeasure to @OnBoundsDefined.
+
 :::note
-🚧   UNDER CONSTRUCTION
+For MountSpecs that did not implement @OnMeasure or @OnBoundsDefined at all, `Mountable.measure()` can leverage [MeasureResult.withEqualDimensions()](https://fburl.com/measureresultwithequaldimensions) method to set return the appropriate sizes.
 :::
+
+For more information, see the [Measuring](mountable-measuring.mdx) page.
 
 ### Migrating @OnCreateContent
 
