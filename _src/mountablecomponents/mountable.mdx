@@ -81,7 +81,7 @@ Each Binder should implement 3 methods:
 - `unbind()` - used to unset properties.
 - `shouldUpdate()` - used to decide whether properties need resetting.
 
-The following code shows a simple mountable, where mount() is the equivalent of bind() and unmount() is the equivalent of unbind():
+The following code shows a component that extends `SimpleMountable`, where mount() is the equivalent of bind() and unmount() is the equivalent of unbind():
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=mount_unmount_example_start end=mount_unmount_example_end
 ```
