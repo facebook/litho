@@ -40,4 +40,9 @@ public class VisibilityChangedEvent {
   public float percentVisibleWidth;
   /** Between 0 and 100, indicates percentage of item height that is visible on screen. */
   public float percentVisibleHeight;
+
+  /** Indicates the height of the RootHost view, if applicable. */
+  public int rootHostViewHeight;
+  /** Indicates the width of the RootHost view, if applicable. */
+  public int rootHostViewWidth;
 }

@@ -281,6 +281,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           boundsIntersect
               && isInVisibleRange(visibilityOutput, visibilityOutputBounds, intersection);
 
+      int rootHostViewWidth = getRootHostViewWidth(extensionState);
+      int rootHostViewHeight = getRootHostViewHeight(extensionState);
+
       if (visibilityItem != null) {
 
         // If we did a relayout due to e.g. a state update then the handlers will have changed,
@@ -298,7 +301,15 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
           if (visibilityChangedHandler != null) {
             VisibilityUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler, 0, 0, 0, 0, 0f, 0f);
+                visibilityChangedHandler,
+                0,
+                0,
+                0,
+                0,
+                rootHostViewWidth,
+                rootHostViewHeight,
+                0f,
+                0f);
           }
 
           if (visibilityItem.isInFocusedRange()) {
@@ -367,12 +378,15 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         if (visibilityChangedHandler != null) {
           final int visibleWidth = getVisibleWidth(intersection);
           final int visibleHeight = getVisibleHeight(intersection);
+
           VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
               getVisibleTop(visibilityOutputBounds, intersection),
               getVisibleLeft(visibilityOutputBounds, intersection),
               visibleWidth,
               visibleHeight,
+              rootHostViewWidth,
+              rootHostViewHeight,
               100f * visibleWidth / visibilityOutputBounds.width(),
               100f * visibleHeight / visibilityOutputBounds.height());
         }
@@ -477,7 +491,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         }
 
         if (visibilityChangedHandler != null) {
-          VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0, 0, 0f, 0f);
+          VisibilityUtils.dispatchOnVisibilityChanged(
+              visibilityChangedHandler, 0, 0, 0, 0, 0, 0, 0f, 0f);
         }
 
         visibilityItem.setWasFullyVisible(false);
@@ -556,5 +571,31 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
   public static int getVisibleHeight(Rect itemIntersection) {
     return itemIntersection.height();
+  }
+
+  public static int getRootHostViewWidth(
+      ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final Host host = getRootHost(extensionState);
+    if (host == null) {
+      return 0;
+    }
+    final View parent = (View) host.getParent();
+    if (parent == null) {
+      return 0;
+    }
+    return parent.getWidth();
+  }
+
+  public static int getRootHostViewHeight(
+      ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final Host host = getRootHost(extensionState);
+    if (host == null) {
+      return 0;
+    }
+    final View parent = (View) host.getParent();
+    if (parent == null) {
+      return 0;
+    }
+    return parent.getHeight();
   }
 }

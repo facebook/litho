@@ -108,6 +108,8 @@ public class VisibilityUtils {
       int visibleLeft,
       int visibleWidth,
       int visibleHeight,
+      int rootHostViewWidth,
+      int rootHostViewHeight,
       float percentVisibleWidth,
       float percentVisibleHeight) {
 
@@ -123,6 +125,8 @@ public class VisibilityUtils {
     sVisibleRectChangedEvent.visibleLeft = visibleLeft;
     sVisibleRectChangedEvent.visibleHeight = visibleHeight;
     sVisibleRectChangedEvent.visibleWidth = visibleWidth;
+    sVisibleRectChangedEvent.rootHostViewHeight = rootHostViewHeight;
+    sVisibleRectChangedEvent.rootHostViewWidth = rootHostViewWidth;
     sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;
     sVisibleRectChangedEvent.percentVisibleWidth = percentVisibleWidth;
 
