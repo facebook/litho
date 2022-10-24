@@ -112,9 +112,10 @@ For Mountable, [DynamicValues](../animations/dynamic-props.mdx) can be implement
 
 For more information and a step-by-step example, see the [BindTo - Dynamic Values API](mountable-bindto.mdx) page.
 
-### Migrating @OnTrigger using Controllers
+### Migrating @OnTrigger using Controllers Pattern
 
-:::note
-🚧   UNDER CONSTRUCTION
-:::
+In MountSpecs, @OnTrigger static annotated methods and `Handle` could be used to [trigger events with handles](../codegen/trigger-events.md).
 
+To implement equivalent behaviour in Mountable, Controller pattern should be used instead.
+
+For more information and a step-by-step example, see the [Controllers Pattern](mountable-controllers.mdx) page.
