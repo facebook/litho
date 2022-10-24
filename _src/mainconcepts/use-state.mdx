@@ -6,6 +6,7 @@ title: useState
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 `useState` is a hook that allows a component to persist and update a single value across renders and is the most common hook you'll encounter.
 
@@ -61,3 +62,22 @@ And then in the child component:
 
 ```kotlin {1,4} file=sample/src/main/java/com/facebook/samples/litho/kotlin/state/ChildComponent.kt start=start_example_child end=end_example_child
 ```
+
+## Batching Updates
+
+Litho has an internal mechanism where it batches state updates to avoid the scenario of doing one layout re-calculation per state update (and corresponding mount) and, therefore
+become more performant.
+
+Internally, Litho achieves this by leveraging the lifecycle of the `Choreographer` API and how it breaks down its different work phases. Whenever the `Choregrapher` receives a VSYNC signal,
+it starts a cycle to prepare the next Frame. In this cycle, it goes through 3 main phases:
+
+1. Input handling
+2. Animation (which layouts, measures, and draws)
+3. Traversals
+
+When Litho enqueues a new state update, it will schedule its layout calculation on the `Choreographer`'s next animation phase. This way, any subsequent state update enqueued before the next animation phase will
+be taken into account in the following layout calculation (and not re-schedule any more work).
+
+<img src={useBaseUrl('/images/batched_updates.png')} alt='Batched Updates Process' className="white-background" />
+
+
