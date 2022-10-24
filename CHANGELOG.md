@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.44.0-SNAPSHOT
+
+_release-date_
+
+ * TBA
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.43.0...master).
+
 ## Version 0.43.0
 
 _2022-10-21_
