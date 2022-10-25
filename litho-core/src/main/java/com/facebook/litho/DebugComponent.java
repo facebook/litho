@@ -259,6 +259,24 @@ public final class DebugComponent {
     return new Rect(x, y, x + mResult.getWidth(), y + mResult.getHeight());
   }
 
+  /**
+   * The bounds of this component relative to its parent componen
+   *
+   * @return
+   */
+  public Rect getBoundsInParentDebugComponent() {
+
+    /**
+     * Many components can result in a single Lithonode/layout resut (from delegatation / custom
+     * components) We want only the first component to 'take' the offset of the underlying layout
+     * node other wise each delegating custom component will appear to multiply the offset
+     */
+    boolean isHeadComponent = mComponentIndex == mNode.getComponentCount() - 1;
+    final int x = isHeadComponent ? mResult.getX() : 0;
+    final int y = isHeadComponent ? mResult.getY() : 0;
+    return new Rect(x, y, x + mResult.getWidth(), y + mResult.getHeight());
+  }
+
   /** @return True if this and given debug components share the same internal node */
   public boolean isSameNode(DebugComponent other) {
     return this.mNode == other.mNode;
