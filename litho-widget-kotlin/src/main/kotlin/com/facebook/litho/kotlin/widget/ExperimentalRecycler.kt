@@ -590,121 +590,125 @@ internal class ExperimentalRecyclerMountable(
             content.setOnRefreshListener(null)
           }
         }
-  }
 
-  private val ANIMATOR_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-      object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
-        override fun shouldUpdate(
-            currentModel: ExperimentalRecyclerMountable,
-            newModel: ExperimentalRecyclerMountable,
-            currentLayoutData: Any?,
-            nextLayoutData: Any?
-        ): Boolean {
-          val previousItemAnimator = currentModel.itemAnimator
-          val nextItemAnimator = newModel.itemAnimator
+    private val ANIMATOR_BINDER: Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+          override fun shouldUpdate(
+              currentModel: ExperimentalRecyclerMountable,
+              newModel: ExperimentalRecyclerMountable,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?
+          ): Boolean {
+            val previousItemAnimator = currentModel.itemAnimator
+            val nextItemAnimator = newModel.itemAnimator
+            return (if (previousItemAnimator == null) nextItemAnimator != null
+            else previousItemAnimator.javaClass != nextItemAnimator.javaClass)
+          }
 
-          return (if (previousItemAnimator == null) nextItemAnimator != null
-          else previousItemAnimator.javaClass != nextItemAnimator.javaClass)
+          override fun bind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            content.setItemAnimator(
+                if (model.itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR)
+                    model.itemAnimator
+                else NoUpdateItemAnimator())
+          }
+
+          override fun unbind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            content.resetItemAnimator()
+          }
         }
 
-        override fun bind(
-            context: Context,
-            content: SectionsRecyclerView,
-            model: ExperimentalRecyclerMountable,
-            layoutData: Any?
-        ) {
-          content.setItemAnimator(
-              if (model.itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR)
-                  model.itemAnimator
-              else NoUpdateItemAnimator())
-        }
+    private val CONSTANT_PROPS_MOUNT_BINDER_WITHOUT_ANIMATOR:
+        Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
+        object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
+          override fun shouldUpdate(
+              currentModel: ExperimentalRecyclerMountable,
+              newModel: ExperimentalRecyclerMountable,
+              currentLayoutData: Any?,
+              nextLayoutData: Any?
+          ): Boolean {
+            if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
+            if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+            if (currentModel.leftPadding != newModel.leftPadding) return true
+            if (currentModel.rightPadding != newModel.rightPadding) return true
+            if (currentModel.topPadding != newModel.topPadding) return true
+            if (currentModel.bottomPadding != newModel.bottomPadding) return true
+            if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
+            if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
+            if (currentModel.isHorizontalFadingEdgeEnabled !=
+                newModel.isHorizontalFadingEdgeEnabled)
+                return true
+            if (currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled)
+                return true
+            if (currentModel.fadingEdgeLength != newModel.fadingEdgeLength) return true
+            if (currentModel.refreshProgressBarBackgroundColor !=
+                newModel.refreshProgressBarBackgroundColor)
+                return true
+            if (currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor)
+                return true
+            return false
+          }
 
-        override fun unbind(
-            context: Context,
-            content: SectionsRecyclerView,
-            model: ExperimentalRecyclerMountable,
-            layoutData: Any?
-        ) {
-          content.resetItemAnimator()
-        }
-      }
-
-  private val CONSTANT_PROPS_MOUNT_BINDER_WITHOUT_ANIMATOR:
-      Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> =
-      object : Binder<ExperimentalRecyclerMountable, SectionsRecyclerView> {
-        override fun shouldUpdate(
-            currentModel: ExperimentalRecyclerMountable,
-            newModel: ExperimentalRecyclerMountable,
-            currentLayoutData: Any?,
-            nextLayoutData: Any?
-        ): Boolean {
-          if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
-          if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
-          if (currentModel.leftPadding != newModel.leftPadding) return true
-          if (currentModel.rightPadding != newModel.rightPadding) return true
-          if (currentModel.topPadding != newModel.topPadding) return true
-          if (currentModel.bottomPadding != newModel.bottomPadding) return true
-          if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
-          if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
-          if (currentModel.isHorizontalFadingEdgeEnabled != newModel.isHorizontalFadingEdgeEnabled)
-              return true
-          if (currentModel.isVerticalFadingEdgeEnabled != newModel.isVerticalFadingEdgeEnabled)
-              return true
-          if (currentModel.fadingEdgeLength != newModel.fadingEdgeLength) return true
-          if (currentModel.refreshProgressBarBackgroundColor !=
-              newModel.refreshProgressBarBackgroundColor)
-              return true
-          if (currentModel.refreshProgressBarColor != newModel.refreshProgressBarColor) return true
-          return false
-        }
-
-        override fun bind(
-            context: Context,
-            content: SectionsRecyclerView,
-            model: ExperimentalRecyclerMountable,
-            layoutData: Any?
-        ) {
-          with(model) {
-            contentDescription?.let { content.recyclerView.contentDescription = contentDescription }
-            content.recyclerView.setHasFixedSize(hasFixedSize)
-            content.recyclerView.clipToPadding = isClipToPaddingEnabled
-            content.clipToPadding = isClipToPaddingEnabled
-            ViewCompat.setPaddingRelative(
-                content.recyclerView,
-                leftPadding,
-                topPadding,
-                rightPadding,
-                bottomPadding,
-            )
-            content.recyclerView.clipChildren = isClipChildrenEnabled
-            content.clipChildren = isClipChildrenEnabled
-            content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
-            content.isNestedScrollingEnabled = isNestedScrollingEnabled
-            content.recyclerView.scrollBarStyle = scrollBarStyle
-            content.recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
-            content.recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
-            content.recyclerView.setFadingEdgeLength(fadingEdgeLength)
-            content.recyclerView.id = recyclerViewId
-            content.recyclerView.overScrollMode = overScrollMode
-            if (refreshProgressBarBackgroundColor != null) {
-              content.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
+          override fun bind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            with(model) {
+              contentDescription?.let {
+                content.recyclerView.contentDescription = contentDescription
+              }
+              content.recyclerView.setHasFixedSize(hasFixedSize)
+              content.recyclerView.clipToPadding = isClipToPaddingEnabled
+              content.clipToPadding = isClipToPaddingEnabled
+              ViewCompat.setPaddingRelative(
+                  content.recyclerView,
+                  leftPadding,
+                  topPadding,
+                  rightPadding,
+                  bottomPadding,
+              )
+              content.recyclerView.clipChildren = isClipChildrenEnabled
+              content.clipChildren = isClipChildrenEnabled
+              content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
+              content.isNestedScrollingEnabled = isNestedScrollingEnabled
+              content.recyclerView.scrollBarStyle = scrollBarStyle
+              content.recyclerView.isHorizontalFadingEdgeEnabled = isHorizontalFadingEdgeEnabled
+              content.recyclerView.isVerticalFadingEdgeEnabled = isVerticalFadingEdgeEnabled
+              content.recyclerView.setFadingEdgeLength(fadingEdgeLength)
+              content.recyclerView.id = recyclerViewId
+              content.recyclerView.overScrollMode = overScrollMode
+              if (refreshProgressBarBackgroundColor != null) {
+                content.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor)
+              }
+              content.setColorSchemeColors(refreshProgressBarColor)
             }
-            content.setColorSchemeColors(refreshProgressBarColor)
           }
-        }
 
-        override fun unbind(
-            context: Context,
-            content: SectionsRecyclerView,
-            model: ExperimentalRecyclerMountable,
-            layoutData: Any?
-        ) {
-          content.recyclerView.id = View.NO_ID
-          model.refreshProgressBarBackgroundColor?.let {
-            content.setProgressBackgroundColorSchemeColor(DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+          override fun unbind(
+              context: Context,
+              content: SectionsRecyclerView,
+              model: ExperimentalRecyclerMountable,
+              layoutData: Any?
+          ) {
+            content.recyclerView.id = View.NO_ID
+            model.refreshProgressBarBackgroundColor?.let {
+              content.setProgressBackgroundColorSchemeColor(
+                  DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR)
+            }
           }
         }
-      }
+  }
 
   init {
     if (useTwoBindersRecycler) {
