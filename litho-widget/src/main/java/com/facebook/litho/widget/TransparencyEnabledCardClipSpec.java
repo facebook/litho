@@ -79,7 +79,9 @@ class TransparencyEnabledCardClipSpec {
   static void onUnmount(ComponentContext c, TransparencyEnabledCardClipDrawable cardClipDrawable) {
     cardClipDrawable.setCornerRadius(0);
     cardClipDrawable.setBackgroundColor(Color.WHITE);
+    cardClipDrawable.setClippingColor(Color.TRANSPARENT);
     cardClipDrawable.resetCornerPaint();
+    cardClipDrawable.setDisableClip(NONE);
   }
 
   @OnBindDynamicValue

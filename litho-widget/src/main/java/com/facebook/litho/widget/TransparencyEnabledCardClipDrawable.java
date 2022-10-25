@@ -29,7 +29,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
-class TransparencyEnabledCardClipDrawable extends Drawable {
+public class TransparencyEnabledCardClipDrawable extends Drawable {
 
   static final int NONE = 0;
   static final int TOP_LEFT = 1 << 0;
@@ -45,7 +45,7 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
   private int mDisableClipCorners = NONE;
   private float mCornerRadius;
 
-  TransparencyEnabledCardClipDrawable() {
+  public TransparencyEnabledCardClipDrawable() {
     mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     resetCornerPaint();
   }
@@ -129,7 +129,7 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
     }
   }
 
-  void setBackgroundColor(int backgroundColor) {
+  public void setBackgroundColor(int backgroundColor) {
     if (mBackgroundPaint.getColor() == backgroundColor) {
       return;
     }
@@ -138,7 +138,7 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
     invalidateSelf();
   }
 
-  void setClippingColor(int clippingColor) {
+  public void setClippingColor(int clippingColor) {
     if (mCornerPaint.getColor() == clippingColor) {
       return;
     }
@@ -159,7 +159,7 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
     mCornerPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
   }
 
-  void setCornerRadius(float radius) {
+  public void setCornerRadius(float radius) {
     radius = (int) (radius + .5f);
     if (mCornerRadius == radius) {
       return;
@@ -184,7 +184,7 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
     mCornerPath.close();
   }
 
-  void setDisableClip(int edge) {
+  public void setDisableClip(int edge) {
     if (mDisableClipCorners == edge) {
       return;
     }
