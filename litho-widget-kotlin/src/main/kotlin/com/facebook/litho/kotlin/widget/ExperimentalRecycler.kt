@@ -245,6 +245,10 @@ internal class ExperimentalRecyclerMountable(
           ): Boolean {
             if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
             if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+            if (currentModel.leftPadding != newModel.leftPadding) return true
+            if (currentModel.rightPadding != newModel.rightPadding) return true
+            if (currentModel.topPadding != newModel.topPadding) return true
+            if (currentModel.bottomPadding != newModel.bottomPadding) return true
             if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
             if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
             if (currentModel.isHorizontalFadingEdgeEnabled !=
@@ -422,6 +426,10 @@ internal class ExperimentalRecyclerMountable(
             if (currentModel.binder != newModel.binder) return true
             if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
             if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+            if (currentModel.leftPadding != newModel.leftPadding) return true
+            if (currentModel.rightPadding != newModel.rightPadding) return true
+            if (currentModel.topPadding != newModel.topPadding) return true
+            if (currentModel.bottomPadding != newModel.bottomPadding) return true
             if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
             if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
             if (currentModel.isHorizontalFadingEdgeEnabled !=
@@ -632,6 +640,10 @@ internal class ExperimentalRecyclerMountable(
         ): Boolean {
           if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
           if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
+          if (currentModel.leftPadding != newModel.leftPadding) return true
+          if (currentModel.rightPadding != newModel.rightPadding) return true
+          if (currentModel.topPadding != newModel.topPadding) return true
+          if (currentModel.bottomPadding != newModel.bottomPadding) return true
           if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
           if (currentModel.scrollBarStyle != newModel.scrollBarStyle) return true
           if (currentModel.isHorizontalFadingEdgeEnabled != newModel.isHorizontalFadingEdgeEnabled)
