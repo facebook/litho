@@ -274,7 +274,9 @@ internal class ExperimentalRecyclerMountable(
               layoutData: Any?
           ) {
             with(model) {
-              contentDescription?.let { content.contentDescription = contentDescription }
+              contentDescription?.let {
+                content.recyclerView.contentDescription = contentDescription
+              }
               content.recyclerView.setHasFixedSize(hasFixedSize)
               content.recyclerView.clipToPadding = isClipToPaddingEnabled
               content.clipToPadding = isClipToPaddingEnabled
@@ -452,7 +454,9 @@ internal class ExperimentalRecyclerMountable(
               layoutData: Any?
           ) {
             with(model) {
-              contentDescription?.let { content.contentDescription = contentDescription }
+              contentDescription?.let {
+                content.recyclerView.contentDescription = contentDescription
+              }
               content.recyclerView.setHasFixedSize(hasFixedSize)
               content.recyclerView.clipToPadding = isClipToPaddingEnabled
               content.clipToPadding = isClipToPaddingEnabled
@@ -648,7 +652,7 @@ internal class ExperimentalRecyclerMountable(
             layoutData: Any?
         ) {
           with(model) {
-            contentDescription?.let { content.contentDescription = contentDescription }
+            contentDescription?.let { content.recyclerView.contentDescription = contentDescription }
             content.recyclerView.setHasFixedSize(hasFixedSize)
             content.recyclerView.clipToPadding = isClipToPaddingEnabled
             content.clipToPadding = isClipToPaddingEnabled
