@@ -48,7 +48,6 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
-import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
@@ -195,13 +194,7 @@ object ExperimentalRecyclerCollectionComponentSpec {
         } else null
     val recycler =
         ExperimentalRecyclerWrapper(
-            style =
-                Style.padding(
-                        start = leftPadding.dp,
-                        end = rightPadding.dp,
-                        top = topPadding.dp,
-                        bottom = bottomPadding.dp)
-                    .flex(shrink = 0f) + touchStyle + positionStyle,
+            style = Style.flex(shrink = 0f) + touchStyle + positionStyle,
             isClipToPaddingEnabled = clipToPadding,
             isClipChildrenEnabled = clipChildren,
             nestedScrollingEnabled = nestedScrollingEnabled,
@@ -229,7 +222,11 @@ object ExperimentalRecyclerCollectionComponentSpec {
             itemAnimator = itemAnimator,
             sectionsViewLogger = sectionsViewLogger,
             useTwoBindersRecycler = useTwoBindersRecycler,
-            enableSeparateAnimatorBinder = enableSeparateAnimatorBinder)
+            enableSeparateAnimatorBinder = enableSeparateAnimatorBinder,
+            leftPadding = leftPadding,
+            topPadding = topPadding,
+            rightPadding = rightPadding,
+            bottomPadding = bottomPadding)
     val containerBuilder: ContainerBuilder<*> =
         Column.create(c).flexShrink(0f).alignContent(YogaAlign.FLEX_START).child(recycler)
     if (loadingState == LoadingState.LOADING && loadingComponent != null) {

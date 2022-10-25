@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
@@ -49,6 +50,10 @@ class ExperimentalRecycler(
     private val binder: LithoBinder<RecyclerView>,
     private val hasFixedSize: Boolean = true,
     private val isClipToPaddingEnabled: Boolean = true,
+    private val leftPadding: Int = 0,
+    private val topPadding: Int = 0,
+    private val rightPadding: Int = 0,
+    private val bottomPadding: Int = 0,
     private @ColorInt val refreshProgressBarBackgroundColor: Int? = null,
     private @ColorInt val refreshProgressBarColor: Int = Color.BLACK,
     private val isClipChildrenEnabled: Boolean = true,
@@ -86,6 +91,10 @@ class ExperimentalRecycler(
             binder = binder,
             hasFixedSize = hasFixedSize,
             isClipToPaddingEnabled = isClipToPaddingEnabled,
+            leftPadding = leftPadding,
+            topPadding = topPadding,
+            rightPadding = rightPadding,
+            bottomPadding = bottomPadding,
             refreshProgressBarBackgroundColor = refreshProgressBarBackgroundColor,
             refreshProgressBarColor = refreshProgressBarColor,
             isClipChildrenEnabled = isClipChildrenEnabled,
@@ -122,6 +131,10 @@ internal class ExperimentalRecyclerMountable(
     private val binder: LithoBinder<RecyclerView>,
     private val hasFixedSize: Boolean,
     private val isClipToPaddingEnabled: Boolean,
+    private val leftPadding: Int,
+    private val topPadding: Int,
+    private val rightPadding: Int,
+    private val bottomPadding: Int,
     private @ColorInt val refreshProgressBarBackgroundColor: Int?,
     private @ColorInt val refreshProgressBarColor: Int,
     private val isClipChildrenEnabled: Boolean,
@@ -265,6 +278,13 @@ internal class ExperimentalRecyclerMountable(
               content.recyclerView.setHasFixedSize(hasFixedSize)
               content.recyclerView.clipToPadding = isClipToPaddingEnabled
               content.clipToPadding = isClipToPaddingEnabled
+              ViewCompat.setPaddingRelative(
+                  content.recyclerView,
+                  leftPadding,
+                  topPadding,
+                  rightPadding,
+                  bottomPadding,
+              )
               content.recyclerView.clipChildren = isClipChildrenEnabled
               content.clipChildren = isClipChildrenEnabled
               content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
@@ -436,6 +456,13 @@ internal class ExperimentalRecyclerMountable(
               content.recyclerView.setHasFixedSize(hasFixedSize)
               content.recyclerView.clipToPadding = isClipToPaddingEnabled
               content.clipToPadding = isClipToPaddingEnabled
+              ViewCompat.setPaddingRelative(
+                  content.recyclerView,
+                  leftPadding,
+                  topPadding,
+                  rightPadding,
+                  bottomPadding,
+              )
               content.recyclerView.clipChildren = isClipChildrenEnabled
               content.clipChildren = isClipChildrenEnabled
               content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
@@ -625,6 +652,13 @@ internal class ExperimentalRecyclerMountable(
             content.recyclerView.setHasFixedSize(hasFixedSize)
             content.recyclerView.clipToPadding = isClipToPaddingEnabled
             content.clipToPadding = isClipToPaddingEnabled
+            ViewCompat.setPaddingRelative(
+                content.recyclerView,
+                leftPadding,
+                topPadding,
+                rightPadding,
+                bottomPadding,
+            )
             content.recyclerView.clipChildren = isClipChildrenEnabled
             content.clipChildren = isClipChildrenEnabled
             content.recyclerView.isNestedScrollingEnabled = isNestedScrollingEnabled
