@@ -390,6 +390,7 @@ public class RenderState<State, RenderContext> {
     private final @Nullable RenderContext mRenderContext;
     private final @Nullable RenderCoreExtension<?, ?>[] extensions;
     private @Nullable Object previousLayoutData;
+    @Nullable private LayoutContextExtraData<?> layoutContextExtraData;
 
     public LayoutContext(
         final Context androidContext,
@@ -443,6 +444,15 @@ public class RenderState<State, RenderContext> {
       final Object data = previousLayoutData;
       previousLayoutData = null;
       return data;
+    }
+
+    public void setLayoutContextExtraData(@Nullable LayoutContextExtraData<?> extraData) {
+      this.layoutContextExtraData = extraData;
+    }
+
+    @Nullable
+    public LayoutContextExtraData<?> getLayoutContextExtraData() {
+      return layoutContextExtraData;
     }
   }
 }

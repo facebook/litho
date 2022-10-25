@@ -133,6 +133,7 @@ dependencies {
     testImplementation deps.compileTesting
     testImplementation deps.junit
     testImplementation deps.mockitoCore
+    testImplementation deps.mockitokotlin
     testImplementation deps.javapoet
     testImplementation deps.robolectric
     testImplementation deps.soloader

@@ -22,6 +22,7 @@ import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTree
+import com.facebook.litho.LithoLayoutContextExtraData.LithoLayoutExtraData
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
@@ -143,12 +144,11 @@ internal class HorizontalScrollMountable(
     size.width = max(0, max(size.width, if (fillViewport) width else 0))
     size.height = max(0, size.height)
 
-    // TODO: [T135975734] We need to find a way to get access to layout direction as it was
-    //  previously retrieved from ComponentLayout, for now passing LTR.
+    val extraLayoutData: LithoLayoutExtraData? =
+        context.layoutContextExtraData?.extraLayoutData as? LithoLayoutExtraData?
+    val direction = extraLayoutData?.layoutDirection ?: DEFAULT_LAYOUT_DIRECTION
     return MeasureResult(
-        size.width,
-        size.height,
-        HorizontalScrollLayoutData(size.width, size.height, YogaDirection.LTR))
+        size.width, size.height, HorizontalScrollLayoutData(size.width, size.height, direction))
   }
 
   override fun mount(c: Context, content: HorizontalScrollLithoView, layoutData: Any?) {
@@ -188,6 +188,10 @@ internal class HorizontalScrollMountable(
     content.unmount()
 
     eventsController?.setScrollableView(null)
+  }
+
+  companion object {
+    private val DEFAULT_LAYOUT_DIRECTION = YogaDirection.LTR
   }
 }
 
