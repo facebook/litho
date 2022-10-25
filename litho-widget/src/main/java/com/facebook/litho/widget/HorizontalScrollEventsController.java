@@ -26,7 +26,8 @@ public class HorizontalScrollEventsController {
 
   private @Nullable HorizontalScrollSpec.HorizontalScrollLithoView mHorizontalScrollView;
 
-  void setScrollableView(@Nullable HorizontalScrollSpec.HorizontalScrollLithoView scrollableView) {
+  public void setScrollableView(
+      @Nullable HorizontalScrollSpec.HorizontalScrollLithoView scrollableView) {
     mHorizontalScrollView = scrollableView;
   }
 

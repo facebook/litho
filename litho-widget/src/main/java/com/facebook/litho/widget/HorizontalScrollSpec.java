@@ -63,7 +63,7 @@ import java.util.List;
  * @uidocs
  */
 @MountSpec
-class HorizontalScrollSpec {
+public class HorizontalScrollSpec {
 
   private static final int LAST_SCROLL_POSITION_UNSET = -1;
 
@@ -253,7 +253,7 @@ class HorizontalScrollSpec {
             .build());
   }
 
-  static class HorizontalScrollLithoView extends HorizontalScrollView
+  public static class HorizontalScrollLithoView extends HorizontalScrollView
       implements HasLithoViewChildren {
     private final LithoView mLithoView;
 
@@ -338,7 +338,7 @@ class HorizontalScrollSpec {
       lithoViews.add(mLithoView);
     }
 
-    void mount(
+    public void mount(
         ComponentTree componentTree,
         ScrollPosition scrollPosition,
         @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
@@ -359,7 +359,7 @@ class HorizontalScrollSpec {
       }
     }
 
-    void unmount() {
+    public void unmount() {
       mLithoView.setComponentTree(null, false);
       mComponentWidth = 0;
       mComponentHeight = 0;
@@ -372,10 +372,10 @@ class HorizontalScrollSpec {
     }
   }
 
-  static class ScrollPosition {
-    int x;
+  public static class ScrollPosition {
+    public int x;
 
-    ScrollPosition(int initialX) {
+    public ScrollPosition(int initialX) {
       this.x = initialX;
     }
   }
