@@ -251,6 +251,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableInNewsFeed = false;
 
+  public static boolean enableMountableInMessenger = false;
+
   public static boolean enableSeparateAnimatorBinder = false;
 
   private static boolean sReduceMemorySpikeUserSession = false;
