@@ -69,6 +69,7 @@ public class TransparencyEnabledCardClipDrawable extends Drawable {
   public void draw(Canvas canvas) {
     final Rect bounds = getBounds();
     if (areAllDisableClipFalse()) {
+      canvas.drawRect(bounds, mCornerPaint);
       drawWithRoundRectImplementation(canvas, bounds);
     } else {
       drawWithClipPathImplementation(canvas, bounds);
