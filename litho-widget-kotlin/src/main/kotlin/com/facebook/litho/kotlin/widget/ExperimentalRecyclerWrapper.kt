@@ -24,7 +24,6 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlin.widget.ExperimentalRecycler
-import com.facebook.litho.sections.widget.NoUpdateItemAnimator
 import com.facebook.litho.widget.Binder
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerEventsController
@@ -46,7 +45,7 @@ fun ExperimentalRecyclerWrapper(
     recyclerViewId: Int? = null,
     overScrollMode: Int? = null,
     contentDescription: CharSequence? = null,
-    itemAnimator: RecyclerView.ItemAnimator? = null,
+    itemAnimator: RecyclerView.ItemAnimator? = ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR,
     recyclerEventsController: RecyclerEventsController? = null,
     onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     snapHelper: SnapHelper? = null,
@@ -75,7 +74,7 @@ fun ExperimentalRecyclerWrapper(
         recyclerViewId = recyclerViewId ?: View.NO_ID,
         overScrollMode = overScrollMode ?: View.OVER_SCROLL_ALWAYS,
         contentDescription = contentDescription,
-        itemAnimator = itemAnimator ?: NoUpdateItemAnimator(),
+        itemAnimator = itemAnimator ?: ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR,
         recyclerEventsController = recyclerEventsController,
         onScrollListeners = onScrollListeners ?: emptyList(),
         snapHelper = snapHelper,

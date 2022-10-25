@@ -61,7 +61,7 @@ class ExperimentalRecycler(
     private @IdRes val recyclerViewId: Int = View.NO_ID,
     private val overScrollMode: Int = View.OVER_SCROLL_ALWAYS,
     private val contentDescription: CharSequence? = null,
-    private val itemAnimator: ItemAnimator = NoUpdateItemAnimator(),
+    private val itemAnimator: ItemAnimator = DEFAULT_ITEM_ANIMATOR,
     private val recyclerEventsController: RecyclerEventsController? = null,
     private val onScrollListeners: List<RecyclerView.OnScrollListener?> = emptyList(),
     private val snapHelper: SnapHelper? = null,
@@ -74,6 +74,10 @@ class ExperimentalRecycler(
     private val enableSeparateAnimatorBinder: Boolean = false,
     private val style: Style? = null
 ) : MountableComponent() {
+
+  companion object {
+    val DEFAULT_ITEM_ANIMATOR: ItemAnimator = NoUpdateItemAnimator()
+  }
 
   override fun MountableComponentScope.render(): MountableRenderResult {
     val measureVersion = useState { 0 }
@@ -276,7 +280,7 @@ internal class ExperimentalRecyclerMountable(
               }
               content.setColorSchemeColors(refreshProgressBarColor)
               content.setItemAnimator(
-                  if (itemAnimator != content.recyclerView.itemAnimator) itemAnimator
+                  if (itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR) itemAnimator
                   else NoUpdateItemAnimator())
             }
           }
@@ -448,8 +452,11 @@ internal class ExperimentalRecyclerMountable(
               content.setColorSchemeColors(refreshProgressBarColor)
               itemDecoration?.let { content.recyclerView.addItemDecoration(it) }
               content.setItemAnimator(
-                  if (itemAnimator != content.recyclerView.itemAnimator) itemAnimator
-                  else NoUpdateItemAnimator())
+                  if (itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR) {
+                    itemAnimator
+                  } else {
+                    NoUpdateItemAnimator()
+                  })
               binder.mount(content.recyclerView)
             }
           }
@@ -567,7 +574,8 @@ internal class ExperimentalRecyclerMountable(
             layoutData: Any?
         ) {
           content.setItemAnimator(
-              if (model.itemAnimator != content.recyclerView.itemAnimator) model.itemAnimator
+              if (model.itemAnimator != ExperimentalRecycler.DEFAULT_ITEM_ANIMATOR)
+                  model.itemAnimator
               else NoUpdateItemAnimator())
         }
 
