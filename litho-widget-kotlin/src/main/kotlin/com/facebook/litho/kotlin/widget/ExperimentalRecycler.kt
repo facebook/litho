@@ -419,6 +419,7 @@ internal class ExperimentalRecyclerMountable(
               currentLayoutData: Any?,
               nextLayoutData: Any?
           ): Boolean {
+            if (currentModel.binder != newModel.binder) return true
             if (currentModel.hasFixedSize != newModel.hasFixedSize) return true
             if (currentModel.isClipToPaddingEnabled != newModel.isClipToPaddingEnabled) return true
             if (currentModel.isClipChildrenEnabled != newModel.isClipChildrenEnabled) return true
