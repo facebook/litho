@@ -530,7 +530,7 @@ internal class ExperimentalRecyclerMountable(
               newModel: ExperimentalRecyclerMountable,
               currentLayoutData: Any?,
               nextLayoutData: Any?
-          ): Boolean = currentModel.binder != newModel.binder
+          ): Boolean = true
 
           override fun bind(
               context: Context,
