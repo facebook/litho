@@ -24,10 +24,9 @@ import androidx.annotation.Nullable;
  */
 public class HorizontalScrollEventsController {
 
-  private @Nullable HorizontalScrollSpec.HorizontalScrollLithoView mHorizontalScrollView;
+  private @Nullable HorizontalScrollLithoView mHorizontalScrollView;
 
-  public void setScrollableView(
-      @Nullable HorizontalScrollSpec.HorizontalScrollLithoView scrollableView) {
+  public void setScrollableView(@Nullable HorizontalScrollLithoView scrollableView) {
     mHorizontalScrollView = scrollableView;
   }
 

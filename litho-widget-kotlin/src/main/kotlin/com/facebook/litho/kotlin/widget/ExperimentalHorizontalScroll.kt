@@ -31,7 +31,7 @@ import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.useState
 import com.facebook.litho.widget.HorizontalScrollEventsController
-import com.facebook.litho.widget.HorizontalScrollSpec
+import com.facebook.litho.widget.HorizontalScrollLithoView
 import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.RenderState
@@ -44,7 +44,7 @@ private const val DEFAULT_OVER_SCROLL_MODE = View.OVER_SCROLL_IF_CONTENT_SCROLLS
 fun ExperimentalHorizontalScroll(
     scrollbarEnabled: Boolean = true,
     eventsController: HorizontalScrollEventsController? = null,
-    onScrollChangeListener: HorizontalScrollSpec.OnScrollChangeListener? = null,
+    onScrollChangeListener: HorizontalScrollLithoView.OnScrollChangeListener? = null,
     scrollStateListener: ScrollStateListener? = null,
     incrementalMountEnabled: Boolean = false,
     overScrollMode: Int = DEFAULT_OVER_SCROLL_MODE,
@@ -71,7 +71,7 @@ fun ExperimentalHorizontalScroll(
 class ExperimentalHorizontalScroll(
     private val scrollbarEnabled: Boolean = true,
     private val eventsController: HorizontalScrollEventsController? = null,
-    private val onScrollChangeListener: HorizontalScrollSpec.OnScrollChangeListener? = null,
+    private val onScrollChangeListener: HorizontalScrollLithoView.OnScrollChangeListener? = null,
     private val scrollStateListener: ScrollStateListener? = null,
     private val incrementalMountEnabled: Boolean = false,
     private val overScrollMode: Int = DEFAULT_OVER_SCROLL_MODE,
@@ -82,7 +82,9 @@ class ExperimentalHorizontalScroll(
 ) : MountableComponent() {
 
   override fun MountableComponentScope.render(): MountableRenderResult {
-    val lastScrollPosition = useState { HorizontalScrollSpec.ScrollPosition(initialScrollPosition) }
+    val lastScrollPosition = useState {
+      HorizontalScrollLithoView.ScrollPosition(initialScrollPosition)
+    }
 
     val childComponentTree = useState {
       ComponentTree.createNestedComponentTree(context, child)
@@ -109,19 +111,19 @@ class ExperimentalHorizontalScroll(
 internal class HorizontalScrollMountable(
     private val scrollbarEnabled: Boolean,
     private val eventsController: HorizontalScrollEventsController?,
-    private val onScrollChangeListener: HorizontalScrollSpec.OnScrollChangeListener?,
+    private val onScrollChangeListener: HorizontalScrollLithoView.OnScrollChangeListener?,
     private val scrollStateListener: ScrollStateListener?,
     private val overScrollMode: Int,
-    private val lastScrollPosition: HorizontalScrollSpec.ScrollPosition,
+    private val lastScrollPosition: HorizontalScrollLithoView.ScrollPosition,
     private val fillViewport: Boolean,
     private val childComponent: Component,
     private val childComponentTree: ComponentTree
-) : SimpleMountable<HorizontalScrollSpec.HorizontalScrollLithoView>(RenderType.VIEW) {
+) : SimpleMountable<HorizontalScrollLithoView>(RenderType.VIEW) {
 
   override fun doesMountRenderTreeHosts(): Boolean = true
 
-  override fun createContent(context: Context): HorizontalScrollSpec.HorizontalScrollLithoView =
-      HorizontalScrollSpec.HorizontalScrollLithoView(context)
+  override fun createContent(context: Context): HorizontalScrollLithoView =
+      HorizontalScrollLithoView(context)
 
   override fun measure(
       context: RenderState.LayoutContext<*>,
@@ -149,11 +151,7 @@ internal class HorizontalScrollMountable(
         HorizontalScrollLayoutData(size.width, size.height, YogaDirection.LTR))
   }
 
-  override fun mount(
-      c: Context,
-      content: HorizontalScrollSpec.HorizontalScrollLithoView,
-      layoutData: Any?
-  ) {
+  override fun mount(c: Context, content: HorizontalScrollLithoView, layoutData: Any?) {
     val horizontalScrollLayoutData = layoutData as HorizontalScrollLayoutData
 
     content.isHorizontalScrollBarEnabled = scrollbarEnabled
@@ -161,10 +159,10 @@ internal class HorizontalScrollMountable(
     content.mount(
         childComponentTree,
         lastScrollPosition,
-        onScrollChangeListener,
-        scrollStateListener,
         horizontalScrollLayoutData.measuredWidth,
-        horizontalScrollLayoutData.measuredHeight)
+        horizontalScrollLayoutData.measuredHeight,
+        onScrollChangeListener,
+        scrollStateListener)
 
     val viewTreeObserver: ViewTreeObserver = content.viewTreeObserver
     viewTreeObserver.addOnPreDrawListener(
@@ -186,11 +184,7 @@ internal class HorizontalScrollMountable(
     eventsController?.setScrollableView(content)
   }
 
-  override fun unmount(
-      c: Context,
-      content: HorizontalScrollSpec.HorizontalScrollLithoView,
-      layoutData: Any?
-  ) {
+  override fun unmount(c: Context, content: HorizontalScrollLithoView, layoutData: Any?) {
     content.unmount()
 
     eventsController?.setScrollableView(null)

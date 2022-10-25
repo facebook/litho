@@ -27,7 +27,7 @@ import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.widget.HorizontalScrollSpec
+import com.facebook.litho.widget.HorizontalScrollLithoView
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -55,9 +55,7 @@ class ExperimentalHorizontalScrollTest {
     assertThat(testLithoView).willRenderContent()
     assertThat(testLithoView).containsExactlyOne(ExperimentalHorizontalScroll::class.java)
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
-    val scrollView =
-        testLithoView.lithoView.getMountItemAt(0).content
-            as HorizontalScrollSpec.HorizontalScrollLithoView
+    val scrollView = testLithoView.lithoView.getMountItemAt(0).content as HorizontalScrollLithoView
     assertThat(scrollView.measuredWidth).isEqualTo(100)
     assertThat(scrollView.measuredHeight).isEqualTo(500)
     assertThat(scrollView.childCount).isEqualTo(1)

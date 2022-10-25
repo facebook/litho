@@ -22,9 +22,6 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import androidx.annotation.Nullable;
@@ -32,8 +29,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.HasLithoViewChildren;
-import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
 import com.facebook.litho.Size;
@@ -54,7 +49,6 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaDirection;
-import java.util.List;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
@@ -63,7 +57,7 @@ import java.util.List;
  * @uidocs
  */
 @MountSpec
-public class HorizontalScrollSpec {
+class HorizontalScrollSpec {
 
   private static final int LAST_SCROLL_POSITION_UNSET = -1;
 
@@ -71,11 +65,6 @@ public class HorizontalScrollSpec {
   @PropDefault static final int initialScrollPosition = LAST_SCROLL_POSITION_UNSET;
   @PropDefault static final boolean incrementalMountEnabled = false;
   @PropDefault static final int overScrollMode = OVER_SCROLL_IF_CONTENT_SCROLLS;
-
-  /** Scroll change listener invoked when the scroll position changes. */
-  public interface OnScrollChangeListener {
-    void onScrollChange(View v, int scrollX, int oldScrollX);
-  }
 
   @OnLoadStyle
   static void onLoadStyle(ComponentContext c, Output<Boolean> scrollbarEnabled) {
@@ -180,11 +169,12 @@ public class HorizontalScrollSpec {
       final HorizontalScrollLithoView horizontalScrollLithoView,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController,
-      @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) @Nullable
+          HorizontalScrollLithoView.OnScrollChangeListener onScrollChangeListener,
       @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
       @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop(optional = true) int overScrollMode,
-      @State final ScrollPosition lastScrollPosition,
+      @State final HorizontalScrollLithoView.ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @Nullable @FromBoundsDefined Integer componentWidth,
       @Nullable @FromBoundsDefined Integer componentHeight,
@@ -195,10 +185,10 @@ public class HorizontalScrollSpec {
     horizontalScrollLithoView.mount(
         childComponentTree,
         lastScrollPosition,
-        onScrollChangeListener,
-        scrollStateListener,
         componentWidth != null ? componentWidth : 0,
-        componentHeight != null ? componentHeight : 0);
+        componentHeight != null ? componentHeight : 0,
+        onScrollChangeListener,
+        scrollStateListener);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -240,143 +230,16 @@ public class HorizontalScrollSpec {
   @OnCreateInitialState
   static void onCreateInitialState(
       ComponentContext c,
-      StateValue<ScrollPosition> lastScrollPosition,
+      StateValue<HorizontalScrollLithoView.ScrollPosition> lastScrollPosition,
       StateValue<ComponentTree> childComponentTree,
       @Prop Component contentProps,
       @Prop(optional = true) int initialScrollPosition,
       @Prop(optional = true) boolean incrementalMountEnabled) {
 
-    lastScrollPosition.set(new ScrollPosition(initialScrollPosition));
+    lastScrollPosition.set(new HorizontalScrollLithoView.ScrollPosition(initialScrollPosition));
     childComponentTree.set(
         ComponentTree.createNestedComponentTree(c, contentProps)
             .incrementalMount(incrementalMountEnabled)
             .build());
-  }
-
-  public static class HorizontalScrollLithoView extends HorizontalScrollView
-      implements HasLithoViewChildren {
-    private final LithoView mLithoView;
-
-    private int mComponentWidth;
-    private int mComponentHeight;;
-
-    @Nullable private ScrollPosition mScrollPosition;
-    @Nullable private HorizontalScrollSpec.OnScrollChangeListener mOnScrollChangeListener;
-    @Nullable private ScrollStateDetector mScrollStateDetector;
-
-    public HorizontalScrollLithoView(Context context) {
-      super(context);
-      mLithoView = new LithoView(context);
-      addView(mLithoView);
-    }
-
-    @Override
-    public void fling(int velocityX) {
-      super.fling(velocityX);
-      if (mScrollStateDetector != null) {
-        mScrollStateDetector.fling();
-      }
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-      super.draw(canvas);
-      if (mScrollStateDetector != null) {
-        mScrollStateDetector.onDraw();
-      }
-    }
-
-    @Override
-    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-      super.onScrollChanged(l, t, oldl, oldt);
-
-      // We need to notify LithoView about the visibility bounds that has changed when View is
-      // scrolled so that correct visibility events are fired for the child components of
-      // HorizontalScroll.
-      mLithoView.notifyVisibleBoundsChanged();
-
-      if (mScrollPosition != null) {
-        if (mOnScrollChangeListener != null) {
-          mOnScrollChangeListener.onScrollChange(this, getScrollX(), mScrollPosition.x);
-        }
-        mScrollPosition.x = getScrollX();
-      }
-
-      if (mScrollStateDetector != null) {
-        mScrollStateDetector.onScrollChanged();
-      }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-      boolean isConsumed = super.onTouchEvent(motionEvent);
-
-      if (mScrollStateDetector != null) {
-        mScrollStateDetector.onTouchEvent(motionEvent);
-      }
-
-      return isConsumed;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-      // The hosting component view always matches the component size. This will
-      // ensure that there will never be a size-mismatch between the view and the
-      // component-based content, which would trigger a layout pass in the
-      // UI thread.
-      mLithoView.measure(
-          MeasureSpec.makeMeasureSpec(mComponentWidth, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(mComponentHeight, MeasureSpec.EXACTLY));
-
-      // The mounted view always gets exact dimensions from the framework.
-      setMeasuredDimension(
-          MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
-    }
-
-    @Override
-    public void obtainLithoViewChildren(List<LithoView> lithoViews) {
-      lithoViews.add(mLithoView);
-    }
-
-    public void mount(
-        ComponentTree componentTree,
-        ScrollPosition scrollPosition,
-        @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
-        ScrollStateListener scrollStateListener,
-        int width,
-        int height) {
-      mLithoView.setComponentTree(componentTree);
-      mScrollPosition = scrollPosition;
-      mOnScrollChangeListener = onScrollChangeListener;
-      mComponentWidth = width;
-      mComponentHeight = height;
-
-      if (scrollStateListener != null) {
-        if (mScrollStateDetector == null) {
-          mScrollStateDetector = new ScrollStateDetector(this);
-        }
-        mScrollStateDetector.setListener(scrollStateListener);
-      }
-    }
-
-    public void unmount() {
-      mLithoView.setComponentTree(null, false);
-      mComponentWidth = 0;
-      mComponentHeight = 0;
-      mScrollPosition = null;
-      mOnScrollChangeListener = null;
-      setScrollX(0);
-      if (mScrollStateDetector != null) {
-        mScrollStateDetector.setListener(null);
-      }
-    }
-  }
-
-  public static class ScrollPosition {
-    public int x;
-
-    public ScrollPosition(int initialX) {
-      this.x = initialX;
-    }
   }
 }
