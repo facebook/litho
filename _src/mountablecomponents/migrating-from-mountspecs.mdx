@@ -119,3 +119,9 @@ In MountSpecs, @OnTrigger static annotated methods and `Handle` could be used to
 To implement equivalent behaviour in Mountable, Controller pattern should be used instead.
 
 For more information and a step-by-step example, see the [Controllers Pattern](mountable-controllers.mdx) page.
+
+### Migrating hasChildLithoViews parameter
+
+In MountSpecs, the `hasChildLithoViews` parameter could be added to the @MountSpec annotation to indicate whether a given component mounts views that contain component-based content that can be incrementally mounted (such as if the mounted view has a LithoView with incremental mount enabled).
+
+To implement the equivalent behaviour in Mountable, override the [doesMountRenderTreeHosts()](https://fburl.com/doesmountrendertreehosts) method to return `true`.
