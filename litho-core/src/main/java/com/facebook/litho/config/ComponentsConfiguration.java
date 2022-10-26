@@ -255,6 +255,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableSeparateAnimatorBinder = false;
 
+  public static boolean enableMountableRecyclerInGroups = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;
