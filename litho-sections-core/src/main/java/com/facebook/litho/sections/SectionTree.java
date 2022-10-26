@@ -1293,6 +1293,10 @@ public class SectionTree {
 
             bindTriggerHandler(newRoot);
           }
+
+          final ChangeSetCalculationState calculationState =
+              contextForCalculation.getChangeSetCalculationState();
+          calculationState.clear();
         }
 
         if (changeSetIsValid) {

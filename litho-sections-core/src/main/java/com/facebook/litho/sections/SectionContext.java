@@ -38,6 +38,7 @@ public class SectionContext extends ComponentContext {
   private WeakReference<Section> mScope;
   private EventHandler<LoadingEvent> mTreeLoadingEventHandler;
   private KeyHandler mKeyHandler;
+  private @Nullable ChangeSetCalculationState mChangeSetCalculationState;
 
   public SectionContext(Context context) {
     this(context, null, null);
@@ -80,6 +81,7 @@ public class SectionContext extends ComponentContext {
     SectionContext sectionContext = new SectionContext(context);
     sectionContext.mSectionTree = context.mSectionTree;
     sectionContext.mTreeLoadingEventHandler = context.mTreeLoadingEventHandler;
+    sectionContext.mChangeSetCalculationState = context.mChangeSetCalculationState;
     sectionContext.mScope = new WeakReference<>(scope);
 
     return sectionContext;
@@ -89,6 +91,7 @@ public class SectionContext extends ComponentContext {
     SectionContext sectionContext = new SectionContext(contextFromSectionTree);
     sectionContext.mSectionTree = contextFromSectionTree.mSectionTree;
     sectionContext.mTreeLoadingEventHandler = contextFromSectionTree.mTreeLoadingEventHandler;
+    sectionContext.mChangeSetCalculationState = new ChangeSetCalculationState();
 
     return sectionContext;
   }
@@ -199,5 +202,9 @@ public class SectionContext extends ComponentContext {
   @Override
   public @Nullable TreeProps getTreeProps() {
     return super.getTreeProps();
+  }
+
+  public @Nullable ChangeSetCalculationState getChangeSetCalculationState() {
+    return mChangeSetCalculationState;
   }
 }
