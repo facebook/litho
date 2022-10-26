@@ -30,9 +30,9 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_UPDATE_SINGL
 import static com.facebook.litho.FrameworkLogEvents.PARAM_CURRENT_ROOT_COUNT;
 import static com.facebook.litho.sections.Section.acquireChildrenMap;
 
+import android.util.Pair;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.PerfEvent;

@@ -19,10 +19,10 @@ package com.facebook.rendercore;
 import static com.facebook.rendercore.extensions.RenderCoreExtension.shouldUpdate;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
-import androidx.core.util.Pair;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;

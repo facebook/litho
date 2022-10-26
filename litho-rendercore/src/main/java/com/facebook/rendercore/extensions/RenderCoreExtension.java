@@ -17,9 +17,9 @@
 package com.facebook.rendercore.extensions;
 
 import android.graphics.Rect;
+import android.util.Pair;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;

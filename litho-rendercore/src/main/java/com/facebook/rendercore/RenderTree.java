@@ -17,8 +17,8 @@
 package com.facebook.rendercore;
 
 import android.util.LongSparseArray;
+import android.util.Pair;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import java.util.List;

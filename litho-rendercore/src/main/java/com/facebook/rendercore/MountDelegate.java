@@ -17,10 +17,10 @@
 package com.facebook.rendercore;
 
 import android.graphics.Rect;
+import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
-import androidx.core.util.Pair;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;

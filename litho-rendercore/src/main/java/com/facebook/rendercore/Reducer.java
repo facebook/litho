@@ -18,8 +18,8 @@ package com.facebook.rendercore;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.util.Pair;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
