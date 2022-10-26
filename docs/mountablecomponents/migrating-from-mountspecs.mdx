@@ -125,3 +125,9 @@ For more information and a step-by-step example, see the [Controllers Pattern](m
 In MountSpecs, the `hasChildLithoViews` parameter could be added to the @MountSpec annotation to indicate whether a given component mounts views that contain component-based content that can be incrementally mounted (such as if the mounted view has a LithoView with incremental mount enabled).
 
 To implement the equivalent behaviour in Mountable, override the [doesMountRenderTreeHosts()](https://fburl.com/doesmountrendertreehosts) method to return `true`.
+
+### Migrating isPureRender parameter
+
+In MountSpecs, the `isPureRender` parameter could be added to the @MountSpec annotation to indicate whether a given component is pure render - when the ComponentTree for this component is updated, if nothing changes then the measurements for this component can be re-used.
+
+For Mountable, there's no equivalent behaviour as all the Mountable Components are pure render, so when migrating this parameter should be ignored.
