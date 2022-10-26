@@ -1245,9 +1245,11 @@ public class SectionTree {
         if (isTracing) {
           ComponentsSystrace.beginSection("calculateNewChangeSet");
         }
+        final SectionContext contextForCalculation =
+            SectionContext.forNewChangeSetCalculation(mContext);
         final ChangeSetState changeSetState =
             calculateNewChangeSet(
-                mContext,
+                contextForCalculation,
                 currentRoot,
                 nextRoot,
                 pendingStateUpdates.mAllStateUpdates,
@@ -1894,7 +1896,6 @@ public class SectionTree {
 
           final String globalKey = nextRoot.getGlobalKey() + childKey;
           child.generateKeyAndSet(nextRoot.getScopedContext(), globalKey);
-          child.setScopedContext(SectionContext.withScope(context, child));
 
           final Pair<Section, Integer> valueAndIndex =
               currentComponentChildren == null

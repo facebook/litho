@@ -85,6 +85,14 @@ public class SectionContext extends ComponentContext {
     return sectionContext;
   }
 
+  static SectionContext forNewChangeSetCalculation(SectionContext contextFromSectionTree) {
+    SectionContext sectionContext = new SectionContext(contextFromSectionTree);
+    sectionContext.mSectionTree = contextFromSectionTree.mSectionTree;
+    sectionContext.mTreeLoadingEventHandler = contextFromSectionTree.mTreeLoadingEventHandler;
+
+    return sectionContext;
+  }
+
   /**
    * Notify the {@link SectionTree} that it needs to synchronously perform a state update.
    *
