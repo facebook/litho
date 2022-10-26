@@ -199,6 +199,7 @@ module.exports = {
             'mountablecomponents/accessibility',
             'mountablecomponents/mountable-bindto',
             'mountablecomponents/mountable-controllers',
+            'mountablecomponents/mountable-preallocation',
             'mountablecomponents/introduction-to-rendercore',
             {
               'Migrating to Mountable Components': [
