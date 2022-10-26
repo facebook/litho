@@ -512,17 +512,6 @@ public abstract class Component
   }
 
   /**
-   * Generated component's state container could implement this interface along with {@link
-   * StateContainer} when componentspec specifies state update method with {@link
-   * com.facebook.litho.annotations.OnUpdateStateWithTransition} annotation.
-   */
-  public interface TransitionContainer {
-
-    /** Remove and return transition provided from OnUpdateStateWithTransition. */
-    Transition consumeTransition();
-  }
-
-  /**
    * A per-Component-class data structure to keep track of some of the last mounted @Prop/@State
    * params a component was rendered with. The exact params that are tracked are just the ones
    * needed to support that Component's use of {@link Diff} params in their lifecycle methods that

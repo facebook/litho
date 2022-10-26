@@ -309,26 +309,6 @@ public class StateGeneratorTest {
   }
 
   @Test
-  public void testGenerateTransferStateWithTransition() {
-    TypeSpecDataHolder dataHolder =
-        StateGenerator.generateTransferState(mSpecModelWithStateWithTransition);
-
-    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
-
-    assertThat(dataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "@java.lang.Override\n"
-                + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
-                + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
-                + "  TestWithStateWithTransitionStateContainer<T> prevStateContainer = (TestWithStateWithTransitionStateContainer<T>) _prevStateContainer;\n"
-                + "  TestWithStateWithTransitionStateContainer<T> nextStateContainer = (TestWithStateWithTransitionStateContainer<T>) _nextStateContainer;\n"
-                + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
-                + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
-                + "  nextStateContainer._transition = prevStateContainer._transition;\n"
-                + "}\n");
-  }
-
-  @Test
   public void testDoNotGenerateTransferState() {
     TypeSpecDataHolder dataHolder = StateGenerator.generateTransferState(mSpecModelWithoutState);
 

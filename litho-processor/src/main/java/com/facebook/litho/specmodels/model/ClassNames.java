@@ -88,7 +88,7 @@ public interface ClassNames {
 
   ClassName TRANSITON = ClassName.bestGuess("com.facebook.litho.Transition");
   ClassName TRANSITION_CONTAINER =
-      ClassName.bestGuess("com.facebook.litho.Component.TransitionContainer");
+      ClassName.bestGuess("com.facebook.litho.SpecGeneratedComponent.TransitionContainer");
 
   ClassName COMPARABLE_DRAWABLE =
       ClassName.bestGuess("com.facebook.litho.drawable.ComparableDrawable");

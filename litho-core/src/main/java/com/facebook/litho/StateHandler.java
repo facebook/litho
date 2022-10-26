@@ -209,17 +209,26 @@ public class StateHandler {
 
     List<Transition> transitionsFromStateUpdate = null;
 
+    final SpecGeneratedComponent.TransitionContainer asTransitionContainer =
+        newStateContainer instanceof SpecGeneratedComponent.TransitionContainer
+            ? (SpecGeneratedComponent.TransitionContainer) newStateContainer
+            : null;
+
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        newStateContainer.applyStateUpdate(update);
-        final Transition transition = obtainTransitionFromStateContainer(newStateContainer);
-        if (transition != null) {
-          if (transitionsFromStateUpdate == null) {
-            transitionsFromStateUpdate = new ArrayList<>();
+        if (asTransitionContainer != null) {
+          final Transition transition =
+              asTransitionContainer.applyStateUpdateWithTransition(update);
+          if (transition != null) {
+            if (transitionsFromStateUpdate == null) {
+              transitionsFromStateUpdate = new ArrayList<>();
+            }
+            TransitionUtils.setOwnerKey(transition, key);
+            transitionsFromStateUpdate.add(transition);
           }
-          TransitionUtils.setOwnerKey(transition, key);
-          transitionsFromStateUpdate.add(transition);
+        } else {
+          newStateContainer.applyStateUpdate(update);
         }
       }
 
@@ -358,14 +367,6 @@ public class StateHandler {
     maybeInitNeededStateContainers();
     mNeededStateContainers.add(key);
     mStateContainers.put(key, state);
-  }
-
-  private static @Nullable Transition obtainTransitionFromStateContainer(
-      StateContainer stateContainer) {
-    if (stateContainer instanceof Component.TransitionContainer) {
-      return ((Component.TransitionContainer) stateContainer).consumeTransition();
-    }
-    return null;
   }
 
   StateContainer applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {

@@ -20,7 +20,6 @@ import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.get
 import static com.facebook.litho.specmodels.generator.StateGenerator.FLAG_LAZY;
 import static com.facebook.litho.specmodels.generator.StateGenerator.hasUpdateStateWithTransition;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Generated;
@@ -49,8 +48,9 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 public class StateContainerGenerator {
-  private static final String METHOD_NAME_CONSUME_TRANSITION = "consumeTransition";
   private static final String METHOD_NAME_APPLY_STATE_UPDATE = "applyStateUpdate";
+  private static final String METHOD_NAME_APPLY_STATE_UPDATE_WITH_TRANSITION =
+      "applyStateUpdateWithTransition";
   private static final String PARAM_NAME_STATE_UPDATE = "stateUpdate";
   private static final String VAR_NAME_PARAMS = "params";
 
@@ -82,50 +82,33 @@ public class StateContainerGenerator {
               .build());
     }
 
-    if (hasUpdateStateWithTransition) {
-      generateTransitionStuff(specModel).addToTypeSpec(stateContainerClassBuilder);
-    }
-
     generateApplyStateUpdateMethod(specModel).addToTypeSpec(stateContainerClassBuilder);
+    if (hasUpdateStateWithTransition) {
+      generateUnsupportedApplyStateUpdateMethod(specModel)
+          .addToTypeSpec(stateContainerClassBuilder);
+    }
 
     return stateContainerClassBuilder.build();
   }
 
-  private static TypeSpecDataHolder generateTransitionStuff(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-
-    final TypeName transitionClass = specModel.getTransitionClass().box();
-
-    typeSpecDataHolder.addField(
-        FieldSpec.builder(transitionClass, GeneratorConstants.STATE_TRANSITION_FIELD_NAME).build());
-
-    final String transitionCopyVarName = "transitionCopy";
-    typeSpecDataHolder.addMethod(
-        MethodSpec.methodBuilder(METHOD_NAME_CONSUME_TRANSITION)
-            .addModifiers(Modifier.PUBLIC)
-            .addAnnotation(Override.class)
-            .addAnnotation(Nullable.class)
-            .returns(transitionClass)
-            .addStatement(
-                "$T $N = $N",
-                specModel.getTransitionClass(),
-                transitionCopyVarName,
-                GeneratorConstants.STATE_TRANSITION_FIELD_NAME)
-            .addStatement("$N = null", GeneratorConstants.STATE_TRANSITION_FIELD_NAME)
-            .addStatement("return $N", transitionCopyVarName)
-            .build());
-
-    return typeSpecDataHolder.build();
-  }
-
   private static TypeSpecDataHolder generateApplyStateUpdateMethod(SpecModel specModel) {
     final boolean hasUpdateStateWithTransition = hasUpdateStateWithTransition(specModel);
-    final MethodSpec.Builder methodBuilder =
-        MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE)
-            .addModifiers(Modifier.PUBLIC)
-            .addAnnotation(Override.class)
-            .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
-            .returns(TypeName.VOID);
+    final MethodSpec.Builder methodBuilder;
+    if (hasUpdateStateWithTransition) {
+      methodBuilder =
+          MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE_WITH_TRANSITION)
+              .addModifiers(Modifier.PUBLIC)
+              .addAnnotation(Override.class)
+              .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
+              .returns(ClassNames.TRANSITION);
+    } else {
+      methodBuilder =
+          MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE)
+              .addModifiers(Modifier.PUBLIC)
+              .addAnnotation(Override.class)
+              .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
+              .returns(TypeName.VOID);
+    }
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       final TypeName stateValueTypeName =
@@ -140,6 +123,11 @@ public class StateContainerGenerator {
         VAR_NAME_PARAMS,
         PARAM_NAME_STATE_UPDATE,
         "params");
+
+    if (hasUpdateStateWithTransition) {
+      methodBuilder.addStatement(
+          "$T $L = null", ClassNames.TRANSITION, GeneratorConstants.STATE_TRANSITION_FIELD_NAME);
+    }
 
     methodBuilder.beginControlFlow("switch ($L.$L)", PARAM_NAME_STATE_UPDATE, "type");
     int methodIndex = 0;
@@ -176,6 +164,10 @@ public class StateContainerGenerator {
       }
     }
     methodBuilder.endControlFlow();
+
+    if (hasUpdateStateWithTransition) {
+      methodBuilder.addStatement("return $L", GeneratorConstants.STATE_TRANSITION_FIELD_NAME);
+    }
 
     return TypeSpecDataHolder.newBuilder().addMethod(methodBuilder.build()).build();
   }
@@ -274,5 +266,18 @@ public class StateContainerGenerator {
       }
     }
     return false;
+  }
+
+  private static TypeSpecDataHolder generateUnsupportedApplyStateUpdateMethod(SpecModel specModel) {
+    return TypeSpecDataHolder.newBuilder()
+        .addMethod(
+            MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
+                .addStatement("throw new UnsupportedOperationException()")
+                .returns(TypeName.VOID)
+                .build())
+        .build();
   }
 }

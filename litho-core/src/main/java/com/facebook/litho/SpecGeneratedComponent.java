@@ -559,4 +559,19 @@ public abstract class SpecGeneratedComponent extends Component
   public int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
   }
+
+  /**
+   * Generated component's state container could implement this interface along with {@link
+   * StateContainer} when componentspec specifies state update method with {@link
+   * com.facebook.litho.annotations.OnUpdateStateWithTransition} annotation.
+   */
+  public interface TransitionContainer {
+
+    /**
+     * Applies a state update and optionally returns a transition. This is meant as a replacement to
+     * the standard applyStateUpdate method on StateContainer.
+     */
+    @Nullable
+    Transition applyStateUpdateWithTransition(StateContainer.StateUpdate stateUpdate);
+  }
 }

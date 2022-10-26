@@ -114,13 +114,6 @@ public class StateGenerator {
           stateValue.getName());
     }
 
-    if (hasUpdateStateWithTransition(specModel)) {
-      methodSpec.addStatement(
-          "nextStateContainer.$L = prevStateContainer.$L",
-          GeneratorConstants.STATE_TRANSITION_FIELD_NAME,
-          GeneratorConstants.STATE_TRANSITION_FIELD_NAME);
-    }
-
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec.build()).build();
   }
 
