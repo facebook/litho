@@ -2355,6 +2355,67 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
+
+    synchronized (mCurrentCalculateResolutionRunnableLock) {
+      if (mCurrentCalculateResolutionRunnable != null) {
+        mResolveThreadHandler.remove(mCurrentCalculateResolutionRunnable);
+        mCurrentCalculateResolutionRunnable = null;
+      }
+    }
+
+    final int localResolveVersion;
+    final Component root;
+    final @Nullable LithoNode currentNode;
+
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      localResolveVersion = mNextResolveVersion++;
+      root = mRoot;
+      currentNode = mCommittedResolutionResult != null ? mCommittedResolutionResult.node : null;
+    }
+
+    final @Nullable LithoResolutionResult resolutionResult =
+        calculateResolutionResult(root, localResolveVersion, currentNode);
+
+    if (resolutionResult == null) {
+      if (!isReleased() && isFromSyncLayout(source)) {
+        final String errorMessage =
+            "ResolutionResult is null, but only async operations can return a null ResolutionResult. Source: "
+                + layoutSourceToString(source)
+                + ", current thread: "
+                + Thread.currentThread().getName()
+                + ". Root: "
+                + (root == null ? "null" : root.getSimpleName());
+        throw new IllegalStateException(errorMessage);
+      }
+
+      return;
+    }
+
+    commitResolutionResult(resolutionResult);
+
+    startLayoutCalculationWithSplitFutures(
+        output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
+  }
+
+  private LithoResolutionResult calculateResolutionResult(
+      final Component root, final int resolveVersion, final @Nullable LithoNode currentNode) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  private synchronized void commitResolutionResult(final LithoResolutionResult resolutionResult) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  private void startLayoutCalculationWithSplitFutures(
+      @Nullable Size output,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution,
+      @Nullable TreeProps treeProps,
+      boolean isCreateLayoutInProgress) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 
