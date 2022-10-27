@@ -330,9 +330,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("mResolvedResultFutureLock")
   private final List<RenderTreeFuture> mResolvedResultFutures = new ArrayList<>();
 
-  @GuardedBy("mLayoutStateFutureLock")
-  private final List<LayoutTreeFuture> mLayoutTreeFutures = new ArrayList<>();
-
   private volatile boolean mHasMounted;
   private volatile boolean mIsFirstMount;
 
@@ -2542,7 +2539,6 @@ public class ComponentTree implements LithoLifecycleListener {
     final LithoResolutionResult resolutionResult;
     final int widthSpec;
     final int heightSpec;
-    final int layoutVersion;
     final @Nullable LayoutState currentLayoutState;
     final @Nullable DiffNode currentDiffNode;
 
@@ -2552,7 +2548,6 @@ public class ComponentTree implements LithoLifecycleListener {
       heightSpec = mHeightSpec;
       currentLayoutState = mCommittedLayoutState;
       currentDiffNode = currentLayoutState != null ? currentLayoutState.getDiffTree() : null;
-      layoutVersion = mNextLayoutVersion++;
     }
 
     // No resolution result, no point proceeding.
@@ -2568,13 +2563,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final LayoutState layoutState =
         runLayoutTreeFuture(
-            source,
-            resolutionResult,
-            widthSpec,
-            heightSpec,
-            layoutVersion,
-            currentLayoutState,
-            currentDiffNode);
+            resolutionResult, widthSpec, heightSpec, currentLayoutState, currentDiffNode);
 
     if (layoutState == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2600,49 +2589,13 @@ public class ComponentTree implements LithoLifecycleListener {
     commitLayoutStateFromLayoutTreeFuture(layoutState);
   }
 
-  @Nullable
   private LayoutState runLayoutTreeFuture(
-      final @CalculateLayoutSource int source,
       final LithoResolutionResult resolutionResult,
       int widthSpec,
       int heightSpec,
-      int version,
       @Nullable LayoutState currentLayoutState,
       @Nullable DiffNode diffNode) {
-
-    // TODO (T134774377) Implement perf event for LayoutTreeFuture
-    final LayoutTreeFuture layoutTreeFuture =
-        new LayoutTreeFuture(
-            resolutionResult,
-            currentLayoutState,
-            diffNode,
-            null,
-            widthSpec,
-            heightSpec,
-            mId,
-            version);
-
-    synchronized (mLayoutStateFutureLock) {
-      if (!isFromSyncLayout(source)) {
-        for (LayoutTreeFuture runningLtf : mLayoutTreeFutures) {
-          if (runningLtf.isEquivalentTo(layoutTreeFuture)) {
-            // An LTF is already running with the exact same params, no need to calculate async.
-            return null;
-          }
-        }
-      }
-
-      mLayoutTreeFutures.add(layoutTreeFuture);
-    }
-
-    final LayoutState layoutState = layoutTreeFuture.runAndGet(source);
-
-    synchronized (mLayoutStateFutureLock) {
-      layoutTreeFuture.release();
-      mLayoutTreeFutures.remove(layoutTreeFuture);
-    }
-
-    return layoutState;
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   private void commitLayoutStateFromLayoutTreeFuture(final LayoutState layoutState) {

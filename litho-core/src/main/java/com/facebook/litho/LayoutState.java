@@ -248,7 +248,7 @@ public class LayoutState
       ComponentContext context,
       Component rootComponent,
       TreeState treeState,
-      @Nullable LayoutState current,
+      LayoutState current,
       int widthSpec,
       int heightSpec,
       int componentTreeId) {

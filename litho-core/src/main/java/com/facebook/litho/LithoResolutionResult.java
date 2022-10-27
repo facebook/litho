@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 
 public class LithoResolutionResult implements PotentiallyPartialResult {
   public final @Nullable LithoNode node;
-  public final ComponentContext context;
   public final Component component;
   public final MeasuredResultCache cache;
   public final TreeState treeState;
@@ -29,14 +28,12 @@ public class LithoResolutionResult implements PotentiallyPartialResult {
 
   public LithoResolutionResult(
       final @Nullable LithoNode node,
-      final ComponentContext context,
       final Component component,
       final MeasuredResultCache cache,
       final TreeState treeState,
       final boolean isPartial,
       final int version) {
     this.node = node;
-    this.context = context;
     this.component = component;
     this.cache = cache;
     this.treeState = treeState;
