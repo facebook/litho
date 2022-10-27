@@ -116,9 +116,6 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
 
     final RenderTreeFuture thatRtf = (RenderTreeFuture) that;
 
-    if (!mComponentContext.equals(thatRtf.mComponentContext)) {
-      return false;
-    }
     if (mComponent.getId() != thatRtf.mComponent.getId()) {
       return false;
     }

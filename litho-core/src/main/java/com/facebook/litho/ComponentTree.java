@@ -319,8 +319,13 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final Object mLayoutStateFutureLock = new Object();
 
+  private final Object mRenderTreeFutureLock = new Object();
+
   @GuardedBy("mLayoutStateFutureLock")
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
+
+  @GuardedBy("mRenderTreeFutureLock")
+  private final List<RenderTreeFuture> mRenderTreeFutures = new ArrayList<>();
 
   private volatile boolean mHasMounted;
   private volatile boolean mIsFirstMount;
@@ -2365,6 +2370,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final int localResolveVersion;
     final Component root;
+    final TreeState treeState;
+    final ComponentContext context;
     final @Nullable LithoNode currentNode;
 
     synchronized (this) {
@@ -2374,11 +2381,14 @@ public class ComponentTree implements LithoLifecycleListener {
 
       localResolveVersion = mNextResolveVersion++;
       root = mRoot;
+      treeState = acquireTreeState();
       currentNode = mCommittedResolutionResult != null ? mCommittedResolutionResult.node : null;
+      context = new ComponentContext(mContext, treeProps);
     }
 
     final @Nullable LithoResolutionResult resolutionResult =
-        calculateResolutionResult(root, localResolveVersion, currentNode);
+        calculateResolutionResult(
+            context, root, treeState, localResolveVersion, currentNode, source);
 
     if (resolutionResult == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2401,9 +2411,74 @@ public class ComponentTree implements LithoLifecycleListener {
         output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
   }
 
+  @Nullable
   private LithoResolutionResult calculateResolutionResult(
-      final Component root, final int resolveVersion, final @Nullable LithoNode currentNode) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      final ComponentContext context,
+      final Component root,
+      final TreeState treeState,
+      final int resolveVersion,
+      final @Nullable LithoNode currentNode,
+      @CalculateLayoutSource int source) {
+
+    // TODO (T134774377) Implement perf event for RenderTreeFuture
+    RenderTreeFuture localRenderTreeFuture =
+        new RenderTreeFuture(context, root, treeState, currentNode, null, resolveVersion);
+
+    final boolean waitingFromSyncLayout = isFromSyncLayout(source);
+
+    synchronized (mRenderTreeFutureLock) {
+      boolean canReuse = false;
+      for (int i = 0; i < mRenderTreeFutures.size(); i++) {
+        final RenderTreeFuture runningRtf = mRenderTreeFutures.get(i);
+        if (!runningRtf.isReleased()
+            && runningRtf.isEquivalentTo(localRenderTreeFuture)
+            && runningRtf.tryRegisterForResponse(waitingFromSyncLayout)) {
+          // Use the latest LithoResolutionResult calculation if it's the same.
+          localRenderTreeFuture = runningRtf;
+          canReuse = true;
+          break;
+        }
+      }
+      if (!canReuse) {
+        if (!localRenderTreeFuture.tryRegisterForResponse(waitingFromSyncLayout)) {
+          throw new RuntimeException("Failed to register to localRenderTreeFuture");
+        }
+        mRenderTreeFutures.add(localRenderTreeFuture);
+      }
+    }
+
+    final LithoResolutionResult resolutionResult = localRenderTreeFuture.runAndGet(source);
+
+    synchronized (mRenderTreeFutureLock) {
+      localRenderTreeFuture.unregisterForResponse();
+
+      // This future has finished executing, if no other threads were waiting for the response we
+      // can remove it.
+      if (localRenderTreeFuture.getWaitingCount() == 0) {
+        localRenderTreeFuture.release();
+        mRenderTreeFutures.remove(localRenderTreeFuture);
+      }
+    }
+
+    if (root.getBuilderContext() != null
+        && root.getBuilderContext() != mContext.getAndroidContext()) {
+      final String message =
+          "ComponentTree context is different from root builder context"
+              + ", ComponentTree context="
+              + mContext.getAndroidContext()
+              + ", root builder context="
+              + root.getBuilderContext()
+              + ", root="
+              + root.getSimpleName()
+              + ", ContextTree="
+              + ComponentTreeDumpingHelper.dumpContextTree(mContext);
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,
+          message);
+    }
+
+    return resolutionResult;
   }
 
   private synchronized void commitResolutionResult(final LithoResolutionResult resolutionResult) {
