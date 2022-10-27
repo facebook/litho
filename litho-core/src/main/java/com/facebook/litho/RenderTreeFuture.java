@@ -75,7 +75,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     }
 
     return new LithoResolutionResult(
-        node, rsc.getCache(), mTreeState, rsc.isLayoutInterrupted(), mResolveVersion);
+        node, mComponent, rsc.getCache(), mTreeState, rsc.isLayoutInterrupted(), mResolveVersion);
   }
 
   @Override
@@ -107,7 +107,12 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     mRenderStateContextForResume = null;
 
     return new LithoResolutionResult(
-        node, partialResult.cache, partialResult.treeState, false, mResolveVersion);
+        node,
+        partialResult.component,
+        partialResult.cache,
+        partialResult.treeState,
+        false,
+        mResolveVersion);
   }
 
   @Override

@@ -314,6 +314,9 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
+  @GuardedBy("mCurrentCalculateLayoutRunnableLock")
+  private @Nullable CalculateLayoutFutureRunnable mCurrentCalculateLayoutFutureRunnable;
+
   @GuardedBy("mCurrentCalculateResolutionRunnableLock")
   private @Nullable CalculateResolutionRunnable mCurrentCalculateResolutionRunnable;
 
@@ -2331,6 +2334,8 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
+    // TODO (T134781976) Maybe skip resolve here and go straight to measure, depending on source.
+
     if (isAsync) {
       synchronized (mCurrentCalculateResolutionRunnableLock) {
         if (mCurrentCalculateResolutionRunnable != null) {
@@ -2494,6 +2499,106 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
+
+    final boolean isAsync = !isFromSyncLayout(source);
+
+    if (!isAsync && output != null) {
+      throw new IllegalStateException("Cannot generate output for async layout calculation");
+    }
+
+    if (isAsync) {
+      synchronized (mCurrentCalculateLayoutRunnableLock) {
+        if (mCurrentCalculateLayoutFutureRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
+        }
+        mCurrentCalculateLayoutFutureRunnable =
+            new CalculateLayoutFutureRunnable(
+                source, treeProps, extraAttribution, isCreateLayoutInProgress);
+
+        String tag = EMPTY_STRING;
+        if (mLayoutThreadHandler.isTracing()) {
+          tag = "calculateLayoutFuture ";
+          if (mRoot != null) {
+            tag = tag + mRoot.getSimpleName();
+          }
+        }
+        mLayoutThreadHandler.post(mCurrentCalculateLayoutFutureRunnable, tag);
+      }
+    } else {
+      calculateLayoutResult(output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
+    }
+  }
+
+  private void calculateLayoutResult(
+      @Nullable Size output,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution,
+      @Nullable TreeProps treeProps,
+      boolean isCreateLayoutInProgress) {
+
+    final LithoResolutionResult resolutionResult;
+    final int widthSpec;
+    final int heightSpec;
+    final @Nullable LayoutState currentLayoutState;
+    final @Nullable DiffNode currentDiffNode;
+
+    synchronized (this) {
+      resolutionResult = mCommittedResolutionResult;
+      widthSpec = mWidthSpec;
+      heightSpec = mHeightSpec;
+      currentLayoutState = mCommittedLayoutState;
+      currentDiffNode = currentLayoutState != null ? currentLayoutState.getDiffTree() : null;
+    }
+
+    // No resolution result, no point proceeding.
+    if (resolutionResult == null) {
+      // TODO (T134781976) Potentially run resolve now.
+      return;
+    }
+
+    // No width / height spec, no point proceeding.
+    if (widthSpec == SIZE_UNINITIALIZED && heightSpec == SIZE_UNINITIALIZED) {
+      return;
+    }
+
+    final LayoutState layoutState =
+        runLayoutTreeFuture(
+            resolutionResult, widthSpec, heightSpec, currentLayoutState, currentDiffNode);
+
+    if (layoutState == null) {
+      if (!isReleased() && isFromSyncLayout(source)) {
+        final String errorMessage =
+            "LayoutState is null, but only async operations can return a null LayoutState. Source: "
+                + layoutSourceToString(source)
+                + ", current thread: "
+                + Thread.currentThread().getName()
+                + ". Root: "
+                + (resolutionResult.component.getSimpleName());
+
+        throw new IllegalStateException(errorMessage);
+      }
+
+      return;
+    }
+
+    if (output != null) {
+      output.width = layoutState.getWidth();
+      output.height = layoutState.getHeight();
+    }
+
+    commitLayoutStateFromLayoutTreeFuture(layoutState);
+  }
+
+  private LayoutState runLayoutTreeFuture(
+      final LithoResolutionResult resolutionResult,
+      int widthSpec,
+      int heightSpec,
+      @Nullable LayoutState currentLayoutState,
+      @Nullable DiffNode diffNode) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  private void commitLayoutStateFromLayoutTreeFuture(final LayoutState layoutState) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 
@@ -3344,6 +3449,29 @@ public class ComponentTree implements LithoLifecycleListener {
   @VisibleForTesting
   EventHandlersController getEventHandlersController() {
     return mEventHandlersController;
+  }
+
+  private class CalculateLayoutFutureRunnable extends ThreadTracingRunnable {
+    private final @CalculateLayoutSource int mSource;
+    private final @Nullable TreeProps mTreeProps;
+    private final @Nullable String mAttribution;
+    private final boolean mIsCreateLayoutInProgress;
+
+    public CalculateLayoutFutureRunnable(
+        @CalculateLayoutSource int source,
+        @Nullable TreeProps treeProps,
+        @Nullable String attribution,
+        boolean isCreateLayoutInProgress) {
+      mSource = source;
+      mTreeProps = treeProps;
+      mAttribution = attribution;
+      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
+    }
+
+    @Override
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+      calculateLayoutResult(null, mSource, mAttribution, mTreeProps, mIsCreateLayoutInProgress);
+    }
   }
 
   private class CalculateResolutionRunnable extends ThreadTracingRunnable {
