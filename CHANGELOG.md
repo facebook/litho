@@ -1,10 +1,10 @@
 # Changelog
 
-## Version 0.44.0-SNAPSHOT
+## Version 0.44.0
 
-_release-date_
+_2022-10-27_
 
- * TBA
+ * New APIs for debugging.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.43.0...master).
 
