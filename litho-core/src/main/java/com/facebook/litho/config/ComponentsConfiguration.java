@@ -218,7 +218,12 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUsePositionInParentForMounting = false;
 
-  public static boolean isBuildAndLayoutSplitEnabled = false;
+  /**
+   * When enabled, Resolve and Layout futures will run separately. Resolve will store a committed
+   * LithoResolutionResult, which will allow subsequent layouts to reuse that result to produce a
+   * LayoutState.
+   */
+  public static boolean isResolveAndLayoutFuturesSplitEnabled = false;
 
   public static boolean isSplitStateHandlersEnabled = false;
 

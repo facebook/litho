@@ -97,6 +97,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
+  private static final String DEFAULT_RESOLVE_THREAD_NAME = "ComponentResolveThread";
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String EMPTY_STRING = "";
   private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
@@ -235,6 +236,9 @@ public class ComponentTree implements LithoLifecycleListener {
   private static volatile Looper sDefaultLayoutThreadLooper;
 
   @GuardedBy("ComponentTree.class")
+  private static volatile Looper sDefaultResolveThreadLooper;
+
+  @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultPreallocateMountContentThreadLooper;
 
   private static final ThreadLocal<WeakReference<RunnableHandler>> sSyncStateUpdatesHandler =
@@ -290,6 +294,9 @@ public class ComponentTree implements LithoLifecycleListener {
   @ThreadConfined(ThreadConfined.UI)
   private RunnableHandler mLayoutThreadHandler;
 
+  @ThreadConfined(ThreadConfined.UI)
+  private RunnableHandler mResolveThreadHandler;
+
   private RunnableHandler mMainThreadHandler = new DefaultHandler(Looper.getMainLooper());
   private final Runnable mBackgroundLayoutStateUpdateRunnable =
       new Runnable() {
@@ -329,6 +336,9 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private int mExternalRootVersion = INVALID_LAYOUT_VERSION;
 
+  @GuardedBy("this")
+  private int mNextResolveVersion;
+
   // Versioning that gets incremented every time we start a new layout computation. This can
   // be useful for stateful objects shared across layouts that need to check whether for example
   // a measure/onCreateLayout call is being executed in the context of an old layout calculation.
@@ -358,6 +368,9 @@ public class ComponentTree implements LithoLifecycleListener {
   private @Nullable LayoutState mCommittedLayoutState;
 
   @GuardedBy("this")
+  private @Nullable LithoResolutionResult mCommittedResolutionResult;
+
+  @GuardedBy("this")
   private @Nullable TreeState mTreeState;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -378,6 +391,8 @@ public class ComponentTree implements LithoLifecycleListener {
   private final boolean isReconciliationEnabled;
 
   private final boolean isSplitStateHandlersEnabled;
+
+  private final boolean isResolveAndLayoutFuturesSplitEnabled;
 
   private final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
 
@@ -450,6 +465,8 @@ public class ComponentTree implements LithoLifecycleListener {
     isSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
     isReuseLastMeasuredNodeInComponentMeasureEnabled =
         ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
+    isResolveAndLayoutFuturesSplitEnabled =
+        ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
     mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
@@ -485,6 +502,12 @@ public class ComponentTree implements LithoLifecycleListener {
     if (mPreAllocateMountContentHandler != null) {
       mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
     }
+
+    if (isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadHandler =
+          instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
+    }
+
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
@@ -2262,6 +2285,12 @@ public class ComponentTree implements LithoLifecycleListener {
           "The layout can't be calculated asynchronously if we need the Size back");
     }
 
+    if (isResolveAndLayoutFuturesSplitEnabled) {
+      startCalculationWithSplitFutures(
+          isAsync, source, extraAttribution, treeProps, isCreateLayoutInProgress);
+      return;
+    }
+
     if (isAsync) {
       synchronized (mCurrentCalculateLayoutRunnableLock) {
         if (mCurrentCalculateLayoutRunnable != null) {
@@ -2283,6 +2312,15 @@ public class ComponentTree implements LithoLifecycleListener {
     } else {
       calculateLayout(output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
     }
+  }
+
+  private void startCalculationWithSplitFutures(
+      boolean isAsync,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution,
+      @Nullable TreeProps treeProps,
+      boolean isCreateLayoutInProgress) {
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   /**
@@ -2670,6 +2708,17 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     return sDefaultLayoutThreadLooper;
+  }
+
+  private static synchronized Looper getDefaultResolveThreadLooper() {
+    if (sDefaultResolveThreadLooper == null) {
+      final HandlerThread defaultThread =
+          new HandlerThread(DEFAULT_RESOLVE_THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);
+      defaultThread.start();
+      sDefaultResolveThreadLooper = defaultThread.getLooper();
+    }
+
+    return sDefaultResolveThreadLooper;
   }
 
   private static boolean isCompatibleSpec(
