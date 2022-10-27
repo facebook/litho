@@ -24,7 +24,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
   private final TreeState mTreeState;
   private final @Nullable LithoNode mCurrentRootNode;
   private final @Nullable PerfEvent mPerfEvent;
-  private final int mLayoutVersion;
+  private final int mResolveVersion;
 
   // Only needed for resume logic.
   private @Nullable RenderStateContext mRenderStateContextForResume;
@@ -35,7 +35,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
       final TreeState treeState,
       final @Nullable LithoNode currentRootNode,
       final @Nullable PerfEvent perfEvent,
-      final int layoutVersion) {
+      final int resolveVersion) {
     super(true);
 
     mComponentContext = c;
@@ -43,7 +43,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     mTreeState = treeState;
     mCurrentRootNode = currentRootNode;
     mPerfEvent = perfEvent;
-    mLayoutVersion = layoutVersion;
+    mResolveVersion = resolveVersion;
   }
 
   @Override
@@ -52,7 +52,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
         new RenderStateContext(
             new MeasuredResultCache(),
             mTreeState,
-            mLayoutVersion,
+            mResolveVersion,
             this,
             mCurrentRootNode,
             mPerfEvent);
@@ -74,7 +74,8 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
       rsc.getCache().freezeCache();
     }
 
-    return new LithoResolutionResult(node, rsc.getCache(), mTreeState, rsc.isLayoutInterrupted());
+    return new LithoResolutionResult(
+        node, rsc.getCache(), mTreeState, rsc.isLayoutInterrupted(), mResolveVersion);
   }
 
   @Override
@@ -105,7 +106,8 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     mRenderStateContextForResume.getCache().freezeCache();
     mRenderStateContextForResume = null;
 
-    return new LithoResolutionResult(node, partialResult.cache, partialResult.treeState, false);
+    return new LithoResolutionResult(
+        node, partialResult.cache, partialResult.treeState, false, mResolveVersion);
   }
 
   @Override

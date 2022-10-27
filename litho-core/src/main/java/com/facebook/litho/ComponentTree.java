@@ -2482,7 +2482,10 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   private synchronized void commitResolutionResult(final LithoResolutionResult resolutionResult) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if (mCommittedResolutionResult == null
+        || mCommittedResolutionResult.resolveVersion < resolutionResult.resolveVersion) {
+      mCommittedResolutionResult = resolutionResult;
+    }
   }
 
   private void startLayoutCalculationWithSplitFutures(
