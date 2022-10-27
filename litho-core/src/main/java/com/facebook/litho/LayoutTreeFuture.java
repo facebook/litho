@@ -20,8 +20,6 @@ import androidx.annotation.Nullable;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final LithoResolutionResult mLithoResolutionResult;
-  private final ComponentContext mComponentContext;
-  private final Component mRootComponent;
   private final @Nullable LayoutState mCurrentLayoutState;
   private final @Nullable DiffNode mDiffTreeRoot;
   private final @Nullable PerfEvent mLogLayoutStatePerfEvent;
@@ -32,8 +30,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
   public LayoutTreeFuture(
       final LithoResolutionResult lithoResolutionResult,
-      final ComponentContext componentContext,
-      final Component component,
       final @Nullable LayoutState currentLayoutState,
       final @Nullable DiffNode diffTreeRoot,
       final @Nullable PerfEvent logLayoutStatePerfEvent,
@@ -44,8 +40,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     super(false);
 
     mLithoResolutionResult = lithoResolutionResult;
-    mComponentContext = componentContext;
-    mRootComponent = component;
     mCurrentLayoutState = currentLayoutState;
     mDiffTreeRoot = diffTreeRoot;
     mLogLayoutStatePerfEvent = logLayoutStatePerfEvent;
@@ -60,11 +54,12 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     final LithoNode node = mLithoResolutionResult.node;
     final TreeState treeState = mLithoResolutionResult.treeState;
     final MeasuredResultCache renderPhaseCache = mLithoResolutionResult.cache;
+    final ComponentContext c = mLithoResolutionResult.context;
 
     final LayoutState layoutState =
         new LayoutState(
-            mComponentContext,
-            mRootComponent,
+            c,
+            mLithoResolutionResult.component,
             treeState,
             mCurrentLayoutState,
             mWidthSpec,
@@ -74,9 +69,9 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     final LayoutStateContext lsc =
         new LayoutStateContext(
             new MeasuredResultCache(renderPhaseCache),
-            mComponentContext,
+            c,
             treeState,
-            mComponentContext.getComponentTree(),
+            c.getComponentTree(),
             mLayoutVersion,
             mDiffTreeRoot,
             this);
@@ -85,19 +80,14 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       lsc.setPerfEvent(mLogLayoutStatePerfEvent);
     }
 
-    final CalculationStateContext prevContext = mComponentContext.getCalculationStateContext();
+    final CalculationStateContext prevContext = c.getCalculationStateContext();
 
     try {
-      mComponentContext.setLayoutStateContext(lsc);
+      c.setLayoutStateContext(lsc);
 
       final @Nullable LithoLayoutResult root =
           Layout.measureTree(
-              lsc,
-              mComponentContext.getAndroidContext(),
-              node,
-              mWidthSpec,
-              mHeightSpec,
-              mLogLayoutStatePerfEvent);
+              lsc, c.getAndroidContext(), node, mWidthSpec, mHeightSpec, mLogLayoutStatePerfEvent);
 
       layoutState.mLayoutResult = root;
 
@@ -105,13 +95,13 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
         mLogLayoutStatePerfEvent.markerPoint("start_collect_results");
       }
 
-      LayoutState.setSizeAfterMeasureAndCollectResults(mComponentContext, lsc, layoutState);
+      LayoutState.setSizeAfterMeasureAndCollectResults(c, lsc, layoutState);
 
       if (mLogLayoutStatePerfEvent != null) {
         mLogLayoutStatePerfEvent.markerPoint("end_collect_results");
       }
     } finally {
-      mComponentContext.setCalculationStateContext(prevContext);
+      c.setCalculationStateContext(prevContext);
     }
 
     return layoutState;
@@ -124,7 +114,14 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
   @Override
   public boolean isEquivalentTo(TreeFuture that) {
-    throw new UnsupportedOperationException(
-        "isEquivalentTo should not be invoked for LayoutTreeFuture.");
+    if (!(that instanceof LayoutTreeFuture)) {
+      return false;
+    }
+
+    final LayoutTreeFuture thatLtf = (LayoutTreeFuture) that;
+
+    return mWidthSpec == thatLtf.mWidthSpec
+        && mHeightSpec == thatLtf.mHeightSpec
+        && mLithoResolutionResult == thatLtf.mLithoResolutionResult;
   }
 }
