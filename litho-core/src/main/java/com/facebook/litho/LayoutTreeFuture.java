@@ -90,6 +90,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               lsc, c.getAndroidContext(), node, mWidthSpec, mHeightSpec, mLogLayoutStatePerfEvent);
 
       layoutState.mLayoutResult = root;
+      layoutState.setNode(mLithoResolutionResult.node);
 
       if (mLogLayoutStatePerfEvent != null) {
         mLogLayoutStatePerfEvent.markerPoint("start_collect_results");

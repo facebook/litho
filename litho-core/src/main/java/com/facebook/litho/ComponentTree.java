@@ -2517,8 +2517,9 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final boolean isAsync = !isFromSyncLayout(source);
 
-    if (!isAsync && output != null) {
-      throw new IllegalStateException("Cannot generate output for async layout calculation");
+    if (isAsync && output != null) {
+      throw new IllegalStateException(
+          "Cannot generate output for async layout calculation (source = " + source + ")");
     }
 
     if (isAsync) {
