@@ -24,7 +24,7 @@ public class LithoResolutionResult implements PotentiallyPartialResult {
   public final MeasuredResultCache cache;
   public final TreeState treeState;
   public final boolean isPartialResult;
-  public final int resolveVersion;
+  public final int version;
 
   public LithoResolutionResult(
       final @Nullable LithoNode node,
@@ -32,13 +32,13 @@ public class LithoResolutionResult implements PotentiallyPartialResult {
       final MeasuredResultCache cache,
       final TreeState treeState,
       final boolean isPartial,
-      final int resolveVersion) {
+      final int version) {
     this.node = node;
     this.component = component;
     this.cache = cache;
     this.treeState = treeState;
     this.isPartialResult = isPartial;
-    this.resolveVersion = resolveVersion;
+    this.version = version;
   }
 
   @Override
