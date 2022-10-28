@@ -281,9 +281,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           boundsIntersect
               && isInVisibleRange(visibilityOutput, visibilityOutputBounds, intersection);
 
-      int rootHostViewWidth = getRootHostViewWidth(extensionState);
-      int rootHostViewHeight = getRootHostViewHeight(extensionState);
-
       if (visibilityItem != null) {
 
         // If we did a relayout due to e.g. a state update then the handlers will have changed,
@@ -301,15 +298,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
           if (visibilityChangedHandler != null) {
             VisibilityUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler,
-                0,
-                0,
-                0,
-                0,
-                rootHostViewWidth,
-                rootHostViewHeight,
-                0f,
-                0f);
+                visibilityChangedHandler, 0, 0, 0, 0, 0, 0, 0f, 0f);
           }
 
           if (visibilityItem.isInFocusedRange()) {
@@ -378,7 +367,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         if (visibilityChangedHandler != null) {
           final int visibleWidth = getVisibleWidth(intersection);
           final int visibleHeight = getVisibleHeight(intersection);
-
+          int rootHostViewWidth = getRootHostViewWidth(extensionState);
+          int rootHostViewHeight = getRootHostViewHeight(extensionState);
           VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
               getVisibleTop(visibilityOutputBounds, intersection),
@@ -430,6 +420,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       Rect componentVisibleBounds) {
     final Host host = getRootHost(extensionState);
     if (host == null) {
+      return false;
+    }
+    if (!(host.getParent() instanceof View)) {
       return false;
     }
     final View parent = (View) host.getParent();
@@ -579,6 +572,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     if (host == null) {
       return 0;
     }
+    if (!(host.getParent() instanceof View)) {
+      return 0;
+    }
     final View parent = (View) host.getParent();
     if (parent == null) {
       return 0;
@@ -590,6 +586,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       ExtensionState<VisibilityMountExtensionState> extensionState) {
     final Host host = getRootHost(extensionState);
     if (host == null) {
+      return 0;
+    }
+    if (!(host.getParent() instanceof View)) {
       return 0;
     }
     final View parent = (View) host.getParent();
