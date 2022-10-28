@@ -59,14 +59,14 @@ public class StateHandler {
    * Maps a component key to a component object that retains the current state values for that key.
    */
   @GuardedBy("this")
-  private @Nullable Map<String, StateContainer> mStateContainers;
+  private final Map<String, StateContainer> mStateContainers = new HashMap<>();
 
   /**
    * Contains all keys of components that were present in the current ComponentTree and therefore
    * their StateContainer needs to be kept around.
    */
   @GuardedBy("this")
-  private HashSet<String> mNeededStateContainers;
+  private final HashSet<String> mNeededStateContainers = new HashSet<>();
 
   /** Map of all cached values that are stored for the current ComponentTree. */
   @GuardedBy("this")
@@ -111,16 +111,12 @@ public class StateHandler {
     }
   }
 
-  public static StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
-    return new StateHandler(stateHandler);
-  }
-
   public InitialStateContainer getInitialStateContainer() {
     return mInitialStateContainer;
   }
 
   public synchronized boolean isEmpty() {
-    return (mStateContainers == null || mStateContainers.isEmpty());
+    return mStateContainers.isEmpty();
   }
 
   /**
@@ -168,7 +164,6 @@ public class StateHandler {
   }
 
   void keepStateContainerForGlobalKey(String key) {
-    maybeInitNeededStateContainers();
     mNeededStateContainers.add(key);
   }
 
@@ -178,14 +173,11 @@ public class StateHandler {
    */
   @Nullable
   StateContainer getStateContainer(String key) {
-    return mStateContainers == null ? null : mStateContainers.get(key);
+    return mStateContainers.get(key);
   }
 
   StateContainer createOrGetStateContainerForComponent(
       final ComponentContext scopedContext, final Component component, final String key) {
-    maybeInitStateContainers();
-    maybeInitNeededStateContainers();
-
     final StateContainer currentStateContainer;
 
     synchronized (this) {
@@ -256,9 +248,6 @@ public class StateHandler {
       final ComponentContext context,
       final Component component,
       final @Nullable LithoNode prevTreeRootNode) {
-    maybeInitStateContainers();
-    maybeInitNeededStateContainers();
-
     synchronized (this) {
       if (mPendingStateUpdates != null) {
         for (Map.Entry<String, List<StateUpdate>> entry : mPendingStateUpdates.entrySet()) {
@@ -339,8 +328,6 @@ public class StateHandler {
   }
 
   public synchronized void addStateContainer(String key, StateContainer state) {
-    maybeInitStateContainers();
-    maybeInitNeededStateContainers();
     mNeededStateContainers.add(key);
     mStateContainers.put(key, state);
   }
@@ -457,7 +444,6 @@ public class StateHandler {
   }
 
   synchronized Map<String, StateContainer> getStateContainers() {
-    maybeInitStateContainers();
     return mStateContainers;
   }
 
@@ -559,18 +545,18 @@ public class StateHandler {
     }
 
     synchronized (this) {
-      maybeInitStateContainers();
       mStateContainers.clear();
       mStateContainers.putAll(stateContainers);
     }
   }
 
   private static void clearUnusedStateContainers(StateHandler currentStateHandler) {
-    final HashSet<String> neededStateContainers = currentStateHandler.mNeededStateContainers;
-    final List<String> stateContainerKeys = new ArrayList<>();
-    if (neededStateContainers == null || currentStateHandler.mStateContainers == null) {
+    if (currentStateHandler.mStateContainers.isEmpty()) {
       return;
     }
+
+    final HashSet<String> neededStateContainers = currentStateHandler.mNeededStateContainers;
+    final List<String> stateContainerKeys = new ArrayList<>();
 
     stateContainerKeys.addAll(currentStateHandler.mStateContainers.keySet());
 
@@ -590,18 +576,6 @@ public class StateHandler {
     synchronized (this) {
       maybeInitPendingStateUpdateTransitions();
       mPendingStateUpdateTransitions.putAll(pendingStateUpdateTransitions);
-    }
-  }
-
-  private synchronized void maybeInitStateContainers() {
-    if (mStateContainers == null) {
-      mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
-    }
-  }
-
-  private synchronized void maybeInitNeededStateContainers() {
-    if (mNeededStateContainers == null) {
-      mNeededStateContainers = new HashSet<>();
     }
   }
 

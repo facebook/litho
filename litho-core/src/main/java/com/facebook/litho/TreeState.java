@@ -32,13 +32,13 @@ public class TreeState {
   private final StateHandler mLayoutStateHandler;
 
   public TreeState() {
-    mRenderStateHandler = StateHandler.createNewInstance(null);
-    mLayoutStateHandler = StateHandler.createNewInstance(null);
+    mRenderStateHandler = new StateHandler(null);
+    mLayoutStateHandler = new StateHandler(null);
   }
 
   public TreeState(TreeState treeState) {
-    mRenderStateHandler = StateHandler.createNewInstance(treeState.mRenderStateHandler);
-    mLayoutStateHandler = StateHandler.createNewInstance(treeState.mLayoutStateHandler);
+    mRenderStateHandler = new StateHandler(treeState.mRenderStateHandler);
+    mLayoutStateHandler = new StateHandler(treeState.mLayoutStateHandler);
   }
 
   // TODO: Remove this method

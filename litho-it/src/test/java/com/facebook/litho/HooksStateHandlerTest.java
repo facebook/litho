@@ -48,7 +48,7 @@ public class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState);
 
     final StateHandler first = new StateHandler();
-    first.getStateContainers().put(GLOBAL_KEY, kStateContainer);
+    first.addStateContainer(GLOBAL_KEY, kStateContainer);
 
     first.queueHookStateUpdate(
         GLOBAL_KEY,
@@ -67,8 +67,8 @@ public class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isTrue();
     assertThat(second.hasUncommittedUpdates()).isTrue();
 
-    final KStateContainer secondKstate =
-        (KStateContainer) second.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer secondKstate = (KStateContainer) second.getStateContainer(GLOBAL_KEY);
+    second.keepStateContainerForGlobalKey(GLOBAL_KEY);
 
     assertThat(secondKstate.mStates)
         .hasSize(4)
@@ -78,7 +78,7 @@ public class HooksStateHandlerTest {
 
     assertThat(first.hasUncommittedUpdates()).isFalse();
 
-    final KStateContainer firstState = (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer firstState = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
 
     assertThat(firstState.mStates)
         .hasSize(4)
@@ -94,7 +94,7 @@ public class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4);
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState);
 
-    first.getStateContainers().put(GLOBAL_KEY, kStateContainer);
+    first.addStateContainer(GLOBAL_KEY, kStateContainer);
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
@@ -124,8 +124,9 @@ public class HooksStateHandlerTest {
 
     assertThat(second.getStateContainers()).hasSize(1);
 
-    final KStateContainer secondKstate =
-        (KStateContainer) second.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer secondKstate = (KStateContainer) second.getStateContainer(GLOBAL_KEY);
+    second.keepStateContainerForGlobalKey(GLOBAL_KEY);
+
     assertThat(secondKstate.mStates)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
@@ -133,7 +134,7 @@ public class HooksStateHandlerTest {
     first.commit(second);
 
     assertThat(first.hasUncommittedUpdates()).isFalse();
-    final KStateContainer kState = (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer kState = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
 
     assertThat(kState.mStates)
         .hasSize(4)
@@ -149,7 +150,7 @@ public class HooksStateHandlerTest {
     kStateContainer = KStateContainer.withNewState(kStateContainer, 4);
     kStateContainer = KStateContainer.withNewState(kStateContainer, bazState);
 
-    first.getStateContainers().put(GLOBAL_KEY, kStateContainer);
+    first.addStateContainer(GLOBAL_KEY, kStateContainer);
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         new HookUpdater() {
@@ -183,9 +184,10 @@ public class HooksStateHandlerTest {
         });
 
     final StateHandler third = new StateHandler(first);
+    third.keepStateContainerForGlobalKey(GLOBAL_KEY);
 
-    final KStateContainer secondKstate =
-        (KStateContainer) second.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer secondKstate = (KStateContainer) second.getStateContainer(GLOBAL_KEY);
+    second.keepStateContainerForGlobalKey(GLOBAL_KEY);
 
     assertThat(secondKstate.mStates)
         .hasSize(4)
@@ -195,7 +197,7 @@ public class HooksStateHandlerTest {
 
     assertThat(first.hasUncommittedUpdates()).isTrue();
 
-    final KStateContainer kState = (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer kState = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
     assertThat(kState.mStates)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
@@ -204,8 +206,7 @@ public class HooksStateHandlerTest {
 
     assertThat(first.hasUncommittedUpdates()).isFalse();
 
-    final KStateContainer firstStateUpdated =
-        (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+    final KStateContainer firstStateUpdated = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
     assertThat(firstStateUpdated.mStates)
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 7, bazState, "newValue"));
