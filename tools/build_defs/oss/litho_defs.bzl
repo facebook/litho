@@ -166,8 +166,6 @@ LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
 
 LITHO_MOCKITO_V2_TARGET = make_dep_path("lib/mockito2:mockito2")
 
-LITHO_POWERMOCK_MOCKITO_TARGET = make_dep_path("lib/powermock:powermock-mockito")
-
 LITHO_POWERMOCK_MOCKITO_V2_TARGET = make_dep_path("lib/powermock2:powermock-mockito2")
 
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
