@@ -116,13 +116,6 @@ public class TreeState {
     stateHandler.applyStateUpdatesEarly(context, component, prevTreeRootNode);
   }
 
-  void applyStateUpdatesForComponent(
-      final ComponentContext scopedContext, final Component component, final String key) {
-    final StateHandler stateHandler = getStateHandler(scopedContext.isNestedTreeContext());
-    stateHandler.applyStateUpdatesForComponent(
-        scopedContext, (SpecGeneratedComponent) component, key);
-  }
-
   private static Set<String> getKeysForPendingStateUpdates(final StateHandler stateHandler) {
     return stateHandler.getKeysForPendingUpdates();
   }
@@ -155,6 +148,12 @@ public class TreeState {
   StateContainer getStateContainer(String key, boolean isNestedTree) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     return stateHandler.getStateContainer(key);
+  }
+
+  StateContainer createOrGetStateContainerForComponent(
+      final ComponentContext scopedContext, final Component component, final String key) {
+    final StateHandler stateHandler = getStateHandler(scopedContext.isNestedTreeContext());
+    return stateHandler.createOrGetStateContainerForComponent(scopedContext, component, key);
   }
 
   void removePendingStateUpdate(String key, boolean isNestedTree) {

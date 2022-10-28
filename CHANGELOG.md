@@ -5,6 +5,7 @@
 _2022-10-27_
 
  * New APIs for debugging.
+ * **Breaking**: `ComponentContext.withComponentScope` is now package-private: it was @VisibleForTesting before, but we are now enforcing the privacy. If you were using it in tests, you can replace it with `ComponentTestHelper.createScopedComponentContextWithStateForTest` (however you should really write tests against LithoViewRule for kt tests and LegacyLithoViewRule for java tests)
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.43.0...master).
 

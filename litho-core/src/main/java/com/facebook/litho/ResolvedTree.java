@@ -338,20 +338,25 @@ public class ResolvedTree {
       final ComponentContext parent,
       final Component component,
       @Nullable final String globalKeyToReuse) {
+    final String globalKey =
+        globalKeyToReuse == null
+            ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
+            : globalKeyToReuse;
+    final ComponentContext c = ComponentContext.withComponentScope(parent, component, globalKey);
 
-    // 1. Update the internal state of the component wrt the parent.
-    // 2. Get the scoped context from the updated component.
-    final ComponentContext c =
-        ComponentContext.withComponentScope(
-            parent,
-            component,
-            globalKeyToReuse == null
-                ? ComponentKeyUtils.generateGlobalKey(parent, parent.getComponentScope(), component)
-                : globalKeyToReuse);
-    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
-
-    // 3. Set the TreeProps which will be passed to the descendants of the component.
+    // Set latest state and the TreeProps which will be passed to the descendants of the component.
     if (component instanceof SpecGeneratedComponent) {
+      final SpecGeneratedComponent specComponent = (SpecGeneratedComponent) component;
+      if (specComponent.hasState()) {
+        c.getScopedComponentInfo()
+            .setStateContainer(
+                renderStateContext
+                    .getTreeState()
+                    .createOrGetStateContainerForComponent(c, specComponent, globalKey));
+      }
+
+      // Note: state must be set (via ScopedComponentInfo.setStateContainer) before invoking
+      // getTreePropsForChildren as @OnCreateTreeProps can depend on @State
       final TreeProps ancestor = parent.getTreeProps();
       final TreeProps descendants =
           ((SpecGeneratedComponent) component).getTreePropsForChildren(c, ancestor);

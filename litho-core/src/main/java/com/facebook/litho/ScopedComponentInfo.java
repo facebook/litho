@@ -58,11 +58,6 @@ public class ScopedComponentInfo implements Cloneable {
       final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
     mComponent = component;
     mContext = context;
-    mStateContainer =
-        component instanceof SpecGeneratedComponent
-                && ((SpecGeneratedComponent) component).hasState()
-            ? ((SpecGeneratedComponent) component).createStateContainer()
-            : null;
     mPrepareInterStagePropsContainer =
         component instanceof SpecGeneratedComponent
             ? ((SpecGeneratedComponent) component).createPrepareInterStagePropsContainer()
@@ -83,7 +78,6 @@ public class ScopedComponentInfo implements Cloneable {
     return mStateContainer;
   }
 
-  /** Only used by KState */
   void setStateContainer(StateContainer state) {
     mStateContainer = state;
   }
@@ -169,24 +163,6 @@ public class ScopedComponentInfo implements Cloneable {
       }
     } else {
       // the get method adds the state container to the needed state container map
-      treeState.keepStateContainerForGlobalKey(
-          mContext.getGlobalKey(), mContext.isNestedTreeContext());
-    }
-  }
-
-  /**
-   * Prepares a component for calling any pending state updates on it by setting the TreeProps which
-   * the component requires from its parent, setting a scoped component context and applies the
-   * pending state updates.
-   */
-  void applyStateUpdates(final TreeState treeState) {
-    if (mComponent.usesLocalStateContainer()) {
-      if (hasState()) {
-        treeState.applyStateUpdatesForComponent(mContext, mComponent, mContext.getGlobalKey());
-      }
-
-    } else {
-      // adds the global key to the needed state container global keys
       treeState.keepStateContainerForGlobalKey(
           mContext.getGlobalKey(), mContext.isNestedTreeContext());
     }

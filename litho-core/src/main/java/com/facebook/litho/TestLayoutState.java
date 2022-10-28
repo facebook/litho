@@ -51,13 +51,11 @@ public class TestLayoutState {
       int heightSpec) {
 
     final ComponentContext c =
-        ComponentContext.withComponentScope(
+        ResolvedTree.createScopedContext(
+            renderStateContext,
             context,
             component,
             ComponentKeyUtils.generateGlobalKey(context, context.getComponentScope(), component));
-
-    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
-    c.setRenderStateContext(renderStateContext);
 
     final LithoNode root =
         createImmediateLayout(renderStateContext, c, widthSpec, heightSpec, component);
@@ -110,7 +108,6 @@ public class TestLayoutState {
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(
             c, component, ComponentKeyUtils.generateGlobalKey(c, c.getComponentScope(), component));
-    c.getScopedComponentInfo().applyStateUpdates(renderStateContext.getTreeState());
 
     node.appendComponent(
         new ScopedComponentInfo(new TestComponent(component), scopedContext, null));

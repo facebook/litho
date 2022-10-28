@@ -181,8 +181,11 @@ public class StateHandler {
     return mStateContainers == null ? null : mStateContainers.get(key);
   }
 
-  private StateContainer createOrGetStateContainerForComponent(
+  StateContainer createOrGetStateContainerForComponent(
       final ComponentContext scopedContext, final Component component, final String key) {
+    maybeInitStateContainers();
+    maybeInitNeededStateContainers();
+
     final StateContainer currentStateContainer;
 
     synchronized (this) {
@@ -190,13 +193,13 @@ public class StateHandler {
     }
 
     if (currentStateContainer != null) {
-      final StateContainer newStateContainer =
-          scopedContext.getScopedComponentInfo().getStateContainer();
-      component.transferState(currentStateContainer, newStateContainer);
-      return newStateContainer;
+      mNeededStateContainers.add(key);
+      return currentStateContainer;
     } else {
-      mInitialStateContainer.createOrGetInitialStateForComponent(component, scopedContext, key);
-      return scopedContext.getScopedComponentInfo().getStateContainer();
+      final StateContainer initialState =
+          mInitialStateContainer.createOrGetInitialStateForComponent(component, scopedContext, key);
+      addStateContainer(key, initialState);
+      return initialState;
     }
   }
 
@@ -333,33 +336,6 @@ public class StateHandler {
         handleExceptionDuringApplyStateUpdate(key, childLithoNode, exception);
       }
     }
-  }
-
-  /**
-   * Sets the initial value for a state or transfers the previous state value to the new component,
-   * then applies all the states updates that have been enqueued for the new component's global key.
-   * Assumed thread-safe because the one write is before all the reads.
-   *
-   * @param component the new component
-   */
-  @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesForComponent(
-      final ComponentContext scopedContext,
-      final SpecGeneratedComponent component,
-      final String key) {
-    maybeInitStateContainers();
-    maybeInitNeededStateContainers();
-
-    final StateContainer newStateContainer =
-        createOrGetStateContainerForComponent(scopedContext, component, key);
-
-    addStateContainer(key, newStateContainer);
-
-    // We maintain a HashSet of global keys for which we could not find the StateContainer while
-    // applying state updates early.
-    // Here, we are checking if component for that global key was part of component tree then
-    // throwing exception.
-    thowSoftErrorIfStateContainerWasNotFound(key, component);
   }
 
   public synchronized void addStateContainer(String key, StateContainer state) {

@@ -166,8 +166,7 @@ public class ComponentContext implements Cloneable {
    * @param scope component associated with the newly created scoped context
    * @return a new ComponentContext instance scoped to the given component
    */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ComponentContext withComponentScope(
+  static ComponentContext withComponentScope(
       final ComponentContext parentContext,
       final Component scope,
       final @Nullable String globalKey) {
@@ -188,6 +187,24 @@ public class ComponentContext implements Cloneable {
         new ScopedComponentInfo(scope, componentContext, errorEventHandler);
 
     return componentContext;
+  }
+
+  /** @deprecated introduced for legacy test cases - don't add new callers */
+  @VisibleForTesting
+  @Deprecated
+  public static ComponentContext createScopedComponentContextWithStateForTest(
+      ComponentContext parent, Component component, String key) {
+    final ComponentContext context = ComponentContext.withComponentScope(parent, component, key);
+    // SpecGeneratedComponents expect a StateContainer to be set on all scoped ComponentContexts
+    // before any lifecycle methods are invoked.
+    if (component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).hasState()) {
+      context
+          .getScopedComponentInfo()
+          .setStateContainer(
+              ((SpecGeneratedComponent) component).createInitialStateContainer(context));
+    }
+    return context;
   }
 
   /**

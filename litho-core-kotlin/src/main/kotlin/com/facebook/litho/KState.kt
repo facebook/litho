@@ -33,21 +33,26 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
       renderStateContext?.treeState
           ?: throw IllegalStateException("Cannot create state outside of layout calculation")
 
-  val kState =
-      treeState.getStateContainer(globalKey, context.isNestedTreeContext()) as KStateContainer?
+  val isNestedTreeContext = context.isNestedTreeContext
+  val kState = treeState.getStateContainer(globalKey, isNestedTreeContext) as KStateContainer?
 
   if (kState == null || kState.mStates.size <= hookIndex) {
     // The initial state was not computed yet. let's create it and put it in the state
     val state =
         treeState.createOrGetInitialHookState(
-            globalKey, hookIndex, initializer, context.isNestedTreeContext())
-    treeState.addStateContainer(globalKey, state, context.isNestedTreeContext())
+            globalKey, hookIndex, initializer, isNestedTreeContext)
+    treeState.addStateContainer(globalKey, state, isNestedTreeContext)
 
     context.scopedComponentInfo.stateContainer = state
 
     return State(context, hookIndex, state.mStates[hookIndex] as T)
   } else {
     context.scopedComponentInfo.stateContainer = kState
+  }
+
+  // Only need to mark this global key as seen once
+  if (hookIndex == 0) {
+    treeState.keepStateContainerForGlobalKey(globalKey, isNestedTreeContext)
   }
 
   return State(context, hookIndex, kState.mStates[hookIndex] as T)

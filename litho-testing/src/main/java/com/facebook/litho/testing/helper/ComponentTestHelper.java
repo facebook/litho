@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -616,6 +617,23 @@ public final class ComponentTestHelper {
       throw new RuntimeException(e);
     }
     treeProps.put(propClass, prop);
+  }
+
+  /**
+   * Creates a ComponentContext scoped to a given component and initialized with its StateContainer.
+   * This was added to replace usages of ComponentContext.withComponentScope in tests.
+   *
+   * <p>This method shouldn't be necessary if you're using the latest test practices with
+   * LithoViewRule (or LegacyLithoViewRule for Java-only tests). See
+   * https://fblitho.com/docs/kotlin/testing-getting-started/ for more info.
+   *
+   * @deprecated introduced for legacy test cases - don't add new callers
+   */
+  @VisibleForTesting
+  @Deprecated
+  public static ComponentContext createScopedComponentContextWithStateForTest(
+      ComponentContext parent, Component component, String key) {
+    return ComponentContext.createScopedComponentContextWithStateForTest(parent, component, key);
   }
 
   /** Access the default layout thread looper for testing purposes only. */

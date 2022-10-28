@@ -85,7 +85,7 @@ public class TreeStateTests {
     localTreeState.registerLayoutState();
 
     // Add state containers in ISC
-    localTreeState.applyStateUpdatesForComponent(
+    localTreeState.createOrGetStateContainerForComponent(
         mComponentContext, mTestComponent, mTestComponentKey);
 
     final StateHandler renderStateHandler =
