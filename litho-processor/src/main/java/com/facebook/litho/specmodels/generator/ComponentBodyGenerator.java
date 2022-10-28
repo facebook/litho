@@ -83,6 +83,7 @@ import javax.lang.model.element.Modifier;
 /** Class that generates the implementation of a Component. */
 public class ComponentBodyGenerator {
 
+  public static final String STATE_CONTAINER_ARGUMENT_NAME = "_stateContainer";
   static final String LOCAL_STATE_CONTAINER_NAME = "_state";
   static final String LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME = "_interStageProps";
   static final String LIFECYCLE_CREATE_INITIAL_STATE = "createInitialState";

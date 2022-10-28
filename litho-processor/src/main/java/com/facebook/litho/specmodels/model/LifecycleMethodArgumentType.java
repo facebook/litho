@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import androidx.annotation.Nullable;
 import com.squareup.javapoet.TypeName;
 
 /** Describes the type required by the lifecycle method being overridden. */
@@ -27,11 +28,18 @@ public class LifecycleMethodArgumentType {
   public static final LifecycleMethodArgumentType INT =
       new LifecycleMethodArgumentType(TypeName.INT);
   public static final LifecycleMethodArgumentType INTER_STAGE_PROPS_CONTAINER =
-      new LifecycleMethodArgumentType(ClassNames.INTER_STAGE_PROPS_CONTAINER);;
+      new LifecycleMethodArgumentType(ClassNames.INTER_STAGE_PROPS_CONTAINER);
 
   public final TypeName type;
+  public final @Nullable String argumentName;
 
   public LifecycleMethodArgumentType(final TypeName type) {
     this.type = type;
+    this.argumentName = null;
+  }
+
+  public LifecycleMethodArgumentType(final TypeName type, final String argumentName) {
+    this.type = type;
+    this.argumentName = argumentName;
   }
 }

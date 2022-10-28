@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LIFECYCLE_CREATE_INITIAL_STATE;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOCAL_STATE_CONTAINER_NAME;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.STATE_CONTAINER_ARGUMENT_NAME;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessorFromContainer;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
@@ -128,14 +129,18 @@ public class DelegateMethodGenerator {
 
     for (int i = 0, size = lifecycleArgs.size(); i < size; i++) {
 
-      final TypeName lifecycleArg = lifecycleArgs.get(i).type;
-      final TypeName delegateArg =
+      final LifecycleMethodArgumentType lifecycleArg = lifecycleArgs.get(i);
+      final TypeName delegateArgType =
           delegateArgs.size() > i ? delegateArgs.get(i).getTypeName() : null;
 
       final String name;
 
-      if (!lifecycleArg.equals(ClassNames.OBJECT) && !lifecycleArg.equals(delegateArg)) {
-        name = "_" + i; // Use the counter to generate a placeholder name.
+      if (!lifecycleArg.type.equals(ClassNames.OBJECT)
+          && !lifecycleArg.type.equals(delegateArgType)) {
+        name =
+            lifecycleArg.argumentName != null
+                ? lifecycleArg.argumentName
+                : "_" + i; // Use the counter to generate a placeholder name.
       } else {
         name = delegateArgs.get(i).getName(); // Use the name from the delegate method if its used.
       }
@@ -279,11 +284,19 @@ public class DelegateMethodGenerator {
           interStagePropsParamName != null ? interStagePropsParamName : "null");
     }
 
+    final boolean initializesStateContainer =
+        (methodDescription.initializesStateContainer && !specModel.getStateValues().isEmpty());
     final boolean requiresGetStateContainer =
         (methodDescription.createsLegacyState && !specModel.getStateValues().isEmpty())
             || delegateMethod.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE);
-
-    if (requiresGetStateContainer && contextParamName != null) {
+    if (initializesStateContainer) {
+      acquireStatements.addStatement(
+          "$L $L = ($L) $L",
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          STATE_CONTAINER_ARGUMENT_NAME);
+    } else if (requiresGetStateContainer && contextParamName != null) {
       acquireStatements.addStatement(
           "$L $L = $L",
           StateContainerGenerator.getStateContainerClassName(specModel),

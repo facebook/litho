@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.STATE_CONTAINER_ARGUMENT_NAME;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.CACHED_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
@@ -144,9 +145,13 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PROTECTED)
           .returnType(TypeName.VOID)
           .name("createInitialState")
-          .lifecycleMethodArguments(ImmutableList.of(LifecycleMethodArgumentType.COMPONENT_CONTEXT))
+          .lifecycleMethodArguments(
+              ImmutableList.of(
+                  LifecycleMethodArgumentType.COMPONENT_CONTEXT,
+                  new LifecycleMethodArgumentType(
+                      ClassNames.STATE_CONTAINER, STATE_CONTAINER_ARGUMENT_NAME)))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE, INJECT_PROP))
-          .createsLegacyState(true)
+          .initializesStateContainer(true)
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_TRANSITION =

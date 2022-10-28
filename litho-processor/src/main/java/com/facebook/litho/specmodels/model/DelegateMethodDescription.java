@@ -72,6 +72,7 @@ public final class DelegateMethodDescription {
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
   public final boolean createsLegacyState;
+  public final boolean initializesStateContainer;
 
   private DelegateMethodDescription(Builder builder) {
     annotations = builder.annotations;
@@ -85,6 +86,7 @@ public final class DelegateMethodDescription {
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
     createsLegacyState = builder.createsLegacyState;
+    initializesStateContainer = builder.initializesStateContainer;
     mInterStagePropsTarget = builder.mInterStagePropsTarget;
   }
 
@@ -126,6 +128,7 @@ public final class DelegateMethodDescription {
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
     private boolean createsLegacyState = false;
+    private boolean initializesStateContainer = false;
 
     private Builder() {}
 
@@ -214,6 +217,12 @@ public final class DelegateMethodDescription {
      */
     public Builder createsLegacyState(boolean createsLegacyState) {
       this.createsLegacyState = createsLegacyState;
+      return this;
+    }
+
+    /** Whether this method accepts a StateContainer and initializes it. */
+    public Builder initializesStateContainer(boolean initializesStateContainer) {
+      this.initializesStateContainer = initializesStateContainer;
       return this;
     }
 

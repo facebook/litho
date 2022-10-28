@@ -76,14 +76,14 @@ public class InitialStateContainer {
     }
 
     synchronized (stateLock) {
-      final StateContainer stateContainer = mInitialStates.get(key);
+      StateContainer stateContainer = mInitialStates.get(key);
       if (stateContainer == null) {
-        ((SpecGeneratedComponent) component).createInitialState(scopedContext);
-        mInitialStates.put(key, scopedContext.getScopedComponentInfo().getStateContainer());
-      } else {
-        component.transferState(
-            stateContainer, scopedContext.getScopedComponentInfo().getStateContainer());
+        stateContainer =
+            ((SpecGeneratedComponent) component).createInitialStateContainer(scopedContext);
+        mInitialStates.put(key, stateContainer);
       }
+      component.transferState(
+          stateContainer, scopedContext.getScopedComponentInfo().getStateContainer());
     }
   }
 

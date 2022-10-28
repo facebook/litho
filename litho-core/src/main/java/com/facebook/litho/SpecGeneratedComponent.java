@@ -153,8 +153,8 @@ public abstract class SpecGeneratedComponent extends Component
     }
   }
 
-  protected @Nullable StateContainer createStateContainer() {
-    return null;
+  protected StateContainer createStateContainer() {
+    throw new RuntimeException("createStateContainer has not been implemented!");
   }
 
   /**
@@ -258,7 +258,13 @@ public abstract class SpecGeneratedComponent extends Component
       final @Nullable PrepareInterStagePropsContainer copyIntoInterStagePropsContainer,
       final @Nullable PrepareInterStagePropsContainer copyFromInterStagePropsContainer) {}
 
-  protected void createInitialState(ComponentContext c) {}
+  protected void createInitialState(ComponentContext c, StateContainer stateContainer) {}
+
+  StateContainer createInitialStateContainer(ComponentContext c) {
+    StateContainer stateContainer = createStateContainer();
+    createInitialState(c, stateContainer);
+    return stateContainer;
+  }
 
   protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {
     return null;

@@ -178,8 +178,8 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   }
 
   @Override
-  protected void createInitialState(ComponentContext c) {
-    TestLayoutStateContainer _state = getStateContainerImpl(c);
+  protected void createInitialState(ComponentContext c, StateContainer _stateContainer) {
+    TestLayoutStateContainer _state = (TestLayoutStateContainer) _stateContainer;
     StateValue<S> state2 = new StateValue<>();
     TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {

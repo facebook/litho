@@ -60,6 +60,7 @@ public class ScopedComponentInfo implements Cloneable {
     mContext = context;
     mStateContainer =
         component instanceof SpecGeneratedComponent
+                && ((SpecGeneratedComponent) component).hasState()
             ? ((SpecGeneratedComponent) component).createStateContainer()
             : null;
     mPrepareInterStagePropsContainer =

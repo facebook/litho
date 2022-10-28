@@ -244,8 +244,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected void createInitialState(ComponentContext c) {
-    TestMountStateContainer _state = getStateContainerImpl(c);
+  protected void createInitialState(ComponentContext c, StateContainer _stateContainer) {
+    TestMountStateContainer _state = (TestMountStateContainer) _stateContainer;
     StateValue<S> state2 = new StateValue<>();
     TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
