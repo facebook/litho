@@ -413,6 +413,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
+  public boolean shouldGenerateTransferState() {
+    return true;
+  }
+
+  @Override
   public boolean shouldGenerateCopyMethod() {
     return true;
   }

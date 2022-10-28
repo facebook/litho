@@ -326,6 +326,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public boolean shouldGenerateTransferState() {
+    return true;
+  }
+
+  @Override
   public boolean shouldGenerateCopyMethod() {
     return true;
   }

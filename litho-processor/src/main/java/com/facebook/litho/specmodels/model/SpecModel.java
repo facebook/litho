@@ -171,6 +171,9 @@ public interface SpecModel {
   /** @return whether or not to generate a hasState method. */
   boolean shouldGenerateHasState();
 
+  /** @return whether or not to generate a transferState method. */
+  boolean shouldGenerateTransferState();
+
   /** @return whether or not this component is stateful. */
   boolean isStateful();
 

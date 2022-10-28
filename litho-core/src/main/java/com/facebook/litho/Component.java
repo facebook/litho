@@ -425,13 +425,6 @@ public abstract class Component
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 
-  /**
-   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
-   * two {@link Component} with the same global scope.
-   */
-  protected void transferState(
-      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
-
   /** For internal use, only. */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
     ComponentUtils.dispatchErrorEvent(c, e);

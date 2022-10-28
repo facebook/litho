@@ -313,6 +313,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
+  public boolean shouldGenerateTransferState() {
+    return mSpecModel.shouldGenerateTransferState();
+  }
+
+  @Override
   public boolean shouldGenerateCopyMethod() {
     return true;
   }

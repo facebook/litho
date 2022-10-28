@@ -633,17 +633,6 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     return true;
   }
 
-  @Override
-  protected void transferState(
-      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    TestMountStateContainer<S> prevStateContainer =
-        (TestMountStateContainer<S>) _prevStateContainer;
-    TestMountStateContainer<S> nextStateContainer =
-        (TestMountStateContainer<S>) _nextStateContainer;
-    nextStateContainer.state1 = prevStateContainer.state1;
-    nextStateContainer.state2 = prevStateContainer.state2;
-  }
-
   private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestMount component) {
     TestMountStateContainer _stateContainer = (TestMountStateContainer) getStateContainerImpl(c);

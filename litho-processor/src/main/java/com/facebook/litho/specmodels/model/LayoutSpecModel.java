@@ -303,6 +303,11 @@ public class LayoutSpecModel implements SpecModel {
   }
 
   @Override
+  public boolean shouldGenerateTransferState() {
+    return false;
+  }
+
+  @Override
   public boolean isStateful() {
     return false;
   }

@@ -159,11 +159,6 @@ abstract class MountableComponent() : Component() {
       nextStateContainer: StateContainer?
   ) = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 
-  final override fun transferState(
-      previousStateContainer: StateContainer,
-      nextStateContainer: StateContainer
-  ) = super.transferState(previousStateContainer, nextStateContainer)
-
   final override fun render(
       renderStateContext: RenderStateContext,
       c: ComponentContext,

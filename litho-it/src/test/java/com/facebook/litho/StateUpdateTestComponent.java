@@ -65,14 +65,6 @@ class StateUpdateTestComponent extends SpecGeneratedComponent {
     finalCounterValue.set(INITIAL_COUNT_STATE_VALUE);
   }
 
-  @Override
-  protected void transferState(
-      StateContainer prevStateContainer, StateContainer nextStateContainer) {
-    TestStateContainer prevStateContainerImpl = (TestStateContainer) prevStateContainer;
-    TestStateContainer nextStateContainerImpl = (TestStateContainer) nextStateContainer;
-    nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
-  }
-
   int getCount(ComponentContext c) {
     return finalCounterValue.get();
   }

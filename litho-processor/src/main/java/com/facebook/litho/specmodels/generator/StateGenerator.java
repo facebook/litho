@@ -82,7 +82,7 @@ public class StateGenerator {
   }
 
   static TypeSpecDataHolder generateTransferState(SpecModel specModel) {
-    if (specModel.getStateValues().isEmpty()) {
+    if (specModel.getStateValues().isEmpty() || !specModel.shouldGenerateTransferState()) {
       return TypeSpecDataHolder.newBuilder().build();
     }
 

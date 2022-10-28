@@ -420,18 +420,6 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
     return true;
   }
 
-  @Override
-  protected void transferState(
-      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    TestLayoutStateContainer<S> prevStateContainer =
-        (TestLayoutStateContainer<S>) _prevStateContainer;
-    TestLayoutStateContainer<S> nextStateContainer =
-        (TestLayoutStateContainer<S>) _nextStateContainer;
-    nextStateContainer.state1 = prevStateContainer.state1;
-    nextStateContainer.state2 = prevStateContainer.state2;
-    nextStateContainer.state3 = prevStateContainer.state3;
-  }
-
   private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestLayout component) {
     TestLayoutStateContainer _stateContainer = (TestLayoutStateContainer) getStateContainerImpl(c);

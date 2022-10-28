@@ -422,6 +422,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
+  public boolean shouldGenerateTransferState() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
   public boolean isStateful() {
     return true;
   }
