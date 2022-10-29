@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.drawable.Drawable
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.accessibility.accessibilityRole
 import com.facebook.litho.core.height
@@ -34,6 +35,7 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
+import com.facebook.litho.view.background
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
@@ -64,6 +66,9 @@ fun <T : Component.Builder<T>> Component.Builder<T>.kotlinStyle(style: Style?): 
  * ```
  */
 object StyleCompat {
+
+  /** @see [JavaStyle.background] */
+  @JvmStatic fun background(value: Drawable): JavaStyle = JavaStyle().background(value)
 
   /** @see [JavaStyle.flexShrink] */
   @JvmStatic fun flexShrink(value: Float): JavaStyle = JavaStyle().flexShrink(value)
@@ -176,6 +181,11 @@ object StyleCompat {
 class JavaStyle {
 
   private var style: Style = Style
+
+  fun background(value: Drawable): JavaStyle {
+    style = style.background(background = value)
+    return this
+  }
 
   fun flexShrink(value: Float): JavaStyle {
     style = style.flex(shrink = value)
