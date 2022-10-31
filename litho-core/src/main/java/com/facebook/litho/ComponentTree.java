@@ -2473,7 +2473,7 @@ public class ComponentTree implements LithoLifecycleListener {
       return;
     }
 
-    commitResolutionResult(resolutionResult);
+    commitResolutionResult(resolutionResult, isCreateLayoutInProgress);
 
     startLayoutCalculationWithSplitFutures(
         output, source, extraAttribution, isCreateLayoutInProgress);
@@ -2549,7 +2549,8 @@ public class ComponentTree implements LithoLifecycleListener {
     return resolutionResult;
   }
 
-  private synchronized void commitResolutionResult(final LithoResolutionResult resolutionResult) {
+  private synchronized void commitResolutionResult(
+      final LithoResolutionResult resolutionResult, final boolean isCreateLayoutInProgress) {
     if (mCommittedResolutionResult == null
         || mCommittedResolutionResult.version < resolutionResult.version) {
       mCommittedResolutionResult = resolutionResult;
@@ -2557,6 +2558,12 @@ public class ComponentTree implements LithoLifecycleListener {
       if (mTreeState != null) {
         mTreeState.commitRenderState(resolutionResult.treeState);
         mTreeState.unregisterRenderState(resolutionResult.treeState);
+      }
+
+      // Resetting the count after resolve calculation is complete and it was triggered during a
+      // calculation
+      if (!isCreateLayoutInProgress) {
+        mStateUpdatesFromCreateLayoutCount = 0;
       }
     }
   }
