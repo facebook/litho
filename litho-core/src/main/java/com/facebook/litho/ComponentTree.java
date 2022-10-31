@@ -2599,7 +2599,14 @@ public class ComponentTree implements LithoLifecycleListener {
       output.height = layoutState.getHeight();
     }
 
-    commitLayoutStateFromLayoutTreeFuture(layoutState);
+    commitLayoutState(
+        layoutState,
+        layoutVersion,
+        source,
+        extraAttribution,
+        isCreateLayoutInProgress,
+        treeProps,
+        resolutionResult.component);
   }
 
   @Nullable
@@ -2647,8 +2654,116 @@ public class ComponentTree implements LithoLifecycleListener {
     return layoutState;
   }
 
-  private void commitLayoutStateFromLayoutTreeFuture(final LayoutState layoutState) {
-    throw new UnsupportedOperationException("Not implemented yet");
+  private void commitLayoutState(
+      final LayoutState layoutState,
+      final int layoutVersion,
+      final @CalculateLayoutSource int source,
+      final @Nullable String extraAttribution,
+      final boolean isCreateLayoutInProgress,
+      final @Nullable TreeProps treeProps,
+      final Component rootComponent) {
+    List<ScopedComponentInfo> scopedComponentInfos = null;
+
+    int rootWidth = 0;
+    int rootHeight = 0;
+    boolean committedNewLayout = false;
+    synchronized (this) {
+      // We don't want to compute, layout, or reduce trees while holding a lock. However this means
+      // that another thread could compute a layout and commit it before we get to this point. To
+      // handle this, we make sure that the committed setRootId is only ever increased, meaning
+      // we only go "forward in time" and will eventually get to the latest layout.
+      // TODO(t66287929): Remove isCommitted check by only allowing one LayoutStateFuture at a time
+      if (layoutVersion > mCommittedLayoutVersion
+          && !layoutState.isCommitted()
+          && isCompatibleSpec(layoutState, mWidthSpec, mHeightSpec)) {
+        mCommittedLayoutVersion = layoutVersion;
+        mCommittedLayoutState = layoutState;
+        layoutState.markCommitted();
+        committedNewLayout = true;
+      }
+
+      if (DEBUG_LOGS) {
+        logFinishLayout(source, extraAttribution, layoutState, committedNewLayout);
+      }
+
+      final TreeState localTreeState = layoutState.consumeTreeState();
+      if (committedNewLayout) {
+        scopedComponentInfos = layoutState.consumeScopedComponentInfos();
+        if (localTreeState != null) {
+          final TreeState treeState = mTreeState;
+          if (treeState != null) { // we could have been released
+            if (ComponentsConfiguration.isTimelineEnabled) {
+              DebugComponentTimeMachine.saveTimelineSnapshot(
+                  this, rootComponent, treeState, treeProps, source, extraAttribution);
+            }
+
+            treeState.commitRenderState(localTreeState);
+            if (isSplitStateHandlersEnabled()) {
+              treeState.commitLayoutState(localTreeState);
+            }
+          }
+        }
+
+        if (mMeasureListeners != null) {
+          rootWidth = layoutState.getWidth();
+          rootHeight = layoutState.getHeight();
+        }
+
+        bindHandlesToComponentTree(this, layoutState);
+      }
+
+      if (mTreeState != null && localTreeState != null) {
+        mTreeState.unregisterRenderState(localTreeState);
+        if (isSplitStateHandlersEnabled()) {
+          mTreeState.unregisterLayoutState(localTreeState);
+        }
+      }
+
+      // Resetting the count after layout calculation is complete and it was triggered from within
+      // layout creation
+      if (!isCreateLayoutInProgress) {
+        mStateUpdatesFromCreateLayoutCount = 0;
+      }
+    }
+
+    if (committedNewLayout) {
+      final List<MeasureListener> measureListeners;
+      synchronized (this) {
+        measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
+      }
+
+      if (measureListeners != null) {
+        for (MeasureListener measureListener : measureListeners) {
+          measureListener.onSetRootAndSizeSpec(
+              layoutVersion,
+              rootWidth,
+              rootHeight,
+              source == CalculateLayoutSource.UPDATE_STATE_ASYNC
+                  || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
+        }
+      }
+    }
+
+    if (scopedComponentInfos != null) {
+      bindEventAndTriggerHandlers(scopedComponentInfos);
+    }
+
+    if (committedNewLayout) {
+      postBackgroundLayoutStateUpdated();
+    }
+
+    if (mPreAllocateMountContentHandler != null) {
+      mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
+
+      String tag = EMPTY_STRING;
+      if (mPreAllocateMountContentHandler.isTracing()) {
+        tag = "preallocateLayout ";
+        if (rootComponent != null) {
+          tag = tag + rootComponent.getSimpleName();
+        }
+      }
+      mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
+    }
   }
 
   /**
@@ -2741,108 +2856,14 @@ public class ComponentTree implements LithoLifecycleListener {
       output.height = localLayoutState.getHeight();
     }
 
-    List<ScopedComponentInfo> scopedComponentInfos = null;
-
-    int rootWidth = 0;
-    int rootHeight = 0;
-    boolean committedNewLayout = false;
-    synchronized (this) {
-      // We don't want to compute, layout, or reduce trees while holding a lock. However this means
-      // that another thread could compute a layout and commit it before we get to this point. To
-      // handle this, we make sure that the committed setRootId is only ever increased, meaning
-      // we only go "forward in time" and will eventually get to the latest layout.
-      // TODO(t66287929): Remove isCommitted check by only allowing one LayoutStateFuture at a time
-      if (localLayoutVersion > mCommittedLayoutVersion
-          && !localLayoutState.isCommitted()
-          && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec)) {
-        mCommittedLayoutVersion = localLayoutVersion;
-        mCommittedLayoutState = localLayoutState;
-        localLayoutState.markCommitted();
-        committedNewLayout = true;
-      }
-
-      if (DEBUG_LOGS) {
-        logFinishLayout(source, extraAttribution, localLayoutState, committedNewLayout);
-      }
-
-      final TreeState localTreeState = localLayoutState.consumeTreeState();
-      if (committedNewLayout) {
-        scopedComponentInfos = localLayoutState.consumeScopedComponentInfos();
-        if (localTreeState != null) {
-          final TreeState treeState = mTreeState;
-          if (treeState != null) { // we could have been released
-            if (ComponentsConfiguration.isTimelineEnabled) {
-              DebugComponentTimeMachine.saveTimelineSnapshot(
-                  this, root, treeState, treeProps, source, extraAttribution);
-            }
-
-            treeState.commitRenderState(localTreeState);
-            if (isSplitStateHandlersEnabled()) {
-              treeState.commitLayoutState(localTreeState);
-            }
-          }
-        }
-
-        if (mMeasureListeners != null) {
-          rootWidth = localLayoutState.getWidth();
-          rootHeight = localLayoutState.getHeight();
-        }
-
-        bindHandlesToComponentTree(this, localLayoutState);
-      }
-
-      if (mTreeState != null && localTreeState != null) {
-        mTreeState.unregisterRenderState(localTreeState);
-        if (isSplitStateHandlersEnabled()) {
-          mTreeState.unregisterLayoutState(localTreeState);
-        }
-      }
-
-      // Resetting the count after layout calculation is complete and it was triggered from within
-      // layout creation
-      if (!isCreateLayoutInProgress) {
-        mStateUpdatesFromCreateLayoutCount = 0;
-      }
-    }
-
-    if (committedNewLayout) {
-      final List<MeasureListener> measureListeners;
-      synchronized (this) {
-        measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
-      }
-
-      if (measureListeners != null) {
-        for (MeasureListener measureListener : measureListeners) {
-          measureListener.onSetRootAndSizeSpec(
-              localLayoutVersion,
-              rootWidth,
-              rootHeight,
-              source == CalculateLayoutSource.UPDATE_STATE_ASYNC
-                  || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
-        }
-      }
-    }
-
-    if (scopedComponentInfos != null) {
-      bindEventAndTriggerHandlers(scopedComponentInfos);
-    }
-
-    if (committedNewLayout) {
-      postBackgroundLayoutStateUpdated();
-    }
-
-    if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
-
-      String tag = EMPTY_STRING;
-      if (mPreAllocateMountContentHandler.isTracing()) {
-        tag = "preallocateLayout ";
-        if (root != null) {
-          tag = tag + root.getSimpleName();
-        }
-      }
-      mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
-    }
+    commitLayoutState(
+        localLayoutState,
+        localLayoutVersion,
+        source,
+        extraAttribution,
+        isCreateLayoutInProgress,
+        treeProps,
+        root);
   }
 
   private void bindEventAndTriggerHandlers(final List<ScopedComponentInfo> scopedComponentInfos) {
