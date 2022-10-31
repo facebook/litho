@@ -225,6 +225,20 @@ public class ComponentsConfiguration {
    */
   public static boolean isResolveAndLayoutFuturesSplitEnabled = false;
 
+  /**
+   * When enabled, and coupled with isResolveAndLayoutFuturesSplitEnabled being enabled, split
+   * resolve and layout futures will each use dedicated thread handlers so that they don't queue
+   * against each other.
+   *
+   * <p>When isResolveAndLayoutFuturesSplitEnabled is false, this has no effect.
+   */
+  public static boolean useSeparateThreadHandlersForResolveAndLayout = false;
+
+  /** Return true when resolve and layout futures are split, and each uses its own thread handler */
+  public static boolean isSplitResolveAndLayoutWithSplitHandlers() {
+    return isResolveAndLayoutFuturesSplitEnabled && useSeparateThreadHandlersForResolveAndLayout;
+  }
+
   public static boolean isSplitStateHandlersEnabled = false;
 
   public static boolean reuseLastMeasuredNodeInComponentMeasure = false;

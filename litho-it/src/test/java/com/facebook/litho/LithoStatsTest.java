@@ -158,6 +158,12 @@ public class LithoStatsTest {
                 // We have to do this inside another thread otherwise the execution of
                 // mChangeSetThreadShadowLooper will happen on Main Thread
                 runOneTask();
+
+                if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled
+                    && !ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
+                  runOneTask();
+                }
+
                 latch.countDown();
               }
             })

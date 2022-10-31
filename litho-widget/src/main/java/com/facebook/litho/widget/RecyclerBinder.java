@@ -961,11 +961,17 @@ public class RecyclerBinder
       if (builder.threadPoolConfig != null) {
         mThreadPoolConfig = builder.threadPoolConfig;
         mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-        mResolveThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
+        mResolveThreadPoolHandler =
+            ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout
+                ? ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig)
+                : null;
       } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
         mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
         mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
-        mResolveThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
+        mResolveThreadPoolHandler =
+            ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout
+                ? ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig)
+                : null;
       } else {
         mThreadPoolConfig = null;
         mLayoutThreadPoolHandler = null;
@@ -4054,7 +4060,10 @@ public class RecyclerBinder
     final RunnableHandler resolveHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
-      resolveHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
+      resolveHandler =
+          ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout
+              ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
+              : null;
     } else if (mLayoutThreadPoolHandler != null) {
       layoutHandler = mLayoutThreadPoolHandler;
       resolveHandler = mResolveThreadPoolHandler;

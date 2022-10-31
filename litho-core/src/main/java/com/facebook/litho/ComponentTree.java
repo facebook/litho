@@ -413,6 +413,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isResolveAndLayoutFuturesSplitEnabled;
 
+  private final boolean useSeparateThreadHandlersForResolveAndLayout;
+
   private final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
 
   private final boolean mMoveLayoutsBetweenThreads;
@@ -486,6 +488,9 @@ public class ComponentTree implements LithoLifecycleListener {
         ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
     isResolveAndLayoutFuturesSplitEnabled =
         ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
+    useSeparateThreadHandlersForResolveAndLayout =
+        isResolveAndLayoutFuturesSplitEnabled
+            && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
     mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
@@ -522,7 +527,7 @@ public class ComponentTree implements LithoLifecycleListener {
       mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
     }
 
-    if (isResolveAndLayoutFuturesSplitEnabled) {
+    if (useSeparateThreadHandlersForResolveAndLayout) {
       mResolveThreadHandler =
           builder.resolveThreadHandler != null
               ? instrumentHandler(builder.resolveThreadHandler)
@@ -532,6 +537,18 @@ public class ComponentTree implements LithoLifecycleListener {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
+  }
+
+  private Object getResolveThreadHandlerLock() {
+    return useSeparateThreadHandlersForResolveAndLayout
+        ? mResolveRunnableLock
+        : mCurrentCalculateLayoutFutureRunnableLock;
+  }
+
+  private RunnableHandler getResolveThreadHandler() {
+    return useSeparateThreadHandlersForResolveAndLayout
+        ? mResolveThreadHandler
+        : mLayoutThreadHandler;
   }
 
   private static boolean incrementalMountGloballyDisabled() {
@@ -649,11 +666,11 @@ public class ComponentTree implements LithoLifecycleListener {
 
   @ThreadConfined(ThreadConfined.UI)
   public void updateResolveThreadHandler(@Nullable RunnableHandler resolveThreadHandler) {
-    if (!isResolveAndLayoutFuturesSplitEnabled) {
+    if (!useSeparateThreadHandlersForResolveAndLayout) {
       return;
     }
 
-    synchronized (mResolveRunnableLock) {
+    synchronized (getResolveThreadHandlerLock()) {
       if (mResolveRunnable != null) {
         mResolveThreadHandler.remove(mResolveRunnable);
       }
@@ -2380,22 +2397,22 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (isAsync) {
-      synchronized (mResolveRunnableLock) {
+      synchronized (getResolveThreadHandlerLock()) {
         if (mResolveRunnable != null) {
-          mResolveThreadHandler.remove(mResolveRunnable);
+          getResolveThreadHandler().remove(mResolveRunnable);
         }
         mResolveRunnable =
             new CalculateResolutionRunnable(
                 source, treeProps, extraAttribution, isCreateLayoutInProgress);
 
         String tag = EMPTY_STRING;
-        if (mResolveThreadHandler.isTracing()) {
+        if (getResolveThreadHandler().isTracing()) {
           tag = "doResolve ";
           if (mRoot != null) {
             tag = tag + mRoot.getSimpleName();
           }
         }
-        mResolveThreadHandler.post(mResolveRunnable, tag);
+        getResolveThreadHandler().post(mResolveRunnable, tag);
       }
     } else {
       doResolve(output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
@@ -2409,9 +2426,9 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
 
-    synchronized (mResolveRunnableLock) {
+    synchronized (getResolveThreadHandlerLock()) {
       if (mResolveRunnable != null) {
-        mResolveThreadHandler.remove(mResolveRunnable);
+        getResolveThreadHandler().remove(mResolveRunnable);
         mResolveRunnable = null;
       }
     }
@@ -3020,9 +3037,9 @@ public class ComponentTree implements LithoLifecycleListener {
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
       if (isResolveAndLayoutFuturesSplitEnabled) {
-        synchronized (mResolveRunnableLock) {
+        synchronized (getResolveThreadHandlerLock()) {
           if (mResolveRunnable != null) {
-            mResolveThreadHandler.remove(mResolveRunnable);
+            getResolveThreadHandler().remove(mResolveRunnable);
             mResolveRunnable = null;
           }
         }

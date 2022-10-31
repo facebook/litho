@@ -31,10 +31,10 @@ public class BackgroundLayoutLooperRule implements TestRule {
   BaseThreadLooperController threadLooperController = new ThreadLooperController();
 
   private void ensureThreadLooperType() {
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled
+    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers()
         && threadLooperController instanceof ThreadLooperController) {
       threadLooperController = new ResolveAndLayoutThreadLooperController();
-    } else if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled
+    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers()
         && threadLooperController instanceof ResolveAndLayoutThreadLooperController) {
       threadLooperController = new ThreadLooperController();
     }

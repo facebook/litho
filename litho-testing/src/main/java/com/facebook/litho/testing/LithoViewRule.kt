@@ -89,10 +89,10 @@ constructor(
   }
 
   private fun ensureThreadLooperType() {
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
+    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
         threadLooperController is ThreadLooperController) {
       threadLooperController = ResolveAndLayoutThreadLooperController()
-    } else if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
+    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
         threadLooperController is ResolveAndLayoutThreadLooperController) {
       threadLooperController = ThreadLooperController()
     }
