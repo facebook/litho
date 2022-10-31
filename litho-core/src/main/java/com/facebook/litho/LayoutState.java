@@ -261,6 +261,7 @@ public class LayoutState
       Component rootComponent,
       TreeState treeState,
       @Nullable LayoutState current,
+      @Nullable LithoNode root,
       int widthSpec,
       int heightSpec,
       int componentTreeId) {
@@ -283,11 +284,9 @@ public class LayoutState
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
     mAccessibilityEnabled = AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager);
-  }
 
-  void setNode(final LithoNode node) {
-    mRoot = node;
-    mRootTransitionId = getTransitionIdForNode(node);
+    mRoot = root;
+    mRootTransitionId = getTransitionIdForNode(root);
   }
 
   @VisibleForTesting
