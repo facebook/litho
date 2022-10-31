@@ -2975,10 +2975,26 @@ public class ComponentTree implements LithoLifecycleListener {
 
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
-      synchronized (mCurrentCalculateLayoutRunnableLock) {
-        if (mCurrentCalculateLayoutRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
-          mCurrentCalculateLayoutRunnable = null;
+      if (isResolveAndLayoutFuturesSplitEnabled) {
+        synchronized (mResolveRunnableLock) {
+          if (mResolveRunnable != null) {
+            mResolveThreadHandler.remove(mResolveRunnable);
+            mResolveRunnable = null;
+          }
+        }
+
+        synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
+          if (mCurrentCalculateLayoutFutureRunnable != null) {
+            mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
+            mCurrentCalculateLayoutFutureRunnable = null;
+          }
+        }
+      } else {
+        synchronized (mCurrentCalculateLayoutRunnableLock) {
+          if (mCurrentCalculateLayoutRunnable != null) {
+            mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
+            mCurrentCalculateLayoutRunnable = null;
+          }
         }
       }
 
@@ -2989,12 +3005,30 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
 
-      synchronized (mLayoutStateFutureLock) {
-        for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-          mLayoutStateFutures.get(i).release();
+      if (isResolveAndLayoutFuturesSplitEnabled) {
+        synchronized (mResolvedResultFutureLock) {
+          for (RenderTreeFuture rtf : mResolvedResultFutures) {
+            rtf.release();
+          }
+
+          mResolvedResultFutures.clear();
         }
 
-        mLayoutStateFutures.clear();
+        synchronized (mLayoutStateFutureLock) {
+          for (LayoutTreeFuture ltf : mLayoutTreeFutures) {
+            ltf.release();
+          }
+
+          mLayoutTreeFutures.clear();
+        }
+      } else {
+        synchronized (mLayoutStateFutureLock) {
+          for (int i = 0; i < mLayoutStateFutures.size(); i++) {
+            mLayoutStateFutures.get(i).release();
+          }
+
+          mLayoutStateFutures.clear();
+        }
       }
 
       if (mPreAllocateMountContentHandler != null) {
@@ -3019,6 +3053,7 @@ public class ComponentTree implements LithoLifecycleListener {
       mTreeState = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
+      mCommittedResolutionResult = null;
     }
 
     if (mAttachDetachHandler != null) {
@@ -3160,9 +3195,23 @@ public class ComponentTree implements LithoLifecycleListener {
       return;
     }
 
-    synchronized (mLayoutStateFutureLock) {
-      for (int i = 0, size = mLayoutStateFutures.size(); i < size; i++) {
-        mLayoutStateFutures.get(i).release();
+    if (isResolveAndLayoutFuturesSplitEnabled) {
+      synchronized (mResolvedResultFutureLock) {
+        for (RenderTreeFuture rtf : mResolvedResultFutures) {
+          rtf.release();
+        }
+      }
+
+      synchronized (mLayoutStateFutureLock) {
+        for (LayoutTreeFuture ltf : mLayoutTreeFutures) {
+          ltf.release();
+        }
+      }
+    } else {
+      synchronized (mLayoutStateFutureLock) {
+        for (int i = 0, size = mLayoutStateFutures.size(); i < size; i++) {
+          mLayoutStateFutures.get(i).release();
+        }
       }
     }
 
