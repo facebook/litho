@@ -108,12 +108,14 @@ constructor(
   lateinit var stateHandler: StateHandler
   private var _lithoView: LithoView? = null
   private var _componentTree: ComponentTree? = null
-  private val threadLooperController: ThreadLooperController = ThreadLooperController()
+  private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
   private val interactionsScope = InteractionsScope()
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
+        ensureThreadLooperType()
+
         try {
           if (themeResId != null) {
             val activity = Robolectric.buildActivity(Activity::class.java).create().get()
@@ -135,6 +137,16 @@ constructor(
           heightSpec = DEFAULT_HEIGHT_SPEC
         }
       }
+    }
+  }
+
+  private fun ensureThreadLooperType() {
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
+        threadLooperController is ThreadLooperController) {
+      threadLooperController = ResolveAndLayoutThreadLooperController()
+    } else if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
+        threadLooperController is ResolveAndLayoutThreadLooperController) {
+      threadLooperController = ThreadLooperController()
     }
   }
 

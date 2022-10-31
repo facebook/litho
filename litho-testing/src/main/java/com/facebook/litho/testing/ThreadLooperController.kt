@@ -28,23 +28,24 @@ import org.robolectric.shadows.ShadowLooper
  * Helper class extracting looper functionality from [BackgroundLayoutLooperRule] that can be reused
  * in other TestRules
  */
-class ThreadLooperController {
-  private lateinit var messageQueue: BlockingQueue<Message>
-  private lateinit var layoutLooper: ShadowLooper
-  private var isInitialized = false
-
-  fun init() {
-    layoutLooper =
+class ThreadLooperController(
+    val layoutLooper: ShadowLooper =
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
                 as Looper)
+) : BaseThreadLooperController {
+  private lateinit var messageQueue: BlockingQueue<Message>
+  private var isInitialized = false
+
+  override fun init() {
     messageQueue = ArrayBlockingQueue(100)
     val layoutLooperThread = LayoutLooperThread(layoutLooper, messageQueue)
     layoutLooperThread.start()
+
     isInitialized = true
   }
 
-  fun clean() {
+  override fun clean() {
     if (!isInitialized) {
       return
     }
@@ -66,7 +67,7 @@ class ThreadLooperController {
    * Runs one task on the background thread, blocking until it completes successfully or throws an
    * exception.
    */
-  fun runOneTaskSync() {
+  override fun runOneTaskSync() {
     val semaphore = TimeOutSemaphore(0)
     messageQueue.add(Message(MessageType.DRAIN_ONE, semaphore))
     semaphore.acquire()
@@ -76,13 +77,13 @@ class ThreadLooperController {
    * Runs through all tasks on the background thread, blocking until it completes successfully or
    * throws an exception.
    */
-  fun runToEndOfTasksSync() {
+  override fun runToEndOfTasksSync() {
     val semaphore = TimeOutSemaphore(0)
     messageQueue.add(Message(MessageType.DRAIN_ALL, semaphore))
     semaphore.acquire()
   }
 
-  fun runToEndOfTasksAsync(): TimeOutSemaphore? {
+  override fun runToEndOfTasksAsync(): TimeOutSemaphore? {
     val semaphore = TimeOutSemaphore(0)
     messageQueue.add(Message(MessageType.DRAIN_ALL, semaphore))
     return semaphore

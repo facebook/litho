@@ -61,11 +61,13 @@ constructor(
     val themeResId: Int? = null
 ) : TestRule {
   lateinit var context: ComponentContext
-  private lateinit var threadLooperController: ThreadLooperController
+  private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       override fun evaluate() {
+        ensureThreadLooperType()
+
         try {
           if (themeResId != null) {
             val activity = Robolectric.buildActivity(Activity::class.java).create().get()
@@ -75,7 +77,6 @@ constructor(
             context = ComponentContext(getApplicationContext<Context>())
           }
 
-          threadLooperController = ThreadLooperController()
           threadLooperController.init()
           base.evaluate()
         } finally {
@@ -84,6 +85,16 @@ constructor(
           context.clearCalculationStateContext()
         }
       }
+    }
+  }
+
+  private fun ensureThreadLooperType() {
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
+        threadLooperController is ThreadLooperController) {
+      threadLooperController = ResolveAndLayoutThreadLooperController()
+    } else if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
+        threadLooperController is ResolveAndLayoutThreadLooperController) {
+      threadLooperController = ThreadLooperController()
     }
   }
 
