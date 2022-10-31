@@ -2401,7 +2401,7 @@ public class ComponentTree implements LithoLifecycleListener {
         && resolutionResult != null
         && resolutionResult.component == root) {
       startLayoutCalculationWithSplitFutures(
-          output, source, extraAttribution, isCreateLayoutInProgress);
+          output, source, extraAttribution, isCreateLayoutInProgress, false);
       return;
     }
 
@@ -2484,7 +2484,12 @@ public class ComponentTree implements LithoLifecycleListener {
     commitResolutionResult(resolutionResult, isCreateLayoutInProgress);
 
     startLayoutCalculationWithSplitFutures(
-        output, source, extraAttribution, isCreateLayoutInProgress);
+        output,
+        source,
+        extraAttribution,
+        isCreateLayoutInProgress,
+        // Don't post when using the same thread handler, as it could cause heavy delays
+        !useSeparateThreadHandlersForResolveAndLayout);
   }
 
   @Nullable
@@ -2581,7 +2586,8 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable Size output,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
-      boolean isCreateLayoutInProgress) {
+      boolean isCreateLayoutInProgress,
+      boolean forceSyncCalculation) {
 
     final boolean isAsync = !isFromSyncLayout(source);
 
@@ -2590,7 +2596,7 @@ public class ComponentTree implements LithoLifecycleListener {
           "Cannot generate output for async layout calculation (source = " + source + ")");
     }
 
-    if (isAsync) {
+    if (isAsync && !forceSyncCalculation) {
       synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
         if (mCurrentCalculateLayoutFutureRunnable != null) {
           mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
