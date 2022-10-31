@@ -174,6 +174,7 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
+              RunnableHandler resolveHandler,
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
@@ -190,6 +191,7 @@ public class RecyclerBinderTest {
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
               holder.mLayoutHandler = layoutHandler;
+              holder.mResolveHandler = resolveHandler;
             }
 
             return holder;
@@ -201,6 +203,7 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
+              RunnableHandler resolveHandler,
               RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               ComponentsConfiguration componentsConfiguration,
@@ -217,6 +220,7 @@ public class RecyclerBinderTest {
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
               holder.mLayoutHandler = layoutHandler;
+              holder.mResolveHandler = resolveHandler;
             }
 
             return holder;

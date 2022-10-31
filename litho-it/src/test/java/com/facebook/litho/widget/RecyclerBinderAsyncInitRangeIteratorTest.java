@@ -78,6 +78,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
+              RunnableHandler resolveHandler,
               RunnableHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,

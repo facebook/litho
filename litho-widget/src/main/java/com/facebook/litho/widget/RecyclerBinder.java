@@ -291,7 +291,8 @@ public class RecyclerBinder
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
-  private final @Nullable RunnableHandler mThreadPoolHandler;
+  private final @Nullable RunnableHandler mLayoutThreadPoolHandler;
+  private final @Nullable RunnableHandler mResolveThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
@@ -386,6 +387,7 @@ public class RecyclerBinder
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
+        @Nullable RunnableHandler resolveHandler,
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         ComponentsConfiguration componentsConfiguration,
@@ -405,6 +407,7 @@ public class RecyclerBinder
         @Override
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
+            @Nullable RunnableHandler resolveHandler,
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             ComponentsConfiguration componentsConfiguration,
@@ -419,6 +422,7 @@ public class RecyclerBinder
             @Nullable ErrorEventHandler errorEventHandler) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
+              .resolveHandler(resolveHandler)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .componentsConfiguration(componentsConfiguration)
@@ -956,17 +960,21 @@ public class RecyclerBinder
        */
       if (builder.threadPoolConfig != null) {
         mThreadPoolConfig = builder.threadPoolConfig;
-        mThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
+        mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
+        mResolveThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
         mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
-        mThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
+        mLayoutThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
+        mResolveThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else {
         mThreadPoolConfig = null;
-        mThreadPoolHandler = null;
+        mLayoutThreadPoolHandler = null;
+        mResolveThreadPoolHandler = null;
       }
     } else {
       mThreadPoolConfig = null;
-      mThreadPoolHandler = null;
+      mLayoutThreadPoolHandler = null;
+      mResolveThreadPoolHandler = null;
     }
 
     mRenderInfoViewCreatorController =
@@ -4043,15 +4051,20 @@ public class RecyclerBinder
     }
 
     final RunnableHandler layoutHandler;
+    final RunnableHandler resolveHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
-    } else if (mThreadPoolHandler != null) {
-      layoutHandler = mThreadPoolHandler;
+      resolveHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
+    } else if (mLayoutThreadPoolHandler != null) {
+      layoutHandler = mLayoutThreadPoolHandler;
+      resolveHandler = mResolveThreadPoolHandler;
     } else {
       layoutHandler = null;
+      resolveHandler = null;
     }
     return mComponentTreeHolderFactory.create(
         renderInfo,
+        resolveHandler,
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mComponentsConfiguration,
@@ -4119,6 +4132,7 @@ public class RecyclerBinder
     if (mLayoutHandlerFactory != null
         && mLayoutHandlerFactory.shouldUpdateLayoutHandler(previousRenderInfo, renderInfo)) {
       holder.updateLayoutHandler(mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo));
+      holder.updateResolveHandler(mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo));
     }
   }
 

@@ -84,6 +84,9 @@ public class ComponentTreeHolder {
   private boolean mIsTreeValid;
 
   @GuardedBy("this")
+  private @Nullable RunnableHandler mResolveHandler;
+
+  @GuardedBy("this")
   private @Nullable RunnableHandler mLayoutHandler;
 
   @GuardedBy("this")
@@ -122,6 +125,7 @@ public class ComponentTreeHolder {
     private RenderInfo renderInfo;
     private ComponentsConfiguration componentsConfiguration =
         ComponentsConfiguration.getDefaultComponentsConfiguration();
+    private @Nullable RunnableHandler resolveHandler;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable RunnableHandler preallocateMountContentHandler;
@@ -144,6 +148,11 @@ public class ComponentTreeHolder {
 
     public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
       this.componentsConfiguration = componentsConfiguration;
+      return this;
+    }
+
+    public Builder resolveHandler(@Nullable RunnableHandler resolveHandler) {
+      this.resolveHandler = resolveHandler;
       return this;
     }
 
@@ -225,6 +234,7 @@ public class ComponentTreeHolder {
   @VisibleForTesting
   ComponentTreeHolder(Builder builder) {
     mRenderInfo = builder.renderInfo;
+    mResolveHandler = builder.resolveHandler;
     mLayoutHandler = builder.layoutHandler;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
@@ -394,6 +404,13 @@ public class ComponentTreeHolder {
     mRenderInfo = renderInfo;
   }
 
+  public synchronized void updateResolveHandler(@Nullable RunnableHandler resolveHandler) {
+    mResolveHandler = resolveHandler;
+    if (mComponentTree != null) {
+      mComponentTree.updateResolveThreadHandler(resolveHandler);
+    }
+  }
+
   public synchronized void updateLayoutHandler(@Nullable RunnableHandler layoutHandler) {
     mLayoutHandler = layoutHandler;
     if (mComponentTree != null) {
@@ -464,6 +481,7 @@ public class ComponentTreeHolder {
       applyCustomAttributesIfProvided(builder);
 
       builder
+          .resolveThreadHandler(mResolveHandler)
           .layoutThreadHandler(mLayoutHandler)
           .treeState(mTreeState)
           .preAllocateMountContentHandler(mPreallocateMountContentHandler)

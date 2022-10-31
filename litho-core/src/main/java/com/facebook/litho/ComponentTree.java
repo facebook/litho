@@ -524,7 +524,9 @@ public class ComponentTree implements LithoLifecycleListener {
 
     if (isResolveAndLayoutFuturesSplitEnabled) {
       mResolveThreadHandler =
-          instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
+          builder.resolveThreadHandler != null
+              ? instrumentHandler(builder.resolveThreadHandler)
+              : instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
     }
 
     mLogger = builder.logger;
@@ -643,6 +645,25 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(layoutThreadHandler);
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  public void updateResolveThreadHandler(@Nullable RunnableHandler resolveThreadHandler) {
+    if (!isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    synchronized (mResolveRunnableLock) {
+      if (mResolveRunnable != null) {
+        mResolveThreadHandler.remove(mResolveRunnable);
+      }
+    }
+
+    if (resolveThreadHandler == null) {
+      resolveThreadHandler = new DefaultHandler(getDefaultResolveThreadLooper());
+    }
+
+    mResolveThreadHandler = instrumentHandler(resolveThreadHandler);
   }
 
   @VisibleForTesting
@@ -3736,6 +3757,7 @@ public class ComponentTree implements LithoLifecycleListener {
         ComponentsConfiguration.getDefaultComponentsConfiguration();
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
+    private @Nullable RunnableHandler resolveThreadHandler;
     private RunnableHandler layoutThreadHandler;
     private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable TreeState treeState;
@@ -3829,6 +3851,14 @@ public class ComponentTree implements LithoLifecycleListener {
       return this;
     }
 
+    public Builder resolveThreadLooper(Looper looper) {
+      if (looper != null) {
+        resolveThreadHandler = new DefaultHandler(looper);
+      }
+
+      return this;
+    }
+
     /** Specify the handler for to preAllocateMountContent */
     public Builder preAllocateMountContentHandler(@Nullable RunnableHandler handler) {
       preAllocateMountContentHandler = handler;
@@ -3858,6 +3888,11 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder layoutThreadHandler(RunnableHandler handler) {
       layoutThreadHandler = handler;
+      return this;
+    }
+
+    public Builder resolveThreadHandler(RunnableHandler handler) {
+      resolveThreadHandler = handler;
       return this;
     }
 
