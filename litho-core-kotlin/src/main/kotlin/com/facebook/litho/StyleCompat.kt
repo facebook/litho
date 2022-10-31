@@ -36,6 +36,7 @@ import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.view.background
+import com.facebook.litho.view.clipChildren
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
@@ -69,6 +70,9 @@ object StyleCompat {
 
   /** @see [JavaStyle.background] */
   @JvmStatic fun background(value: Drawable): JavaStyle = JavaStyle().background(value)
+
+  /** @see [JavaStyle.clipChildren] */
+  @JvmStatic fun clipChildren(value: Boolean): JavaStyle = JavaStyle().clipChildren(value)
 
   /** @see [JavaStyle.flexShrink] */
   @JvmStatic fun flexShrink(value: Float): JavaStyle = JavaStyle().flexShrink(value)
@@ -184,6 +188,11 @@ class JavaStyle {
 
   fun background(value: Drawable): JavaStyle {
     style = style.background(background = value)
+    return this
+  }
+
+  fun clipChildren(value: Boolean): JavaStyle {
+    style = style.clipChildren(clipChildren = value)
     return this
   }
 
