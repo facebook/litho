@@ -48,7 +48,17 @@ public class LayoutSpecLifecycleTest {
         LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
     mLegacyLithoViewRule.setRoot(component);
 
-    assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      assertThat(getSteps(info))
+          .describedAs("Only render lifecycle methods should be called")
+          .containsExactly(
+              LifecycleStep.ON_CREATE_INITIAL_STATE,
+              LifecycleStep.ON_CREATE_TREE_PROP,
+              LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+              LifecycleStep.ON_CREATE_LAYOUT);
+    } else {
+      assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
+    }
   }
 
   @Test

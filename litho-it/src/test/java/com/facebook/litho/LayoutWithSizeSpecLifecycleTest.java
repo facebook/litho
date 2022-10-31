@@ -20,6 +20,7 @@ import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import androidx.core.view.ViewCompat;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester;
@@ -45,7 +46,13 @@ public class LayoutWithSizeSpecLifecycleTest {
             .build();
     mLegacyLithoViewRule.setRoot(component);
 
-    assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      assertThat(getSteps(info))
+          .describedAs("No lifecycle methods should be called")
+          .containsExactly(LifecycleStep.ON_CREATE_INITIAL_STATE);
+    } else {
+      assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
+    }
   }
 
   @Test
