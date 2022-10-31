@@ -43,6 +43,7 @@ import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
@@ -641,8 +642,26 @@ public final class ComponentTestHelper {
     return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
   }
 
+  public static Looper getDefaultResolveThreadLooper() {
+    return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper");
+  }
+
   /** Access the shadow of the default layout thread looper for testing purposes only. */
   public static ShadowLooper getDefaultLayoutThreadShadowLooper() {
     return shadowOf(getDefaultLayoutThreadLooper());
+  }
+
+  public static ShadowLooper getDefaultResolveThreadShadowLooper() {
+    return shadowOf(getDefaultResolveThreadLooper());
+  }
+
+  public static ShadowLooper[] getDefaultThreadShadowLoopers() {
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return new ShadowLooper[] {
+        getDefaultResolveThreadShadowLooper(), getDefaultLayoutThreadShadowLooper()
+      };
+    } else {
+      return new ShadowLooper[] {getDefaultLayoutThreadShadowLooper()};
+    }
   }
 }

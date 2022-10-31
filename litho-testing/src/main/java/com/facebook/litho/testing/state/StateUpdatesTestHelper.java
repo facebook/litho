@@ -91,7 +91,7 @@ public final class StateUpdatesTestHelper {
         context,
         component,
         stateUpdater,
-        ComponentTestHelper.getDefaultLayoutThreadShadowLooper(),
+        ComponentTestHelper.getDefaultThreadShadowLoopers(),
         false,
         false);
   }
@@ -116,7 +116,7 @@ public final class StateUpdatesTestHelper {
         context,
         component,
         stateUpdater,
-        new ShadowLooper[] {ComponentTestHelper.getDefaultLayoutThreadShadowLooper()},
+        ComponentTestHelper.getDefaultThreadShadowLoopers(),
         incrementalMountEnabled,
         visibilityProcessingEnabled);
   }
