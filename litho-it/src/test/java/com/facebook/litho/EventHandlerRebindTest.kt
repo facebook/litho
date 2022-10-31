@@ -185,13 +185,9 @@ class EventHandlerRebindTest {
         .describedAs("There should be one click of the button")
         .hasSize(1)
 
-    // This is the correct behavior, but it's currently broken!
-    // assertThat(clickListener.events[0])
-    //     .describedAs("The latest counter is 3, so the event should have value 3")
-    //     .isEqualTo(3)
     assertThat(clickListener.events[0])
-        .describedAs("The latest counter is 3, but the code has a bug so we actually get 2")
-        .isEqualTo(2)
+        .describedAs("The latest counter is 3, so the event should have value 3")
+        .isEqualTo(3)
 
     clickListener.clear()
   }

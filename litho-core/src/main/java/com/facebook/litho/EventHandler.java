@@ -23,7 +23,7 @@ import com.facebook.rendercore.Function;
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
   public final int id;
-  public final EventDispatchInfo dispatchInfo;
+  public EventDispatchInfo dispatchInfo;
   public final @Nullable Object[] params;
 
   protected EventHandler(@Nullable HasEventDispatcher hasEventDispatcher, int id) {

@@ -231,11 +231,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
                   + "Event Handlers must be created using a SectionContext from its Section.",
               className, section.getSimpleName()));
     }
-    final EventDispatchInfo eventDispatchInfo = new EventDispatchInfo(section, c);
-    final EventHandler<E> eventHandler = new EventHandler<>(id, eventDispatchInfo, params);
-    final SectionTree sectionTree = c.getSectionTree();
-    if (sectionTree != null) {
-      sectionTree.recordEventHandler(section, eventHandler);
+    final EventHandler eventHandler =
+        new EventHandler<>(id, new EventDispatchInfo(section, c), params);
+    final ChangeSetCalculationState calculationState = c.getChangeSetCalculationState();
+    if (calculationState != null && calculationState.isActive()) {
+      calculationState.recordEventHandler(c.getGlobalKey(), eventHandler);
     }
     return eventHandler;
   }

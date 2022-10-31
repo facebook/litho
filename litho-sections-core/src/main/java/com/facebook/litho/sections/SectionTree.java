@@ -40,7 +40,7 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.EventHandlersController;
+import com.facebook.litho.EventHandlersController2;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
@@ -297,13 +297,9 @@ public class SectionTree {
 
   private final AtomicBoolean mPostToFrontOfQueueForFirstChangeset;
 
-  private final EventHandlersController mEventHandlersController = new EventHandlersController();
+  private final EventHandlersController2 mEventHandlersController = new EventHandlersController2();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
-
-  void recordEventHandler(Section section, EventHandler eventHandler) {
-    mEventHandlersController.recordEventHandler(section.getGlobalKey(), eventHandler);
-  }
 
   private synchronized void bindTriggerHandler(Section section) {
     section.recordEventTrigger(section.getScopedContext(), mEventTriggersContainer);
@@ -321,7 +317,7 @@ public class SectionTree {
   }
 
   @VisibleForTesting
-  EventHandlersController getEventHandlersController() {
+  EventHandlersController2 getEventHandlersController() {
     return mEventHandlersController;
   }
 
@@ -379,6 +375,10 @@ public class SectionTree {
   public static Builder create(SectionContext context, Target target) {
     // TODO use pools t11953296
     return new Builder(context, target);
+  }
+
+  public SectionContext getContext() {
+    return mContext;
   }
 
   /**
@@ -1263,7 +1263,7 @@ public class SectionTree {
         final boolean changeSetIsValid;
         Section oldRoot = null;
         Section newRoot = null;
-
+        final List<Pair<String, EventHandler>> createdEventHandlers;
         synchronized (this) {
           boolean currentNotNull = currentRoot != null;
           boolean instanceCurrentNotNull = mCurrentSection != null;
@@ -1296,13 +1296,16 @@ public class SectionTree {
 
           final ChangeSetCalculationState calculationState =
               contextForCalculation.getChangeSetCalculationState();
+          createdEventHandlers = calculationState.getEventHandlers();
           calculationState.clear();
         }
 
         if (changeSetIsValid) {
+          mEventHandlersController.canonicalizeEventDispatchInfos(createdEventHandlers);
           if (newRoot != null) {
             bindNewComponent(newRoot);
           }
+          mEventHandlersController.clearUnusedEventDispatchInfos();
 
           final List<Section> removedComponents = changeSetState.getRemovedComponents();
           for (int i = 0, size = removedComponents.size(); i < size; i++) {
@@ -1310,7 +1313,6 @@ public class SectionTree {
             releaseRange(mLastRanges.remove(removedComponent.getGlobalKey()));
           }
 
-          mEventHandlersController.clearUnusedEventHandlers();
           postNewChangeSets(prevTracingRunnable, changesetDebugInfo);
         }
 
@@ -1433,7 +1435,7 @@ public class SectionTree {
 
   private void bindNewComponent(Section section) {
     section.bindService(section.getScopedContext());
-    mEventHandlersController.bindEventHandlers(
+    mEventHandlersController.updateEventDispatchInfoForGlobalKey(
         section.getScopedContext(), section, section.getGlobalKey());
 
     if (!section.isDiffSectionSpec()) {

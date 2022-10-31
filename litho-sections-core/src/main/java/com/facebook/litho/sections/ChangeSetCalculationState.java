@@ -16,7 +16,11 @@
 
 package com.facebook.litho.sections;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
+import com.facebook.litho.EventHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Container for data, besides the ChangeSet itself, created as part of a changeset calculation:
@@ -30,6 +34,20 @@ class ChangeSetCalculationState {
   /** @return whether the associated changeset calculation is still in progress. */
   boolean isActive() {
     return mState != null;
+  }
+
+  void recordEventHandler(String globalKey, EventHandler eventHandler) {
+    if (mState == null) {
+      throw new RuntimeException("Trying to use inactive ChangeSetCalculationState!");
+    }
+    mState.eventHandlers.add(new Pair<>(globalKey, eventHandler));
+  }
+
+  List<Pair<String, EventHandler>> getEventHandlers() {
+    if (mState == null) {
+      throw new RuntimeException("Trying to use inactive ChangeSetCalculationState!");
+    }
+    return mState.eventHandlers;
   }
 
   /**
@@ -47,5 +65,7 @@ class ChangeSetCalculationState {
    * The actual implementation of the calculation state - ChangeSetCalculationState is just a box
    * for this data which can be cleared.
    */
-  private static class State {}
+  private static class State {
+    private final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+  }
 }

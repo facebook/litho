@@ -21,10 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.util.Pair;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.EventHandlersController;
+import com.facebook.litho.EventHandlersController2;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,70 +36,110 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class SectionTreeEventHandlerTest {
 
+  private static final String SECTION1_GLOBAL_KEY = "section1";
+  private static final String SECTION2_GLOBAL_KEY = "section2";
+
   private final Section mSection = mock(Section.class);
+  private final Section mSection2 = mock(Section.class);
+  private SectionTree mSectionTree;
   private SectionContext mContext;
   private SectionTree.Target mTestTarget;
 
   @Before
   public void setup() {
-    when(mSection.getGlobalKey()).thenReturn("section1");
-    mContext = SectionContext.withScope(new SectionContext(getApplicationContext()), mSection);
+    when(mSection.getGlobalKey()).thenReturn(SECTION1_GLOBAL_KEY);
+    when(mSection2.getGlobalKey()).thenReturn(SECTION2_GLOBAL_KEY);
     mTestTarget = new TestTarget();
+    mSectionTree =
+        SectionTree.create(new SectionContext(getApplicationContext()), mTestTarget).build();
+    mContext = mSectionTree.getContext();
   }
 
   @Test
   public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
-    SectionTree sectionTree = SectionTree.create(mContext, mTestTarget).build();
-    EventHandlersController eventHandlersController = sectionTree.getEventHandlersController();
+    EventHandlersController2 eventHandlersController = mSectionTree.getEventHandlersController();
 
-    sectionTree.setRoot(mSection);
+    SectionContext scopedContext = SectionContext.withScope(mContext, mSection);
 
-    EventHandler eventHandler1 = mContext.newEventHandler(1, null);
+    EventHandler eventHandler1 =
+        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);
 
-    sectionTree.recordEventHandler(mSection, eventHandler1);
-    eventHandlersController.bindEventHandlers(mContext, mSection, mSection.getGlobalKey());
-    eventHandlersController.clearUnusedEventHandlers();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
 
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+    EventHandler eventHandler2 =
+        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);
 
-    EventHandlersController.EventHandlersWrapper eventHandlersWrapper =
-        eventHandlersController.getEventHandlers().values().iterator().next();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
+    assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo);
 
-    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
+    final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));
+    eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler2));
 
-    EventHandler eventHandler2 = mContext.newEventHandler(1, null);
+    eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers);
 
-    sectionTree.recordEventHandler(mSection, eventHandler2);
-    eventHandlersController.bindEventHandlers(mContext, mSection, mSection.getGlobalKey());
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
+    assertThat(eventHandler1.dispatchInfo).isSameAs(eventHandler2.dispatchInfo);
 
-    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
+    Section newSection = mock(Section.class);
+    when(newSection.getGlobalKey()).thenReturn(SECTION1_GLOBAL_KEY);
+    SectionContext newScopedContext = SectionContext.withScope(mContext, newSection);
 
-    eventHandlersWrapper = eventHandlersController.getEventHandlers().values().iterator().next();
-    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
+    eventHandlersController.updateEventDispatchInfoForGlobalKey(
+        newScopedContext, newSection, mSection.getGlobalKey());
+    eventHandlersController.clearUnusedEventDispatchInfos();
+
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
+    assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(newScopedContext);
+    assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(newScopedContext);
+    assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(newSection);
+    assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(newSection);
   }
 
   @Test
   public void testClearUnusedEntries() {
-    SectionTree sectionTree = SectionTree.create(mContext, mTestTarget).build();
-    EventHandlersController eventHandlersController = sectionTree.getEventHandlersController();
+    Section section = mock(Section.class);
+    Section section2 = mock(Section.class);
+    Section section2_2 = mock(Section.class);
+    when(section.getGlobalKey()).thenReturn(SECTION1_GLOBAL_KEY);
+    when(section2.getGlobalKey()).thenReturn(SECTION2_GLOBAL_KEY);
+    when(section2_2.getGlobalKey()).thenReturn(SECTION2_GLOBAL_KEY);
+    SectionContext scopedContext = SectionContext.withScope(mContext, section);
+    SectionContext scopedContext2 = SectionContext.withScope(mContext, section2);
+    SectionContext scopedContext2_2 = SectionContext.withScope(mContext, section2_2);
 
-    sectionTree.setRoot(mSection);
+    EventHandlersController2 eventHandlersController = mSectionTree.getEventHandlersController();
 
-    EventHandler eventHandler1 = mContext.newEventHandler(1, null);
+    EventHandler eventHandler1 =
+        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);
+    EventHandler eventHandler2 =
+        Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext2, 1, null);
 
-    sectionTree.recordEventHandler(mSection, eventHandler1);
-    eventHandlersController.bindEventHandlers(mContext, mSection, mSection.getGlobalKey());
-    eventHandlersController.clearUnusedEventHandlers();
+    final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));
+    eventHandlers.add(new Pair<>(SECTION2_GLOBAL_KEY, eventHandler2));
 
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+    eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers);
 
-    when(mSection.getGlobalKey()).thenReturn("section2");
-    sectionTree.setRoot(mSection);
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(2);
+    assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(scopedContext);
+    assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(scopedContext2);
+    assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(section);
+    assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(section2);
 
-    sectionTree.recordEventHandler(mSection, eventHandler1);
-    eventHandlersController.bindEventHandlers(mContext, mSection, mSection.getGlobalKey());
-    eventHandlersController.clearUnusedEventHandlers();
+    eventHandlersController.updateEventDispatchInfoForGlobalKey(
+        scopedContext2_2, section2_2, SECTION2_GLOBAL_KEY);
+    eventHandlersController.clearUnusedEventDispatchInfos();
 
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
+    assertThat(eventHandlersController.getDispatchInfos().get(SECTION2_GLOBAL_KEY)).isNotNull();
+
+    eventHandlersController.clearUnusedEventDispatchInfos();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
+
+    assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(scopedContext);
+    assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(scopedContext2_2);
+    assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(section);
+    assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(section2_2);
   }
 }
