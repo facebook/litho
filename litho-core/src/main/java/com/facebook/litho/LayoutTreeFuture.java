@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.stats.LithoStats;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final LithoResolutionResult mLithoResolutionResult;
@@ -28,6 +27,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final int mHeightSpec;
   private final int mComponentTreeId;
   private final int mLayoutVersion;
+  private final boolean mIsSync;
 
   public LayoutTreeFuture(
       final LithoResolutionResult lithoResolutionResult,
@@ -37,7 +37,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       final int widthSpec,
       final int heightSpec,
       final int componentTreeId,
-      final int layoutVersion) {
+      final int layoutVersion,
+      final boolean isSync) {
     super(false);
 
     mLithoResolutionResult = lithoResolutionResult;
@@ -48,6 +49,11 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
     mLayoutVersion = layoutVersion;
+    mIsSync = isSync;
+  }
+
+  public boolean isSync() {
+    return mIsSync;
   }
 
   @Override
@@ -104,11 +110,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       }
     } finally {
       c.setCalculationStateContext(prevContext);
-    }
-
-    LithoStats.incrementComponentCalculateLayoutCount();
-    if (ThreadUtils.isMainThread()) {
-      LithoStats.incrementComponentCalculateLayoutOnUICount();
     }
 
     return layoutState;

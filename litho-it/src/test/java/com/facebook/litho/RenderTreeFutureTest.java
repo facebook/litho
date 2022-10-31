@@ -157,7 +157,8 @@ public class RenderTreeFutureTest {
             widthSpec,
             heightSpec,
             mComponentContext.getComponentTree().mId,
-            0);
+            0,
+            true);
 
     final LayoutState layoutState =
         layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);

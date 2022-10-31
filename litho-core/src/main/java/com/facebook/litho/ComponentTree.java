@@ -2341,13 +2341,18 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
     final LithoResolutionResult resolutionResult;
+    final Component root;
     synchronized (this) {
       resolutionResult = mCommittedResolutionResult;
+      root = mRoot;
     }
 
     // The source of the calculation was from measure or setSizeSpec, meaning there are no
-    // changes to the resolve step - only measure needs to happen.
-    if (isMeasureOnlySource(source) && resolutionResult != null) {
+    // changes to the resolve step - only measure needs to happen - if the resolution result
+    // is compatible with the current root.
+    if (isMeasureOnlySource(source)
+        && resolutionResult != null
+        && resolutionResult.component == root) {
       startLayoutCalculationWithSplitFutures(
           output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
       return;
@@ -2636,6 +2641,11 @@ public class ComponentTree implements LithoLifecycleListener {
         isCreateLayoutInProgress,
         treeProps,
         resolutionResult.component);
+
+    LithoStats.incrementComponentCalculateLayoutCount();
+    if (ThreadUtils.isMainThread()) {
+      LithoStats.incrementComponentCalculateLayoutOnUICount();
+    }
   }
 
   @Nullable
@@ -2648,6 +2658,15 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable LayoutState currentLayoutState,
       @Nullable DiffNode diffNode) {
 
+    synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
+      if (mCurrentCalculateLayoutFutureRunnable != null) {
+        mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
+        mCurrentCalculateLayoutFutureRunnable = null;
+      }
+    }
+
+    final boolean isSync = isFromSyncLayout(source);
+
     // TODO (T134774377) Implement perf event for LayoutTreeFuture
     final LayoutTreeFuture layoutTreeFuture =
         new LayoutTreeFuture(
@@ -2658,12 +2677,16 @@ public class ComponentTree implements LithoLifecycleListener {
             widthSpec,
             heightSpec,
             mId,
-            version);
+            version,
+            isSync);
 
     synchronized (mLayoutStateFutureLock) {
-      if (!isFromSyncLayout(source)) {
-        for (LayoutTreeFuture runningLtf : mLayoutTreeFutures) {
-          if (runningLtf.isEquivalentTo(layoutTreeFuture)) {
+      for (LayoutTreeFuture runningLtf : mLayoutTreeFutures) {
+        if (runningLtf.isEquivalentTo(layoutTreeFuture)) {
+          if (isSync && !runningLtf.isSync()) {
+            // We are running sync now. No need to complete the async future
+            runningLtf.release();
+          } else if (!isSync) {
             // An LTF is already running with the exact same params, no need to calculate async.
             return null;
           }
