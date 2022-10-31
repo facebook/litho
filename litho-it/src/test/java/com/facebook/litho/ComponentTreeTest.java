@@ -1620,6 +1620,11 @@ public class ComponentTreeTest {
   @Test
   public void testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeCompletionReturnsCorrectSize()
       throws InterruptedException {
+    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
@@ -1756,6 +1761,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testLayoutStateNotCommittedTwiceWithLayoutStateFutures() throws InterruptedException {
+    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -1817,6 +1827,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testMainThreadLayoutWillInterruptCompatibleBGLayout() throws InterruptedException {
+    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -1871,6 +1886,11 @@ public class ComponentTreeTest {
   @Test
   public void testMainThreadLayoutWillNotInterruptCompatibleBGLayoutIfSyncBGLayoutIsAlsoPending()
       throws InterruptedException {
+    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -1943,6 +1963,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testSyncBGLayoutWillNotAttachToInterruptedLayout() throws InterruptedException {
+    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -2033,6 +2058,11 @@ public class ComponentTreeTest {
   @Test
   @Ignore
   public void testCreateOneLayoutStateFuture() {
+    // Not relevant for when split is enabled
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
     RunnableHandler handler =
@@ -2079,6 +2109,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testLayoutStateFutureMainWaitingOnBg() {
+    // Not relevant for when split is enabled
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
     RunnableHandler handler =
@@ -2136,6 +2171,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testRecalculateDifferentRoots() {
+    // Not relevant for when split is enabled
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
     RunnableHandler handler =
