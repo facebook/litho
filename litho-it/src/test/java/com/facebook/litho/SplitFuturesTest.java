@@ -441,4 +441,147 @@ public class SplitFuturesTest {
     // Ensure we can find Comp2's Text mounted.
     assertThat(mLegacyLithoViewRule.findViewWithText("Comp2")).isNotNull();
   }
+
+  /**
+   * Testing that when setting size-specs via a background thread twice, the older one does not get
+   * committed. This test will ensure that the 1st setSizeSpecs starts before the 2nd setSizeSpecs,
+   * but will finish after the 2nd setSizeSpecs completes, thus ensuring the version-check when
+   * committing the LayoutState is working as expected.
+   *
+   * <p>We assert this is working by waiting for both background setSizeSpecs to finish, then
+   * checking the committed LayoutState has the newest size-specs, despite the older one finishing
+   * last.
+   */
+  @Test
+  public void testOlderLayoutIsNotCommitted() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    // Boolean holder to check if the 1st measurement has happened yet. We want to force the 1st
+    // measurement to stall until the 2nd measurement completes.
+    final boolean[] didFirstMeasureHappenHolder = new boolean[1];
+
+    // Latch to wait for the 2nd setSizeSpec to finish before the 1st one can complete
+    final TimeOutSemaphore waitForSecondSizeSpecToFinishLatch = new TimeOutSemaphore(0);
+
+    // Latch to ensure the 1st setSizeSpec with "old" specs gets called before the 2nd one
+    final TimeOutSemaphore waitForFirstSizeSpecToStartLatch = new TimeOutSemaphore(0);
+
+    final RenderAndLayoutCountingTesterSpec.Listener listener =
+        new RenderAndLayoutCountingTesterSpec.Listener() {
+          @Override
+          public void onPrepare() {}
+
+          @Override
+          public void onMeasure() {
+            // Waiting should only happen on the 1st measure.
+            // The latches below ensure that this condition is only met for the "old" specs.
+            boolean isFirst = false;
+            synchronized (didFirstMeasureHappenHolder) {
+              if (!didFirstMeasureHappenHolder[0]) {
+                didFirstMeasureHappenHolder[0] = true;
+                isFirst = true;
+              }
+            }
+
+            if (isFirst) {
+              // First measure has started, inform 2nd measure can begin
+              waitForFirstSizeSpecToStartLatch.release();
+
+              // First measure must now wait for 2nd measure to complete
+              waitForSecondSizeSpecToFinishLatch.acquire();
+            }
+          }
+        };
+
+    final Component component =
+        Column.create(c)
+            .child(
+                RenderAndLayoutCountingTester.create(c)
+                    .renderAndMeasureCounter(counter)
+                    .listener(listener))
+            .build();
+
+    // Set the root component once (sync)
+    mLegacyLithoViewRule.setRoot(component);
+
+    // "Old" size-specs to be set first, but finish last
+    final int oldWidthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    final int oldHeightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+
+    // "New" size-specs to be set second, but finish 1st
+    final int newWidthSpec = SizeSpec.makeSizeSpec(150, SizeSpec.EXACTLY);
+    final int newHeightSpec = SizeSpec.makeSizeSpec(150, SizeSpec.EXACTLY);
+
+    final ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
+
+    // Background thread latch with -1 permits to ensure both bg tasks finish
+    final TimeOutSemaphore bgThreadLatch = new TimeOutSemaphore(-1);
+
+    final Size output1 = new Size();
+    final Size output2 = new Size();
+
+    // Set the "old" size specs on the background
+    runOnBackgroundThread(
+        bgThreadLatch,
+        new Runnable() {
+          @Override
+          public void run() {
+            // Call setSizeSpec with "old" size specs
+            componentTree.setSizeSpec(oldWidthSpec, oldHeightSpec, output1);
+          }
+        });
+
+    // Set the "new" size specs on the background
+    runOnBackgroundThread(
+        bgThreadLatch,
+        new Runnable() {
+          @Override
+          public void run() {
+            // Wait for 1st setSizeSpec to happen
+            waitForFirstSizeSpecToStartLatch.acquire();
+
+            // Call setSizeSpec with "new" size specs
+            componentTree.setSizeSpec(newWidthSpec, newHeightSpec, output2);
+
+            // Inform 2nd measure has completed
+            waitForSecondSizeSpecToFinishLatch.release();
+          }
+        });
+
+    // Wait for both background threads to finish
+    bgThreadLatch.acquire();
+
+    final int oldWidth = SizeSpec.getSize(oldWidthSpec);
+    final int oldHeight = SizeSpec.getSize(oldHeightSpec);
+    final int newWidth = SizeSpec.getSize(newWidthSpec);
+    final int newHeight = SizeSpec.getSize(newHeightSpec);
+
+    // Ensure older setSizeSpec has the correct output
+    assertThat(output1.width).isEqualTo(oldWidth);
+    assertThat(output1.height).isEqualTo(oldHeight);
+
+    // Ensure newer setSizeSpec has the correct output
+    assertThat(output2.width).isEqualTo(newWidth);
+    assertThat(output2.height).isEqualTo(newHeight);
+
+    // Set root only happened once, so we expect only 1 render call.
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+
+    // Despite only the newer size-specs getting committed, measure still happens twice
+    assertThat(counter.getMeasureCount()).isEqualTo(2);
+
+    final LayoutState committedLayoutState = componentTree.getCommittedLayoutState();
+
+    // Ensure the committed layout-state has the newer sizes
+    assertThat(committedLayoutState).isNotNull();
+    assertThat(committedLayoutState.getWidth()).isEqualTo(newWidth);
+    assertThat(committedLayoutState.getHeight()).isEqualTo(newHeight);
+  }
 }
