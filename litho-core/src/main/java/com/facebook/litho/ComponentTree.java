@@ -29,6 +29,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
+import static com.facebook.litho.LayoutState.isMeasureOnlySource;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
@@ -2339,7 +2340,18 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
-    // TODO (T134781976) Maybe skip resolve here and go straight to measure, depending on source.
+    final LithoResolutionResult resolutionResult;
+    synchronized (this) {
+      resolutionResult = mCommittedResolutionResult;
+    }
+
+    // The source of the calculation was from measure or setSizeSpec, meaning there are no
+    // changes to the resolve step - only measure needs to happen.
+    if (isMeasureOnlySource(source) && resolutionResult != null) {
+      startLayoutCalculationWithSplitFutures(
+          output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
+      return;
+    }
 
     if (isAsync) {
       synchronized (mResolveRunnableLock) {
@@ -2557,9 +2569,25 @@ public class ComponentTree implements LithoLifecycleListener {
       layoutVersion = mNextLayoutVersion++;
     }
 
-    // No resolution result, no point proceeding.
+    // No resolution result, do not proceed with layout.
+    // If a resolution future is not already running, run it now.
     if (resolutionResult == null) {
-      // TODO (T134781976) Potentially run resolve now.
+      final boolean noCurrentResolutionsInProgress;
+
+      synchronized (mResolvedResultFutureLock) {
+        noCurrentResolutionsInProgress = mResolvedResultFutures.isEmpty();
+      }
+
+      if (noCurrentResolutionsInProgress) {
+        startCalculationWithSplitFutures(
+            !isFromSyncLayout(source),
+            output,
+            source,
+            extraAttribution,
+            treeProps,
+            isCreateLayoutInProgress);
+      }
+
       return;
     }
 

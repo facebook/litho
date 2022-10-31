@@ -131,6 +131,18 @@ public class LayoutState
     }
   }
 
+  public static boolean isMeasureOnlySource(@CalculateLayoutSource int source) {
+    switch (source) {
+      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC:
+      case CalculateLayoutSource.SET_SIZE_SPEC_ASYNC:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
 
