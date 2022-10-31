@@ -2502,6 +2502,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final boolean waitingFromSyncLayout = isFromSyncLayout(source);
 
+    // TODO (T136079256): Combine into common mechanism
     synchronized (mResolvedResultFutureLock) {
       boolean canReuse = false;
       for (int i = 0; i < mResolvedResultFutures.size(); i++) {
@@ -2725,7 +2726,7 @@ public class ComponentTree implements LithoLifecycleListener {
     final boolean isSync = isFromSyncLayout(source);
 
     // TODO (T134774377) Implement perf event for LayoutTreeFuture
-    final LayoutTreeFuture layoutTreeFuture =
+    LayoutTreeFuture layoutTreeFuture =
         new LayoutTreeFuture(
             resolutionResult,
             currentLayoutState,
@@ -2734,30 +2735,42 @@ public class ComponentTree implements LithoLifecycleListener {
             widthSpec,
             heightSpec,
             mId,
-            version,
-            isSync);
+            version);
 
+    // TODO (T136079256): Combine into common mechanism
     synchronized (mLayoutStateFutureLock) {
+      boolean isReusingFuture = false;
+
       for (LayoutTreeFuture runningLtf : mLayoutTreeFutures) {
-        if (runningLtf.isEquivalentTo(layoutTreeFuture)) {
-          if (isSync && !runningLtf.isSync()) {
-            // We are running sync now. No need to complete the async future
-            runningLtf.release();
-          } else if (!isSync) {
+        if (!runningLtf.isReleased() && runningLtf.isEquivalentTo(layoutTreeFuture)) {
+          if (isSync) {
+            // We are running sync now. Grab and wait on the current running one.
+            layoutTreeFuture = runningLtf;
+            isReusingFuture = true;
+            break;
+          } else {
             // An LTF is already running with the exact same params, no need to calculate async.
             return null;
           }
         }
       }
 
-      mLayoutTreeFutures.add(layoutTreeFuture);
+      if (!isReusingFuture) {
+        mLayoutTreeFutures.add(layoutTreeFuture);
+      }
+
+      layoutTreeFuture.tryRegisterForResponse(isSync);
     }
 
     final LayoutState layoutState = layoutTreeFuture.runAndGet(source);
 
     synchronized (mLayoutStateFutureLock) {
-      layoutTreeFuture.release();
-      mLayoutTreeFutures.remove(layoutTreeFuture);
+      layoutTreeFuture.unregisterForResponse();
+
+      if (layoutTreeFuture.getWaitingCount() == 0) {
+        layoutTreeFuture.release();
+        mLayoutTreeFutures.remove(layoutTreeFuture);
+      }
     }
 
     return layoutState;
@@ -3343,6 +3356,7 @@ public class ComponentTree implements LithoLifecycleListener {
             extraAttribution);
     final boolean waitingFromSyncLayout = isFromSyncLayout(source);
 
+    // TODO (T136079256): Combine into common mechanism
     synchronized (mLayoutStateFutureLock) {
       boolean canReuse = false;
       for (int i = 0; i < mLayoutStateFutures.size(); i++) {
