@@ -2571,7 +2571,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
       if (mTreeState != null) {
         mTreeState.commitRenderState(resolutionResult.treeState);
-        mTreeState.unregisterRenderState(resolutionResult.treeState);
       }
 
       // Resetting the count after resolve calculation is complete and it was triggered during a
@@ -2579,6 +2578,10 @@ public class ComponentTree implements LithoLifecycleListener {
       if (!isCreateLayoutInProgress) {
         mStateUpdatesFromCreateLayoutCount = 0;
       }
+    }
+
+    if (mTreeState != null) {
+      mTreeState.unregisterRenderState(resolutionResult.treeState);
     }
   }
 

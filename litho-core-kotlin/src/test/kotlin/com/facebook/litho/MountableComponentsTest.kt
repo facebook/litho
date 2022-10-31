@@ -31,6 +31,7 @@ import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.accessibility.importantForAccessibility
 import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
 import com.facebook.litho.animated.alpha
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.margin
@@ -357,13 +358,22 @@ class MountableComponentsTest {
       component
     }
 
-    assertThat(LifecycleStep.getSteps(steps))
-        .containsExactly(
-            LifecycleStep.RENDER,
-            LifecycleStep.ON_MEASURE,
-            LifecycleStep.SHOULD_UPDATE,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT)
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      assertThat(LifecycleStep.getSteps(steps))
+          .containsExactly(
+              LifecycleStep.ON_MEASURE,
+              LifecycleStep.SHOULD_UPDATE,
+              LifecycleStep.ON_UNMOUNT,
+              LifecycleStep.ON_MOUNT)
+    } else {
+      assertThat(LifecycleStep.getSteps(steps))
+          .containsExactly(
+              LifecycleStep.RENDER,
+              LifecycleStep.ON_MEASURE,
+              LifecycleStep.SHOULD_UPDATE,
+              LifecycleStep.ON_UNMOUNT,
+              LifecycleStep.ON_MOUNT)
+    }
   }
 
   @Test
