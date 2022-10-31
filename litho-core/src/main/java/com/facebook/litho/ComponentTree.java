@@ -483,7 +483,6 @@ public class ComponentTree implements LithoLifecycleListener {
     } else {
       isReconciliationEnabled = builder.isReconciliationEnabled;
     }
-    isSplitStateHandlersEnabled = ComponentsConfiguration.isSplitStateHandlersEnabled;
     isReuseLastMeasuredNodeInComponentMeasureEnabled =
         ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
     isResolveAndLayoutFuturesSplitEnabled =
@@ -491,6 +490,9 @@ public class ComponentTree implements LithoLifecycleListener {
     useSeparateThreadHandlersForResolveAndLayout =
         isResolveAndLayoutFuturesSplitEnabled
             && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
+    isSplitStateHandlersEnabled =
+        ComponentsConfiguration.isSplitStateHandlersEnabled
+            || isResolveAndLayoutFuturesSplitEnabled;
     mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
@@ -2451,6 +2453,8 @@ public class ComponentTree implements LithoLifecycleListener {
       context = new ComponentContext(mContext, treeProps);
     }
 
+    treeState.registerRenderState();
+
     final @Nullable LithoResolutionResult resolutionResult =
         calculateResolutionResult(
             context, root, treeState, localResolveVersion, currentNode, source);
@@ -2550,6 +2554,11 @@ public class ComponentTree implements LithoLifecycleListener {
     if (mCommittedResolutionResult == null
         || mCommittedResolutionResult.version < resolutionResult.version) {
       mCommittedResolutionResult = resolutionResult;
+
+      if (mTreeState != null) {
+        mTreeState.commitRenderState(resolutionResult.treeState);
+        mTreeState.unregisterRenderState(resolutionResult.treeState);
+      }
     }
   }
 
@@ -2639,6 +2648,8 @@ public class ComponentTree implements LithoLifecycleListener {
     if (widthSpec == SIZE_UNINITIALIZED && heightSpec == SIZE_UNINITIALIZED) {
       return;
     }
+
+    resolutionResult.treeState.registerLayoutState();
 
     final LayoutState layoutState =
         runLayoutTreeFuture(
@@ -2787,9 +2798,14 @@ public class ComponentTree implements LithoLifecycleListener {
                   this, rootComponent, treeState, treeProps, source, extraAttribution);
             }
 
-            treeState.commitRenderState(localTreeState);
-            if (isSplitStateHandlersEnabled()) {
+            if (isResolveAndLayoutFuturesSplitEnabled) {
+              // Render state was committed during resolve
               treeState.commitLayoutState(localTreeState);
+            } else {
+              treeState.commitRenderState(localTreeState);
+              if (isSplitStateHandlersEnabled()) {
+                treeState.commitLayoutState(localTreeState);
+              }
             }
           }
         }
@@ -2803,9 +2819,14 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       if (mTreeState != null && localTreeState != null) {
-        mTreeState.unregisterRenderState(localTreeState);
-        if (isSplitStateHandlersEnabled()) {
+        if (isResolveAndLayoutFuturesSplitEnabled) {
+          // Render state was unregistered after resolve
           mTreeState.unregisterLayoutState(localTreeState);
+        } else {
+          mTreeState.unregisterRenderState(localTreeState);
+          if (isSplitStateHandlersEnabled()) {
+            mTreeState.unregisterLayoutState(localTreeState);
+          }
         }
       }
 

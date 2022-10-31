@@ -40,7 +40,6 @@ import com.facebook.litho.Size;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeState;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestLithoView;
@@ -155,7 +154,7 @@ public class StateUpdatesTest {
             .getChildAt(0)
             .getComponentContextAt(1);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, context, 0);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, context, 0);
@@ -181,7 +180,7 @@ public class StateUpdatesTest {
             .getNode()
             .getComponentContextAt(1);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, context, 0);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, context, 0);
@@ -261,7 +260,7 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
@@ -289,7 +288,7 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
@@ -347,7 +346,7 @@ public class StateUpdatesTest {
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 1);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild3, 0);
@@ -388,7 +387,7 @@ public class StateUpdatesTest {
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 1);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild3, 0);
@@ -474,7 +473,7 @@ public class StateUpdatesTest {
 
     assertThatStateContainerIsInStateHandler(componentTree, parentSibling, 0);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 0);
       assertThatNestedParentStateContainerIsInLayoutStateHandler(componentTree, parent, 2);
@@ -530,7 +529,7 @@ public class StateUpdatesTest {
 
     assertThatStateContainerIsInStateHandler(componentTree, grandParentSibling, 0);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, parentSibling, 0);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 0);
@@ -572,7 +571,7 @@ public class StateUpdatesTest {
             .getChildAt(0)
             .getComponentContextAt(1);
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 0);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, componentContext, 0);
@@ -595,7 +594,7 @@ public class StateUpdatesTest {
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    if (ComponentsConfiguration.isSplitStateHandlersEnabled) {
+    if (componentTree.isSplitStateHandlersEnabled()) {
       assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
     } else {
       assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
