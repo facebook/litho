@@ -652,9 +652,11 @@ public class ComponentTree implements LithoLifecycleListener {
    */
   @ThreadConfined(ThreadConfined.UI)
   public void updateLayoutThreadHandler(@Nullable RunnableHandler layoutThreadHandler) {
-    synchronized (mUpdateStateSyncRunnableLock) {
-      if (mUpdateStateSyncRunnable != null) {
-        mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
+    if (!useSeparateThreadHandlersForResolveAndLayout) {
+      synchronized (mUpdateStateSyncRunnableLock) {
+        if (mUpdateStateSyncRunnable != null) {
+          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
+        }
       }
     }
 
@@ -675,6 +677,12 @@ public class ComponentTree implements LithoLifecycleListener {
     synchronized (getResolveThreadHandlerLock()) {
       if (mResolveRunnable != null) {
         mResolveThreadHandler.remove(mResolveRunnable);
+      }
+    }
+
+    synchronized (mUpdateStateSyncRunnableLock) {
+      if (mUpdateStateSyncRunnable != null) {
+        mResolveThreadHandler.remove(mUpdateStateSyncRunnable);
       }
     }
 
@@ -1685,7 +1693,7 @@ public class ComponentTree implements LithoLifecycleListener {
               + "using the default background layout thread instead");
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
-          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
+          getResolveThreadHandler().remove(mUpdateStateSyncRunnable);
         }
         mUpdateStateSyncRunnable =
             new UpdateStateSyncRunnable(attribution, isCreateLayoutInProgress);
@@ -1694,7 +1702,7 @@ public class ComponentTree implements LithoLifecycleListener {
         if (mLayoutThreadHandler.isTracing()) {
           tag = "updateStateSyncNoLooper " + attribution;
         }
-        mLayoutThreadHandler.post(mUpdateStateSyncRunnable, tag);
+        getResolveThreadHandler().post(mUpdateStateSyncRunnable, tag);
       }
       return;
     }
@@ -3082,7 +3090,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
-          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
+          getResolveThreadHandler().remove(mUpdateStateSyncRunnable);
           mUpdateStateSyncRunnable = null;
         }
       }
