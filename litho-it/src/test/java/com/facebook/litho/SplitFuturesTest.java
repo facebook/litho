@@ -30,6 +30,7 @@ import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.LifecycleStep.SHOULD_UPDATE;
 import static com.facebook.litho.testing.ThreadTestingUtils.runOnBackgroundThread;
+import static com.facebook.litho.testing.ThreadTestingUtils.shortWait;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
@@ -40,6 +41,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
 import com.facebook.litho.widget.RenderAndLayoutCountingTester;
 import com.facebook.litho.widget.RenderAndLayoutCountingTesterSpec;
+import com.facebook.litho.widget.Text;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -226,7 +228,7 @@ public class SplitFuturesTest {
    * should have the correct values.
    */
   @Test
-  public void testBackgroundSyncMeasures_LayoutTreeFutureIsReused() {
+  public void testBackgroundSyncMeasures_layoutTreeFutureIsReused() {
     // Only relevant when futures are split
     if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
       return;
@@ -238,11 +240,8 @@ public class SplitFuturesTest {
     // Latch that waits for the 1st measure to start
     final TimeOutSemaphore firstMeasureStartLatch = new TimeOutSemaphore(0);
 
-    // Boolean holder to determine if 1st measure happened
-    final boolean[] firstMeasureHappenedHolder = new boolean[1];
-
-    // Latch that waits for all measures to be started
-    final TimeOutSemaphore measureQueuedLatch = new TimeOutSemaphore(1);
+    // Latch that waits for the 2nd setSizeSpec to get called
+    final TimeOutSemaphore secondSizeSpecCalledLatch = new TimeOutSemaphore(0);
 
     // Listener to be passed into the component.
     final RenderAndLayoutCountingTesterSpec.Listener listener =
@@ -252,25 +251,14 @@ public class SplitFuturesTest {
 
           @Override
           public void onMeasure() {
-            synchronized (firstMeasureHappenedHolder) {
-              if (!firstMeasureHappenedHolder[0]) {
-                // Inform first measure has started, so that the next one can be queued.
-                // Only relevant for the 1st measure
-                firstMeasureStartLatch.release();
-                firstMeasureHappenedHolder[0] = true;
-              }
-            }
+            // inform measure has started
+            firstMeasureStartLatch.release();
 
-            // Await all setSizeSpecs to complete. This ensures the 1st onMeasure doesn't finish
-            // before the next one is queued
-            measureQueuedLatch.acquire();
+            // wait for 2nd setSizeSpec to be called
+            secondSizeSpecCalledLatch.acquire();
 
             // Add short delay to ensure other thread can call setSizeSpec before this finishes.
-            try {
-              Thread.sleep(20);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+            shortWait();
           }
         };
 
@@ -290,7 +278,8 @@ public class SplitFuturesTest {
     final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(150, SizeSpec.EXACTLY);
 
-    final Size[] outputs = new Size[] {new Size(), new Size()};
+    final Size output1 = new Size();
+    final Size output2 = new Size();
 
     // Background thread latch to wait on before asserting. -1 permits to ensure both bg threads
     // finish and release.
@@ -298,28 +287,33 @@ public class SplitFuturesTest {
 
     // Set-size-spec-sync twice in a row with the same size-specs on the background.
     // Wait until the 1st onMeasure kicks in before queuing the 2nd one.
-    // This will help ensure that the running future is reused rather than queuing another one
-    for (int i = 0; i < 2; i++) {
-      final Size output = outputs[i];
-      runOnBackgroundThread(
-          bgThreadLatch,
-          new Runnable() {
-            @Override
-            public void run() {
-              // Count-down latch informing we're about to call setSizeSpec
-              measureQueuedLatch.release();
+    // This will ensure that the running future is reused rather than queuing another one
+    runOnBackgroundThread(
+        bgThreadLatch,
+        new Runnable() {
+          @Override
+          public void run() {
+            // Call setSizeSpec, which should call onMeasure only once.
+            componentTree.setSizeSpec(widthSpec, heightSpec, output1);
+          }
+        });
 
-              // Call setSizeSpec, which should call onMeasure only once.
-              componentTree.setSizeSpec(widthSpec, heightSpec, output);
-            }
-          });
+    // Wait until 1st measure happens before queuing the next one. This ensures the Layout
+    // future is in process, so that the 2nd setSizeSpec just reuses the running one.
+    firstMeasureStartLatch.acquire();
 
-      // Wait until 1st measure happens before queuing the next one. This ensures the Layout
-      // future is in process, so that the 2nd setSizeSpec just reuses the running one.
-      if (i == 0) {
-        firstMeasureStartLatch.acquire();
-      }
-    }
+    runOnBackgroundThread(
+        bgThreadLatch,
+        new Runnable() {
+          @Override
+          public void run() {
+            // Inform 2nd setSizeSpec is about to get called
+            secondSizeSpecCalledLatch.release();
+
+            // Call setSizeSpec, which should just reuse the 1st setSizeSpec's future
+            componentTree.setSizeSpec(widthSpec, heightSpec, output2);
+          }
+        });
 
     // Wait for all measures to finish queuing
     bgThreadLatch.acquire();
@@ -328,9 +322,123 @@ public class SplitFuturesTest {
     assertThat(counter.getMeasureCount()).isEqualTo(1);
 
     // Ensure outputs were properly set
-    assertThat(outputs[0].width).isEqualTo(100);
-    assertThat(outputs[0].height).isEqualTo(150);
-    assertThat(outputs[1].width).isEqualTo(100);
-    assertThat(outputs[1].height).isEqualTo(150);
+    assertThat(output1.width).isEqualTo(100);
+    assertThat(output1.height).isEqualTo(150);
+    assertThat(output2.width).isEqualTo(100);
+    assertThat(output2.height).isEqualTo(150);
+  }
+
+  /**
+   * Testing that when setting root via a background thread twice, the older one does not get
+   * committed. This test will ensure that the 1st setRoot starts before the 2nd setRoot, but will
+   * finish after the 2nd setRoot completes, thus ensuring the version-check when committing the
+   * resolution result is working as expected.
+   *
+   * <p>We assert this is working by waiting for both background setRoots to finish, then triggering
+   * a sync measure and ensuring only the 2nd root got measured and mounted.
+   */
+  @Test
+  public void testOlderRootIsNotCommitted() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+    final RenderAndMeasureCounter counter1 = new RenderAndMeasureCounter();
+    final RenderAndMeasureCounter counter2 = new RenderAndMeasureCounter();
+
+    // Latch to force comp1 to wait until comp2 has completed rendering and has been committed.
+    final TimeOutSemaphore waitForSecondSetRootToFinishLatch = new TimeOutSemaphore(0);
+
+    // Latch to wait for the 1st setRoot to get called to avoid calling the 2nd setRoot 1st.
+    final TimeOutSemaphore waitForFirstSetRootLatch = new TimeOutSemaphore(0);
+
+    // Listener for comp1
+    final RenderAndLayoutCountingTesterSpec.Listener listener1 =
+        new RenderAndLayoutCountingTesterSpec.Listener() {
+          @Override
+          public void onPrepare() {
+            // Inform 1st setRoot has been called
+            waitForFirstSetRootLatch.release();
+
+            // wait for 2nd setRoot to finish
+            waitForSecondSetRootToFinishLatch.acquire();
+          }
+
+          @Override
+          public void onMeasure() {}
+        };
+
+    // Component1 will be set as root 1st, but will finish after Component2
+    final Component component1 =
+        Column.create(c)
+            .child(Text.create(c).text("Comp1"))
+            .child(
+                RenderAndLayoutCountingTester.create(c)
+                    .renderAndMeasureCounter(counter1)
+                    .listener(listener1))
+            .build();
+
+    // Component2 will be set as root 2nd, but will finish before Component1
+    final Component component2 =
+        Column.create(c)
+            .child(Text.create(c).text("Comp2"))
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter2))
+            .build();
+
+    // Background thread latch with -1 permits to ensure both bg tasks finish
+    final TimeOutSemaphore bgThreadLatch = new TimeOutSemaphore(-1);
+
+    runOnBackgroundThread(
+        bgThreadLatch,
+        new Runnable() {
+          @Override
+          public void run() {
+            // Set root1 1st.
+            mLegacyLithoViewRule.setRoot(component1);
+          }
+        });
+
+    runOnBackgroundThread(
+        bgThreadLatch,
+        new Runnable() {
+          @Override
+          public void run() {
+            // Wait for the 1st setRoot to be called
+            waitForFirstSetRootLatch.acquire();
+
+            // Call the 2nd setRoot, will be called after comp1 is set as root, thereby making
+            // comp2 the latest.
+            mLegacyLithoViewRule.setRoot(component2);
+
+            // inform comp2 has finished render
+            waitForSecondSetRootToFinishLatch.release();
+          }
+        });
+
+    // Wait for both background tasks to finish
+    bgThreadLatch.acquire();
+
+    // Now do layout to trigger a measure with the committed resolution result. We expect only the
+    // 2nd component to get measured here.
+    mLegacyLithoViewRule
+        .setSizeSpecs(
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY))
+        .measure()
+        .layout()
+        .idle();
+
+    // Both components were rendered, so we expect them both to have a render count of 1
+    assertThat(counter1.getRenderCount()).isEqualTo(1);
+    assertThat(counter2.getRenderCount()).isEqualTo(1);
+
+    // Only the 2nd root should have been committed, so only the 2nd one will have been measured.
+    assertThat(counter1.getMeasureCount()).isEqualTo(0);
+    assertThat(counter2.getMeasureCount()).isEqualTo(1);
+
+    // Ensure we can find Comp2's Text mounted.
+    assertThat(mLegacyLithoViewRule.findViewWithText("Comp2")).isNotNull();
   }
 }
