@@ -584,4 +584,96 @@ public class SplitFuturesTest {
     assertThat(committedLayoutState.getWidth()).isEqualTo(newWidth);
     assertThat(committedLayoutState.getHeight()).isEqualTo(newHeight);
   }
+
+  /**
+   * When an async layout is requested while a sync layout is in progress with the same size-specs,
+   * the async layout should be completely ignored in favour of the running sync one.
+   *
+   * <p>This test sets up this scenario by triggering a sync layout in a bg-thread, while an async
+   * layout with the same size specs is queued.
+   *
+   * <p>To force the timing to be right, the async tasks are only drained (i.e., triggered) when the
+   * measure from the sync layout has started. The sync layout is then blocked until the async tasks
+   * have finished draining.
+   *
+   * <p>We then wait for the background thread to finish, and ensure measure has only happened once,
+   * and the output is populated with the corerect values.
+   */
+  @Test
+  public void testAsyncLayoutIsSkippedWhenEquivalentSyncLayoutInProgress() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    final TimeOutSemaphore syncMeasureStartedLatch = new TimeOutSemaphore(0);
+    final TimeOutSemaphore asyncMeasureTriggeredLatch = new TimeOutSemaphore(0);
+
+    final RenderAndLayoutCountingTesterSpec.Listener listener =
+        new RenderAndLayoutCountingTesterSpec.Listener() {
+          @Override
+          public void onPrepare() {}
+
+          @Override
+          public void onMeasure() {
+            // Inform measure has started
+            syncMeasureStartedLatch.release();
+
+            // Wait for async tasks to drain
+            asyncMeasureTriggeredLatch.acquire();
+          }
+        };
+
+    final Component component =
+        Column.create(c)
+            .child(
+                RenderAndLayoutCountingTester.create(c)
+                    .renderAndMeasureCounter(counter)
+                    .listener(listener))
+            .build();
+
+    // Set the root component once (sync)
+    mLegacyLithoViewRule.setRoot(component);
+
+    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+
+    final ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
+
+    componentTree.setSizeSpecAsync(widthSpec, heightSpec);
+
+    final Size output = new Size();
+
+    final TimeOutSemaphore bgLatch =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.setSizeSpec(widthSpec, heightSpec, output);
+              }
+            });
+
+    // Wait for sync measure to start
+    syncMeasureStartedLatch.acquire();
+
+    // Force async tasks to run
+    mLegacyLithoViewRule.idle();
+
+    // Inform async tasks have been drained
+    asyncMeasureTriggeredLatch.release();
+
+    // Wait for bg thread to finish
+    bgLatch.acquire();
+
+    // Measure should have only happened once
+    assertThat(counter.getMeasureCount()).isEqualTo(1);
+
+    // Ensure sync measure output is correct
+    assertThat(output.width).isEqualTo(100);
+    assertThat(output.height).isEqualTo(100);
+  }
 }
