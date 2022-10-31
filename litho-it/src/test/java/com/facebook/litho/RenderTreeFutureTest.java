@@ -146,11 +146,11 @@ public class RenderTreeFutureTest {
     final LithoResolutionResult renderResult =
         renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
 
+    assertThat(renderResult).isNotNull();
+
     final LayoutTreeFuture layoutTreeFuture =
         new LayoutTreeFuture(
             renderResult,
-            mComponentContext,
-            component,
             null,
             null,
             null,
@@ -161,6 +161,8 @@ public class RenderTreeFutureTest {
 
     final LayoutState layoutState =
         layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+
+    assertThat(layoutState).isNotNull();
 
     final RenderTree renderTree = layoutState.toRenderTree();
 
