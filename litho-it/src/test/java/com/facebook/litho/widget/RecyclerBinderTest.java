@@ -157,6 +157,7 @@ public class RecyclerBinderTest {
   private LayoutInfo mCircularLayoutInfo;
   private ComponentContext mComponentContext;
   private ShadowLooper mLayoutThreadShadowLooper;
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private RecyclerBinder.ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private RecyclerBinder.ComponentTreeHolderFactory
       mComponentTreeHolderFactoryLayoutFinishedListener;
@@ -253,11 +254,33 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+  }
+
+  private void runOneTask() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runOneTask();
+    }
+
+    mLayoutThreadShadowLooper.runOneTask();
   }
 
   @After
   public void tearDown() {
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   private void setupBaseLayoutInfoMock(LayoutInfo layoutInfo, int orientation) {
@@ -2466,7 +2489,7 @@ public class RecyclerBinderTest {
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
@@ -2496,7 +2519,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
@@ -2532,7 +2555,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
@@ -2555,7 +2578,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2590,7 +2613,7 @@ public class RecyclerBinderTest {
           }
         });
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
@@ -2600,7 +2623,7 @@ public class RecyclerBinderTest {
     // TODO T36028263
     // assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
@@ -2645,7 +2668,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final RecyclerView recyclerView = new RecyclerView(mComponentContext.getAndroidContext());
     recyclerBinder.mount(recyclerView);
@@ -2686,7 +2709,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
@@ -2731,7 +2754,7 @@ public class RecyclerBinderTest {
     // TODO T36028263
     // assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
@@ -2762,7 +2785,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2800,7 +2823,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2837,7 +2860,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2853,7 +2876,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2920,7 +2943,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2960,7 +2983,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
 
@@ -2997,13 +3020,13 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     // compute one layout to ensure batching behavior remains
-    mLayoutThreadShadowLooper.runOneTask();
+    runOneTask();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     // finish computing all layouts - batch should now be applied
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -3040,20 +3063,20 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
     // complete first layout
-    mLayoutThreadShadowLooper.runOneTask();
+    runOneTask();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
     // complete second layout
-    mLayoutThreadShadowLooper.runOneTask();
+    runOneTask();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
     // complete the rest of the layouts
     for (int i = 2; i < NUM_TO_INSERT; i++) {
-      mLayoutThreadShadowLooper.runToEndOfTasks();
+      runToEndOfTasks();
     }
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
@@ -3077,7 +3100,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(500, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -3108,7 +3131,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -3155,14 +3178,14 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     recyclerBinder.removeItemAtAsync(0);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -3186,7 +3209,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
 
@@ -3194,7 +3217,7 @@ public class RecyclerBinderTest {
     recyclerBinder.removeItemAtAsync(0);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
     assertComponentAtEquals(recyclerBinder, 0, components.get(0));
@@ -3219,13 +3242,13 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
 
     recyclerBinder.moveItemAsync(0, 2);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
     assertComponentAtEquals(recyclerBinder, 0, components.get(1));
@@ -3252,7 +3275,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
 
@@ -3260,7 +3283,7 @@ public class RecyclerBinderTest {
     recyclerBinder.moveItemAsync(0, 1);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
     assertComponentAtEquals(recyclerBinder, 0, components.get(0));
@@ -3283,7 +3306,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final ComponentRenderInfo newRenderInfo =
         ComponentRenderInfo.create()
@@ -3299,7 +3322,7 @@ public class RecyclerBinderTest {
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
     assertThat(holder.isTreeValid()).isTrue();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   @Test
@@ -3330,7 +3353,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     verify(observer, never()).onItemRangeChanged(anyInt(), eq(1), isNull());
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
@@ -3356,7 +3379,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
 
@@ -3376,7 +3399,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
     recyclerBinder.updateItemAtAsync(1, newRenderInfo1);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
     assertComponentAtEquals(recyclerBinder, 0, newRenderInfo0.getComponent());
@@ -3403,7 +3426,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
 
@@ -3432,7 +3455,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(4, renderInfos.size()));
     recyclerBinder.updateItemAtAsync(2, newRenderInfo2);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(6);
     assertComponentAtEquals(recyclerBinder, 0, components.get(4));
@@ -3457,7 +3480,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final RenderInfo newRenderInfo =
         ViewRenderInfo.create()
@@ -3471,7 +3494,7 @@ public class RecyclerBinderTest {
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   @Test
@@ -3490,7 +3513,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final ComponentRenderInfo newRenderInfo =
         ComponentRenderInfo.create()
@@ -3506,7 +3529,7 @@ public class RecyclerBinderTest {
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
     assertThat(holder.isTreeValid()).isTrue();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   @Test
@@ -3526,7 +3549,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
 
@@ -3543,7 +3566,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateRangeAtAsync(0, newRenderInfos);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(7);
     assertComponentAtEquals(recyclerBinder, 0, components.get(6));
@@ -3572,7 +3595,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
 
@@ -3580,7 +3603,7 @@ public class RecyclerBinderTest {
     recyclerBinder.removeRangeAtAsync(0, 3);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
     assertComponentAtEquals(recyclerBinder, 0, components.get(6));
@@ -3609,7 +3632,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(7);
 
@@ -3647,7 +3670,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
 
@@ -3677,7 +3700,7 @@ public class RecyclerBinderTest {
     recyclerBinder.clearAsync();
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
   }
@@ -3699,7 +3722,7 @@ public class RecyclerBinderTest {
     recyclerBinder.clearAsync();
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -3722,16 +3745,16 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 3));
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(3, 6));
     recyclerBinder.removeRangeAtAsync(0, 3);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), null);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getRenderInfoAt(0)).isEqualTo(renderInfos.get(0));
     assertThat(recyclerBinder.getRenderInfoAt(1)).isEqualTo(renderInfos.get(1));
@@ -3748,7 +3771,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(1, ComponentRenderInfo.create().component(component1).build());
     recyclerBinder.updateItemAtAsync(2, ComponentRenderInfo.create().component(component2).build());
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
     assertThat(recyclerBinder.getRenderInfoAt(0).getComponent().isEquivalentTo(component0))
@@ -3774,15 +3797,15 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     recyclerBinder.removeRangeAtAsync(0, renderInfos.size());
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), null);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
   }
@@ -3884,7 +3907,7 @@ public class RecyclerBinderTest {
     // TODO T36028263
     // verify(changeSetCompleteCallback1, never()).onDataBound();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(changeSetCompleteCallback1).onDataBound();
     reset(changeSetCompleteCallback1);
@@ -3900,7 +3923,7 @@ public class RecyclerBinderTest {
 
     verify(changeSetCompleteCallback2, never()).onDataBound();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(changeSetCompleteCallback1, never()).onDataBound();
     verify(changeSetCompleteCallback2).onDataBound();
@@ -3936,7 +3959,7 @@ public class RecyclerBinderTest {
 
     verify(changeSetCompleteCallback1, never()).onDataBound();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(changeSetCompleteCallback1).onDataBound();
     reset(changeSetCompleteCallback1);
@@ -3946,7 +3969,7 @@ public class RecyclerBinderTest {
 
     verify(changeSetCompleteCallback2, never()).onDataBound();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(changeSetCompleteCallback1, never()).onDataBound();
     verify(changeSetCompleteCallback2).onDataBound();
@@ -3973,7 +3996,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(changeSetCompleteCallback).onDataBound();
   }
@@ -4023,7 +4046,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     // Mount view after insertions
     final LithoRecyclerView recyclerView = new LithoRecyclerView(getApplicationContext());
@@ -4210,7 +4233,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2 * 5);
 
@@ -4297,7 +4320,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     // Mount view after insertions
     recyclerBinder.mount(recyclerView);
@@ -4400,7 +4423,7 @@ public class RecyclerBinderTest {
     assertThat(mHoldersForComponents.get(components.get(0).getComponent()).mLayoutSyncCalled)
         .isTrue();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(mHoldersForComponents.get(components.get(1).getComponent()).mLayoutAsyncCalled)
         .isTrue();
@@ -4744,7 +4767,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(10);
 
@@ -4801,7 +4824,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(10);
 
@@ -4852,7 +4875,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(recyclerBinder.getComponentTreeHolderAt(2).hasCompletedLatestLayout()).isTrue();
     assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isTrue();
@@ -4902,7 +4925,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     runOnBackgroundThreadSync(
         new Runnable() {
@@ -5048,7 +5071,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     // Run for a bit -- runTasks causes the test to hang because of how ShadowLooper is implemented
     for (int i = 0; i < 10; i++) {
@@ -5092,7 +5115,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     for (int i = 0; i < 10000; i++) {
       ShadowLooper.runMainLooperOneTask();
@@ -5164,7 +5187,7 @@ public class RecyclerBinderTest {
 
     assertThat(mRecyclerBinder.getItemCount()).isEqualTo(0);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(mRecyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
@@ -5206,7 +5229,7 @@ public class RecyclerBinderTest {
 
     assertThat(mRecyclerBinder.getItemCount()).isEqualTo(0);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(mRecyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
@@ -5251,7 +5274,7 @@ public class RecyclerBinderTest {
     final int rangeStart = 0;
     final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     final List<String> expectedSteps = new ArrayList<>();
@@ -5269,7 +5292,7 @@ public class RecyclerBinderTest {
     final int newRangeEnd = newRangeStart + rangeSize;
     mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     expectedSteps.clear();
@@ -5315,7 +5338,7 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
     mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     steps.clear();
@@ -5363,7 +5386,7 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
     mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     steps.clear();
@@ -5371,7 +5394,7 @@ public class RecyclerBinderTest {
     // Remove item at index 0.
     mRecyclerBinder.removeItemAt(0);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(steps)
@@ -5408,7 +5431,7 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
     mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     steps.clear();
@@ -5417,7 +5440,7 @@ public class RecyclerBinderTest {
     final int removeItemCount = 5;
     mRecyclerBinder.removeRangeAt(0, removeItemCount);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     final List<String> expectedSteps = new ArrayList<>();
@@ -5458,7 +5481,7 @@ public class RecyclerBinderTest {
     int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
     mRecyclerBinder.measure(outSize, widthSpec, heightSpec, null);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     steps.clear();
@@ -5476,7 +5499,7 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.replaceAll(newRenderInfos);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     final int rangeSize = heightPx / childHeightPx;

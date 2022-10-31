@@ -23,6 +23,8 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.Looper;
+import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -43,6 +45,7 @@ public class ComponentTreeHasCompatibleLayoutTest {
   private int mHeightSpec2;
 
   private Component mComponent;
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
   private ComponentTree mComponentTree;
@@ -53,6 +56,12 @@ public class ComponentTreeHasCompatibleLayoutTest {
     mComponent = SimpleMountSpecTester.create(mContext).build();
     mComponentTree = create(mContext, mComponent).build();
 
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
@@ -61,6 +70,14 @@ public class ComponentTreeHasCompatibleLayoutTest {
     mWidthSpec2 = makeSizeSpec(40, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
     mHeightSpec2 = makeSizeSpec(42, EXACTLY);
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @Test
@@ -81,7 +98,7 @@ public class ComponentTreeHasCompatibleLayoutTest {
     assertThat(mComponentTree.hasCompatibleLayout(mWidthSpec, mHeightSpec)).isFalse();
 
     // Now the background thread run the queued task.
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(mComponentTree.hasCompatibleLayout(mWidthSpec, mHeightSpec)).isTrue();
   }

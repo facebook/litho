@@ -26,11 +26,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ public class RecyclerBinderManualRangeTest {
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
   private ComponentContext mComponentContext;
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   @Before
@@ -63,11 +66,25 @@ public class RecyclerBinderManualRangeTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @After
   public void tearDown() {
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   @Test
@@ -102,7 +119,7 @@ public class RecyclerBinderManualRangeTest {
       assertThat(holder.hasCompletedLatestLayout()).describedAs("Holder " + i).isFalse();
     }
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     for (int i = 0; i < 2; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
@@ -151,7 +168,7 @@ public class RecyclerBinderManualRangeTest {
       assertThat(holder.hasCompletedLatestLayout()).describedAs("Holder " + i).isFalse();
     }
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     for (int i = 0; i < 2; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);

@@ -49,6 +49,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
@@ -95,6 +96,7 @@ import org.robolectric.shadows.ShadowLooper;
 public class MountStateIncrementalMountTest {
 
   private ComponentContext mContext;
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
@@ -107,6 +109,20 @@ public class MountStateIncrementalMountTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @Test
@@ -1567,7 +1583,7 @@ public class MountStateIncrementalMountTest {
 
     mLegacyLithoViewRule.setRoot(rcc2);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     mLegacyLithoViewRule.dispatchGlobalLayout();
 
     assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);

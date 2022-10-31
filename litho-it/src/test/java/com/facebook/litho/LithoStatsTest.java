@@ -20,6 +20,8 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
+import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -40,6 +42,7 @@ public class LithoStatsTest {
 
   private static final String LOG_TAG = "logTag";
 
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
   private StateUpdateTestComponent mTestComponent;
@@ -55,6 +58,10 @@ public class LithoStatsTest {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), LOG_TAG, mComponentsLogger);
 
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper = ComponentTestHelper.getDefaultResolveThreadShadowLooper();
+    }
+
     mLayoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper();
     mTestComponent = new StateUpdateTestComponent();
     mTestComponentKey = mTestComponent.getKey();
@@ -67,6 +74,22 @@ public class LithoStatsTest {
     ComponentTestHelper.measureAndLayout(mLithoView);
   }
 
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+  }
+
+  private void runOneTask() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runOneTask();
+    }
+
+    mLayoutThreadShadowLooper.runOneTask();
+  }
+
   @Test
   public void updateStateAsync_incrementsAsyncCountAndTotalCount() {
     final long beforeSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
@@ -75,7 +98,7 @@ public class LithoStatsTest {
 
     mComponentTree.updateStateAsync(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
     final long afterAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount();
@@ -94,7 +117,7 @@ public class LithoStatsTest {
 
     mComponentTree.updateStateSync(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
     final long afterAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount();
@@ -134,7 +157,7 @@ public class LithoStatsTest {
               public void run() {
                 // We have to do this inside another thread otherwise the execution of
                 // mChangeSetThreadShadowLooper will happen on Main Thread
-                mLayoutThreadShadowLooper.runOneTask();
+                runOneTask();
                 latch.countDown();
               }
             })

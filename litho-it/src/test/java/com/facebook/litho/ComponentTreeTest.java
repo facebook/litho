@@ -34,6 +34,8 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -81,6 +83,7 @@ public class ComponentTreeTest {
   private int mHeightSpec2;
 
   private Component mComponent;
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
   private RootWrapperComponentFactory mOldWrapperConfig;
@@ -94,10 +97,32 @@ public class ComponentTreeTest {
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
 
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mWidthSpec2 = makeSizeSpec(40, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
     mHeightSpec2 = makeSizeSpec(42, EXACTLY);
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+  }
+
+  private void runOneTask() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runOneTask();
+    }
+
+    mLayoutThreadShadowLooper.runOneTask();
   }
 
   @Before
@@ -113,7 +138,7 @@ public class ComponentTreeTest {
   @After
   public void tearDown() {
     // Clear pending tasks in case test failed
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   private void creationCommonChecks(ComponentTree componentTree) {
@@ -186,7 +211,7 @@ public class ComponentTreeTest {
     Assert.assertNull(componentTree.getCommittedLayoutState());
 
     // Now the background thread run the queued task.
-    mLayoutThreadShadowLooper.runOneTask();
+    runOneTask();
 
     postSizeSpecChecks(componentTree);
   }
@@ -201,7 +226,7 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
-    mLayoutThreadShadowLooper.runOneTask();
+    runOneTask();
 
     LayoutState layoutState = componentTree.getMainThreadLayoutState();
     ComponentContext c = componentTree.getContext();
@@ -302,7 +327,7 @@ public class ComponentTreeTest {
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     postSizeSpecChecks(componentTree, mWidthSpec2, mHeightSpec2);
   }
@@ -339,7 +364,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
 
@@ -703,7 +728,7 @@ public class ComponentTreeTest {
     assertThat(componentTree.getMainThreadLayoutState().isForComponentId(mComponent.getId()))
         .isTrue();
 
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue();
@@ -728,7 +753,7 @@ public class ComponentTreeTest {
         .isTrue();
 
     // Clear tasks
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
   }
 
   /*
@@ -1138,7 +1163,7 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                mLayoutThreadShadowLooper.runToEndOfTasks();
+                runToEndOfTasks();
               }
             });
 
@@ -1225,7 +1250,7 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                mLayoutThreadShadowLooper.runToEndOfTasks();
+                runToEndOfTasks();
               }
             });
 
@@ -1267,7 +1292,7 @@ public class ComponentTreeTest {
 
     newComponent.setTestComponentListener(null);
     newThreadLooper.runToEndOfTasks();
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
@@ -1327,7 +1352,7 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                mLayoutThreadShadowLooper.runToEndOfTasks();
+                runToEndOfTasks();
               }
             });
 
@@ -1369,7 +1394,7 @@ public class ComponentTreeTest {
 
     newComponent.setTestComponentListener(null);
     newThreadLooper.runToEndOfTasks();
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);

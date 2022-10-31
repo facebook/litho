@@ -27,6 +27,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
+import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -47,6 +49,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
   private int mHeightSpec2;
 
   private Component mComponent;
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
   private ComponentTree mComponentTree;
@@ -58,6 +61,12 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     mComponent = SimpleMountSpecTester.create(mContext).build();
     mComponentTree = create(mContext, mComponent).build();
 
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
@@ -68,6 +77,14 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     mHeightSpec2 = makeSizeSpec(42, EXACTLY);
 
     mListener = mock(ComponentTree.NewLayoutStateReadyListener.class);
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @Test
@@ -86,7 +103,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     verify(mListener, never()).onNewLayoutStateReady((ComponentTree) any());
 
     // Now the background thread run the queued task.
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(mListener).onNewLayoutStateReady(mComponentTree);
   }
@@ -100,7 +117,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     verify(mListener, never()).onNewLayoutStateReady((ComponentTree) any());
 
     // Now the background thread run the queued task.
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(mListener).onNewLayoutStateReady(mComponentTree);
   }
@@ -115,7 +132,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     verify(mListener, never()).onNewLayoutStateReady((ComponentTree) any());
 
     // Now the background thread run the queued task.
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     verify(mListener).onNewLayoutStateReady(mComponentTree);
   }

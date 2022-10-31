@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -50,6 +51,7 @@ public class LayoutStateFutureReleaseTest {
   private ComponentContext mContext;
   private final boolean config =
       ComponentsConfiguration.getDefaultComponentsConfiguration().getUseCancelableLayoutFutures();
+  private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   @Before
@@ -65,6 +67,20 @@ public class LayoutStateFutureReleaseTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      mResolveThreadShadowLooper =
+          Shadows.shadowOf(
+              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
+    }
+  }
+
+  private void runToEndOfTasks() {
+    if (mResolveThreadShadowLooper != null) {
+      mResolveThreadShadowLooper.runToEndOfTasks();
+    }
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @After
@@ -197,7 +213,7 @@ public class LayoutStateFutureReleaseTest {
         };
 
     componentTree.setRootAndSizeSpecAsync(column, mWidthSpec, mHeightSpec);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
+    runToEndOfTasks();
 
     try {
       scheduleSyncLayout.await(5000, TimeUnit.MILLISECONDS);
