@@ -23,6 +23,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.RenderAndMeasureCounter;
 import com.facebook.litho.Size;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
@@ -33,7 +34,15 @@ import com.facebook.litho.annotations.Prop;
 public class RenderAndLayoutCountingTesterSpec {
 
   @OnPrepare
-  static void onPrepare(ComponentContext c, @Prop RenderAndMeasureCounter renderAndMeasureCounter) {
+  static void onPrepare(
+      ComponentContext c,
+      @Prop RenderAndMeasureCounter renderAndMeasureCounter,
+      @Prop(optional = true) Listener listener) {
+
+    if (listener != null) {
+      listener.onPrepare();
+    }
+
     renderAndMeasureCounter.incrementRenderCount();
   }
 
@@ -44,7 +53,16 @@ public class RenderAndLayoutCountingTesterSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop RenderAndMeasureCounter renderAndMeasureCounter) {
+      @Prop RenderAndMeasureCounter renderAndMeasureCounter,
+      @Prop(optional = true) Listener listener) {
+
+    if (listener != null) {
+      listener.onMeasure();
+    }
+
+    size.width = SizeSpec.getSize(widthSpec);
+    size.height = SizeSpec.getSize(heightSpec);
+
     renderAndMeasureCounter.incrementMeasureCount();
   }
 
@@ -52,5 +70,11 @@ public class RenderAndLayoutCountingTesterSpec {
   @OnCreateMountContent
   static View onCreateMountContent(Context c) {
     return new View(c);
+  }
+
+  public static interface Listener {
+    void onPrepare();
+
+    void onMeasure();
   }
 }
