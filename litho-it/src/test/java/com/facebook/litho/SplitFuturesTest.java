@@ -36,6 +36,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
+import com.facebook.litho.widget.RenderAndLayoutCountingTester;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -141,5 +142,62 @@ public class SplitFuturesTest {
         .describedAs("Setting new root after measure should render and measure")
         .containsExactly(
             ON_CREATE_TREE_PROP, ON_PREPARE, SHOULD_UPDATE, ON_MEASURE, ON_BOUNDS_DEFINED);
+  }
+
+  /** Test multiple set-root async. */
+  @Test
+  public void testAsyncSetRootWitNoMeasures() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    final Component component1 =
+        Column.create(c)
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .build();
+
+    // Set root async
+    mLegacyLithoViewRule.setRootAsync(component1);
+
+    // Render should not have happened yet
+    assertThat(counter.getRenderCount()).isEqualTo(0);
+
+    // Wait for tasks to finish
+    mLegacyLithoViewRule.idle();
+
+    // Now render should have happened once.
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+
+    final Component component2 =
+        Column.create(c)
+            .backgroundColor(0xFFFF00)
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .build();
+
+    final Component component3 =
+        Column.create(c)
+            .backgroundColor(0xFF0000)
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .build();
+
+    // Reset the counter
+    counter.reset();
+
+    // Queue 2 set-root-asyncs. Only 1 should actually happen
+    mLegacyLithoViewRule.setRootAsync(component2);
+    mLegacyLithoViewRule.setRootAsync(component3);
+
+    // Run to end of tasks
+    mLegacyLithoViewRule.idle();
+
+    // Multiple queued async set roots will only end up running the latest one.
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+
+    // No measure should have happened yet.
+    assertThat(counter.getMeasureCount()).isEqualTo(0);
   }
 }
