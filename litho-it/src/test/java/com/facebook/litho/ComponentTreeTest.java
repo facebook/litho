@@ -1416,6 +1416,12 @@ public class ComponentTreeTest {
 
   @Test
   public void testMeasureWithUpdateStateThatCompletesFirst() throws InterruptedException {
+    // Skip this test when resolve and layout futures are split, as it assumes measure will
+    // trigger onPrepare, which is no longer the case.
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
     TestDrawableComponent blockingComponent =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
@@ -1499,6 +1505,12 @@ public class ComponentTreeTest {
   @Test
   public void testUpdateStateWithMeasureThatStartsBeforeUpdateStateCompletes()
       throws InterruptedException {
+    // Skip this test when resolve and layout futures are split, as it assumes measure will
+    // trigger onPrepare, which is no longer the case.
+    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
     SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
     TestDrawableComponent blockingComponent =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
