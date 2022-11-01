@@ -137,6 +137,50 @@ public class MeasureResult {
     return new MeasureResult(width, height);
   }
 
+  /**
+   * Returns a {@link MeasureResult} that respects both specs and the desired width and height. The
+   * desired size is usually the necessary pixels to render the inner content.
+   */
+  public static MeasureResult withDesiredPx(
+      final int widthSpec,
+      final int heightSpec,
+      final int desiredWidthPx,
+      final int desiredHeightPx) {
+    return new MeasureResult(
+        getResultSizePxWithSpecAndDesiredPx(widthSpec, desiredWidthPx),
+        getResultSizePxWithSpecAndDesiredPx(heightSpec, desiredHeightPx));
+  }
+
+  /**
+   * Returns a {@link MeasureResult} that respects both specs and the desired width and height. The
+   * desired size is usually the necessary pixels to render the inner content.
+   */
+  public static MeasureResult withDesiredPx(
+      int widthSpec,
+      int heightSpec,
+      final int desiredWidthPx,
+      final int desiredHeightPx,
+      final @Nullable Object layoutData) {
+    return new MeasureResult(
+        getResultSizePxWithSpecAndDesiredPx(widthSpec, desiredWidthPx),
+        getResultSizePxWithSpecAndDesiredPx(heightSpec, desiredHeightPx),
+        layoutData);
+  }
+
+  private static int getResultSizePxWithSpecAndDesiredPx(int spec, int desiredSize) {
+    final int mode = MeasureSpecUtils.getMode(spec);
+    switch (mode) {
+      case UNSPECIFIED:
+        return desiredSize;
+      case AT_MOST:
+        return Math.min(MeasureSpecUtils.getSize(spec), desiredSize);
+      case EXACTLY:
+        return MeasureSpecUtils.getSize(spec);
+      default:
+        throw new IllegalStateException("Unexpected size spec mode");
+    }
+  }
+
   public static MeasureResult error() {
     return new MeasureResult();
   }
