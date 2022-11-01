@@ -183,10 +183,6 @@ object StyleCompat {
   /** @see [JavaStyle.positionType] */
   @JvmStatic fun positionType(value: YogaPositionType): JavaStyle = JavaStyle().positionType(value)
 
-  /** @see [JavaStyle.translationY] */
-  @JvmStatic
-  fun translationY(value: DynamicValue<Float>): JavaStyle = JavaStyle().translationY(value)
-
   /** @see [JavaStyle.border] */
   @JvmStatic fun border(border: Border): JavaStyle = JavaStyle().border(border)
 }
