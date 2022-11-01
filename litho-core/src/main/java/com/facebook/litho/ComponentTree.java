@@ -218,6 +218,34 @@ public class ComponentTree implements LithoLifecycleListener {
     void onSetRootAndSizeSpec(int layoutVersion, int width, int height, boolean stateUpdate);
   }
 
+  public enum FutureType {
+    RESOLVE,
+    LAYOUT
+  }
+
+  public enum FutureExecutionType {
+    /** A new future is about to be triggered */
+    NEW_FUTURE,
+
+    /** An already running future is about to be reused */
+    REUSE_FUTURE,
+
+    /** No future needs to run at all */
+    CANCELLED
+  }
+
+  public interface FutureExecutionListener {
+
+    /**
+     * Called just before a future for resolve or layout is triggered.
+     *
+     * @param futureType The type of the future - resolve or layout
+     * @param futureExecutionType How the future is going to be executed - run a new future, reuse a
+     *     running one, or cancelled entirely.
+     */
+    void onPreExecution(final FutureType futureType, final FutureExecutionType futureExecutionType);
+  }
+
   @GuardedBy("this")
   private @Nullable List<MeasureListener> mMeasureListeners;
 
@@ -334,6 +362,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<TreeFuture<LayoutState>> mLayoutTreeFutures = new ArrayList<>();
+
+  private @Nullable FutureExecutionListener mFutureExecutionListener;
 
   private volatile boolean mHasMounted;
   private volatile boolean mIsFirstMount;
@@ -2495,7 +2525,9 @@ public class ComponentTree implements LithoLifecycleListener {
             new RenderTreeFuture(context, root, treeState, currentNode, null, localResolveVersion),
             mResolvedResultFutures,
             source,
-            mResolvedResultFutureLock);
+            mResolvedResultFutureLock,
+            mFutureExecutionListener,
+            FutureType.RESOLVE);
 
     if (resolutionResult == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2649,7 +2681,9 @@ public class ComponentTree implements LithoLifecycleListener {
                 layoutVersion),
             mLayoutTreeFutures,
             source,
-            mLayoutStateFutureLock);
+            mLayoutStateFutureLock,
+            mFutureExecutionListener,
+            FutureType.LAYOUT);
 
     if (layoutState == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2687,6 +2721,11 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  void setFutureExecutionListener(final @Nullable FutureExecutionListener futureExecutionListener) {
+    mFutureExecutionListener = futureExecutionListener;
+  }
+
   /**
    * Given a provided tree-future, this method will track it via a given list, and run it.
    *
@@ -2704,6 +2743,9 @@ public class ComponentTree implements LithoLifecycleListener {
    * @param futureList The list of futures this future will be added to
    * @param source The source of the calculation
    * @param mutex A mutex to use to synchronize access to the provided future list
+   * @param futureExecutionListener optional listener that will be invoked just before the future is
+   *     run
+   * @param futureType The type of the future (resolve or layout)
    * @param <T> The generic type of the provided future & expected result
    * @return The result of running the future, or null if an equivalent future is already running
    *     and the provided source is async.
@@ -2713,18 +2755,21 @@ public class ComponentTree implements LithoLifecycleListener {
       TreeFuture<T> treeFuture,
       final List<TreeFuture<T>> futureList,
       final @CalculateLayoutSource int source,
-      final Object mutex) {
+      final Object mutex,
+      final @Nullable FutureExecutionListener futureExecutionListener,
+      final FutureType futureType) {
     final boolean isSync = isFromSyncLayout(source);
+    boolean isReusingFuture = false;
+    boolean isAborted = false;
 
     synchronized (mutex) {
-      boolean isReusingFuture = false;
-
       // Iterate over the running futures to see if an equivalent one is running
       for (final TreeFuture<T> runningFuture : futureList) {
         if (!runningFuture.isReleased() && runningFuture.isEquivalentTo(treeFuture)) {
           if (!isSync) {
-            // An future is already running with the exact same params, no need to calculate async.
-            return null;
+            // A future is already running with the exact same params, no need to calculate async.
+            isAborted = true;
+            break;
           } else if (runningFuture.tryRegisterForResponse(isSync)) {
             // Running in sync, and an equivalent running future was found and is allowing to be
             // reused (tryRegisterForResponse returned true).
@@ -2738,11 +2783,29 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
 
-      if (!isReusingFuture) {
-        // Not reusing, increase the wait count and add the new future to the list
+      if (!isReusingFuture && !isAborted) {
+        // Not reusing and not aborted, increase the wait count and add the new future to the list
         treeFuture.tryRegisterForResponse(isSync);
         futureList.add(treeFuture);
       }
+    }
+
+    if (futureExecutionListener != null) {
+      final FutureExecutionType executionType;
+      if (isAborted) {
+        executionType = FutureExecutionType.CANCELLED;
+      } else if (isReusingFuture) {
+        executionType = FutureExecutionType.REUSE_FUTURE;
+      } else {
+        executionType = FutureExecutionType.NEW_FUTURE;
+      }
+
+      futureExecutionListener.onPreExecution(futureType, executionType);
+    }
+
+    // Aborted run, return null.
+    if (isAborted) {
+      return null;
     }
 
     // Run and get the result
