@@ -874,4 +874,66 @@ public class SplitFuturesTest {
     assertThat(counter.getRenderCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(0);
   }
+
+  /**
+   * The check of whether or not render can be skipped includes a ref-equality check on the
+   * tree-props. This test ensures that when tree-props are set once, and the same root is set twice
+   * (with different size-specs), render doesn't happen twice.
+   *
+   * <p>If this test breaks, it's likely due to a change in ComponentTree that makes copies of
+   * tree-props.
+   */
+  @Test
+  public void testNoChangeToTreeProps_renderStillHappensOnce() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    final Component component =
+        Column.create(c)
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .build();
+
+    final Size output = new Size();
+
+    // Define tree-props on the CT
+    final TreeProps treeProps = new TreeProps();
+
+    mLegacyLithoViewRule
+        .getComponentTree()
+        .setRootAndSizeSpecSync(
+            component,
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            output,
+            treeProps); // Set new tree props.
+
+    // Ensure render and measure happened once, and the output is set correctly
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(counter.getMeasureCount()).isEqualTo(1);
+    assertThat(output.width).isEqualTo(100);
+    assertThat(output.height).isEqualTo(100);
+
+    // Set the same root again, with the same tree-props, but different size-specs
+    mLegacyLithoViewRule
+        .getComponentTree()
+        .setRootAndSizeSpecSync(
+            component,
+            SizeSpec.makeSizeSpec(150, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(150, SizeSpec.EXACTLY),
+            output,
+            treeProps); // Use the same tree props
+
+    // Same component, so render count should still be 1.
+    // Measure should increment, and the output should be equal to the new values.
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(counter.getMeasureCount()).isEqualTo(2);
+    assertThat(output.width).isEqualTo(150);
+    assertThat(output.height).isEqualTo(150);
+  }
 }
