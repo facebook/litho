@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.animated.translationY
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
 import com.facebook.litho.core.margin
@@ -177,6 +178,10 @@ object StyleCompat {
 
   /** @see [JavaStyle.positionType] */
   @JvmStatic fun positionType(value: YogaPositionType): JavaStyle = JavaStyle().positionType(value)
+
+  /** @see [JavaStyle.translationY] */
+  @JvmStatic
+  fun translationY(value: DynamicValue<Float>): JavaStyle = JavaStyle().translationY(value)
 
   /** @see [JavaStyle.border] */
   @JvmStatic fun border(border: Border): JavaStyle = JavaStyle().border(border)
@@ -413,6 +418,11 @@ class JavaStyle {
 
   fun accessibilityRole(@AccessibilityRoleType role: String): JavaStyle {
     style = style.accessibilityRole(role)
+    return this
+  }
+
+  fun translationY(value: DynamicValue<Float>): JavaStyle {
+    style = style.translationY(value)
     return this
   }
 
