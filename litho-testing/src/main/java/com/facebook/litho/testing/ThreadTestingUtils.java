@@ -54,13 +54,4 @@ public class ThreadTestingUtils {
             })
         .start();
   }
-
-  /** Waits a short amount of time (20 ms) to help avoid tight race conditions */
-  public static void shortWait() {
-    try {
-      Thread.sleep(20);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
 }

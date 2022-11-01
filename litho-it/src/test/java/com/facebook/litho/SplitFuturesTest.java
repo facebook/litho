@@ -30,7 +30,6 @@ import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.LifecycleStep.SHOULD_UPDATE;
 import static com.facebook.litho.testing.ThreadTestingUtils.runOnBackgroundThread;
-import static com.facebook.litho.testing.ThreadTestingUtils.shortWait;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
@@ -240,8 +239,8 @@ public class SplitFuturesTest {
     // Latch that waits for the 1st measure to start
     final TimeOutSemaphore firstMeasureStartLatch = new TimeOutSemaphore(0);
 
-    // Latch that waits for the 2nd setSizeSpec to get called
-    final TimeOutSemaphore secondSizeSpecCalledLatch = new TimeOutSemaphore(0);
+    // Latch that waits for the 2nd future pre-execution listener
+    final TimeOutSemaphore secondFuturePreExecutionLatch = new TimeOutSemaphore(0);
 
     // Listener to be passed into the component.
     final RenderAndLayoutCountingTesterSpec.Listener listener =
@@ -254,11 +253,8 @@ public class SplitFuturesTest {
             // inform measure has started
             firstMeasureStartLatch.release();
 
-            // wait for 2nd setSizeSpec to be called
-            secondSizeSpecCalledLatch.acquire();
-
-            // Add short delay to ensure other thread can call setSizeSpec before this finishes.
-            shortWait();
+            // wait for 2nd future's pre-execution callback
+            secondFuturePreExecutionLatch.acquire();
           }
         };
 
@@ -302,13 +298,27 @@ public class SplitFuturesTest {
     // future is in process, so that the 2nd setSizeSpec just reuses the running one.
     firstMeasureStartLatch.acquire();
 
+    final boolean[] isReusingFutureHolder = new boolean[1];
+
+    final ComponentTree.FutureExecutionListener futureExecutionListener =
+        new ComponentTree.FutureExecutionListener() {
+          @Override
+          public void onPreExecution(ComponentTree.FutureExecutionType futureExecutionType) {
+            secondFuturePreExecutionLatch.release();
+            isReusingFutureHolder[0] =
+                futureExecutionType == ComponentTree.FutureExecutionType.REUSE_FUTURE;
+          }
+        };
+
     runOnBackgroundThread(
         bgThreadLatch,
         new Runnable() {
           @Override
           public void run() {
-            // Inform 2nd setSizeSpec is about to get called
-            secondSizeSpecCalledLatch.release();
+            // set the pre-execution listener. This will be called after the 1st future has
+            // already begun execution, so no concerns over this being triggered for the 1st
+            // future.
+            componentTree.setFutureExecutionListener(futureExecutionListener);
 
             // Call setSizeSpec, which should just reuse the 1st setSizeSpec's future
             componentTree.setSizeSpec(widthSpec, heightSpec, output2);
@@ -326,6 +336,9 @@ public class SplitFuturesTest {
     assertThat(output1.height).isEqualTo(150);
     assertThat(output2.width).isEqualTo(100);
     assertThat(output2.height).isEqualTo(150);
+
+    // Ensure the future was reused
+    assertThat(isReusingFutureHolder[0]).isTrue();
   }
 
   /**
@@ -707,6 +720,9 @@ public class SplitFuturesTest {
     // Latch to wait for async render to begin before sync render
     final TimeOutSemaphore waitForAsyncRenderToStartLatch = new TimeOutSemaphore(0);
 
+    // Latch to wait for the 2nd future's pre-execution
+    final TimeOutSemaphore waitForSecondPreFutureExecutionLatch = new TimeOutSemaphore(0);
+
     final RenderAndLayoutCountingTesterSpec.Listener listener =
         new RenderAndLayoutCountingTesterSpec.Listener() {
           @Override
@@ -714,8 +730,8 @@ public class SplitFuturesTest {
             // Inform async render has started
             waitForAsyncRenderToStartLatch.release();
 
-            // Short wait to let sync render to begin
-            shortWait();
+            // Wait for the 2nd future's pre-execution
+            waitForSecondPreFutureExecutionLatch.acquire();
           }
 
           @Override
@@ -750,6 +766,15 @@ public class SplitFuturesTest {
     // Wait for async render to start
     waitForAsyncRenderToStartLatch.acquire();
 
+    componentTree.setFutureExecutionListener(
+        new ComponentTree.FutureExecutionListener() {
+          @Override
+          public void onPreExecution(ComponentTree.FutureExecutionType futureExecutionType) {
+            // Inform 2nd future's pre-execution occurred.
+            waitForSecondPreFutureExecutionLatch.release();
+          }
+        });
+
     // Set root and sync-spec sync
     componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
 
@@ -781,6 +806,9 @@ public class SplitFuturesTest {
     // Latch to wait for async measure to begin before sync render
     final TimeOutSemaphore waitForAsyncMeasureToStartLatch = new TimeOutSemaphore(0);
 
+    // Latch to wait for 2nd future pre-execution
+    final TimeOutSemaphore waitForSecondFuturePreExecutionLatch = new TimeOutSemaphore(0);
+
     final RenderAndLayoutCountingTesterSpec.Listener listener =
         new RenderAndLayoutCountingTesterSpec.Listener() {
           @Override
@@ -791,8 +819,8 @@ public class SplitFuturesTest {
             // Inform async measure has started
             waitForAsyncMeasureToStartLatch.release();
 
-            // Short wait to let sync process to begin
-            shortWait();
+            // Wait for 2nd future pre-execution
+            waitForSecondFuturePreExecutionLatch.acquire();
           }
         };
 
@@ -824,12 +852,30 @@ public class SplitFuturesTest {
     // Wait for async measure to start
     waitForAsyncMeasureToStartLatch.acquire();
 
+    final boolean[] isFutureReusedHolder = new boolean[1];
+
+    componentTree.setFutureExecutionListener(
+        new ComponentTree.FutureExecutionListener() {
+          @Override
+          public void onPreExecution(ComponentTree.FutureExecutionType futureExecutionType) {
+
+            // Inform second future pre-execution has occurred.
+            waitForSecondFuturePreExecutionLatch.release();
+
+            isFutureReusedHolder[0] =
+                futureExecutionType == ComponentTree.FutureExecutionType.REUSE_FUTURE;
+          }
+        });
+
     // Set root and sync-spec sync
     componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
 
     // Ensure render and measure only happened once
     assertThat(counter.getRenderCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(1);
+
+    // Ensure 2nd future is reused
+    assertThat(isFutureReusedHolder[0]).isTrue();
   }
 
   /**

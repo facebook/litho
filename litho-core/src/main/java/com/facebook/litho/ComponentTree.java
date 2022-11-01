@@ -218,11 +218,6 @@ public class ComponentTree implements LithoLifecycleListener {
     void onSetRootAndSizeSpec(int layoutVersion, int width, int height, boolean stateUpdate);
   }
 
-  public enum FutureType {
-    RESOLVE,
-    LAYOUT
-  }
-
   public enum FutureExecutionType {
     /** A new future is about to be triggered */
     NEW_FUTURE,
@@ -239,11 +234,10 @@ public class ComponentTree implements LithoLifecycleListener {
     /**
      * Called just before a future for resolve or layout is triggered.
      *
-     * @param futureType The type of the future - resolve or layout
      * @param futureExecutionType How the future is going to be executed - run a new future, reuse a
      *     running one, or cancelled entirely.
      */
-    void onPreExecution(final FutureType futureType, final FutureExecutionType futureExecutionType);
+    void onPreExecution(final FutureExecutionType futureExecutionType);
   }
 
   @GuardedBy("this")
@@ -2526,8 +2520,7 @@ public class ComponentTree implements LithoLifecycleListener {
             mResolvedResultFutures,
             source,
             mResolvedResultFutureLock,
-            mFutureExecutionListener,
-            FutureType.RESOLVE);
+            mFutureExecutionListener);
 
     if (resolutionResult == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2682,8 +2675,7 @@ public class ComponentTree implements LithoLifecycleListener {
             mLayoutTreeFutures,
             source,
             mLayoutStateFutureLock,
-            mFutureExecutionListener,
-            FutureType.LAYOUT);
+            mFutureExecutionListener);
 
     if (layoutState == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2745,7 +2737,6 @@ public class ComponentTree implements LithoLifecycleListener {
    * @param mutex A mutex to use to synchronize access to the provided future list
    * @param futureExecutionListener optional listener that will be invoked just before the future is
    *     run
-   * @param futureType The type of the future (resolve or layout)
    * @param <T> The generic type of the provided future & expected result
    * @return The result of running the future, or null if an equivalent future is already running
    *     and the provided source is async.
@@ -2756,8 +2747,7 @@ public class ComponentTree implements LithoLifecycleListener {
       final List<TreeFuture<T>> futureList,
       final @CalculateLayoutSource int source,
       final Object mutex,
-      final @Nullable FutureExecutionListener futureExecutionListener,
-      final FutureType futureType) {
+      final @Nullable FutureExecutionListener futureExecutionListener) {
     final boolean isSync = isFromSyncLayout(source);
     boolean isReusingFuture = false;
     boolean isAborted = false;
@@ -2800,7 +2790,7 @@ public class ComponentTree implements LithoLifecycleListener {
         executionType = FutureExecutionType.NEW_FUTURE;
       }
 
-      futureExecutionListener.onPreExecution(futureType, executionType);
+      futureExecutionListener.onPreExecution(executionType);
     }
 
     // Aborted run, return null.
