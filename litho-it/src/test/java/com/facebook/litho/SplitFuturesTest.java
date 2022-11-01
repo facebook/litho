@@ -831,4 +831,47 @@ public class SplitFuturesTest {
     assertThat(counter.getRenderCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(1);
   }
+
+  /**
+   * When splitting futures, we include an optimisation to avoid blocking the UI thread when setting
+   * root sync when there's no size-specs. Without split futures, nothing would happen here, so when
+   * introducing split futures, we want to ensure that we're still not blocking the UI thread.
+   *
+   * <p>This test verifies this behaviour by calling setRoot (sync) and ensuring that prior to
+   * running to the end of tasks, no render has happened. Then we run to the end of tasks and ensure
+   * that the render did happen.
+   *
+   * <p>In all cases, measure should not happen.
+   */
+  @Test
+  public void testSetRootWithNoSizeSpecsHappensAsync() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    final Component component =
+        Column.create(c)
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
+            .build();
+
+    // Set root here should force the operation to become async
+    mLegacyLithoViewRule.setRoot(component);
+
+    // Setting root without size-specs should force the operation to become async, so we verify
+    // that render did not happen yet.
+    assertThat(counter.getRenderCount()).isEqualTo(0);
+    assertThat(counter.getMeasureCount()).isEqualTo(0);
+
+    // Run to end of tasks, forcing async task to complete
+    mLegacyLithoViewRule.idle();
+
+    // Now that we've run to end of tasks, we can expect render to have happened (tho no measure)
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(counter.getMeasureCount()).isEqualTo(0);
+  }
 }
