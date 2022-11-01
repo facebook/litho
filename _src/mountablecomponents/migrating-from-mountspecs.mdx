@@ -67,7 +67,7 @@ Additionally, `Mountable.measure()` receives the `LayoutContext`, width and heig
 When translating a MountSpec containing both @OnMeasure and @OnBoundsDefined, the logic needs to be merged into a single `measure()` method - there's no need to pass outputs from @OnMeasure to @OnBoundsDefined.
 
 :::note
-For MountSpecs that did not implement @OnMeasure or @OnBoundsDefined at all, `Mountable.measure()` can leverage [MeasureResult.withEqualDimensions()](https://fburl.com/measureresultwithequaldimensions) method to set return the appropriate sizes.
+For MountSpecs that did not implement @OnMeasure nor @OnBoundsDefined at all, `Mountable.measure()` can leverage `MeasureResult.fromSpecs()` method to set return the appropriate sizes.
 :::
 
 For more information, see the [Measuring](mountable-measuring.mdx) page.
