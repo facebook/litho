@@ -330,10 +330,10 @@ public class ComponentTree implements LithoLifecycleListener {
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
 
   @GuardedBy("mResolvedResultFutureLock")
-  private final List<RenderTreeFuture> mResolvedResultFutures = new ArrayList<>();
+  private final List<TreeFuture<LithoResolutionResult>> mResolvedResultFutures = new ArrayList<>();
 
   @GuardedBy("mLayoutStateFutureLock")
-  private final List<LayoutTreeFuture> mLayoutTreeFutures = new ArrayList<>();
+  private final List<TreeFuture<LayoutState>> mLayoutTreeFutures = new ArrayList<>();
 
   private volatile boolean mHasMounted;
   private volatile boolean mIsFirstMount;
@@ -2352,7 +2352,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (isResolveAndLayoutFuturesSplitEnabled) {
-      startCalculationWithSplitFutures(
+      requestResolveWithSplitFutures(
           isAsync, output, source, extraAttribution, isCreateLayoutInProgress);
       return;
     }
@@ -2380,7 +2380,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  private void startCalculationWithSplitFutures(
+  private void requestResolveWithSplitFutures(
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
@@ -2410,7 +2410,7 @@ public class ComponentTree implements LithoLifecycleListener {
     if (resolutionResult != null
         && resolutionResult.component == root
         && resolutionResult.context.getTreeProps() == treeProps) {
-      startLayoutCalculationWithSplitFutures(
+      requestLayoutWithSplitFutures(
           output, source, extraAttribution, isCreateLayoutInProgress, false);
       return;
     }
@@ -2470,88 +2470,6 @@ public class ComponentTree implements LithoLifecycleListener {
       context = new ComponentContext(mContext, treeProps);
     }
 
-    treeState.registerRenderState();
-
-    final @Nullable LithoResolutionResult resolutionResult =
-        calculateResolutionResult(
-            context, root, treeState, localResolveVersion, currentNode, source);
-
-    if (resolutionResult == null) {
-      if (!isReleased() && isFromSyncLayout(source)) {
-        final String errorMessage =
-            "ResolutionResult is null, but only async operations can return a null ResolutionResult. Source: "
-                + layoutSourceToString(source)
-                + ", current thread: "
-                + Thread.currentThread().getName()
-                + ". Root: "
-                + (root == null ? "null" : root.getSimpleName());
-        throw new IllegalStateException(errorMessage);
-      }
-
-      return;
-    }
-
-    commitResolutionResult(resolutionResult, isCreateLayoutInProgress);
-
-    startLayoutCalculationWithSplitFutures(
-        output,
-        source,
-        extraAttribution,
-        isCreateLayoutInProgress,
-        // Don't post when using the same thread handler, as it could cause heavy delays
-        !useSeparateThreadHandlersForResolveAndLayout);
-  }
-
-  @Nullable
-  private LithoResolutionResult calculateResolutionResult(
-      final ComponentContext context,
-      final Component root,
-      final TreeState treeState,
-      final int resolveVersion,
-      final @Nullable LithoNode currentNode,
-      final @CalculateLayoutSource int source) {
-
-    // TODO (T134774377) Implement perf event for RenderTreeFuture
-    RenderTreeFuture localResolvedResultFuture =
-        new RenderTreeFuture(context, root, treeState, currentNode, null, resolveVersion);
-
-    final boolean waitingFromSyncLayout = isFromSyncLayout(source);
-
-    // TODO (T136079256): Combine into common mechanism
-    synchronized (mResolvedResultFutureLock) {
-      boolean canReuse = false;
-      for (int i = 0; i < mResolvedResultFutures.size(); i++) {
-        final RenderTreeFuture runningRtf = mResolvedResultFutures.get(i);
-        if (!runningRtf.isReleased()
-            && runningRtf.isEquivalentTo(localResolvedResultFuture)
-            && runningRtf.tryRegisterForResponse(waitingFromSyncLayout)) {
-          // Use the latest LithoResolutionResult calculation if it's the same.
-          localResolvedResultFuture = runningRtf;
-          canReuse = true;
-          break;
-        }
-      }
-      if (!canReuse) {
-        if (!localResolvedResultFuture.tryRegisterForResponse(waitingFromSyncLayout)) {
-          throw new RuntimeException("Failed to register to local ResolvedResultFuture");
-        }
-        mResolvedResultFutures.add(localResolvedResultFuture);
-      }
-    }
-
-    final LithoResolutionResult resolutionResult = localResolvedResultFuture.runAndGet(source);
-
-    synchronized (mResolvedResultFutureLock) {
-      localResolvedResultFuture.unregisterForResponse();
-
-      // This future has finished executing, if no other threads were waiting for the response we
-      // can remove it.
-      if (localResolvedResultFuture.getWaitingCount() == 0) {
-        localResolvedResultFuture.release();
-        mResolvedResultFutures.remove(localResolvedResultFuture);
-      }
-    }
-
     if (root.getBuilderContext() != null
         && root.getBuilderContext() != mContext.getAndroidContext()) {
       final String message =
@@ -2570,7 +2488,39 @@ public class ComponentTree implements LithoLifecycleListener {
           message);
     }
 
-    return resolutionResult;
+    treeState.registerRenderState();
+
+    final @Nullable LithoResolutionResult resolutionResult =
+        trackAndRunTreeFuture(
+            new RenderTreeFuture(context, root, treeState, currentNode, null, localResolveVersion),
+            mResolvedResultFutures,
+            source,
+            mResolvedResultFutureLock);
+
+    if (resolutionResult == null) {
+      if (!isReleased() && isFromSyncLayout(source)) {
+        final String errorMessage =
+            "ResolutionResult is null, but only async operations can return a null ResolutionResult. Source: "
+                + layoutSourceToString(source)
+                + ", current thread: "
+                + Thread.currentThread().getName()
+                + ". Root: "
+                + (root == null ? "null" : root.getSimpleName());
+        throw new IllegalStateException(errorMessage);
+      }
+
+      return;
+    }
+
+    commitResolutionResult(resolutionResult, isCreateLayoutInProgress);
+
+    requestLayoutWithSplitFutures(
+        output,
+        source,
+        extraAttribution,
+        isCreateLayoutInProgress,
+        // Don't post when using the same thread handler, as it could cause heavy delays
+        !useSeparateThreadHandlersForResolveAndLayout);
   }
 
   private synchronized void commitResolutionResult(
@@ -2595,7 +2545,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  private void startLayoutCalculationWithSplitFutures(
+  private void requestLayoutWithSplitFutures(
       @Nullable Size output,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
@@ -2637,6 +2587,13 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress) {
 
+    synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
+      if (mCurrentCalculateLayoutFutureRunnable != null) {
+        mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
+        mCurrentCalculateLayoutFutureRunnable = null;
+      }
+    }
+
     final @Nullable LithoResolutionResult resolutionResult;
     final int widthSpec;
     final int heightSpec;
@@ -2665,7 +2622,7 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       if (noCurrentResolutionsInProgress) {
-        startCalculationWithSplitFutures(
+        requestResolveWithSplitFutures(
             !isFromSyncLayout(source), output, source, extraAttribution, isCreateLayoutInProgress);
       }
 
@@ -2680,14 +2637,19 @@ public class ComponentTree implements LithoLifecycleListener {
     resolutionResult.treeState.registerLayoutState();
 
     final LayoutState layoutState =
-        runLayoutTreeFuture(
+        trackAndRunTreeFuture(
+            new LayoutTreeFuture(
+                resolutionResult,
+                currentLayoutState,
+                currentDiffNode,
+                null,
+                widthSpec,
+                heightSpec,
+                mId,
+                layoutVersion),
+            mLayoutTreeFutures,
             source,
-            resolutionResult,
-            widthSpec,
-            heightSpec,
-            layoutVersion,
-            currentLayoutState,
-            currentDiffNode);
+            mLayoutStateFutureLock);
 
     if (layoutState == null) {
       if (!isReleased() && isFromSyncLayout(source)) {
@@ -2725,74 +2687,79 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
+  /**
+   * Given a provided tree-future, this method will track it via a given list, and run it.
+   *
+   * <p>If an equivalent tree-future is found in the given list of futures, the sequence in this
+   * method will attempt to reuse it and increase the wait-count on it if successful.
+   *
+   * <p>If an async operation is requested and an equivalent future is already running, it will be
+   * discarded and return null.
+   *
+   * <p>If no equivalent running future was found in the provided list, it will be added to the list
+   * for the duration of the run, and then, provided it has a 0 wait-count, it will be removed from
+   * the provided list.
+   *
+   * @param treeFuture The future to executed
+   * @param futureList The list of futures this future will be added to
+   * @param source The source of the calculation
+   * @param mutex A mutex to use to synchronize access to the provided future list
+   * @param <T> The generic type of the provided future & expected result
+   * @return The result of running the future, or null if an equivalent future is already running
+   *     and the provided source is async.
+   */
   @Nullable
-  private LayoutState runLayoutTreeFuture(
+  private static <T extends PotentiallyPartialResult> T trackAndRunTreeFuture(
+      TreeFuture<T> treeFuture,
+      final List<TreeFuture<T>> futureList,
       final @CalculateLayoutSource int source,
-      final LithoResolutionResult resolutionResult,
-      int widthSpec,
-      int heightSpec,
-      int version,
-      @Nullable LayoutState currentLayoutState,
-      @Nullable DiffNode diffNode) {
-
-    synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
-      if (mCurrentCalculateLayoutFutureRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
-        mCurrentCalculateLayoutFutureRunnable = null;
-      }
-    }
-
+      final Object mutex) {
     final boolean isSync = isFromSyncLayout(source);
 
-    // TODO (T134774377) Implement perf event for LayoutTreeFuture
-    LayoutTreeFuture layoutTreeFuture =
-        new LayoutTreeFuture(
-            resolutionResult,
-            currentLayoutState,
-            diffNode,
-            null,
-            widthSpec,
-            heightSpec,
-            mId,
-            version);
-
-    // TODO (T136079256): Combine into common mechanism
-    synchronized (mLayoutStateFutureLock) {
+    synchronized (mutex) {
       boolean isReusingFuture = false;
 
-      for (LayoutTreeFuture runningLtf : mLayoutTreeFutures) {
-        if (!runningLtf.isReleased() && runningLtf.isEquivalentTo(layoutTreeFuture)) {
-          if (isSync) {
-            // We are running sync now. Grab and wait on the current running one.
-            layoutTreeFuture = runningLtf;
+      // Iterate over the running futures to see if an equivalent one is running
+      for (final TreeFuture<T> runningFuture : futureList) {
+        if (!runningFuture.isReleased() && runningFuture.isEquivalentTo(treeFuture)) {
+          if (!isSync) {
+            // An future is already running with the exact same params, no need to calculate async.
+            return null;
+          } else if (runningFuture.tryRegisterForResponse(isSync)) {
+            // Running in sync, and an equivalent running future was found and is allowing to be
+            // reused (tryRegisterForResponse returned true).
+            // Discard the provided future and use the running future instead.
+            // tryRegisterForResponse returned true and also increased the wait-count, so no need
+            // to do that later.
+            treeFuture = runningFuture;
             isReusingFuture = true;
             break;
-          } else {
-            // An LTF is already running with the exact same params, no need to calculate async.
-            return null;
           }
         }
       }
 
       if (!isReusingFuture) {
-        mLayoutTreeFutures.add(layoutTreeFuture);
-      }
-
-      layoutTreeFuture.tryRegisterForResponse(isSync);
-    }
-
-    final LayoutState layoutState = layoutTreeFuture.runAndGet(source);
-
-    synchronized (mLayoutStateFutureLock) {
-      layoutTreeFuture.unregisterForResponse();
-
-      if (layoutTreeFuture.getWaitingCount() == 0) {
-        layoutTreeFuture.release();
-        mLayoutTreeFutures.remove(layoutTreeFuture);
+        // Not reusing, increase the wait count and add the new future to the list
+        treeFuture.tryRegisterForResponse(isSync);
+        futureList.add(treeFuture);
       }
     }
 
-    return layoutState;
+    // Run and get the result
+    final T result = treeFuture.runAndGet(source);
+
+    synchronized (mutex) {
+      // Unregister for response, decreasing the wait count
+      treeFuture.unregisterForResponse();
+
+      // If the wait count is 0, release the future and remove it from the list
+      if (treeFuture.getWaitingCount() == 0) {
+        treeFuture.release();
+        futureList.remove(treeFuture);
+      }
+    }
+
+    return result;
   }
 
   private void commitLayoutState(
@@ -3129,7 +3096,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
       if (isResolveAndLayoutFuturesSplitEnabled) {
         synchronized (mResolvedResultFutureLock) {
-          for (RenderTreeFuture rtf : mResolvedResultFutures) {
+          for (TreeFuture rtf : mResolvedResultFutures) {
             rtf.release();
           }
 
@@ -3137,7 +3104,7 @@ public class ComponentTree implements LithoLifecycleListener {
         }
 
         synchronized (mLayoutStateFutureLock) {
-          for (LayoutTreeFuture ltf : mLayoutTreeFutures) {
+          for (TreeFuture ltf : mLayoutTreeFutures) {
             ltf.release();
           }
 
@@ -3319,13 +3286,13 @@ public class ComponentTree implements LithoLifecycleListener {
 
     if (isResolveAndLayoutFuturesSplitEnabled) {
       synchronized (mResolvedResultFutureLock) {
-        for (RenderTreeFuture rtf : mResolvedResultFutures) {
+        for (TreeFuture rtf : mResolvedResultFutures) {
           rtf.release();
         }
       }
 
       synchronized (mLayoutStateFutureLock) {
-        for (LayoutTreeFuture ltf : mLayoutTreeFutures) {
+        for (TreeFuture ltf : mLayoutTreeFutures) {
           ltf.release();
         }
       }
