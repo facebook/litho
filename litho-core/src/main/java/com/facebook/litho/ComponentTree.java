@@ -2393,6 +2393,15 @@ public class ComponentTree implements LithoLifecycleListener {
       resolutionResult = mCommittedResolutionResult;
       root = mRoot;
       treeProps = mRootTreeProps;
+
+      // If we're only setting root, and there are no size specs, move the operation to async
+      // to avoid hanging on the main thread
+      if (source == CalculateLayoutSource.SET_ROOT_SYNC
+          && mWidthSpec == SIZE_UNINITIALIZED
+          && mHeightSpec == SIZE_UNINITIALIZED) {
+        isAsync = true;
+        source = CalculateLayoutSource.SET_ROOT_ASYNC;
+      }
     }
 
     // The current root and tree-props are the same as the committed resolution result. Therefore,

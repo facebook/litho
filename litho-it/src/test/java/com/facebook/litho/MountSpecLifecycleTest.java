@@ -64,7 +64,7 @@ public class MountSpecLifecycleTest {
         MountSpecLifecycleTester.create(mLegacyLithoViewRule.getContext())
             .lifecycleTracker(lifecycleTracker)
             .build();
-    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component).idle();
 
     if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
       assertThat(lifecycleTracker.getSteps())

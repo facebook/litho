@@ -28,8 +28,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 /** Tests for [useCallback] and capturing of props/state within collections lambdas. */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class UseCallbackTest {
 

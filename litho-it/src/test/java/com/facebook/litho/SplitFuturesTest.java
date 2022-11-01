@@ -85,7 +85,7 @@ public class SplitFuturesTest {
             .build();
 
     // Setting root, only render steps should occur
-    mLegacyLithoViewRule.setRoot(component1);
+    mLegacyLithoViewRule.setRoot(component1).idle();
 
     assertThat(tracker.getSteps())
         .describedAs("Only render-phase steps are present")
@@ -389,6 +389,13 @@ public class SplitFuturesTest {
 
     // Background thread latch with -1 permits to ensure both bg tasks finish
     final TimeOutSemaphore bgThreadLatch = new TimeOutSemaphore(-1);
+
+    // Set size specs so setRoot happens sync
+    mLegacyLithoViewRule
+        .getComponentTree()
+        .setSizeSpec(
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
     runOnBackgroundThread(
         bgThreadLatch,

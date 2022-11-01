@@ -46,7 +46,7 @@ public class LayoutSpecLifecycleTest {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
         LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
-    mLegacyLithoViewRule.setRoot(component);
+    mLegacyLithoViewRule.setRoot(component).idle();
 
     if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
       assertThat(getSteps(info))
