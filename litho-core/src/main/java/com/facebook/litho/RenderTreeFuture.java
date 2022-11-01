@@ -134,6 +134,10 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
       return false;
     }
 
+    if (mComponentContext.getTreeProps() != thatRtf.mComponentContext.getTreeProps()) {
+      return false;
+    }
+
     return true;
   }
 }

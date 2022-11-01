@@ -676,4 +676,152 @@ public class SplitFuturesTest {
     assertThat(output.width).isEqualTo(100);
     assertThat(output.height).isEqualTo(100);
   }
+
+  /**
+   * When an async setRootAndSizeSpec happens, followed by an equivalent sync call, we expect the
+   * async process to be promoted to the main thread, thus ensuring render and measure only happen
+   * once.
+   *
+   * <p>The test verifies this behaviour works correctly during render by triggering an async
+   * setRootAndSizeSpec, waiting for render to begin, and then triggering an equivalent sync
+   * process.
+   */
+  @Test
+  public void testSyncRenderContinuesAsyncOnMainThread() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    // Latch to wait for async render to begin before sync render
+    final TimeOutSemaphore waitForAsyncRenderToStartLatch = new TimeOutSemaphore(0);
+
+    final RenderAndLayoutCountingTesterSpec.Listener listener =
+        new RenderAndLayoutCountingTesterSpec.Listener() {
+          @Override
+          public void onPrepare() {
+            // Inform async render has started
+            waitForAsyncRenderToStartLatch.release();
+
+            // Short wait to let sync render to begin
+            shortWait();
+          }
+
+          @Override
+          public void onMeasure() {}
+        };
+
+    final Component component =
+        Column.create(c)
+            .child(
+                RenderAndLayoutCountingTester.create(c)
+                    .renderAndMeasureCounter(counter)
+                    .listener(listener))
+            .build();
+
+    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+
+    final ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
+
+    // Set root and size-spec async
+    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
+
+    // run to end of tasks on background to avoid blocking here
+    runOnBackgroundThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mLegacyLithoViewRule.idle();
+          }
+        });
+
+    // Wait for async render to start
+    waitForAsyncRenderToStartLatch.acquire();
+
+    // Set root and sync-spec sync
+    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
+
+    // Ensure render and measure only happened once
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(counter.getMeasureCount()).isEqualTo(1);
+  }
+
+  /**
+   * When an async setRootAndSizeSpec happens, followed by an equivalent sync call, we expect the
+   * async process to be promoted to the main thread, thus ensuring render and measure only happen
+   * once.
+   *
+   * <p>The test verifies this behaviour works correctly during layout by triggering an async
+   * setRootAndSizeSpec, waiting for layout to begin, and then triggering an equivalent sync
+   * process.
+   */
+  @Test
+  public void testSyncLayoutContinuesAsyncOnMainThread() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+
+    // Latch to wait for async measure to begin before sync render
+    final TimeOutSemaphore waitForAsyncMeasureToStartLatch = new TimeOutSemaphore(0);
+
+    final RenderAndLayoutCountingTesterSpec.Listener listener =
+        new RenderAndLayoutCountingTesterSpec.Listener() {
+          @Override
+          public void onPrepare() {}
+
+          @Override
+          public void onMeasure() {
+            // Inform async measure has started
+            waitForAsyncMeasureToStartLatch.release();
+
+            // Short wait to let sync process to begin
+            shortWait();
+          }
+        };
+
+    final Component component =
+        Column.create(c)
+            .child(
+                RenderAndLayoutCountingTester.create(c)
+                    .renderAndMeasureCounter(counter)
+                    .listener(listener))
+            .build();
+
+    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+
+    final ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
+
+    // Set root and size-spec async
+    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
+
+    // run to end of tasks on background to avoid blocking here
+    runOnBackgroundThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mLegacyLithoViewRule.idle();
+          }
+        });
+
+    // Wait for async measure to start
+    waitForAsyncMeasureToStartLatch.acquire();
+
+    // Set root and sync-spec sync
+    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
+
+    // Ensure render and measure only happened once
+    assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(counter.getMeasureCount()).isEqualTo(1);
+  }
 }

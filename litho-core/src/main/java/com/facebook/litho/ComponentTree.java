@@ -29,7 +29,6 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
-import static com.facebook.litho.LayoutState.isMeasureOnlySource;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
@@ -2389,17 +2388,19 @@ public class ComponentTree implements LithoLifecycleListener {
       boolean isCreateLayoutInProgress) {
     final LithoResolutionResult resolutionResult;
     final Component root;
+    final TreeProps treeProps;
     synchronized (this) {
       resolutionResult = mCommittedResolutionResult;
       root = mRoot;
+      treeProps = mRootTreeProps;
     }
 
-    // The source of the calculation was from measure or setSizeSpec, meaning there are no
-    // changes to the resolve step - only measure needs to happen - if the resolution result
-    // is compatible with the current root.
-    if (isMeasureOnlySource(source)
-        && resolutionResult != null
-        && resolutionResult.component == root) {
+    // The current root and tree-props are the same as the committed resolution result. Therefore,
+    // there is no need to calculate the resolution result again and we can proceed straight to
+    // layout.
+    if (resolutionResult != null
+        && resolutionResult.component == root
+        && resolutionResult.context.getTreeProps() == treeProps) {
       startLayoutCalculationWithSplitFutures(
           output, source, extraAttribution, isCreateLayoutInProgress, false);
       return;
