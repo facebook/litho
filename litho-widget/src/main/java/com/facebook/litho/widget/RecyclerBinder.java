@@ -150,6 +150,7 @@ public class RecyclerBinder
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mRecyclerViewItemPrefetch;
   private final int mItemViewCacheSize;
+  private final @RecyclingStrategy int mRecyclingStrategy;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
 
@@ -479,6 +480,7 @@ public class RecyclerBinder
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
     private int itemViewCacheSize = 0;
+    private @RecyclingStrategy int recyclingStrategy = RecyclingStrategy.DEFAULT;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;
@@ -786,6 +788,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder recyclingStrategy(@RecyclingStrategy int recyclingStrategy) {
+      this.recyclingStrategy = recyclingStrategy;
+      return this;
+    }
+
     public Builder componentWarmer(@Nullable ComponentWarmer componentWarmer) {
       mComponentWarmer = componentWarmer;
       return this;
@@ -1037,6 +1044,7 @@ public class RecyclerBinder
     mComponentWarmer = builder.mComponentWarmer;
     mStartupLogger = builder.startupLogger;
     mErrorEventHandler = builder.errorEventHandler;
+    mRecyclingStrategy = builder.recyclingStrategy;
   }
 
   /**
@@ -3569,6 +3577,13 @@ public class RecyclerBinder
   public @interface CommitPolicy {
     int IMMEDIATE = 0;
     int LAYOUT_BEFORE_INSERT = 1;
+  }
+
+  /** Strategies for recycling layouts of items in binder */
+  @IntDef({RecyclingStrategy.DEFAULT, RecyclingStrategy.RETAIN_MAXIMUM_RANGE})
+  public @interface RecyclingStrategy {
+    int DEFAULT = 0;
+    int RETAIN_MAXIMUM_RANGE = 1;
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
