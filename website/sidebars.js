@@ -196,10 +196,10 @@ module.exports = {
             'mountablecomponents/mountable-component',
             'mountablecomponents/mountable',
             'mountablecomponents/mountable-measuring',
-            'mountablecomponents/accessibility',
             'mountablecomponents/mountable-bindto',
             'mountablecomponents/mountable-controllers',
             'mountablecomponents/mountable-preallocation',
+            'mountablecomponents/accessibility',
             'mountablecomponents/introduction-to-rendercore',
             {
               'Migrating to Mountable Components': [
