@@ -173,6 +173,10 @@ object StyleCompat {
   fun accessibilityRole(@AccessibilityRoleType role: String): JavaStyle =
       JavaStyle().accessibilityRole(role)
 
+  /** @see [JavaStyle.translationY] */
+  @JvmStatic
+  fun translationY(value: DynamicValue<Float>): JavaStyle = JavaStyle().translationY(value)
+
   /** @see [JavaStyle.alignSelf] */
   @JvmStatic fun alignSelf(value: YogaAlign): JavaStyle = JavaStyle().alignSelf(value)
 
