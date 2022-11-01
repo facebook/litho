@@ -97,7 +97,7 @@ internal class TransparencyEnabledCardClipMountable(
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?
-  ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+  ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
 
   override fun mount(c: Context, content: TransparencyEnabledCardClipDrawable, layoutData: Any?) {
     content.setBackgroundColor(cardBackgroundColor)

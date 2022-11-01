@@ -25,6 +25,7 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 
 /** Encapsulates the measured size of a Mountable, and any layout data */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -52,6 +53,28 @@ public class MeasureResult {
     this.height = 0;
     this.layoutData = null;
     this.mHadExceptions = true;
+  }
+
+  /**
+   * Returns a {@link MeasureResult} with sizes set based on the provided {@param widthSpec} and
+   * {@param heightSpec}.
+   *
+   * <p>This method should only be used for Mountable Components which do not measure themselves -
+   * it's the parent that has determined the exact size for this child.
+   *
+   * @throws IllegalArgumentException if the widthSpec or heightSpec is not exact
+   */
+  public static MeasureResult fromSpecs(final int widthSpec, final int heightSpec) {
+    if (MeasureSpecUtils.getMode(widthSpec) != EXACTLY
+        || MeasureSpecUtils.getMode(heightSpec) != EXACTLY) {
+      throw new IllegalArgumentException(
+          "The sizes must be exact, but width is "
+              + MeasureSpecUtils.getMeasureSpecDescription(widthSpec)
+              + " and height is "
+              + MeasureSpecUtils.getMeasureSpecDescription(heightSpec));
+    }
+    return new MeasureResult(
+        MeasureSpecUtils.getSize(widthSpec), MeasureSpecUtils.getSize(heightSpec));
   }
 
   /**

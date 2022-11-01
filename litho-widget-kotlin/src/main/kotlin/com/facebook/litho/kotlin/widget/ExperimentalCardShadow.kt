@@ -111,5 +111,5 @@ internal class CardShadowMountable(
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?
-  ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+  ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
 }

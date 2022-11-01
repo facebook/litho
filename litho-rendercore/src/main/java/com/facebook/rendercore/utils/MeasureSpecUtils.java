@@ -19,8 +19,6 @@ package com.facebook.rendercore.utils;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.getMode;
-import static android.view.View.MeasureSpec.getSize;
 
 import android.view.View;
 import java.util.Locale;
@@ -43,6 +41,14 @@ public class MeasureSpecUtils {
 
   public static int exactly(int px) {
     return View.MeasureSpec.makeMeasureSpec(px, View.MeasureSpec.EXACTLY);
+  }
+
+  public static int getMode(int spec) {
+    return View.MeasureSpec.getMode(spec);
+  }
+
+  public static int getSize(int spec) {
+    return View.MeasureSpec.getSize(spec);
   }
 
   public static boolean areMeasureSpecsEquivalent(int specA, int specB) {

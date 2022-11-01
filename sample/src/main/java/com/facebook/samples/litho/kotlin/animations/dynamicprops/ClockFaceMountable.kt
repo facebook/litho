@@ -48,6 +48,6 @@ class ClockFaceMountable(private val time: DynamicValue<Long>, private val style
         widthSpec: Int,
         heightSpec: Int,
         previousLayoutData: Any?
-    ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+    ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
   }
 }

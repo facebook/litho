@@ -81,7 +81,7 @@ internal class CardClipMountable(
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?
-  ): MeasureResult = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+  ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
 
   override fun mount(c: Context, content: CardClipDrawable, layoutData: Any?) {
     clippingColor?.let { content.setClippingColor(clippingColor) }
