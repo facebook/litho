@@ -921,6 +921,63 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testMoveRange_withRetainMaximumRangeRecyclingStrategy() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder
+            .rangeRatio(RANGE_RATIO)
+            .estimatedViewportCount(1)
+            .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
+            .build(mComponentContext);
+    final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
+    final int newRangeStart = 40;
+    final int newRangeEnd = 43;
+
+    recyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+
+    validateRangeWithRetainMaximumRangeStrategy(components, 40, 43, 40, 43);
+  }
+
+  @Test
+  public void testIncreaseDecreaseMoveRangeAhead_withRetainMaximumRangeRecyclingStrategy() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder
+            .rangeRatio(RANGE_RATIO)
+            .estimatedViewportCount(1)
+            .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
+            .build(mComponentContext);
+    final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
+
+    recyclerBinder.onNewVisibleRange(30, 33);
+    validateRangeWithRetainMaximumRangeStrategy(components, 30, 33, 30, 33);
+
+    recyclerBinder.onNewVisibleRange(31, 32);
+    validateRangeWithRetainMaximumRangeStrategy(components, 31, 32, 30, 33);
+
+    recyclerBinder.onNewVisibleRange(32, 35);
+    validateRangeWithRetainMaximumRangeStrategy(components, 32, 35, 30, 33);
+  }
+
+  @Test
+  public void testIncreaseDecreaseMoveRangeBehind_withRetainMaximumRangeRecyclingStrategy() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder
+            .rangeRatio(RANGE_RATIO)
+            .estimatedViewportCount(1)
+            .recyclingStrategy(RecyclerBinder.RecyclingStrategy.RETAIN_MAXIMUM_RANGE)
+            .build(mComponentContext);
+    final List<ComponentRenderInfo> components = prepareLoadedBinder(recyclerBinder, 100);
+
+    recyclerBinder.onNewVisibleRange(30, 33);
+    validateRangeWithRetainMaximumRangeStrategy(components, 30, 33, 30, 33);
+
+    recyclerBinder.onNewVisibleRange(31, 32);
+    validateRangeWithRetainMaximumRangeStrategy(components, 31, 32, 30, 33);
+
+    recyclerBinder.onNewVisibleRange(29, 32);
+    validateRangeWithRetainMaximumRangeStrategy(components, 29, 32, 30, 33);
+  }
+
+  @Test
   public void testRealRangeOverridesEstimatedRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int newRangeStart = 40;
@@ -5638,6 +5695,51 @@ public class RecyclerBinderTest {
         .component(
             SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build())
         .build();
+  }
+
+  private void validateRangeWithRetainMaximumRangeStrategy(
+      List<ComponentRenderInfo> components,
+      int rangeStart,
+      int rangeEnd,
+      int lowestRangeStart,
+      int highestRangeEnd) {
+    int newRangeStart = rangeStart;
+    int newRangeEnd = rangeEnd;
+    String rangeDescription = ", in range: " + rangeStart + "-" + rangeEnd;
+    if (rangeStart >= lowestRangeStart && rangeEnd <= highestRangeEnd) {
+      newRangeStart = lowestRangeStart;
+      newRangeEnd = highestRangeEnd;
+    }
+
+    final int rangeSize = newRangeEnd - newRangeStart;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+
+    TestComponentTreeHolder componentTreeHolder;
+    for (int i = 0; i < components.size(); i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+
+      if (i >= newRangeStart - (RANGE_RATIO * rangeSize) && i <= newRangeStart + rangeTotal) {
+        assertThat(componentTreeHolder.isTreeValid())
+            .describedAs("isTreeValid expected True: index: " + i + rangeDescription)
+            .isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled)
+            .describedAs("layoutAsyncCalled expected True index: " + i + rangeDescription)
+            .isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled)
+            .describedAs("layoutSyncCalled expected True index: " + i + rangeDescription)
+            .isFalse();
+      } else {
+        assertThat(componentTreeHolder.isTreeValid())
+            .describedAs("isTreeValid expected False: index: " + i + rangeDescription)
+            .isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled)
+            .describedAs("layoutAsyncCalled expected False index: " + i + rangeDescription)
+            .isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled)
+            .describedAs("layoutSyncCalled expected False index: " + i + rangeDescription)
+            .isFalse();
+      }
+    }
   }
 
   static void assertHasCompatibleLayout(

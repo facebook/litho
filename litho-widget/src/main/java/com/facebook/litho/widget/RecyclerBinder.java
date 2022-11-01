@@ -290,6 +290,13 @@ public class RecyclerBinder
   // The size computed for the first Component to be used when we can't use the size specs passed to
   // measure.
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
+
+  @GuardedBy("this")
+  private int mLowestRangeStartSinceDeletes = Integer.MAX_VALUE;
+
+  @GuardedBy("this")
+  private int mHighestRangeStartSinceDeletes = Integer.MIN_VALUE;
+
   private StickyHeaderController mStickyHeaderController;
   private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
   private final @Nullable RunnableHandler mLayoutThreadPoolHandler;
@@ -3363,6 +3370,7 @@ public class RecyclerBinder
     final int rangeStart;
     final int rangeEnd;
     final int treeHoldersSize;
+    final boolean didRangeExtremitiesChange;
 
     synchronized (this) {
       if (!isMeasured() || mEstimatedViewportCount == UNSET) {
@@ -3381,19 +3389,41 @@ public class RecyclerBinder
         rangeStart = firstVisible - (int) (rangeSize * mRangeRatio);
         rangeEnd = firstVisible + rangeSize + (int) (rangeSize * mRangeRatio);
       }
+
+      if (rangeStart < mLowestRangeStartSinceDeletes || rangeEnd > mHighestRangeStartSinceDeletes) {
+        didRangeExtremitiesChange = true;
+        mLowestRangeStartSinceDeletes = rangeStart;
+        mHighestRangeStartSinceDeletes = rangeEnd;
+      } else {
+        didRangeExtremitiesChange = false;
+      }
     }
 
-    traverser.traverse(
-        0,
-        treeHoldersSize,
-        firstVisible,
-        lastVisible,
-        new RecyclerRangeTraverser.Processor() {
-          @Override
-          public boolean process(int index) {
-            return computeRangeLayoutAt(index, rangeStart, rangeEnd, treeHoldersSize);
-          }
-        });
+    RecyclerRangeTraverser.Processor processor;
+    switch (mRecyclingStrategy) {
+      case RecyclingStrategy.RETAIN_MAXIMUM_RANGE:
+        processor =
+            new RecyclerRangeTraverser.Processor() {
+              @Override
+              public boolean process(int index) {
+                return computeRangeLayoutWithRetainMaximumRange(
+                    index, rangeStart, rangeEnd, treeHoldersSize, didRangeExtremitiesChange);
+              }
+            };
+        break;
+
+      case RecyclingStrategy.DEFAULT:
+      default:
+        processor =
+            new RecyclerRangeTraverser.Processor() {
+              @Override
+              public boolean process(int index) {
+                return computeRangeLayoutAt(index, rangeStart, rangeEnd, treeHoldersSize);
+              }
+            };
+    }
+
+    traverser.traverse(0, treeHoldersSize, firstVisible, lastVisible, processor);
   }
 
   /** @return Whether or not to continue layout computation for current range */
@@ -3425,14 +3455,59 @@ public class RecyclerBinder
         holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
       }
     } else {
-      if (ThreadUtils.isMainThread()) {
-        maybeAcquireStateAndReleaseTree(holder, mAcquireStateHandlerOnRelease);
-      } else {
-        mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
-      }
+      maybeReleaseOutOfRangeTree(holder);
     }
 
     return true;
+  }
+
+  /** @return Whether or not to continue layout computation for current range */
+  private boolean computeRangeLayoutWithRetainMaximumRange(
+      int index, int rangeStart, int rangeEnd, int treeHoldersSize, boolean allowDeletions) {
+
+    final ComponentTreeHolder holder;
+    int childrenWidthSpec = 0, childrenHeightSpec = 0;
+    final boolean shouldTryComputeLayout;
+
+    synchronized (this) {
+      // Someone modified the ComponentsTreeHolders while we were computing this range. We
+      // can just bail as another range will be computed.
+      if (treeHoldersSize != mComponentTreeHolders.size()) {
+        return false;
+      }
+
+      holder = mComponentTreeHolders.get(index);
+
+      if (holder.getRenderInfo().rendersView()) {
+        return true;
+      }
+
+      shouldTryComputeLayout =
+          (index >= rangeStart || holder.getRenderInfo().isSticky()) && index <= rangeEnd;
+
+      if (shouldTryComputeLayout) {
+        childrenWidthSpec = getActualChildrenWidthSpec(holder);
+        childrenHeightSpec = getActualChildrenHeightSpec(holder);
+      }
+    }
+
+    if (shouldTryComputeLayout) {
+      if (!holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
+        holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+      }
+    } else if (allowDeletions && canReleaseTree(holder)) {
+      maybeReleaseOutOfRangeTree(holder);
+    }
+
+    return true;
+  }
+
+  private void maybeReleaseOutOfRangeTree(final ComponentTreeHolder holder) {
+    if (ThreadUtils.isMainThread()) {
+      maybeAcquireStateAndReleaseTree(holder, mAcquireStateHandlerOnRelease);
+    } else {
+      mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
+    }
   }
 
   private Runnable getMaybeAcquireStateAndReleaseTreeRunnable(final ComponentTreeHolder holder) {
@@ -3447,13 +3522,18 @@ public class RecyclerBinder
   @UiThread
   private static void maybeAcquireStateAndReleaseTree(
       ComponentTreeHolder holder, boolean acquireStateAndReleaseTree) {
-    if (holder.isTreeValid()
-        && !holder.shouldPreventRelease()
-        && !holder.getRenderInfo().isSticky()
+    if (canReleaseTree(holder)
         && (holder.getComponentTree() != null
             && holder.getComponentTree().getLithoView() == null)) {
       holder.acquireStateAndReleaseTree(acquireStateAndReleaseTree);
     }
+  }
+
+  private static boolean canReleaseTree(ComponentTreeHolder holder) {
+    return holder.isTreeValid()
+        && !holder.shouldPreventRelease()
+        && !holder.getRenderInfo().isSticky()
+        && holder.getComponentTree() != null;
   }
 
   private boolean getReverseLayout() {
