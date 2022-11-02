@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
@@ -62,6 +63,8 @@ import java.util.Map;
  */
 @DoNotStrip
 public class ComponentHost extends Host implements DisappearingHost {
+
+  @IdRes public static final int COMPONENT_NODE_INFO_ID = R.id.component_node_info;
 
   public static final String TEXTURE_TOO_BIG = "TextureTooBig";
   public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
@@ -158,6 +161,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       mViewMountItems.put(index, mountItem);
       mountView((View) content, output.getFlags());
       maybeRegisterTouchExpansion(index, mountItem);
+      maybeRegisterViewForAccessibility(output, (View) content);
     }
 
     mMountItems.put(index, mountItem);
@@ -434,7 +438,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   @Override
   public void setTag(int key, @Nullable Object tag) {
     super.setTag(key, tag);
-    if (key == R.id.component_node_info && tag != null) {
+    if (key == COMPONENT_NODE_INFO_ID && tag != null) {
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
 
       if (mComponentAccessibilityDelegate != null) {
@@ -616,6 +620,32 @@ public class ComponentHost extends Host implements DisappearingHost {
     if (getMountItemCount() == 0) {
       setImplementsVirtualViews(false);
     }
+  }
+
+  private void maybeRegisterViewForAccessibility(final LayoutOutput output, final View view) {
+    Component component = output.getComponent();
+    if (view instanceof ComponentHost) {
+      // We already registered the accessibility delegate when building the host.
+      return;
+    }
+
+    if (component instanceof SpecGeneratedComponent) {
+      // Do not change the current behavior we have for SpecGeneratedComponents.
+      return;
+    }
+
+    NodeInfo nodeInfo = (NodeInfo) view.getTag(COMPONENT_NODE_INFO_ID);
+    if (mIsComponentAccessibilityDelegateSet && nodeInfo != null) {
+      // Check if AccessibilityDelegate is set on the host, it means accessibility is enabled.
+      registerAccessibilityDelegateOnView(view, nodeInfo);
+    }
+  }
+
+  private void registerAccessibilityDelegateOnView(View view, NodeInfo nodeInfo) {
+    ViewCompat.setAccessibilityDelegate(
+        view,
+        new ComponentAccessibilityDelegate(
+            view, nodeInfo, view.isFocusable(), ViewCompat.getImportantForAccessibility(view)));
   }
 
   /**
@@ -935,15 +965,9 @@ public class ComponentHost extends Host implements DisappearingHost {
       if (child instanceof ComponentHost) {
         ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(true);
       } else {
-        final NodeInfo nodeInfo = (NodeInfo) child.getTag(R.id.component_node_info);
+        final NodeInfo nodeInfo = (NodeInfo) child.getTag(COMPONENT_NODE_INFO_ID);
         if (nodeInfo != null) {
-          ViewCompat.setAccessibilityDelegate(
-              child,
-              new ComponentAccessibilityDelegate(
-                  child,
-                  nodeInfo,
-                  child.isFocusable(),
-                  ViewCompat.getImportantForAccessibility(child)));
+          registerAccessibilityDelegateOnView(child, nodeInfo);
         }
       }
     }

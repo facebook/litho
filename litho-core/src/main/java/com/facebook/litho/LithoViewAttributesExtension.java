@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isHostSpec;
+import static com.facebook.litho.ComponentHost.COMPONENT_NODE_INFO_ID;
 import static com.facebook.litho.LithoMountData.isViewClickable;
 import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
@@ -330,14 +331,14 @@ public class LithoViewAttributesExtension
       return;
     }
 
-    view.setTag(R.id.component_node_info, nodeInfo);
+    view.setTag(COMPONENT_NODE_INFO_ID, nodeInfo);
   }
 
   private static void unsetAccessibilityDelegate(View view) {
-    if (!(view instanceof ComponentHost) && view.getTag(R.id.component_node_info) == null) {
+    if (!(view instanceof ComponentHost) && view.getTag(COMPONENT_NODE_INFO_ID) == null) {
       return;
     }
-    view.setTag(R.id.component_node_info, null);
+    view.setTag(COMPONENT_NODE_INFO_ID, null);
     if (!(view instanceof ComponentHost)) {
       ViewCompat.setAccessibilityDelegate(view, null);
     }
