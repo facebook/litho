@@ -187,6 +187,8 @@ public class CommonPropsTest {
         onInitializeAccessibilityNodeInfoHandler = mock(EventHandler.class);
     final EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler =
         mock(EventHandler.class);
+    final EventHandler<OnPopulateAccessibilityNodeEvent> onPopulateAccessibiliNodeHandler =
+        mock(EventHandler.class);
     final EventHandler<OnRequestSendAccessibilityEventEvent>
         onRequestSendAccessibilityEventHandler = mock(EventHandler.class);
     final EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler =
@@ -202,6 +204,7 @@ public class CommonPropsTest {
     mCommonProps.onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
     mCommonProps.onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
     mCommonProps.onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    mCommonProps.onPopulateAccessibilityNodeHandler(onPopulateAccessibiliNodeHandler);
     mCommonProps.onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
     mCommonProps.performAccessibilityActionHandler(performAccessibilityActionHandler);
     mCommonProps.sendAccessibilityEventHandler(sendAccessibilityEventHandler);
@@ -550,6 +553,8 @@ public class CommonPropsTest {
         onInitializeAccessibilityNodeInfoHandler = new EventHandler<>(content, 3);
     final EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler =
         new EventHandler<>(content, 3);
+    final EventHandler<OnPopulateAccessibilityNodeEvent> onPopulateAccessibilityNodeHandler =
+        new EventHandler<>(content, 3);
     final EventHandler<OnRequestSendAccessibilityEventEvent>
         onRequestSendAccessibilityEventHandler = new EventHandler<>(content, 3);
     final EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler =
@@ -566,6 +571,7 @@ public class CommonPropsTest {
 
     commonProps.onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
     commonProps.onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    commonProps.onPopulateAccessibilityNodeHandler(onPopulateAccessibilityNodeHandler);
 
     commonProps.onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
     commonProps.performAccessibilityActionHandler(performAccessibilityActionHandler);

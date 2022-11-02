@@ -128,6 +128,8 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private static final int PFLAG_ROTATION_Y_IS_SET = 1 << 26;
   private static final int PFLAG_AMBIENT_SHADOW_COLOR_IS_SET = 1 << 27;
   private static final int PFLAG_SPOT_SHADOW_COLOR_IS_SET = 1 << 28;
+  // When this flag is set, onPopulateAccessibilityNodeHandler was explicitly set on this node
+  private static final int PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET = 1 << 29;
 
   private @Nullable CharSequence mContentDescription;
   private @Nullable Object mViewTag;
@@ -158,6 +160,8 @@ public class NodeInfo implements Equivalence<NodeInfo> {
       mOnInitializeAccessibilityEventHandler;
   private @Nullable EventHandler<OnPopulateAccessibilityEventEvent>
       mOnPopulateAccessibilityEventHandler;
+  private @Nullable EventHandler<OnPopulateAccessibilityNodeEvent>
+      mOnPopulateAccessibilityNodeHandler;
   private @Nullable EventHandler<OnInitializeAccessibilityNodeInfoEvent>
       mOnInitializeAccessibilityNodeInfoHandler;
   private @Nullable EventHandler<OnRequestSendAccessibilityEventEvent>
@@ -393,6 +397,17 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     return mOnPopulateAccessibilityEventHandler;
   }
 
+  public void setOnPopulateAccessibilityNodeHandler(
+      @Nullable EventHandler<OnPopulateAccessibilityNodeEvent> onPopulateAccessibilityNodeHandler) {
+    mPrivateFlags |= PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET;
+    mOnPopulateAccessibilityNodeHandler = onPopulateAccessibilityNodeHandler;
+  }
+
+  public @Nullable EventHandler<OnPopulateAccessibilityNodeEvent>
+      getOnPopulateAccessibilityNodeHandler() {
+    return mOnPopulateAccessibilityNodeHandler;
+  }
+
   public void setOnRequestSendAccessibilityEventHandler(
       @Nullable
           EventHandler<OnRequestSendAccessibilityEventEvent>
@@ -444,6 +459,7 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     return mOnInitializeAccessibilityEventHandler != null
         || mOnInitializeAccessibilityNodeInfoHandler != null
         || mOnPopulateAccessibilityEventHandler != null
+        || mOnPopulateAccessibilityNodeHandler != null
         || mOnRequestSendAccessibilityEventHandler != null
         || mPerformAccessibilityActionHandler != null
         || mDispatchPopulateAccessibilityEventHandler != null
@@ -635,6 +651,9 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     }
     if ((mPrivateFlags & PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       target.setOnPopulateAccessibilityEventHandler(mOnPopulateAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET) != 0) {
+      target.setOnPopulateAccessibilityNodeHandler(mOnPopulateAccessibilityNodeHandler);
     }
     if ((mPrivateFlags & PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       target.setOnRequestSendAccessibilityEventHandler(mOnRequestSendAccessibilityEventHandler);

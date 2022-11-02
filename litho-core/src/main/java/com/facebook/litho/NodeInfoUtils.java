@@ -105,6 +105,11 @@ public class NodeInfoUtils {
     }
 
     if (!CommonUtils.isEquivalentTo(
+        x.getOnPopulateAccessibilityNodeHandler(), y.getOnPopulateAccessibilityNodeHandler())) {
+      return false;
+    }
+
+    if (!CommonUtils.isEquivalentTo(
         x.getOnRequestSendAccessibilityEventHandler(),
         y.getOnRequestSendAccessibilityEventHandler())) {
       return false;

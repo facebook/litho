@@ -174,6 +174,17 @@ public class NodeInfoTest {
   }
 
   @Test
+  public void testOnPopulateAccessibilityNodeHandler() {
+    EventHandler<OnPopulateAccessibilityNodeEvent> handler = new EventHandler<>(null, 1);
+
+    mNodeInfo.setOnPopulateAccessibilityNodeHandler(handler);
+    assertThat(handler).isSameAs(mNodeInfo.getOnPopulateAccessibilityNodeHandler());
+
+    mNodeInfo.copyInto(mUpdatedNodeInfo);
+    assertThat(handler).isSameAs(mUpdatedNodeInfo.getOnPopulateAccessibilityNodeHandler());
+  }
+
+  @Test
   public void testOnInitializeAccessibilityNodeInfoHandler() {
     EventHandler<OnInitializeAccessibilityNodeInfoEvent> handler = new EventHandler<>(null, 1);
 
@@ -283,6 +294,13 @@ public class NodeInfoTest {
     mNodeInfo.setOnPopulateAccessibilityEventHandler(
         new EventHandler<OnPopulateAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
+  }
+
+  @Test
+  public void testOnPopulateAccessibilityNodeHandlerFlag() {
+    mNodeInfo.setOnPopulateAccessibilityNodeHandler(
+        new EventHandler<OnPopulateAccessibilityNodeEvent>(null, 1));
+    testFlagIsSetThenClear(mNodeInfo, "PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET");
   }
 
   @Test

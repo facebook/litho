@@ -506,6 +506,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         .setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
   }
 
+  public void onPopulateAccessibilityNodeHandler(
+      @Nullable EventHandler<OnPopulateAccessibilityNodeEvent> onPopulateAccessibilityNodeHandler) {
+    getOrCreateNodeInfo().setOnPopulateAccessibilityNodeHandler(onPopulateAccessibilityNodeHandler);
+  }
+
   public void onRequestSendAccessibilityEventHandler(
       @Nullable
           EventHandler<OnRequestSendAccessibilityEventEvent>

@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.OnPopulateAccessibilityEventEvent
+import com.facebook.litho.OnPopulateAccessibilityNodeEvent
 import com.facebook.litho.OnRequestSendAccessibilityEventEvent
 import com.facebook.litho.PerformAccessibilityActionEvent
 import com.facebook.litho.SendAccessibilityEventEvent
@@ -47,6 +48,7 @@ internal enum class AccessibilityField {
   ON_INITIALIZE_ACCESSIBILITY_EVENT,
   ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
   ON_POPULATE_ACCESSIBILITY_EVENT,
+  ON_POPULATE_ACCESSIBILITY_NODE,
   ON_REQUEST_SEND_ACCESSIBILITY_EVENT,
   PERFORM_ACCESSIBILITY_ACTION,
   SEND_ACCESSIBILITY_EVENT,
@@ -76,6 +78,9 @@ internal data class AccessibilityStyleItem(val field: AccessibilityField, val va
       AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT ->
           commonProps.onPopulateAccessibilityEventHandler(
               eventHandler(value as (OnPopulateAccessibilityEventEvent) -> Unit))
+      AccessibilityField.ON_POPULATE_ACCESSIBILITY_NODE ->
+          commonProps.onPopulateAccessibilityNodeHandler(
+              eventHandler(value as (OnPopulateAccessibilityNodeEvent) -> Unit))
       AccessibilityField.ON_REQUEST_SEND_ACCESSIBILITY_EVENT ->
           commonProps.onRequestSendAccessibilityEventHandler(
               eventHandler(value as (OnRequestSendAccessibilityEventEvent) -> Unit))
@@ -171,6 +176,14 @@ inline fun Style.onPopulateAccessibilityEvent(
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_POPULATE_ACCESSIBILITY_EVENT, onPopulateAccessibilityEventHandler)
+
+/** Gives a chance to the component to implement its own accessibility support. */
+inline fun Style.onPopulateAccessibilityNode(
+    noinline onPopulateAccessibilityNodeHandler: (OnPopulateAccessibilityNodeEvent) -> Unit
+): Style =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_POPULATE_ACCESSIBILITY_NODE, onPopulateAccessibilityNodeHandler)
 
 /**
  * Called when a child of the host View has requested sending an [AccessibilityEvent] and gives an

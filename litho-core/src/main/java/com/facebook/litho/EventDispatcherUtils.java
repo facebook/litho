@@ -185,6 +185,23 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(eventHandler, onPopulateAccessibilityEventEvent);
   }
 
+  static void dispatchOnPopulateAccessibilityNode(
+      EventHandler<OnPopulateAccessibilityNodeEvent> eventHandler,
+      View host,
+      AccessibilityNodeInfoCompat info) {
+    assertMainThread();
+
+    final OnPopulateAccessibilityNodeEvent onPopulateAccessibilityNodeEvent =
+        new OnPopulateAccessibilityNodeEvent();
+    onPopulateAccessibilityNodeEvent.host = host;
+    onPopulateAccessibilityNodeEvent.accessibilityNode = info;
+
+    final EventDispatcher eventDispatcher =
+        Preconditions.checkNotNull(eventHandler.dispatchInfo.hasEventDispatcher)
+            .getEventDispatcher();
+    eventDispatcher.dispatchOnEvent(eventHandler, onPopulateAccessibilityNodeEvent);
+  }
+
   static boolean dispatchOnRequestSendAccessibilityEvent(
       EventHandler<OnRequestSendAccessibilityEventEvent> eventHandler,
       ViewGroup host,

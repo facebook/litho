@@ -84,6 +84,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     if (mNodeInfo != null && mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler() != null) {
       EventDispatcherUtils.dispatchOnInitializeAccessibilityNodeInfoEvent(
           mNodeInfo.getOnInitializeAccessibilityNodeInfoHandler(), host, node, mSuperDelegate);
+      dispatchOnPopulateAccessibilityNodeEvent(host, node);
     } else if (mountItem != null) {
       super.onInitializeAccessibilityNodeInfo(host, node);
       // Coalesce the accessible mount item's information with the
@@ -93,6 +94,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       final Component component = layoutOutput.getComponent();
       final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       try {
+        dispatchOnPopulateAccessibilityNodeEvent(host, node);
         component.onPopulateAccessibilityNode(
             scopedContext, host, node, getInterStageProps(mountItem));
       } catch (Exception e) {
@@ -123,6 +125,14 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         && mNodeInfo.getAccessibilityHeadingState() != NodeInfo.ACCESSIBILITY_HEADING_UNSET) {
       node.setHeading(
           mNodeInfo.getAccessibilityHeadingState() == NodeInfo.ACCESSIBILITY_HEADING_SET_TRUE);
+    }
+  }
+
+  private void dispatchOnPopulateAccessibilityNodeEvent(
+      View host, AccessibilityNodeInfoCompat node) {
+    if (mNodeInfo != null && mNodeInfo.getOnPopulateAccessibilityNodeHandler() != null) {
+      EventDispatcherUtils.dispatchOnPopulateAccessibilityNode(
+          mNodeInfo.getOnPopulateAccessibilityNodeHandler(), host, node);
     }
   }
 

@@ -30,6 +30,7 @@ import com.facebook.litho.accessibility.accessibilityRoleDescription
 import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.accessibility.importantForAccessibility
 import com.facebook.litho.accessibility.onInitializeAccessibilityNodeInfo
+import com.facebook.litho.accessibility.onPopulateAccessibilityNode
 import com.facebook.litho.animated.alpha
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
@@ -437,6 +438,7 @@ class MountableComponentsTest {
   @Test
   fun `when a11y props are set on style it should set them on the rendered content`() {
     val eventHandler: EventHandler<OnInitializeAccessibilityNodeInfoEvent> = mock()
+    val onPopulateAccessibilityNodeHandler: EventHandler<OnPopulateAccessibilityNodeEvent> = mock()
 
     val component =
         TestViewMountableComponent(
@@ -446,7 +448,8 @@ class MountableComponentsTest {
                     .accessibilityRoleDescription("Accessibility Test")
                     .contentDescription("Accessibility Test")
                     .importantForAccessibility(ImportantForAccessibility.YES)
-                    .onInitializeAccessibilityNodeInfo { eventHandler })
+                    .onInitializeAccessibilityNodeInfo { eventHandler }
+                    .onPopulateAccessibilityNode { onPopulateAccessibilityNodeHandler })
 
     // verify that info is set on the LithoView where possible, otherwise on LithoNode
     val testView = lithoViewRule.render { component }
@@ -458,6 +461,7 @@ class MountableComponentsTest {
     assertThat(testView.lithoView.getChildAt(0).importantForAccessibility)
         .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_YES)
     assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
+    assertThat(nodeInfo?.onPopulateAccessibilityNodeHandler).isNotNull
   }
 
   @Test

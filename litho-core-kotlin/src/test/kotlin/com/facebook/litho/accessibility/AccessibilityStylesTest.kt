@@ -24,6 +24,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.OnInitializeAccessibilityEventEvent
 import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.OnPopulateAccessibilityEventEvent
+import com.facebook.litho.OnPopulateAccessibilityNodeEvent
 import com.facebook.litho.OnRequestSendAccessibilityEventEvent
 import com.facebook.litho.PerformAccessibilityActionEvent
 import com.facebook.litho.Row
@@ -173,6 +174,36 @@ class AccessibilityStylesTest {
     val node = testLithoView.currentRootNode?.node
     val nodeInfo = node?.nodeInfo
     assertThat(nodeInfo?.onPopulateAccessibilityEventHandler).isNotNull
+  }
+
+  /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
+  @Test
+  fun onPopulateAccessibilityNode_whenNotSet_isNotSetOnView() {
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.width(200.px))
+      }
+    }
+    val testLithoView = lithoViewRule.render { TestComponent() }
+    val node = testLithoView.currentRootNode?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onPopulateAccessibilityNodeHandler).isNull()
+  }
+
+  /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
+  @Test
+  fun onPopulateAccessibilityNode_whenSet_isSetOnView() {
+    val eventHandler: EventHandler<OnPopulateAccessibilityNodeEvent> = mock()
+
+    class TestComponentWithHandler : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.onPopulateAccessibilityNode { eventHandler })
+      }
+    }
+    val testLithoView = lithoViewRule.render { TestComponentWithHandler() }
+    val node = testLithoView.currentRootNode?.node
+    val nodeInfo = node?.nodeInfo
+    assertThat(nodeInfo?.onPopulateAccessibilityNodeHandler).isNotNull
   }
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
