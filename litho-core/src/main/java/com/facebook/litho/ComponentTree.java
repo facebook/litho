@@ -2378,7 +2378,7 @@ public class ComponentTree implements LithoLifecycleListener {
     if (isResolveAndLayoutFuturesSplitEnabled) {
       final int syncWidthSpec = !isAsync && output != null ? widthSpec : SIZE_UNINITIALIZED;
       final int syncHeightSpec = !isAsync && output != null ? heightSpec : SIZE_UNINITIALIZED;
-      requestResolveWithSplitFutures(
+      requestRenderWithSplitFutures(
           isAsync,
           output,
           source,
@@ -2412,7 +2412,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  private void requestResolveWithSplitFutures(
+  private void requestRenderWithSplitFutures(
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
@@ -2684,7 +2684,7 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       if (noCurrentResolutionsInProgress) {
-        requestResolveWithSplitFutures(
+        requestRenderWithSplitFutures(
             !isSync,
             output,
             source,
