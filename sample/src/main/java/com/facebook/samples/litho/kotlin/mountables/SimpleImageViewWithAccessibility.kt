@@ -43,7 +43,7 @@ class SimpleImageViewWithAccessibility(private val style: Style? = null) : Mount
                       AccessibilityNodeInfoCompat.ACTION_CLICK, "actionDescriptionText"))
             }
 
-    return MountableRenderResult(SimpleImageViewMountable(), style?.plus(a11y) ?: a11y)
+    return MountableRenderResult(SimpleImageViewMountable(), a11y + style)
   }
 }
 // end_simple_mountable_component_with_a11y_example
