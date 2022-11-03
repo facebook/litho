@@ -22,6 +22,7 @@ import android.content.Context;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -108,7 +109,7 @@ public class FrescoImageSpec {
       @Prop(optional = true) ScalingUtils.ScaleType progressBarImageScaleType,
       @Prop(optional = true, resType = DRAWABLE) Drawable retryImage,
       @Prop(optional = true) ScalingUtils.ScaleType retryImageScaleType,
-      @Prop(optional = true) RoundingParams roundingParams,
+      @Prop(optional = true) @Nullable RoundingParams roundingParams,
       @Prop(optional = true) ColorFilter colorFilter) {
 
     GenericDraweeHierarchy draweeHierarchy = draweeDrawable.getDraweeHierarchy();
