@@ -118,6 +118,14 @@ internal class SampleTextInputMountable(
         newMountable.hint != currentMountable.hint ||
         newMountable.inputBackground != currentMountable.inputBackground
   }
+
+  // start_preallocation_example
+  override fun canPreallocate(): Boolean = true
+
+  override fun poolSize(): Int {
+    return 10
+  }
+  // end_preallocation_example
 }
 
 private fun getBackgroundOrDefault(context: Context, specifiedBackground: Drawable): Drawable? {

@@ -58,14 +58,6 @@ internal class SimpleImageViewMountable() : SimpleMountable<ImageView>(RenderTyp
     }
   }
 
-  // start_preallocation_example
-  override fun canPreallocate(): Boolean = true
-
-  override fun poolSize(): Int {
-    return 10
-  }
-  // end_preallocation_example
-
   override fun mount(c: Context, content: ImageView, layoutData: Any?) {
     content.setImageDrawable(c.resources.getDrawable(R.drawable.ic_launcher))
   }

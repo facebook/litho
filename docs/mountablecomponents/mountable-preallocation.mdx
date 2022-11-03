@@ -30,7 +30,7 @@ If there are memory concerns (especially for memory-consuming content), smaller 
 
 In order for mount content to be pre-allocated, at least the `canPreallocate()` method should be overridden to return `true`. Override `poolSize()` to configure the amount of items in the pool, as shown in the example below:
 
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewComponent.kt start=start_preallocation_example end=end_preallocation_example
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SampleTextInput.kt start=start_preallocation_example end=end_preallocation_example
 ```
 
-For the SimpleImageViewComponent example above, ten instances of ImageView will be created and pre-allocated in the recycling pool.
+For the SampleTextInput component example above, ten instances of EditText will be created and pre-allocated in the recycling pool.
