@@ -19,7 +19,6 @@ package com.facebook.rendercore;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import com.facebook.rendercore.RenderState.LayoutContext;
 
 /**
  * Represents a single node in a RenderCore Tree. A Node has children, base layout information, and

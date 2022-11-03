@@ -23,8 +23,8 @@ import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 class SeekBarMountable(
     private val onProgressChange: (Float) -> Unit,
@@ -65,7 +65,7 @@ class SeekBarMountable(
     }
 
     override fun measure(
-        context: RenderState.LayoutContext<*>,
+        context: LayoutContext<*>,
         widthSpec: Int,
         heightSpec: Int,
         previousLayoutData: Any?

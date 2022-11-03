@@ -73,8 +73,7 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
   }
 
   @Override
-  public final LayoutResult calculateLayout(
-      RenderState.LayoutContext context, int widthSpec, int heightSpec) {
+  public final LayoutResult calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
     final MeasureResult measureResult =
         measure(context, widthSpec, heightSpec, context.consumePreviousLayoutDataForCurrentNode());
 
@@ -109,7 +108,7 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
    * @return a {@link MeasureResult} with the width, height, and optional layout data.
    */
   protected abstract MeasureResult measure(
-      final RenderState.LayoutContext context,
+      final LayoutContext context,
       final int widthSpec,
       final int heightSpec,
       final @Nullable Object previousLayoutData);

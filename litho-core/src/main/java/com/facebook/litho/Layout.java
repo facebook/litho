@@ -28,7 +28,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.RenderState.LayoutContext;
+import com.facebook.rendercore.LayoutContext;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaNode;
 

@@ -34,8 +34,8 @@ import com.facebook.litho.useState
 import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.litho.widget.HorizontalScrollLithoView
 import com.facebook.litho.widget.ScrollStateListener
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 import com.facebook.yoga.YogaDirection
 import kotlin.math.max
 
@@ -127,7 +127,7 @@ internal class HorizontalScrollMountable(
       HorizontalScrollLithoView(context)
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

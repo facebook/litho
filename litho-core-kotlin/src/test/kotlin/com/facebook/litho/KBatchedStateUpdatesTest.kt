@@ -28,8 +28,8 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleText
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -356,7 +356,7 @@ internal class TestTextMountable(private val text: String, private val tag: Stri
   override fun createContent(context: Context): TextView = TextView(context)
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

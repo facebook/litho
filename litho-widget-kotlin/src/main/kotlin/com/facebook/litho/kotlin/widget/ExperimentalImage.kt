@@ -31,8 +31,8 @@ import com.facebook.litho.SizeSpec.UNSPECIFIED
 import com.facebook.litho.Style
 import com.facebook.litho.drawable.DrawableUtils
 import com.facebook.litho.utils.MeasureUtils
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 /**
  * A component to render a [Drawable].
@@ -67,7 +67,7 @@ internal class ImageMountable(
   }
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

@@ -31,8 +31,8 @@ import com.facebook.litho.widget.CardClipDrawable.NONE
 import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
 import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
 import com.facebook.litho.widget.TransparencyEnabledCardClipDrawable
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 
 private const val DEFAULT_BACKGROUND_COLOR = Color.WHITE
 private const val DEFAULT_CLIPPING_COLOR = Color.TRANSPARENT
@@ -93,7 +93,7 @@ internal class TransparencyEnabledCardClipMountable(
       TransparencyEnabledCardClipDrawable()
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?

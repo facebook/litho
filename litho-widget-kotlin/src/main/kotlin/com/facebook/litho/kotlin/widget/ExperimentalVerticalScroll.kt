@@ -40,8 +40,8 @@ import com.facebook.litho.widget.LithoScrollView
 import com.facebook.litho.widget.R
 import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.litho.widget.VerticalScrollEventsController
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.RenderState
 import kotlin.math.max
 import kotlin.math.min
 
@@ -159,7 +159,7 @@ internal class VerticalScrollMountable(
           as LithoScrollView
 
   override fun measure(
-      context: RenderState.LayoutContext<*>,
+      context: LayoutContext<*>,
       widthSpec: Int,
       heightSpec: Int,
       previousLayoutData: Any?
