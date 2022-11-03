@@ -12,9 +12,18 @@ Unlike MountSpecs, Mountable Components consist of two separate pieces:
 
 The following two sections contain information on how to migrate MountSpec static lifecycle methods into a Mountable Component `render()` and the `Mountable` it returns. The [Cheatsheet](mountable-cheatsheet.mdx) can also be consulted for a set of links for the migration of individual aspects of existing code.
 
-:::note
-Before you start migrating your MountSpec, make sure to go through the setup steps outlined [here](../kotlin/setup-and-intro.mdx).
-:::
+## Setup - Adding Dependencies
+
+To use the Kotlin Litho API, you'll need to add the following dependencies into your BUCK file:
+
+```python title="BUCK"
+deps = [
+    "//fbandroid/libraries/components:litho_core_kotlin",
+    "//fbandroid/libraries/components/litho-widget-kotlin/src/main/kotlin/com/facebook/litho/kotlin/widget:widget", # for widgets
+],
+```
+
+More details on the setup steps are outlined in the [Introduction and Setup](../kotlin/setup-and-intro.mdx) page.
 
 ## Migrating parts belonging to Mountable Component `render()` method
 
