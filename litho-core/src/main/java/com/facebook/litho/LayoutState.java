@@ -136,7 +136,7 @@ public class LayoutState
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
-  private @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
+  private @Nullable List<ScopedComponentInfo> mScopedSpecComponentInfos;
 
   private final ComponentContext mContext;
 
@@ -236,7 +236,7 @@ public class LayoutState
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mTreeState = treeState;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
-    mScopedComponentInfos = new ArrayList<>();
+    mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
 
     mAccessibilityManager =
@@ -259,7 +259,7 @@ public class LayoutState
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mTreeState = treeState;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
-    mScopedComponentInfos = new ArrayList<>();
+    mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
 
     mTreeState = treeState;
@@ -961,8 +961,9 @@ public class LayoutState
       // calculation.
       final ComponentContext delegateScopedContext = node.getComponentContextAt(i);
       if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
-        if (layoutState.mScopedComponentInfos != null) {
-          layoutState.mScopedComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
+        if (layoutState.mScopedSpecComponentInfos != null
+            && delegate instanceof SpecGeneratedComponent) {
+          layoutState.mScopedSpecComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
         }
       }
       if (delegateKey != null || delegate.hasHandle()) {
@@ -1002,11 +1003,11 @@ public class LayoutState
   }
 
   @Nullable
-  List<ScopedComponentInfo> consumeScopedComponentInfos() {
-    final List<ScopedComponentInfo> scopedComponentInfos = mScopedComponentInfos;
-    mScopedComponentInfos = null;
+  List<ScopedComponentInfo> consumeScopedSpecComponentInfos() {
+    final List<ScopedComponentInfo> scopedSpecComponentInfos = mScopedSpecComponentInfos;
+    mScopedSpecComponentInfos = null;
 
-    return scopedComponentInfos;
+    return scopedSpecComponentInfos;
   }
 
   @Nullable

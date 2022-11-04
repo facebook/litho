@@ -2866,8 +2866,8 @@ public class ComponentTree implements LithoLifecycleListener {
       final boolean isCreateLayoutInProgress,
       final @Nullable TreeProps treeProps,
       final Component rootComponent) {
-    List<ScopedComponentInfo> scopedComponentInfos = null;
-
+    List<ScopedComponentInfo> scopedSpecComponentInfos = null;
+    List<MeasureListener> measureListeners = null;
     int rootWidth = 0;
     int rootHeight = 0;
     boolean committedNewLayout = false;
@@ -2892,7 +2892,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
       final TreeState localTreeState = layoutState.consumeTreeState();
       if (committedNewLayout) {
-        scopedComponentInfos = layoutState.consumeScopedComponentInfos();
+        scopedSpecComponentInfos = layoutState.consumeScopedSpecComponentInfos();
         if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
@@ -2919,6 +2919,8 @@ public class ComponentTree implements LithoLifecycleListener {
         }
 
         bindHandlesToComponentTree(this, layoutState);
+
+        measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
       }
 
       if (mTreeState != null && localTreeState != null) {
@@ -2941,11 +2943,6 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (committedNewLayout) {
-      final List<MeasureListener> measureListeners;
-      synchronized (this) {
-        measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
-      }
-
       if (measureListeners != null) {
         for (MeasureListener measureListener : measureListeners) {
           measureListener.onSetRootAndSizeSpec(
@@ -2956,27 +2953,23 @@ public class ComponentTree implements LithoLifecycleListener {
                   || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
         }
       }
-    }
 
-    if (scopedComponentInfos != null) {
-      bindEventAndTriggerHandlers(scopedComponentInfos);
-    }
+      bindEventAndTriggerHandlers(scopedSpecComponentInfos);
 
-    if (committedNewLayout) {
       postBackgroundLayoutStateUpdated();
-    }
 
-    if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
+      if (mPreAllocateMountContentHandler != null) {
+        mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
 
-      String tag = EMPTY_STRING;
-      if (mPreAllocateMountContentHandler.isTracing()) {
-        tag = "preallocateLayout ";
-        if (rootComponent != null) {
-          tag = tag + rootComponent.getSimpleName();
+        String tag = EMPTY_STRING;
+        if (mPreAllocateMountContentHandler.isTracing()) {
+          tag = "preallocateLayout ";
+          if (rootComponent != null) {
+            tag = tag + rootComponent.getSimpleName();
+          }
         }
+        mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
       }
-      mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
     }
   }
 
@@ -3080,18 +3073,19 @@ public class ComponentTree implements LithoLifecycleListener {
         root);
   }
 
-  private void bindEventAndTriggerHandlers(final List<ScopedComponentInfo> scopedComponentInfos) {
+  private void bindEventAndTriggerHandlers(
+      final @Nullable List<ScopedComponentInfo> scopedSpecComponentInfos) {
 
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
-      for (ScopedComponentInfo scopedComponentInfo : scopedComponentInfos) {
-        final ComponentContext scopedContext = scopedComponentInfo.getContext();
-        final Component component = scopedComponentInfo.getComponent();
-        if (component instanceof SpecGeneratedComponent) {
+      if (scopedSpecComponentInfos != null) {
+        for (ScopedComponentInfo scopedSpecComponentInfo : scopedSpecComponentInfos) {
+          final SpecGeneratedComponent component =
+              (SpecGeneratedComponent) scopedSpecComponentInfo.getComponent();
+          final ComponentContext scopedContext = scopedSpecComponentInfo.getContext();
           mEventHandlersController.bindEventHandlers(
               scopedContext, component, scopedContext.getGlobalKey());
-          ((SpecGeneratedComponent) component)
-              .recordEventTrigger(scopedContext, mEventTriggersContainer);
+          component.recordEventTrigger(scopedContext, mEventTriggersContainer);
         }
       }
     }
