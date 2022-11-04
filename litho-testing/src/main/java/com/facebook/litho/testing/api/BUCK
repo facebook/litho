@@ -1,0 +1,29 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_KOTLIN_TARGET",
+    "LITHO_SECTIONS_TARGET",
+    "LITHO_TESTING_COMPONENTS_FINDER_TARGET",
+    "LITHO_TESTING_WHITEBOX_TARGET",
+    "LITHO_WIDGET_KOTLIN_COLLECTION_TARGET",
+    "LITHO_WIDGET_KOTLIN_TARGET",
+    "litho_android_test_library",
+)
+
+litho_android_test_library(
+    name = "api",
+    visibility = [
+        "//fbandroid/libraries/components/litho-testing/src/test/java/com/facebook/litho/testing/api:api",
+    ],
+    deps = [
+        LITHO_KOTLIN_TARGET,
+        LITHO_WIDGET_KOTLIN_TARGET,
+        LITHO_WIDGET_KOTLIN_COLLECTION_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
+        LITHO_TESTING_COMPONENTS_FINDER_TARGET,
+        LITHO_SECTIONS_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_TESTING_WHITEBOX_TARGET,
+    ],
+)
