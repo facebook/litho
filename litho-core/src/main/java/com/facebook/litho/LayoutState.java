@@ -547,14 +547,15 @@ public class LayoutState
   @Nullable
   private static DebugHierarchy.Node getDebugHierarchy(
       @Nullable DebugHierarchy.Node parentHierarchy, final LithoNode node) {
+    if (!ComponentsConfiguration.isDebugHierarchyEnabled) {
+      return null;
+    }
     List<ScopedComponentInfo> infos = node.getScopedComponentInfos();
     List<Component> components = new ArrayList<>(infos.size());
     for (ScopedComponentInfo info : infos) {
       components.add(info.getComponent());
     }
-    return ComponentsConfiguration.isDebugHierarchyEnabled
-        ? DebugHierarchy.newNode(parentHierarchy, node.getTailComponent(), components)
-        : null;
+    return DebugHierarchy.newNode(parentHierarchy, node.getTailComponent(), components);
   }
 
   /**
