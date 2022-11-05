@@ -1,0 +1,61 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("@fbsource//tools/build_defs/android:litho_jni.bzl", "LITHO_JNI_DEPS")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_KOTLIN_TARGET",
+    "LITHO_MOCKITO_KOTLIN_V2_TARGET",
+    "LITHO_RENDERCORE_TARGET",
+    "LITHO_RENDERCORE_TESTING_TARGET",
+    "LITHO_ROBOLECTRIC_V4_TARGET",
+    "LITHO_SOLOADER_TARGET",
+    "LITHO_STATS_TARGET",
+    "LITHO_TESTING_ASSERTJ_TARGET",
+    "LITHO_TESTING_CORE_TARGET",
+    "LITHO_TESTING_VIEWTREE_TARGET",
+    "LITHO_WIDGET_KOTLIN_COLLECTION_TARGET",
+    "LITHO_WIDGET_KOTLIN_TARGET",
+    "LITHO_YOGA_TARGET",
+    "litho_robolectric4_test",
+    "make_dep_path",
+)
+
+litho_robolectric4_test(
+    name = "litho",
+    srcs = glob(
+        ["**/*.kt"],
+    ),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    jni_deps = LITHO_JNI_DEPS,
+    provided_deps = [
+        LITHO_ROBOLECTRIC_V4_TARGET,
+    ],
+    source = "8",
+    target = "8",
+    deps = [
+        LITHO_RENDERCORE_TARGET,
+        LITHO_TESTING_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_KOTLIN_TARGET,
+        LITHO_MOCKITO_KOTLIN_V2_TARGET,
+        LITHO_RENDERCORE_TESTING_TARGET,
+        LITHO_WIDGET_KOTLIN_COLLECTION_TARGET,
+        LITHO_WIDGET_KOTLIN_TARGET,
+        LITHO_SOLOADER_TARGET,
+        LITHO_STATS_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_TESTING_CORE_TARGET,
+        LITHO_TESTING_VIEWTREE_TARGET,
+        "//fbandroid/libraries/components/litho-live-data/src/main/kotlin/com/facebook/litho:litho-live-data",
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+    ],
+)

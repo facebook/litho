@@ -37,9 +37,11 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class AOSPLithoLifecycleProvider implements LithoLifecycleProvider, LifecycleObserver {
   private LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
+  private LifecycleOwner mLifecycleOwner;
 
   public AOSPLithoLifecycleProvider(LifecycleOwner lifecycleOwner) {
     mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
+    mLifecycleOwner = lifecycleOwner;
     lifecycleOwner.getLifecycle().addObserver(this);
   }
 
@@ -76,5 +78,9 @@ public class AOSPLithoLifecycleProvider implements LithoLifecycleProvider, Lifec
   @OnLifecycleEvent(ON_DESTROY)
   private void onDestroy() {
     moveToLifecycle(DESTROYED);
+  }
+
+  public LifecycleOwner getLifecycleOwner() {
+    return mLifecycleOwner;
   }
 }

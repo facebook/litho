@@ -44,14 +44,15 @@ android {
 dependencies {
     implementation project(':litho-core')
     implementation project(':litho-core-kotlin')
-    implementation project(':litho-widget')
-    implementation project(':litho-widget-kotlin')
-    implementation project(':litho-fresco')
-    implementation project(':litho-fresco-kotlin')
-    implementation project(':litho-sections-core')
-    implementation project(':litho-sections-widget')
     implementation project(':litho-editor-core')
     implementation project(':litho-editor-flipper')
+    implementation project(':litho-fresco')
+    implementation project(':litho-fresco-kotlin')
+    implementation project(':litho-live-data')
+    implementation project(':litho-sections-core')
+    implementation project(':litho-sections-widget')
+    implementation project(':litho-widget')
+    implementation project(':litho-widget-kotlin')
     compileOnly project(':litho-sections-annotations')
     kapt project(':litho-processor')
     kapt project(':litho-sections-processor')
@@ -75,6 +76,7 @@ dependencies {
     implementation deps.supportSwipeRefresh
     implementation deps.supportTransition
     implementation deps.archLifecycle
+    implementation deps.liveData
 
 
     // Integration test only

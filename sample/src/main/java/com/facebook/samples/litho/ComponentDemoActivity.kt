@@ -17,6 +17,7 @@
 package com.facebook.samples.litho
 
 import android.os.Bundle
+import com.facebook.litho.AOSPLithoLifecycleProvider
 import com.facebook.litho.LithoView
 import com.facebook.samples.litho.Demos.SingleDemo
 import java.lang.RuntimeException
@@ -28,13 +29,14 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     if (model !is SingleDemo || (model.componentCreator == null && model.component == null)) {
       throw RuntimeException("Invalid model: $model")
     }
-    val lithoView = LithoView(this)
+
     val componentCreator = model.componentCreator
     if (componentCreator != null) {
+      val lithoView = LithoView(this)
       lithoView.setComponent(componentCreator.create(lithoView.componentContext))
     } else {
-      lithoView.setComponent(model.component)
+      val lithoView = LithoView.create(this, model.component, AOSPLithoLifecycleProvider(this))
+      setContentView(lithoView)
     }
-    setContentView(lithoView)
   }
 }

@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
+import com.facebook.litho.LithoLifecycleProvider
 import com.facebook.litho.LithoView
 import com.facebook.litho.componentsfinder.findAllComponentsInLithoView
 import com.facebook.litho.componentsfinder.findComponentInLithoView
@@ -71,13 +72,17 @@ import org.robolectric.Shadows
 class TestLithoView
 internal constructor(
     val context: ComponentContext,
-    val componentsConfiguration: ComponentsConfiguration? = null
+    val componentsConfiguration: ComponentsConfiguration? = null,
+    private val lithoLifecycleProvider: LithoLifecycleProvider? = null
 ) {
   val componentTree: ComponentTree
     get() {
       if (_componentTree == null) {
         _componentTree =
-            ComponentTree.create(context).componentsConfiguration(componentsConfiguration).build()
+            ComponentTree.create(context)
+                .withLithoLifecycleProvider(lithoLifecycleProvider)
+                .componentsConfiguration(componentsConfiguration)
+                .build()
       }
       return _componentTree ?: throw AssertionError("Set to null by another thread")
     }

@@ -54,6 +54,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
@@ -187,6 +188,12 @@ public class ComponentTree implements LithoLifecycleListener {
     }
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
+
+    if (lifecycleProvider instanceof AOSPLithoLifecycleProvider) {
+      setInternalTreeProp(
+          LifecycleOwner.class,
+          ((AOSPLithoLifecycleProvider) lifecycleProvider).getLifecycleOwner());
+    }
   }
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
@@ -1814,6 +1821,24 @@ public class ComponentTree implements LithoLifecycleListener {
             STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD + attribution,
             message);
       }
+    }
+  }
+
+  /**
+   * Stores a tree property to be used in the context of this {@link ComponentTree}, where it will
+   * associate the given key to its value.
+   *
+   * <p>It will make sure that the tree properties are properly cloned and stored.
+   */
+  private void setInternalTreeProp(Class key, Object value) {
+    if (!mContext.isParentTreePropsCloned()) {
+      mContext.setTreeProps(TreeProps.acquire(mContext.getTreeProps()));
+      mContext.setParentTreePropsCloned(true);
+    }
+
+    TreeProps treeProps = mContext.getTreeProps();
+    if (treeProps != null) {
+      treeProps.put(key, value);
     }
   }
 

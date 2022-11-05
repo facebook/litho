@@ -117,6 +117,7 @@ import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleCompon
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.controllers.ControllersExampleComponent
+import com.facebook.samples.litho.kotlin.observability.UseLiveDataComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
@@ -285,8 +286,12 @@ class Demos {
                                 component = TooltipTriggerExampleKComponent()))),
                     DemoGrouping(
                         name = "Logging",
+                        listOf(SingleDemo(name = " Logging", klass = LoggingActivity::class.java))),
+                    DemoGrouping(
+                        name = "Observability",
                         listOf(
-                            SingleDemo(name = " Logging", klass = LoggingActivity::class.java))))),
+                            SingleDemo(
+                                name = "useLiveData", component = UseLiveDataComponent()))))),
             DemoList(
                 name = "Java API Demos",
                 listOf(

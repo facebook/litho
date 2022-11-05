@@ -1,0 +1,22 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_JAVA_TARGET",
+    "LITHO_KOTLIN_TARGET",
+    "litho_android_library",
+)
+
+litho_android_library(
+    name = "litho-live-data",
+    srcs = glob(["**/*.kt"]),
+    autoglob = False,
+    labels = ["supermodule:android/default/litho.core"],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_KOTLIN_TARGET,
+        LITHO_JAVA_TARGET,
+        "//fbandroid/third-party/android/androidx:lifecycle-common",
+        "//fbandroid/third-party/android/androidx:lifecycle-livedata-ktx",
+    ],
+)
