@@ -31,6 +31,7 @@ import com.facebook.litho.livedata.useLiveData
 import com.facebook.litho.sp
 import com.facebook.litho.view.onClick
 
+// start_example
 internal class UseLiveDataComponent(private val viewModel: FakeViewModel = FakeViewModel()) :
     KComponent() {
 
@@ -46,6 +47,7 @@ internal class UseLiveDataComponent(private val viewModel: FakeViewModel = FakeV
     }
   }
 }
+// end_example
 
 private class HeaderComponent(private val name: String) : KComponent() {
 

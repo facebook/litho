@@ -1,0 +1,49 @@
+---
+id: use-live-data 
+title: useLiveData 
+description: How does Litho support LiveData
+keywords:
+ - LiveData
+ - useLiveData
+---
+
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+import {FbInternalOnly} from 'docusaurus-plugin-internaldocs-fb/internal'
+
+The `useLiveData` hook provides support to observe `LiveData` updates inside a `Component`.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/observability/UseLiveDataComponent.kt  start=start_example end=end_example
+```
+
+This hook will start observing the given `LiveData` and return its latest value every time it changes. The values observed are internally represented as Litho's `State`, hence it will trigger a  new layout calculation for any `LiveData` value change.
+
+### Integrating Litho with the `LifecycleOwner`
+
+A core principle for `LiveData` observation is the `LifecycleOwner`, which defines at which points the Observer can listen to value changes. In order to use `useLiveData`, you **must** create your `LithoView` with the `AOSPLithoLifecycleProvider` and  pass the appropriate `LifecycleOwner` to it. This can be done as in the sample below:
+:::
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/documentation/LithoViewCreationFragment.kt  start=start_example end=end_example
+```
+
+
+The `LiveData` observation will respect the `LifecycleOwner` lifecycle. Therefore, it will not  consume updates if the `Lifecycle.State` is not at least `Lifecycle.State.STARTED`, and it will
+automatically stop being observed if the given `LifecycleOwner` moves to `Lifecycle.State.DESTROYED`.
+
+### Dependencies
+
+In gradle, you should add the following dependency to the `build.gradle` file:
+
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
+  implementation 'com.facebook.litho:litho-live-data:{{site.lithoVersion}}'
+}
+`} />
+
+<FbInternalOnly>
+
+In buck, you should add the following dependency to your BUCK file:
+
+```buck
+//fbandroid/libraries/components/litho-live-data/src/main/kotlin/com/facebook/litho:live-live-data
+```
+</FbInternalOnly>
