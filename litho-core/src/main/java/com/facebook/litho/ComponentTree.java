@@ -2563,7 +2563,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     treeState.registerRenderState();
 
-    final @Nullable LithoResolutionResult resolutionResult =
+    final TreeFuture.TreeFutureResult<LithoResolutionResult> resolutionResultHolder =
         trackAndRunTreeFuture(
             new RenderTreeFuture(
                 context,
@@ -2579,6 +2579,8 @@ public class ComponentTree implements LithoLifecycleListener {
             mResolvedResultFutureLock,
             mFutureExecutionListener);
 
+    final @Nullable LithoResolutionResult resolutionResult = resolutionResultHolder.result;
+
     if (resolutionResult == null) {
       if (!isReleased()
           && isFromSyncLayout(source)
@@ -2586,6 +2588,8 @@ public class ComponentTree implements LithoLifecycleListener {
         final String errorMessage =
             "ResolutionResult is null, but only async operations can return a null ResolutionResult. Source: "
                 + layoutSourceToString(source)
+                + ", message: "
+                + resolutionResultHolder.message
                 + ", current thread: "
                 + Thread.currentThread().getName()
                 + ". Root: "
@@ -2739,7 +2743,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     resolutionResult.treeState.registerLayoutState();
 
-    final LayoutState layoutState =
+    final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder =
         trackAndRunTreeFuture(
             new LayoutTreeFuture(
                 resolutionResult,
@@ -2755,11 +2759,15 @@ public class ComponentTree implements LithoLifecycleListener {
             mLayoutStateFutureLock,
             mFutureExecutionListener);
 
+    final @Nullable LayoutState layoutState = layoutStateHolder.result;
+
     if (layoutState == null) {
       if (!isReleased() && isSync) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
+                + ", message: "
+                + layoutStateHolder.message
                 + ", current thread: "
                 + Thread.currentThread().getName()
                 + ". Root: "
@@ -2816,16 +2824,16 @@ public class ComponentTree implements LithoLifecycleListener {
    * @param futureExecutionListener optional listener that will be invoked just before the future is
    *     run
    * @param <T> The generic type of the provided future & expected result
-   * @return The result of running the future, or null if an equivalent future is already running
-   *     and the provided source is async.
+   * @return The result holder of running the future. It will contain the result if there were no
+   *     issues running the future, or a message explaining why the result is null.
    */
-  @Nullable
-  private static <T extends PotentiallyPartialResult> T trackAndRunTreeFuture(
-      TreeFuture<T> treeFuture,
-      final List<TreeFuture<T>> futureList,
-      final @CalculateLayoutSource int source,
-      final Object mutex,
-      final @Nullable FutureExecutionListener futureExecutionListener) {
+  private static <T extends PotentiallyPartialResult>
+      TreeFuture.TreeFutureResult<T> trackAndRunTreeFuture(
+          TreeFuture<T> treeFuture,
+          final List<TreeFuture<T>> futureList,
+          final @CalculateLayoutSource int source,
+          final Object mutex,
+          final @Nullable FutureExecutionListener futureExecutionListener) {
     final boolean isSync = isFromSyncLayout(source);
     boolean isReusingFuture = false;
     boolean isAborted = false;
@@ -2873,11 +2881,11 @@ public class ComponentTree implements LithoLifecycleListener {
 
     // Aborted run, return null.
     if (isAborted) {
-      return null;
+      return new TreeFuture.TreeFutureResult<T>(TreeFuture.FUTURE_RESULT_NULL_REASON_ABORTED);
     }
 
     // Run and get the result
-    final T result = treeFuture.runAndGet(source);
+    final TreeFuture.TreeFutureResult<T> result = treeFuture.runAndGet(source);
 
     synchronized (mutex) {
       // Unregister for response, decreasing the wait count
@@ -3489,7 +3497,7 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    final LayoutState layoutState = localLayoutStateFuture.runAndGet(source);
+    final LayoutState layoutState = localLayoutStateFuture.runAndGet(source).result;
 
     synchronized (mLayoutStateFutureLock) {
       localLayoutStateFuture.unregisterForResponse();

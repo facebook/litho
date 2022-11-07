@@ -77,7 +77,7 @@ public class RenderTreeFutureTest {
 
         // set the render-result-holder here. It is expected to be null.
         lithoResolutionResultHolder[0] =
-            renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC);
+            renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC).result;
 
         // indicate thread has finished
         backgroundTaskCompleteHolder[1] = true;
@@ -102,7 +102,7 @@ public class RenderTreeFutureTest {
 
     // While still blocked, trigger a sync calculation on the main thread
     final LithoResolutionResult renderResult =
-        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     // Wait for the background thread to finish
     waitForMilestone(
@@ -144,7 +144,7 @@ public class RenderTreeFutureTest {
         new RenderTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
 
     final LithoResolutionResult renderResult =
-        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     assertThat(renderResult).isNotNull();
 
@@ -160,7 +160,7 @@ public class RenderTreeFutureTest {
             0);
 
     final LayoutState layoutState =
-        layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+        layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     assertThat(layoutState).isNotNull();
 

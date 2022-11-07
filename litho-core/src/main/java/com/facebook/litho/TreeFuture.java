@@ -40,6 +40,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Base class that wraps a {@link FutureTask} to allow calculating the same result across threads.
  */
 public abstract class TreeFuture<T extends PotentiallyPartialResult> {
+  public static final String FUTURE_RESULT_NULL_REASON_ABORTED = "Aborted";
+  public static final String FUTURE_RESULT_NULL_REASON_RELEASED = "TreeFuture released";
+  public static final String FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD =
+      "Waiting for sync result from non-main-thread";
+  public static final String FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD =
+      "Resuming partial result skipped due to not being on main-thread";
+
   private static final int INTERRUPTIBLE = 0;
   private static final int INTERRUPTED = 1;
   private static final int NON_INTERRUPTIBLE = 2;
@@ -52,7 +59,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   private volatile @Nullable Object mContinuationToken;
   private volatile boolean mReleased = false;
 
-  protected final RunnableFuture<T> mFutureTask;
+  protected final RunnableFuture<TreeFutureResult<T>> mFutureTask;
   protected final boolean mMoveOperationsBetweenThreads;
 
   public TreeFuture(boolean moveOperationsBetweenThreads) {
@@ -60,20 +67,20 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     this.mFutureTask =
         FutureInstrumenter.instrument(
             new FutureTask<>(
-                new Callable<T>() {
+                new Callable<TreeFutureResult<T>>() {
                   @Override
-                  public @Nullable T call() {
+                  public @Nullable TreeFutureResult<T> call() {
                     synchronized (TreeFuture.this) {
                       if (mReleased) {
-                        return null;
+                        return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RELEASED);
                       }
                     }
                     final T result = calculate();
                     synchronized (TreeFuture.this) {
                       if (mReleased) {
-                        return null;
+                        return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RELEASED);
                       } else {
-                        return result;
+                        return new TreeFutureResult<T>(result);
                       }
                     }
                   }
@@ -238,8 +245,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    * @return The expected result of calculation, or null if this future was released.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  @Nullable
-  T runAndGet(@LayoutState.CalculateLayoutSource final int source) {
+  TreeFutureResult<T> runAndGet(@LayoutState.CalculateLayoutSource final int source) {
     if (mRunningThreadId.compareAndSet(-1, Process.myTid())) {
       mFutureTask.run();
     }
@@ -252,7 +258,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     final boolean shouldWaitForResult = !mFutureTask.isDone() && notRunningOnMyThread;
 
     if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
-      return null;
+      return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD);
     }
 
     if (isMainThread() && shouldWaitForResult) {
@@ -273,7 +279,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       didRaiseThreadPriority = false;
     }
 
-    T result;
+    TreeFutureResult<T> treeFutureResult;
 
     final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
     try {
@@ -290,7 +296,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       //    future itself. If the future is being triggered again, then the cached result is
       //    returned immediately, and it is assumed that this result is partial. The partial result
       //    will then be resumed later in this method.
-      result = mFutureTask.get();
+      treeFutureResult = mFutureTask.get();
 
       onWaitEnd(shouldTrace, false);
 
@@ -303,7 +309,9 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
         }
       }
 
-      if (mInterruptState.get() == INTERRUPTED && result.isPartialResult()) {
+      if (mInterruptState.get() == INTERRUPTED
+          && treeFutureResult.result != null
+          && treeFutureResult.result.isPartialResult()) {
         if (ThreadUtils.isMainThread()) {
           // This means that the bg task was interrupted and it returned a partially resolved
           // InternalNode. We need to finish computing this LayoutState.
@@ -312,7 +320,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
           mContinuationToken = null;
           try {
             // Resuming here. We are on the main-thread.
-            result = resumeCalculation(result);
+            treeFutureResult = new TreeFutureResult<T>(resumeCalculation(treeFutureResult.result));
           } catch (Throwable th) {
             markFailure(token, th);
             throw th;
@@ -322,7 +330,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
         } else {
           // This means that the bg task was interrupted and the UI thread will pick up the rest
           // of the work. No need to return a LayoutState.
-          result = null;
+          treeFutureResult =
+              new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD);
           mContinuationToken = onOfferWorkForContinuation("offerPartial", mInterruptToken);
 
           mInterruptToken = null;
@@ -341,14 +350,35 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       onGetEnd(shouldTrace);
     }
 
-    if (result == null) {
-      return null;
-    }
     synchronized (TreeFuture.this) {
       if (mReleased) {
-        return null;
+        return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RELEASED);
       }
-      return result;
+      return treeFutureResult;
+    }
+  }
+
+  /**
+   * Holder class for tree-future results. When the contained result is null, the string message
+   * will be populated with the result for it being null.
+   */
+  public static class TreeFutureResult<T extends PotentiallyPartialResult> {
+    public final @Nullable T result;
+    public final @Nullable String message;
+
+    /** Initialise the TreeFutureResult with a non-null result. */
+    public TreeFutureResult(T result) {
+      this.result = result;
+      this.message = null;
+    }
+
+    /**
+     * Initialise the TreeFutureResult with a message explaining why the result is null. Use this
+     * ctor when null results should be produced.
+     */
+    public TreeFutureResult(String message) {
+      this.result = null;
+      this.message = message;
     }
   }
 }
