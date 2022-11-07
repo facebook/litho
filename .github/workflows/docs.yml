@@ -14,12 +14,30 @@ jobs:
         uses: actions/checkout@v2
         with:
           persist-credentials: false
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Gradle caches
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+      - name: Gradle wrapper caches
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Install and Build
         run: |
           yarn
           yarn build
         working-directory: website/
+
+      - name: Generate Reference Docs
+        run:
+          ./gradlew dokkaHtmlMultiModule
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.0
