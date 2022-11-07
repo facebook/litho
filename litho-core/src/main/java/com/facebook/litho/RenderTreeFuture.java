@@ -35,8 +35,9 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
       final TreeState treeState,
       final @Nullable LithoNode currentRootNode,
       final @Nullable PerfEvent perfEvent,
-      final int resolveVersion) {
-    super(true);
+      final int resolveVersion,
+      final boolean useCancellableFutures) {
+    super(useCancellableFutures);
 
     mComponentContext = c;
     mComponent = component;

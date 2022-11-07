@@ -2565,14 +2565,24 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final @Nullable LithoResolutionResult resolutionResult =
         trackAndRunTreeFuture(
-            new RenderTreeFuture(context, root, treeState, currentNode, null, localResolveVersion),
+            new RenderTreeFuture(
+                context,
+                root,
+                treeState,
+                currentNode,
+                null,
+                localResolveVersion,
+                mMoveLayoutsBetweenThreads
+                    || mComponentsConfiguration.getUseCancelableLayoutFutures()),
             mResolvedResultFutures,
             source,
             mResolvedResultFutureLock,
             mFutureExecutionListener);
 
     if (resolutionResult == null) {
-      if (!isReleased() && isFromSyncLayout(source)) {
+      if (!isReleased()
+          && isFromSyncLayout(source)
+          && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "ResolutionResult is null, but only async operations can return a null ResolutionResult. Source: "
                 + layoutSourceToString(source)
