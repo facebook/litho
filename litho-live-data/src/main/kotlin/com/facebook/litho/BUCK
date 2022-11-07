@@ -9,7 +9,7 @@ litho_android_library(
     name = "litho-live-data",
     srcs = glob(["**/*.kt"]),
     autoglob = False,
-    labels = ["supermodule:android/default/litho.core"],
+    labels = [],
     visibility = [
         "PUBLIC",
     ],
