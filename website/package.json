@@ -1,11 +1,12 @@
 {
   "scripts": {
     "start": "docusaurus start",
-    "build": "docusaurus build",
+    "build": "docusaurus build && yarn gen-reference-docs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,md,mdx}\"",
-    "prettier:diff": "prettier --config .prettierrc --list-different \"**/*.{js,md,mdx}\""
+    "prettier:diff": "prettier --config .prettierrc --list-different \"**/*.{js,md,mdx}\"",
+    "gen-reference-docs": "sh ./gen_reference_docs.sh"
   },
   "dependencies": {
     "@docusaurus/core": "2.1.0",
