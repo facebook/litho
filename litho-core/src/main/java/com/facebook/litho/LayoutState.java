@@ -1474,6 +1474,15 @@ public class LayoutState
       return;
     }
 
+    if (!layoutState.mMountableOutputs.isEmpty()) {
+      throw new IllegalStateException(
+          "Attempting to collect results on an already populated LayoutState."
+              + "\n Root: "
+              + layoutState.mRootComponentName
+              + "\n Is partial: "
+              + layoutState.mIsPartialLayoutState);
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
