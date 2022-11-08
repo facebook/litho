@@ -31,7 +31,7 @@ An important difference from adding children in a normal container like `Column`
 There are two primary ways to add children to a Lazy Collection:
 
 * `child` - takes a component and an *optional* `id` parameter - if `id` is null or not provided, an id will be generated based on the sequence and type of this child in the list (i.e. 'third Text'). This auto-generated id may be fine, but an explicit one is safer!
-* `children` - takes a lambda mapping a list of data to a list of components and a *mandataory* `id` function that maps data to an id for that component.
+* `children` - takes a lambda mapping a list of data to a list of components and a *mandatory* `id` function that maps data to an id for that component.
 
 For more information on how to make sure updates are applied to your Lazy List correctly and efficiently, see the [Working with Updates docs](lazycollections-working-with-updates.mdx).
 
