@@ -374,13 +374,11 @@ internal class TestTextMountable(private val text: String, private val tag: Stri
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<TextView>,
       newMountable: SimpleMountable<TextView>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    currentMountable as TestTextMountable
     newMountable as TestTextMountable
-    return currentMountable.text != newMountable.text || currentMountable.tag != newMountable.tag
+    return text != newMountable.text || tag != newMountable.tag
   }
 }

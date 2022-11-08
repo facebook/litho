@@ -117,15 +117,13 @@ internal class ImageMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<MatrixDrawable<Drawable>>,
       newMountable: SimpleMountable<MatrixDrawable<Drawable>>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    currentMountable as ImageMountable
     newMountable as ImageMountable
-    return (newMountable.scaleType != currentMountable.scaleType ||
-        !DrawableUtils.isEquivalentTo(newMountable.drawable, currentMountable.drawable))
+    return (newMountable.scaleType != scaleType ||
+        !DrawableUtils.isEquivalentTo(newMountable.drawable, drawable))
   }
 
   override fun poolSize(): Int = 30

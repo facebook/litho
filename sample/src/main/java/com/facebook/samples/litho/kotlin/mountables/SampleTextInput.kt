@@ -107,16 +107,14 @@ internal class SampleTextInputMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<EditText>,
       newMountable: SimpleMountable<EditText>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    currentMountable as SampleTextInputMountable
     newMountable as SampleTextInputMountable
-    return newMountable.initialText != currentMountable.initialText ||
-        newMountable.hint != currentMountable.hint ||
-        newMountable.inputBackground != currentMountable.inputBackground
+    return newMountable.initialText != initialText ||
+        newMountable.hint != hint ||
+        newMountable.inputBackground != inputBackground
   }
 
   // start_preallocation_example

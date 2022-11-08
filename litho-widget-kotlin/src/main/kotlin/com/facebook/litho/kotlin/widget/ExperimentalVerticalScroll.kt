@@ -256,19 +256,17 @@ internal class VerticalScrollMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<LithoScrollView>,
       newMountable: SimpleMountable<LithoScrollView>,
       currentLayoutData: Any?,
-      nextLayoutData: Any?,
+      nextLayoutData: Any?
   ): Boolean {
-    currentMountable as VerticalScrollMountable
     newMountable as VerticalScrollMountable
-    return !currentMountable.component.isEquivalentTo(newMountable.component) ||
-        currentMountable.scrollbarEnabled != newMountable.scrollbarEnabled ||
-        currentMountable.scrollbarFadingEnabled != newMountable.scrollbarFadingEnabled ||
-        currentMountable.fillViewport != newMountable.fillViewport ||
-        currentMountable.nestedScrollingEnabled != newMountable.nestedScrollingEnabled ||
-        currentMountable.incrementalMountEnabled != newMountable.incrementalMountEnabled
+    return !component.isEquivalentTo(newMountable.component) ||
+        scrollbarEnabled != newMountable.scrollbarEnabled ||
+        scrollbarFadingEnabled != newMountable.scrollbarFadingEnabled ||
+        fillViewport != newMountable.fillViewport ||
+        nestedScrollingEnabled != newMountable.nestedScrollingEnabled ||
+        incrementalMountEnabled != newMountable.incrementalMountEnabled
   }
 }
 

@@ -93,14 +93,12 @@ internal class ProgressMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<ProgressView>,
       newMountable: SimpleMountable<ProgressView>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    currentMountable as ProgressMountable
     newMountable as ProgressMountable
-    return newMountable.color != currentMountable.color ||
-        newMountable.indeterminateDrawable != currentMountable.indeterminateDrawable
+    return newMountable.color != color ||
+        newMountable.indeterminateDrawable != indeterminateDrawable
   }
 }

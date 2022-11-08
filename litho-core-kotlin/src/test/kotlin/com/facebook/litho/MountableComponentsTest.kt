@@ -765,14 +765,11 @@ open class ViewMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<View>,
       newMountable: SimpleMountable<View>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.SHOULD_UPDATE))
-    currentMountable as ViewMountable
-    newMountable as ViewMountable
     return true
   }
 }
@@ -826,12 +823,10 @@ class DrawableMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<Drawable>,
       newMountable: SimpleMountable<Drawable>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    currentMountable as DrawableMountable
     newMountable as DrawableMountable
     return true
   }

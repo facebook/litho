@@ -63,14 +63,12 @@ internal class TimePickerMountable(
   }
 
   override fun shouldUpdate(
-      currentMountable: SimpleMountable<TimePicker>,
       newMountable: SimpleMountable<TimePicker>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean {
-    currentMountable as TimePickerMountable
     newMountable as TimePickerMountable
-    return newMountable.controller != currentMountable.controller
+    return newMountable.controller != controller
   }
 }
 

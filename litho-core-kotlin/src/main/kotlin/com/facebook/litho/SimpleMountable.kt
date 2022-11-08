@@ -52,14 +52,20 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
    * Called to check if properties need to be reset. This is expected to be done by invoking
    * [unmount] and then [mount] if this function returns true.
    */
-  open fun shouldUpdate(
+  fun shouldUpdate(
       currentMountable: SimpleMountable<ContentT>,
+      newMountable: SimpleMountable<ContentT>,
+      currentLayoutData: Any?,
+      nextLayoutData: Any?
+  ): Boolean = shouldUpdate(newMountable, currentLayoutData, nextLayoutData)
+
+  open fun shouldUpdate(
       newMountable: SimpleMountable<ContentT>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
   ): Boolean =
       currentLayoutData === nextLayoutData &&
-          EquivalenceUtils.isEqualOrEquivalentTo(currentMountable, newMountable)
+          EquivalenceUtils.isEqualOrEquivalentTo(this, newMountable)
 
   override fun getContentAllocator(): ContentAllocator<ContentT> {
     return this
@@ -76,7 +82,7 @@ private val BINDER: RenderUnit.Binder<*, *> =
       ): Boolean {
         currentLayoutData as LithoLayoutData
         nextLayoutData as LithoLayoutData
-        return newMountable.shouldUpdate(
+        return currentMountable.shouldUpdate(
             currentMountable,
             newMountable,
             currentLayoutData.mLayoutData,
