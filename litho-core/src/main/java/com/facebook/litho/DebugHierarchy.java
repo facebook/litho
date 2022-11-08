@@ -32,14 +32,14 @@ public class DebugHierarchy {
   public static class Node {
 
     public final @Nullable Node parent;
-    public final @Nullable Component component;
-    public final @Nullable List<Component> components;
+    public final Component component;
+    public final List<Component> components;
     public final @OutputUnitType int type;
 
     public Node(
         @Nullable Node parent,
-        @Nullable Component component,
-        @Nullable List<Component> components,
+        Component component,
+        List<Component> components,
         @OutputUnitType int type) {
       this.parent = parent;
       this.component = component;
@@ -59,7 +59,7 @@ public class DebugHierarchy {
       if (parent != null) {
         parent.toHierarchyString(sb);
       }
-      if (components == null || components.isEmpty()) {
+      if (components.isEmpty()) {
         sb.append("(no components)");
         sb.append(',');
         return;
@@ -83,7 +83,7 @@ public class DebugHierarchy {
   }
 
   public static Node newNode(
-      @Nullable Node parent, @Nullable Component component, @Nullable List<Component> components) {
+      @Nullable Node parent, Component component, List<Component> components) {
     return new Node(parent, component, components, OutputUnitType.HOST);
   }
 
