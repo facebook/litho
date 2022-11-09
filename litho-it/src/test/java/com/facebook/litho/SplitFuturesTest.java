@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import android.graphics.Color;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TimeOutSemaphore;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
@@ -55,6 +56,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class SplitFuturesTest {
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  public final @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
 
   /**
    * Test the following flow:
@@ -170,12 +172,14 @@ public class SplitFuturesTest {
 
     // Render should not have happened yet
     assertThat(counter.getRenderCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(0);
 
     // Wait for tasks to finish
     mLegacyLithoViewRule.idle();
 
     // Now render should have happened once.
     assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
 
     final Component component2 =
         Column.create(c)
@@ -191,6 +195,7 @@ public class SplitFuturesTest {
 
     // Reset the counter
     counter.reset();
+    mLithoStatsRule.resetAllCounters();
 
     // Queue 2 set-root-asyncs. Only 1 should actually happen
     mLegacyLithoViewRule.setRootAsync(component2);
@@ -201,9 +206,11 @@ public class SplitFuturesTest {
 
     // Multiple queued async set roots will only end up running the latest one.
     assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
 
     // No measure should have happened yet.
     assertThat(counter.getMeasureCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(0);
   }
 
   /**
@@ -411,6 +418,8 @@ public class SplitFuturesTest {
             SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
+    mLithoStatsRule.resetAllCounters();
+
     runOnBackgroundThread(
         bgThreadLatch,
         new Runnable() {
@@ -444,14 +453,17 @@ public class SplitFuturesTest {
     // Both components were rendered, so we expect them both to have a render count of 1
     assertThat(counter1.getRenderCount()).isEqualTo(1);
     assertThat(counter2.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(2);
 
     // Both measures should have happened, but only the the 2nd component should've been committed
     assertThat(counter1.getMeasureCount()).isEqualTo(1);
     assertThat(counter2.getMeasureCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(2);
 
     // Reset the counters
     counter1.reset();
     counter2.reset();
+    mLithoStatsRule.resetAllCounters();
 
     // Now do layout to trigger a measure with the committed resolution result. We expect only the
     // 2nd component to get measured here.
@@ -466,10 +478,12 @@ public class SplitFuturesTest {
     // Ensure no new renders
     assertThat(counter1.getRenderCount()).isEqualTo(0);
     assertThat(counter2.getRenderCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(0);
 
     // Ensure no new measures
     assertThat(counter1.getMeasureCount()).isEqualTo(0);
     assertThat(counter2.getMeasureCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(0);
 
     // Ensure we can find Comp2's Text mounted.
     assertThat(mLegacyLithoViewRule.findViewWithText("Comp2")).isNotNull();
@@ -606,6 +620,8 @@ public class SplitFuturesTest {
     // Set the root component once (sync)
     mLegacyLithoViewRule.setRoot(component);
 
+    mLithoStatsRule.resetAllCounters();
+
     // "Old" size-specs to be set first, but finish last
     final int oldWidthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     final int oldHeightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
@@ -668,9 +684,11 @@ public class SplitFuturesTest {
 
     // Set root only happened once, so we expect only 1 render call.
     assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
 
     // Despite only the newer size-specs getting committed, measure still happens twice
     assertThat(counter.getMeasureCount()).isEqualTo(2);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(2);
 
     final LayoutState committedLayoutState = componentTree.getCommittedLayoutState();
 
@@ -733,6 +751,7 @@ public class SplitFuturesTest {
 
     // Set the root component once (sync)
     mLegacyLithoViewRule.setRoot(component);
+    mLithoStatsRule.resetAllCounters();
 
     final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
@@ -766,6 +785,7 @@ public class SplitFuturesTest {
 
     // Measure should have only happened once
     assertThat(counter.getMeasureCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
 
     // Ensure sync measure output is correct
     assertThat(output.width).isEqualTo(100);
@@ -855,7 +875,9 @@ public class SplitFuturesTest {
 
     // Ensure render and measure only happened once
     assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(1);
   }
 
   /**
@@ -947,7 +969,9 @@ public class SplitFuturesTest {
 
     // Ensure render and measure only happened once
     assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(1);
 
     // Ensure 2nd future is reused
     assertThat(isFutureReusedHolder[0]).isTrue();
@@ -982,18 +1006,23 @@ public class SplitFuturesTest {
 
     // Set root here should force the operation to become async
     mLegacyLithoViewRule.setRoot(component);
+    mLithoStatsRule.resetAllCounters();
 
     // Setting root without size-specs should force the operation to become async, so we verify
     // that render did not happen yet.
     assertThat(counter.getRenderCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(0);
     assertThat(counter.getMeasureCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(0);
 
     // Run to end of tasks, forcing async task to complete
     mLegacyLithoViewRule.idle();
 
     // Now that we've run to end of tasks, we can expect render to have happened (tho no measure)
     assertThat(counter.getRenderCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(0);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(0);
   }
 
   /**
@@ -1037,6 +1066,8 @@ public class SplitFuturesTest {
     // Ensure render and measure happened once, and the output is set correctly
     assertThat(counter.getRenderCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(1);
     assertThat(output.width).isEqualTo(100);
     assertThat(output.height).isEqualTo(100);
 
@@ -1054,6 +1085,8 @@ public class SplitFuturesTest {
     // Measure should increment, and the output should be equal to the new values.
     assertThat(counter.getRenderCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(2);
+    assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
+    assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(2);
     assertThat(output.width).isEqualTo(150);
     assertThat(output.height).isEqualTo(150);
   }

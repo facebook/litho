@@ -54,8 +54,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 @RunWith(LithoTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class NestedTreeResolutionTest {
 
   public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
