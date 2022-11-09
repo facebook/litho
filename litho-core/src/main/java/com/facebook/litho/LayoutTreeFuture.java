@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.stats.LithoStats;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final LithoResolutionResult mLithoResolutionResult;
@@ -51,6 +52,9 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
   @Override
   protected LayoutState calculate() {
+
+    LithoStats.incrementLayoutCount();
+
     final LithoNode node = mLithoResolutionResult.node;
     final TreeState treeState = mLithoResolutionResult.treeState;
     final MeasuredResultCache renderPhaseCache = mLithoResolutionResult.cache;

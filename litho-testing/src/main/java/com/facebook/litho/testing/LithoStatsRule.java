@@ -127,6 +127,14 @@ public class LithoStatsRule implements TestRule {
     return LithoStats.getSectionCalculateNewChangesetOnUICount();
   }
 
+  public long getResolveCount() {
+    return LithoStats.getResolveCount();
+  }
+
+  public long getLayoutCount() {
+    return LithoStats.getLayoutCount();
+  }
+
   /** Resets all the counter. */
   public synchronized void resetAllCounters() {
     LithoStats.resetAllCounters();

@@ -30,6 +30,10 @@ public final class LithoStats {
   private static final AtomicLong sComponentCalculateLayoutOnUICount = new AtomicLong(0);
   private static final AtomicLong sComponentMountCount = new AtomicLong(0);
 
+  private static final AtomicLong sResolveCount = new AtomicLong(0);
+  private static final AtomicLong sResumeCount = new AtomicLong(0);
+  private static final AtomicLong sLayoutCount = new AtomicLong(0);
+
   private static final AtomicLong sSectionAppliedStateUpdateCount = new AtomicLong(0);
   private static final AtomicLong sSectionTriggeredSyncStateUpdateCount = new AtomicLong(0);
   private static final AtomicLong sSectionTriggeredAsyncStateUpdateCount = new AtomicLong(0);
@@ -79,6 +83,21 @@ public final class LithoStats {
   /** @return the global count of all mount operations that have happened in the process. */
   public static long getComponentMountCount() {
     return sComponentMountCount.get();
+  }
+
+  /** @return the global count of all do resolve operations that have happened in the process. */
+  public static long getResolveCount() {
+    return sResolveCount.get();
+  }
+
+  /** @return the global count of all do resume operations that have happened in the process. */
+  public static long getResumeCount() {
+    return sResolveCount.get();
+  }
+
+  /** @return the global count of all do layout operations that have happened in the process. */
+  public static long getLayoutCount() {
+    return sLayoutCount.get();
   }
 
   /**
@@ -181,6 +200,30 @@ public final class LithoStats {
   }
 
   /**
+   * @return increment and get the global count of all do resolve operations that have happened in
+   *     the process.
+   */
+  public static long incrementResolveCount() {
+    return sResolveCount.addAndGet(1);
+  }
+
+  /**
+   * @return increment and get the global count of all do resumes operations that have happened in
+   *     the process.
+   */
+  public static long incrementResumeCount() {
+    return sResumeCount.addAndGet(1);
+  }
+
+  /**
+   * @return increment and get the global count of all do layout operations that have happened in
+   *     the process.
+   */
+  public static long incrementLayoutCount() {
+    return sLayoutCount.addAndGet(1);
+  }
+
+  /**
    * Increment the count of all applied state updates in Litho sections by {@param num}.
    *
    * @return The new total number of all state updates in Litho sections recorded.
@@ -235,6 +278,9 @@ public final class LithoStats {
     sComponentCalculateLayoutCount.set(0);
     sComponentCalculateLayoutOnUICount.set(0);
     sComponentMountCount.set(0);
+    sLayoutCount.set(0);
+    sResolveCount.set(0);
+    sResumeCount.set(0);
     sSectionAppliedStateUpdateCount.set(0);
     sSectionTriggeredSyncStateUpdateCount.set(0);
     sSectionTriggeredAsyncStateUpdateCount.set(0);

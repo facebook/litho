@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.stats.LithoStats;
 
 public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
   private final ComponentContext mComponentContext;
@@ -84,6 +85,8 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
 
   @Override
   protected LithoResolutionResult calculate() {
+    LithoStats.incrementResolveCount();
+
     final RenderStateContext rsc =
         new RenderStateContext(
             new MeasuredResultCache(),
@@ -122,6 +125,9 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
 
   @Override
   protected LithoResolutionResult resumeCalculation(LithoResolutionResult partialResult) {
+
+    LithoStats.incrementResumeCount();
+
     if (!partialResult.isPartialResult) {
       throw new IllegalStateException("Cannot resume a non-partial result");
     }
