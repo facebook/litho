@@ -29,15 +29,15 @@ jobs:
           path: ~/.gradle/wrapper
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
+      - name: Generate Reference Docs
+        run:
+          ./gradlew dokkaHtmlMultiModule
+
       - name: Install and Build
         run: |
           yarn
           yarn build
         working-directory: website/
-
-      - name: Generate Reference Docs
-        run:
-          ./gradlew dokkaHtmlMultiModule
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.0
