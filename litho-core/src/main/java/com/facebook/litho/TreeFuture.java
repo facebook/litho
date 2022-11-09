@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Base class that wraps a {@link FutureTask} to allow calculating the same result across threads.
  */
 public abstract class TreeFuture<T extends PotentiallyPartialResult> {
-  public static final String FUTURE_RESULT_NULL_REASON_ABORTED = "Aborted";
   public static final String FUTURE_RESULT_NULL_REASON_RELEASED = "TreeFuture released";
   public static final String FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD =
       "Waiting for sync result from non-main-thread";

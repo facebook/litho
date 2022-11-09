@@ -97,7 +97,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
   private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
   private static final String TAG = ComponentTree.class.getSimpleName();
-  private static final int SIZE_UNINITIALIZED = -1;
+  public static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_RESOLVE_THREAD_NAME = "ComponentResolveThread";
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String EMPTY_STRING = "";
@@ -230,10 +230,7 @@ public class ComponentTree implements LithoLifecycleListener {
     NEW_FUTURE,
 
     /** An already running future is about to be reused */
-    REUSE_FUTURE,
-
-    /** No future needs to run at all */
-    CANCELLED
+    REUSE_FUTURE
   }
 
   public interface FutureExecutionListener {
@@ -2573,7 +2570,9 @@ public class ComponentTree implements LithoLifecycleListener {
                 null,
                 localResolveVersion,
                 mMoveLayoutsBetweenThreads
-                    || mComponentsConfiguration.getUseCancelableLayoutFutures()),
+                    || mComponentsConfiguration.getUseCancelableLayoutFutures(),
+                syncWidthSpec,
+                syncHeightSpec),
             mResolvedResultFutures,
             source,
             mResolvedResultFutureLock,
@@ -2836,52 +2835,43 @@ public class ComponentTree implements LithoLifecycleListener {
           final @Nullable FutureExecutionListener futureExecutionListener) {
     final boolean isSync = isFromSyncLayout(source);
     boolean isReusingFuture = false;
-    boolean isAborted = false;
 
     synchronized (mutex) {
       // Iterate over the running futures to see if an equivalent one is running
       for (final TreeFuture<T> runningFuture : futureList) {
-        if (!runningFuture.isReleased() && runningFuture.isEquivalentTo(treeFuture)) {
-          if (!isSync) {
-            // A future is already running with the exact same params, no need to calculate async.
-            isAborted = true;
-            break;
-          } else if (runningFuture.tryRegisterForResponse(isSync)) {
-            // Running in sync, and an equivalent running future was found and is allowing to be
-            // reused (tryRegisterForResponse returned true).
-            // Discard the provided future and use the running future instead.
-            // tryRegisterForResponse returned true and also increased the wait-count, so no need
-            // to do that later.
-            treeFuture = runningFuture;
-            isReusingFuture = true;
-            break;
-          }
+        if (!runningFuture.isReleased()
+            && runningFuture.isEquivalentTo(treeFuture)
+            && runningFuture.tryRegisterForResponse(isSync)) {
+          // An equivalent running future was found, and can be reused (tryRegisterForResponse
+          // returned true). Discard the provided future, and use the running future instead.
+          // tryRegisterForResponse returned true, and also increased the wait-count, so no need
+          // explicity call that.
+          treeFuture = runningFuture;
+          isReusingFuture = true;
+          break;
         }
       }
 
-      if (!isReusingFuture && !isAborted) {
-        // Not reusing and not aborted, increase the wait count and add the new future to the list
-        treeFuture.tryRegisterForResponse(isSync);
+      // Not reusing so mark as NON_INTERRUPTIBLE, increase the wait count, add the new future to
+      // the list.
+      if (!isReusingFuture) {
+        if (!treeFuture.tryRegisterForResponse(isSync)) {
+          throw new RuntimeException("Failed to register to tree future");
+        }
+
         futureList.add(treeFuture);
       }
     }
 
     if (futureExecutionListener != null) {
       final FutureExecutionType executionType;
-      if (isAborted) {
-        executionType = FutureExecutionType.CANCELLED;
-      } else if (isReusingFuture) {
+      if (isReusingFuture) {
         executionType = FutureExecutionType.REUSE_FUTURE;
       } else {
         executionType = FutureExecutionType.NEW_FUTURE;
       }
 
       futureExecutionListener.onPreExecution(executionType);
-    }
-
-    // Aborted run, return null.
-    if (isAborted) {
-      return new TreeFuture.TreeFutureResult<T>(TreeFuture.FUTURE_RESULT_NULL_REASON_ABORTED);
     }
 
     // Run and get the result

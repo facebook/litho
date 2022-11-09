@@ -30,6 +30,7 @@ import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.LifecycleStep.SHOULD_UPDATE;
 import static com.facebook.litho.testing.ThreadTestingUtils.runOnBackgroundThread;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
@@ -460,6 +461,68 @@ public class SplitFuturesTest {
 
     // Ensure we can find Comp2's Text mounted.
     assertThat(mLegacyLithoViewRule.findViewWithText("Comp2")).isNotNull();
+  }
+
+  @Test
+  public void ifSyncResolveIsInProgress_thenAsyncResolveShouldWaitForInProgressResolve() {
+    // Only relevant when futures are split
+    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+      return;
+    }
+
+    final boolean[] isFirstHolder = new boolean[] {false};
+
+    final ComponentContext c = mLegacyLithoViewRule.context;
+    final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
+    // Latch to wait for the 1st setRoot to get called to avoid calling the 2nd setRoot 1st.
+    final TimeOutSemaphore latch = new TimeOutSemaphore(0);
+    final RenderAndLayoutCountingTesterSpec.Listener listener =
+        new RenderAndLayoutCountingTesterSpec.Listener() {
+          @Override
+          public void onPrepare() {
+
+            boolean isFirst = false;
+            synchronized (isFirstHolder) {
+              if (!isFirstHolder[0]) {
+                isFirstHolder[0] = true;
+                isFirst = true;
+              }
+            }
+
+            if (isFirst) {
+              mLegacyLithoViewRule
+                  .getComponentTree()
+                  .setFutureExecutionListener(type -> latch.release() /* release first set root */);
+
+              mLegacyLithoViewRule.setRootAsync(mLegacyLithoViewRule.getComponentTree().getRoot());
+              runOnBackgroundThread(mLegacyLithoViewRule::idle /* run async set root */);
+
+              latch.acquire(); // wait for async set root to release latch
+            }
+          }
+
+          @Override
+          public void onMeasure() {}
+        };
+
+    // Component will be set as root 1st, but will finish after Component2
+    final Component component =
+        Column.create(c)
+            .child(Text.create(c).text("Component"))
+            .child(
+                RenderAndLayoutCountingTester.create(c)
+                    .renderAndMeasureCounter(counter)
+                    .listener(listener))
+            .build();
+
+    // required to trigger async set roots
+    mLegacyLithoViewRule.getComponentTree().setSizeSpec(exactly(100), exactly(100));
+
+    // first set root
+    mLegacyLithoViewRule.setRoot(component);
+
+    // The second resolve should be skipped
+    assertThat(counter.getRenderCount()).isEqualTo(1);
   }
 
   /**

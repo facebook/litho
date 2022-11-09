@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
+
 import androidx.annotation.Nullable;
 
 public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
@@ -25,6 +27,10 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
   private final @Nullable LithoNode mCurrentRootNode;
   private final @Nullable PerfEvent mPerfEvent;
   private final int mResolveVersion;
+
+  // TODO(T137275959): Refactor sync render logic to remove sizes from resolved tree future
+  @Deprecated private final int mSyncWidthSpec;
+  @Deprecated private final int mSyncHeightSpec;
 
   // Only needed for resume logic.
   private @Nullable RenderStateContext mRenderStateContextForResume;
@@ -37,14 +43,43 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
       final @Nullable PerfEvent perfEvent,
       final int resolveVersion,
       final boolean useCancellableFutures) {
-    super(useCancellableFutures);
+    this(
+        c,
+        component,
+        treeState,
+        currentRootNode,
+        perfEvent,
+        resolveVersion,
+        useCancellableFutures,
+        SIZE_UNINITIALIZED,
+        SIZE_UNINITIALIZED);
+  }
 
+  /**
+   * TODO(T137275959)
+   *
+   * @deprecated Refactor sync render logic to remove sizes from resolved tree future
+   */
+  @Deprecated
+  public RenderTreeFuture(
+      final ComponentContext c,
+      final Component component,
+      final TreeState treeState,
+      final @Nullable LithoNode currentRootNode,
+      final @Nullable PerfEvent perfEvent,
+      final int resolveVersion,
+      final boolean useCancellableFutures,
+      final int syncWidthSpec,
+      final int syncHeightSpec) {
+    super(useCancellableFutures);
     mComponentContext = c;
     mComponent = component;
     mTreeState = treeState;
     mCurrentRootNode = currentRootNode;
     mPerfEvent = perfEvent;
     mResolveVersion = resolveVersion;
+    mSyncWidthSpec = syncWidthSpec;
+    mSyncHeightSpec = syncHeightSpec;
   }
 
   @Override
@@ -136,6 +171,16 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     }
 
     if (mComponentContext.getTreeProps() != thatRtf.mComponentContext.getTreeProps()) {
+      return false;
+    }
+
+    // TODO(T137275959): delete on refactor
+    if (mSyncWidthSpec != thatRtf.mSyncWidthSpec) {
+      return false;
+    }
+
+    // TODO(T137275959): delete on refactor
+    if (mSyncHeightSpec != thatRtf.mSyncHeightSpec) {
       return false;
     }
 
