@@ -52,12 +52,12 @@ module.exports = {
       items: [
         {
           label: 'Docs',
-          to: 'docs/intro/motivation',
+          to: 'docs/mainconcepts/components-basics',
           position: 'right',
         },
         {
-          label: 'API',
-          to: 'pathname:///javadoc',
+          label: 'API Reference [ʙᴇᴛᴀ]',
+          to: 'https://fblitho.com/reference',
           position: 'right',
         },
         {
@@ -88,8 +88,8 @@ module.exports = {
               to: 'docs/getting-started',
             },
             {
-              label: 'API',
-              to: 'pathname:///javadoc',
+              label: 'API Reference [ʙᴇᴛᴀ]',
+              to: 'https://fblitho.com/reference',
             },
           ],
         },
