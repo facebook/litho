@@ -2284,6 +2284,12 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress,
       boolean forceLayout) {
+
+    final int requestedWidthSpec;
+    final int requestedHeightSpec;
+    final Component requestedRoot;
+    final TreeProps requestedTreeProps;
+
     synchronized (this) {
       if (mReleased) {
         // If this is coming from a background thread, we may have been released from the main
@@ -2389,6 +2395,11 @@ public class ComponentTree implements LithoLifecycleListener {
         treeProps = mRootTreeProps;
       }
 
+      requestedWidthSpec = mWidthSpec;
+      requestedHeightSpec = mHeightSpec;
+      requestedRoot = mRoot;
+      requestedTreeProps = mRootTreeProps;
+
       mLastLayoutSource = source;
     }
 
@@ -2398,16 +2409,16 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (isResolveAndLayoutFuturesSplitEnabled) {
-      final int syncWidthSpec = !isAsync && output != null ? widthSpec : SIZE_UNINITIALIZED;
-      final int syncHeightSpec = !isAsync && output != null ? heightSpec : SIZE_UNINITIALIZED;
       requestRenderWithSplitFutures(
           isAsync,
           output,
           source,
           extraAttribution,
           isCreateLayoutInProgress,
-          syncWidthSpec,
-          syncHeightSpec);
+          requestedWidthSpec,
+          requestedHeightSpec,
+          requestedRoot,
+          requestedTreeProps);
       return;
     }
 
@@ -2440,41 +2451,39 @@ public class ComponentTree implements LithoLifecycleListener {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
-      final int syncWidthSpec,
-      final int syncHeightSpec) {
-    final LithoResolutionResult resolutionResult;
-    final Component root;
-    final TreeProps treeProps;
+      final int widthSpec,
+      final int heightSpec,
+      final Component root,
+      final TreeProps treeProps) {
+    final LithoResolutionResult currentResolutionResult;
     synchronized (this) {
-      resolutionResult = mCommittedResolutionResult;
-      root = mRoot;
-      treeProps = mRootTreeProps;
+      currentResolutionResult = mCommittedResolutionResult;
+    }
 
-      // If we're only setting root, and there are no size specs, move the operation to async
-      // to avoid hanging on the main thread
-      if (source == CalculateLayoutSource.SET_ROOT_SYNC
-          && mWidthSpec == SIZE_UNINITIALIZED
-          && mHeightSpec == SIZE_UNINITIALIZED) {
-        isAsync = true;
-        source = CalculateLayoutSource.SET_ROOT_ASYNC;
-      }
+    // If we're only setting root, and there are no size specs, move the operation to async
+    // to avoid hanging on the main thread
+    if (source == CalculateLayoutSource.SET_ROOT_SYNC
+        && widthSpec == SIZE_UNINITIALIZED
+        && heightSpec == SIZE_UNINITIALIZED) {
+      isAsync = true;
+      source = CalculateLayoutSource.SET_ROOT_ASYNC;
     }
 
     // The current root and tree-props are the same as the committed resolution result. Therefore,
     // there is no need to calculate the resolution result again and we can proceed straight to
     // layout.
-    if (resolutionResult != null
-        && resolutionResult.component == root
-        && resolutionResult.context.getTreeProps() == treeProps) {
+    if (currentResolutionResult != null
+        && currentResolutionResult.component == root
+        && currentResolutionResult.context.getTreeProps() == treeProps) {
       requestLayoutWithSplitFutures(
-          resolutionResult,
+          currentResolutionResult,
           output,
           source,
           extraAttribution,
           isCreateLayoutInProgress,
           false,
-          syncWidthSpec,
-          syncHeightSpec);
+          widthSpec,
+          heightSpec);
       return;
     }
 
@@ -2484,7 +2493,14 @@ public class ComponentTree implements LithoLifecycleListener {
           getResolveThreadHandler().remove(mResolveRunnable);
         }
         mResolveRunnable =
-            new CalculateResolutionRunnable(source, extraAttribution, isCreateLayoutInProgress);
+            new CalculateResolutionRunnable(
+                source,
+                root,
+                treeProps,
+                widthSpec,
+                heightSpec,
+                extraAttribution,
+                isCreateLayoutInProgress);
 
         String tag = EMPTY_STRING;
         if (getResolveThreadHandler().isTracing()) {
@@ -2501,8 +2517,10 @@ public class ComponentTree implements LithoLifecycleListener {
           source,
           extraAttribution,
           isCreateLayoutInProgress,
-          syncWidthSpec,
-          syncHeightSpec);
+          root,
+          treeProps,
+          widthSpec,
+          heightSpec);
     }
   }
 
@@ -2511,8 +2529,10 @@ public class ComponentTree implements LithoLifecycleListener {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
-      final int syncWidthSpec,
-      final int syncHeightSpec) {
+      final Component root,
+      final @Nullable TreeProps treeProps,
+      final int widthSpec,
+      final int heightSpec) {
 
     synchronized (getResolveThreadHandlerLock()) {
       if (mResolveRunnable != null) {
@@ -2522,22 +2542,18 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     final int localResolveVersion;
-    final Component root;
     final TreeState treeState;
     final ComponentContext context;
     final @Nullable LithoNode currentNode;
-    final @Nullable TreeProps treeProps;
 
     synchronized (this) {
-      if (mRoot == null) {
+      if (root == null) {
         return;
       }
 
       localResolveVersion = mNextResolveVersion++;
-      root = mRoot;
       treeState = acquireTreeState();
       currentNode = mCommittedResolutionResult != null ? mCommittedResolutionResult.node : null;
-      treeProps = mRootTreeProps;
       context = new ComponentContext(mContext, treeProps);
     }
 
@@ -2572,8 +2588,8 @@ public class ComponentTree implements LithoLifecycleListener {
                 localResolveVersion,
                 mMoveLayoutsBetweenThreads
                     || mComponentsConfiguration.getUseCancelableLayoutFutures(),
-                syncWidthSpec,
-                syncHeightSpec),
+                widthSpec,
+                heightSpec),
             mResolvedResultFutures,
             source,
             mResolvedResultFutureLock,
@@ -2610,8 +2626,8 @@ public class ComponentTree implements LithoLifecycleListener {
         isCreateLayoutInProgress,
         // Don't post when using the same thread handler, as it could cause heavy delays
         !useSeparateThreadHandlersForResolveAndLayout,
-        syncWidthSpec,
-        syncHeightSpec);
+        widthSpec,
+        heightSpec);
   }
 
   private synchronized void commitResolutionResult(
@@ -2643,8 +2659,8 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
       boolean forceSyncCalculation,
-      final int syncWidthSpec,
-      final int syncHeightSpec) {
+      final int widthSpec,
+      final int heightSpec) {
 
     final boolean isAsync = !isFromSyncLayout(source);
 
@@ -2660,7 +2676,12 @@ public class ComponentTree implements LithoLifecycleListener {
         }
         mCurrentCalculateLayoutFutureRunnable =
             new CalculateLayoutFutureRunnable(
-                resolutionResult, source, extraAttribution, isCreateLayoutInProgress);
+                resolutionResult,
+                source,
+                widthSpec,
+                heightSpec,
+                extraAttribution,
+                isCreateLayoutInProgress);
 
         String tag = EMPTY_STRING;
         if (mLayoutThreadHandler.isTracing()) {
@@ -2678,8 +2699,8 @@ public class ComponentTree implements LithoLifecycleListener {
           source,
           extraAttribution,
           isCreateLayoutInProgress,
-          syncWidthSpec,
-          syncHeightSpec);
+          widthSpec,
+          heightSpec);
     }
   }
 
@@ -2689,8 +2710,8 @@ public class ComponentTree implements LithoLifecycleListener {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
-      final int syncWidthSpec,
-      final int syncHeightSpec) {
+      final int widthSpec,
+      final int heightSpec) {
     synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
       if (mCurrentCalculateLayoutFutureRunnable != null) {
         mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
@@ -2698,8 +2719,6 @@ public class ComponentTree implements LithoLifecycleListener {
       }
     }
 
-    final int widthSpec;
-    final int heightSpec;
     final int layoutVersion;
     final @Nullable LayoutState currentLayoutState;
     final @Nullable DiffNode currentDiffNode;
@@ -2708,8 +2727,6 @@ public class ComponentTree implements LithoLifecycleListener {
     final boolean isSync = isFromSyncLayout(source);
 
     synchronized (this) {
-      widthSpec = isSync && output != null ? syncWidthSpec : mWidthSpec;
-      heightSpec = isSync && output != null ? syncHeightSpec : mHeightSpec;
       currentLayoutState = mCommittedLayoutState;
       currentDiffNode = currentLayoutState != null ? currentLayoutState.getDiffTree() : null;
       layoutVersion = mNextLayoutVersion++;
@@ -3796,16 +3813,22 @@ public class ComponentTree implements LithoLifecycleListener {
   private class CalculateLayoutFutureRunnable extends ThreadTracingRunnable {
     private final LithoResolutionResult mLithoResolutionResult;
     private final @CalculateLayoutSource int mSource;
+    private final int mWidthSpec;
+    private final int mHeightSpec;
     private final @Nullable String mAttribution;
     private final boolean mIsCreateLayoutInProgress;
 
     public CalculateLayoutFutureRunnable(
         final LithoResolutionResult resolutionResult,
         @CalculateLayoutSource int source,
+        int widthSpec,
+        int heightSpec,
         @Nullable String attribution,
         boolean isCreateLayoutInProgress) {
       mLithoResolutionResult = resolutionResult;
       mSource = source;
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
       mAttribution = attribution;
       mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
@@ -3818,22 +3841,33 @@ public class ComponentTree implements LithoLifecycleListener {
           mSource,
           mAttribution,
           mIsCreateLayoutInProgress,
-          SIZE_UNINITIALIZED,
-          SIZE_UNINITIALIZED);
+          mWidthSpec,
+          mHeightSpec);
     }
   }
 
   private class CalculateResolutionRunnable extends ThreadTracingRunnable {
-
     private final @CalculateLayoutSource int mSource;
+    private final Component mRoot;
+    private final TreeProps mTreeProps;
+    private final int mWidthSpec;
+    private final int mHeightSpec;
     private final @Nullable String mAttribution;
     private final boolean mIsCreateLayoutInProgress;
 
     public CalculateResolutionRunnable(
         @CalculateLayoutSource int source,
+        Component root,
+        TreeProps treeProps,
+        int widthSpec,
+        int heightSpec,
         @Nullable String attribution,
         boolean isCreateLayoutInProgress) {
       mSource = source;
+      mRoot = root;
+      mTreeProps = treeProps;
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
       mAttribution = attribution;
       mIsCreateLayoutInProgress = isCreateLayoutInProgress;
     }
@@ -3845,8 +3879,10 @@ public class ComponentTree implements LithoLifecycleListener {
           mSource,
           mAttribution,
           mIsCreateLayoutInProgress,
-          SIZE_UNINITIALIZED,
-          SIZE_UNINITIALIZED);
+          mRoot,
+          mTreeProps,
+          mWidthSpec,
+          mHeightSpec);
     }
   }
 
