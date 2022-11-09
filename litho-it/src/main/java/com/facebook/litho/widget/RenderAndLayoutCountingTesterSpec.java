@@ -29,6 +29,7 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ShouldUpdate;
 
 @MountSpec(isPureRender = true)
 public class RenderAndLayoutCountingTesterSpec {
@@ -70,6 +71,11 @@ public class RenderAndLayoutCountingTesterSpec {
   @OnCreateMountContent
   static View onCreateMountContent(Context c) {
     return new View(c);
+  }
+
+  @ShouldUpdate
+  static boolean shouldUpdate() {
+    return true;
   }
 
   public static interface Listener {
