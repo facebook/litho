@@ -250,6 +250,7 @@ class RecyclerSpec {
 
     if (recyclerEventsController != null) {
       recyclerEventsController.setSectionsRecyclerView(sectionsRecycler);
+      recyclerEventsController.setSnapHelper(snapHelper);
     }
 
     if (sectionsRecycler.hasBeenDetachedFromWindow()) {
@@ -282,6 +283,7 @@ class RecyclerSpec {
 
     if (recyclerEventsController != null) {
       recyclerEventsController.setSectionsRecyclerView(null);
+      recyclerEventsController.setSnapHelper(null);
     }
 
     if (onScrollListeners != null) {

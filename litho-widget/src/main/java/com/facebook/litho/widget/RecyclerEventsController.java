@@ -19,6 +19,7 @@ package com.facebook.litho.widget;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ThreadUtils;
 
 /**
@@ -35,6 +36,8 @@ public class RecyclerEventsController {
   @Nullable private SectionsRecyclerView mSectionsRecyclerView;
 
   @Nullable private OnRecyclerUpdateListener mOnRecyclerUpdateListener;
+
+  @Nullable private SnapHelper mSnapHelper;
 
   private final Runnable mClearRefreshRunnable =
       new Runnable() {
@@ -145,5 +148,13 @@ public class RecyclerEventsController {
   public void setOnRecyclerUpdateListener(
       @Nullable OnRecyclerUpdateListener onRecyclerUpdateListener) {
     mOnRecyclerUpdateListener = onRecyclerUpdateListener;
+  }
+
+  /*package*/ void setSnapHelper(@Nullable SnapHelper snapHelper) {
+    mSnapHelper = snapHelper;
+  }
+
+  public @Nullable SnapHelper getSnapHelper() {
+    return mSnapHelper;
   }
 }
