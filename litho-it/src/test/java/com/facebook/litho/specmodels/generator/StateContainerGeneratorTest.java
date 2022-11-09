@@ -200,7 +200,9 @@ public class StateContainerGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
-                + "    throw new UnsupportedOperationException();\n"
+                + "    if (applyStateUpdateWithTransition(stateUpdate) != null) {\n"
+                + "      throw new UnsupportedOperationException();\n"
+                + "    }\n"
                 + "  }\n"
                 + "}\n");
   }
@@ -253,7 +255,9 @@ public class StateContainerGeneratorTest {
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
-                + "    throw new UnsupportedOperationException();\n"
+                + "    if (applyStateUpdateWithTransition(stateUpdate) != null) {\n"
+                + "      throw new UnsupportedOperationException();\n"
+                + "    }\n"
                 + "  }\n"
                 + "}\n");
   }

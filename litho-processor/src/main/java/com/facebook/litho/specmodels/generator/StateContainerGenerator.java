@@ -275,9 +275,20 @@ public class StateContainerGenerator {
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .addParameter(ClassNames.COMPONENT_STATE_UPDATE, PARAM_NAME_STATE_UPDATE)
-                .addStatement("throw new UnsupportedOperationException()")
+                .addCode(generateThrowCodeBlock())
                 .returns(TypeName.VOID)
                 .build())
+        .build();
+  }
+
+  private static CodeBlock generateThrowCodeBlock() {
+    return CodeBlock.builder()
+        .beginControlFlow(
+            "if ($L($L) != null)",
+            METHOD_NAME_APPLY_STATE_UPDATE_WITH_TRANSITION,
+            PARAM_NAME_STATE_UPDATE)
+        .addStatement("throw new UnsupportedOperationException()")
+        .endControlFlow()
         .build();
   }
 }
