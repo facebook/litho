@@ -109,6 +109,11 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       c.setCalculationStateContext(prevContext);
     }
 
+    LithoStats.incrementComponentCalculateLayoutCount();
+    if (ThreadUtils.isMainThread()) {
+      LithoStats.incrementComponentCalculateLayoutOnUICount();
+    }
+
     return layoutState;
   }
 

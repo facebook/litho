@@ -441,6 +441,18 @@ public class SplitFuturesTest {
     // Wait for both background tasks to finish
     bgThreadLatch.acquire();
 
+    // Both components were rendered, so we expect them both to have a render count of 1
+    assertThat(counter1.getRenderCount()).isEqualTo(1);
+    assertThat(counter2.getRenderCount()).isEqualTo(1);
+
+    // Both measures should have happened, but only the the 2nd component should've been committed
+    assertThat(counter1.getMeasureCount()).isEqualTo(1);
+    assertThat(counter2.getMeasureCount()).isEqualTo(1);
+
+    // Reset the counters
+    counter1.reset();
+    counter2.reset();
+
     // Now do layout to trigger a measure with the committed resolution result. We expect only the
     // 2nd component to get measured here.
     mLegacyLithoViewRule
@@ -451,13 +463,13 @@ public class SplitFuturesTest {
         .layout()
         .idle();
 
-    // Both components were rendered, so we expect them both to have a render count of 1
-    assertThat(counter1.getRenderCount()).isEqualTo(1);
-    assertThat(counter2.getRenderCount()).isEqualTo(1);
+    // Ensure no new renders
+    assertThat(counter1.getRenderCount()).isEqualTo(0);
+    assertThat(counter2.getRenderCount()).isEqualTo(0);
 
-    // Only the 2nd root should have been committed, so only the 2nd one will have been measured.
+    // Ensure no new measures
     assertThat(counter1.getMeasureCount()).isEqualTo(0);
-    assertThat(counter2.getMeasureCount()).isEqualTo(1);
+    assertThat(counter2.getMeasureCount()).isEqualTo(0);
 
     // Ensure we can find Comp2's Text mounted.
     assertThat(mLegacyLithoViewRule.findViewWithText("Comp2")).isNotNull();
