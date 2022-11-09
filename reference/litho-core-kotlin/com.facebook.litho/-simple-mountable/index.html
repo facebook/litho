@@ -1,0 +1,552 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>SimpleMountable</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>Litho</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="litho-core-kotlin::com.facebook.litho/SimpleMountable///PointingToDeclaration//912954277">
+  <div class="breadcrumbs"><a href="../../index.html">litho-core-kotlin</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho</a><span class="delimiter">/</span><span class="current">SimpleMountable</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Simple</span><wbr><span><span>Mountable</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">SimpleMountable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">renderType<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.RenderType///PointingToDeclaration/">RenderUnit.RenderType</span></span></span><span class="token punctuation">)</span> : <span data-unresolved-link="com.facebook.rendercore/Mountable///PointingToDeclaration/">Mountable</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt; </span>, <span data-unresolved-link="com.facebook.rendercore/ContentAllocator///PointingToDeclaration/">ContentAllocator</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt; </span></div><p class="paragraph">This is a simplified implementation of a <span data-unresolved-link="com.facebook.rendercore/Mountable///PointingToDeclaration/">Mountable</span> which requires only one Binder. Must be immutable, and not cause side effects.</p><p>Experimental. Currently for Litho team internal use only.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section-body">
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="-235917338%2FConstructors%2F912954277" anchor-label="SimpleMountable" id="-235917338%2FConstructors%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-simple-mountable.html"><span>Simple</span><wbr><span><span>Mountable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-235917338%2FConstructors%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-simple-mountable.html"><span class="token function">SimpleMountable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">renderType<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.RenderType///PointingToDeclaration/">RenderUnit.RenderType</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-1481358291%2FFunctions%2F912954277" anchor-label="addAttachBinder" id="-1481358291%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1481358291%2FFunctions%2F912954277"><span>add</span><wbr><span>Attach</span><wbr><span><span>Binder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1481358291%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1481358291%2FFunctions%2F912954277"><span class="token function">addAttachBinder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword">in </span><a href="index.html">ContentT</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="2048211108%2FFunctions%2F912954277" anchor-label="addAttachBinders" id="2048211108%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#2048211108%2FFunctions%2F912954277"><span>add</span><wbr><span>Attach</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2048211108%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/java/lang/SafeVarargs.html"><span class="token annotation builtin">SafeVarargs</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#2048211108%2FFunctions%2F912954277"><span class="token function">addAttachBinders</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>p0<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword">in </span><a href="index.html">ContentT</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1927990155%2FFunctions%2F912954277" anchor-label="addMountBinder" id="1927990155%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#1927990155%2FFunctions%2F912954277"><span>add</span><wbr><span>Mount</span><wbr><span><span>Binder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1927990155%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1927990155%2FFunctions%2F912954277"><span class="token function">addMountBinder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword">in </span><a href="index.html">ContentT</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-609269370%2FFunctions%2F912954277" anchor-label="addMountBinders" id="-609269370%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-609269370%2FFunctions%2F912954277"><span>add</span><wbr><span>Mount</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-609269370%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/java/lang/SafeVarargs.html"><span class="token annotation builtin">SafeVarargs</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-609269370%2FFunctions%2F912954277"><span class="token function">addMountBinders</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>p0<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword">in </span><a href="index.html">ContentT</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1744210793%2FFunctions%2F912954277" anchor-label="attachBinders" id="-1744210793%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1744210793%2FFunctions%2F912954277"><span>attach</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1744210793%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1744210793%2FFunctions%2F912954277"><span class="token function">attachBinders</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>p2<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">p3<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Systracer///PointingToDeclaration/">Systracer</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="696338224%2FFunctions%2F912954277" anchor-label="calculateLayout" id="696338224%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#696338224%2FFunctions%2F912954277"><span>calculate</span><wbr><span><span>Layout</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="696338224%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#696338224%2FFunctions%2F912954277"><span class="token function">calculateLayout</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/LayoutContext///PointingToDeclaration/">LayoutContext</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">p2<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Node.LayoutResult///PointingToDeclaration/">Node.LayoutResult</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="931365935%2FFunctions%2F912954277" anchor-label="canPreallocate" id="931365935%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#931365935%2FFunctions%2F912954277"><span>can</span><wbr><span><span>Preallocate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="931365935%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#931365935%2FFunctions%2F912954277"><span class="token function">canPreallocate</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-373987159%2FFunctions%2F912954277" anchor-label="createContent" id="-373987159%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-373987159%2FFunctions%2F912954277"><span>create</span><wbr><span><span>Content</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-373987159%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-373987159%2FFunctions%2F912954277"><span class="token function">createContent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ContentT</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="248688211%2FFunctions%2F912954277" anchor-label="createPoolableContent" id="248688211%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#248688211%2FFunctions%2F912954277"><span>create</span><wbr><span>Poolable</span><wbr><span><span>Content</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="248688211%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#248688211%2FFunctions%2F912954277"><span class="token function">createPoolableContent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">ContentT</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1864213397%2FFunctions%2F912954277" anchor-label="createRecyclingPool" id="-1864213397%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1864213397%2FFunctions%2F912954277"><span>create</span><wbr><span>Recycling</span><wbr><span><span>Pool</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1864213397%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1864213397%2FFunctions%2F912954277"><span class="token function">createRecyclingPool</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/MountItemsPool.ItemPool///PointingToDeclaration/">MountItemsPool.ItemPool</span><span class="token operator">?</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-182838811%2FFunctions%2F912954277" anchor-label="detachBinders" id="-182838811%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-182838811%2FFunctions%2F912954277"><span>detach</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-182838811%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-182838811%2FFunctions%2F912954277"><span class="token function">detachBinders</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>p2<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">p3<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Systracer///PointingToDeclaration/">Systracer</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-263978032%2FFunctions%2F912954277" anchor-label="doesMountRenderTreeHosts" id="-263978032%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-263978032%2FFunctions%2F912954277"><span>does</span><wbr><span>Mount</span><wbr><span>Render</span><wbr><span>Tree</span><wbr><span><span>Hosts</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-263978032%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-263978032%2FFunctions%2F912954277"><span class="token function">doesMountRenderTreeHosts</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1162003244%2FFunctions%2F912954277" anchor-label="getAttachBinders" id="-1162003244%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1162003244%2FFunctions%2F912954277"><span>get</span><wbr><span>Attach</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1162003244%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span></div></div><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1162003244%2FFunctions%2F912954277"><span class="token function">getAttachBinders</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1285942971%2FFunctions%2F912954277" anchor-label="getAttachBinderTypeToDelegateMap" id="-1285942971%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1285942971%2FFunctions%2F912954277"><span>get</span><wbr><span>Attach</span><wbr><span>Binder</span><wbr><span>Type</span><wbr><span>To</span><wbr><span>Delegate</span><wbr><span><span>Map</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1285942971%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span></div></div><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1285942971%2FFunctions%2F912954277"><span class="token function">getAttachBinderTypeToDelegateMap</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-597282417%2FFunctions%2F912954277" anchor-label="getContentAllocator" id="-597282417%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="get-content-allocator.html"><span>get</span><wbr><span>Content</span><wbr><span><span>Allocator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-597282417%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="get-content-allocator.html"><span class="token function">getContentAllocator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/ContentAllocator///PointingToDeclaration/">ContentAllocator</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="625020161%2FFunctions%2F912954277" anchor-label="getDescription" id="625020161%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#625020161%2FFunctions%2F912954277"><span>get</span><wbr><span><span>Description</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="625020161%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#625020161%2FFunctions%2F912954277"><span class="token function">getDescription</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="553738055%2FFunctions%2F912954277" anchor-label="getId" id="553738055%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#553738055%2FFunctions%2F912954277"><span>get</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="553738055%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#553738055%2FFunctions%2F912954277"><span class="token function">getId</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1710038546%2FFunctions%2F912954277" anchor-label="getMountBinders" id="1710038546%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#1710038546%2FFunctions%2F912954277"><span>get</span><wbr><span>Mount</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1710038546%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span></div></div><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#1710038546%2FFunctions%2F912954277"><span class="token function">getMountBinders</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html">MutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-171198845%2FFunctions%2F912954277" anchor-label="getMountBinderTypeToDelegateMap" id="-171198845%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-171198845%2FFunctions%2F912954277"><span>get</span><wbr><span>Mount</span><wbr><span>Binder</span><wbr><span>Type</span><wbr><span>To</span><wbr><span>Delegate</span><wbr><span><span>Map</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-171198845%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span></div></div><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-171198845%2FFunctions%2F912954277"><span class="token function">getMountBinderTypeToDelegateMap</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html">MutableMap</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">, </span><span class="token keyword"></span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.DelegateBinder///PointingToDeclaration/">RenderUnit.DelegateBinder</span><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token punctuation">, </span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1853822008%2FFunctions%2F912954277" anchor-label="getPoolableContentType" id="1853822008%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#1853822008%2FFunctions%2F912954277"><span>get</span><wbr><span>Poolable</span><wbr><span>Content</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1853822008%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1853822008%2FFunctions%2F912954277"><span class="token function">getPoolableContentType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-807030720%2FFunctions%2F912954277" anchor-label="getRenderContentType" id="-807030720%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-807030720%2FFunctions%2F912954277"><span>get</span><wbr><span>Render</span><wbr><span>Content</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-807030720%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-807030720%2FFunctions%2F912954277"><span class="token function">getRenderContentType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1372031214%2FFunctions%2F912954277" anchor-label="getRenderType" id="-1372031214%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1372031214%2FFunctions%2F912954277"><span>get</span><wbr><span>Render</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1372031214%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1372031214%2FFunctions%2F912954277"><span class="token function">getRenderType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/RenderUnit.RenderType///PointingToDeclaration/">RenderUnit.RenderType</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1602216633%2FFunctions%2F912954277" anchor-label="isRecyclingDisabled" id="1602216633%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#1602216633%2FFunctions%2F912954277"><span>is</span><wbr><span>Recycling</span><wbr><span><span>Disabled</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1602216633%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#1602216633%2FFunctions%2F912954277"><span class="token function">isRecyclingDisabled</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-714183610%2FFunctions%2F912954277" anchor-label="mount" id="-714183610%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="mount.html"><span><span>mount</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-714183610%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="mount.html"><span class="token function">mount</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">content<span class="token operator">: </span><a href="index.html">ContentT</a><span class="token punctuation">, </span></span><span class="parameter ">layoutData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called just before mounting the content. Use it to set properties on the content. This method is always called from the main thread.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1159463403%2FFunctions%2F912954277" anchor-label="mountBinders" id="-1159463403%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-1159463403%2FFunctions%2F912954277"><span>mount</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1159463403%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#-1159463403%2FFunctions%2F912954277"><span class="token function">mountBinders</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>p2<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">p3<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Systracer///PointingToDeclaration/">Systracer</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-101752760%2FFunctions%2F912954277" anchor-label="onCreateMountContentPool" id="-101752760%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-101752760%2FFunctions%2F912954277"><span>on</span><wbr><span>Create</span><wbr><span>Mount</span><wbr><span>Content</span><wbr><span><span>Pool</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-101752760%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-101752760%2FFunctions%2F912954277"><span class="token function">onCreateMountContentPool</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/MountItemsPool.ItemPool///PointingToDeclaration/">MountItemsPool.ItemPool</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-567448318%2FFunctions%2F912954277" anchor-label="poolSize" id="-567448318%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-567448318%2FFunctions%2F912954277"><span>pool</span><wbr><span><span>Size</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-567448318%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-567448318%2FFunctions%2F912954277"><span class="token function">poolSize</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-493912674%2FFunctions%2F912954277" anchor-label="setId" id="-493912674%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#-493912674%2FFunctions%2F912954277"><span>set</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-493912674%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-493912674%2FFunctions%2F912954277"><span class="token function">setId</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1900623482%2FFunctions%2F912954277" anchor-label="shouldUpdate" id="1900623482%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="should-update.html"><span>should</span><wbr><span><span>Update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1900623482%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-update.html"><span class="token function">shouldUpdate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newMountable<span class="token operator">: </span><a href="index.html">SimpleMountable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">currentLayoutData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">nextLayoutData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><br><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="should-update.html"><span class="token function">shouldUpdate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">currentMountable<span class="token operator">: </span><a href="index.html">SimpleMountable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">newMountable<span class="token operator">: </span><a href="index.html">SimpleMountable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">ContentT</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">currentLayoutData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">nextLayoutData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Called to check if properties need to be reset. This is expected to be done by invoking <a href="unmount.html">unmount</a> and then <a href="mount.html">mount</a> if this function returns true.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="666878047%2FFunctions%2F912954277" anchor-label="unmount" id="666878047%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="unmount.html"><span><span>unmount</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="666878047%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="unmount.html"><span class="token function">unmount</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">c<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">content<span class="token operator">: </span><a href="index.html">ContentT</a><span class="token punctuation">, </span></span><span class="parameter ">layoutData<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Called just after unmounting the content. Use it to unset properties on the content. This method is always called from the main thread.</p></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="687419356%2FFunctions%2F912954277" anchor-label="unmountBinders" id="687419356%2FFunctions%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="index.html#687419356%2FFunctions%2F912954277"><span>unmount</span><wbr><span><span>Binders</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="687419356%2FFunctions%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">override </span><span class="token keyword">fun </span><a href="index.html#687419356%2FFunctions%2F912954277"><span class="token function">unmountBinders</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="androidx.annotation/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>p2<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">p3<span class="token operator">: </span><span data-unresolved-link="com.facebook.rendercore/Systracer///PointingToDeclaration/">Systracer</span></span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+

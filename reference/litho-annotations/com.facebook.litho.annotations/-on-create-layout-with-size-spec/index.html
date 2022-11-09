@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>OnCreateLayoutWithSizeSpec</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>Litho</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="litho-annotations::com.facebook.litho.annotations/OnCreateLayoutWithSizeSpec///PointingToDeclaration//-246487483">
+  <div class="breadcrumbs"><a href="../../index.html">litho-annotations</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.annotations</a><span class="delimiter">/</span><span class="current">OnCreateLayoutWithSizeSpec</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>On</span><wbr><span>Create</span><wbr><span>Layout</span><wbr><span>With</span><wbr><span>Size</span><wbr><span><span>Spec</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html"><span class="token annotation builtin">Retention</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/RetentionPolicy.html">RetentionPolicy.CLASS</a></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="index.html">OnCreateLayoutWithSizeSpec</a></div><p class="paragraph"><code class="lang-kotlin">OnCreateLayoutWithSizeSpec</code> is the same as <a href="../-on-create-layout/index.html">OnCreateLayout</a> but the layout can be resolved with a specified width and height. Use this instead of <code class="lang-kotlin">OnCreateLayout</code> if the <a href="../-layout-spec/index.html">LayoutSpec</a> returns a layout tree that depends on its own and/or its children's size. </p><p class="paragraph">For example, a spec might use Component <code class="lang-kotlin">A</code> if that fits within the specified width or use Component <code class="lang-kotlin">B</code> instead. </p><p class="paragraph">The annotated method must return a Component and can receive the following arguments. </p><p class="paragraph">Required:</p><ol><li>ComponentContext </li><li>int (width spec) </li><li>int (height spec) </li></ol><p class="paragraph">Optional and annotated arguments:</p><ul><li><a href="../-prop/index.html">Prop</a></li><li><a href="../-tree-prop/index.html">TreeProp</a></li><li><a href="../-inject-prop/index.html">InjectProp</a></li><li><a href="../-state/index.html">State</a></li><li><code class="lang-kotlin">Output</code></li></ul><p class="paragraph">The annotation processor will validate this and other invariants in the API at build time. The optional and annotated arguments are inputs which should be used to create the layout of the spec. </p><p class="paragraph">For example: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@LayoutSpec
+class MyComponentSpec {
+
+ @OnCreateLayoutWithSizeSpec
+  static Component onCreateLayoutWithSizeSpec(
+      ComponentContext c,
+      int widthSpec,
+      int heightSpec) {
+
+    final Component textComponent =
+        Text.create(c).textSizeSp(16).text("Some text to measure.").build();
+
+    // UNSPECIFIED sizeSpecs will measure the text as being one line only,
+    // having unlimited width.
+    final Size textOutputSize = new Size();
+    textComponent.measure(
+        c,
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+        textOutputSize);
+
+    // Small component to use in case textComponent does not fit within the current layout.
+    final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
+
+    // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
+    final int layoutWidth = SizeSpec.getSize(widthSpec);
+    final boolean textFits = (textOutputSize.width &lt;= layoutWidth);
+
+    return textFits ? textComponent : imageComponent;
+  }
+}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="See also">See also</button></div>
+    <div class="tabs-section-body">
+      <h4 class="">See also</h4>
+      <div data-togglable="See also">
+        <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="See also"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div data-togglable="See also"><div class="table" data-togglable="See also"><div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex"><div><a href="../-on-create-layout/index.html"><span>On</span><wbr><span>Create</span><wbr><span><span>Layout</span></span></a></div></span></div><div></div></div></div></div></div></div></div>
+      </div>
+      <h2 class="">Functions</h2>
+      <div class="table" data-togglable="Functions"><a data-name="-2087345088%2FFunctions%2F-246487483" anchor-label="annotationType" id="-2087345088%2FFunctions%2F-246487483" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-on-detached/index.html#-2087345088%2FFunctions%2F-246487483"><span>annotation</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2087345088%2FFunctions%2F-246487483"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-on-detached/index.html#-2087345088%2FFunctions%2F-246487483"><span class="token function">annotationType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html">Class</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Annotation.html">Annotation</a><span class="token operator">&gt;</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1297283241%2FFunctions%2F-246487483" anchor-label="equals" id="-1297283241%2FFunctions%2F-246487483" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-on-detached/index.html#-1297283241%2FFunctions%2F-246487483"><span><span>equals</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1297283241%2FFunctions%2F-246487483"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-on-detached/index.html#-1297283241%2FFunctions%2F-246487483"><span class="token function">equals</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-867487634%2FFunctions%2F-246487483" anchor-label="hashCode" id="-867487634%2FFunctions%2F-246487483" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-on-detached/index.html#-867487634%2FFunctions%2F-246487483"><span>hash</span><wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-867487634%2FFunctions%2F-246487483"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-on-detached/index.html#-867487634%2FFunctions%2F-246487483"><span class="token function">hashCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1045653699%2FFunctions%2F-246487483" anchor-label="toString" id="-1045653699%2FFunctions%2F-246487483" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main"></a>
+        <div class="table-row" data-filterable-current=":litho-annotations:dokkaHtmlPartial/main" data-filterable-set=":litho-annotations:dokkaHtmlPartial/main">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="../-on-detached/index.html#-1045653699%2FFunctions%2F-246487483"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1045653699%2FFunctions%2F-246487483"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-annotations:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-on-detached/index.html#-1045653699%2FFunctions%2F-246487483"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+

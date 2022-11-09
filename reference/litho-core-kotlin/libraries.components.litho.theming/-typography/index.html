@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Typography</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+<a href="../../../index.html">
+<span>Litho</span>            </a>    </div>
+    <div>
+    </div>
+    <div class="pull-right d-flex">
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" id="content" pageids="litho-core-kotlin::libraries.components.litho.theming/Typography///PointingToDeclaration//912954277">
+  <div class="breadcrumbs"><a href="../../index.html">litho-core-kotlin</a><span class="delimiter">/</span><a href="../index.html">libraries.components.litho.theming</a><span class="delimiter">/</span><span class="current">Typography</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Typography</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Typography</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>h1<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(fontSize = 48.sp, typeface = Typeface.DEFAULT_BOLD)<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>h2<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(fontSize = 30.sp, typeface = Typeface.DEFAULT_BOLD)<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>subtitle1<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(
+            fontColor = Color.GRAY,
+            fontSize = 16.sp,
+        )<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>body1<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(
+            fontColor = Color.GRAY,
+            fontSize = 14.sp,
+        )</span></span><span class="token punctuation">)</span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
+    <div class="tabs-section-body">
+      <h2 class="tabbedcontent">Constructors</h2>
+      <div class="table" data-togglable="Constructors"><a data-name="569809685%2FConstructors%2F912954277" anchor-label="Typography" id="569809685%2FConstructors%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue TabbedContent">
+            <div class=""><span class="inline-flex">
+                <div><a href="-typography.html"><span><span>Typography</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="569809685%2FConstructors%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-typography.html"><span class="token function">Typography</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">h1<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(fontSize = 48.sp, typeface = Typeface.DEFAULT_BOLD)<span class="token punctuation">, </span></span><span class="parameter ">h2<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(fontSize = 30.sp, typeface = Typeface.DEFAULT_BOLD)<span class="token punctuation">, </span></span><span class="parameter ">subtitle1<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(
+            fontColor = Color.GRAY,
+            fontSize = 16.sp,
+        )<span class="token punctuation">, </span></span><span class="parameter ">body1<span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a><span class="token operator"> = </span>TextStyle(
+            fontColor = Color.GRAY,
+            fontSize = 14.sp,
+        )</span></span><span class="token punctuation">)</span></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="">Properties</h2>
+      <div class="table" data-togglable="Properties"><a data-name="-910061934%2FProperties%2F912954277" anchor-label="body1" id="-910061934%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="body1.html"><span><span>body1</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-910061934%2FProperties%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><a data-name="-910061934%2FProperties%2F912954277" anchor-label="body1" id="-910061934%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="body1.html">body1</a><span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1451492048%2FProperties%2F912954277" anchor-label="h1" id="1451492048%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="h1.html"><span><span>h1</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1451492048%2FProperties%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><a data-name="1451492048%2FProperties%2F912954277" anchor-label="h1" id="1451492048%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="h1.html">h1</a><span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="1482511855%2FProperties%2F912954277" anchor-label="h2" id="1482511855%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="h2.html"><span><span>h2</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1482511855%2FProperties%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><a data-name="1482511855%2FProperties%2F912954277" anchor-label="h2" id="1482511855%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="h2.html">h2</a><span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<a data-name="-1854875768%2FProperties%2F912954277" anchor-label="subtitle1" id="-1854875768%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a>
+        <div class="table-row" data-filterable-current=":litho-core-kotlin:dokkaHtmlPartial/release" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release">
+          <div class="main-subrow keyValue ">
+            <div class=""><span class="inline-flex">
+                <div><a href="subtitle1.html"><span><span>subtitle1</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1854875768%2FProperties%2F912954277"></span>
+                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                </span></span></div>
+            <div>
+              <div class="title">
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core-kotlin:dokkaHtmlPartial/release"><a data-name="-1854875768%2FProperties%2F912954277" anchor-label="subtitle1" id="-1854875768%2FProperties%2F912954277" data-filterable-set=":litho-core-kotlin:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="subtitle1.html">subtitle1</a><span class="token operator">: </span><a href="../-text-style/index.html">TextStyle</a></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2022 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+
+</body></html>
+
