@@ -33,9 +33,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useProducer]. */
 @OptIn(ExperimentalCoroutinesApi::class)
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(AndroidJUnit4::class)
 class UseProducerTest {
 

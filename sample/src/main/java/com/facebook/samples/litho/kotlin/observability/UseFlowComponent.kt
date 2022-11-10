@@ -16,21 +16,20 @@
 
 package com.facebook.samples.litho.kotlin.observability
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.livedata.useLiveData
+import com.facebook.litho.useFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 // start_example
-internal class UseLiveDataComponent(
-    private val viewModel: FakeLiveDataViewModel = FakeLiveDataViewModel()
-) : KComponent() {
+internal class UseFlowComponent(private val viewModel: FakeFlowViewModel = FakeFlowViewModel()) :
+    KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    val viewState = useLiveData(viewModel.liveData) ?: error("should not be null")
+    val viewState = useFlow(viewModel.flow)
 
     return Column {
       child(HeaderComponent(viewState.name))
@@ -43,16 +42,16 @@ internal class UseLiveDataComponent(
 }
 // end_example
 
-internal class FakeLiveDataViewModel {
+internal class FakeFlowViewModel {
 
   private var myCounter = 10
   private val name = "John"
 
-  private val _liveData = MutableLiveData(ViewState(myCounter, name))
-  internal val liveData: LiveData<ViewState> = _liveData
+  private val _flow = MutableStateFlow(ViewState(myCounter, name))
+  internal val flow: StateFlow<ViewState> = _flow
 
   fun onIncrementCounterClick() {
     myCounter++
-    _liveData.value = ViewState(myCounter, name)
+    _flow.value = ViewState(myCounter, name)
   }
 }

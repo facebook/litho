@@ -42,8 +42,11 @@ android {
 }
 
 dependencies {
+    compileOnly project(':litho-sections-annotations')
+
     implementation project(':litho-core')
     implementation project(':litho-core-kotlin')
+    implementation project(':litho-coroutines-kotlin')
     implementation project(':litho-editor-core')
     implementation project(':litho-editor-flipper')
     implementation project(':litho-fresco')
@@ -53,7 +56,7 @@ dependencies {
     implementation project(':litho-sections-widget')
     implementation project(':litho-widget')
     implementation project(':litho-widget-kotlin')
-    compileOnly project(':litho-sections-annotations')
+
     kapt project(':litho-processor')
     kapt project(':litho-sections-processor')
 
@@ -69,14 +72,15 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     // Support Library
+    implementation deps.archLifecycle
+    implementation deps.kotlinCoroutines
     implementation deps.kotlinStandardLib
+    implementation deps.liveData
     implementation deps.supportAppCompat
     implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.supportTransition
-    implementation deps.archLifecycle
-    implementation deps.liveData
 
 
     // Integration test only

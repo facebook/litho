@@ -117,6 +117,7 @@ import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleCompon
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.controllers.ControllersExampleComponent
+import com.facebook.samples.litho.kotlin.observability.UseFlowComponent
 import com.facebook.samples.litho.kotlin.observability.UseLiveDataComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
@@ -290,8 +291,8 @@ class Demos {
                     DemoGrouping(
                         name = "Observability",
                         listOf(
-                            SingleDemo(
-                                name = "useLiveData", component = UseLiveDataComponent()))))),
+                            SingleDemo(name = "useLiveData", component = UseLiveDataComponent()),
+                            SingleDemo(name = "useFlow", component = UseFlowComponent()))))),
             DemoList(
                 name = "Java API Demos",
                 listOf(
