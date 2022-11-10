@@ -25,6 +25,8 @@ com.facebook.litho.transition
 com.facebook.litho.view
 com.facebook.litho.visibility
 libraries.components.litho.theming
+module:litho-coroutines-kotlin
+com.facebook.litho
 module:litho-testing
 com.facebook.litho
 com.facebook.litho.componentsfinder
