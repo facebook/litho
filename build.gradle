@@ -48,6 +48,17 @@ subprojects {
         enabled = false
     }
 
+    tasks.withType(org.jetbrains.dokka.gradle.DokkaTaskPartial).configureEach {
+        dokkaSourceSets {
+            configureEach {
+                def module_docs_file = 'module-docs.md'
+                if (file(module_docs_file).exists()) {
+                    includes.from(module_docs_file)
+                }
+            }
+        }
+    }
+
     afterEvaluate {
         tasks.withType(Test) {
             it.dependsOn copyYogaLibs
