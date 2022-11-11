@@ -27,6 +27,8 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
       ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
   private final boolean defaultIsSplitFuturesEnabled =
       ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
+  private final boolean defaultIsInterruptEarlyEnabled =
+      ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
@@ -34,6 +36,8 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
         !defaultReuseLastMeasuredNodeInComponentMeasure;
     ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled = !defaultIsSplitFuturesEnabled;
+    ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled =
+        !defaultIsInterruptEarlyEnabled;
   }
 
   @Override
@@ -42,5 +46,7 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
         defaultReuseLastMeasuredNodeInComponentMeasure;
     ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled = defaultIsSplitFuturesEnabled;
+    ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled =
+        defaultIsInterruptEarlyEnabled;
   }
 }

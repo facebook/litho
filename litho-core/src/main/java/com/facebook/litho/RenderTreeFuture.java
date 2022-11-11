@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 
 public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
@@ -81,6 +82,9 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     mResolveVersion = resolveVersion;
     mSyncWidthSpec = syncWidthSpec;
     mSyncHeightSpec = syncHeightSpec;
+
+    // Allow interrupt to happen during tryRegisterForResponse when config is enabled.
+    mEnableEarlyInterrupt = ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
   }
 
   @Override

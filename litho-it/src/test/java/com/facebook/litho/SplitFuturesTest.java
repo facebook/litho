@@ -43,7 +43,6 @@ import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
 import com.facebook.litho.widget.RenderAndLayoutCountingTester;
 import com.facebook.litho.widget.RenderAndLayoutCountingTesterSpec;
 import com.facebook.litho.widget.Text;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -799,7 +798,6 @@ public class SplitFuturesTest {
    * process.
    */
   @Test
-  @Ignore("TODO: T137503508 - this test is flakey with latest iteration")
   public void testSyncRenderContinuesAsyncOnMainThread() {
     // Only relevant when futures are split
     if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {

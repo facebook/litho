@@ -61,6 +61,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   protected final RunnableFuture<TreeFutureResult<T>> mFutureTask;
   protected final boolean mMoveOperationsBetweenThreads;
 
+  protected boolean mEnableEarlyInterrupt = false;
+
   public TreeFuture(boolean moveOperationsBetweenThreads) {
     mMoveOperationsBetweenThreads = moveOperationsBetweenThreads;
     this.mFutureTask =
@@ -150,6 +152,10 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       }
     }
 
+    if (mEnableEarlyInterrupt) {
+      maybeInterruptEarly();
+    }
+
     // If we haven't returned false by now, we are now marked NON_INTERRUPTIBLE so we're good to
     // wait on this future
     mRefCount.incrementAndGet();
@@ -233,6 +239,24 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    */
   protected Systracer.ArgsBuilder addSystraceArgs(final Systracer.ArgsBuilder argsBuilder) {
     return argsBuilder;
+  }
+
+  /**
+   * When called, this method will apply the iterrupt logic when calling tryRegisterForResponse,
+   * rather than during runAndGet. This ensures that a tight race between reusing a future and
+   * interrupting it can't happen, making the interruption and reuse logic a single operation.
+   *
+   * <p>In doing so, we can ensure that async tasks that are interrupted by equivalent sync tasks do
+   * not proceed and return null as intended.
+   */
+  private void maybeInterruptEarly() {
+    final int runningThreadId = mRunningThreadId.get();
+    final boolean isRunningOnDifferentThread =
+        !mFutureTask.isDone() && runningThreadId != -1 && runningThreadId != Process.myTid();
+
+    if (mMoveOperationsBetweenThreads && isRunningOnDifferentThread && isMainThread()) {
+      tryMoveToInterruptedState();
+    }
   }
 
   /**
