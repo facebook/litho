@@ -310,13 +310,9 @@ public class SplitFuturesTest {
     final boolean[] isReusingFutureHolder = new boolean[1];
 
     final ComponentTree.FutureExecutionListener futureExecutionListener =
-        new ComponentTree.FutureExecutionListener() {
-          @Override
-          public void onPreExecution(ComponentTree.FutureExecutionType futureExecutionType) {
-            secondFuturePreExecutionLatch.release();
-            isReusingFutureHolder[0] =
-                futureExecutionType == ComponentTree.FutureExecutionType.REUSE_FUTURE;
-          }
+        type -> {
+          secondFuturePreExecutionLatch.release();
+          isReusingFutureHolder[0] = type == ComponentTree.FutureExecutionType.REUSE_FUTURE;
         };
 
     runOnBackgroundThread(
@@ -519,7 +515,7 @@ public class SplitFuturesTest {
             if (isFirst) {
               mLegacyLithoViewRule
                   .getComponentTree()
-                  .setFutureExecutionListener(type -> latch.release() /* release first set root */);
+                  .setFutureExecutionListener(type -> latch.release());
 
               mLegacyLithoViewRule.setRootAsync(mLegacyLithoViewRule.getComponentTree().getRoot());
               runOnBackgroundThread(mLegacyLithoViewRule::idle /* run async set root */);
@@ -852,28 +848,31 @@ public class SplitFuturesTest {
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
 
     // run to end of tasks on background to avoid blocking here
-    runOnBackgroundThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            mLegacyLithoViewRule.idle();
-          }
-        });
+    final TimeOutSemaphore bgThreadLatch =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mLegacyLithoViewRule.runToEndOfBackgroundTasks();
+              }
+            });
 
     // Wait for async render to start
     waitForAsyncRenderToStartLatch.acquire();
 
     componentTree.setFutureExecutionListener(
-        new ComponentTree.FutureExecutionListener() {
-          @Override
-          public void onPreExecution(ComponentTree.FutureExecutionType futureExecutionType) {
-            // Inform 2nd future's pre-execution occurred.
-            waitForSecondPreFutureExecutionLatch.release();
-          }
+        type -> {
+          componentTree.setFutureExecutionListener(null);
+
+          // Inform 2nd future's pre-execution occurred.
+          waitForSecondPreFutureExecutionLatch.release();
         });
 
     // Set root and sync-spec sync
     componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
+
+    // Let the bg thread finish
+    bgThreadLatch.acquire();
 
     // Ensure render and measure only happened once
     assertThat(counter.getRenderCount()).isEqualTo(1);
@@ -940,13 +939,14 @@ public class SplitFuturesTest {
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
 
     // run to end of tasks on background to avoid blocking here
-    runOnBackgroundThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            mLegacyLithoViewRule.idle();
-          }
-        });
+    final TimeOutSemaphore bgThreadLatch =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mLegacyLithoViewRule.runToEndOfBackgroundTasks();
+              }
+            });
 
     // Wait for async measure to start
     waitForAsyncMeasureToStartLatch.acquire();
@@ -954,20 +954,20 @@ public class SplitFuturesTest {
     final boolean[] isFutureReusedHolder = new boolean[1];
 
     componentTree.setFutureExecutionListener(
-        new ComponentTree.FutureExecutionListener() {
-          @Override
-          public void onPreExecution(ComponentTree.FutureExecutionType futureExecutionType) {
+        type -> {
+          componentTree.setFutureExecutionListener(null);
 
-            // Inform second future pre-execution has occurred.
-            waitForSecondFuturePreExecutionLatch.release();
+          // Inform second future pre-execution has occurred.
+          waitForSecondFuturePreExecutionLatch.release();
 
-            isFutureReusedHolder[0] =
-                futureExecutionType == ComponentTree.FutureExecutionType.REUSE_FUTURE;
-          }
+          isFutureReusedHolder[0] = type == ComponentTree.FutureExecutionType.REUSE_FUTURE;
         });
 
     // Set root and sync-spec sync
     componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
+
+    // Let the bg thread finish
+    bgThreadLatch.acquire();
 
     // Ensure render and measure only happened once
     assertThat(counter.getRenderCount()).isEqualTo(1);

@@ -460,8 +460,16 @@ constructor(
    * the queue
    */
   fun idle() {
-    threadLooperController.runToEndOfTasksSync()
+    runToEndOfBackgroundTasks()
     shadowOf(Looper.getMainLooper()).idle()
+  }
+
+  /**
+   * Runs through all tasks on the background thread only, not touching the main lopper, blocking
+   * until it completes.
+   */
+  fun runToEndOfBackgroundTasks() {
+    threadLooperController.runToEndOfTasksSync()
   }
 
   /**
