@@ -18,12 +18,12 @@ package com.facebook.samples.litho.kotlin.animations.dynamicprops
 
 import android.content.Context
 import com.facebook.litho.DynamicValue
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 class ClockFaceMountable(private val time: DynamicValue<Long>, private val style: Style? = null) :
@@ -43,11 +43,7 @@ class ClockFaceMountable(private val time: DynamicValue<Long>, private val style
 
     override fun unmount(c: Context, content: SimpleClockView, layoutData: Any?) = Unit
 
-    override fun measure(
-        context: LayoutContext<*>,
-        widthSpec: Int,
-        heightSpec: Int,
-        previousLayoutData: Any?
-    ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
+    override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
+        fromSpecs(widthSpec, heightSpec)
   }
 }

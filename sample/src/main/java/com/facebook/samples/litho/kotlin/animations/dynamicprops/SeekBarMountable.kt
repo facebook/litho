@@ -18,12 +18,12 @@ package com.facebook.samples.litho.kotlin.animations.dynamicprops
 
 import android.content.Context
 import android.widget.SeekBar
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 class SeekBarMountable(
@@ -64,11 +64,7 @@ class SeekBarMountable(
       content.setOnSeekBarChangeListener(null)
     }
 
-    override fun measure(
-        context: LayoutContext<*>,
-        widthSpec: Int,
-        heightSpec: Int,
-        previousLayoutData: Any?
-    ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
+    override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
+        fromSpecs(widthSpec, heightSpec)
   }
 }

@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
 import com.facebook.litho.DrawableMatrix
 import com.facebook.litho.MatrixDrawable
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
@@ -30,8 +31,6 @@ import com.facebook.litho.SizeSpec
 import com.facebook.litho.SizeSpec.UNSPECIFIED
 import com.facebook.litho.Style
 import com.facebook.litho.drawable.DrawableUtils
-import com.facebook.litho.utils.MeasureUtils
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 /**
@@ -66,12 +65,7 @@ internal class ImageMountable(
     return MatrixDrawable()
   }
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     val size = Size()
 
     val intrinsicWidth = drawable.intrinsicWidth
@@ -83,9 +77,8 @@ internal class ImageMountable(
     } else {
       val aspectRatio = intrinsicWidth.toFloat() / intrinsicHeight.toFloat()
 
-      // MeasureUtils.measureWithAspectRatio will appropriately set sizes on the size object
-      MeasureUtils.measureWithAspectRatio(
-          widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size)
+      // measureWithAspectRatio will appropriately set sizes on the size object
+      withAspectRatio(widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size)
     }
 
     val matrix =

@@ -18,6 +18,8 @@ package com.facebook.litho
 
 import android.content.Context
 import com.facebook.rendercore.ContentAllocator
+import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit
 
@@ -35,6 +37,18 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
         DelegateBinder.createDelegateBinder(
             this, BINDER as Binder<SimpleMountable<ContentT>, ContentT>))
   }
+
+  final override fun measure(
+      context: LayoutContext<*>,
+      widthSpec: Int,
+      heightSpec: Int,
+      previousLayoutData: Any?
+  ): MeasureResult {
+    val measureScope = MeasureScope(context, previousLayoutData)
+    return measureScope.measure(widthSpec, heightSpec)
+  }
+
+  abstract fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult
 
   /**
    * Called just before mounting the content. Use it to set properties on the content. This method

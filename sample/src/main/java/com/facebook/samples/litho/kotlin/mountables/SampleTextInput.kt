@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
@@ -30,7 +31,6 @@ import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.utils.MeasureUtils
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 /**
@@ -61,19 +61,14 @@ internal class SampleTextInputMountable(
   }
 
   // start_measure_with_view_measurement
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     // The height should be the measured height of EditText with relevant params
-    val editTextForMeasure: EditText = AppCompatEditText(context.androidContext)
+    val editTextForMeasure: EditText = AppCompatEditText(androidContext)
 
     editTextForMeasure.hint = hint
     editTextForMeasure.background =
         getBackgroundOrDefault(
-            context.androidContext,
+            androidContext,
             if (inputBackground === ColorDrawable(Color.TRANSPARENT)) editTextForMeasure.background
             else inputBackground)
     editTextForMeasure.setText(initialText)

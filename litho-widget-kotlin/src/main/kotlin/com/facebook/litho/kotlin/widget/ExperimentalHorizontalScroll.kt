@@ -23,6 +23,7 @@ import android.widget.HorizontalScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoLayoutContextExtraData.LithoLayoutExtraData
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
@@ -34,7 +35,6 @@ import com.facebook.litho.useState
 import com.facebook.litho.widget.HorizontalScrollEventsController
 import com.facebook.litho.widget.HorizontalScrollLithoView
 import com.facebook.litho.widget.ScrollStateListener
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.yoga.YogaDirection
 import kotlin.math.max
@@ -126,13 +126,7 @@ internal class HorizontalScrollMountable(
   override fun createContent(context: Context): HorizontalScrollLithoView =
       HorizontalScrollLithoView(context)
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
-
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     val size = Size()
     val width = max(0, SizeSpec.getSize(widthSpec))
 
@@ -145,7 +139,7 @@ internal class HorizontalScrollMountable(
     size.height = max(0, size.height)
 
     val extraLayoutData: LithoLayoutExtraData? =
-        context.layoutContextExtraData?.extraLayoutData as? LithoLayoutExtraData?
+        layoutContext.layoutContextExtraData?.extraLayoutData as? LithoLayoutExtraData?
     val direction = extraLayoutData?.layoutDirection ?: DEFAULT_LAYOUT_DIRECTION
     return MeasureResult(
         size.width, size.height, HorizontalScrollLayoutData(size.width, size.height, direction))

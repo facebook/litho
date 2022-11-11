@@ -19,13 +19,13 @@ package com.facebook.samples.litho.kotlin.mountables.controllers
 import android.content.Context
 import android.os.Build
 import android.widget.TimePicker
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.ThreadUtils
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 class TimePickerComponent(
@@ -53,13 +53,8 @@ internal class TimePickerMountable(
   }
   // mountable_component_end
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
-    return MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
+    return withEqualSize(widthSpec, heightSpec)
   }
 
   override fun shouldUpdate(

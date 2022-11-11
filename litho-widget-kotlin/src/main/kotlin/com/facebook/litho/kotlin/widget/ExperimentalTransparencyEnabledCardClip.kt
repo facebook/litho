@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.facebook.litho.DynamicValue
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
@@ -31,7 +32,6 @@ import com.facebook.litho.widget.CardClipDrawable.NONE
 import com.facebook.litho.widget.CardClipDrawable.TOP_LEFT
 import com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT
 import com.facebook.litho.widget.TransparencyEnabledCardClipDrawable
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 private const val DEFAULT_BACKGROUND_COLOR = Color.WHITE
@@ -92,12 +92,8 @@ internal class TransparencyEnabledCardClipMountable(
   override fun createContent(context: Context): TransparencyEnabledCardClipDrawable =
       TransparencyEnabledCardClipDrawable()
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
+      fromSpecs(widthSpec, heightSpec)
 
   override fun mount(c: Context, content: TransparencyEnabledCardClipDrawable, layoutData: Any?) {
     content.setBackgroundColor(cardBackgroundColor)

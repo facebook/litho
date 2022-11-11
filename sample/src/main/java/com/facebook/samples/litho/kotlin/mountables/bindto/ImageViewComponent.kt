@@ -20,13 +20,13 @@ import android.content.Context
 import android.graphics.Color
 import android.widget.ImageView
 import com.facebook.litho.DynamicValue
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.samples.litho.R
 import com.facebook.samples.litho.R.drawable.ic_launcher
@@ -67,17 +67,12 @@ internal class ImageViewMountable() : SimpleMountable<ImageView>(RenderType.VIEW
   // create_content_example_end
 
   // measure_example_start
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       MeasureResult(defaultSize, defaultSize)
     } else {
-      MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+      withEqualSize(widthSpec, heightSpec)
     }
   }
   // measure_example_end

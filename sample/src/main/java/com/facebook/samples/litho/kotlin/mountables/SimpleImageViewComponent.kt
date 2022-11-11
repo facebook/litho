@@ -18,13 +18,13 @@ package com.facebook.samples.litho.kotlin.mountables
 
 import android.content.Context
 import android.widget.ImageView
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.samples.litho.R
 
@@ -44,17 +44,12 @@ internal class SimpleImageViewMountable() : SimpleMountable<ImageView>(RenderTyp
 
   override fun createContent(context: Context): ImageView = ImageView(context)
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       MeasureResult(defaultSize, defaultSize)
     } else {
-      MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+      withEqualSize(widthSpec, heightSpec)
     }
   }
 

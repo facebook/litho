@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
@@ -28,7 +29,6 @@ import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
 import com.facebook.litho.theming.getTheme
 import com.facebook.litho.widget.ProgressView
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 /**
@@ -61,17 +61,12 @@ internal class ProgressMountable(
 
   override fun createContent(context: Context): ProgressView = ProgressView(context)
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       MeasureResult(defaultSize, defaultSize)
     } else {
-      MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
+      withEqualSize(widthSpec, heightSpec)
     }
   }
 

@@ -48,7 +48,6 @@ import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
@@ -729,12 +728,7 @@ open class ViewMountable(
     return view
   }
 
-  override fun measure(
-      context: LayoutContext<Any>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?,
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
     val width =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
@@ -791,12 +785,7 @@ class DrawableMountable(
     return drawable
   }
 
-  override fun measure(
-      context: LayoutContext<Any>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?,
-  ): MeasureResult {
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     val width =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
           SizeSpec.getSize(widthSpec)

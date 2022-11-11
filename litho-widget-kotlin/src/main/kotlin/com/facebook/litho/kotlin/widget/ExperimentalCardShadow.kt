@@ -17,13 +17,13 @@
 package com.facebook.litho.kotlin.widget
 
 import android.content.Context
+import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.Style
 import com.facebook.litho.widget.CardShadowDrawable
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 
 /**
@@ -106,10 +106,6 @@ internal class CardShadowMountable(
     content.setShadowDy(0f)
   }
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult = MeasureResult.fromSpecs(widthSpec, heightSpec)
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
+      fromSpecs(widthSpec, heightSpec)
 }

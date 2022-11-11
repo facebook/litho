@@ -28,7 +28,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.viewtree.ViewPredicates.hasVisibleText
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
-import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
@@ -355,12 +354,8 @@ internal class TestTextMountable(private val text: String, private val tag: Stri
 
   override fun createContent(context: Context): TextView = TextView(context)
 
-  override fun measure(
-      context: LayoutContext<*>,
-      widthSpec: Int,
-      heightSpec: Int,
-      previousLayoutData: Any?
-  ): MeasureResult = MeasureResult(100, 100)
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
+      MeasureResult(100, 100)
 
   override fun mount(c: Context, content: TextView, layoutData: Any?) {
     content.setText(text)
