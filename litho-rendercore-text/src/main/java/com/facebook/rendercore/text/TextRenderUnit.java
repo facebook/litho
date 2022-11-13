@@ -83,7 +83,8 @@ public class TextRenderUnit extends RenderUnit<RCTextView> implements ContentAll
               textLayoutContext.clickableSpans,
               textLayoutContext.textStyle.highlightStartOffset,
               textLayoutContext.textStyle.highlightEndOffset,
-              textLayoutContext.textStyle.highlightCornerRadius);
+              textLayoutContext.textStyle.highlightCornerRadius,
+              textLayoutContext.isExplicitlyTruncated);
 
           if (textLayoutContext.processedText instanceof MountableCharSequence) {
             ((MountableCharSequence) textLayoutContext.processedText).onMount(textView);

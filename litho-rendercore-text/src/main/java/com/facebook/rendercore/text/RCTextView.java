@@ -67,6 +67,7 @@ public class RCTextView extends View {
   private int mLinkColor;
   private int mHighlightColor;
   private int mHighlightCornerRadius;
+  private boolean mIsExplicitlyTruncated;
   private ImageSpan[] mImageSpans;
   private int mSelectionStart;
   private int mSelectionEnd;
@@ -131,7 +132,8 @@ public class RCTextView extends View {
       ClickableSpan[] clickableSpans,
       int highlightStartOffset,
       int highlightEndOffset,
-      int highlightCornerRadius) {
+      int highlightCornerRadius,
+      boolean isExplicitlyTruncated) {
     mText = text;
     mLayout = layout;
     mLayoutTranslationX = layoutTranslationX;
@@ -139,6 +141,7 @@ public class RCTextView extends View {
     mClipToBounds = clipToBounds;
     mHighlightColor = highlightColor;
     mHighlightCornerRadius = highlightCornerRadius;
+    mIsExplicitlyTruncated = isExplicitlyTruncated;
     if (linkColor != 0) {
       mColorStateList = null;
       mLinkColor = linkColor;
@@ -168,6 +171,10 @@ public class RCTextView extends View {
     mImageSpans = imageSpans;
     mClickableSpans = clickableSpans;
     invalidate();
+  }
+
+  public boolean isTextTruncated() {
+    return mIsExplicitlyTruncated || TextMeasurementUtils.getEllipsizedLineNumber(mLayout) != -1;
   }
 
   public void unmount() {
