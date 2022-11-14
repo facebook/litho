@@ -7,6 +7,8 @@ Mountable should implement a `measure()` function to define how it should measur
 
 The `measure()` function returns a `MeasureResult` object that contains the width and height of the content and, optionally, any layout data.
 
+Access to the utility methods that can be used to return appropriate `MeasureResult`, as well as androidContext and previousLayoutData, is possible in the `measure()` method via [MeasureScope](https://fburl.com/measurescope).
+
 :::note
 `measure()` method can be called on any thread, and has the following characteristics:
 - it must not cause any side effects

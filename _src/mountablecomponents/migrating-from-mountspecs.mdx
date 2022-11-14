@@ -89,7 +89,7 @@ More information on Mountable content creation can be found [here](mountable.mdx
 
 ### Migrating content pooling and pre-allocation
 
-For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the [ContentAllocator](introduction-to-rendercore.mdx/#contentallocator) returned from Mountable's `getContentAllocator()` method that can be used to configure the recycling pool and pre-allocation for content.
+For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the `ContentAllocator` returned from Mountable's `getContentAllocator()` method that can be used to configure the recycling pool and pre-allocation for content.
 
 Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, `getContentAllocator()` method should be overridden to return an implementation of the `ContentAllocator` interface and overridden 'canPreallocate()' and 'poolSize()' methods. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling. It is recommended to return a constant instance.
 
@@ -99,7 +99,7 @@ More information on Mountable content pooling can be found [here](mountable.mdx)
 
 For MountSpecs, @OnMount and @OnBind static annotated methods [could be used to set properties on content](../codegen/mount-specs.md/#mount-spec-component-lifecycle), along with matching @OnUnmount and @OnUnbind to unset properties.
 
-Mountable uses [Binders](introduction-to-rendercore.mdx/#binder) to set properties on the content, and the equivalent of those 2 methods is a single `Binder.bind()` method to set the properties, and matching `Binder.unbind()` method to unset them.
+Mountable uses `Binders` to set properties on the content, and the equivalent of those 2 methods is a single `Binder.bind()` method to set the properties, and matching `Binder.unbind()` method to unset them.
 
 Therefore, the contents of @OnMount and @OnBind should be merged into single `bind()` method when migrating to Mountable (or `SimpleMountable.mount()` when using `SimpleMountable`). Similarly, @OnUnbind and @OnUnmount should be merged to form `unbind()` method (in that particular order).
 
@@ -109,7 +109,7 @@ In MountSpecs it was impossible to implement granular binding - only one pair of
 
 More information on binding and unbinding content properties can be found [here](mountable.mdx/#binding-and-unbinding-content-properties).
 
-Each [Binder](introduction-to-rendercore.mdx/#binder) contains `shouldUpdate()` method, which can help to avoid remeasuring and remounting upon updates if the properties of interest have not changed. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs.
+Each `Binder` contains `shouldUpdate()` method, which can help to avoid remeasuring and remounting upon updates if the properties of interest have not changed. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs.
 
 :::note
 Each individual `shouldUpdate()` should compare old and new properties that are set in `mount()` method of the same Binder.
