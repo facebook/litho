@@ -2759,7 +2759,7 @@ public class ComponentTree implements LithoLifecycleListener {
     final @Nullable LayoutState layoutState = layoutStateHolder.result;
 
     if (layoutState == null) {
-      if (!isReleased() && isSync) {
+      if (!isReleased() && isSync && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
