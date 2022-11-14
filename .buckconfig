@@ -16,3 +16,6 @@
 
 [tools]
   java11_for_tests = "/usr/local/java-runtime/impl/11/bin/java"
+
+[cxx]
+  link_path_normalization_args_enabled = true
