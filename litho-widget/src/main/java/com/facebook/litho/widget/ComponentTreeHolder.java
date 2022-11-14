@@ -26,6 +26,8 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentTree.WorkingRangeAndPositionHolder;
+import com.facebook.litho.ComponentTree.WorkingRangeHolder;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
@@ -38,7 +40,6 @@ import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * A class used to store the data backing a {@link RecyclerBinder}. For each item the
@@ -115,6 +116,9 @@ public class ComponentTreeHolder {
 
   @GuardedBy("this")
   private int mLastRequestedHeightSpec = UNINITIALIZED;
+
+  @GuardedBy("this")
+  private WorkingRangeAndPositionHolder mPendingWorkingRangeAndPosition = null;
 
   public static Builder create() {
     return new Builder();
@@ -426,19 +430,30 @@ public class ComponentTreeHolder {
     mLastMeasuredHeight = height;
   }
 
-  synchronized void checkWorkingRangeAndDispatch(
+  void checkWorkingRangeAndDispatch(
       int position,
       int firstVisibleIndex,
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex) {
-    if (mComponentTree != null) {
-      mComponentTree.checkWorkingRangeAndDispatch(
-          position,
-          firstVisibleIndex,
-          lastVisibleIndex,
-          firstFullyVisibleIndex,
-          lastFullyVisibleIndex);
+    checkWorkingRangeAndDispatch(
+        new WorkingRangeAndPositionHolder(
+            position,
+            new WorkingRangeHolder(
+                firstVisibleIndex,
+                lastVisibleIndex,
+                firstFullyVisibleIndex,
+                lastFullyVisibleIndex)));
+  }
+
+  synchronized void checkWorkingRangeAndDispatch(
+      WorkingRangeAndPositionHolder workingRangeAndPosition) {
+    if (mComponentTree == null) {
+      if (ComponentsConfiguration.useReliableWorkingRange) {
+        mPendingWorkingRangeAndPosition = workingRangeAndPosition;
+      }
+    } else {
+      mComponentTree.checkWorkingRangeAndDispatch(workingRangeAndPosition);
     }
   }
 
@@ -502,6 +517,10 @@ public class ComponentTreeHolder {
 
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
+      }
+      if (mPendingWorkingRangeAndPosition != null) {
+        mComponentTree.checkWorkingRangeAndDispatch(mPendingWorkingRangeAndPosition);
+        mPendingWorkingRangeAndPosition = null;
       }
     }
   }
