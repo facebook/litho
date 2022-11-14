@@ -29,11 +29,18 @@ import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 
-class PlaygroundKComponent : KComponent() {
+data class LithoDataClass(val n: Int)
+
+class PlaygroundKComponent(
+    val pair: Pair<Int, Int> = Pair(1, 2),
+    val dataClass: LithoDataClass = LithoDataClass(7),
+) : KComponent() {
   override fun ComponentScope.render(): Component? {
     val counter = useState { 1 }
 
     return Column(style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } }) {
+      child(Text(text = "Pair ${pair.first} ${pair.second}", textSize = 20.sp))
+      child(Text(text = "dataClass ${dataClass.n}", textSize = 20.sp))
       child(Text(text = "Hello, Kotlin World!", textSize = 20.sp))
       child(
           Text(

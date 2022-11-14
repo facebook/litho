@@ -29,6 +29,7 @@ import com.facebook.litho.editor.instances.GenericEditorInstance;
 import com.facebook.litho.editor.instances.ListEditorInstance;
 import com.facebook.litho.editor.instances.MapEditorInstance;
 import com.facebook.litho.editor.instances.NumberEditorInstance;
+import com.facebook.litho.editor.instances.ObjectEditorInstance;
 import com.facebook.litho.editor.instances.StringEditorInstance;
 import com.facebook.litho.editor.instances.UtilSizeEditorInstance;
 import com.facebook.litho.editor.model.EditorValue;
@@ -53,6 +54,7 @@ public final class EditorRegistry {
   private EditorRegistry() {}
 
   private static final Map<Class<?>, Editor> EDITORS = new HashMap<>();
+  private static boolean USE_OBJECT_EDITOR = false;
 
   private static @Nullable Editor getEditor(final Class<?> c) {
 
@@ -62,7 +64,19 @@ public final class EditorRegistry {
       }
     }
 
+    if (USE_OBJECT_EDITOR) {
+      return ObjectEditorInstance.Companion.getInstance();
+    }
+
     return null;
+  }
+
+  public static void enableObjectEditor() {
+    USE_OBJECT_EDITOR = true;
+  }
+
+  public static void disableObjectEditor() {
+    USE_OBJECT_EDITOR = false;
   }
 
   public static void registerEditor(final Class<?> c, final Editor e) {

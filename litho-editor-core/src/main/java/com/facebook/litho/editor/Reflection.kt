@@ -16,9 +16,63 @@
 
 package com.facebook.litho.editor
 
+import java.lang.reflect.AccessibleObject
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 object Reflection {
+  private val cache = mutableMapOf<String, AccessibleObject>()
+  private inline fun <reified T> fromCache(key: String): T? = cache[key] as? T
+
+  private fun getCacheKey(obj: Any, name: String, vararg types: Class<*>) =
+      StringBuilder()
+          .apply {
+            val klass = obj as? Class<*> ?: obj::class.java
+            append(klass.name).append('#').append(name)
+            if (types.isNotEmpty()) {
+              append('(')
+              var separator = ""
+              types.forEach {
+                append(separator).append(it.name)
+                separator = ","
+              }
+              append(')')
+            }
+          }
+          .toString()
+
+  fun getMethod(obj: Any?, name: String, vararg types: Class<*>): Method? {
+    if (obj == null) return null
+    val key = getCacheKey(obj, name, *types)
+    return fromCache(key)
+        ?: run {
+          var klass: Class<*>? = obj as? Class<*> ?: obj.javaClass
+          while (klass != null) {
+            try {
+              klass.getDeclaredMethod(name, *types).let { method ->
+                if (!method.isAccessible) method.isAccessible = true
+                cache[key] = method
+                return method
+              }
+            } catch (ignored: NoSuchMethodException) {}
+            klass = klass.superclass
+          }
+          null
+        }
+  }
+
+  inline fun <reified T> invoke(
+      obj: Any?,
+      name: String,
+      types: Array<Class<*>> = emptyArray(),
+      vararg args: Any
+  ): T? =
+      try {
+        getMethod(obj, name, *types)?.run { invoke(obj, *args) as? T }
+      } catch (e: Exception) {
+        null
+      }
+
   fun <T> getValueUNSAFE(f: Field, node: Any?): T? {
     return try {
       val oldAccessibility = f.isAccessible
