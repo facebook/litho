@@ -15,8 +15,12 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka'
+// Dokka requires the kotlin plugin to be applied, however
+// since this module has no Kotlin, we make it conditional
+if (isDokkaBuild) {
+  apply plugin: 'kotlin-android'
+  apply plugin: 'org.jetbrains.dokka'
+}
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
