@@ -16,7 +16,6 @@
 
 package com.facebook.litho.editor;
 
-import com.facebook.litho.editor.instances.EditorUtils;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorColor;
@@ -47,7 +46,7 @@ public final class SimpleEditor {
 
       @Override
       public boolean write(final Field f, final Object node, final EditorValue values) {
-        final T value = EditorUtils.getNodeUNSAFE(f, node);
+        final T value = Reflection.INSTANCE.getValueUNSAFE(f, node);
         values.when(writeMutable(propertyEditor, value));
         return true;
       }
@@ -63,7 +62,7 @@ public final class SimpleEditor {
 
       @Override
       public boolean write(final Field f, final Object node, final EditorValue values) {
-        final T value = EditorUtils.getNodeUNSAFE(f, node);
+        final T value = Reflection.INSTANCE.getValueUNSAFE(f, node);
         values.when(writeImmutable(f, node, propertyEditor, value));
         return true;
       }
@@ -73,7 +72,7 @@ public final class SimpleEditor {
   // Read data
 
   private static <T> EditorValue makeValue(Field f, Object node, PropertyReader<T> propertyReader) {
-    T value = EditorUtils.getNodeUNSAFE(f, node);
+    T value = Reflection.INSTANCE.getValueUNSAFE(f, node);
     final Map<String, SimpleEditorValue> properties = propertyReader.readProperties(value);
     Map<String, EditorValue> shape = new HashMap<>();
     for (Map.Entry<String, SimpleEditorValue> property : properties.entrySet()) {
@@ -189,7 +188,7 @@ public final class SimpleEditor {
         final T newValue =
             propertyEditor.writeProperties(
                 value, stringProperties, numberProperties, boolProperties, pickProperties);
-        EditorUtils.setNodeUNSAFE(f, node, newValue);
+        Reflection.INSTANCE.setValueUNSAFE(f, node, newValue);
         return null;
       }
     };

@@ -19,6 +19,7 @@ package com.facebook.litho.editor.instances;
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -27,7 +28,7 @@ public class ComparableColorDrawableEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    ColorDrawable colorDrawable = EditorUtils.getNodeUNSAFE(f, node);
+    ColorDrawable colorDrawable = Reflection.INSTANCE.getValueUNSAFE(f, node);
     return colorDrawable == null
         ? EditorValue.string("null")
         : EditorValue.color(colorDrawable.getColor());
@@ -37,7 +38,7 @@ public class ComparableColorDrawableEditorInstance implements Editor {
   public boolean write(final Field f, final Object node, final EditorValue values) {
     ComparableColorDrawable comparableColorDrawable =
         ComparableColorDrawable.create(((EditorNumber) values).value.intValue());
-    EditorUtils.setNodeUNSAFE(f, node, comparableColorDrawable);
+    Reflection.INSTANCE.setValueUNSAFE(f, node, comparableColorDrawable);
     return true;
   }
 }

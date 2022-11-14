@@ -17,6 +17,7 @@
 package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -32,7 +33,7 @@ public class NumberEditorInstance<T extends Number> implements Editor {
   @Override
   public EditorValue read(Field f, Object node) {
     // If you use Number here it causes an exception when attempting to do implicit conversion
-    Object n = EditorUtils.<Object>getNodeUNSAFE(f, node);
+    Object n = Reflection.INSTANCE.<Object>getValueUNSAFE(f, node);
     return n == null ? EditorValue.string("null") : EditorValue.number(((Number) n).floatValue());
   }
 
@@ -57,7 +58,7 @@ public class NumberEditorInstance<T extends Number> implements Editor {
               value = value.longValue();
             } // else trust the value the user has input is assignable
             // to the one expected by the field
-            EditorUtils.setNodeUNSAFE(f, node, value);
+            Reflection.INSTANCE.setValueUNSAFE(f, node, value);
             return null;
           }
         });

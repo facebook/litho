@@ -17,6 +17,7 @@
 package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -25,7 +26,7 @@ public class StringEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    CharSequence value = EditorUtils.getNodeUNSAFE(f, node);
+    CharSequence value = Reflection.INSTANCE.getValueUNSAFE(f, node);
     value = value == null ? "null" : value;
     return EditorValue.string(value.toString());
   }
@@ -36,7 +37,8 @@ public class StringEditorInstance implements Editor {
         new EditorValue.DefaultEditorVisitor() {
           @Override
           public Void isString(EditorString string) {
-            EditorUtils.setNodeUNSAFE(f, node, string.value);
+            Reflection.INSTANCE.setValueUNSAFE(f, node, string.value);
+
             return null;
           }
         });

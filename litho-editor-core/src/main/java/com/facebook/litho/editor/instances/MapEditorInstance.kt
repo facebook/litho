@@ -18,6 +18,7 @@ package com.facebook.litho.editor.instances
 
 import com.facebook.litho.editor.Editor
 import com.facebook.litho.editor.EditorRegistry
+import com.facebook.litho.editor.Reflection
 import com.facebook.litho.editor.model.EditorShape
 import com.facebook.litho.editor.model.EditorValue
 import java.lang.reflect.Field
@@ -30,7 +31,7 @@ class MapEditorInstance : Editor {
 
   override fun read(f: Field, node: Any?): EditorValue {
     val dataClassInstance =
-        EditorUtils.getNodeUNSAFE<Map<Any?, Any?>>(f, node) ?: return EditorValue.string("null")
+        Reflection.getValueUNSAFE<Map<Any?, Any?>>(f, node) ?: return EditorValue.string("null")
 
     val keyToEditorValue: MutableMap<String, EditorValue> = mutableMapOf()
     for ((key, value) in dataClassInstance.entries) {
@@ -46,10 +47,10 @@ class MapEditorInstance : Editor {
     return EditorValue.shape(keyToEditorValue)
   }
 
-  override fun write(f: Field?, node: Any?, values: EditorValue): Boolean {
+  override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
     val editedParams = (values as? EditorShape)?.value ?: return true
 
-    val oldMap = EditorUtils.getNodeUNSAFE<Map<Any?, Any?>>(f, node) ?: return true
+    val oldMap = Reflection.getValueUNSAFE<Map<Any?, Any?>>(f, node) ?: return true
 
     val newMap = mutableMapOf<Any?, Any?>()
     newMap.putAll(oldMap)
@@ -69,7 +70,7 @@ class MapEditorInstance : Editor {
         }
       }
     }
-    EditorUtils.setNodeUNSAFE(f, node, newMap)
+    Reflection.setValueUNSAFE(f, node, newMap)
     return true
   }
 }

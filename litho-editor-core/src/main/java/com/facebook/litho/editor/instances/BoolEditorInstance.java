@@ -17,6 +17,7 @@
 package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -27,7 +28,7 @@ public class BoolEditorInstance implements Editor {
   public EditorValue read(final Field f, final Object node) {
     // If you use Boolean here it causes an exception when attempting to do implicit conversion to
     // boolean
-    final Object b = EditorUtils.<Object>getNodeUNSAFE(f, node);
+    final Object b = Reflection.INSTANCE.getValueUNSAFE(f, node);
     return b == null ? EditorValue.string("null") : EditorValue.bool((Boolean) b);
   }
 
@@ -37,7 +38,8 @@ public class BoolEditorInstance implements Editor {
         new EditorValue.DefaultEditorVisitor() {
           @Override
           public Void isBool(final EditorBool bool) {
-            EditorUtils.setNodeUNSAFE(f, node, bool.value);
+            Reflection.INSTANCE.setValueUNSAFE(f, node, bool.value);
+
             return null;
           }
         });

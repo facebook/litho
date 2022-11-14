@@ -18,6 +18,7 @@ package com.facebook.litho.editor.instances
 
 import com.facebook.litho.editor.Editor
 import com.facebook.litho.editor.EditorRegistry
+import com.facebook.litho.editor.Reflection
 import com.facebook.litho.editor.model.EditorShape
 import com.facebook.litho.editor.model.EditorValue
 import java.lang.reflect.Field
@@ -25,7 +26,7 @@ import java.lang.reflect.Field
 class ListEditorInstance : Editor {
 
   override fun read(f: Field, node: Any?): EditorValue {
-    val list = EditorUtils.getNodeUNSAFE<List<Any?>?>(f, node) ?: return EditorValue.string("null")
+    val list = Reflection.getValueUNSAFE<List<Any?>?>(f, node) ?: return EditorValue.string("null")
 
     val resolvedList =
         list.map {
@@ -39,10 +40,10 @@ class ListEditorInstance : Editor {
     return EditorValue.array(resolvedList)
   }
 
-  override fun write(f: Field?, node: Any?, values: EditorValue): Boolean {
+  override fun write(f: Field, node: Any?, values: EditorValue): Boolean {
     val editedValues = (values as? EditorShape?)?.value ?: return true
 
-    val oldList = EditorUtils.getNodeUNSAFE<List<Any?>?>(f, node) ?: return true
+    val oldList = Reflection.getValueUNSAFE<List<Any?>?>(f, node) ?: return true
 
     val newList = mutableListOf<Any?>()
     newList.addAll(oldList)
@@ -59,7 +60,7 @@ class ListEditorInstance : Editor {
       }
     }
 
-    EditorUtils.setNodeUNSAFE(f, node, newList)
+    Reflection.setValueUNSAFE(f, node, newList)
     return true
   }
 }

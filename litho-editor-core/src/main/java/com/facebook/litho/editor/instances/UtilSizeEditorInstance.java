@@ -18,6 +18,7 @@ package com.facebook.litho.editor.instances;
 
 import android.util.Size;
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -36,7 +37,7 @@ public class UtilSizeEditorInstance implements Editor {
   @Override
   public EditorValue read(Field f, Object node) {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      final Size size = EditorUtils.getNodeUNSAFE(f, node);
+      final Size size = Reflection.INSTANCE.getValueUNSAFE(f, node);
       if (size == null) {
         return EditorValue.string("null");
       }
@@ -59,7 +60,7 @@ public class UtilSizeEditorInstance implements Editor {
 
   // Assuming 'values' is an EditorString formatted as "width=WIDTH_NUMBER height=HEIGHT_NUMBER",
   // allowing extra whitespaces between 'height', 'width', '=', and both numbers, and assuming both
-  // numbers are interes, we write them as the corresponding Size object.
+  // numbers are integers, we write them as the corresponding Size object.
   // In all other cases, nothing changes.
   @Override
   public boolean write(final Field f, final Object node, final EditorValue values) {
@@ -83,7 +84,7 @@ public class UtilSizeEditorInstance implements Editor {
               final int sizeWidth = Integer.parseInt(components.get(1));
               final int sizeHeight = Integer.parseInt(components.get(3));
               if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                EditorUtils.setNodeUNSAFE(f, node, new Size(sizeWidth, sizeHeight));
+                Reflection.INSTANCE.setValueUNSAFE(f, node, new Size(sizeWidth, sizeHeight));
               }
             } catch (NumberFormatException e) {
               // No-Op if value could not be parsed into a number.

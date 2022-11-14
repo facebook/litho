@@ -282,4 +282,21 @@ public abstract class EditorValue {
 
     R addBool(R aggregator, EditorBool bool);
   }
+
+  public Object getValue() {
+    if (this instanceof EditorNumber) {
+      return ((EditorNumber) this).value;
+    } else if (this instanceof EditorString) {
+      return ((EditorString) this).value;
+    } else if (this instanceof EditorBool) {
+      return ((EditorBool) this).value;
+    } else if (this instanceof EditorShape) {
+      return ((EditorShape) this).value;
+    } else if (this instanceof EditorArray) {
+      return ((EditorArray) this).value;
+    } else if (this instanceof EditorPick) {
+      return ((EditorPick) this).selected;
+    }
+    throw new IllegalStateException("No Value");
+  }
 }

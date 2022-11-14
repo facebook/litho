@@ -18,6 +18,7 @@ package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
 import com.facebook.litho.editor.EditorRegistry;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AtomicReferenceEditorInstance implements Editor {
   @Override
   public EditorValue read(Field f, Object node) {
-    AtomicReference<Object> reference = EditorUtils.getNodeUNSAFE(f, node);
+    AtomicReference<Object> reference = Reflection.INSTANCE.getValueUNSAFE(f, node);
     if (reference == null) {
       return EditorValue.string("null");
     }
@@ -41,7 +42,10 @@ public class AtomicReferenceEditorInstance implements Editor {
 
   @Override
   public boolean write(final Field f, final Object node, final EditorValue values) {
-    final AtomicReference<Object> reference = EditorUtils.getNodeUNSAFE(f, node);
+    final AtomicReference<Object> reference = Reflection.INSTANCE.getValueUNSAFE(f, node);
+    if (reference == null) {
+      return false;
+    }
     final Object o = reference.get();
     if (o == null) {
       return true;

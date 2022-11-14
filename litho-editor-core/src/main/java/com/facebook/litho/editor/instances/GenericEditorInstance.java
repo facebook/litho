@@ -18,12 +18,14 @@ package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
 import com.facebook.litho.editor.EditorRegistry;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import javax.annotation.Nullable;
 
 public class GenericEditorInstance implements Editor {
 
@@ -33,7 +35,7 @@ public class GenericEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    final Object object = EditorUtils.getNodeUNSAFE(f, node);
+    final Object object = Reflection.INSTANCE.getValueUNSAFE(f, node);
     if (object == null) {
       return EditorValue.string("null");
     }
@@ -42,7 +44,7 @@ public class GenericEditorInstance implements Editor {
     HashMap<String, EditorValue> map = new HashMap<>();
 
     for (Field field : fields) {
-      Object value = EditorUtils.getNodeUNSAFE(field, object);
+      Object value = Reflection.INSTANCE.getValueUNSAFE(field, object);
       if (value != null) {
         EditorValue editorValue = EditorRegistry.read(value.getClass(), field, object);
         if (editorValue != null) {
@@ -60,34 +62,37 @@ public class GenericEditorInstance implements Editor {
 
   @Override
   public boolean write(Field f, Object node, EditorValue v) {
-    final Object object = EditorUtils.getNodeUNSAFE(f, node);
+    final Object object = Reflection.INSTANCE.getValueUNSAFE(f, node);
     v.whenPrimitive(
         new EditorValue.DefaultEditorPrimitiveVisitor() {
 
           private boolean write(
-              Object object,
+              @Nullable Object obj,
               String[] path,
               EditorValue editorValue,
               GenericEditorValueWriter writer) {
-            if (object == null) {
+            if (obj == null) {
               return false;
             }
-            Class<?> clazz = object.getClass();
+            Class<?> clazz = obj.getClass();
 
             for (int i = 0; i < path.length; ++i) {
-              Field field = EditorUtils.geFieldUNSAFE(clazz, path[i]);
-              Object value = EditorUtils.getNodeUNSAFE(field, object);
+              Field field = Reflection.INSTANCE.geFieldUNSAFE(clazz, path[i]);
+              if (field == null) {
+                return false;
+              }
+              Object value = Reflection.INSTANCE.getValueUNSAFE(field, obj);
               if (value == null) {
                 return false;
               }
 
               if (i == path.length - 1) {
-                writer.write(object, field, value, editorValue);
+                writer.write(obj, field, value, editorValue);
                 return true;
               }
 
               clazz = value.getClass();
-              object = value;
+              obj = value;
             }
 
             return false;
@@ -99,16 +104,14 @@ public class GenericEditorInstance implements Editor {
                 object,
                 path,
                 bool,
-                new GenericEditorValueWriter() {
-                  @Override
-                  public boolean write(
-                      Object object, Field field, Object fieldValue, EditorValue editorValue) {
-                    if (fieldValue instanceof Boolean) {
-                      EditorUtils.setNodeUNSAFE(field, object, ((EditorBool) editorValue).value);
-                      return true;
-                    }
-                    return false;
+                (obj, field, fieldValue, editorValue) -> {
+                  if (fieldValue instanceof Boolean) {
+                    Reflection.INSTANCE.setValueUNSAFE(
+                        field, obj, ((EditorBool) editorValue).value);
+
+                    return true;
                   }
+                  return false;
                 });
           }
 
@@ -118,16 +121,14 @@ public class GenericEditorInstance implements Editor {
                 object,
                 path,
                 number,
-                new GenericEditorValueWriter() {
-                  @Override
-                  public boolean write(
-                      Object object, Field field, Object fieldValue, EditorValue editorValue) {
-                    if (fieldValue instanceof Number) {
-                      EditorUtils.setNodeUNSAFE(field, object, ((EditorNumber) editorValue).value);
-                      return true;
-                    }
-                    return false;
+                (obj, field, fieldValue, editorValue) -> {
+                  if (fieldValue instanceof Number) {
+                    Reflection.INSTANCE.setValueUNSAFE(
+                        field, obj, ((EditorNumber) editorValue).value);
+
+                    return true;
                   }
+                  return false;
                 });
           }
 
@@ -137,16 +138,14 @@ public class GenericEditorInstance implements Editor {
                 object,
                 path,
                 string,
-                new GenericEditorValueWriter() {
-                  @Override
-                  public boolean write(
-                      Object object, Field field, Object fieldValue, EditorValue editorValue) {
-                    if (fieldValue instanceof CharSequence || fieldValue instanceof String) {
-                      EditorUtils.setNodeUNSAFE(field, object, ((EditorString) editorValue).value);
-                      return true;
-                    }
-                    return false;
+                (obj, field, fieldValue, editorValue) -> {
+                  if (fieldValue instanceof CharSequence) {
+                    Reflection.INSTANCE.setValueUNSAFE(
+                        field, obj, ((EditorString) editorValue).value);
+
+                    return true;
                   }
+                  return false;
                 });
           }
         });

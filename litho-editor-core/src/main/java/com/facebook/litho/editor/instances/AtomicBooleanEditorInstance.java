@@ -17,6 +17,7 @@
 package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -26,7 +27,7 @@ public class AtomicBooleanEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    AtomicBoolean atomicBoolean = EditorUtils.getNodeUNSAFE(f, node);
+    AtomicBoolean atomicBoolean = Reflection.INSTANCE.getValueUNSAFE(f, node);
     return atomicBoolean == null
         ? EditorValue.string("null")
         : EditorValue.bool((Boolean) atomicBoolean.get());
@@ -38,7 +39,7 @@ public class AtomicBooleanEditorInstance implements Editor {
         new EditorValue.DefaultEditorVisitor() {
           @Override
           public Void isBool(final EditorBool bool) {
-            EditorUtils.setNodeUNSAFE(f, node, new AtomicBoolean(bool.value));
+            Reflection.INSTANCE.setValueUNSAFE(f, node, new AtomicBoolean(bool.value));
             return null;
           }
         });

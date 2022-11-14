@@ -17,6 +17,7 @@
 package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
+import com.facebook.litho.editor.Reflection;
 import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
@@ -26,7 +27,7 @@ public class AtomicIntegerEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    AtomicInteger atomicInteger = EditorUtils.getNodeUNSAFE(f, node);
+    AtomicInteger atomicInteger = Reflection.INSTANCE.getValueUNSAFE(f, node);
     return atomicInteger == null
         ? EditorValue.string("null")
         : EditorValue.number((Integer) atomicInteger.get());
@@ -39,7 +40,8 @@ public class AtomicIntegerEditorInstance implements Editor {
           @Override
           public Void isNumber(final EditorNumber editor) {
             // If the value if non-integer, it gets rounded down.
-            EditorUtils.setNodeUNSAFE(f, node, new AtomicInteger(editor.value.intValue()));
+            Reflection.INSTANCE.setValueUNSAFE(f, node, new AtomicInteger(editor.value.intValue()));
+
             return null;
           }
         });
