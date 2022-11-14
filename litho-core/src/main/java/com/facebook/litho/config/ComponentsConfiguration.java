@@ -286,6 +286,12 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableInFacecast = false;
 
+  /**
+   * Attempts to compute the working range when a collection or its items are not yet laid out will
+   * save the desired working range, and apply it once layout completes.
+   */
+  public static boolean useReliableWorkingRange = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;

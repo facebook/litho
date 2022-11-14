@@ -204,6 +204,9 @@ public class ComponentTree implements LithoLifecycleListener {
     return mRenderUnitIdGenerator;
   }
 
+  @GuardedBy("this")
+  private @Nullable WorkingRangeAndPositionHolder mPendingWorkingRangeAndPosition;
+
   public interface MeasureListener {
 
     /**
@@ -1877,13 +1880,33 @@ public class ComponentTree implements LithoLifecycleListener {
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex) {
-    if (mCommittedLayoutState != null) {
+    checkWorkingRangeAndDispatch(
+        new WorkingRangeAndPositionHolder(
+            position,
+            new WorkingRangeHolder(
+                firstVisibleIndex,
+                lastVisibleIndex,
+                firstFullyVisibleIndex,
+                lastFullyVisibleIndex)));
+  }
+
+  /**
+   * Check if the any child components stored in {@link LayoutState} have entered/exited the working
+   * range, and dispatch the event to trigger the corresponding registered methods.
+   */
+  public synchronized void checkWorkingRangeAndDispatch(
+      WorkingRangeAndPositionHolder workingRangeAndPosition) {
+    if (mCommittedLayoutState == null) {
+      if (ComponentsConfiguration.useReliableWorkingRange) {
+        mPendingWorkingRangeAndPosition = workingRangeAndPosition;
+      }
+    } else {
       mCommittedLayoutState.checkWorkingRangeAndDispatch(
-          position,
-          firstVisibleIndex,
-          lastVisibleIndex,
-          firstFullyVisibleIndex,
-          lastFullyVisibleIndex,
+          workingRangeAndPosition.position,
+          workingRangeAndPosition.workingRange.firstVisibleIndex,
+          workingRangeAndPosition.workingRange.lastVisibleIndex,
+          workingRangeAndPosition.workingRange.firstFullyVisibleIndex,
+          workingRangeAndPosition.workingRange.lastFullyVisibleIndex,
           mWorkingRangeStatusHandler);
     }
   }
@@ -1897,6 +1920,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     mWorkingRangeStatusHandler.clear();
+    mPendingWorkingRangeAndPosition = null;
   }
 
   /**
@@ -2649,6 +2673,15 @@ public class ComponentTree implements LithoLifecycleListener {
 
     if (mTreeState != null) {
       mTreeState.unregisterRenderState(resolutionResult.treeState);
+    }
+
+    WorkingRangeAndPositionHolder workingRangeAndPosition = null;
+    synchronized (this) {
+      workingRangeAndPosition = mPendingWorkingRangeAndPosition;
+      mPendingWorkingRangeAndPosition = null;
+    }
+    if (workingRangeAndPosition != null) {
+      checkWorkingRangeAndDispatch(workingRangeAndPosition);
     }
   }
 
@@ -3436,6 +3469,36 @@ public class ComponentTree implements LithoLifecycleListener {
             }
           },
           "Release");
+    }
+  }
+
+  /** Holds an item's position and working range data. */
+  public static class WorkingRangeAndPositionHolder {
+    public final int position;
+    public final WorkingRangeHolder workingRange;
+
+    public WorkingRangeAndPositionHolder(int position, WorkingRangeHolder workingRange) {
+      this.position = position;
+      this.workingRange = workingRange;
+    }
+  }
+
+  /** Holds working range data. */
+  public static class WorkingRangeHolder {
+    public final int firstVisibleIndex;
+    public final int lastVisibleIndex;
+    public final int firstFullyVisibleIndex;
+    public final int lastFullyVisibleIndex;
+
+    public WorkingRangeHolder(
+        int firstVisibleIndex,
+        int lastVisibleIndex,
+        int firstFullyVisibleIndex,
+        int lastFullyVisibleIndex) {
+      this.firstVisibleIndex = firstVisibleIndex;
+      this.lastVisibleIndex = lastVisibleIndex;
+      this.firstFullyVisibleIndex = firstFullyVisibleIndex;
+      this.lastFullyVisibleIndex = lastFullyVisibleIndex;
     }
   }
 
