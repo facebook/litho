@@ -25,7 +25,16 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class StyleTest {
 
-  private data class TestStyleItem(val name: String) : StyleItem {
+  private class TestItemField : StyleItemField {
+    companion object {
+      val instance = TestItemField()
+    }
+  }
+
+  private data class TestStyleItem(override val value: String) : StyleItem<String> {
+
+    override val field = TestItemField.instance
+
     override fun applyToComponent(context: ComponentContext, component: Component) = Unit
   }
 
@@ -76,7 +85,7 @@ class StyleTest {
 
   private fun Style.toStringList(): List<String> {
     val list = mutableListOf<String>()
-    forEach { list.add((it as TestStyleItem).name) }
+    forEach { list.add((it as TestStyleItem).value) }
     return list
   }
 }

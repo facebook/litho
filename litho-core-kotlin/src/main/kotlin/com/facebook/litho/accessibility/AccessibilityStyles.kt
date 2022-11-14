@@ -29,6 +29,7 @@ import com.facebook.litho.SendAccessibilityEventEvent
 import com.facebook.litho.SendAccessibilityEventUncheckedEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
@@ -39,7 +40,7 @@ import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [AccessibilityStyleItem]. */
 @PublishedApi
-internal enum class AccessibilityField {
+internal enum class AccessibilityField : StyleItemField {
   ACCESSIBILITY_HEADING,
   ACCESSIBILITY_ROLE,
   ACCESSIBILITY_ROLE_DESCRIPTION,
@@ -56,8 +57,10 @@ internal enum class AccessibilityField {
 }
 
 @PublishedApi
-internal data class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) :
-    StyleItem {
+internal data class AccessibilityStyleItem(
+    override val field: AccessibilityField,
+    override val value: Any?
+) : StyleItem<Any?> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

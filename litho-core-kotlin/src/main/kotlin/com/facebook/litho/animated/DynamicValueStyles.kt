@@ -32,12 +32,13 @@ import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getOrCreateCommonDynamicPropsHolder
 
 /** Enums for [DynamicStyleItem]. */
 @PublishedApi
-internal enum class DynamicField {
+internal enum class DynamicField : StyleItemField {
   ALPHA,
   BACKGROUND_COLOR,
   BACKGROUND_DRAWABLE,
@@ -54,8 +55,10 @@ internal enum class DynamicField {
  * Common style item for all dynamic value styles. See note on [DynamicField] about this pattern.
  */
 @PublishedApi
-internal data class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) :
-    StyleItem {
+internal data class DynamicStyleItem(
+    override val field: DynamicField,
+    override val value: DynamicValue<*>
+) : StyleItem<DynamicValue<*>> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val dynamicProps = component.getOrCreateCommonDynamicPropsHolder()
     when (field) {

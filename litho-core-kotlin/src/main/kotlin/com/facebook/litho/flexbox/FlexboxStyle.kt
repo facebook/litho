@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaAlign
@@ -31,7 +32,7 @@ import com.facebook.yoga.YogaPositionType
 
 /** Enums for [FlexboxDimenStyleItem]. */
 @PublishedApi
-internal enum class FlexboxDimenField {
+internal enum class FlexboxDimenField : StyleItemField {
   FLEX_BASIS,
   POSITION_ALL,
   POSITION_START,
@@ -46,7 +47,7 @@ internal enum class FlexboxDimenField {
 
 /** Enums for [FlexboxFloatStyleItem]. */
 @PublishedApi
-internal enum class FlexboxFloatField {
+internal enum class FlexboxFloatField : StyleItemField {
   FLEX,
   FLEX_GROW,
   FLEX_SHRINK,
@@ -56,7 +57,7 @@ internal enum class FlexboxFloatField {
 
 /** Enums for [FlexboxObjectStyleItem]. */
 @PublishedApi
-internal enum class FlexboxObjectField {
+internal enum class FlexboxObjectField : StyleItemField {
   ALIGN_SELF,
   BORDER,
   LAYOUT_DIRECTION,
@@ -68,8 +69,10 @@ internal enum class FlexboxObjectField {
 
 /** Common style item for all dimen styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
-internal data class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dimen) :
-    StyleItem {
+internal data class FlexboxDimenStyleItem(
+    override val field: FlexboxDimenField,
+    override val value: Dimen
+) : StyleItem<Dimen> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(context.resourceResolver)
@@ -91,7 +94,8 @@ internal data class FlexboxDimenStyleItem(val field: FlexboxDimenField, val valu
 
 /** Common style item for all float styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
-internal class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : StyleItem {
+internal class FloatStyleItem(override val field: FlexboxFloatField, override val value: Float) :
+    StyleItem<Float> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -106,7 +110,10 @@ internal class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : 
 
 /** Common style item for all object styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
-internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: Any?) : StyleItem {
+internal class FlexboxObjectStyleItem(
+    override val field: FlexboxObjectField,
+    override val value: Any?
+) : StyleItem<Any?> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

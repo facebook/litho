@@ -16,11 +16,16 @@
 
 package com.facebook.litho
 
+interface StyleItemField
+
 /**
  * Part of a [Style] that can apply an attribute to an underlying Component, e.g. width or click
  * handling.
  */
-interface StyleItem {
+interface StyleItem<T> {
+
+  val value: T
+  val field: StyleItemField
 
   /** Sets this style item value on the given [Component]. */
   fun applyToComponent(context: ComponentContext, component: Component)
@@ -55,7 +60,7 @@ open class Style(
      * This is the [StyleItem] we're adding, e.g. the background when calling `.background()` in
      * `Style.padding().background()`
      */
-    private val item: StyleItem?,
+    private val item: StyleItem<*>?,
 ) {
 
   operator fun plus(other: Style?): Style {
@@ -65,14 +70,14 @@ open class Style(
     return CombinedStyle(if (this === Style) null else this, other)
   }
 
-  inline operator fun plus(nextItem: StyleItem?): Style {
+  inline operator fun plus(nextItem: StyleItem<*>?): Style {
     if (nextItem == null) {
       return this
     }
     return Style(if (this === Style) null else this, nextItem)
   }
 
-  open fun forEach(lambda: (StyleItem) -> Unit) {
+  open fun forEach(lambda: (StyleItem<*>) -> Unit) {
     previousStyle?.forEach(lambda)
     if (item != null) {
       lambda(item)
@@ -121,7 +126,7 @@ open class Style(
  */
 private data class CombinedStyle(val first: Style?, val second: Style?) : Style(first, null) {
 
-  override fun forEach(lambda: (StyleItem) -> Unit) {
+  override fun forEach(lambda: (StyleItem<*>) -> Unit) {
     first?.forEach(lambda)
     second?.forEach(lambda)
   }

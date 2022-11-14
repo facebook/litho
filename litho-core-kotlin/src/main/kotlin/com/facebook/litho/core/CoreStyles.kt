@@ -21,13 +21,14 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [CoreDimenStyleItem]. */
 @PublishedApi
-internal enum class CoreDimenField {
+internal enum class CoreDimenField : StyleItemField {
   WIDTH,
   HEIGHT,
   MIN_WIDTH,
@@ -56,7 +57,7 @@ internal enum class CoreDimenField {
 
 /** Enums for [CoreFloatStyleItem]. */
 @PublishedApi
-internal enum class CoreFloatField {
+internal enum class CoreFloatField : StyleItemField {
   WIDTH_PERCENT,
   HEIGHT_PERCENT,
   MIN_WIDTH_PERCENT,
@@ -67,7 +68,10 @@ internal enum class CoreFloatField {
 
 /** Common style item for all core dimen styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
-internal data class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : StyleItem {
+internal data class CoreDimenStyleItem(
+    override val field: CoreDimenField,
+    override val value: Dimen
+) : StyleItem<Dimen> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(context.resourceResolver)
@@ -103,7 +107,8 @@ internal data class CoreDimenStyleItem(val field: CoreDimenField, val value: Dim
 
 /** Common style item for all core float styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
-internal class CoreFloatStyleItem(val field: CoreFloatField, val value: Float) : StyleItem {
+internal class CoreFloatStyleItem(override val field: CoreFloatField, override val value: Float) :
+    StyleItem<Float> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

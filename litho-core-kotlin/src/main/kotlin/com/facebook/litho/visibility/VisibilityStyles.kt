@@ -23,6 +23,7 @@ import com.facebook.litho.FullImpressionVisibleEvent
 import com.facebook.litho.InvisibleEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.UnfocusedVisibleEvent
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
@@ -32,7 +33,7 @@ import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [VisibilityStyleItem]. */
 @PublishedApi
-internal enum class VisibilityField {
+internal enum class VisibilityField : StyleItemField {
   ON_VISIBLE,
   ON_INVISIBLE,
   ON_FOCUSED,
@@ -43,13 +44,16 @@ internal enum class VisibilityField {
 
 /** Enums for [VisibilityFloatStyleItem]. */
 @PublishedApi
-internal enum class VisibilityFloatField {
+internal enum class VisibilityFloatField : StyleItemField {
   VISIBLE_HEIGHT_RATIO,
   VISIBLE_WIDTH_RATIO,
 }
 
 @PublishedApi
-internal data class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
+internal data class VisibilityStyleItem(
+    override val field: VisibilityField,
+    override val value: Any?
+) : StyleItem<Any?> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -72,8 +76,10 @@ internal data class VisibilityStyleItem(val field: VisibilityField, val value: A
 }
 
 @PublishedApi
-internal class VisibilityFloatStyleItem(val field: VisibilityFloatField, val value: Float) :
-    StyleItem {
+internal class VisibilityFloatStyleItem(
+    override val field: VisibilityFloatField,
+    override val value: Float
+) : StyleItem<Float> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

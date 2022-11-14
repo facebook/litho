@@ -22,21 +22,35 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.Transition
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.getCommonPropsHolder
+
+data class TransitionKeyStyleItemValue(
+    val transitionKey: String?,
+    val transitionKeyType: TransitionKeyType
+)
+
+enum class TransitionKeyFields : StyleItemField {
+  TRANSITION_KEY,
+}
 
 @PublishedApi
 internal data class TransitionKeyStyleItem(
     val context: ComponentContext,
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType
-) : StyleItem {
+) : StyleItem<TransitionKeyStyleItemValue> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     commonProps.transitionKey(transitionKey, context.globalKey)
     commonProps.transitionKeyType(transitionKeyType)
   }
+
+  override val value: TransitionKeyStyleItemValue =
+      TransitionKeyStyleItemValue(transitionKey, transitionKeyType)
+  override val field: TransitionKeyFields = TransitionKeyFields.TRANSITION_KEY
 }
 
 /**

@@ -31,6 +31,7 @@ import com.facebook.litho.InterceptTouchEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.StyleItemField
 import com.facebook.litho.TouchEvent
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
@@ -41,7 +42,7 @@ import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
 @PublishedApi
-internal enum class ObjectField {
+internal enum class ObjectField : StyleItemField {
   BACKGROUND,
   CLICKABLE,
   CLIP_CHILDREN,
@@ -67,7 +68,7 @@ internal enum class ObjectField {
 
 /** Enums for [FloatStyleItem]. */
 @PublishedApi
-internal enum class FloatField {
+internal enum class FloatField : StyleItemField {
   ALPHA,
   ROTATION,
   ROTATION_X,
@@ -77,7 +78,7 @@ internal enum class FloatField {
 
 /** Enums for [FloatStyleItem]. */
 @PublishedApi
-internal enum class DimenField {
+internal enum class DimenField : StyleItemField {
   TOUCH_EXPANSION_START,
   TOUCH_EXPANSION_TOP,
   TOUCH_EXPANSION_END,
@@ -92,7 +93,8 @@ internal enum class DimenField {
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
 @PublishedApi
-internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
+internal data class ObjectStyleItem(override val field: ObjectField, override val value: Any?) :
+    StyleItem<Any?> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -140,7 +142,8 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
-internal data class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
+internal data class FloatStyleItem(override val field: FloatField, override val value: Float) :
+    StyleItem<Float> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -155,7 +158,8 @@ internal data class FloatStyleItem(val field: FloatField, val value: Float) : St
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
-internal data class DimenStyleItem(val field: DimenField, val value: Dimen) : StyleItem {
+internal data class DimenStyleItem(override val field: DimenField, override val value: Dimen) :
+    StyleItem<Dimen> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(context.resourceResolver)
@@ -489,13 +493,24 @@ inline fun Style.touchExpansion(
         left?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_LEFT, it) } +
         right?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_RIGHT, it) }
 
+enum class ShadowStyleField : StyleItemField {
+  SHADOW_ITEM,
+}
+
+data class ShadowStyleItemParams(
+    val elevation: Dimen,
+    val outlineProvider: ViewOutlineProvider,
+    @ColorInt val ambientShadowColor: Int,
+    @ColorInt val spotShadowColor: Int
+)
+
 @PublishedApi
 internal data class ShadowStyleItem(
     val elevation: Dimen,
     val outlineProvider: ViewOutlineProvider,
     @ColorInt val ambientShadowColor: Int,
     @ColorInt val spotShadowColor: Int
-) : StyleItem {
+) : StyleItem<ShadowStyleItemParams> {
 
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
@@ -504,6 +519,10 @@ internal data class ShadowStyleItem(
     commonProps.ambientShadowColor(ambientShadowColor)
     commonProps.spotShadowColor(spotShadowColor)
   }
+
+  override val field: ShadowStyleField = ShadowStyleField.SHADOW_ITEM
+  override val value: ShadowStyleItemParams =
+      ShadowStyleItemParams(elevation, outlineProvider, ambientShadowColor, spotShadowColor)
 }
 
 /**
