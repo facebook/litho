@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.accessibility.accessibilityRole
+import com.facebook.litho.animated.translationX
 import com.facebook.litho.animated.translationY
 import com.facebook.litho.core.height
 import com.facebook.litho.core.heightPercent
@@ -38,6 +39,7 @@ import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.view.background
 import com.facebook.litho.view.clipChildren
+import com.facebook.litho.view.testKey
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
@@ -176,6 +178,13 @@ object StyleCompat {
   /** @see [JavaStyle.translationY] */
   @JvmStatic
   fun translationY(value: DynamicValue<Float>): JavaStyle = JavaStyle().translationY(value)
+
+  /** @see [JavaStyle.translationX] */
+  @JvmStatic
+  fun translationX(value: DynamicValue<Float>): JavaStyle = JavaStyle().translationX(value)
+
+  /** @see [JavaStyle.testKey] */
+  @JvmStatic fun testKey(value: String?): JavaStyle = JavaStyle().testKey(value)
 
   /** @see [JavaStyle.alignSelf] */
   @JvmStatic fun alignSelf(value: YogaAlign): JavaStyle = JavaStyle().alignSelf(value)
@@ -423,6 +432,16 @@ class JavaStyle {
 
   fun translationY(value: DynamicValue<Float>): JavaStyle {
     style = style.translationY(value)
+    return this
+  }
+
+  fun translationX(value: DynamicValue<Float>): JavaStyle {
+    style = style.translationX(value)
+    return this
+  }
+
+  fun testKey(value: String?): JavaStyle {
+    style = style.testKey(value)
     return this
   }
 
