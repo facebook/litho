@@ -3,6 +3,10 @@ id: migrating-from-mountspecs
 title: Migrating from MountSpecs
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
 This page outlines the process of migrating from [MountSpecs](../codegen/mount-specs.md) to [Mountable Components](mountable-component.mdx).
 
 Unlike MountSpecs, Mountable Components consist of two separate pieces:
@@ -87,33 +91,165 @@ For more information, see the [Measuring](mountable-measuring.mdx) page.
 
 More information on Mountable content creation can be found [here](mountable.mdx/#content-creation).
 
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec
+public class MyComponentSpec {
+
+  @OnCreateMountContent
+  static ImageView onCreateMountContent(Context c) {
+    return new ImageView(c);
+  }
+
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<ImageView>(RenderType.VIEW) {
+
+ override fun createContent(context: Context): ImageView = ImageView(context)
+
+ ...
+}
+```
+
+  </TabItem>
+</Tabs>
+
 ### Migrating content pooling and pre-allocation
 
-For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the `ContentAllocator` returned from Mountable's `getContentAllocator()` method that can be used to configure the recycling pool and pre-allocation for content.
+For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the `ContentAllocator` interface that SimpleMountable implements, which can be used to configure the recycling pool and pre-allocation for content.
 
-Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, `getContentAllocator()` method should be overridden to return an implementation of the `ContentAllocator` interface and overridden 'canPreallocate()' and 'poolSize()' methods. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling. It is recommended to return a constant instance.
+Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, 'canPreallocate()' and 'poolSize()' methods should be overridden. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling.
 
 More information on Mountable content pooling can be found [here](mountable.mdx).
 
-### Migrating Binding (properties setting) - @OnMount, @OnBind, @OnUnbind, @OnUnmount, and @OnShouldUpdate
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec(canPreallocate = true, poolSize = 1)
+public class MyComponentSpec {
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<View>(RenderType.VIEW) {
+
+ override fun canPreallocate(): Boolean = true
+
+ override fun poolSize(): Int = 1
+
+ ...
+}
+```
+
+  </TabItem>
+</Tabs>
+
+### Migrating Binding and Mounting (properties setting) - @OnMount, @OnBind, @OnUnbind, @OnUnmount, and @OnShouldUpdate
 
 For MountSpecs, @OnMount and @OnBind static annotated methods [could be used to set properties on content](../codegen/mount-specs.md/#mount-spec-component-lifecycle), along with matching @OnUnmount and @OnUnbind to unset properties.
 
-Mountable uses `Binders` to set properties on the content, and the equivalent of those 2 methods is a single `Binder.bind()` method to set the properties, and matching `Binder.unbind()` method to unset them.
+In `SimpleMountable`, the equivalent of those two pairs of methods is a single `mount()` method to set the properties, and a matching `unmount()` method to unset them.
 
-Therefore, the contents of @OnMount and @OnBind should be merged into single `bind()` method when migrating to Mountable (or `SimpleMountable.mount()` when using `SimpleMountable`). Similarly, @OnUnbind and @OnUnmount should be merged to form `unbind()` method (in that particular order).
+Therefore, the contents of @OnMount and @OnBind should be merged into a single `mount()` method when migrating to SimpleMountable. Similarly, @OnUnbind and @OnUnmount should be merged to form an `unmount()` method (in that particular order).
 
-:::note
-In MountSpecs it was impossible to implement granular binding - only one pair of @OnMount and/or @OnBind could be used. Mountable allows for multiple Binders, so it is possible to implement granular binding (only resetting properties that changed), which can allow for performance gains.
-:::
+More information on mounting and unmounting content properties can be found on the [Lifecycle of a SimpleMountable](mountable.mdx/#mounting-and-unmounting-content-properties) page.
 
-More information on binding and unbinding content properties can be found [here](mountable.mdx/#binding-and-unbinding-content-properties).
+`SimpleMountable` also contains the `shouldUpdate()` method, which can help to avoid remeasuring and remounting upon updates if the properties of interest have not changed. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs.
 
-Each `Binder` contains `shouldUpdate()` method, which can help to avoid remeasuring and remounting upon updates if the properties of interest have not changed. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs.
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
 
-:::note
-Each individual `shouldUpdate()` should compare old and new properties that are set in `mount()` method of the same Binder.
-:::
+```java
+@MountSpec
+public class MyComponentSpec {
+
+  @OnMount
+  static void onMount(
+      ComponentContext c,
+      EditText editText,
+      @Prop CharSequence hint) {
+    editText.setHint(hint);
+  }
+
+  @OnUnmount
+  static void onUnmount(
+      ComponentContext c, EditText editText) {
+    editText.setHint("");
+  }
+
+  @ShouldUpdate
+  static boolean shouldUpdate(@Prop(optional = true) Diff<CharSequence> hint) {
+    if (!ObjectsCompat.equals(hint.getPrevious(), hint.getNext())) {
+      return true;
+    }
+
+    return false;
+  }
+
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<EditText>(RenderType.VIEW) {
+
+  override fun mount(c: Context, content: EditText, layoutData: Any?) {
+    content.hint = hint
+  }
+
+  override fun unmount(c: Context, content: EditText, layoutData: Any?) {
+    content.hint = ""
+  }
+
+  override fun shouldUpdate(
+      newMountable: SimpleMountable<EditText>,
+      currentLayoutData: Any?,
+      nextLayoutData: Any?
+  ): Boolean {
+    newMountable as MyMountable
+    return newMountable.hint != hint
+  }
+
+  ...
+}
+```
+
+  </TabItem>
+</Tabs>
 
 ### Migrating @OnBindDynamicValue using bindTo API
 
@@ -134,6 +270,37 @@ For more information and a step-by-step example, see the [Controllers Pattern](m
 In MountSpecs, the `hasChildLithoViews` parameter could be added to the @MountSpec annotation to indicate whether a given component mounts views that contain component-based content that can be incrementally mounted (such as if the mounted view has a LithoView with incremental mount enabled).
 
 To implement the equivalent behaviour in Mountable, override the [doesMountRenderTreeHosts()](https://fburl.com/doesmountrendertreehosts) method to return `true`.
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec(hasChildLithoViews = true)
+public class MyComponentSpec {
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<View>(RenderType.VIEW) {
+
+ override fun doesMountRenderTreeHosts(): Boolean = true
+
+ ...
+}
+```
+
+  </TabItem>
+</Tabs>
 
 ### Migrating isPureRender parameter
 

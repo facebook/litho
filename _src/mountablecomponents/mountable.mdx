@@ -1,93 +1,79 @@
 ---
 id: mountable
-title: Lifecycle of a Mountable
+title: Lifecycle of a SimpleMountable
 ---
 
-A `Mountable` represents a reusable unit responsible for hosting the logic to create, measure, and bind the content that the mountable component will render.
+A `Mountable` represents a reusable unit responsible for hosting the logic to create, measure, and mount the content that the mountable component will render.
 
 As illustrated in the [Creating a Mountable Component](mountable-component.mdx#creating-a-mountable-component) page, the `MountableComponent.render()` method should return a `Mountable` implementation and any `Style` object to be applied to the component on the `MountableRenderResult` object.
 
-:::note
-Mountable extends `RenderUnit`, which is a rendering primitive. For more information, see the `Introduction to RenderCore` page.
-:::
+This page provides an overview of a `SimpleMountable`: a simplified version of a Mountable that can be extended to provide a bespoke implementation.
 
-## Lifecycle of a Mountable
+## Lifecycle of a SimpleMountable
 
-A Mountable has four important stages in its lifecycle, which must occur in the following order:
+A SimpleMountable has four important stages in its lifecycle, which occur in the following order:
 
-1. [Content size measurement](#content-size-measurement)
 1. [Creation](#creation-of-a-mountable)
+1. [Content size measurement](#content-size-measurement)
 1. [Content creation](#content-creation)
-1. [Binding and unbinding content properties](#binding-and-unbinding-content-properties)
+1. [Mounting and unmounting content properties](#mounting-and-unmounting-content-properties)
 
 Each of these stages is detailed in the following sub-sections.
+
+### Creation of a SimpleMountable
+
+In order to create a SimpleMountable, write a class that extends the [SimpleMountable](https://fburl.com/simplemountable) abstract class.
+
+The following example provides an implementation of `SimpleMountable` with an `ImageView` as content:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewComponent.kt start=start_simple_mountable_example end=end_simple_mountable_example
+```
 
 ### Content size measurement
 
 :::note
-This stage of the mountable's lifecycle can occur on any thread.
+This stage of the SimpleMountable's lifecycle can occur on any thread.
 :::
 
-Each Mountable should implement a `measure()` function to define how it measures itself given arbitrary width and height specs. The `MeasureResult` object it returns contains the width and height of the content, and optionally any layout data, as shown in the following example:
+Each SimpleMountable should implement a `measure()` function to define how it measures itself given arbitrary width and height specs. The `MeasureResult` object it returns contains the width and height of the content, and optionally any layout data, as shown in the following example:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=measure_example_start end=measure_example_end
 ```
 
 To learn about the different strategies to measure content, see the [Measuring](mountable-measuring.mdx) page.
 
-### Creation of a Mountable
-
-In order to create a Mountable, write a class that extends the [Mountable](pathname:///javadoc/com/facebook/rendercore/Mountable.html) abstract class. Implementations directly extending the `Mountable` class enable multiple `Binders` to be specified to set and unset properties on the mounted content (see [Binding and unbinding content properties](#binding-and-unbinding-content-properties)).
-
-In the majority of cases, a single `Binder` will be enough to implement the binding required for the `MountableComponent`.
-
-For this reason, a `SimpleMountable` abstract class has been created, which encapsulates the logic of the `Binder` creation and addition. To implement setting and unsetting the properties of the content, just override `mount()`, `unmount()`, and, optionally, the `shouldUpdate()` method.
-
-The following example provides an implementation of `SimpleMountable` in an `ImageView`:
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewComponent.kt start=start_simple_mountable_example end=end_simple_mountable_example
-```
-
 ### Content creation
 
 :::note
-This stage of the mountable's lifecycle can only occur on the main thread.
+This stage of the SimpleMountable's lifecycle can only occur on the main thread.
 :::
 
-Each Mountable needs to create the content it hosts (either a `View` or a `Drawable`) via a `ContentAllocator`.
+Each SimpleMountable needs to create the content it hosts (either a `View` or a `Drawable`) by a implementing the `createContent()` method, as shown in the following example:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=create_content_example_start end=create_content_example_end
 ```
 
-You should also pass the type of the created content to the `Mountable` super constructor, either `RenderType.VIEW` for views or `RenderType.DRAWABLE` for drawables.
+You should also pass the type of the created content to the `SimpleMountable` super constructor, either `RenderType.VIEW` for views or `RenderType.DRAWABLE` for drawables.
 
 :::note
-The content should not be mutated based on props passed from MountableComponent to the Mountable.
+The content should not be mutated based on props passed from MountableComponent to the SimpleMountable.
 :::
 
-In order to optimize the mount performance, the `ContentAllocator` can also be used to define [content pooling](mountable-preallocation.mdx).
+In order to optimize the mount performance, the methods from the `ContentAllocator` interface can also be overridden to define a [content pooling](mountable-preallocation.mdx) strategy.
 
-### Binding and unbinding content properties
+### Mounting and unmounting content properties
 
 :::note
-This stage of the mountable's lifecycle can only occur on the main thread.
+This stage of the SimpleMountable's lifecycle can only occur on the main thread.
 :::
 
-A Mountable uses one or more `Binders` to `bind()` and `unbind()` properties on the mounted content.
+Properties can be set and unset on the content using `mount()` and `unmount()` methods respectively. Additionally, the `shouldUpdate()` can be overridden to decide whether properties need resetting.
 
-Each Binder should implement 3 methods:
-
-- `bind()` - used to set properties.
-- `unbind()` - used to unset properties.
-- `shouldUpdate()` - used to decide whether properties need resetting.
-
-The following code shows a component that extends `SimpleMountable`, where mount() is the equivalent of bind() and unmount() is the equivalent of unbind():
+The following code shows a component that extends `SimpleMountable` and appropriately sets and unsets the properties on the content:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=mount_unmount_example_start end=mount_unmount_example_end
 ```
 
-Each `Binder` should be added to the `Mountable` using the `addMountUnmountExtension()` method.
-
 :::note Important
-Once set, a property should be unset in the matching `unbind()` method to ensure correctness when the content is reused.
+Once set, a property should be unset in the `unmount()` method to ensure correctness when the content is reused.
 :::
