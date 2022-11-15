@@ -3,6 +3,10 @@ id: migrating-from-mountspecs
 title: Migrating from MountSpecs
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
 This page outlines the process of migrating from [MountSpecs](../codegen/mount-specs.md) to [Mountable Components](mountable-component.mdx).
 
 Unlike MountSpecs, Mountable Components consist of two separate pieces:
@@ -134,6 +138,37 @@ For more information and a step-by-step example, see the [Controllers Pattern](m
 In MountSpecs, the `hasChildLithoViews` parameter could be added to the @MountSpec annotation to indicate whether a given component mounts views that contain component-based content that can be incrementally mounted (such as if the mounted view has a LithoView with incremental mount enabled).
 
 To implement the equivalent behaviour in Mountable, override the [doesMountRenderTreeHosts()](https://fburl.com/doesmountrendertreehosts) method to return `true`.
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec(hasChildLithoViews = true)
+public class MyComponentSpec {
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<View>(RenderType.VIEW) {
+
+ override fun doesMountRenderTreeHosts(): Boolean = true
+
+ ...
+}
+```
+
+  </TabItem>
+</Tabs>
 
 ### Migrating isPureRender parameter
 
