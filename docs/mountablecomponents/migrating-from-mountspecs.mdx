@@ -93,11 +93,44 @@ More information on Mountable content creation can be found [here](mountable.mdx
 
 ### Migrating content pooling and pre-allocation
 
-For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the `ContentAllocator` returned from Mountable's `getContentAllocator()` method that can be used to configure the recycling pool and pre-allocation for content.
+For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the `ContentAllocator` interface that SimpleMountable implements, which can be used to configure the recycling pool and pre-allocation for content.
 
-Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, `getContentAllocator()` method should be overridden to return an implementation of the `ContentAllocator` interface and overridden 'canPreallocate()' and 'poolSize()' methods. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling. It is recommended to return a constant instance.
+Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, 'canPreallocate()' and 'poolSize()' methods should be overridden. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling.
 
 More information on Mountable content pooling can be found [here](mountable.mdx).
+
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec(canPreallocate = true, poolSize = 1)
+public class MyComponentSpec {
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<View>(RenderType.VIEW) {
+
+ override fun canPreallocate(): Boolean = true
+
+ override fun poolSize(): Int = 1
+
+ ...
+}
+```
+
+  </TabItem>
+</Tabs>
 
 ### Migrating Binding (properties setting) - @OnMount, @OnBind, @OnUnbind, @OnUnmount, and @OnShouldUpdate
 
