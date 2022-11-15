@@ -286,6 +286,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableInFacecast = false;
 
+  public static boolean enableMountableInStoriesViewerFeelingsSticker = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;
