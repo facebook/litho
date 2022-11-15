@@ -1435,6 +1435,11 @@ public class LayoutState
       }
     }
 
+    // LayoutState is no longer partial. Remove all partial-related information.
+    layoutState.mIsPartialLayoutState = false;
+    layoutState.mPartiallyResolvedRoot = null;
+    layoutState.mPartialRenderStateContext = null;
+
     return layoutState;
   }
 
