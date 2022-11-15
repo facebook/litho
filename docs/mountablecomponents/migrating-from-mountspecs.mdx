@@ -91,6 +91,43 @@ For more information, see the [Measuring](mountable-measuring.mdx) page.
 
 More information on Mountable content creation can be found [here](mountable.mdx/#content-creation).
 
+<Tabs
+  groupId="migrating_from_mountspecs_tab_group"
+  defaultValue="mountspec_tab"
+  values={[
+    {label: 'Mount Spec', value: 'mountspec_tab'},
+    {label: 'Mountable', value: 'mountable_tab'},
+  ]}>
+  <TabItem value="mountspec_tab">
+
+```java
+@MountSpec
+public class MyComponentSpec {
+
+  @OnCreateMountContent
+  static ImageView onCreateMountContent(Context c) {
+    return new ImageView(c);
+  }
+
+  ...
+}
+```
+
+  </TabItem>
+  <TabItem value="mountable_tab">
+
+```kotlin
+class MyMountable : SimpleMountable<ImageView>(RenderType.VIEW) {
+
+ override fun createContent(context: Context): ImageView = ImageView(context)
+
+ ...
+}
+```
+
+  </TabItem>
+</Tabs>
+
 ### Migrating content pooling and pre-allocation
 
 For Mountable, instead of static annotated methods or @MountSpec annotation parameters, it's the `ContentAllocator` interface that SimpleMountable implements, which can be used to configure the recycling pool and pre-allocation for content.
