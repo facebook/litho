@@ -4,7 +4,7 @@ title: BindTo - Dynamic Values API
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-**Dynamic Mount Props** property types enable the value of the property on the content mounted by the Mountable to be updated, without triggering a new layout (such as when animating the text colour of a Text component).
+**Dynamic Mount Props** property types enable the value of the property, on the content mounted by the SimpleMountable, to be updated without triggering a new layout (such as when animating the text colour of a Text component).
 
 ## BindTo API in Practice
 
@@ -45,6 +45,6 @@ The following short video shows the BindTo API in action:
 
 ## Key points for the BindTo API
 
-* A `DynamicValue` has to be bound to the Mountable in `MountableComponentScope.render()`.
-* A Mountable can have several dynamic props.
+* A `DynamicValue` has to be bound to the SimpleMountable in `MountableComponentScope.render()`.
+* A SimpleMountable can have several dynamic props.
 * The Binder will automatically unbind by setting the default value.
