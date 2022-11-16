@@ -22,6 +22,8 @@ import com.facebook.flipper.core.FlipperObject
 import com.facebook.flipper.plugins.inspector.InspectorValue
 import com.facebook.flipper.plugins.inspector.InspectorValue.Type.Color
 import com.facebook.flipper.plugins.inspector.Named
+import com.facebook.litho.Component
+import com.facebook.litho.DebugComponent
 import com.facebook.litho.KStateContainer
 import com.facebook.litho.SpecGeneratedComponent
 import com.facebook.litho.StateContainer
@@ -29,7 +31,6 @@ import com.facebook.litho.StateDebuggingUtils
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
-import java.util.ArrayList
 
 object DataUtils {
 
@@ -83,6 +84,41 @@ object DataUtils {
       data.add(Named("Props", props.build()))
     }
     return data
+  }
+
+  @JvmStatic
+  fun getMountingData(node: DebugComponent): FlipperObject? {
+
+    val lithoView = node.lithoView
+    val mountingData = FlipperObject.Builder()
+
+    if (lithoView == null) {
+      return mountingData.build()
+    }
+
+    val mountState = lithoView.mountDelegateTarget ?: return mountingData.build()
+    val componentTree = lithoView.componentTree ?: return mountingData.build()
+    var hasMountingInfo = false
+    val component = node.component
+
+    if (component.mountType != Component.MountType.NONE) {
+      val renderUnit = DebugComponent.getRenderUnit(node, componentTree)
+      if (renderUnit != null) {
+        val renderUnitId = renderUnit.id
+        val isMounted = mountState.getContentById(renderUnitId) != null
+        mountingData.put("mounted", isMounted)
+        hasMountingInfo = true
+      }
+    }
+
+    val visibilityOutput = DebugComponent.getVisibilityOutput(node, componentTree)
+    if (visibilityOutput != null) {
+      val isVisible = DebugComponent.isVisible(node, lithoView)
+      mountingData.put("visible", isVisible)
+      hasMountingInfo = true
+    }
+
+    return if (hasMountingInfo) mountingData.build() else null
   }
 
   // Props can override the value shown in the Layout Inspector by implementing PropWithDescription

@@ -188,6 +188,11 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
       data.addAll(propData);
     }
 
+    final FlipperObject mountingData = getMountingData(node);
+    if (mountingData != null) {
+      data.add(new Named<>("Mounting and Visibility", mountingData));
+    }
+
     final FlipperObject stateData = getStateData(node);
     if (stateData != null) {
       data.add(new Named<>("State", stateData));
@@ -438,6 +443,12 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     final Component component = node.getComponent();
     return DataUtils.getPropData(component);
+  }
+
+  @Nullable
+  private static FlipperObject getMountingData(DebugComponent node) throws Exception {
+
+    return DataUtils.getMountingData(node);
   }
 
   @Nullable

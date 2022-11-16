@@ -45,6 +45,7 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.lang.ref.WeakReference;
@@ -1688,6 +1689,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     } else {
       return null;
     }
+  }
+
+  VisibilityMountExtension.VisibilityMountExtensionState getVisibilityExtensionState() {
+    return (VisibilityMountExtension.VisibilityMountExtensionState)
+        mLithoHostListenerCoordinator.getVisibilityExtensionState().getState();
   }
 
   public void setMountStartupLoggingInfo(

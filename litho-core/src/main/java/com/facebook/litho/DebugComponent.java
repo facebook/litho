@@ -24,6 +24,10 @@ import android.view.View;
 import android.widget.TextView;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -113,6 +117,52 @@ public final class DebugComponent {
     final LithoNode rootNode = result.getNode();
     final int outerWrapperComponentIndex = Math.max(0, rootNode.getComponentCount() - 1);
     return DebugComponent.getInstance(result, outerWrapperComponentIndex, 0, 0);
+  }
+
+  public static @Nullable RenderUnit getRenderUnit(
+      final DebugComponent debugComponent, final ComponentTree componentTree) {
+    final Component component = debugComponent.getComponent();
+    final LayoutState layoutState = componentTree.getMainThreadLayoutState();
+    if (layoutState == null) {
+      return null;
+    }
+
+    for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
+      final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
+      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
+      if (lithoRenderUnit.getComponentContext() != null
+          && lithoRenderUnit.getComponentContext().getComponentScope() == component) {
+        return lithoRenderUnit;
+      }
+    }
+
+    return null;
+  }
+
+  public static @Nullable VisibilityOutput getVisibilityOutput(
+      final DebugComponent debugComponent, final ComponentTree componentTree) {
+    final String componentGlobalKey = debugComponent.getComponentGlobalKey();
+    final LayoutState layoutState = componentTree.getMainThreadLayoutState();
+    if (layoutState == null) {
+      return null;
+    }
+
+    for (int i = 0, size = layoutState.getVisibilityOutputCount(); i < size; i++) {
+      final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(i);
+      if (visibilityOutput.getId().equals(componentGlobalKey)) {
+        return visibilityOutput;
+      }
+    }
+
+    return null;
+  }
+
+  public static boolean isVisible(DebugComponent debugComponent, final LithoView lithoView) {
+    final String componentGlobalKey = debugComponent.getComponentGlobalKey();
+    final VisibilityMountExtension.VisibilityMountExtensionState visibilityState =
+        lithoView.getVisibilityExtensionState();
+
+    return VisibilityMountExtension.isVisible(visibilityState, componentGlobalKey);
   }
 
   private static String generateGlobalKey(ComponentContext context, String componentKey) {
@@ -426,6 +476,10 @@ public final class DebugComponent {
   /** @return The Component instance this debug component wraps. */
   public Component getComponent() {
     return mNode.getComponentAt(mComponentIndex);
+  }
+
+  private String getComponentGlobalKey() {
+    return mNode.getComponentContextAt(mComponentIndex).getGlobalKey();
   }
 
   /** @return If this debug component represents a layout node, return it. */

@@ -550,6 +550,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private VisibilityMountExtensionState() {}
   }
 
+  public static boolean isVisible(VisibilityMountExtensionState state, String key) {
+    return state.mVisibilityIdToItemMap.containsKey(key);
+  }
+
   public static int getVisibleTop(Rect itemBounds, Rect itemIntersection) {
     return itemIntersection.top - itemBounds.top;
   }
