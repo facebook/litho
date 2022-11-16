@@ -65,7 +65,8 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Map<String, Object>> customAttributes,
       @Prop(optional = true) Diff<Object> data,
       @Prop(optional = true) Diff<ComponentsLogger> componentsLogger,
-      @Prop(optional = true) Diff<String> logTag) {
+      @Prop(optional = true) Diff<String> logTag,
+      @Prop(optional = true) Diff<Boolean> shouldCompareComponentCommonProps) {
     final Object prevData = data.getPrevious();
     final Object nextData = data.getNext();
     final Component prevComponent = component.getPrevious();
@@ -130,15 +131,21 @@ public class SingleComponentSectionSpec {
     if (isFullSpan != null && isFullSpan.getPrevious() != null) {
       isPrevFullSpan = isFullSpan.getPrevious();
     }
-
     final boolean customAttributesEqual =
         MapDiffUtils.areMapsEqual(customAttributes.getPrevious(), customAttributes.getNext());
+
+    boolean shouldCompareComponentCommonPropsValue = false;
+    if (shouldCompareComponentCommonProps != null
+        && shouldCompareComponentCommonProps.getNext() != null) {
+      shouldCompareComponentCommonPropsValue = shouldCompareComponentCommonProps.getNext();
+    }
 
     if (isPrevSticky != isNextSticky
         || prevSpanSize != nextSpanSize
         || isPrevFullSpan != isNextFullSpan
         || !customAttributesEqual
-        || !isComponentEquivalent(prevComponent, nextComponent)) {
+        || !isComponentEquivalent(
+            prevComponent, nextComponent, shouldCompareComponentCommonPropsValue)) {
       changeSet.update(
           0,
           addCustomAttributes(
@@ -158,10 +165,12 @@ public class SingleComponentSectionSpec {
     }
   }
 
-  private static boolean isComponentEquivalent(Component prevComponent, Component nextComponent) {
+  private static boolean isComponentEquivalent(
+      Component prevComponent, Component nextComponent, boolean shouldCompareCommonProps) {
     return prevComponent.isEquivalentTo(
         nextComponent,
-        ComponentsConfiguration.shouldCompareRootCommonPropsInSingleComponentSection);
+        ComponentsConfiguration.shouldCompareRootCommonPropsInSingleComponentSection
+            || shouldCompareCommonProps);
   }
 
   private static ComponentRenderInfo.Builder addCustomAttributes(
