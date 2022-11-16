@@ -292,6 +292,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useReliableWorkingRange = false;
 
+  public static boolean enableMountableInStoriesViewerFeelingsSticker = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;
@@ -380,7 +382,7 @@ public class ComponentsConfiguration {
    * Defines whether or not we should throw an exception when focus requests which happen on threads
    * different than the Main Thread.
    */
-  private static boolean isNonMainThreadFocusRequestThrowingEnabled = false;
+  private static boolean isNonMainThreadFocusRequestThrowingEnabled = true;
 
   public static void setIsNonMainThreadFocusRequestThrowingEnabled(boolean enabled) {
     isNonMainThreadFocusRequestThrowingEnabled = enabled;

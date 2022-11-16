@@ -980,6 +980,16 @@ public class ComponentBodyGenerator {
         break;
 
       case Comparable.COMPONENT:
+        codeBlock
+            .beginControlFlow(
+                "if ($L != null ? !$L.isEquivalentTo($L, shouldCompareCommonProps) : $L != null)",
+                firstComparator,
+                firstComparator,
+                secondComparator,
+                secondComparator)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
       case Comparable.SECTION:
       case Comparable.EVENT_HANDLER:
       case Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE:

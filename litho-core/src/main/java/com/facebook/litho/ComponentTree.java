@@ -1324,6 +1324,38 @@ public class ComponentTree implements LithoLifecycleListener {
           needsSyncLayout = false;
         } else {
           needsSyncLayout = true;
+
+          if (DEBUG_LOGS) {
+            if (mMainThreadLayoutState != null) {
+              LayoutState state = mMainThreadLayoutState;
+              int id = mRoot != null ? mRoot.getId() : INVALID_ID;
+              boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
+              final boolean doesIdMatch = state.getRootComponent().getId() == id;
+
+              String idMatchError = "";
+              if (!doesIdMatch && id != INVALID_ID) {
+                idMatchError = "\nid-matched: " + doesIdMatch;
+              }
+
+              String measurementError = "";
+              if (!doesSpecMatch) {
+                String measuredSize = "w: " + state.getWidth() + " h: " + state.getHeight();
+                String measuredSpec = specsToString(state.getWidthSpec(), state.getHeightSpec());
+                String requiredSpec = specsToString(widthSpec, heightSpec);
+                measurementError =
+                    "\nrequired-spec: "
+                        + requiredSpec
+                        + "\nmeasured-spec: "
+                        + measuredSpec
+                        + "\nmeasured-size: "
+                        + measuredSize;
+              }
+
+              debugLog("measure:", "needsSyncLayout: " + measurementError + idMatchError);
+            } else {
+              debugLog("measure:", "needsSyncLayout: no MainThreadLayout available");
+            }
+          }
         }
       }
 
@@ -1387,6 +1419,13 @@ public class ComponentTree implements LithoLifecycleListener {
               + ", OutHeight: "
               + measureOutput[1]);
     }
+  }
+
+  private static String specsToString(int widthSpec, int heightSpec) {
+    return "w: "
+        + SizeSpec.toSimpleString(widthSpec)
+        + ", h: "
+        + SizeSpec.toSimpleString(heightSpec);
   }
 
   /** Returns {@code true} if the layout call mounted the component. */
@@ -2783,7 +2822,8 @@ public class ComponentTree implements LithoLifecycleListener {
                 widthSpec,
                 heightSpec,
                 mId,
-                layoutVersion),
+                layoutVersion,
+                mIsLayoutDiffingEnabled),
             mLayoutTreeFutures,
             source,
             mLayoutStateFutureLock,

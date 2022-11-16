@@ -252,12 +252,12 @@ public class LayoutState
       @Nullable LithoNode root,
       int widthSpec,
       int heightSpec,
-      int componentTreeId) {
+      int componentTreeId,
+      boolean isLayoutDiffingEnabled) {
     mContext = context;
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
-    mTreeState = treeState;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
@@ -267,7 +267,7 @@ public class LayoutState
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
     mRootComponentName = rootComponent.getSimpleName();
-    mShouldGenerateDiffTree = true;
+    mShouldGenerateDiffTree = isLayoutDiffingEnabled;
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
@@ -1434,6 +1434,11 @@ public class LayoutState
         }
       }
     }
+
+    // LayoutState is no longer partial. Remove all partial-related information.
+    layoutState.mIsPartialLayoutState = false;
+    layoutState.mPartiallyResolvedRoot = null;
+    layoutState.mPartialRenderStateContext = null;
 
     return layoutState;
   }

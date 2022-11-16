@@ -21,7 +21,7 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.litho.ResolvedTree.applyTransitionsAndEseEffectEntriesToNode;
+import static com.facebook.litho.ResolvedTree.applyTransitionsAndUseEffectEntriesToNode;
 
 import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
@@ -376,7 +376,7 @@ public class TestLayoutState {
         }
 
         if (renderResult != null && node != null) {
-          applyTransitionsAndEseEffectEntriesToNode(
+          applyTransitionsAndUseEffectEntriesToNode(
               renderResult.transitions, renderResult.useEffectEntries, node);
         }
       }

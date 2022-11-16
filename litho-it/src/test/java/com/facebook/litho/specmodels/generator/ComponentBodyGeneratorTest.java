@@ -451,7 +451,7 @@ public class ComponentBodyGeneratorTest {
                 + "  if (arg0 != mountTestRef.arg0) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg4 != null ? !arg4.isEquivalentTo(mountTestRef.arg4) : mountTestRef.arg4 != null) {\n"
+                + "  if (arg4 != null ? !arg4.isEquivalentTo(mountTestRef.arg4, shouldCompareCommonProps) : mountTestRef.arg4 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg5 != null) {\n"

@@ -28,6 +28,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final int mHeightSpec;
   private final int mComponentTreeId;
   private final int mLayoutVersion;
+  private final boolean mIsLayoutDiffingEnabled;
 
   public LayoutTreeFuture(
       final LithoResolutionResult lithoResolutionResult,
@@ -37,7 +38,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       final int widthSpec,
       final int heightSpec,
       final int componentTreeId,
-      final int layoutVersion) {
+      final int layoutVersion,
+      final boolean isLayoutDiffingEnabled) {
     super(false);
 
     mLithoResolutionResult = lithoResolutionResult;
@@ -48,6 +50,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
     mLayoutVersion = layoutVersion;
+    mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
   }
 
   @Override
@@ -69,7 +72,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
             node,
             mWidthSpec,
             mHeightSpec,
-            mComponentTreeId);
+            mComponentTreeId,
+            mIsLayoutDiffingEnabled);
 
     final LayoutStateContext lsc =
         new LayoutStateContext(

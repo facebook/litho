@@ -16,7 +16,7 @@ It's important to remember that the content is necessarily nullable because the 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=start_controller_code_example end=end_controller_code_example
 ```
 
-The Controller must be bound and unbound from the content manually from the `bind`, and `unbind` methods of a SimpleMountable, or from the `bind` and `unbind` methods of the binder used for the Mountable:
+The Controller must be mounted and unmounted from the content manually from the `mount()` and `unmount()` methods of a SimpleMountable:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=start_controller_bind_code_example end=end_controller_unbind_code_example
 ```
@@ -26,7 +26,7 @@ In the Mountable Component implementation, it's necessary to  manually `bind` an
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=mountable_component_start end=mountable_component_end
 ```
 
-The mountable should pass the `TimePickerController` as a constructor parameter. A small performance improvement can be achieved by putting the controller into the [useCached](../mainconcepts/use-cached.mdx) hook, so it's not recreated in each rerender.
+The SimpleMountable should pass the `TimePickerController` as a constructor parameter. A small performance improvement can be achieved by putting the controller into the [useCached](../mainconcepts/use-cached.mdx) hook so it's not recreated in each rerender.
 
 Any other methods on the controller instance can be called easily in the code (see `controller.setHour()`):
 
@@ -35,7 +35,7 @@ Any other methods on the controller instance can be called easily in the code (s
 
 ## Key points for Controllers
 
-* The Mountable takes a controller as a constructor parameter.
+* The SimpleMountable takes a controller as a constructor parameter.
 * If the controller is stateful, then it's necessary to hold the controller in state/cache otherwise state will be lost across re-renders.
 * Controllers should bind and unbind the controllers manually.
 * Controllers should maintain/update/watch state manually.
