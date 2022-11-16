@@ -115,6 +115,32 @@ public class SizeSpec {
   }
 
   /**
+   * Returns a simple String representation of the specified measure specification.
+   *
+   * @param sizeSpec the size specification to convert to a String
+   * @return a String with the following format: "MODE SIZE"
+   */
+  public static String toSimpleString(int sizeSpec) {
+    int mode = getMode(sizeSpec);
+    int size = getSize(sizeSpec);
+
+    StringBuilder sb = new StringBuilder();
+
+    if (mode == UNSPECIFIED) {
+      sb.append("UNSPECIFIED ");
+    } else if (mode == EXACTLY) {
+      sb.append("EXACTLY ");
+    } else if (mode == AT_MOST) {
+      sb.append("AT_MOST ");
+    } else {
+      sb.append(mode).append(" ");
+    }
+
+    sb.append(size);
+    return sb.toString();
+  }
+
+  /**
    * Resolve a size spec given a preferred size.
    *
    * @param sizeSpec The spec to resolve.
