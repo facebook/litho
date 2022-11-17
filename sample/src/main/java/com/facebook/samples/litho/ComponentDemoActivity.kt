@@ -34,6 +34,7 @@ class ComponentDemoActivity : NavigatableDemoActivity() {
     if (componentCreator != null) {
       val lithoView = LithoView(this)
       lithoView.setComponent(componentCreator.create(lithoView.componentContext))
+      setContentView(lithoView)
     } else {
       val lithoView = LithoView.create(this, model.component, AOSPLithoLifecycleProvider(this))
       setContentView(lithoView)
