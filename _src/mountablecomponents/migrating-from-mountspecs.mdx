@@ -61,6 +61,10 @@ MountableComponents do not provide a `@OnPrepare` lifecycle method to move heavy
 
 Similar to `@OnPrepare`, `@OnLoadStyle` lifecycle method's content should also migrate to be a part of MountableComponent's `render()` method.
 
+:::note
+`@OnLoadStyle` lifecycle method from MountSpecs is not related to the `Style` object used for KComponents or Mountable Components and should not be confused with it. `@OnLoadStyle` is a lifecycle method used to retrieve XML attributes with style and theme information applied via calling [obtainStyledAttributes()](https://developer.android.com/reference/android/content/res/Resources.Theme#obtainStyledAttributes(android.util.AttributeSet,%20int[],%20int,%20int)).
+:::
+
 ## Migrating parts belonging to the `Mountable` object
 
 The subsections below outline how to migrate the parts of a MountSpec that will be hosted by the `Mountable`. This includes logic to measure, create (and optionally pool), and bind the content, as well as `DynamicValues` and `Controllers` - a mechanism that replaces `@OnTrigger` static lifecycle method.
