@@ -319,11 +319,23 @@ public final class DebugComponent {
     /**
      * Many components can result in a single Lithonode/layout resut (from delegatation / custom
      * components) We want only the first component to 'take' the offset of the underlying layout
-     * node other wise each delegating custom component will appear to multiply the offset
+     * node other wise each delegating custom component will appear to multiply the offset.
+     *
+     * <p>NestedTreeHolder nodes have to be handled differently. The head component on the
+     * NestedTreeHolderResult will create a separate DebugComponent node but any margin that needs
+     * to be added to its bounds will be applied on the nested result node, which is hosted on
+     * another DebugComponent instance.
      */
     boolean isHeadComponent = mComponentIndex == mNode.getComponentCount() - 1;
-    final int x = isHeadComponent ? mResult.getX() : 0;
-    final int y = isHeadComponent ? mResult.getY() : 0;
+    final LithoLayoutResult nestedResult =
+        (mResult instanceof NestedTreeHolderResult)
+            ? ((NestedTreeHolderResult) mResult).getNestedResult()
+            : null;
+    final int xFromNestedResult = nestedResult == null ? 0 : nestedResult.getX();
+    final int yFromNestedResult = nestedResult == null ? 0 : nestedResult.getY();
+    final int x = mResult != null && isHeadComponent ? mResult.getX() + xFromNestedResult : 0;
+    final int y = mResult != null && isHeadComponent ? mResult.getY() + yFromNestedResult : 0;
+
     return new Rect(x, y, x + mResult.getWidth(), y + mResult.getHeight());
   }
 
