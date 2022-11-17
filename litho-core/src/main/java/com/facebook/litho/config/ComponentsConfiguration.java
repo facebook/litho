@@ -212,13 +212,6 @@ public class ComponentsConfiguration {
   public static boolean furyEventCallbackInstrumentation = false;
 
   /**
-   * This toggles whether Litho's MountState uses the position of the item in the host view to
-   * mount/unmount or uses the position in the LayoutState. The default is to use the position in
-   * the LayoutState.
-   */
-  public static boolean shouldUsePositionInParentForMounting = false;
-
-  /**
    * When enabled, Resolve and Layout futures will run separately. Resolve will store a committed
    * LithoResolutionResult, which will allow subsequent layouts to reuse that result to produce a
    * LayoutState.
