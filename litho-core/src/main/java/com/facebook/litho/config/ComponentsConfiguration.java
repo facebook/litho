@@ -208,9 +208,6 @@ public class ComponentsConfiguration {
 
   public static int hostComponentPoolSize = 30;
 
-  /** This toggles whether fury should instrument the Litho event callback event */
-  public static boolean furyEventCallbackInstrumentation = false;
-
   /**
    * When enabled, Resolve and Layout futures will run separately. Resolve will store a committed
    * LithoResolutionResult, which will allow subsequent layouts to reuse that result to produce a
