@@ -2356,9 +2356,13 @@ public class ComponentTree implements LithoLifecycleListener {
         mExternalRootVersion = externalRootVersion;
       }
 
-      if (root != null) {
-        if ((mTreeState != null && mTreeState.hasUncommittedUpdates())) {
-          root = root.makeShallowCopyWithNewId();
+      // If there are uncommitted state updates, use a cloned root with a different ID to ensure
+      // render occurs. If a null root was provided, use the cached root if it exists.
+      if (mTreeState != null && mTreeState.hasUncommittedUpdates()) {
+        final Component rootToCopy = root != null ? root : mRoot;
+
+        if (rootToCopy != null) {
+          root = rootToCopy.makeShallowCopyWithNewId();
         }
       }
 
