@@ -159,7 +159,9 @@ module.exports = {
     ],
     ...fbInternalOnly({
       'Contributing to the Documentation': [
-        'fb/documentation/contributing-documentation',
+        'fb/documentation/documentation-standards',
+        'fb/documentation/documentation-workflow',
+        'fb/documentation/add-new-page',
         'fb/documentation/writing-guide',
         'fb/documentation/formatting-tips',
       ],
