@@ -20,6 +20,7 @@ import android.content.Context
 import com.facebook.litho.utils.MeasureUtils
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.utils.MeasureSpecUtils
 
 /**
  * The scope for the [SimpleMountable] measure method. Provides access to [androidContext],
@@ -88,4 +89,23 @@ class MeasureScope(val layoutContext: LayoutContext<*>, val previousLayoutData: 
       desiredHeightPx: Int
   ): MeasureResult =
       MeasureResult.withDesiredPx(widthSpec, heightSpec, desiredWidthPx, desiredHeightPx)
+}
+
+/**
+ * Extracts the mode from the supplied size specification.
+ * @param spec the size specification to extract the mode from.
+ * @return [android.view.View.MeasureSpec.UNSPECIFIED], [android.view.View.MeasureSpec.AT_MOST] or
+ * [android.view.View.MeasureSpec.EXACTLY]
+ */
+inline fun MeasureScope.getMode(spec: Int): Int {
+  return MeasureSpecUtils.getMode(spec)
+}
+
+/**
+ * Extracts the size from the supplied size specification.
+ * @param spec the size specification to extract the size from.
+ * @return the size in pixels defined in the supplied size specification.
+ */
+inline fun MeasureScope.getSize(spec: Int): Int {
+  return MeasureSpecUtils.getSize(spec)
 }
