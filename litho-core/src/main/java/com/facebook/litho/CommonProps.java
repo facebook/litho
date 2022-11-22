@@ -386,6 +386,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
     getOrCreateNodeInfo().setEnabled(isEnabled);
   }
 
+  public boolean isEnabled() {
+    return getOrCreateNodeInfo().getEnabledState() == NodeInfo.ENABLED_SET_TRUE;
+  }
+
   public void selected(boolean isSelected) {
     getOrCreateNodeInfo().setSelected(isSelected);
   }
@@ -430,6 +434,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
   public void contentDescription(@Nullable CharSequence contentDescription) {
     getOrCreateNodeInfo().setContentDescription(contentDescription);
+  }
+
+  @Nullable
+  public CharSequence getContentDescription() {
+    return getOrCreateNodeInfo().getContentDescription();
   }
 
   public void viewTag(@Nullable Object viewTag) {

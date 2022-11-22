@@ -16,12 +16,9 @@
 
 package com.facebook.litho.testing.api
 
-/**
- * This abstraction allows you to represent any given predicate on a [TestNode]. This is the base to
- * the mechanism that allows filtering test nodes to perform assertions or the matchers used in the
- * assertions.
- */
-class TestNodeMatcher(val description: String, private val predicate: (TestNode) -> Boolean) {
+fun TestNodeSelection.assert(matcher: TestNodeMatcher): TestNodeSelection {
+  val node = fetchTestNode()
+  check(matcher.matches(node)) { "Failed assertion: ${matcher.description}" }
 
-  fun matches(node: TestNode): Boolean = predicate(node)
+  return this
 }

@@ -26,4 +26,13 @@ import com.facebook.litho.Component
 class TestNode(private val component: Component) {
 
   val componentType: Class<*> = component::class.java
+
+  val testKey: String?
+    get() = component.commonProps?.testKey
+
+  val isEnabled: Boolean
+    get() = component.commonProps?.isEnabled ?: false
+
+  val contentDescription: CharSequence?
+    get() = component.commonProps?.contentDescription
 }

@@ -29,7 +29,7 @@ class FiltersTest {
   @Test
   fun `hasType successfully matches when the test node component has the same class`() {
     val testNode = TestNode(CounterComponent(10))
-    val filter = hasType(CounterComponent::class.java)
+    val filter = hasType<CounterComponent>()
 
     Assertions.assertThat(filter.matches(testNode)).isTrue
   }
@@ -37,7 +37,7 @@ class FiltersTest {
   @Test
   fun `hasType fails to match when the test node component has the another class`() {
     val testNode = TestNode(CounterComponent(10))
-    val filter = hasType(Text::class.java)
+    val filter = hasType<Text>()
 
     Assertions.assertThat(filter.matches(testNode)).isFalse
   }
