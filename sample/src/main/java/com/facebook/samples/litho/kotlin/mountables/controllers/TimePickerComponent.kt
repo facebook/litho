@@ -49,7 +49,7 @@ internal class TimePickerMountable(
   }
 
   override fun unmount(c: Context, content: TimePicker, layoutData: Any?) {
-    controller?.unbind(content)
+    controller?.unbind()
   }
   // mountable_component_end
 
@@ -124,7 +124,7 @@ class TimePickerController(var currentHour: Int, var currentMinute: Int) {
     setTimeChangedListener()
   }
 
-  fun unbind(content: TimePicker) {
+  fun unbind() {
     this.content?.setOnTimeChangedListener(null)
     this.content = null
   }

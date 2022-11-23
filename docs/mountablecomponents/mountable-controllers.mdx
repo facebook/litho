@@ -10,7 +10,7 @@ The Controllers Pattern can be used to control the content from outside the comp
 To demonstrate the use of controllers in practice, the following code implements a simple TimePicker Component, which can be used to show some arbitrary time: the code implements simple getters and setters of the TimePicker properties.
 
 :::note
-It's important to remember that the content is necessarily nullable because the **content can get unmounted when it is out of the viewport**. So, any operation invoked on the controller should be memoized when the content is unbound so that they can be applied once the content is mounted. In the following code, notice how the minutes and hours are set to the vars in the setter methods and how, in `bind`, the values are set back to the content)
+It's important to remember that the content is necessarily nullable because the **content can get unmounted when it is out of the viewport**. Any operation invoked on the controller should be memoized (saved) when the content is unbound so that it can be applied once the content is mounted. In the following code, notice how the minutes and hours are set to the vars in the setter methods and how, in `bind`, the values are set back on the content.
 :::
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=start_controller_code_example end=end_controller_code_example
