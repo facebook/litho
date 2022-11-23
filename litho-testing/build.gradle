@@ -58,6 +58,7 @@ dependencies {
     implementation deps.jsr305
     implementation deps.junit
     implementation deps.mockitoCore
+    implementation deps.mockitokotlin
     implementation(deps.robolectric) {
         exclude group: "com.google.guava", module: "guava"
     }

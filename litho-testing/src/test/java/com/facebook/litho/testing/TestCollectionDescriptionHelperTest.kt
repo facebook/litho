@@ -33,6 +33,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.collection.LazyList
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,7 +53,7 @@ class TestCollectionDescriptionHelperTest {
     assertThat(TestCollectionDescriptionHelper.collectionToString(testCollection))
         .isEqualTo(testCollection.recyclerView.toString())
   }
-
+  @Ignore("t138559546")
   @Test
   fun `prints recycler with fully visible child item info with id`() {
     val testLithoView =
@@ -75,7 +76,7 @@ class TestCollectionDescriptionHelperTest {
         """
                 .trimMargin())
   }
-
+  @Ignore("t138559546")
   @Test
   fun `prints recycler with partially visible child item info with id`() {
     val testLithoView =
@@ -98,7 +99,7 @@ class TestCollectionDescriptionHelperTest {
         """
                 .trimMargin())
   }
-
+  @Ignore("t138559546")
   @Test
   fun `prints recycler with invisible child item info without id set`() {
     val testLithoView =
@@ -119,7 +120,7 @@ class TestCollectionDescriptionHelperTest {
         """
                 .trimMargin())
   }
-
+  @Ignore("t138559546")
   @Test
   fun `prints recycler with multiple children including fallback`() {
     val testLithoView =
