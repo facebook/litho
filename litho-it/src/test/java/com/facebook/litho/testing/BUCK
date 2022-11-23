@@ -30,6 +30,7 @@ load(
 litho_robolectric4_test(
     name = "testing",
     srcs = glob([
+        "*Test.java",
         "*Test.kt",
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
