@@ -42,7 +42,7 @@ data class TestCollectionItem(
 
   private val renderInfo
     get() = componentTreeHolder.renderInfo
-  private val componentTree
+  internal val componentTree
     get() = componentTreeHolder.componentTree
 
   val id
