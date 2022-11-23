@@ -68,6 +68,7 @@ internal class ImageViewMountable() : SimpleMountable<ImageView>(RenderType.VIEW
 
   // measure_example_start
   override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
+    // if the sizes are unspecified, set default size; otherwise enforce equal sizes
     return if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       MeasureResult(defaultSize, defaultSize)
