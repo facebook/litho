@@ -31,33 +31,37 @@ import com.facebook.samples.litho.kotlin.animations.dynamicprops.SeekBar
 
 class MountableBindToExampleComponent : KComponent() {
 
-  // start_bindTo_useBinding_code
+  // start_bindTo_seekbar_code
   override fun ComponentScope.render(): Component? {
     val background = useBinding(50f)
     val rotation = useBinding(0f)
     val scale = useBinding(1f)
-    // end_bindTo_useBinding_code
     return Column(style = Style.padding(all = 20.dp)) {
-      // start_bindTo_seekbar_code
       child(
           SeekBar(
-              initialValue = 0f, label = "background", onProgressChanged = { background.set(it) }))
+              initialValue = 0f,
+              label = "background",
+              onProgressChanged = { backgroundValue -> background.set(backgroundValue) }))
       child(
           SeekBar(
               initialValue = 0f,
               label = "rotation",
-              onProgressChanged = { rotation.set(evaluate(it, 0f, 360f)) }))
+              onProgressChanged = { rotationValue ->
+                rotation.set(evaluate(rotationValue, 0f, 360f))
+              }))
       child(
           SeekBar(
               initialValue = 1f,
               label = "scale",
-              onProgressChanged = { scale.set(evaluate(it, .75f, 1.25f)) }))
+              onProgressChanged = { scaleValue -> scale.set(evaluate(scaleValue, .75f, 1.25f)) }))
       // end_bindTo_seekbar_code
-
+      // start_bindTo_imagecomponent_def
       child(
           Column(style = Style.width(100.dp).height(100.dp).margin(all = 50.dp)) {
             child(ImageViewComponent(background = background, rotation = rotation, scale = scale))
           })
+      // end_bindTo_imagecomponent_def
+
     }
   }
 }

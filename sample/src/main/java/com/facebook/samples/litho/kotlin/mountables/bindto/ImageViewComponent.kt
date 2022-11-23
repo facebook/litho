@@ -39,9 +39,8 @@ class ImageViewComponent(
     private val style: Style? = null
 ) : MountableComponent() {
   // end_bindTo_imagecomponent_code
-
+  // start_bindTo_binding_code
   override fun MountableComponentScope.render(): MountableRenderResult {
-    // start_bindTo_binding_code
     // simple binding
     rotation.bindTo(0f, ImageView::setRotation)
     scale.bindTo(1f, ImageView::setScaleX)
