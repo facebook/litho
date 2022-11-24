@@ -43,12 +43,17 @@ import com.facebook.litho.kotlin.widget.ExperimentalVerticalScroll
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.match
+import com.facebook.litho.testing.testrunner.LithoLocalTestRunConfiguration
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onVisible
+import com.facebook.rendercore.ContentAllocator
+import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.Mountable
+import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
@@ -58,11 +63,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
+import org.junit.runners.model.FrameworkMethod
 import org.mockito.kotlin.mock
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
+@LithoTestRunner.LocalConfigurations(NonLithoMountableTestRunConfig::class)
 class MountableComponentsTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
@@ -746,7 +753,13 @@ class TestViewMountableComponent(
     // using tag for convenience of tests
     dynamicTag?.let { dynamicTag.bindTo("default_value", View::setTag) }
 
-    return MountableRenderResult(ViewMountable(identity, view, steps), style)
+    return MountableRenderResult(
+        if (NonLithoMountableTestRunConfig.shouldUseNonLithoViewMountable) {
+          NonLithoViewMountable(identity, view, steps)
+        } else {
+          ViewMountable(identity, view, steps)
+        },
+        style)
   }
 }
 
@@ -755,6 +768,7 @@ open class ViewMountable(
     open val view: View,
     open val steps: MutableList<LifecycleStep.StepInfo>? = null,
     open val updateState: ((String) -> Unit)? = null,
+    open val shouldUpdate: Boolean = true,
 ) : SimpleMountable<View>(RenderType.VIEW) {
 
   override fun createContent(context: Context): View {
@@ -799,7 +813,7 @@ open class ViewMountable(
       nextLayoutData: Any?
   ): Boolean {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.SHOULD_UPDATE))
-    return true
+    return shouldUpdate
   }
 }
 
@@ -856,4 +870,99 @@ class DrawableMountable(
   }
 }
 
+class NonLithoViewMountable(
+    val identity: Int = 0,
+    val view: View,
+    val steps: MutableList<LifecycleStep.StepInfo>? = null,
+    val shouldUpdate: Boolean = true
+) : Mountable<View>(RenderType.VIEW) {
+
+  init {
+    addMountBinder(
+        createDelegateBinder(
+            this,
+            object : Binder<NonLithoViewMountable, View> {
+              override fun shouldUpdate(
+                  currentModel: NonLithoViewMountable,
+                  newModel: NonLithoViewMountable,
+                  currentLayoutData: Any?,
+                  nextLayoutData: Any?
+              ): Boolean {
+                steps?.add(LifecycleStep.StepInfo(LifecycleStep.SHOULD_UPDATE))
+                currentLayoutData as TestLayoutData
+                nextLayoutData as TestLayoutData
+                return shouldUpdate
+              }
+
+              override fun bind(
+                  context: Context?,
+                  content: View?,
+                  model: NonLithoViewMountable?,
+                  layoutData: Any?
+              ) {
+                steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
+                layoutData as TestLayoutData
+              }
+
+              override fun unbind(
+                  context: Context?,
+                  content: View?,
+                  model: NonLithoViewMountable?,
+                  layoutData: Any?
+              ) {
+                steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_UNMOUNT))
+                layoutData as TestLayoutData
+              }
+            }))
+  }
+
+  override fun measure(
+      context: LayoutContext<*>,
+      widthSpec: Int,
+      heightSpec: Int,
+      previousLayoutData: Any?
+  ): MeasureResult {
+    steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
+    val width =
+        if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY) {
+          SizeSpec.getSize(widthSpec)
+        } else {
+          100
+        }
+
+    val height =
+        if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY) {
+          SizeSpec.getSize(heightSpec)
+        } else {
+          100
+        }
+
+    return MeasureResult(width, height, TestLayoutData(width, height))
+  }
+
+  override fun getContentAllocator(): ContentAllocator<View> {
+    return ContentAllocator {
+      steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
+      view
+    }
+  }
+}
+
 class TestLayoutData(val width: Int, val height: Int)
+
+class NonLithoMountableTestRunConfig : LithoLocalTestRunConfiguration {
+
+  companion object {
+    var shouldUseNonLithoViewMountable: Boolean = false
+  }
+
+  val defaultValue = shouldUseNonLithoViewMountable
+
+  override fun beforeTest(method: FrameworkMethod?) {
+    shouldUseNonLithoViewMountable = !defaultValue
+  }
+
+  override fun afterTest(method: FrameworkMethod?) {
+    shouldUseNonLithoViewMountable = defaultValue
+  }
+}
