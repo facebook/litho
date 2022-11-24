@@ -28,6 +28,7 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -43,6 +44,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.RenderUnit.Binder;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.HashMap;
@@ -93,26 +95,21 @@ public class LithoViewAttributesExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
-      final LithoViewAttributesState state = extensionState.getState();
-      final long id = lithoRenderUnit.getId();
+    final LithoViewAttributesState state = extensionState.getState();
+    final long id = renderUnit.getId();
+    final @Nullable LayoutOutput output = getLayoutOutput(renderUnit);
 
+    if (output != null) {
+      // Get the initial view attribute flags for the root LithoView.
       if (!state.hasDefaultViewAttributes(id)) {
-
         final int flags;
-
-        // Get the initial view attribute flags for the root LithoView.
         if (renderUnit.getId() == ROOT_HOST_ID) {
           flags = ((LithoView) content).mViewAttributeFlags;
         } else {
           flags = LithoMountData.getViewAttributeFlags(content);
         }
-
         state.setDefaultViewAttributes(id, flags);
       }
-
       setViewAttributes(content, output);
     }
   }
@@ -123,11 +120,12 @@ public class LithoViewAttributesExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
-      final LithoViewAttributesState state = extensionState.getState();
-      final int flags = state.getDefaultViewAttributes(lithoRenderUnit.getId());
+    final LithoViewAttributesState state = extensionState.getState();
+    final long id = renderUnit.getId();
+    final @Nullable LayoutOutput output = getLayoutOutput(renderUnit);
+
+    if (output != null) {
+      final int flags = state.getDefaultViewAttributes(id);
       unsetViewAttributes(content, output, flags);
     }
   }
@@ -142,18 +140,52 @@ public class LithoViewAttributesExtension
       return false;
     }
 
-    final LithoRenderUnit prevLithoRenderUnit = (LithoRenderUnit) previousRenderUnit;
-    final LithoRenderUnit nextLithoRenderUnit = (LithoRenderUnit) nextRenderUnit;
+    if (previousRenderUnit instanceof LithoRenderUnit
+        && nextRenderUnit instanceof LithoRenderUnit) {
 
-    return (previousRenderUnit instanceof MountSpecLithoRenderUnit
-            && nextLithoRenderUnit instanceof MountSpecLithoRenderUnit
-            && MountSpecLithoRenderUnit.shouldUpdateMountItem(
-                (MountSpecLithoRenderUnit) prevLithoRenderUnit,
-                (MountSpecLithoRenderUnit) nextLithoRenderUnit,
-                previousLayoutData,
-                nextLayoutData))
-        || shouldUpdateViewInfo(
-            nextLithoRenderUnit.getLayoutOutput(), prevLithoRenderUnit.getLayoutOutput());
+      final LithoRenderUnit prevLithoRenderUnit = (LithoRenderUnit) previousRenderUnit;
+      final LithoRenderUnit nextLithoRenderUnit = (LithoRenderUnit) nextRenderUnit;
+
+      return (previousRenderUnit instanceof MountSpecLithoRenderUnit
+              && nextLithoRenderUnit instanceof MountSpecLithoRenderUnit
+              && MountSpecLithoRenderUnit.shouldUpdateMountItem(
+                  (MountSpecLithoRenderUnit) prevLithoRenderUnit,
+                  (MountSpecLithoRenderUnit) nextLithoRenderUnit,
+                  previousLayoutData,
+                  nextLayoutData))
+          || shouldUpdateViewInfo(
+              nextLithoRenderUnit.getLayoutOutput(), prevLithoRenderUnit.getLayoutOutput());
+    } else {
+      final @Nullable ViewAttributeBinder prevBinder =
+          previousRenderUnit.findAttachBinderByClass(ViewAttributeBinder.class);
+
+      final @Nullable ViewAttributeBinder nextBinder =
+          nextRenderUnit.findAttachBinderByClass(ViewAttributeBinder.class);
+
+      if (prevBinder == null || nextBinder == null) {
+        return prevBinder != null || nextBinder != null;
+      }
+
+      return shouldUpdateViewInfo(nextBinder.mOutput, prevBinder.mOutput);
+    }
+  }
+
+  static @Nullable LayoutOutput getLayoutOutput(RenderUnit<?> unit) {
+    final LayoutOutput output;
+    if (unit instanceof LithoRenderUnit) {
+      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) unit;
+      output = lithoRenderUnit.getLayoutOutput();
+    } else {
+      final @Nullable ViewAttributeBinder binder =
+          unit.findAttachBinderByClass(ViewAttributeBinder.class);
+      if (binder != null) {
+        output = binder.mOutput;
+      } else {
+        output = null;
+      }
+    }
+
+    return output;
   }
 
   static void setViewAttributes(Object content, LayoutOutput output) {
@@ -927,5 +959,42 @@ public class LithoViewAttributesExtension
     final NodeInfo currentNodeInfo = currentLayoutOutput.getNodeInfo();
     return (currentNodeInfo == null && nextNodeInfo != null)
         || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
+  }
+
+  /**
+   * This Binder is only used to hold the LayoutOutput for the component. The bind and unbind are
+   * deliberately null. When this extension can be converted into a Binder then the implementation
+   * of the extension will move into this Binder.
+   */
+  public static final class ViewAttributeBinder implements Binder<RenderUnit<?>, Object> {
+
+    final LayoutOutput mOutput;
+
+    public ViewAttributeBinder(final LayoutOutput output) {
+      mOutput = output;
+    }
+
+    @Override
+    public boolean shouldUpdate(
+        final RenderUnit<?> currentModel,
+        final RenderUnit<?> newModel,
+        final @Nullable Object currentLayoutData,
+        final @Nullable Object nextLayoutData) {
+      return false;
+    }
+
+    @Override
+    public void bind(
+        final Context context,
+        final Object content,
+        final RenderUnit<?> renderUnit,
+        final @Nullable Object layoutData) {}
+
+    @Override
+    public void unbind(
+        final Context context,
+        final Object content,
+        final RenderUnit<?> renderUnit,
+        final @Nullable Object layoutData) {}
   }
 }

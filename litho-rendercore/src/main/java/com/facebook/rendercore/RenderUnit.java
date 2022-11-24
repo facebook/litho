@@ -424,6 +424,19 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
+  public @Nullable <T extends Binder<?, ?>> T findAttachBinderByClass(Class<T> klass) {
+    if (mAttachBinderTypeToDelegateMap == null || mAttachBinderTypeToDelegateMap.isEmpty()) {
+      return null;
+    }
+
+    final DelegateBinder binder = mAttachBinderTypeToDelegateMap.get(klass);
+    if (binder == null) {
+      return null;
+    }
+
+    return (T) binder.binder;
+  }
+
   /**
    * This methods diff current and new binders, calling shouldUpdate if needed, and returning a list
    * of binders from the "current" ones to unbind, and a list of binders from the "new" ones to
