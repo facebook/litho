@@ -19,11 +19,16 @@ package com.facebook.litho.testing.testrunner;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.config.ComponentsConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +44,8 @@ import org.robolectric.util.ReflectionHelpers;
 
 public class LithoTestRunner extends RobolectricTestRunner {
 
+  private final List<Class<? extends LithoLocalTestRunConfiguration>> mLocalTestRunConfigs;
+
   /**
    * Creates a runner to run {@code testClass}. Looks in your working directory for your
    * AndroidManifest.xml file and res directory by default. Use the {@link Config} annotation to
@@ -49,6 +56,13 @@ public class LithoTestRunner extends RobolectricTestRunner {
    */
   public LithoTestRunner(final Class<?> testClass) throws InitializationError {
     super(testClass);
+    @Nullable
+    LocalConfigurations annotation = getTestClass().getAnnotation(LocalConfigurations.class);
+    if (annotation != null) {
+      mLocalTestRunConfigs = Arrays.asList(annotation.value());
+    } else {
+      mLocalTestRunConfigs = Collections.emptyList();
+    }
   }
 
   /**
@@ -56,16 +70,18 @@ public class LithoTestRunner extends RobolectricTestRunner {
    *     test suite will always be run without any extra configurations in addition to these run
    *     configurations.
    */
-  private List<? extends Class<? extends LithoTestRunConfiguration>> getExtraRunConfigurations() {
+  private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
     return Arrays.asList(SplitBuildAndLayoutTestRunConfiguration.class);
   }
 
   @Override
   protected List<FrameworkMethod> getChildren() {
     final List<FrameworkMethod> children = super.getChildren();
-    final List<? extends Class<? extends LithoTestRunConfiguration>> extraRunConfigurations =
-        getExtraRunConfigurations();
-    if (extraRunConfigurations.isEmpty()) {
+
+    final List<Class<? extends LithoTestRunConfiguration>> configs = new ArrayList<>();
+    configs.addAll(getGlobalConfigs());
+
+    if (configs.isEmpty()) {
       return children;
     }
 
@@ -73,10 +89,21 @@ public class LithoTestRunner extends RobolectricTestRunner {
     final ArrayList<FrameworkMethod> res = new ArrayList<>();
     for (FrameworkMethod method : children) {
       res.add(method);
-      for (Class<? extends LithoTestRunConfiguration> configuration : extraRunConfigurations) {
+      for (Class<? extends LithoLocalTestRunConfiguration> localConfig : mLocalTestRunConfigs) {
         res.add(
             new LithoRobolectricFrameworkMethod(
-                (RobolectricFrameworkMethod) method, configuration));
+                (RobolectricFrameworkMethod) method, null, localConfig));
+      }
+
+      for (Class<? extends LithoTestRunConfiguration> configuration : configs) {
+        res.add(
+            new LithoRobolectricFrameworkMethod(
+                (RobolectricFrameworkMethod) method, configuration, null));
+        for (Class<? extends LithoLocalTestRunConfiguration> localConfig : mLocalTestRunConfigs) {
+          res.add(
+              new LithoRobolectricFrameworkMethod(
+                  (RobolectricFrameworkMethod) method, configuration, localConfig));
+        }
       }
     }
 
@@ -96,23 +123,50 @@ public class LithoTestRunner extends RobolectricTestRunner {
     if (method instanceof LithoRobolectricFrameworkMethod) {
       LithoRobolectricFrameworkMethod lithoMethod = (LithoRobolectricFrameworkMethod) method;
       lithoMethod.sandbox = sandbox;
-      lithoMethod.configurationInstance =
-          ReflectionHelpers.newInstance(
-              sandbox.<LithoTestRunConfiguration>bootstrappedClass(lithoMethod.configurationClass));
 
-      // This hack is because LithoTestRunConfiguration is loaded in both the main 'app' classloader
-      // and in the sandbox classloader the test runs with. Normally, we would exclude
-      // LithoTestRunConfiguration by overriding createClassLoaderConfig and in this class using
-      // doNotAcquireClass, however doing leads to the dreaded "Cannot load NodeConfig" error due
-      // to the change in classloader config, thus we hack around it with reflection instead.
-      Class<LithoTestRunner> testRunnerClass =
-          lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
-      try {
-        testRunnerClass
-            .getMethod("beforeTest", FrameworkMethod.class)
-            .invoke(lithoMethod.configurationInstance, method);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (lithoMethod.configurationClass != null) {
+        lithoMethod.configurationInstance =
+            ReflectionHelpers.newInstance(
+                sandbox.<LithoTestRunConfiguration>bootstrappedClass(
+                    lithoMethod.configurationClass));
+
+        // This hack is because LithoTestRunConfiguration is loaded in both the main 'app'
+        // classloader and in the sandbox classloader the test runs with. Normally, we would exclude
+        // LithoTestRunConfiguration by overriding createClassLoaderConfig and in this class using
+        // doNotAcquireClass, however doing leads to the dreaded "Cannot load NodeConfig" error due
+        // to the change in classloader config, thus we hack around it with reflection instead.
+        Class<LithoTestRunner> testConfig =
+            lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
+        try {
+          testConfig
+              .getMethod("beforeTest", FrameworkMethod.class)
+              .invoke(lithoMethod.configurationInstance, method);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      if (lithoMethod.localConfigurationClass != null) {
+        lithoMethod.localConfigurationInstance =
+            ReflectionHelpers.newInstance(
+                sandbox.<LithoTestRunConfiguration>bootstrappedClass(
+                    lithoMethod.localConfigurationClass));
+
+        // This hack is because LithoLocalTestRunConfiguration is loaded in both the main 'app'
+        // classloader and in the sandbox classloader the test runs with. Normally, we would exclude
+        // LithoLocalTestRunConfiguration by overriding createClassLoaderConfig and in this class
+        // using doNotAcquireClass, however doing leads to the dreaded "Cannot load NodeConfig"
+        // error due to the change in classloader config, thus we hack around it with reflection
+        // instead.
+        Class<LithoTestRunner> localTestConfig =
+            lithoMethod.sandbox.bootstrappedClass(LithoLocalTestRunConfiguration.class);
+        try {
+          localTestConfig
+              .getMethod("beforeTest", FrameworkMethod.class)
+              .invoke(lithoMethod.localConfigurationInstance, method);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
       }
     }
   }
@@ -122,19 +176,35 @@ public class LithoTestRunner extends RobolectricTestRunner {
   protected void afterTest(FrameworkMethod method, Method bootstrappedMethod) {
     if (method instanceof LithoRobolectricFrameworkMethod) {
       LithoRobolectricFrameworkMethod lithoMethod = (LithoRobolectricFrameworkMethod) method;
-      Class<LithoTestRunner> testRunnerClass =
-          lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
 
       // See comment in beforeTest above
-      try {
-        testRunnerClass
-            .getMethod("afterTest", FrameworkMethod.class)
-            .invoke(lithoMethod.configurationInstance, method);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      if (lithoMethod.configurationInstance != null) {
+        Class<LithoTestRunner> testConfig =
+            lithoMethod.sandbox.bootstrappedClass(LithoTestRunConfiguration.class);
+        try {
+          testConfig
+              .getMethod("afterTest", FrameworkMethod.class)
+              .invoke(lithoMethod.configurationInstance, method);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
       }
-      lithoMethod.sandbox = null;
       lithoMethod.configurationInstance = null;
+
+      if (lithoMethod.localConfigurationInstance != null) {
+        Class<LithoTestRunner> localTestConfig =
+            lithoMethod.sandbox.bootstrappedClass(LithoLocalTestRunConfiguration.class);
+        try {
+          localTestConfig
+              .getMethod("afterTest", FrameworkMethod.class)
+              .invoke(lithoMethod.localConfigurationInstance, method);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+      lithoMethod.localConfigurationInstance = null;
+
+      lithoMethod.sandbox = null;
     }
     super.afterTest(method, bootstrappedMethod);
   }
@@ -146,25 +216,33 @@ public class LithoTestRunner extends RobolectricTestRunner {
 
   private static class LithoRobolectricFrameworkMethod extends RobolectricFrameworkMethod {
 
-    public final Class<? extends LithoTestRunConfiguration> configurationClass;
+    public final @Nullable Class<? extends LithoTestRunConfiguration> configurationClass;
+    public final @Nullable Class<? extends LithoLocalTestRunConfiguration> localConfigurationClass;
 
     // This is meant to be a LithoTestRunConfiguration instance - it isn't because the
     // LithoTestRunConfiguration that will be the parent class of this instance is from a different
     // class loader than LithoRobolectricFrameworkMethod will be loaded in.
     @Nullable Object configurationInstance;
+    @Nullable Object localConfigurationInstance;
+
     @Nullable Sandbox sandbox;
 
     protected LithoRobolectricFrameworkMethod(
         RobolectricFrameworkMethod other,
-        Class<? extends LithoTestRunConfiguration> configurationClass) {
+        @Nullable Class<? extends LithoTestRunConfiguration> configurationClass,
+        @Nullable Class<? extends LithoLocalTestRunConfiguration> localConfigClass) {
       super(other);
       this.configurationClass = configurationClass;
+      this.localConfigurationClass = localConfigClass;
     }
 
     @SuppressWarnings("ReflectionMethodUse")
     @Override
     public String getName() {
-      return super.getName() + "[" + configurationClass.getSimpleName() + "]";
+      String variant =
+          (configurationClass != null ? configurationClass.getSimpleName() + ":" : "")
+              + (localConfigurationClass != null ? localConfigurationClass.getSimpleName() : "");
+      return super.getName() + "[" + variant + "]";
     }
 
     @Override
@@ -176,12 +254,13 @@ public class LithoTestRunner extends RobolectricTestRunner {
         return false;
       }
       LithoRobolectricFrameworkMethod that = (LithoRobolectricFrameworkMethod) o;
-      return Objects.equals(configurationClass, that.configurationClass);
+      return Objects.equals(configurationClass, that.configurationClass)
+          && Objects.equals(localConfigurationClass, that.localConfigurationClass);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(super.hashCode(), configurationClass);
+      return Objects.hash(super.hashCode(), configurationClass, localConfigurationClass);
     }
   }
 
@@ -226,5 +305,11 @@ public class LithoTestRunner extends RobolectricTestRunner {
         }
       }
     }
+  }
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.TYPE)
+  public @interface LocalConfigurations {
+    Class<? extends LithoLocalTestRunConfiguration>[] value();
   }
 }
