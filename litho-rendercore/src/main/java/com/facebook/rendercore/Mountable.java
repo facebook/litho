@@ -141,6 +141,25 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
     super.detachBinders(context, (ContentT) content, layoutData, tracer);
   }
 
+  @Override
+  public final void updateBinders(
+      Context context,
+      ContentT contentT,
+      RenderUnit<ContentT> currentRenderUnit,
+      @Nullable Object currentLayoutData,
+      @Nullable Object newLayoutData,
+      @Nullable MountDelegate mountDelegate,
+      boolean isAttached) {
+    super.updateBinders(
+        context,
+        contentT,
+        currentRenderUnit,
+        currentLayoutData,
+        newLayoutData,
+        mountDelegate,
+        isAttached);
+  }
+
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final @Nullable Map<Class<?>, DelegateBinder<?, ContentT>>

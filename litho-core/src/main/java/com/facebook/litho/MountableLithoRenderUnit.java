@@ -20,10 +20,13 @@ import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBi
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributeBinder;
 import com.facebook.rendercore.ContentAllocator;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.Systracer;
 import java.util.List;
 import java.util.Map;
@@ -76,25 +79,54 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   @Override
   protected void mountBinders(
       Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.mountBinders(context, o, layoutData, tracer);
+    mMountable.mountBinders(
+        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData, tracer);
   }
 
   @Override
   protected void unmountBinders(
       Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.unmountBinders(context, o, layoutData, tracer);
+    mMountable.unmountBinders(
+        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData, tracer);
   }
 
   @Override
   protected void attachBinders(
       Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.attachBinders(context, content, layoutData, tracer);
+    mMountable.attachBinders(
+        context,
+        content,
+        Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData,
+        tracer);
   }
 
   @Override
   protected void detachBinders(
       Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
-    mMountable.detachBinders(context, content, layoutData, tracer);
+    mMountable.detachBinders(
+        context,
+        content,
+        Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData,
+        tracer);
+  }
+
+  @Override
+  protected void updateBinders(
+      Context context,
+      Object o,
+      RenderUnit<Object> currentRenderUnit,
+      @Nullable Object currentLayoutData,
+      @Nullable Object newLayoutData,
+      @Nullable MountDelegate mountDelegate,
+      boolean isAttached) {
+    mMountable.updateBinders(
+        context,
+        o,
+        ((MountableLithoRenderUnit) currentRenderUnit).mMountable,
+        Preconditions.checkNotNull((LithoLayoutData) currentLayoutData).mLayoutData,
+        Preconditions.checkNotNull((LithoLayoutData) newLayoutData).mLayoutData,
+        mountDelegate,
+        isAttached);
   }
 
   @Nullable

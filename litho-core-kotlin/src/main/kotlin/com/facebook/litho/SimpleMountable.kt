@@ -94,13 +94,12 @@ private val BINDER: RenderUnit.Binder<*, *> =
           currentLayoutData: Any?,
           nextLayoutData: Any?
       ): Boolean {
-        currentLayoutData as LithoLayoutData
-        nextLayoutData as LithoLayoutData
         return currentMountable.shouldUpdate(
             currentMountable,
             newMountable,
-            currentLayoutData.mLayoutData,
-            nextLayoutData.mLayoutData)
+            currentLayoutData,
+            nextLayoutData,
+        )
       }
 
       override fun bind(
@@ -109,8 +108,7 @@ private val BINDER: RenderUnit.Binder<*, *> =
           mountable: SimpleMountable<Any>,
           layoutData: Any?
       ) {
-        layoutData as LithoLayoutData
-        mountable.mount(context, content, layoutData.mLayoutData)
+        mountable.mount(context, content, layoutData)
       }
 
       override fun unbind(
@@ -119,7 +117,6 @@ private val BINDER: RenderUnit.Binder<*, *> =
           mountable: SimpleMountable<Any>,
           layoutData: Any?
       ) {
-        layoutData as LithoLayoutData
-        mountable.unmount(context, content, layoutData.mLayoutData)
+        mountable.unmount(context, content, layoutData)
       }
     }

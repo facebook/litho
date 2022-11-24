@@ -120,6 +120,41 @@ class MountableComponentsTest {
   }
 
   @Test
+  fun `width, height, focusable, viewTag styles respected when updated`() {
+
+    val testView =
+        lithoViewRule.render {
+          TestViewMountableComponent(
+              TextView(lithoViewRule.context.androidContext),
+              style = Style.width(667.px).height(668.px).focusable(true).viewTag("test_view_tag"),
+          )
+        }
+
+    assertThat(testView.lithoView.childCount).isEqualTo(1)
+    val realTestView = testView.lithoView.getChildAt(0)
+
+    ViewAssertions.assertThat(realTestView).matches(match<TextView> { bounds(0, 0, 667, 668) })
+
+    assertThat(realTestView.isFocusable).isTrue
+
+    testView.findViewWithTag("test_view_tag")
+
+    lithoViewRule.render(lithoView = testView.lithoView) {
+      TestViewMountableComponent(
+          TextView(lithoViewRule.context.androidContext),
+          style = Style.width(667.px).height(668.px).focusable(false).viewTag("new_test_view_tag"),
+      )
+    }
+
+    assertThat(testView.lithoView.childCount).isEqualTo(1)
+    val newRealTestView = testView.lithoView.getChildAt(0)
+
+    assertThat(newRealTestView.isFocusable).isFalse
+
+    testView.findViewWithTag("new_test_view_tag")
+  }
+
+  @Test
   fun `onClick event is dispatched when set`() {
     val wasClicked = AtomicBoolean(false)
 

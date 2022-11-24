@@ -318,7 +318,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
    * Unbind and rebind all binders which should update compared to a previous (i.e. current)
    * RenderUnit.
    */
-  void updateBinders(
+  protected void updateBinders(
       Context context,
       MOUNT_CONTENT content,
       RenderUnit<MOUNT_CONTENT> currentRenderUnit,
