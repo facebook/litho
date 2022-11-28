@@ -66,26 +66,17 @@ public interface ContentAllocator<Content> {
    * content can improve performance in some circumstances where creating the content is expensive.
    *
    * @return {@code true} to preallocate the content, otherwise {@code false}
-   *     <p>Experimental. Currently for Litho team internal use only.
    */
   default boolean canPreallocate() {
     return false;
   }
 
-  /**
-   * This API informs the framework about the size of the content pool. The default is 3.
-   *
-   * <p>Experimental. Currently for Litho team internal use only.
-   */
+  /** This API informs the framework about the size of the content pool. The default is 3. */
   default int poolSize() {
     return DEFAULT_MAX_PREALLOCATION;
   }
 
-  /**
-   * Creates the content pool the framework should use for this Mountable.
-   *
-   * <p>Experimental. Currently for Litho team internal use only.
-   */
+  /** Creates the content pool the framework should use for this Mountable. */
   default MountItemsPool.ItemPool onCreateMountContentPool() {
     return new MountItemsPool.DefaultItemPool(this, poolSize());
   }

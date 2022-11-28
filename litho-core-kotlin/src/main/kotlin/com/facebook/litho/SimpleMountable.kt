@@ -26,8 +26,6 @@ import com.facebook.rendercore.RenderUnit
 /**
  * This is a simplified implementation of a [Mountable] which requires only one [Binder]. Must be
  * immutable, and not cause side effects.
- *
- * <p>Experimental. Currently for Litho team internal use only.</p>
  */
 abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
     Mountable<ContentT>(renderType), ContentAllocator<ContentT> {

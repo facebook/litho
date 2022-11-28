@@ -23,10 +23,8 @@ import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
 
 /**
- * <p>Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec
- * APIs. All Kotlin mountable components must extend this class.</p>
- *
- * <p>Experimental. Currently for Litho team internal use only.</p>
+ * Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec APIs.
+ * All Kotlin mountable components must extend this class.
  */
 abstract class MountableComponent() : Component() {
 
