@@ -24,4 +24,16 @@ package com.facebook.litho.testing.api
 class TestNodeMatcher(val description: String, private val predicate: (TestNode) -> Boolean) {
 
   fun matches(node: TestNode): Boolean = predicate(node)
+
+  infix fun or(nodeMatcher: TestNodeMatcher): TestNodeMatcher =
+      TestNodeMatcher("$description or ${nodeMatcher.description}") {
+        matches(it) || nodeMatcher.matches(it)
+      }
+
+  infix fun and(nodeMatcher: TestNodeMatcher): TestNodeMatcher =
+      TestNodeMatcher("$description and ${nodeMatcher.description}") {
+        matches(it) && nodeMatcher.matches(it)
+      }
+
+  operator fun not(): TestNodeMatcher = TestNodeMatcher("not $description") { !matches(it) }
 }
