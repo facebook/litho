@@ -280,6 +280,8 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableInIGDS = false;
 
+  public static boolean crashOnWrongUseRefUsage = false;
+
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;

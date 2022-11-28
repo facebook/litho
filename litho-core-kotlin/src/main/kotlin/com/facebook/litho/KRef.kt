@@ -19,10 +19,28 @@
 package com.facebook.litho
 
 import androidx.annotation.UiThread
+import com.facebook.litho.ThreadUtils.assertMainThread
 import com.facebook.litho.annotations.Hook
+import com.facebook.litho.config.ComponentsConfiguration
 
 /** A simple mutable holder of a value. */
-class Ref<T>(@UiThread var value: T)
+class Ref<T>(@UiThread value: T) {
+  var value: T = value
+    get() {
+      maybeAssertMainThread()
+      return field
+    }
+    set(value) {
+      maybeAssertMainThread()
+      field = value
+    }
+
+  private fun maybeAssertMainThread() {
+    if (ComponentsConfiguration.crashOnWrongUseRefUsage) {
+      assertMainThread()
+    }
+  }
+}
 
 /**
  * Declares a mutable, main-thread confined reference that will be persisted across renders with an
