@@ -27,7 +27,6 @@ import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.Style
-import com.facebook.litho.theming.getTheme
 import com.facebook.litho.widget.ProgressView
 import com.facebook.rendercore.MeasureResult
 
@@ -38,17 +37,14 @@ import com.facebook.rendercore.MeasureResult
  * @param color Tint color for the drawable.
  */
 class ExperimentalProgress(
-    private val color: Int? = null,
+    private val color: Int = Color.TRANSPARENT,
     private val indeterminateDrawable: Drawable? = null,
     private val style: Style? = null
 ) : MountableComponent() {
 
   override fun MountableComponentScope.render(): MountableRenderResult {
-    val defaultColor = getTheme().colors.primary
     return MountableRenderResult(
-        ProgressMountable(
-            color = color ?: defaultColor, indeterminateDrawable = indeterminateDrawable),
-        style)
+        ProgressMountable(color = color, indeterminateDrawable = indeterminateDrawable), style)
   }
 }
 
