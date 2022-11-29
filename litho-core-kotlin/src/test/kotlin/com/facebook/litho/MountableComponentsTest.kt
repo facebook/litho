@@ -48,6 +48,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.focusable
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
+import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.LayoutContext
@@ -65,6 +66,7 @@ import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.junit.runners.model.FrameworkMethod
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -736,6 +738,177 @@ class MountableComponentsTest {
             LifecycleStep.ON_EVENT_VISIBLE,
         )
   }
+
+  @Test
+  fun `Mountable that is excluded from incremental mount is setting this value properly`() {
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+
+    val component =
+        TestViewMountableComponent(
+            TextView(lithoViewRule.context.androidContext),
+            excludeFromIncrementalMount = true,
+            steps = steps,
+            style =
+                Style.width(100.px)
+                    .height(100.px)
+                    .margin(top = 50.px)
+                    .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
+                    .onInvisible {
+                      steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
+                    })
+
+    // Create a FrameLayout 100x100
+    val parent = FrameLayout(lithoViewRule.context.androidContext)
+    parent.measure(exactly(1080), exactly(100))
+    parent.layout(0, 0, 1080, 100)
+
+    // Add a new LithoView to that FrameLayout
+    val testView = lithoViewRule.createTestLithoView()
+    parent.addView(testView.lithoView)
+    testView.lithoView
+    // Render the component
+    lithoViewRule.render(testView.lithoView) { component }
+
+    // Since everything is in the view port everything should mount
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_EVENT_VISIBLE,
+        )
+    steps.clear()
+
+    // should not unmount if the component is outside of the visible rect due to the 55px offset
+    testView.lithoView.offsetTopAndBottom(55) // 55 offset from top; the item is 50 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).containsExactly(LifecycleStep.ON_EVENT_INVISIBLE)
+    steps.clear()
+
+    // should not do anything when no items cross over the view port
+    testView.lithoView.offsetTopAndBottom(5) // 55 + 5 = 60 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).isEmpty()
+    steps.clear()
+
+    // should trigger visibility event when the component is back in the view port
+    testView.lithoView.offsetTopAndBottom(-20) // 60 - 20 = 40 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).containsExactly(LifecycleStep.ON_EVENT_VISIBLE)
+  }
+
+  @Test
+  fun `Mountable that is not excluded from incremental mount by default is setting this value properly`() {
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+
+    val component =
+        TestViewMountableComponent(
+            TextView(lithoViewRule.context.androidContext),
+            steps = steps,
+            style =
+                Style.width(100.px)
+                    .height(100.px)
+                    .margin(top = 50.px)
+                    .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
+                    .onInvisible {
+                      steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
+                    })
+
+    // Create a FrameLayout 100x100
+    val parent = FrameLayout(lithoViewRule.context.androidContext)
+    parent.measure(exactly(1080), exactly(100))
+    parent.layout(0, 0, 1080, 100)
+
+    // Add a new LithoView to that FrameLayout
+    val testView = lithoViewRule.createTestLithoView()
+    parent.addView(testView.lithoView)
+    testView.lithoView
+    // Render the component
+    lithoViewRule.render(testView.lithoView) { component }
+
+    // Since everything is in the view port everything should mount
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_EVENT_VISIBLE,
+        )
+    steps.clear()
+
+    // should unmount if the component is outside of the visible rect due to the 55px offset
+    testView.lithoView.offsetTopAndBottom(55) // 55 offset from top; the item is 50 offset from top
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_EVENT_INVISIBLE)
+    steps.clear()
+
+    // should not do anything when no items cross over the view port
+    testView.lithoView.offsetTopAndBottom(5) // 55 + 5 = 60 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).isEmpty()
+    steps.clear()
+
+    // should mount back and trigger visibility event when the component is back in the view port
+    testView.lithoView.offsetTopAndBottom(-20) // 60 - 20 = 40 offset from top
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_EVENT_VISIBLE)
+  }
+
+  @Test
+  fun `Mountable that sets that is not excluded from incremental mount is setting this value properly`() {
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+
+    val component =
+        TestViewMountableComponent(
+            TextView(lithoViewRule.context.androidContext),
+            excludeFromIncrementalMount = false,
+            steps = steps,
+            style =
+                Style.width(100.px)
+                    .height(100.px)
+                    .margin(top = 50.px)
+                    .onVisible { steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE)) }
+                    .onInvisible {
+                      steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_INVISIBLE))
+                    })
+
+    // Create a FrameLayout 100x100
+    val parent = FrameLayout(lithoViewRule.context.androidContext)
+    parent.measure(exactly(1080), exactly(100))
+    parent.layout(0, 0, 1080, 100)
+
+    // Add a new LithoView to that FrameLayout
+    val testView = lithoViewRule.createTestLithoView()
+    parent.addView(testView.lithoView)
+    testView.lithoView
+    // Render the component
+    lithoViewRule.render(testView.lithoView) { component }
+
+    // Since everything is in the view port everything should mount
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.RENDER,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_EVENT_VISIBLE,
+        )
+    steps.clear()
+
+    // should unmount if the component is outside of the visible rect due to the 55px offset
+    testView.lithoView.offsetTopAndBottom(55) // 55 offset from top; the item is 50 offset from top
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_EVENT_INVISIBLE)
+    steps.clear()
+
+    // should not do anything when no items cross over the view port
+    testView.lithoView.offsetTopAndBottom(5) // 55 + 5 = 60 offset from top
+    assertThat(LifecycleStep.getSteps(steps)).isEmpty()
+    steps.clear()
+
+    // should mount back and trigger visibility event when the component is back in the view port
+    testView.lithoView.offsetTopAndBottom(-20) // 60 - 20 = 40 offset from top
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_EVENT_VISIBLE)
+  }
 }
 
 class TestViewMountableComponent(
@@ -743,12 +916,15 @@ class TestViewMountableComponent(
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
     val identity: Int = 0,
     val dynamicTag: DynamicValue<Any?>? = null,
+    val excludeFromIncrementalMount: Boolean? = null,
     val style: Style? = null
 ) : MountableComponent() {
 
   override fun MountableComponentScope.render(): MountableRenderResult {
 
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.RENDER))
+
+    excludeFromIncrementalMount?.let { excludeFromIncrementalMount(excludeFromIncrementalMount) }
 
     // using tag for convenience of tests
     dynamicTag?.let { dynamicTag.bindTo("default_value", View::setTag) }

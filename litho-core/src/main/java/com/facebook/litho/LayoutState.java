@@ -52,6 +52,7 @@ import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.Systracer;
+import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
@@ -205,7 +206,8 @@ public class LayoutState
   private @Nullable List<Attachable> mAttachables;
 
   // If there is any component marked with 'ExcludeFromIncrementalMountComponent'
-  private boolean mHasComponentsExcludedFromIncrementalMount;
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public boolean mHasComponentsExcludedFromIncrementalMount;
 
   final boolean mShouldAddHostViewForRootComponent =
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
@@ -1965,18 +1967,22 @@ public class LayoutState
 
     final int position = layoutState.mMountableOutputs.size();
     final Rect absoluteBounds = node.getAbsoluteBounds(new Rect());
+    final boolean shouldExcludeMountableFromIncrementalMount =
+        unit.findAttachBinderByClass(ExcludeFromIncrementalMountBinder.class) != null;
 
     final IncrementalMountOutput incrementalMountOutput =
         new IncrementalMountOutput(
             node.getRenderUnit().getId(),
             position,
             absoluteBounds,
-            layoutOutput.getComponent().excludeFromIncrementalMount(),
+            layoutOutput.getComponent().excludeFromIncrementalMount()
+                || shouldExcludeMountableFromIncrementalMount,
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
 
-    if (layoutOutput.getComponent().excludeFromIncrementalMount()) {
+    if (layoutOutput.getComponent().excludeFromIncrementalMount()
+        || shouldExcludeMountableFromIncrementalMount) {
       layoutState.mHasComponentsExcludedFromIncrementalMount = true;
     }
 

@@ -23,6 +23,7 @@ class MountableComponentScope
 internal constructor(context: ComponentContext, renderStateContext: RenderStateContext) :
     ComponentScope(context, renderStateContext) {
   internal val binders: ArrayList<DynamicPropsHolder<Any?, Mountable<*>>> by lazy { ArrayList(2) }
+  internal var shouldExcludeFromIncrementalMount: Boolean = false
 
   /**
    * Creates a binding between the dynamic value, and the content’s property.
@@ -35,6 +36,15 @@ internal constructor(context: ComponentContext, renderStateContext: RenderStateC
       valueSetter: (ContentT, ValueT) -> Unit
   ) {
     addBinder(DynamicPropsHolder(this, defaultValue, valueSetter))
+  }
+
+  /**
+   * Indicates whether the component skips Incremental Mount.
+   * @param shouldExclude if this is true then the Component will not be involved in Incremental
+   * Mount.
+   */
+  fun excludeFromIncrementalMount(shouldExclude: Boolean) {
+    shouldExcludeFromIncrementalMount = shouldExclude
   }
 
   private fun <ValueT, ContentT> addBinder(binder: DynamicPropsHolder<ContentT, ValueT>) {

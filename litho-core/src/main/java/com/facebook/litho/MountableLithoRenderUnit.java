@@ -129,6 +129,12 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         isAttached);
   }
 
+  @Override
+  @Nullable
+  public <T extends Binder<?, ?>> T findAttachBinderByClass(Class<T> klass) {
+    return mMountable.findAttachBinderByClass(klass);
+  }
+
   @Nullable
   @Override
   public Map<Class<?>, DelegateBinder<?, Object>> getMountBinderTypeToDelegateMap() {

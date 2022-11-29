@@ -21,6 +21,7 @@ import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
+import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
 
 /**
  * Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec APIs.
@@ -53,6 +54,11 @@ abstract class MountableComponent() : Component() {
     mountableRenderResult.mountable.addMountBinder(
         createDelegateBinder(
             mountableRenderResult.mountable, DynamicValuesBinder(mountableComponentScope.binders)))
+    if (mountableComponentScope.shouldExcludeFromIncrementalMount) {
+      mountableRenderResult.mountable.addAttachBinder(
+          createDelegateBinder(
+              mountableRenderResult.mountable, ExcludeFromIncrementalMountBinder.INSTANCE))
+    }
 
     return PrepareResult(
         mountableRenderResult.mountable,
