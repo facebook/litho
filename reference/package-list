@@ -20,11 +20,9 @@ com.facebook.litho.animated
 com.facebook.litho.annotations
 com.facebook.litho.core
 com.facebook.litho.flexbox
-com.facebook.litho.theming
 com.facebook.litho.transition
 com.facebook.litho.view
 com.facebook.litho.visibility
-libraries.components.litho.theming
 module:litho-coroutines-kotlin
 com.facebook.litho
 module:litho-testing
