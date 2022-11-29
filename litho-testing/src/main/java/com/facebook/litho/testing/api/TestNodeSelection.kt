@@ -44,6 +44,14 @@ class TestNodeSelection(
     }
   }
 
+  fun assert(matcher: TestNodeMatcher) {
+    val testNode = fetchTestNode()
+
+    if (!matcher.matches(testNode)) {
+      throw AssertionError("Failed assertion: ${matcher.description}")
+    }
+  }
+
   private fun fetchMatchingNodes(): List<TestNode> {
     val nodes = testContext.provideAllTestNodes()
     return selector.map(nodes)

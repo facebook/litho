@@ -23,13 +23,15 @@ package com.facebook.litho.testing.api
  * An example usage: `hasType(CounterComponent::class.java)`
  */
 fun hasType(type: Class<*>): TestNodeMatcher =
-    TestNodeMatcher("hasType($type)") { testNode -> testNode.componentType == type }
+    TestNodeMatcher("is a component of type ${type.canonicalName}") { testNode ->
+      testNode.componentType == type
+    }
 
 inline fun <reified T> hasType(): TestNodeMatcher = hasType(T::class.java)
 
-fun isEnabled(): TestNodeMatcher = TestNodeMatcher("isEnabled") { node -> node.isEnabled }
+fun isEnabled(): TestNodeMatcher = TestNodeMatcher("is enabled") { node -> node.isEnabled }
 
-fun isNotEnabled(): TestNodeMatcher = TestNodeMatcher("isNotEnabled") { node -> !node.isEnabled }
+fun isNotEnabled(): TestNodeMatcher = TestNodeMatcher("is not enabled") { node -> !node.isEnabled }
 
 fun hasTestKey(key: String): TestNodeMatcher =
-    TestNodeMatcher("hasTestKey") { node -> node.testKey == key }
+    TestNodeMatcher("has test key \"$key\"") { node -> node.testKey == key }
