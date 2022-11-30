@@ -32,5 +32,18 @@ The following cheatsheet provides a set of links for the migration of individual
 | Manual Keys | [key()](mainconcepts/coordinate-state-actions/keys-and-identity.md#assigning-manual-keys) |
 | Handle | [handle()](basics.mdx#handles) |
 | @OnCreateLayoutWithSizeSpec | Not yet supported. Suggested [workaround](../custom-layout.md#kotlin-integration) |
-| @MountSpec / @GroupSectionSpec | Not yet supported. For now, use the Spec API. |
-| @OnTrigger | Not yet supported. For now, use the Spec API. |
+| @MountSpec | [MountableComponent()](../mainconcepts/mountablecomponents/overview.mdx)|
+| @OnTrigger | [Controllers pattern](../mainconcepts/mountablecomponents/mountable-controllers.mdx) |
+| @OnBind / @OnUnbind | [mount() / unmount()](https://fburl.com/code/hwshbday) |
+| @OnMount / @OnUnmount | [mount() / unmount()](https://fburl.com/code/hwshbday) |
+| @OnBindDynamicValue | [BindTo - Dynamic Values API](../mainconcepts/mountablecomponents/mountable-bindto.mdx) |
+| @ShouldUpdate | [shouldUpdate()](../mainconcepts/mountablecomponents/mountable.mdx#mounting-and-unmounting-content-properties) |
+| @OnCreateMountContent |  [createContent()](../mainconcepts/mountablecomponents/mountable.mdx#content-creation) |
+| @OnCreateMountContentPool |  [ContentAllocator API](https://fburl.com/code/r3paekuj)|
+| @OnMeasure |  [measure()](../mainconcepts/mountablecomponents/mountable-measuring.mdx) |
+| @OnBoundsDefined |  [measure()](../mainconcepts/mountablecomponents/mountable-measuring.mdx) |
+| @OnPrepare |  [MountableComponentScope.render()](../mainconcepts/mountablecomponents/mountable-component.mdx) |
+| @OnLoadStyle | [MountableComponentScope.render()](../mainconcepts/mountablecomponents/mountable-component.mdx) |
+| Accessibility | [Accessibility for Mountable Components](../mainconcepts/mountablecomponents/accessibility.mdx) (see: [AccessibilityStyles](https://fburl.com/code/3ikzp6c7))|
+| hasChildLithoViews | [doesMountRenderTreeHosts()](https://fburl.com/doesmountrendertreehosts)|
+| isPureRender | No equivalent. Ignore when converting. |

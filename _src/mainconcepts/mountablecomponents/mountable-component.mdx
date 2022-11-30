@@ -1,0 +1,32 @@
+---
+id: mountable-component
+title: Creating a Mountable Component
+---
+
+Mountable Components can be used to render views or drawables on the screen.
+
+## Comparison with KComponents
+
+There are several similarities between Mountable Components and [KComponents](/mainconcepts/components-basics.mdx):
+
+* They both consist of a render function that can use the component's [props](../props.mdx) and [hooks](../hooks-intro.mdx).
+* As with KComponents, mountable components are subject to [rules](../components-basics.mdx/#rules-for-components) for their use.
+* Just like KComponents, mountable components can be configured using common props and state.
+
+## Creating a Mountable Component
+
+The following example shows a Mountable Component that will return a 'mountable' that creates an 'ImageView' to be rendered on the screen.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewComponent.kt start=start_simple_mountable_component_example end=end_simple_mountable_component_example
+```
+
+A Mountable represents a reusable unit responsible for hosting the logic to create, measure, and bind the content that the Mountable Component will render. For more information, see the [Lifecycle of a SimpleMountable](mountable.mdx) page.
+
+As can be seen from the above example, the `render()` function returns:
+
+* A `MountableRenderResult` object that contains a 'Mountable' to be rendered
+* A `style` object that is applied to the mountable component.
+
+:::note
+The `render()` method can be invoked from multiple threads. You should **not** assume it can only be called from the main thread. The implementation of render should not cause side effects; essentially, it acts like a pure function.
+:::
