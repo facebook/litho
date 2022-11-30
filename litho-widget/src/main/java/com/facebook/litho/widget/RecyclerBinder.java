@@ -487,7 +487,8 @@ public class RecyclerBinder
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
     private int itemViewCacheSize = 0;
-    private @RecyclingStrategy int recyclingStrategy = RecyclingStrategy.DEFAULT;
+    private @RecyclingStrategy int recyclingStrategy =
+        ComponentsConfiguration.recyclerBinderStrategy;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
     private @Nullable RecyclerBinderAdapterDelegate adapterDelegate = null;

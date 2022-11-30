@@ -258,6 +258,8 @@ public class ComponentsConfiguration {
 
   public static boolean fixMemoryLeakInRecyclerBinder = false;
 
+  public static int recyclerBinderStrategy = 0;
+
   public static boolean enableMountableComponents = false;
 
   public static boolean enableMountableRecycler = false;
