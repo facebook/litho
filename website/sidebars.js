@@ -45,6 +45,18 @@ module.exports = {
         ],
       },
       {
+        'Mountable Components': [
+          'mainconcepts/mountablecomponents/overview',
+          'mainconcepts/mountablecomponents/mountable-component',
+          'mainconcepts/mountablecomponents/mountable',
+          'mainconcepts/mountablecomponents/mountable-measuring',
+          'mainconcepts/mountablecomponents/mountable-bindto',
+          'mainconcepts/mountablecomponents/mountable-controllers',
+          'mainconcepts/mountablecomponents/mountable-preallocation',
+          'mainconcepts/mountablecomponents/accessibility',
+        ]
+      },
+      {
         'Layout System with Flexbox': [
           'mainconcepts/flexbox-yoga',
           'mainconcepts/yoga-playground',
@@ -128,6 +140,7 @@ module.exports = {
       'kotlin/kotlin-intro',
       'kotlin/kotlin-api-basics',
       'kotlin/hooks-for-spec-developers',
+      'kotlin/migrating-from-mountspecs',
       'kotlin/kotlin-flexbox-containers',
       'kotlin/event-handling',
       'kotlin/kotlin-api-cheatsheet',
@@ -193,24 +206,6 @@ module.exports = {
           ],
         },
         'fb/experimentation',
-        {
-          'Mountable Components': [
-            'mountablecomponents/overview',
-            'mountablecomponents/mountable-component',
-            'mountablecomponents/mountable',
-            'mountablecomponents/mountable-measuring',
-            'mountablecomponents/mountable-bindto',
-            'mountablecomponents/mountable-controllers',
-            'mountablecomponents/mountable-preallocation',
-            'mountablecomponents/accessibility',
-            {
-              'Migrating to Mountable Components': [
-                'mountablecomponents/migrating-from-mountspecs',
-                'mountablecomponents/mountable-cheatsheet',
-              ],
-            },
-          ]
-        },
         {
           'Open Source': [
             'fb/open-source',

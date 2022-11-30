@@ -7,14 +7,14 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
 
-This page outlines the process of migrating from [MountSpecs](../codegen/mount-specs.md) to [Mountable Components](mountable-component.mdx).
+This page outlines the process of migrating from [MountSpecs](../codegen/mount-specs.md) to [Mountable Components](../mainconcepts/mountablecomponents/mountable-component.mdx).
 
 Unlike MountSpecs, Mountable Components consist of two separate pieces:
 
 * `MountableComponent.render()` - a method that returns a `Mountable` and `Style` that will be applied to it.
 * `Mountable` - an object that hosts the logic for measuring, creation, and setting properties on the mount content (a view or a drawable).
 
-The following two sections contain information on how to migrate MountSpec static lifecycle methods into a Mountable Component `render()` and the `Mountable` it returns. The [Cheatsheet](mountable-cheatsheet.mdx) can also be consulted for a set of links for the migration of individual aspects of existing code.
+The following two sections contain information on how to migrate MountSpec static lifecycle methods into a Mountable Component `render()` and the `Mountable` it returns. The [Cheatsheet](cheatsheet.mdx) can also be consulted for a set of links for the migration of individual aspects of existing code.
 
 ## Setup - Adding Dependencies
 
@@ -37,7 +37,7 @@ The subsections below outline how to migrate the parts of a MountSpec that will 
 
 Similar to [KComponents](../kotlin/setup-and-intro.mdx/#props), Props are now just `val` properties on the `MountableComponent`, and `@PropDefaults` become default values of those `val` properties.
 
-Common Props can be set using the `Style` object which the `MountableComponent` returns from `render()` method on the `MountableRenderResult` object. You can find more information on `Style` and how to work with it [here](../kotlin/setup-and-intro.mdx/#common-props).
+Common Props can be set using the `Style` object which the `MountableComponent` returns from `render()` method on the `MountableRenderResult` object. You can find more information on `Style` and how to work with it on the [KComponent and Props](../kotlin/basics.mdx/#common-props) page.
 
 ### Migrating State and some other lifecycle methods
 
@@ -45,11 +45,11 @@ As with KComponents, most of the APIs implemented with lifecycle methods in the 
 
 Those Hooks can be used in the `render()` method of the `MountableComponent`.
 
-More information on how to migrate Hooks can be found [here](../kotlin/hooks-for-spec-developers.mdx).
+More information on how to migrate Hooks can be found on the [Hooks](../kotlin/hooks-for-spec-developers.mdx) page.
 
 ### Migrating Accessibility
 
-Accessibility for Mountable Components is implemented using the `Style` object. You can find out more about how to implement A11Y for Mountable Components [here](accessibility.mdx).
+Accessibility for Mountable Components is implemented using the `Style` object. You can find out more about how to implement A11Y for Mountable Components on the dedicated [Accessibility](../mainconcepts/mountablecomponents/accessibility.mdx) page.
 
 ### Migrating event handling
 
@@ -87,13 +87,13 @@ When translating a MountSpec containing both @OnMeasure and @OnBoundsDefined, th
 For MountSpecs that did not implement @OnMeasure nor @OnBoundsDefined at all, `Mountable.measure()` can leverage `MeasureResult.fromSpecs()` method to set return the appropriate sizes.
 :::
 
-For more information, see the [Measuring](mountable-measuring.mdx) page.
+For more information, see the [Measuring](../mainconcepts/mountablecomponents/mountable-measuring.mdx) page.
 
 ### Migrating @OnCreateContent
 
 `@OnCreateMountContent` lifecycle method's equivalent for Mountable is the `createContent()` method.
 
-More information on Mountable content creation can be found [here](mountable.mdx/#content-creation).
+More information on Mountable content creation can be found on the dedicated [Lifecycle of the SimpleMountable](../mainconcepts/mountablecomponents/mountable.mdx/#content-creation) page.
 
 <Tabs
   groupId="migrating_from_mountspecs_tab_group"
@@ -138,7 +138,7 @@ For Mountable, instead of static annotated methods or @MountSpec annotation para
 
 Instead of specifying `canPreallocate` and `poolSize` parameters on the @MountSpec annotation, 'canPreallocate()' and 'poolSize()' methods should be overridden. `ContentAllocator` interface also contains various other methods that can be overridden to configure content recycling.
 
-More information on Mountable content pooling can be found [here](mountable.mdx).
+More information on Mountable content pooling can be found on the [Content Pooling](../mainconcepts/mountablecomponents/mountable-preallocation.mdx) page.
 
 <Tabs
   groupId="migrating_from_mountspecs_tab_group"
@@ -181,7 +181,7 @@ In `SimpleMountable`, the equivalent of those two pairs of methods is a single `
 
 Therefore, the contents of @OnMount and @OnBind should be merged into a single `mount()` method when migrating to SimpleMountable. Similarly, @OnUnbind and @OnUnmount should be merged to form an `unmount()` method (in that particular order).
 
-More information on mounting and unmounting content properties can be found on the [Lifecycle of a SimpleMountable](mountable.mdx/#mounting-and-unmounting-content-properties) page.
+More information on mounting and unmounting content properties can be found on the [Lifecycle of a SimpleMountable](../mainconcepts/mountablecomponents/mountable.mdx/#mounting-and-unmounting-content-properties) page.
 
 `SimpleMountable` also contains the `shouldUpdate()` method, which can help to avoid remeasuring and remounting upon updates if the properties of interest have not changed. It represents an [equivalent for @ShouldUpdate](../codegen/mount-specs.md/#shouldupdate) static annotated method present in MountSpecs.
 
@@ -259,7 +259,7 @@ class MyMountable : SimpleMountable<EditText>(RenderType.VIEW) {
 
 For Mountable, [DynamicValues](../animations/dynamic-props.mdx) can be implemented using the BindTo API.
 
-For more information and a step-by-step example, see the [BindTo - Dynamic Values API](mountable-bindto.mdx) page.
+For more information and a step-by-step example, see the [BindTo - Dynamic Values API](../mainconcepts/mountablecomponents/mountable-bindto.mdx) page.
 
 ### Migrating @OnTrigger using Controllers Pattern
 
@@ -267,7 +267,7 @@ In MountSpecs, @OnTrigger static annotated methods and `Handle` could be used to
 
 To implement equivalent behaviour in Mountable, Controller pattern should be used instead.
 
-For more information and a step-by-step example, see the [Controllers Pattern](mountable-controllers.mdx) page.
+For more information and a step-by-step example, see the [Controllers Pattern](../mainconcepts/mountablecomponents/mountable-controllers.mdx) page.
 
 ### Migrating hasChildLithoViews parameter
 

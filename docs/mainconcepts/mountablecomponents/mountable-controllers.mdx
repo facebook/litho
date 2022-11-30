@@ -26,7 +26,7 @@ In the Mountable Component implementation, it's necessary to  manually `bind` an
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/controllers/TimePickerComponent.kt start=mountable_component_start end=mountable_component_end
 ```
 
-The SimpleMountable should pass the `TimePickerController` as a constructor parameter. A small performance improvement can be achieved by putting the controller into the [useCached](../mainconcepts/use-cached.mdx) hook so it's not recreated in each rerender.
+The SimpleMountable should pass the `TimePickerController` as a constructor parameter. A small performance improvement can be achieved by putting the controller into the [useCached](../use-cached.mdx) hook so it's not recreated in each rerender.
 
 Any other methods on the controller instance can be called easily in the code (see `controller.setHour()`):
 
