@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing.error;
+package com.facebook.litho.testing.error
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec
 
 @LayoutSpec
-public class TestCrasherOnCreateLayoutWithSizeSpecSpec {
+object TestCrasherOnCreateLayoutWithSizeSpecSpec {
+  @JvmStatic
   @OnCreateLayoutWithSizeSpec
-  protected static Component onCreateLayoutWithSizeSpec(
-      ComponentContext c, final int widthSpec, final int heightSpec) {
-    throw new RuntimeException("onCreateLayoutWithSizeSpec crash");
+  @Suppress("ComponentsUnneededLayoutWithSizeSpecDetector")
+  fun onCreateLayoutWithSizeSpec(c: ComponentContext, widthSpec: Int, heightSpec: Int): Component {
+    throw RuntimeException("onCreateLayoutWithSizeSpec crash")
   }
 }

@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing.error;
+package com.facebook.litho.testing.error
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
 
 @LayoutSpec
-public class TestHasDelegateThatCrashesOnCreateLayoutSpec {
+object TestHasDelegateThatCrashesOnCreateLayoutSpec {
+  @JvmStatic
   @OnCreateLayout
-  public static Component onCreateLayout(ComponentContext c) {
-    return TestCrasherOnCreateLayout.create(c).build();
-  }
+  fun onCreateLayout(c: ComponentContext): Component = TestCrasherOnCreateLayout.create(c).build()
 }
