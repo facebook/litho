@@ -1,12 +1,22 @@
 # Changelog
 
-## Version 0.45.0-SNAPSHOT
+## Version 0.46.0-SNAPSHOT
 
 _release-date_
 
- * TBA
+* TBA
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.44.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.45.0...master).
+
+## Version 0.45.0
+
+_2022-12-02_
+
+ * Many internals changes which should not affect end-users: StateContainers are now immutable and added support for testing split of resolve and layout processes
+ * Fix for bug where some EventHandlers would be stale after updates when using sections
+ * SimpleMountable API is stabilized and ready to replace @MountSpec usages in Kotlin. See [here](https://fblitho.com/docs/mainconcepts/mountablecomponents/overview/) for the docs!
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.44.0...v0.45.0).
 
 ## Version 0.44.0
 
@@ -15,7 +25,7 @@ _2022-10-27_
  * New APIs for debugging.
  * **Breaking**: `ComponentContext.withComponentScope` is now package-private: it was @VisibleForTesting before, but we are now enforcing the privacy. If you were using it in tests, you can replace it with `ComponentTestHelper.createScopedComponentContextWithStateForTest` (however you should really write tests against LithoViewRule for kt tests and LegacyLithoViewRule for java tests)
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.43.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.43.0...v0.44.0).
 
 ## Version 0.43.0
 
@@ -25,7 +35,7 @@ _2022-10-21_
    * Instead of implementing `ComponentsSystrace.Systrace`, implementations should implement `com.facebook.rendercore.Systracer`, located in litho-rendercore. The `ArgsBuilder` interface has also moved from ComponentsSystrace to the Systracer interface.
    * Some method names have been corrected. Specifically start/endSectionAsync have become start/endAsyncSection, aligning them to the Tracer API.
  * We have implemented a mechanism that allows us to batch state updates with a deterministic approach. This mechanism enqueues state updates until the next Choreographer Frame Callback (precisely the next "anim" step) and only then schedules the following layout calculation.
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.42.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.42.0...v0.43.0).
 
 ## Version 0.42.0
 
