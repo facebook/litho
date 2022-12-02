@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing.treeprop;
+package com.facebook.litho.testing.treeprop
 
-/** Simple mutable object to store a prop. Used by TreePropTest. */
-public class TreePropTestResult {
+class TreePropStringType(val value: String) {
 
-  public Object mProp;
+  override fun equals(obj: Any?): Boolean {
+    if (this === obj) {
+      return true
+    }
+    if (obj == null || javaClass != obj.javaClass) {
+      return false
+    }
+    val other = obj as TreePropStringType
+    return other.value == value
+  }
+
+  override fun hashCode(): Int = value.hashCode()
+
+  override fun toString(): String = "TreePropStringType{mValue='${value}${'\''}${'}'}"
 }

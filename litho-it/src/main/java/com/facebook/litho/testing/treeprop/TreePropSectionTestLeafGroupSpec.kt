@@ -14,36 +14,34 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing.treeprop;
+package com.facebook.litho.testing.treeprop
 
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.sections.Children;
-import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.annotations.GroupSectionSpec;
-import com.facebook.litho.sections.annotations.OnCreateChildren;
-import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.TreeProp
+import com.facebook.litho.sections.Children
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.annotations.GroupSectionSpec
+import com.facebook.litho.sections.annotations.OnCreateChildren
+import com.facebook.litho.sections.common.SingleComponentSection
+import kotlin.jvm.JvmField
 
 /** Used in TreePropSectionTest. */
 @GroupSectionSpec
-public class TreePropSectionTestLeafGroupSpec {
+object TreePropSectionTestLeafGroupSpec {
 
-  public static class Result {
-    public Object mProp;
-  }
-
+  @JvmStatic
   @OnCreateChildren
-  static Children onCreateChildren(
-      final SectionContext c,
-      @TreeProp TreePropNumberType propA,
-      @TreeProp TreePropStringType propB,
-      @Prop(optional = true) Result resultPropA,
-      @Prop Result resultPropB) {
+  fun onCreateChildren(
+      c: SectionContext,
+      @TreeProp propA: TreePropNumberType?,
+      @TreeProp propB: TreePropStringType?,
+      @Prop(optional = true) resultPropA: Result?,
+      @Prop resultPropB: Result
+  ): Children {
     if (resultPropA != null) {
-      resultPropA.mProp = propA;
+      resultPropA.prop = propA
     }
-    resultPropB.mProp = propB;
-
+    resultPropB.prop = propB
     return Children.create()
         .child(
             SingleComponentSection.create(c)
@@ -51,6 +49,10 @@ public class TreePropSectionTestLeafGroupSpec {
                     TreePropSectionTestLeafLayout.create(c)
                         .resultPropA(resultPropA)
                         .resultPropB(resultPropB)))
-        .build();
+        .build()
+  }
+
+  class Result {
+    @JvmField var prop: Any? = null
   }
 }

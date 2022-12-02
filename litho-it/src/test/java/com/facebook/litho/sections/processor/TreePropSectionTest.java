@@ -70,12 +70,12 @@ public class TreePropSectionTest {
             .resultPropBLeaf2(propBLeaf2)
             .build());
 
-    assertThat(propALeaf1.mProp).isEqualTo(treePropA);
+    assertThat(propALeaf1.prop).isEqualTo(treePropA);
     // TreePropSectionTestMiddleGroupSpec modifies "propB".
-    assertThat(propBLeaf1.mProp).isEqualTo(treePropBChanged);
+    assertThat(propBLeaf1.prop).isEqualTo(treePropBChanged);
 
     // The second LeafGroupSpec does not see the modification to "propB"
     // because its not a descendant of MiddleGroupSpec.
-    assertThat(propBLeaf2.mProp).isEqualTo(treePropB);
+    assertThat(propBLeaf2.prop).isEqualTo(treePropB);
   }
 }
