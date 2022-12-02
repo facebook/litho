@@ -21,6 +21,7 @@ import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.atMost;
 import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.unspecified;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -54,13 +55,14 @@ import org.robolectric.shadows.ShadowView;
 @RunWith(LithoTestRunner.class)
 public class LithoViewTest {
   private LithoView mLithoView;
+  private Component mInitialComponent;
 
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
   @Rule public LithoStatsRule mLithoStatsRule = new LithoStatsRule();
 
   @Before
   public void setup() {
-    final Component component =
+    mInitialComponent =
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
@@ -69,7 +71,7 @@ public class LithoViewTest {
         };
 
     mLithoView = new LithoView(getApplicationContext());
-    mLithoView.setComponent(component);
+    mLithoView.setComponent(mInitialComponent);
   }
 
   @After
@@ -334,6 +336,59 @@ public class LithoViewTest {
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs("Should only force layout one time.")
         .isEqualTo(1);
+  }
+
+  @Test
+  public void getRootComponent_returnsRootComponentWhenSet_viaSetComponent() {
+    assertThat(mLithoView.getRootComponent()).isEqualTo(mInitialComponent);
+
+    final Component newRootComponent =
+        SimpleMountSpecTester.create(mLithoView.getComponentContext()).heightPx(12345).build();
+    mLithoView.setComponent(newRootComponent);
+
+    assertThat(mLithoView.getRootComponent()).isEqualTo(newRootComponent);
+  }
+
+  @Test
+  public void getRootComponent_returnsRootComponentWhenSet_viaSetComponentTree() {
+    assertThat(mLithoView.getRootComponent()).isEqualTo(mInitialComponent);
+
+    final ComponentContext c = mLithoView.getComponentContext();
+    final Component newRootComponent = SimpleMountSpecTester.create(c).heightPx(12345).build();
+    mLithoView.setComponentTree(ComponentTree.create(c, newRootComponent).build());
+
+    assertThat(mLithoView.getRootComponent()).isEqualTo(newRootComponent);
+  }
+
+  @Test
+  public void getRootComponent_returnsNullComponentWhenNoComponentSet() {
+    mLithoView = new LithoView(getApplicationContext());
+
+    assertThat(mLithoView.getRootComponent()).isNull();
+  }
+
+  @Test
+  public void getRootComponent_returnsNullWhenNoComponent_viaSetComponentTree() {
+    assumeThat(mLithoView.getRootComponent()).isEqualTo(mInitialComponent);
+
+    mLithoView.setComponentTree(null);
+    // Measure + layout is necessary to ensure async operations have finished come assertion point
+    mLithoView.measure(unspecified(), unspecified());
+    mLithoView.layout(0, 0, 50, 50);
+
+    assertThat(mLithoView.getRootComponent()).isNull();
+  }
+
+  @Test
+  public void getRootComponent_returnsEmptyComponentWhenNoComponent_viaSetComponent() {
+    assumeThat(mLithoView.getRootComponent()).isEqualTo(mInitialComponent);
+
+    mLithoView.setComponent(null);
+    // Measure + layout is necessary to ensure async operations have finished come assertion point
+    mLithoView.measure(unspecified(), unspecified());
+    mLithoView.layout(0, 0, 50, 50);
+
+    assertThat(mLithoView.getRootComponent()).isInstanceOf(EmptyComponent.class);
   }
 
   private LithoView setupLithoViewForDoubleMeasureTest(

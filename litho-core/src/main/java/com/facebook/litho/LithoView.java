@@ -655,6 +655,13 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return mComponentTree;
   }
 
+  @VisibleForTesting
+  @Nullable
+  public Component getRootComponent() {
+    @Nullable final ComponentTree componentTree = mComponentTree;
+    return componentTree != null ? componentTree.getRoot() : null;
+  }
+
   public synchronized void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
     mOnDirtyMountListener = onDirtyMountListener;
   }
