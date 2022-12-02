@@ -37,6 +37,6 @@ Any other methods on the controller instance can be called easily in the code (s
 
 * The SimpleMountable takes a controller as a constructor parameter.
 * If the controller is stateful, then it's necessary to hold the controller in state/cache otherwise state will be lost across re-renders.
-* Controllers should bind and unbind the controllers manually.
+* Mountable should bind and unbind the controllers manually.
 * Controllers should maintain/update/watch state manually.
 * `useCached` should be used to improve performance.
