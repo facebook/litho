@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.api
 
+import com.facebook.litho.AttributeKey
 import com.facebook.litho.Component
 
 /**
@@ -35,4 +36,6 @@ class TestNode(private val component: Component) {
 
   val contentDescription: CharSequence?
     get() = component.commonProps?.contentDescription
+
+  fun <T> getAttribute(key: AttributeKey<T>): T = component.getAttribute(key)
 }

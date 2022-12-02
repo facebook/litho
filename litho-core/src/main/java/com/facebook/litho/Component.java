@@ -84,7 +84,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Component
-    implements Cloneable, HasEventDispatcher, EventDispatcher, Equivalence<Component> {
+    implements Cloneable,
+        HasEventDispatcher,
+        EventDispatcher,
+        Equivalence<Component>,
+        AttributesAcceptor {
 
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
@@ -104,6 +108,17 @@ public abstract class Component
   private static final String NULL_KEY_SET = "Component:NullKeySet";
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
+
+  private final AttributesHolder mAttributesHolder = new AttributesHolder();
+
+  @Override
+  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
+    mAttributesHolder.setAttributeKey(attributeKey, value);
+  }
+
+  public <T> T getAttribute(AttributeKey<T> attributeKey) {
+    return mAttributesHolder.get(attributeKey);
+  }
 
   /**
    * @return the globally unique ID associated with {@param type}, creating one if necessary.

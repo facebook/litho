@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.api
 
+import com.facebook.litho.AttributeKey
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -26,26 +27,48 @@ import org.junit.Test
 
 class FiltersTest {
 
+  private val counterKey = AttributeKey<Int>("counter")
+
   @Test
   fun `hasType successfully matches when the test node component has the same class`() {
-    val testNode = TestNode(CounterComponent(10))
-    val filter = hasType<CounterComponent>()
+    val testNode = TestNode(DummyComponent())
+    val filter = hasType<DummyComponent>()
 
     Assertions.assertThat(filter.matches(testNode)).isTrue
   }
 
   @Test
   fun `hasType fails to match when the test node component has the another class`() {
-    val testNode = TestNode(CounterComponent(10))
+    val testNode = TestNode(DummyComponent())
     val filter = hasType<Text>()
 
     Assertions.assertThat(filter.matches(testNode)).isFalse
   }
-}
 
-internal class CounterComponent(private val counter: Int) : KComponent() {
+  @Test
+  fun `hasAttribute successfully matches when the attribute has the correct value`() {
+    val component = DummyComponent()
+    component.setAttributeKey(counterKey, 10)
 
-  override fun ComponentScope.render(): Component {
-    return Text("Counter: $counter")
+    val filter = hasAttribute(counterKey, 10)
+    val testNode = TestNode(component)
+    Assertions.assertThat(filter.matches(testNode)).isTrue
+  }
+
+  @Test
+  fun `hasAttribute fails to match when the attribute has a different value`() {
+    val component = DummyComponent()
+    component.setAttributeKey(counterKey, 10)
+
+    val filter = hasAttribute(counterKey, 20)
+    val testNode = TestNode(component)
+    Assertions.assertThat(filter.matches(testNode)).isFalse
+  }
+
+  private class DummyComponent : KComponent() {
+
+    override fun ComponentScope.render(): Component {
+      return Text("Hello")
+    }
   }
 }

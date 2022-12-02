@@ -16,6 +16,8 @@
 
 package com.facebook.litho.testing.api
 
+import com.facebook.litho.AttributeKey
+
 /**
  * This filter will match all test nodes that represent a [Component] with the given class type
  * [componentClass].
@@ -35,3 +37,13 @@ fun isNotEnabled(): TestNodeMatcher = TestNodeMatcher("is not enabled") { node -
 
 fun hasTestKey(key: String): TestNodeMatcher =
     TestNodeMatcher("has test key \"$key\"") { node -> node.testKey == key }
+
+/**
+ * Generic purpose test node filters based on the attributes system. This filter will match all
+ * [TestNode] whose [Component] has set [value] for the attribute with key [key]
+ */
+fun <T> hasAttribute(key: AttributeKey<T>, value: T): TestNodeMatcher {
+  return TestNodeMatcher("${key.description} = $value") { testNode: TestNode ->
+    testNode.getAttribute(key) == value
+  }
+}
