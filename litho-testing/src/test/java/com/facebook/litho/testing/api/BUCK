@@ -6,6 +6,7 @@ load("@fbsource//tools/build_defs/android:litho_jni.bzl", "LITHO_JNI_DEPS")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
+    "LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_JUNIT_TARGET",
     "LITHO_KOTLIN_TARGET",
@@ -34,6 +35,7 @@ litho_robolectric4_test(
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET,
         LITHO_JUNIT_TARGET,
         LITHO_KOTLIN_TARGET,
         LITHO_MOCKITO_KOTLIN_V2_TARGET,

@@ -16,18 +16,13 @@
 
 package com.facebook.litho.testing.api
 
-/**
- * This is the entry point through which nodes are discovered for testing.
- *
- * It will typically be implemented by a test rule
- */
-interface TestNodeSelectionProvider {
+import com.facebook.litho.LithoView
 
-  /**
-   * Finds a test node that matches the given condition.
-   *
-   * The result is a lazy representation of the matching node which can then be evaluated on-demand.
-   * For usage patterns and concepts, see [TestNodeSelection]
-   */
-  fun selectNode(matcher: TestNodeMatcher): TestNodeSelection
+class LithoTestContext(private val lithoView: LithoView) : TestContext {
+
+  private val testNodesListResolver = TestNodesListResolver()
+
+  override fun provideAllTestNodes(): List<TestNode> {
+    return testNodesListResolver.getCurrentTestNodes(lithoView)
+  }
 }

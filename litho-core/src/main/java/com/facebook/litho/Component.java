@@ -109,6 +109,10 @@ public abstract class Component
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
+  /**
+   * Holds the attributes for this component. These attributes are used in the scope of the testing
+   * API, which can verify if a given Component has a given attribute.
+   */
   private final AttributesHolder mAttributesHolder = new AttributesHolder();
 
   @Override

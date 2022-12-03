@@ -36,6 +36,20 @@ class TestNodeSelection(
     return result.first()
   }
 
+  fun assertExists() {
+    val result = fetchMatchingNodes()
+
+    val numResults = result.size
+
+    if (numResults == 0) {
+      throw AssertionError("There are no results for searched test node.")
+    }
+
+    if (numResults > 1) {
+      throw AssertionError("There is more than one result for the matched test nodes.")
+    }
+  }
+
   fun assertDoesNotExist() {
     val result = fetchMatchingNodes()
 
