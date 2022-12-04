@@ -50,7 +50,7 @@ class SelectionTest {
     val selection = TestNodeSelection(testContext, identitySelector)
 
     Assertions.assertThatThrownBy { selection.fetchTestNode() }
-        .isInstanceOf(IllegalStateException::class.java)
+        .isInstanceOf(AssertionError::class.java)
   }
 
   @Test
@@ -60,7 +60,7 @@ class SelectionTest {
     val selection = TestNodeSelection(testContext, identitySelector)
 
     Assertions.assertThatThrownBy { selection.fetchTestNode() }
-        .isInstanceOf(IllegalStateException::class.java)
+        .isInstanceOf(AssertionError::class.java)
   }
 }
 

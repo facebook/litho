@@ -31,7 +31,10 @@ class TestNodeSelection(
   fun fetchTestNode(): TestNode {
     val result = fetchMatchingNodes()
 
-    check(result.size == 1) { "Expected exactly 1 test node. Found ${result.size}" }
+    if (result.size != 1) {
+      val errorMessage = "Failed: expected exactly 1 test node. Found ${result.size}"
+      throw AssertionError(errorMessage)
+    }
 
     return result.first()
   }
