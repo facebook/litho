@@ -58,6 +58,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.AccessibilityRole;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsReporter;
@@ -878,6 +879,10 @@ class TextSpec {
       @FromBoundsDefined Float textLayoutTranslationY,
       @Nullable @FromBoundsDefined ClickableSpan[] clickableSpans,
       @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
+    Component componentScope = c.getComponentScope();
+    if (componentScope != null) {
+      componentScope.setAttributeKey(WidgetAttributes.Text, processedText);
+    }
 
     TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
 

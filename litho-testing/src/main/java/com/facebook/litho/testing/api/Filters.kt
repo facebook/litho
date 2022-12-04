@@ -17,6 +17,7 @@
 package com.facebook.litho.testing.api
 
 import com.facebook.litho.AttributeKey
+import com.facebook.litho.widget.WidgetAttributes
 
 /**
  * This filter will match all test nodes that represent a [Component] with the given class type
@@ -37,6 +38,17 @@ fun isNotEnabled(): TestNodeMatcher = TestNodeMatcher("is not enabled") { node -
 
 fun hasTestKey(key: String): TestNodeMatcher =
     TestNodeMatcher("has test key \"$key\"") { node -> node.testKey == key }
+
+/**
+ * Returns a [TestNodeMatcher] that verifies if the given node contains the exact [text]
+ *
+ * It uses the attribute [WidgetAttributes.Text] to look for the text value. One example of Litho
+ * widget that relies on this attribute is the [TextSpec]. This means that you can use this matcher
+ * to verify the text used with any instance of Litho's Text.
+ */
+fun hasText(text: String): TestNodeMatcher {
+  return hasAttribute(WidgetAttributes.Text, text)
+}
 
 /**
  * Generic purpose test node filters based on the attributes system. This filter will match all

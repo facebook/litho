@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.widget;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.facebook.litho.AttributeKey;
 
-/** Simple holder which allows to store and retrieve attributes. */
-public class AttributesHolder implements AttributesAcceptor {
+/** Collection of the {@link AttributeKey} that are used across Litho's widgets. */
+public class WidgetAttributes {
 
-  private final Map<AttributeKey<?>, Object> mAttributes = new HashMap<>();
-
-  public <T> T get(AttributeKey<T> key) {
-    return (T) mAttributes.get(key);
+  private WidgetAttributes() {
+    // do nothing
   }
 
-  @Override
-  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
-    mAttributes.put(attributeKey, value);
-  }
+  /** Key used to identify real text set by the developer in the {@link TextSpec}. */
+  public static final AttributeKey<CharSequence> Text = new AttributeKey<>("text");
 }

@@ -110,21 +110,6 @@ public abstract class Component
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
   /**
-   * Holds the attributes for this component. These attributes are used in the scope of the testing
-   * API, which can verify if a given Component has a given attribute.
-   */
-  private final AttributesHolder mAttributesHolder = new AttributesHolder();
-
-  @Override
-  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
-    mAttributesHolder.setAttributeKey(attributeKey, value);
-  }
-
-  public <T> T getAttribute(AttributeKey<T> attributeKey) {
-    return mAttributesHolder.get(attributeKey);
-  }
-
-  /**
    * @return the globally unique ID associated with {@param type}, creating one if necessary.
    *     Allocated IDs map 1-to-1 with objects passed to this method.
    */
@@ -2428,5 +2413,20 @@ public abstract class Component
     }
 
     return list;
+  }
+
+  /**
+   * Holds the attributes for this component. These attributes are used in the scope of the testing
+   * API, which can verify if a given Component has a given attribute.
+   */
+  private final AttributesHolder mAttributesHolder = new AttributesHolder();
+
+  @Override
+  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
+    mAttributesHolder.setAttributeKey(attributeKey, value);
+  }
+
+  public <T> T getAttribute(AttributeKey<T> attributeKey) {
+    return mAttributesHolder.get(attributeKey);
   }
 }
