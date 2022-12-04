@@ -51,6 +51,16 @@ fun hasText(text: String): TestNodeMatcher {
 }
 
 /**
+ * Returns a [TestNodeMatcher] that verifies if the given node has a content description which is an
+ * exact match with [description].
+ */
+fun hasContentDescription(description: CharSequence): TestNodeMatcher {
+  return TestNodeMatcher("has contentDescription \"$description\"") { node ->
+    node.contentDescription == description
+  }
+}
+
+/**
  * Generic purpose test node filters based on the attributes system. This filter will match all
  * [TestNode] whose [Component] has set [value] for the attribute with key [key]
  */
