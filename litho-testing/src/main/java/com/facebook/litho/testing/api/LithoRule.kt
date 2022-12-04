@@ -46,9 +46,7 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
   }
 
   override fun selectNode(matcher: TestNodeMatcher): TestNodeSelection {
-    return TestNodeSelection(
-        testContext = testContext,
-        selector = TestNodeSelector { testNodes -> testNodes.filter(matcher::matches) })
+    return TestNodeSelection(testContext = testContext, selector = testNodeSelector(matcher))
   }
 
   private fun setupLithoViewWithComponent(
