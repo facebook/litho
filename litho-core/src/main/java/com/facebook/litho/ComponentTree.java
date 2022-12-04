@@ -436,8 +436,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isReconciliationEnabled;
 
-  private final boolean isSplitStateHandlersEnabled;
-
   private final boolean isResolveAndLayoutFuturesSplitEnabled;
 
   private final boolean useSeparateThreadHandlersForResolveAndLayout;
@@ -517,9 +515,6 @@ public class ComponentTree implements LithoLifecycleListener {
     useSeparateThreadHandlersForResolveAndLayout =
         isResolveAndLayoutFuturesSplitEnabled
             && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
-    isSplitStateHandlersEnabled =
-        ComponentsConfiguration.isSplitStateHandlersEnabled
-            || isResolveAndLayoutFuturesSplitEnabled;
     mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
@@ -1452,10 +1447,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
-  }
-
-  public boolean isSplitStateHandlersEnabled() {
-    return isSplitStateHandlersEnabled;
   }
 
   public boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
@@ -2977,9 +2968,7 @@ public class ComponentTree implements LithoLifecycleListener {
               treeState.commitLayoutState(localTreeState);
             } else {
               treeState.commitRenderState(localTreeState);
-              if (isSplitStateHandlersEnabled()) {
-                treeState.commitLayoutState(localTreeState);
-              }
+              treeState.commitLayoutState(localTreeState);
             }
           }
         }
@@ -3000,9 +2989,7 @@ public class ComponentTree implements LithoLifecycleListener {
           mTreeState.unregisterLayoutState(localTreeState);
         } else {
           mTreeState.unregisterRenderState(localTreeState);
-          if (isSplitStateHandlersEnabled()) {
-            mTreeState.unregisterLayoutState(localTreeState);
-          }
+          mTreeState.unregisterLayoutState(localTreeState);
         }
       }
 
@@ -3669,9 +3656,7 @@ public class ComponentTree implements LithoLifecycleListener {
         contextWithStateHandler = new ComponentContext(context, treeProps);
 
         treeState.registerRenderState();
-        if (isSplitStateHandlersEnabled()) {
-          treeState.registerLayoutState();
-        }
+        treeState.registerLayoutState();
       }
 
       final boolean isTracing = ComponentsSystrace.isTracing();

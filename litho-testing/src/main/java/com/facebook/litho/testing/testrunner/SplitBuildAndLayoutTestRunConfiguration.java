@@ -21,8 +21,6 @@ import org.junit.runners.model.FrameworkMethod;
 
 public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConfiguration {
 
-  private final boolean defaultIsSplitStateHandlersEnabled =
-      ComponentsConfiguration.isSplitStateHandlersEnabled;
   private final boolean defaultReuseLastMeasuredNodeInComponentMeasure =
       ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
   private final boolean defaultIsSplitFuturesEnabled =
@@ -32,7 +30,6 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
 
   @Override
   public void beforeTest(FrameworkMethod method) {
-    ComponentsConfiguration.isSplitStateHandlersEnabled = !defaultIsSplitStateHandlersEnabled;
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
         !defaultReuseLastMeasuredNodeInComponentMeasure;
     ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled = !defaultIsSplitFuturesEnabled;
@@ -42,7 +39,6 @@ public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConf
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.isSplitStateHandlersEnabled = defaultIsSplitStateHandlersEnabled;
     ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
         defaultReuseLastMeasuredNodeInComponentMeasure;
     ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled = defaultIsSplitFuturesEnabled;

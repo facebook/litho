@@ -154,12 +154,7 @@ public class StateUpdatesTest {
             .getChildAt(0)
             .getComponentContextAt(1);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, context, 0);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, context, 0);
-      assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, context, 0);
   }
 
   @Test
@@ -180,12 +175,7 @@ public class StateUpdatesTest {
             .getNode()
             .getComponentContextAt(1);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, context, 0);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, context, 0);
-      assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, context, 0);
   }
 
   @Test
@@ -260,11 +250,7 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
     assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
@@ -288,11 +274,7 @@ public class StateUpdatesTest {
 
     ComponentWithCounterStateLayout.incrementCountSync(componentContext);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
     assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 
@@ -346,15 +328,9 @@ public class StateUpdatesTest {
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 1);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild3, 0);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 1);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild3, 0);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 1);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild3, 0);
   }
 
   @Test
@@ -387,15 +363,9 @@ public class StateUpdatesTest {
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 1);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild3, 0);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 1);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild3, 0);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 1);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild3, 0);
   }
 
   @Test
@@ -473,15 +443,9 @@ public class StateUpdatesTest {
 
     assertThatStateContainerIsInStateHandler(componentTree, parentSibling, 0);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 0);
-      assertThatNestedParentStateContainerIsInLayoutStateHandler(componentTree, parent, 2);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 0);
-      assertThatNestedParentStateContainerIsInStateHandler(componentTree, parent, 2);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 0);
+    assertThatNestedParentStateContainerIsInLayoutStateHandler(componentTree, parent, 2);
   }
 
   @Test
@@ -529,20 +493,11 @@ public class StateUpdatesTest {
 
     assertThatStateContainerIsInStateHandler(componentTree, grandParentSibling, 0);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, parentSibling, 0);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 0);
-      assertThatNestedGrandParentStateContainerIsInLayoutStateHandler(
-          componentTree, grandParent, 2);
-      assertThatNestedParentStateContainerIsInLayoutStateHandler(componentTree, parent, 2);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, parentSibling, 0);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild1, 1);
-      assertThatStateContainerIsInStateHandler(componentTree, componentContextChild2, 0);
-      assertThatNestedGrandParentStateContainerIsInStateHandler(componentTree, grandParent, 2);
-      assertThatNestedParentStateContainerIsInStateHandler(componentTree, parent, 2);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, parentSibling, 0);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild1, 1);
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContextChild2, 0);
+    assertThatNestedGrandParentStateContainerIsInLayoutStateHandler(componentTree, grandParent, 2);
+    assertThatNestedParentStateContainerIsInLayoutStateHandler(componentTree, parent, 2);
   }
 
   @Test
@@ -571,11 +526,7 @@ public class StateUpdatesTest {
             .getChildAt(0)
             .getComponentContextAt(1);
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 0);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContext, 0);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 0);
 
     ComponentWithCounterStateLayout.incrementCountAsync(componentContext);
 
@@ -594,11 +545,7 @@ public class StateUpdatesTest {
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
-    if (componentTree.isSplitStateHandlersEnabled()) {
-      assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
-    } else {
-      assertThatStateContainerIsInStateHandler(componentTree, componentContext, 1);
-    }
+    assertThatStateContainerIsInLayoutStateHandler(componentTree, componentContext, 1);
     assertThat(getInitialStates(componentTree).isEmpty()).isTrue();
   }
 

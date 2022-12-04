@@ -748,14 +748,6 @@ public class ComponentContext implements Cloneable {
     return mComponentTree != null && mComponentTree.shouldReuseOutputs();
   }
 
-  boolean isSplitStateHandlersEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isSplitStateHandlersEnabled();
-    } else {
-      return ComponentsConfiguration.isSplitStateHandlersEnabled;
-    }
-  }
-
   boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
     if (getComponentTree() != null) {
       return getComponentTree().isReuseLastMeasuredNodeInComponentMeasureEnabled();
@@ -765,7 +757,7 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean isNestedTreeContext() {
-    return isSplitStateHandlersEnabled() && this.isNestedTreeContext;
+    return isNestedTreeContext;
   }
 
   boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {
