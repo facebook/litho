@@ -17,7 +17,9 @@
 package com.facebook.litho.testing.api
 
 import com.facebook.litho.AttributeKey
+import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
+import com.facebook.litho.EventHandler
 
 /**
  * A test node is used to hold all the information needed to represent a given component in the
@@ -36,6 +38,9 @@ class TestNode(private val component: Component) {
 
   val contentDescription: CharSequence?
     get() = component.commonProps?.contentDescription
+
+  val clickHandler: EventHandler<ClickEvent>?
+    get() = component.commonProps?.clickHandler
 
   fun <T> getAttribute(key: AttributeKey<T>): T = component.getAttribute(key)
 }

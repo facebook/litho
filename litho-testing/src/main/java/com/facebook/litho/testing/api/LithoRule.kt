@@ -17,26 +17,37 @@
 package com.facebook.litho.testing.api
 
 import android.content.Context
+import android.os.Looper
 import android.view.View
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoView
+import com.facebook.litho.testing.BaseThreadLooperController
+import com.facebook.litho.testing.ThreadLooperController
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import org.robolectric.Shadows.shadowOf
 
 class LithoRule : TestRule, TestNodeSelectionProvider {
 
   private var componentContext: ComponentContext? = null
   private lateinit var testContext: TestContext
 
+  private var threadLooperController: BaseThreadLooperController = ThreadLooperController()
+
   override fun apply(statement: Statement, description: Description): Statement =
       object : Statement() {
         override fun evaluate() {
-          componentContext = ComponentContext(getApplicationContext<Context>())
-          statement.evaluate()
+          try {
+            componentContext = ComponentContext(getApplicationContext<Context>())
+            threadLooperController.init()
+            statement.evaluate()
+          } finally {
+            threadLooperController.clean()
+          }
         }
       }
 
@@ -46,6 +57,7 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
   }
 
   override fun selectNode(matcher: TestNodeMatcher): TestNodeSelection {
+    idle()
     return TestNodeSelection(testContext = testContext, selector = testNodeSelector(matcher))
   }
 
@@ -65,6 +77,16 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
     lithoView.onAttachedToWindowForTest()
     lithoView.measure(DEFAULT_WIDTH_SPEC, DEFAULT_HEIGHT_SPEC)
     lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
+  }
+
+  /**
+   * Runs through all tasks on the background thread and main lopper, blocking until it completes.
+   * Use if there are any async events triggered by layout ( ie visibility events) to manually drain
+   * the queue
+   */
+  private fun idle() {
+    threadLooperController.runToEndOfTasksSync()
+    shadowOf(Looper.getMainLooper()).idle()
   }
 
   companion object {
