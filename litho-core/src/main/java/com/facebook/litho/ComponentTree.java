@@ -339,11 +339,11 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final Object mResolveRunnableLock = new Object();
 
-  @GuardedBy("mCurrentCalculateLayoutRunnableLock")
+  @GuardedBy("mCurrentCalculateLayoutFutureRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
-  @GuardedBy("mCurrentCalculateLayoutFutureRunnableLock")
-  private @Nullable CalculateLayoutFutureRunnable mCurrentCalculateLayoutFutureRunnable;
+  @GuardedBy("mCurrentDoLayoutRunnable")
+  private @Nullable DoLayoutRunnable mCurrentDoLayoutRunnable;
 
   @GuardedBy("mResolveRunnableLock")
   private @Nullable DoResolveRunnable mResolveRunnable;
@@ -2701,11 +2701,11 @@ public class ComponentTree implements LithoLifecycleListener {
 
     if (isAsync && !forceSyncCalculation) {
       synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
-        if (mCurrentCalculateLayoutFutureRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
+        if (mCurrentDoLayoutRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
         }
-        mCurrentCalculateLayoutFutureRunnable =
-            new CalculateLayoutFutureRunnable(
+        mCurrentDoLayoutRunnable =
+            new DoLayoutRunnable(
                 resolutionResult,
                 source,
                 widthSpec,
@@ -2720,7 +2720,7 @@ public class ComponentTree implements LithoLifecycleListener {
             tag = tag + mRoot.getSimpleName();
           }
         }
-        mLayoutThreadHandler.post(mCurrentCalculateLayoutFutureRunnable, tag);
+        mLayoutThreadHandler.post(mCurrentDoLayoutRunnable, tag);
       }
     } else {
       doLayout(
@@ -2743,9 +2743,9 @@ public class ComponentTree implements LithoLifecycleListener {
       final int widthSpec,
       final int heightSpec) {
     synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
-      if (mCurrentCalculateLayoutFutureRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
-        mCurrentCalculateLayoutFutureRunnable = null;
+      if (mCurrentDoLayoutRunnable != null) {
+        mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+        mCurrentDoLayoutRunnable = null;
       }
     }
 
@@ -3221,9 +3221,9 @@ public class ComponentTree implements LithoLifecycleListener {
         }
 
         synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
-          if (mCurrentCalculateLayoutFutureRunnable != null) {
-            mLayoutThreadHandler.remove(mCurrentCalculateLayoutFutureRunnable);
-            mCurrentCalculateLayoutFutureRunnable = null;
+          if (mCurrentDoLayoutRunnable != null) {
+            mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+            mCurrentDoLayoutRunnable = null;
           }
         }
       } else {
@@ -3835,7 +3835,7 @@ public class ComponentTree implements LithoLifecycleListener {
     return mEventHandlersController;
   }
 
-  private class CalculateLayoutFutureRunnable extends ThreadTracingRunnable {
+  private class DoLayoutRunnable extends ThreadTracingRunnable {
     private final LithoResolutionResult mLithoResolutionResult;
     private final @CalculateLayoutSource int mSource;
     private final int mWidthSpec;
@@ -3843,7 +3843,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private final @Nullable String mAttribution;
     private final boolean mIsCreateLayoutInProgress;
 
-    public CalculateLayoutFutureRunnable(
+    public DoLayoutRunnable(
         final LithoResolutionResult resolutionResult,
         @CalculateLayoutSource int source,
         int widthSpec,
