@@ -346,7 +346,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private @Nullable CalculateLayoutFutureRunnable mCurrentCalculateLayoutFutureRunnable;
 
   @GuardedBy("mResolveRunnableLock")
-  private @Nullable CalculateResolutionRunnable mResolveRunnable;
+  private @Nullable DoResolveRunnable mResolveRunnable;
 
   private final Object mLayoutStateFutureLock = new Object();
 
@@ -2523,7 +2523,7 @@ public class ComponentTree implements LithoLifecycleListener {
           getResolveThreadHandler().remove(mResolveRunnable);
         }
         mResolveRunnable =
-            new CalculateResolutionRunnable(
+            new DoResolveRunnable(
                 source,
                 root,
                 treeProps,
@@ -3871,7 +3871,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  private class CalculateResolutionRunnable extends ThreadTracingRunnable {
+  private class DoResolveRunnable extends ThreadTracingRunnable {
     private final @CalculateLayoutSource int mSource;
     private final Component mRoot;
     private final TreeProps mTreeProps;
@@ -3880,7 +3880,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private final @Nullable String mAttribution;
     private final boolean mIsCreateLayoutInProgress;
 
-    public CalculateResolutionRunnable(
+    public DoResolveRunnable(
         @CalculateLayoutSource int source,
         Component root,
         TreeProps treeProps,
