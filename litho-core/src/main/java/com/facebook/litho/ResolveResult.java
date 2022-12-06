@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 
-public class LithoResolutionResult implements PotentiallyPartialResult {
+public class ResolveResult implements PotentiallyPartialResult {
   public final @Nullable LithoNode node;
   public final ComponentContext context;
   public final Component component;
@@ -27,7 +27,7 @@ public class LithoResolutionResult implements PotentiallyPartialResult {
   public final boolean isPartialResult;
   public final int version;
 
-  public LithoResolutionResult(
+  public ResolveResult(
       final @Nullable LithoNode node,
       final ComponentContext context,
       final Component component,

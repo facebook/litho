@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.stats.LithoStats;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState> {
-  private final LithoResolutionResult mLithoResolutionResult;
+  private final ResolveResult mResolveResult;
   private final @Nullable LayoutState mCurrentLayoutState;
   private final @Nullable DiffNode mDiffTreeRoot;
   private final @Nullable PerfEvent mLogLayoutStatePerfEvent;
@@ -31,7 +31,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final boolean mIsLayoutDiffingEnabled;
 
   public LayoutTreeFuture(
-      final LithoResolutionResult lithoResolutionResult,
+      final ResolveResult resolveResult,
       final @Nullable LayoutState currentLayoutState,
       final @Nullable DiffNode diffTreeRoot,
       final @Nullable PerfEvent logLayoutStatePerfEvent,
@@ -42,7 +42,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       final boolean isLayoutDiffingEnabled) {
     super(false);
 
-    mLithoResolutionResult = lithoResolutionResult;
+    mResolveResult = resolveResult;
     mCurrentLayoutState = currentLayoutState;
     mDiffTreeRoot = diffTreeRoot;
     mLogLayoutStatePerfEvent = logLayoutStatePerfEvent;
@@ -58,15 +58,15 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
     LithoStats.incrementLayoutCount();
 
-    final LithoNode node = mLithoResolutionResult.node;
-    final TreeState treeState = mLithoResolutionResult.treeState;
-    final MeasuredResultCache renderPhaseCache = mLithoResolutionResult.cache;
-    final ComponentContext c = mLithoResolutionResult.context;
+    final LithoNode node = mResolveResult.node;
+    final TreeState treeState = mResolveResult.treeState;
+    final MeasuredResultCache renderPhaseCache = mResolveResult.cache;
+    final ComponentContext c = mResolveResult.context;
 
     final LayoutState layoutState =
         new LayoutState(
             c,
-            mLithoResolutionResult.component,
+            mResolveResult.component,
             treeState,
             mCurrentLayoutState,
             node,
@@ -136,6 +136,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
     return mWidthSpec == thatLtf.mWidthSpec
         && mHeightSpec == thatLtf.mHeightSpec
-        && mLithoResolutionResult == thatLtf.mLithoResolutionResult;
+        && mResolveResult == thatLtf.mResolveResult;
   }
 }

@@ -22,7 +22,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 
-public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
+public class RenderTreeFuture extends TreeFuture<ResolveResult> {
   private final ComponentContext mComponentContext;
   private final Component mComponent;
   private final TreeState mTreeState;
@@ -88,7 +88,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
   }
 
   @Override
-  protected LithoResolutionResult calculate() {
+  protected ResolveResult calculate() {
     LithoStats.incrementResolveCount();
 
     final RenderStateContext rsc =
@@ -117,7 +117,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
       rsc.getCache().freezeCache();
     }
 
-    return new LithoResolutionResult(
+    return new ResolveResult(
         node,
         mComponentContext,
         mComponent,
@@ -128,7 +128,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
   }
 
   @Override
-  protected LithoResolutionResult resumeCalculation(LithoResolutionResult partialResult) {
+  protected ResolveResult resumeCalculation(ResolveResult partialResult) {
 
     LithoStats.incrementResumeCount();
 
@@ -158,7 +158,7 @@ public class RenderTreeFuture extends TreeFuture<LithoResolutionResult> {
     mRenderStateContextForResume.getCache().freezeCache();
     mRenderStateContextForResume = null;
 
-    return new LithoResolutionResult(
+    return new ResolveResult(
         node,
         mComponentContext,
         partialResult.component,

@@ -60,7 +60,7 @@ public class RenderTreeFutureTest {
     // Set the render-result holder to be set during a background / async run of the future.
     // Since it will be interrupted and resumed on the main-thread, it's expected this holder to
     // always hold null.
-    final LithoResolutionResult[] lithoResolutionResultHolder = new LithoResolutionResult[1];
+    final ResolveResult[] resolveResultHolder = new ResolveResult[1];
 
     // 2 booleans used to track milestones of the background calculation.
     // Index 0 - used to track when the background thread has started.
@@ -76,7 +76,7 @@ public class RenderTreeFutureTest {
         backgroundTaskCompleteHolder[0] = true;
 
         // set the render-result-holder here. It is expected to be null.
-        lithoResolutionResultHolder[0] =
+        resolveResultHolder[0] =
             renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC).result;
 
         // indicate thread has finished
@@ -101,7 +101,7 @@ public class RenderTreeFutureTest {
     }.start();
 
     // While still blocked, trigger a sync calculation on the main thread
-    final LithoResolutionResult renderResult =
+    final ResolveResult renderResult =
         renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     // Wait for the background thread to finish
@@ -112,7 +112,7 @@ public class RenderTreeFutureTest {
 
     // Ensure the render-result from the background thread is null, meaning it was properly
     // interrupted.
-    assertThat(lithoResolutionResultHolder[0]).isNull();
+    assertThat(resolveResultHolder[0]).isNull();
 
     // Ensure the render result from the main-thread calculation is not null
     assertThat(renderResult).isNotNull();
@@ -143,7 +143,7 @@ public class RenderTreeFutureTest {
     final RenderTreeFuture renderTreeFuture =
         new RenderTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
 
-    final LithoResolutionResult renderResult =
+    final ResolveResult renderResult =
         renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     assertThat(renderResult).isNotNull();
