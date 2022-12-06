@@ -335,17 +335,17 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final Object mCurrentCalculateLayoutRunnableLock = new Object();
 
-  private final Object mCurrentCalculateLayoutFutureRunnableLock = new Object();
+  private final Object mCurrentDoLayoutRunnableLock = new Object();
 
-  private final Object mResolveRunnableLock = new Object();
+  private final Object mCurrentDoResolveRunnableLock = new Object();
 
-  @GuardedBy("mCurrentCalculateLayoutFutureRunnableLock")
+  @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
-  @GuardedBy("mCurrentDoLayoutRunnable")
+  @GuardedBy("mCurrentDoLayoutRunnableLock")
   private @Nullable DoLayoutRunnable mCurrentDoLayoutRunnable;
 
-  @GuardedBy("mResolveRunnableLock")
+  @GuardedBy("mCurrentDoResolveRunnableLock")
   private @Nullable DoResolveRunnable mCurrentDoResolveRunnable;
 
   private final Object mLayoutStateFutureLock = new Object();
@@ -565,8 +565,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private Object getResolveThreadHandlerLock() {
     return useSeparateThreadHandlersForResolveAndLayout
-        ? mResolveRunnableLock
-        : mCurrentCalculateLayoutFutureRunnableLock;
+        ? mCurrentDoResolveRunnableLock
+        : mCurrentDoLayoutRunnableLock;
   }
 
   private RunnableHandler getResolveThreadHandler() {
@@ -2700,7 +2700,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (isAsync && !forceSyncCalculation) {
-      synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
+      synchronized (mCurrentDoLayoutRunnableLock) {
         if (mCurrentDoLayoutRunnable != null) {
           mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
         }
@@ -2742,7 +2742,7 @@ public class ComponentTree implements LithoLifecycleListener {
       boolean isCreateLayoutInProgress,
       final int widthSpec,
       final int heightSpec) {
-    synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
+    synchronized (mCurrentDoLayoutRunnableLock) {
       if (mCurrentDoLayoutRunnable != null) {
         mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
         mCurrentDoLayoutRunnable = null;
@@ -3220,7 +3220,7 @@ public class ComponentTree implements LithoLifecycleListener {
           }
         }
 
-        synchronized (mCurrentCalculateLayoutFutureRunnableLock) {
+        synchronized (mCurrentDoLayoutRunnableLock) {
           if (mCurrentDoLayoutRunnable != null) {
             mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
             mCurrentDoLayoutRunnable = null;
