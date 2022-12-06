@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.stateupdates;
+package com.facebook.litho.stateupdates
 
-public abstract class TestEventListener {
-  abstract void onTestEventCalled(int actualCount, int expectedValue);
+import com.facebook.litho.ComponentContext
+
+fun interface BaseIncrementStateCaller {
+  fun increment(c: ComponentContext?)
 }

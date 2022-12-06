@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.stateupdates;
+package com.facebook.litho.stateupdates
 
-import com.facebook.litho.annotations.Event;
-import com.facebook.litho.annotations.OnTrigger;
-
-/** A custom event used to test {@link OnTrigger} method. */
-@Event
-public class TestEvent {
-  int expectedValue;
-
-  public TestEvent(int value) {
-    this.expectedValue = value;
-  }
+abstract class TestEventListener {
+  abstract fun onTestEventCalled(actualCount: Int, expectedValue: Int)
 }

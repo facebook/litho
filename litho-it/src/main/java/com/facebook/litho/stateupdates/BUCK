@@ -17,7 +17,6 @@ load(
 
 litho_android_test_library(
     name = "stateupdates",
-    language = "JAVA",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
@@ -29,7 +28,7 @@ litho_android_test_library(
         LITHO_ANNOTATIONS_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_TESTING_CORE_TARGET,
-        LITHO_YOGA_TARGET,
         LITHO_WIDGET_TARGET,
+        LITHO_YOGA_TARGET,
     ],
 )

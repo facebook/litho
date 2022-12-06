@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.stateupdates;
+package com.facebook.litho.stateupdates
 
-import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.Event
+import com.facebook.litho.annotations.OnTrigger
+import kotlin.jvm.JvmField
 
-public interface BaseIncrementStateCaller {
-  void increment(final ComponentContext c);
-}
+/** A custom event used to test [OnTrigger] method. */
+@Event class TestEvent(@JvmField var expectedValue: Int)

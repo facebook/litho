@@ -206,7 +206,7 @@ public class StateUpdatesTest {
                     .listener(
                         new TestEventListener() {
                           @Override
-                          void onTestEventCalled(int actualCount, int expectedValue) {
+                          public void onTestEventCalled(int actualCount, int expectedValue) {
                             assertThat(actualCount).isEqualTo(expectedValue);
                           }
                         }))
