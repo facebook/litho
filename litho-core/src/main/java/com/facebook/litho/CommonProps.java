@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
@@ -54,6 +55,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   @Nullable private NodeInfo mNodeInfo;
   @Nullable private DefaultLayoutProps mLayoutProps;
   @Nullable private Drawable mBackground;
+  @Nullable private Rect mPaddingFromBackground;
   @Nullable private String mTestKey;
   @Nullable private Object mComponentTag;
   private boolean mWrapInView;
@@ -104,6 +106,13 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   public void background(@Nullable Drawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
+    if (mBackground != null) {
+      final Rect outRect = new Rect();
+      mBackground.getPadding(outRect);
+      if (outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0) {
+        mPaddingFromBackground = outRect;
+      }
+    }
   }
 
   public void testKey(@Nullable String testKey) {
@@ -326,6 +335,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
   @Nullable
   public Drawable getBackground() {
     return mBackground;
+  }
+
+  public @Nullable Rect getPaddingFromBackground() {
+    return mPaddingFromBackground;
   }
 
   @Nullable
@@ -643,6 +656,7 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
       node.background(mBackground);
+      node.setPaddingFromBackground(mPaddingFromBackground);
     }
     if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
       node.testKey(mTestKey);

@@ -127,6 +127,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected @Nullable EventHandler<InvisibleEvent> mInvisibleHandler;
   protected @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   protected @Nullable Drawable mBackground;
+  protected @Nullable Rect mPaddingFromBackground;
   protected @Nullable Drawable mForeground;
   protected @Nullable PathEffect mBorderPathEffect;
   protected @Nullable StateListAnimator mStateListAnimator;
@@ -261,6 +262,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     } else {
       background(ContextCompat.getDrawable(context, resId));
     }
+  }
+
+  public void setPaddingFromBackground(@Nullable Rect padding) {
+    mPaddingFromBackground = padding;
   }
 
   public void border(Border border) {
@@ -1070,11 +1075,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return node;
   }
 
-  static @Nullable Rect getPaddingFromDrawable(Drawable drawable) {
-    final Rect rect = new Rect();
-    return getDrawablePadding(drawable, rect) ? rect : null;
-  }
-
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(
       @Nullable EventHandler<T> currentHandler, @Nullable EventHandler<T> newHandler) {
     if (currentHandler == null) {
@@ -1089,17 +1089,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     } else {
       return new DelegatingEventHandler<>(currentHandler, newHandler);
     }
-  }
-
-  /**
-   * This is a wrapper on top of built in {@link Drawable#getPadding(Rect)} which overrides default
-   * return value. The reason why we need this - is because on pre-L devices LayerDrawable always
-   * returns "true" even if drawable doesn't have padding (see https://goo.gl/gExcMQ). Since we
-   * heavily rely on correctness of this information, we need to check padding manually
-   */
-  private static boolean getDrawablePadding(Drawable drawable, Rect outRect) {
-    drawable.getPadding(outRect);
-    return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
   }
 
   public @Nullable LithoNode reconcile(
@@ -1160,8 +1149,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
       if (mNestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
         mNestedTreeHolder.transferInto(this);
-        if (mBackground != null) {
-          setPaddingFromDrawable(writer, mBackground);
+        if (mPaddingFromBackground != null) {
+          setPaddingFromDrawable(writer, mPaddingFromBackground);
         }
       } else {
         final CommonProps props = component.getCommonProps();
@@ -1178,9 +1167,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
           }
 
           // Set the padding from the background
-          final Drawable background = props.getBackground();
-          if (background != null) {
-            setPaddingFromDrawable(writer, background);
+          final @Nullable Rect padding = props.getPaddingFromBackground();
+          if (padding != null) {
+            setPaddingFromDrawable(writer, padding);
           }
 
           // Copy the layout props into this LithoNode.
@@ -1225,14 +1214,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return new LithoLayoutResult(getTailComponentContext(), this, node, parent);
   }
 
-  protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {
-    final Rect rect = getPaddingFromDrawable(drawable);
-    if (rect != null) {
-      target.paddingPx(LEFT, rect.left);
-      target.paddingPx(TOP, rect.top);
-      target.paddingPx(RIGHT, rect.right);
-      target.paddingPx(BOTTOM, rect.bottom);
-    }
+  protected static void setPaddingFromDrawable(YogaLayoutProps target, Rect padding) {
+    target.paddingPx(LEFT, padding.left);
+    target.paddingPx(TOP, padding.top);
+    target.paddingPx(RIGHT, padding.right);
+    target.paddingPx(BOTTOM, padding.bottom);
   }
 
   boolean isPaddingSet() {

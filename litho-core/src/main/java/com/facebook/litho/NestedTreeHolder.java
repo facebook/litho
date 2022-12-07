@@ -111,6 +111,7 @@ public class NestedTreeHolder extends LithoNode {
     }
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
       target.background(mBackground);
+      target.setPaddingFromBackground(mPaddingFromBackground);
     }
     if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
       target.foreground(mForeground);
