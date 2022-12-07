@@ -1098,9 +1098,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * heavily rely on correctness of this information, we need to check padding manually
    */
   private static boolean getDrawablePadding(Drawable drawable, Rect outRect) {
-    // TODO(T139382507): Add logging to attribute crash to a component
-    // clone the state to avoid crashes due to race conditions.
-    drawable.mutate().getPadding(outRect);
+    drawable.getPadding(outRect);
     return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
   }
 
