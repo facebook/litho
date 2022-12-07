@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.os.Handler;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
@@ -52,14 +51,7 @@ class ViewPagerHelperSectionSpec<T> {
   protected static void onDataBound(
       final SectionContext c, @Prop(optional = true) final int initialPageIndex) {
     if (initialPageIndex >= 0) {
-      new Handler()
-          .post(
-              new Runnable() {
-                @Override
-                public void run() {
-                  SectionLifecycle.requestFocus(c, initialPageIndex);
-                }
-              });
+      SectionLifecycle.requestFocus(c, initialPageIndex);
     }
   }
 
