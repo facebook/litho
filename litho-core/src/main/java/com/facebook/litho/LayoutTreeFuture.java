@@ -60,7 +60,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
     final LithoNode node = mResolveResult.node;
     final TreeState treeState = mResolveResult.treeState;
-    final MeasuredResultCache renderPhaseCache = mResolveResult.cache;
+    final MeasuredResultCache renderPhaseCache = mResolveResult.consumeCache();
     final ComponentContext c = mResolveResult.context;
 
     final LayoutState layoutState =

@@ -162,7 +162,7 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
         node,
         mComponentContext,
         partialResult.component,
-        partialResult.cache,
+        partialResult.consumeCache(),
         partialResult.treeState,
         false,
         mResolveVersion);

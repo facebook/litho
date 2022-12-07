@@ -28,6 +28,13 @@ import java.util.Map;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class MeasuredResultCache {
+
+  static final MeasuredResultCache EMPTY = new MeasuredResultCache();
+
+  static {
+    EMPTY.freezeCache();
+  }
+
   private final SparseArrayCompat<LithoNode> mComponentIdToNodeCache = new SparseArrayCompat<>();
   private final Map<LithoNode, LithoLayoutResult> mNodeToResultCache = new HashMap<>();
 
