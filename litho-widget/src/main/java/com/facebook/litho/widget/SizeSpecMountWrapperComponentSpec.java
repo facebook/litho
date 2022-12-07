@@ -52,7 +52,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>Usage: Create a {@link SizeSpecMountWrapperComponentSpec} with a {@link Component} added to
  * it, and it will provide the width and height information through a {@link Size} typed {@link
  * com.facebook.litho.annotations.TreeProp}.
+ *
+ * @deprecated Use a @LayoutSpec with @OnCreateLayoutWithSizeSpec instead. If you need the tree
+ *     props as well, you can use @OnCreateTreeProp to pass them down as well.
  */
+@Deprecated
 @MountSpec(hasChildLithoViews = true)
 public class SizeSpecMountWrapperComponentSpec {
   private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
