@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
@@ -116,7 +117,9 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       @Nullable RecyclerBinderConfiguration recyclerBinderConfiguration,
       @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory) {
     if (orientation == OrientationHelper.VERTICAL
-        && !(snapMode == SNAP_NONE || snapMode == SNAP_TO_START)) {
+        && !(snapMode == SNAP_NONE
+            || snapMode == SNAP_TO_START
+            || snapMode == SnapUtil.SNAP_TO_CENTER)) {
       throw new UnsupportedOperationException(
           "Only snap to start is implemented for vertical lists");
     }
@@ -262,7 +265,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private static void validate(ListRecyclerConfiguration configuration) {
       int snapMode = configuration.getSnapMode();
       if (configuration.getOrientation() == OrientationHelper.VERTICAL
-          && !(snapMode == SNAP_NONE || snapMode == SNAP_TO_START)) {
+          && !(snapMode == SNAP_NONE || snapMode == SNAP_TO_START || snapMode == SNAP_TO_CENTER)) {
         throw new UnsupportedOperationException(
             "Only snap to start is implemented for vertical lists");
       }
