@@ -62,6 +62,6 @@ litho_robolectric4_test(
         #"//fbandroid/libraries/components/litho-it-spec/src/test/java/com/facebook/litho:litho",
         "//xplat/sonar/android/src/main/java/com/facebook/flipper/core:core",
         "//xplat/sonar/android/src/main/java/com/facebook/flipper/plugins/inspector:inspectorAndroid",
-        "//third-party/jetbrains/annotations:annotations",
+        "//third-party/java/org/jetbrains/annotations:annotations",
     ],
 )
