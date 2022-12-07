@@ -159,6 +159,14 @@ public class MeasuredResultCache {
     return currentLayoutResult;
   }
 
+  /** Remove the cached layout result for the given Node. */
+  public void removeCachedResult(final LithoNode node) {
+    mNodeToResultCache.remove(node);
+    if (mDelegateCache != null) {
+      mDelegateCache.removeCachedResult(node);
+    }
+  }
+
   /** Cleares the cache generated for the given component. */
   public void clearCache(final Component component) {
     clearCache(component.getId());

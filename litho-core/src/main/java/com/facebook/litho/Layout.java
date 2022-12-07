@@ -240,6 +240,10 @@ class Layout {
         resultCache.getCachedResult(holder.getCachedNode());
 
     if (cachedLayout != null) {
+
+      // Consume the cached result
+      resultCache.removeCachedResult(holder.getCachedNode());
+
       final boolean hasValidDirection =
           hasValidLayoutDirectionInNestedTree(holderResult, cachedLayout);
       final boolean hasCompatibleSizeSpec =
