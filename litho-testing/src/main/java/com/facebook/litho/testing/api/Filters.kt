@@ -40,7 +40,7 @@ fun hasTestKey(key: String): TestNodeMatcher =
     TestNodeMatcher("has test key \"$key\"") { node -> node.testKey == key }
 
 /**
- * Returns a [TestNodeMatcher] that verifies if the given node contains the exact [text]
+ * Returns a [TestNodeMatcher] that verifies if the given node text matches the exact [text]
  *
  * It uses the attribute [WidgetAttributes.Text] to look for the text value. One example of Litho
  * widget that relies on this attribute is the [TextSpec]. This means that you can use this matcher
@@ -48,6 +48,13 @@ fun hasTestKey(key: String): TestNodeMatcher =
  */
 fun hasText(text: String): TestNodeMatcher {
   return hasAttribute(WidgetAttributes.Text, text)
+}
+
+/** Returns a [TestNodeMatcher] that verifies if the given node contains the given [text] */
+fun hasTextContaining(text: CharSequence): TestNodeMatcher {
+  return TestNodeMatcher("has text containing \"$text\"") { node ->
+    node.getAttribute(WidgetAttributes.Text)?.contains(text) ?: false
+  }
 }
 
 /**

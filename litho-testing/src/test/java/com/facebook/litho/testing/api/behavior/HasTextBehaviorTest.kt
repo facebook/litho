@@ -22,6 +22,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.api.LithoRule
 import com.facebook.litho.testing.api.hasText
+import com.facebook.litho.testing.api.hasTextContaining
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
@@ -34,7 +35,7 @@ class HasTextBehaviorTest {
   @get:Rule val rule: LithoRule = LithoRule()
 
   @Test
-  fun `will succeed when there is a component with the given text`() {
+  fun `hasText will succeed when there is a component with the exact given text`() {
     rule
         .render { DummyComponent("Hello world!") }
         .selectNode(hasText("Hello world!"))
@@ -42,11 +43,30 @@ class HasTextBehaviorTest {
   }
 
   @Test
-  fun `will throw assertion when there is no component with the given text`() {
+  fun `hasTextContaining will succeed when there is a component whose text contains the given text`() {
+    rule
+        .render { DummyComponent("Hello world!") }
+        .selectNode(hasTextContaining("wor"))
+        .assertExists()
+  }
+
+  @Test
+  fun `hasText will throw assertion when there is no component with the exact given text`() {
     assertThatThrownBy {
           rule
               .render { DummyComponent("Hello world!") }
-              .selectNode(hasText("Hello my friend!"))
+              .selectNode(hasText("Hello world!!"))
+              .assertExists()
+        }
+        .isInstanceOf(AssertionError::class.java)
+  }
+
+  @Test
+  fun `hasTextContaining will throw assertion when there is no component containing given text`() {
+    assertThatThrownBy {
+          rule
+              .render { DummyComponent("Hello world!") }
+              .selectNode(hasTextContaining("word"))
               .assertExists()
         }
         .isInstanceOf(AssertionError::class.java)
