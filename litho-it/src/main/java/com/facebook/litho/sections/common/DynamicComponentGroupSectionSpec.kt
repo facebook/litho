@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.common;
+package com.facebook.litho.sections.common
 
-import com.facebook.litho.Component;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.sections.Children;
-import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.annotations.GroupSectionSpec;
-import com.facebook.litho.sections.annotations.OnCreateChildren;
+import com.facebook.litho.Component
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.sections.Children
+import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.annotations.GroupSectionSpec
+import com.facebook.litho.sections.annotations.OnCreateChildren
 
 /** Dynamic group section spec that accepts a component to populate as the child. */
 @GroupSectionSpec
-class DynamicComponentGroupSectionSpec {
-
+internal object DynamicComponentGroupSectionSpec {
+  @JvmStatic
   @OnCreateChildren
-  static Children onCreateChildren(
-      SectionContext c, @Prop Component component, @Prop int totalItems) {
-    Children.Builder builder = Children.create();
-
-    for (int i = 0; i < totalItems; i++) {
-      builder.child(SingleComponentSection.create(c).component(component).key("key" + i).build());
+  fun onCreateChildren(
+      c: SectionContext,
+      @Prop component: Component,
+      @Prop totalItems: Int
+  ): Children {
+    val builder = Children.create()
+    for (i in 0 until totalItems) {
+      builder.child(SingleComponentSection.create(c).component(component).key("key$i").build())
     }
-
-    return builder.build();
+    return builder.build()
   }
 }
