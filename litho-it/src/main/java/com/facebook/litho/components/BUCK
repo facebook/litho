@@ -15,7 +15,6 @@ load(
 
 litho_android_test_library(
     name = "components",
-    language = "JAVA",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
