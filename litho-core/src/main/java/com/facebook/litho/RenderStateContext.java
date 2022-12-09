@@ -16,10 +16,13 @@
 
 package com.facebook.litho;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -34,6 +37,7 @@ public class RenderStateContext implements CalculationStateContext {
   private final @Nullable LithoNode mCurrentRoot;
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
   private final @Nullable PerfEvent mPerfEventLogger;
+  private @Nullable ArrayList<Pair<String, EventHandler>> mCreatedEventHandlers = null;
 
   RenderStateContext(
       final MeasuredResultCache cache,
@@ -102,6 +106,19 @@ public class RenderStateContext implements CalculationStateContext {
   @Override
   public TreeFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
+  }
+
+  @Override
+  public void recordEventHandler(String globalKey, EventHandler eventHandler) {
+    if (mCreatedEventHandlers == null) {
+      mCreatedEventHandlers = new ArrayList<>();
+    }
+    mCreatedEventHandlers.add(new Pair<>(globalKey, eventHandler));
+  }
+
+  @Override
+  public @Nullable List<Pair<String, EventHandler>> getCreatedEventHandlers() {
+    return mCreatedEventHandlers;
   }
 
   public void markLayoutUninterruptible() {

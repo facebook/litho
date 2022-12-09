@@ -59,15 +59,14 @@ class EventHandlerRebindTest {
    * THE TESTS
    *
    * There are 4 groups of assertions:
-   *
    * 1. Ensure things are set up properly
    * 2. Update the counter (@State on the Section): ensure the button doesn't re-render but the
-   * event handler does reflect the latest state.
+   *    event handler does reflect the latest state.
    * 3. Cause the button to re-render (by changing the textSize prop) and update the counter: ensure
-   * the button re-renders as expected and that the event handler reflects the latest state again
+   *    the button re-renders as expected and that the event handler reflects the latest state again
    * 4. Update the counter again: ensure the button doesn't re-render but the event handler reflects
-   * the latest state. This is the same as (2) but makes sure things still work after the button
-   * re-renders.
+   *    the latest state. This is the same as (2) but makes sure things still work after the button
+   *    re-renders.
    */
   @Test
   fun `test section event handlers update even if row doesn't re-render`() {
@@ -204,15 +203,14 @@ class EventHandlerRebindTest {
    * THE TESTS
    *
    * There are 4 groups of assertions:
-   *
    * 1. Ensure things are set up properly
    * 2. Update the counter (@State on the parent Component): ensure the button doesn't re-render but
-   * the event handler does reflect the latest state.
+   *    the event handler does reflect the latest state.
    * 3. Cause the button to re-render (by changing the textSize prop) and update the counter: ensure
-   * the button re-renders as expected and that the event handler reflects the latest state again
+   *    the button re-renders as expected and that the event handler reflects the latest state again
    * 4. Update the counter again: ensure the button doesn't re-render but the event handler reflects
-   * the latest state. This is the same as (2) but makes sure things still work after the button
-   * re-renders.
+   *    the latest state. This is the same as (2) but makes sure things still work after the button
+   *    re-renders.
    */
   @Test
   fun `test component event handlers update even if nested tree doesn't re-render`() {
@@ -320,12 +318,9 @@ class EventHandlerRebindTest {
         .describedAs("There should be one click of the button")
         .hasSize(1)
 
-    // assertThat(clickListener.events[0])
-    //     .describedAs("The latest counter is 3, so the event should have value 3")
-    //     .isEqualTo(3)
     assertThat(clickListener.events[0])
-        .describedAs("The latest counter is 3, but there's a bug so it returns 2!")
-        .isEqualTo(2)
+        .describedAs("The latest counter is 3, so the event should have value 3")
+        .isEqualTo(3)
 
     clickListener.clear()
   }

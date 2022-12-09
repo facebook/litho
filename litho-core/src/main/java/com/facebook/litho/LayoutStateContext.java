@@ -16,10 +16,12 @@
 
 package com.facebook.litho;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +41,7 @@ public class LayoutStateContext implements CalculationStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable ComponentContext mRootComponentContext;
   private final int mLayoutVersion;
+  private @Nullable ArrayList<Pair<String, EventHandler>> mCreatedEventHandlers = null;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mIsReleased = false;
@@ -159,6 +162,19 @@ public class LayoutStateContext implements CalculationStateContext {
 
   public void markLayoutResumed() {
     mThreadResumedOn.add(Thread.currentThread().getName());
+  }
+
+  @Override
+  public void recordEventHandler(String globalKey, EventHandler eventHandler) {
+    if (mCreatedEventHandlers == null) {
+      mCreatedEventHandlers = new ArrayList<>();
+    }
+    mCreatedEventHandlers.add(new Pair<>(globalKey, eventHandler));
+  }
+
+  @Override
+  public @Nullable List<Pair<String, EventHandler>> getCreatedEventHandlers() {
+    return mCreatedEventHandlers;
   }
 
   public String getLifecycleDebugString() {

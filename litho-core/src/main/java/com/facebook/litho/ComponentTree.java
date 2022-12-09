@@ -46,6 +46,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Choreographer;
 import android.view.View;
 import androidx.annotation.Keep;
@@ -426,7 +427,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final ErrorEventHandler mErrorEventHandler;
 
-  private final EventHandlersController mEventHandlersController = new EventHandlersController();
+  private final EventHandlersController2 mEventHandlersController = new EventHandlersController2();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
 
@@ -1874,10 +1875,6 @@ public class ComponentTree implements LithoLifecycleListener {
     return mTreeState;
   }
 
-  void recordEventHandler(ComponentContext scopedContext, EventHandler eventHandler) {
-    mEventHandlersController.recordEventHandler(scopedContext.getGlobalKey(), eventHandler);
-  }
-
   @GuardedBy("mEventTriggersContainer")
   private void clearUnusedTriggerHandlers() {
     mEventTriggersContainer.clear();
@@ -2930,6 +2927,8 @@ public class ComponentTree implements LithoLifecycleListener {
       final Component rootComponent) {
     List<ScopedComponentInfo> scopedSpecComponentInfos = null;
     List<MeasureListener> measureListeners = null;
+    List<Pair<String, EventHandler>> createdEventHandlers = null;
+
     int rootWidth = 0;
     int rootHeight = 0;
     boolean committedNewLayout = false;
@@ -2955,6 +2954,7 @@ public class ComponentTree implements LithoLifecycleListener {
       final TreeState localTreeState = layoutState.consumeTreeState();
       if (committedNewLayout) {
         scopedSpecComponentInfos = layoutState.consumeScopedSpecComponentInfos();
+        createdEventHandlers = layoutState.consumeCreatedEventHandlers();
         if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
@@ -3012,7 +3012,7 @@ public class ComponentTree implements LithoLifecycleListener {
         }
       }
 
-      bindEventAndTriggerHandlers(scopedSpecComponentInfos);
+      bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
 
       postBackgroundLayoutStateUpdated();
 
@@ -3132,23 +3132,26 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   private void bindEventAndTriggerHandlers(
+      final @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
       final @Nullable List<ScopedComponentInfo> scopedSpecComponentInfos) {
-
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
+      if (createdEventHandlers != null) {
+        mEventHandlersController.canonicalizeEventDispatchInfos(createdEventHandlers);
+      }
       if (scopedSpecComponentInfos != null) {
         for (ScopedComponentInfo scopedSpecComponentInfo : scopedSpecComponentInfos) {
           final SpecGeneratedComponent component =
               (SpecGeneratedComponent) scopedSpecComponentInfo.getComponent();
           final ComponentContext scopedContext = scopedSpecComponentInfo.getContext();
-          mEventHandlersController.bindEventHandlers(
+          mEventHandlersController.updateEventDispatchInfoForGlobalKey(
               scopedContext, component, scopedContext.getGlobalKey());
           component.recordEventTrigger(scopedContext, mEventTriggersContainer);
         }
       }
     }
 
-    mEventHandlersController.clearUnusedEventHandlers();
+    mEventHandlersController.clearUnusedEventDispatchInfos();
   }
 
   /**
@@ -3831,7 +3834,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @VisibleForTesting
-  EventHandlersController getEventHandlersController() {
+  EventHandlersController2 getEventHandlersController() {
     return mEventHandlersController;
   }
 

@@ -473,11 +473,11 @@ public abstract class Component
                   + "Event Handlers must be created using a ComponentContext from its Component.",
               className, c.getComponentScope().getSimpleName()));
     }
-    final EventDispatchInfo eventDispatchInfo = new EventDispatchInfo(c.getComponentScope(), c);
-    final EventHandler<E> eventHandler = new EventHandler<>(id, eventDispatchInfo, params);
-    final ComponentTree componentTree = c.getComponentTree();
-    if (componentTree != null) {
-      componentTree.recordEventHandler(c, eventHandler);
+    final EventHandler eventHandler =
+        new EventHandler<>(id, new EventDispatchInfo(c.getComponentScope(), c), params);
+    final CalculationStateContext calculationStateContext = c.getCalculationStateContext();
+    if (calculationStateContext != null) {
+      calculationStateContext.recordEventHandler(c.getGlobalKey(), eventHandler);
     }
     return eventHandler;
   }

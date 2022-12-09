@@ -109,6 +109,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       if (mLogLayoutStatePerfEvent != null) {
         mLogLayoutStatePerfEvent.markerPoint("end_collect_results");
       }
+
+      layoutState.setCreatedEventHandlers(
+          CommonUtils.mergeLists(
+              mResolveResult.createdEventHandlers, lsc.getCreatedEventHandlers()));
     } finally {
       c.setCalculationStateContext(prevContext);
     }

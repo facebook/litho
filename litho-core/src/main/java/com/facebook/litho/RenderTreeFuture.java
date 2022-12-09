@@ -18,9 +18,11 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import java.util.List;
 
 public class RenderTreeFuture extends TreeFuture<ResolveResult> {
   private final ComponentContext mComponentContext;
@@ -124,7 +126,8 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
         rsc.getCache(),
         mTreeState,
         rsc.isLayoutInterrupted(),
-        mResolveVersion);
+        mResolveVersion,
+        rsc.getCreatedEventHandlers());
   }
 
   @Override
@@ -156,6 +159,8 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
     }
 
     mRenderStateContextForResume.getCache().freezeCache();
+    final List<Pair<String, EventHandler>> createdEventHandlers =
+        mRenderStateContextForResume.getCreatedEventHandlers();
     mRenderStateContextForResume = null;
 
     return new ResolveResult(
@@ -165,7 +170,8 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
         partialResult.consumeCache(),
         partialResult.treeState,
         false,
-        mResolveVersion);
+        mResolveVersion,
+        createdEventHandlers);
   }
 
   @Override

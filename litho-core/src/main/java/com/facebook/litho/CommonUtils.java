@@ -18,7 +18,9 @@ package com.facebook.litho;
 
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CommonUtils {
 
@@ -80,5 +82,18 @@ public class CommonUtils {
     }
 
     return true;
+  }
+
+  static final @Nullable <T> List<T> mergeLists(@Nullable List<T> a, @Nullable List<T> b) {
+    if (a == null || a.isEmpty()) {
+      return b;
+    }
+    if (b == null || b.isEmpty()) {
+      return a;
+    }
+    ArrayList<T> result = new ArrayList<>(a.size() + b.size());
+    result.addAll(a);
+    result.addAll(b);
+    return result;
   }
 }

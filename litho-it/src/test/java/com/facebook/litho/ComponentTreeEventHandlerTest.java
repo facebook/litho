@@ -20,83 +20,114 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import android.util.Pair;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class ComponentTreeEventHandlerTest {
+
+  private ComponentTree mComponentTree;
   private ComponentContext mContext;
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(getApplicationContext());
+    mComponentTree = ComponentTree.create(new ComponentContext(getApplicationContext())).build();
+    mContext = mComponentTree.getContext();
   }
 
   @Test
-  public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
+  public void testAllEventHandlersForEventDispatchInfoAreUpdated() {
     Component component = mock(Component.class);
     final String componentGlobalKey = "component1";
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, component, componentGlobalKey);
 
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
-    EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
+    EventHandlersController2 eventHandlersController = mComponentTree.getEventHandlersController();
 
-    EventHandler eventHandler1 = scopedContext.newEventHandler(1);
+    EventHandler eventHandler1 =
+        Component.newEventHandler(component.getClass(), "TestComponent", scopedContext, 1, null);
 
-    componentTree.recordEventHandler(scopedContext, eventHandler1);
-    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey);
-    eventHandlersController.clearUnusedEventHandlers();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
 
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+    EventHandler eventHandler2 =
+        Component.newEventHandler(component.getClass(), "TestComponent", scopedContext, 1, null);
 
-    EventHandlersController.EventHandlersWrapper eventHandlersWrapper =
-        eventHandlersController.getEventHandlers().values().iterator().next();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
+    assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo);
 
-    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
+    final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    eventHandlers.add(new Pair<>(componentGlobalKey, eventHandler1));
+    eventHandlers.add(new Pair<>(componentGlobalKey, eventHandler2));
 
-    EventHandler eventHandler2 = scopedContext.newEventHandler(1);
+    eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers);
 
-    componentTree.recordEventHandler(scopedContext, eventHandler2);
-    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey);
-    eventHandlersController.clearUnusedEventHandlers();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
+    assertThat(eventHandler1.dispatchInfo).isSameAs(eventHandler2.dispatchInfo);
 
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+    Component newComponent = mock(Component.class);
+    ComponentContext newScopedContext =
+        ComponentContext.withComponentScope(mContext, newComponent, componentGlobalKey);
+    eventHandlersController.updateEventDispatchInfoForGlobalKey(
+        newScopedContext, newComponent, componentGlobalKey);
+    eventHandlersController.clearUnusedEventDispatchInfos();
 
-    eventHandlersWrapper = eventHandlersController.getEventHandlers().values().iterator().next();
-    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
+    assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(newScopedContext);
+    assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(newScopedContext);
+    assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(newComponent);
+    assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(newComponent);
   }
 
   @Test
   public void testClearUnusedEntries() {
-
     Component component = mock(Component.class);
+    Component component2 = mock(Component.class);
+    Component component2_2 = mock(Component.class);
     final String componentGlobalKey1 = "component1";
     final String componentGlobalKey2 = "component2";
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, component, componentGlobalKey1);
-
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
-    EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
-
-    EventHandler eventHandler1 = scopedContext.newEventHandler(1);
-
-    componentTree.recordEventHandler(scopedContext, eventHandler1);
-    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey1);
-    eventHandlersController.clearUnusedEventHandlers();
-
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
-
     ComponentContext scopedContext2 =
-        ComponentContext.withComponentScope(mContext, component, componentGlobalKey2);
+        ComponentContext.withComponentScope(mContext, component2, componentGlobalKey2);
+    ComponentContext scopedContext2_2 =
+        ComponentContext.withComponentScope(mContext, component2_2, componentGlobalKey2);
 
-    componentTree.setRoot(component);
-    componentTree.recordEventHandler(scopedContext2, eventHandler1);
-    eventHandlersController.bindEventHandlers(scopedContext2, component, componentGlobalKey2);
-    eventHandlersController.clearUnusedEventHandlers();
+    EventHandlersController2 eventHandlersController = mComponentTree.getEventHandlersController();
 
-    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+    EventHandler eventHandler1 =
+        Component.newEventHandler(component.getClass(), "TestComponent", scopedContext, 1, null);
+    EventHandler eventHandler2 =
+        Component.newEventHandler(component2.getClass(), "TestComponent2", scopedContext2, 1, null);
+
+    final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    eventHandlers.add(new Pair<>(componentGlobalKey1, eventHandler1));
+    eventHandlers.add(new Pair<>(componentGlobalKey2, eventHandler2));
+
+    eventHandlersController.canonicalizeEventDispatchInfos(eventHandlers);
+
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(2);
+    assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(scopedContext);
+    assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(scopedContext2);
+    assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(component);
+    assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(component2);
+
+    eventHandlersController.updateEventDispatchInfoForGlobalKey(
+        scopedContext2_2, component2_2, componentGlobalKey2);
+    eventHandlersController.clearUnusedEventDispatchInfos();
+
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(1);
+    assertThat(eventHandlersController.getDispatchInfos().get(componentGlobalKey2)).isNotNull();
+
+    eventHandlersController.clearUnusedEventDispatchInfos();
+    assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
+
+    assertThat(eventHandler1.dispatchInfo.componentContext).isSameAs(scopedContext);
+    assertThat(eventHandler2.dispatchInfo.componentContext).isSameAs(scopedContext2_2);
+    assertThat(eventHandler1.dispatchInfo.hasEventDispatcher).isSameAs(component);
+    assertThat(eventHandler2.dispatchInfo.hasEventDispatcher).isSameAs(component2_2);
   }
 }

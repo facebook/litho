@@ -16,7 +16,9 @@
 
 package com.facebook.litho;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
+import java.util.List;
 
 public interface CalculationStateContext {
   MeasuredResultCache getCache();
@@ -29,4 +31,9 @@ public interface CalculationStateContext {
 
   @Nullable
   TreeFuture getLayoutStateFuture();
+
+  void recordEventHandler(String globalKey, EventHandler eventHandler);
+
+  @Nullable
+  List<Pair<String, EventHandler>> getCreatedEventHandlers();
 }

@@ -16,7 +16,9 @@
 
 package com.facebook.litho;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ResolveResult implements PotentiallyPartialResult {
@@ -27,6 +29,7 @@ public class ResolveResult implements PotentiallyPartialResult {
   public final TreeState treeState;
   public final boolean isPartialResult;
   public final int version;
+  public final @Nullable List<Pair<String, EventHandler>> createdEventHandlers;
 
   public ResolveResult(
       final @Nullable LithoNode node,
@@ -35,7 +38,8 @@ public class ResolveResult implements PotentiallyPartialResult {
       final MeasuredResultCache cache,
       final TreeState treeState,
       final boolean isPartial,
-      final int version) {
+      final int version,
+      @Nullable List<Pair<String, EventHandler>> createdEventHandlers) {
     this.node = node;
     this.context = context;
     this.component = component;
@@ -43,6 +47,7 @@ public class ResolveResult implements PotentiallyPartialResult {
     this.treeState = treeState;
     this.isPartialResult = isPartial;
     this.version = version;
+    this.createdEventHandlers = createdEventHandlers;
   }
 
   @Override
