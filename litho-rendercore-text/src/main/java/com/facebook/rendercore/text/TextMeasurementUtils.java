@@ -289,47 +289,51 @@ public class TextMeasurementUtils {
       layoutBuilder.setTextStyle(textStyle.textStyle);
     }
 
-    final boolean isRTL = LayoutUtils.isLayoutDirectionRTL(context);
-
+    final boolean isLocaleDirectionRTL = LayoutUtils.isLayoutDirectionRTL(context);
     if (textStyle.textDirection == null) {
       textStyle.textDirection =
-          isRTL
+          isLocaleDirectionRTL
               ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
               : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
     }
     layoutBuilder.setTextDirection(textStyle.textDirection);
 
+    final boolean isTextDirectionRTL = textStyle.textDirection.isRtl(text, 0, text.length());
+
     final Layout.Alignment textAlignment;
-    final boolean textIsRTL;
     switch (textStyle.alignment) {
       default:
       case TEXT_START:
-        textAlignment = Layout.Alignment.ALIGN_NORMAL;
+        textAlignment =
+            (isLocaleDirectionRTL == isTextDirectionRTL)
+                ? Layout.Alignment.ALIGN_NORMAL
+                : Layout.Alignment.ALIGN_OPPOSITE;
         break;
       case TEXT_END:
-        textAlignment = Layout.Alignment.ALIGN_OPPOSITE;
-        break;
-      case LAYOUT_START:
-        textIsRTL = (textStyle.textDirection.isRtl(text, 0, text.length()));
         textAlignment =
-            (isRTL == textIsRTL) ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
-        break;
-      case LAYOUT_END:
-        textIsRTL = (textStyle.textDirection.isRtl(text, 0, text.length()));
-        textAlignment =
-            (isRTL == textIsRTL) ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
-        break;
-      case LEFT:
-        textAlignment =
-            textStyle.textDirection.isRtl(text, 0, text.length())
+            (isLocaleDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_OPPOSITE
                 : Layout.Alignment.ALIGN_NORMAL;
         break;
-      case RIGHT:
+      case LAYOUT_START:
         textAlignment =
-            textStyle.textDirection.isRtl(text, 0, text.length())
+            (isLocaleDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_NORMAL
                 : Layout.Alignment.ALIGN_OPPOSITE;
+        break;
+      case LAYOUT_END:
+        textAlignment =
+            (isLocaleDirectionRTL == isTextDirectionRTL)
+                ? Layout.Alignment.ALIGN_OPPOSITE
+                : Layout.Alignment.ALIGN_NORMAL;
+        break;
+      case LEFT:
+        textAlignment =
+            isTextDirectionRTL ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
+        break;
+      case RIGHT:
+        textAlignment =
+            isTextDirectionRTL ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
         break;
       case CENTER:
         textAlignment = Layout.Alignment.ALIGN_CENTER;
