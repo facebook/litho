@@ -25,6 +25,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -118,30 +119,25 @@ public class TreePropGenerator {
           .indent();
 
       for (int i = 0, size = onCreateTreePropsMethod.methodParams.size(); i < size; i++) {
+        MethodParamModel methodParamModel = onCreateTreePropsMethod.methodParams.get(i);
         if (i == 0) {
           block.add("($T) $L", specModel.getContextClass(), "c");
-        } else if (MethodParamModelUtils.isAnnotatedWith(
-            onCreateTreePropsMethod.methodParams.get(i), State.class)) {
-          block.add(
-              "$L.$L",
-              LOCAL_STATE_CONTAINER_NAME,
-              onCreateTreePropsMethod.methodParams.get(i).getName());
-        } else if (MethodParamModelUtils.isAnnotatedWith(
-            onCreateTreePropsMethod.methodParams.get(i), TreeProp.class)) {
+        } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, State.class)) {
+          block.add("$L.$L", LOCAL_STATE_CONTAINER_NAME, methodParamModel.getName());
+        } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, TreeProp.class)) {
           if (specModel.isStateful()) {
-            block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());
+            block.add("$L", methodParamModel.getName());
           } else {
             block.add(
                 "(($T) $T.getTreePropFromParent(parentTreeProps,"
-                    + TreePropGenerator.findTypeByTypeName(
-                        onCreateTreePropsMethod.methodParams.get(i).getTypeName())
+                    + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
                     + ".class"
                     + "))",
-                onCreateTreePropsMethod.methodParams.get(i).getTypeName(),
+                methodParamModel.getTypeName(),
                 ClassNames.COMPONENT);
           }
         } else {
-          block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());
+          block.add("$L", methodParamModel.getName());
         }
 
         if (i < size - 1) {
