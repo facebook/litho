@@ -86,7 +86,7 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
                 specModel,
                 DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel),
                 runMode))
-        .addTypeSpecDataHolder(TreePropGenerator.generate(specModel))
+        .addTypeSpecDataHolder(TreePropGenerator.generate(specModel, runMode))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
         .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
         .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel, runMode))

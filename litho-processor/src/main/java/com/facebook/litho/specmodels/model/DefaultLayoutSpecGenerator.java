@@ -65,7 +65,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(ComponentBodyGenerator.generate(layoutSpecModel, null, runMode))
-        .addTypeSpecDataHolder(TreePropGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(TreePropGenerator.generate(layoutSpecModel, runMode))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
                 layoutSpecModel,

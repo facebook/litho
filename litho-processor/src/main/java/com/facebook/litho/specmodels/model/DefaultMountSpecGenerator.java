@@ -78,7 +78,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(ComponentBodyGenerator.generate(mountSpecModel, null, runMode))
-        .addTypeSpecDataHolder(TreePropGenerator.generate(mountSpecModel))
+        .addTypeSpecDataHolder(TreePropGenerator.generate(mountSpecModel, runMode))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
                 mountSpecModel,

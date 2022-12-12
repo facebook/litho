@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
@@ -195,7 +196,8 @@ public class TreePropGeneratorTest {
 
   @Test
   public void testGenerate() {
-    TypeSpecDataHolder typeSpecDataHolder = TreePropGenerator.generate(mSpecModel);
+    TypeSpecDataHolder typeSpecDataHolder =
+        TreePropGenerator.generate(mSpecModel, RunMode.normal());
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(2);
@@ -228,7 +230,8 @@ public class TreePropGeneratorTest {
 
   @Test
   public void testGenericGenerate() {
-    TypeSpecDataHolder typeSpecDataHolder = TreePropGenerator.generate(mGenericSpecModel);
+    TypeSpecDataHolder typeSpecDataHolder =
+        TreePropGenerator.generate(mGenericSpecModel, RunMode.normal());
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(2);

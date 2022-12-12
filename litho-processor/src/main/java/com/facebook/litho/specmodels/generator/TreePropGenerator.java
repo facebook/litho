@@ -20,9 +20,11 @@ import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOC
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -31,22 +33,26 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import java.util.EnumSet;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the tree prop methods for a Component. */
 public class TreePropGenerator {
 
+  private static final ClassName LAZY_CLASS_NAME = ClassName.get("com.facebook.inject", "Lazy");
+
   private TreePropGenerator() {}
 
-  public static TypeSpecDataHolder generate(SpecModel specModel) {
+  public static TypeSpecDataHolder generate(SpecModel specModel, EnumSet<RunMode> runMode) {
     return TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(generatePopulateTreeProps(specModel))
-        .addTypeSpecDataHolder(generateGetTreePropsForChildren(specModel))
+        .addTypeSpecDataHolder(generateGetTreePropsForChildren(specModel, runMode))
         .build();
   }
 
@@ -74,7 +80,8 @@ public class TreePropGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(method.build()).build();
   }
 
-  static TypeSpecDataHolder generateGetTreePropsForChildren(SpecModel specModel) {
+  static TypeSpecDataHolder generateGetTreePropsForChildren(
+      SpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecMethodModel<DelegateMethod, Void>> onCreateTreePropsMethods =
         SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
 
@@ -136,6 +143,16 @@ public class TreePropGenerator {
                 methodParamModel.getTypeName(),
                 ClassNames.COMPONENT);
           }
+        } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class)) {
+          boolean isLazy =
+              runMode.contains(RunMode.ABI)
+                  ? !methodParamModel.getTypeSpec().toString().contains("Lazy<")
+                  : methodParamModel.getTypeSpec().isSubType(LAZY_CLASS_NAME);
+          block.add(
+              "($T) $L$L",
+              methodParamModel.getTypeName(),
+              methodParamModel.getName(),
+              isLazy ? "" : ".get()");
         } else {
           block.add("$L", methodParamModel.getName());
         }
