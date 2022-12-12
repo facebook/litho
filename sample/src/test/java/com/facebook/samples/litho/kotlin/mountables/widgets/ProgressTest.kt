@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -31,24 +31,22 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.LooperMode
 
 /** Tests for [ProgressComponent] */
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class ExperimentalProgressTest {
+class ProgressTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
   fun `ProgressComponent should render`() {
     val testLithoView =
-        lithoViewRule.render { ExperimentalProgress(style = Style.width(100.px).height(100.px)) }
+        lithoViewRule.render { Progress(style = Style.width(100.px).height(100.px)) }
 
-    // should find an ExperimentalProgress in the tree
-    assertNotNull(testLithoView.findComponent(ExperimentalProgress::class))
+    // should find an Progress in the tree
+    assertNotNull(testLithoView.findComponent(Progress::class))
 
-    // should mount an ExperimentalProgress
+    // should mount an Progress
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
 
     val content = testLithoView.lithoView.getMountItemAt(0).content as ProgressView
@@ -58,8 +56,8 @@ class ExperimentalProgressTest {
 
   @Test
   fun `same instance should be equivalent`() {
-    val component = ExperimentalProgress()
-    val component2 = ExperimentalProgress()
+    val component = Progress()
+    val component2 = Progress()
 
     assertThat(component).isEquivalentTo(component2)
     assertThat(component).isEquivalentTo(component2, true)
@@ -69,15 +67,13 @@ class ExperimentalProgressTest {
   fun `components with same prop values should be equivalent`() {
     val colorDrawable = ColorDrawable(Color.RED)
     val color = Color.BLACK
-    val firstProgressWithColorDrawable = ExperimentalProgress(indeterminateDrawable = colorDrawable)
-    val secondProgressWithColorDrawable =
-        ExperimentalProgress(indeterminateDrawable = colorDrawable)
-    val firstProgressWithColor = ExperimentalProgress(color = color)
-    val secondProgressWithColor = ExperimentalProgress(color = color)
-    val firstProgressWithBothParams =
-        ExperimentalProgress(indeterminateDrawable = colorDrawable, color = color)
+    val firstProgressWithColorDrawable = Progress(indeterminateDrawable = colorDrawable)
+    val secondProgressWithColorDrawable = Progress(indeterminateDrawable = colorDrawable)
+    val firstProgressWithColor = Progress(color = color)
+    val secondProgressWithColor = Progress(color = color)
+    val firstProgressWithBothParams = Progress(indeterminateDrawable = colorDrawable, color = color)
     val secondProgressWithBothParams =
-        ExperimentalProgress(indeterminateDrawable = colorDrawable, color = color)
+        Progress(indeterminateDrawable = colorDrawable, color = color)
 
     assertThat(firstProgressWithColorDrawable).isEquivalentTo(secondProgressWithColorDrawable)
     assertThat(firstProgressWithColorDrawable).isEquivalentTo(secondProgressWithColorDrawable, true)

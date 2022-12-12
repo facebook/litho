@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -40,32 +40,30 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
-import org.robolectric.annotation.LooperMode
 
 /** Tests for [ExperimentalImage] */
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class ExperimentalImageTest {
+class ImageTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
-  fun `ExperimentalImage should render`() {
+  fun `Image should render`() {
     lithoViewRule
         .render {
-          ExperimentalImage(
+          Image(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(100.px),
           )
         }
         .apply {
-          // should find an ExperimentalImage in the tree
-          findComponent(ExperimentalImage::class)
+          // should find an Image in the tree
+          findComponent(Image::class)
 
-          // should mount an ExperimentalImage
+          // should mount an Image
           assertThat(lithoView.mountItemCount).isEqualTo(1)
 
-          // content of ExperimentalImage should be a MatrixDrawable
+          // content of Image should be a MatrixDrawable
           val content = lithoView.getMountItemAt(0).content as MatrixDrawable<*>
           assertThat(content.bounds.width()).isEqualTo(100)
           assertThat(content.bounds.height()).isEqualTo(100)
@@ -84,7 +82,7 @@ class ExperimentalImageTest {
     val node =
         lithoViewRule
             .render {
-              ExperimentalImage(
+              Image(
                   drawable = ColorDrawable(Color.RED),
                   style =
                       Style.width(100.px)
@@ -97,8 +95,8 @@ class ExperimentalImageTest {
               )
             }
             .apply {
-              // should find an ExperimentalImage in the tree
-              findComponent(ExperimentalImage::class)
+              // should find an Image in the tree
+              findComponent(Image::class)
 
               // verify a11y properties are correctly set on the View
               assertThat(lithoView.contentDescription).isEqualTo("Accessibility Test")

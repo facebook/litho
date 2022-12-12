@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -32,19 +32,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.LooperMode
 
 /** Tests for [ExperimentalHorizontalScroll] */
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class ExperimentalHorizontalScrollTest {
+class HorizontalScrollTest {
   @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
 
   @Test
   fun `HorizontalScroll Component should render`() {
     val component =
-        ExperimentalHorizontalScroll(style = Style.width(100.px).height(500.px)) {
-          ExperimentalImage(
+        HorizontalScroll(style = Style.width(100.px).height(500.px)) {
+          Image(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(500.px),
           )
@@ -53,7 +51,7 @@ class ExperimentalHorizontalScrollTest {
     val testLithoView = lithoViewRule.render { component }
 
     assertThat(testLithoView).willRenderContent()
-    assertThat(testLithoView).containsExactlyOne(ExperimentalHorizontalScroll::class.java)
+    assertThat(testLithoView).containsExactlyOne(HorizontalScroll::class.java)
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
     val scrollView = testLithoView.lithoView.getMountItemAt(0).content as HorizontalScrollLithoView
     assertThat(scrollView.measuredWidth).isEqualTo(100)

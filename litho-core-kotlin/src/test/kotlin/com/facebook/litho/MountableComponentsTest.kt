@@ -39,7 +39,6 @@ import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.kotlin.widget.ExperimentalVerticalScroll
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.match
@@ -50,6 +49,7 @@ import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.visibility.onInvisible
 import com.facebook.litho.visibility.onVisible
+import com.facebook.litho.widget.LithoScrollView
 import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
@@ -684,18 +684,17 @@ class MountableComponentsTest {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
     val component =
-        ExperimentalVerticalScroll(
-            incrementalMountEnabled = true,
+        TestVerticalScrollComponent(
+            child =
+                TestViewMountableComponent(
+                    TextView(lithoViewRule.context.androidContext),
+                    steps = steps,
+                    style =
+                        Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
+                          steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
+                        }),
             style = Style.width(100.px).height(100.px),
-        ) {
-          TestViewMountableComponent(
-              TextView(lithoViewRule.context.androidContext),
-              steps = steps,
-              style =
-                  Style.width(100.px).height(100.px).margin(top = 50.px).onVisible {
-                    steps.add(LifecycleStep.StepInfo(LifecycleStep.ON_EVENT_VISIBLE))
-                  })
-        }
+        )
 
     // Create a FrameLayout 100x100
     val parent = FrameLayout(lithoViewRule.context.androidContext)
@@ -1122,6 +1121,49 @@ class NonLithoViewMountable(
       view
     }
   }
+}
+
+class TestVerticalScrollComponent(
+    val child: Component,
+    val style: Style? = null,
+) : MountableComponent() {
+
+  override fun MountableComponentScope.render(): MountableRenderResult {
+
+    val componentTree = useState { ComponentTree.createNestedComponentTree(context, child).build() }
+
+    return MountableRenderResult(
+        TestVerticalScrollMountable(
+            component = child,
+            componentTree = componentTree.value,
+        ),
+        style)
+  }
+}
+
+internal class TestVerticalScrollMountable(
+    val component: Component,
+    val componentTree: ComponentTree,
+) : SimpleMountable<LithoScrollView>(RenderType.VIEW) {
+
+  override fun doesMountRenderTreeHosts(): Boolean = true
+
+  override fun createContent(context: Context): LithoScrollView = LithoScrollView(context)
+
+  override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
+    return MeasureResult(100, 100)
+  }
+
+  override fun mount(c: Context, content: LithoScrollView, layoutData: Any?) {
+    content.isVerticalScrollBarEnabled = true
+    content.mount(
+        componentTree,
+        LithoScrollView.ScrollPosition(0),
+        null,
+    )
+  }
+
+  override fun unmount(c: Context, content: LithoScrollView, layoutData: Any?) = Unit
 }
 
 class TestLayoutData(val width: Int, val height: Int)

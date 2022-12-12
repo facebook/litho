@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.content.Context
 import com.facebook.litho.MeasureScope
@@ -36,7 +38,7 @@ import com.facebook.rendercore.MeasureResult
  * @param shadowDx The x offset of the shadow.
  * @param shadowDy The y offset of the shadow.
  */
-class ExperimentalCardShadow(
+class CardShadow(
     private val shadowStartColor: Int? = null,
     private val shadowEndColor: Int? = null,
     private val cornerRadius: Float? = null,

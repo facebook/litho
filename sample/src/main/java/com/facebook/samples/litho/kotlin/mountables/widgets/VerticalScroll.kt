@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,11 +16,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.content.Context
 import android.os.Build
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.widget.NestedScrollView
@@ -38,14 +39,13 @@ import com.facebook.litho.Wrapper
 import com.facebook.litho.px
 import com.facebook.litho.useState
 import com.facebook.litho.widget.LithoScrollView
-import com.facebook.litho.widget.R
 import com.facebook.litho.widget.ScrollStateListener
 import com.facebook.litho.widget.VerticalScrollEventsController
 import com.facebook.rendercore.MeasureResult
 import kotlin.math.max
 import kotlin.math.min
 
-fun ExperimentalVerticalScroll(
+fun VerticalScroll(
     scrollbarEnabled: Boolean = false,
     nestedScrollingEnabled: Boolean = false,
     verticalFadingEdgeEnabled: Boolean = false,
@@ -63,7 +63,7 @@ fun ExperimentalVerticalScroll(
     child: () -> Component,
 ): Component {
 
-  return ExperimentalVerticalScroll(
+  return VerticalScroll(
       scrollbarEnabled,
       nestedScrollingEnabled,
       verticalFadingEdgeEnabled,
@@ -82,7 +82,7 @@ fun ExperimentalVerticalScroll(
   )
 }
 
-class ExperimentalVerticalScroll(
+class VerticalScroll(
     val scrollbarEnabled: Boolean = false,
     val nestedScrollingEnabled: Boolean = false,
     val verticalFadingEdgeEnabled: Boolean = false,
@@ -154,9 +154,7 @@ internal class VerticalScrollMountable(
 
   override fun doesMountRenderTreeHosts(): Boolean = true
 
-  override fun createContent(context: Context): LithoScrollView =
-      LayoutInflater.from(context).inflate(R.layout.litho_scroll_view, null, false)
-          as LithoScrollView
+  override fun createContent(context: Context): LithoScrollView = LithoScrollView(context)
 
   override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
     val heightMode = SizeSpec.getMode(heightSpec)

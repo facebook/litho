@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
-import com.facebook.litho.testing.assertj.LithoAssertions.assertThat
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import junit.framework.Assert.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.LooperMode
 
-/** Tests for [ExperimentalTransparencyEnabledCardClip] */
-@LooperMode(LooperMode.Mode.LEGACY)
+/** Tests for [ExperimentalCardClip] */
 @RunWith(LithoTestRunner::class)
-class ExperimentalTransparencyEnabledCardClipTest {
+class CardClipTest {
 
-  @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()
+  @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   @Test
-  fun `ExperimentalTransparencyEnabledCardClip should render`() {
-    val component =
-        ExperimentalTransparencyEnabledCardClip(style = Style.width(100.px).height(100.px))
+  fun `CardClip should render`() {
+    val testLithoView =
+        lithoViewRule.render { CardClip(style = Style.width(100.px).height(100.px)) }
 
-    val testLithoView = lithoViewRule.render { component }
+    // should find an ExperimentalCardClip in the tree
+    assertNotNull(testLithoView.findComponent(CardClip::class))
 
-    assertThat(testLithoView).willRenderContent()
-    assertThat(testLithoView).containsExactlyOne(ExperimentalTransparencyEnabledCardClip::class)
+    // should mount an ExperimentalCardClip
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
   }
 }

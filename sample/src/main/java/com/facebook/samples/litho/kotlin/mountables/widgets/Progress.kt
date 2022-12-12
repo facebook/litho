@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.content.Context
 import android.graphics.Color
@@ -36,7 +38,7 @@ import com.facebook.rendercore.MeasureResult
  * @param indeterminateDrawable Drawable to be shown to show progress.
  * @param color Tint color for the drawable.
  */
-class ExperimentalProgress(
+class Progress(
     private val color: Int = Color.TRANSPARENT,
     private val indeterminateDrawable: Drawable? = null,
     private val style: Style? = null

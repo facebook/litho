@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.content.Context
 import android.view.View
@@ -44,7 +46,7 @@ import kotlin.math.max
 private const val LAST_SCROLL_POSITION_UNSET = -1
 private const val DEFAULT_OVER_SCROLL_MODE = View.OVER_SCROLL_IF_CONTENT_SCROLLS
 
-fun ExperimentalHorizontalScroll(
+fun HorizontalScroll(
     scrollbarEnabled: Boolean = true,
     eventsController: HorizontalScrollEventsController? = null,
     onScrollChangeListener: HorizontalScrollLithoView.OnScrollChangeListener? = null,
@@ -57,7 +59,7 @@ fun ExperimentalHorizontalScroll(
     child: () -> Component,
 ): Component {
 
-  return ExperimentalHorizontalScroll(
+  return HorizontalScroll(
       scrollbarEnabled = scrollbarEnabled,
       eventsController = eventsController,
       onScrollChangeListener = onScrollChangeListener,
@@ -71,7 +73,7 @@ fun ExperimentalHorizontalScroll(
   )
 }
 
-class ExperimentalHorizontalScroll(
+class HorizontalScroll(
     private val scrollbarEnabled: Boolean = true,
     private val eventsController: HorizontalScrollEventsController? = null,
     private val onScrollChangeListener: HorizontalScrollLithoView.OnScrollChangeListener? = null,

@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -42,7 +44,7 @@ import com.facebook.rendercore.MeasureResult
  * @param drawable The [Drawable] to render.
  * @param scaleType The [ScaleType] to scale or transform the [drawable].
  */
-class ExperimentalImage(
+class Image(
     val drawable: Drawable,
     val scaleType: ScaleType? = ScaleType.FIT_XY,
     val style: Style? = null,
@@ -53,8 +55,8 @@ class ExperimentalImage(
 }
 
 /**
- * The [SimpleMountable] used by the [ExperimentalImage]. It uses a [MatrixDrawable], and
- * [DrawableMatrix] to correctly render the actual [drawable] inside it.
+ * The [SimpleMountable] used by the [Image]. It uses a [MatrixDrawable], and [DrawableMatrix] to
+ * correctly render the actual [drawable] inside it.
  */
 internal class ImageMountable(
     val drawable: Drawable,

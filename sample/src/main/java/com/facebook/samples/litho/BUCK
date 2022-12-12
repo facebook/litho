@@ -51,6 +51,7 @@ load(
     "LITHO_YOGAJNI_TARGET",
     "LITHO_YOGA_TARGET",
     "fb_android_library",
+    "make_dep_path",
 )
 
 fb_android_library(
@@ -65,6 +66,9 @@ fb_android_library(
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
     pure_kotlin = False,
+    tests = [
+        make_dep_path("sample/src/test/java/com/facebook/samples/litho:litho"),
+    ],
     visibility = [
         "PUBLIC",
     ],

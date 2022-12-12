@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -33,12 +33,10 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.annotation.LooperMode
 
 /** Tests for [ExperimentalVerticalScroll] */
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
-class ExperimentalVerticalScrollTest {
+class VerticalScrollTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
@@ -46,10 +44,10 @@ class ExperimentalVerticalScrollTest {
   fun `VerticalScroll Component should render`() {
     lithoViewRule
         .render {
-          ExperimentalVerticalScroll(
+          VerticalScroll(
               style = Style.width(100.px).height(100.px),
           ) {
-            ExperimentalImage(
+            Image(
                 drawable = ColorDrawable(Color.RED),
                 style = Style.width(100.px).height(500.px),
             )
@@ -58,7 +56,7 @@ class ExperimentalVerticalScrollTest {
         .apply {
 
           // should find an VerticalScroll Component in the tree
-          findComponent(ExperimentalVerticalScroll::class)
+          findComponent(VerticalScroll::class)
 
           // should mount an VerticalScroll Component
           assertThat(lithoView.mountItemCount).isEqualTo(1)
@@ -85,8 +83,8 @@ class ExperimentalVerticalScrollTest {
   @Test
   fun `same instance should be equivalent`() {
     val component =
-        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(100.px).height(100.px)) {
+          Image(
               drawable = ColorDrawable(Color.RED),
               style = Style.width(100.px).height(500.px),
           )
@@ -100,16 +98,16 @@ class ExperimentalVerticalScrollTest {
   fun `components with same prop values should be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
-        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(100.px).height(100.px)) {
+          Image(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
         }
 
     val b =
-        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(100.px).height(100.px)) {
+          Image(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
@@ -122,16 +120,16 @@ class ExperimentalVerticalScrollTest {
   @Test
   fun `components with different prop values should not be equivalent`() {
     val a =
-        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(100.px).height(100.px)) {
+          Image(
               drawable = ColorDrawable(Color.RED), // red here
               style = Style.width(100.px).height(500.px),
           )
         }
 
     val b =
-        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px)) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(100.px).height(100.px)) {
+          Image(
               drawable = ColorDrawable(Color.BLUE), // blue here
               style = Style.width(100.px).height(500.px),
           )
@@ -146,16 +144,16 @@ class ExperimentalVerticalScrollTest {
   fun `components with different style values should not be equivalent`() {
     val color = ColorDrawable(Color.RED)
     val a =
-        ExperimentalVerticalScroll(style = Style.width(100.px).height(100.px) /* 100 here */) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(100.px).height(100.px) /* 100 here */) {
+          Image(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )
         }
 
     val b =
-        ExperimentalVerticalScroll(style = Style.width(200.px).height(200.px) /* 200 here */) {
-          ExperimentalImage(
+        VerticalScroll(style = Style.width(200.px).height(200.px) /* 200 here */) {
+          Image(
               drawable = color,
               style = Style.width(100.px).height(500.px),
           )

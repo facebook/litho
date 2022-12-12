@@ -92,6 +92,7 @@ dependencies {
     // Unit test only
     testImplementation project(':litho-testing')
     testCompileOnly deps.jsr305
+    testCompileOnly deps.mockitokotlin
     testAnnotationProcessor project(':litho-processor')
     kaptTest project(':litho-processor')
     testImplementation deps.junit

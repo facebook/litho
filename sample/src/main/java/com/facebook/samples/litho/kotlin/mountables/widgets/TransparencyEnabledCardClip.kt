@@ -1,3 +1,5 @@
+// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -14,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.kotlin.widget
+package com.facebook.samples.litho.kotlin.mountables.widgets
 
 import android.content.Context
 import android.graphics.Color
@@ -49,7 +51,7 @@ private const val DEFAULT_CLIPPING_COLOR = Color.TRANSPARENT
  * @param disableClipBottomLeft If set, opt out of clipping the bottom-left corner.
  * @param disableClipBottomRight If set, opt out of clipping the bottom-right corner.
  */
-class ExperimentalTransparencyEnabledCardClip(
+class TransparencyEnabledCardClip(
     private val cardBackgroundColor: Int = DEFAULT_BACKGROUND_COLOR,
     private val clippingColor: Int = DEFAULT_CLIPPING_COLOR,
     private val cornerRadius: Float? = null,
