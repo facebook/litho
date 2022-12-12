@@ -117,6 +117,7 @@ import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleCompon
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.controllers.ControllersExampleComponent
+import com.facebook.samples.litho.kotlin.mountables.widgets.WidgetsExampleComponent
 import com.facebook.samples.litho.kotlin.observability.UseFlowComponent
 import com.facebook.samples.litho.kotlin.observability.UseLiveDataComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
@@ -251,6 +252,9 @@ class Demos {
                             SingleDemo(
                                 name = "Simple ImageView Mountable Component With A11Y Example",
                                 component = SimpleImageViewWithAccessibilityExampleComponent()),
+                            SingleDemo(
+                                name = "Sample Mountable Components Example",
+                                component = WidgetsExampleComponent()),
                             SingleDemo(
                                 name = "BindTo - Dynamic Values API",
                                 component = MountableBindToExampleComponent()),
