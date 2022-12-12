@@ -149,9 +149,8 @@ internal class FlexboxObjectStyleItem(
  *
  * **flex-basis-percent**: see **flex-basis**. Defines the default size as a percentage of its
  * parent's size. Values should be from 0 to 100.
- *
  * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
- * properties.
+ *   properties.
  * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  *
  * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null, flex-basis-percent = null
@@ -171,9 +170,8 @@ inline fun Style.flex(
 /**
  * Defines how a child should be aligned with a Row or Column, overriding the parent's align-items
  * property for this child.
- *
  * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
- * properties.
+ *   properties.
  * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  */
 inline fun Style.alignSelf(align: YogaAlign): Style =

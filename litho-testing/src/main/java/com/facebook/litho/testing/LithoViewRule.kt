@@ -39,6 +39,7 @@ import org.robolectric.Shadows.shadowOf
 /**
  * This test utility allows clients to create a [TestLithoView] instance that allows to test
  * assertion on the view hierarchy rendered by a Litho components.
+ *
  * ```
  *  @RunWith(AndroidJUnit4::class)
  *  class LithoSampleTest {

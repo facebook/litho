@@ -34,6 +34,7 @@ private const val EXPAND_TO_REVEAL_KEY = "expandToReveal"
 
 /**
  * Component implementing the Expand to Reveal behavior
+ *
  * @param isExpanded is the component currently expanded or hidden
  * @param component that will be revealed
  * @param transitionAnimator optional param for the custom [TransitionAnimator]

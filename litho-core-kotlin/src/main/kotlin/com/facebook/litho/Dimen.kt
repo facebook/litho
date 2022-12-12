@@ -124,9 +124,9 @@ const val PAYLOAD_MASK = 0xFFFF_FFFFL
  * all px/dp/sp values are 32-bits, while doubles are 64-bit. The encoding is as follows:
  * - DP: The double is not NaN, and the double value can just be cast to a float
  * - PX: The double is a quiet NaN with PX_FLAG set in the mantissa, and the least significant
- * 32-bits (the payload) are the signed int value
+ *   32-bits (the payload) are the signed int value
  * - SP: The double is a quiet NaN with SP_FLAG set in the mantissa, and the least significant
- * 32-bits (the payload) are the signed float value
+ *   32-bits (the payload) are the signed float value
  *
  * Read more about quiet NaN's here: https://www.doc.ic.ac.uk/~eedwards/compsys/float/nan.html
  */

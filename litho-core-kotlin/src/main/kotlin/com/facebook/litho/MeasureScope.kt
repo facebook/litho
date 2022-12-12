@@ -93,9 +93,10 @@ class MeasureScope(val layoutContext: LayoutContext<*>, val previousLayoutData: 
 
 /**
  * Extracts the mode from the supplied size specification.
+ *
  * @param spec the size specification to extract the mode from.
  * @return [android.view.View.MeasureSpec.UNSPECIFIED], [android.view.View.MeasureSpec.AT_MOST] or
- * [android.view.View.MeasureSpec.EXACTLY]
+ *   [android.view.View.MeasureSpec.EXACTLY]
  */
 inline fun MeasureScope.getMode(spec: Int): Int {
   return MeasureSpecUtils.getMode(spec)
@@ -103,6 +104,7 @@ inline fun MeasureScope.getMode(spec: Int): Int {
 
 /**
  * Extracts the size from the supplied size specification.
+ *
  * @param spec the size specification to extract the size from.
  * @return the size in pixels defined in the supplied size specification.
  */

@@ -94,9 +94,9 @@ class KBatchedStateUpdatesTest {
    * In this test we:
    * 1. Run two async updates (which are being batched when batching is enabled).
    * 2. Run on sync update. This sync update will end up consuming the currently batched updates and
-   * trigger one layout calculation.
+   *    trigger one layout calculation.
    * 3. Then we start another batching with two async updates, which will trigger another layout
-   * calculation.
+   *    calculation.
    *
    * The goal of this test is that the batching mechanism still works correctly, even when
    * interrupted by another sync update.
@@ -148,10 +148,9 @@ class KBatchedStateUpdatesTest {
 
   /**
    * In this test we:
-   *
    * 1. Execute two async updates (which are being batched when batching is enabled)
    * 2. Execute one sync update. This sync update actually ends up on consuming the already enqueued
-   * updates.
+   *    updates.
    * 3. In this scenario we only have one layout calculation (besides the initial one).
    *
    * This test guarantees that we don't do any extra layout calculation due to the batching.
@@ -238,9 +237,9 @@ class KBatchedStateUpdatesTest {
    * In this test we:
    * 1. Run two async updates (which are being batched when batching is enabled).
    * 2. Run on sync update. This sync update will end up consuming the currently batched updates and
-   * trigger one layout calculation.
+   *    trigger one layout calculation.
    * 3. Then we start another batching with two async updates, which will trigger another layout
-   * calculation.
+   *    calculation.
    *
    * The goal of this test is that the batching mechanism still works correctly, even when
    * interrupted by another sync update.
@@ -291,10 +290,9 @@ class KBatchedStateUpdatesTest {
 
   /**
    * In this test we:
-   *
    * 1. Execute two async updates (which are being batched when batching is enabled)
    * 2. Execute one sync update. This sync update actually ends up on consuming the already enqueued
-   * updates.
+   *    updates.
    * 3. In this scenario we only have one layout calculation (besides the initial one).
    *
    * This test guarantees that we don't do any extra layout calculation due to the batching.

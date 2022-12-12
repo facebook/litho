@@ -90,7 +90,7 @@ class LazyCollectionController {
    *
    * @param index The index of the child to scroll to
    * @param offset Attempt to offset the child by this number of pixels from the start of the
-   * Collection.
+   *   Collection.
    */
   @UiThread
   fun scrollToIndex(index: Int, @Px offset: Int = 0) {
@@ -103,7 +103,7 @@ class LazyCollectionController {
    *
    * @param index The index of the child to scroll to
    * @param offset Attempt to offset the child by this number of pixels from the start of the
-   * Collection.
+   *   Collection.
    * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
    */
   @UiThread
@@ -121,7 +121,7 @@ class LazyCollectionController {
    *
    * @param id The id of the child to scroll to
    * @param offset Attempt to offset the child by this number of pixels from the start of the
-   * Collection.
+   *   Collection.
    */
   @UiThread
   fun scrollToId(
@@ -137,7 +137,7 @@ class LazyCollectionController {
    *
    * @param id The id of the child to scroll to
    * @param offset Attempt to offset the child by this number of pixels from the start of the
-   * Collection.
+   *   Collection.
    * @param smoothScrollAlignmentType Attempt to position the child based on this alignment type.
    */
   @UiThread

@@ -141,6 +141,7 @@ abstract class KComponent : Component() {
 
 /**
  * Sets a manual key on the given Component returned in the lambda, e.g.
+ *
  * ```
  * key("my_key") { Text(...) }
  * ```
@@ -153,6 +154,7 @@ inline fun key(key: String, componentLambda: () -> Component): Component {
 
 /**
  * Sets a handle on the given Component returned in the lambda, e.g.
+ *
  * ```
  * handle(Handle()) { Text(...) }
  * ```

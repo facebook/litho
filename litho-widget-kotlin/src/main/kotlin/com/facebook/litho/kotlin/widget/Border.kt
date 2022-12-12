@@ -29,19 +29,15 @@ import com.facebook.yoga.YogaEdge
  * Creates a border style to be applied to a component
  *
  * @param edgeAll sets the props for all edges.
- *
  * @param edgeHorizontal customises both horizontal edges.
  * @param edgeVertical customises both vertical edges.
  * @param edgeStart customises the start edge, from top to bottom.
  * @param edgeEnd customises end edge, from top to bottom.
- *
  * @param edgeTop customises the top edge of the border.
  * @param edgeBottom customises the bottom edge of the border.
  * @param edgeLeft customises the left edge of the border.
  * @param edgeRight customises for the right edge of the border.
- *
  * @param radius customises each corner radius.
- *
  * @param effect applies an effect to the border.
  */
 inline fun ResourcesScope.Border(
@@ -112,7 +108,6 @@ class BorderEdge(@ColorInt val color: Int? = null, val width: Dimen? = null) {
  * @param topLeft the radius to be applied to the top left corner
  * @param topRight the radius to be applied to the top right corner
  * @param bottomLeft the radius to be applied to the bottom left corner
- *
  * @param bottomRight the radius to be applied to the bottom right corner
  */
 class BorderRadius(

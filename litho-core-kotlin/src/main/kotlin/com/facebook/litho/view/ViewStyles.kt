@@ -528,20 +528,16 @@ internal data class ShadowStyleItem(
 /**
  * Style for attaching a standard Material Design shadow to a component. Refer to
  * https://material.io/design/environment/light-shadows.html for more information.
- *
  * - **elevation**: Sets the elevation of this component above the surface using
- * https://developer.android.com/reference/android/view/View#setElevation(float). Larger elevation
- * values result in larger shadows.
- *
+ *   https://developer.android.com/reference/android/view/View#setElevation(float). Larger elevation
+ *   values result in larger shadows.
  * - **outlineProvider**: Used to determine the shape of the shadow. If not specified,
- * https://developer.android.com/reference/android/view/ViewOutlineProvider#BOUNDS will be used to
- * target the component's bounds.
- *
+ *   https://developer.android.com/reference/android/view/ViewOutlineProvider#BOUNDS will be used to
+ *   target the component's bounds.
  * - **ambientShadowColor**: Sets the color of the ambient shadow. Ignored on < API 28 devices. See
- * https://developer.android.com/reference/android/view/View#setOutlineAmbientShadowColor(int)
- *
+ *   https://developer.android.com/reference/android/view/View#setOutlineAmbientShadowColor(int)
  * - **outlineShadowColor**: Sets the color of the spotlight shadow. Ignored on < API 28 devices.
- * See https://developer.android.com/reference/android/view/View#setOutlineSpotShadowColor(int)
+ *   See https://developer.android.com/reference/android/view/View#setOutlineSpotShadowColor(int)
  */
 inline fun Style.shadow(
     elevation: Dimen,

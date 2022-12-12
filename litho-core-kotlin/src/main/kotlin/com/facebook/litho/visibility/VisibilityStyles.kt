@@ -119,7 +119,7 @@ inline fun Style.onUnfocusedVisible(noinline onUnfocused: (UnfocusedVisibleEvent
  * point, termed a "full impression". A full impression is defined as:
  * - if the Component is smaller than the viewport, when the entire Component is visible
  * - if the Component is bigger than the viewport, when all the edges have passed through the
- * viewport once
+ *   viewport once
  */
 inline fun Style.onFullImpression(
     noinline onFullImpression: (FullImpressionVisibleEvent) -> Unit

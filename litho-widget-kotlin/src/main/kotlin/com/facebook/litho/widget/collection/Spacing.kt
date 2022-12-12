@@ -31,7 +31,7 @@ import com.facebook.litho.ResourcesScope
  *
  * Features include:
  * 1. equals() implementation (it's a data class) means it will pass prop isEquivalent checks
- * avoiding unnecessary re-renders.
+ *    avoiding unnecessary re-renders.
  * 2. Respects orientation and layout direction.
  * 3. Specify start/end/between spacing separately.
  *
@@ -43,7 +43,7 @@ import com.facebook.litho.ResourcesScope
  * ```
  *
  * @param all Spacing between all items and to the start and end item. If other values are set they
- * will override this value.
+ *   will override this value.
  * @param between Spacing between all items
  * @param start Spacing at the front of the first item
  * @param end Spacing at the end of the last item

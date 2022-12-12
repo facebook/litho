@@ -32,10 +32,8 @@ import com.facebook.litho.view.onClick
 /**
  * Text component which will display a greeting with the given name.
  *
- * @constructor Instantiates a new BootcampText component
- *
  * @param name the name to display in the greeting message
- *
+ * @constructor Instantiates a new BootcampText component
  * @property name the name that will be displayed in the greeting message
  */
 class ClickableText(private val name: String) : KComponent() {

@@ -32,7 +32,7 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
    * @param id A unique identifier for the child
    * @param isSticky Fix the child to the top of the collection if it is scrolled out of view
    * @param onNearViewport A callback that will be invoked when the child is close to or enters the
-   * visible area.
+   *   visible area.
    */
   fun child(
       component: Component?,
@@ -53,10 +53,10 @@ class LazyListScope(override val context: ComponentContext) : ResourcesScope {
    * @param id A unique identifier for the child
    * @param isSticky Fix the child to the top of the collection if it is scrolled out of view
    * @param onNearViewport A callback that will be invoked when the child is close to or enters the
-   * visible area.
+   *   visible area.
    * @param deps An array of prop and state values used by [componentFunction] to create the
-   * [Component]. A change to one of these values will cause [componentFunction] to recreate the
-   * [Component].
+   *   [Component]. A change to one of these values will cause [componentFunction] to recreate the
+   *   [Component].
    * @param componentFunction A function that returns a [Component]
    */
   fun child(

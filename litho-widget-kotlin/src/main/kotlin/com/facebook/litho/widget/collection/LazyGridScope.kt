@@ -35,7 +35,7 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
    * @param isFullSpan Span the child across all columns
    * @param spanSize Span the specified number of columns
    * @param onNearViewport A callback that will be invoked when the child is close to or enters the
-   * visible area.
+   *   visible area.
    */
   fun child(
       component: Component?,
@@ -59,10 +59,10 @@ class LazyGridScope(override val context: ComponentContext) : ResourcesScope {
    * @param isFullSpan Span the child across all columns
    * @param spanSize Span the specified number of columns
    * @param onNearViewport A callback that will be invoked when the child is close to or enters the
-   * visible area.
+   *   visible area.
    * @param deps An array of prop and state values used by [componentFunction] to create the
-   * [Component]. A change to one of these values will cause [componentFunction] to recreate the
-   * [Component].
+   *   [Component]. A change to one of these values will cause [componentFunction] to recreate the
+   *   [Component].
    * @param componentFunction A function that returns a [Component]
    */
   fun child(

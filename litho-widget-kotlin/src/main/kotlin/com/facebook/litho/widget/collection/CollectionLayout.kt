@@ -27,10 +27,11 @@ import com.facebook.litho.widget.SnapUtil
 
 /**
  * Provide layout configuration options to a [Collection]
+ *
  * @param orientation @see [RecyclerView.Orientation]
  * @param snapMode How contents snaps to position after a scroll @see [SnapUtil.SnapMode]
  * @param reverse Reverse item traversal and layout order @see
- * [LinearLayoutManager#setReverseLayout]
+ *   [LinearLayoutManager#setReverseLayout]
  */
 abstract class CollectionLayout(
     @RecyclerView.Orientation orientation: Int,
@@ -89,13 +90,14 @@ internal object CollectionLayouts {
 
   /**
    * Provide layout configuration options for a linear [Collection].
+   *
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout
    * @param crossAxisWrapMode Specify how the [Collection] will wrap its contents across the main
-   * axis.
+   *   axis.
    * @param mainAxisWrapContent If set, the size of the [Collection] along the main axis will match
-   * the size of its children
+   *   the size of its children
    */
   fun Linear(
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
@@ -124,6 +126,7 @@ internal object CollectionLayouts {
 
   /**
    * Provide layout configuration options for a grid [Collection].
+   *
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout
@@ -147,6 +150,7 @@ internal object CollectionLayouts {
 
   /**
    * Provide layout configuration options for a staggered grid [Collection].
+   *
    * @param orientation @see CollectionLayout
    * @param snapMode @see CollectionLayout
    * @param reverse @see CollectionLayout

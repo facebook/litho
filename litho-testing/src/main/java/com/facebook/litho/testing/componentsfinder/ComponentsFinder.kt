@@ -34,6 +34,7 @@ import kotlin.reflect.KClass
  * return Story()
  * }
  * ```
+ *
  * `findRootComponentInLithoView` will only be able to return `FBStory` component, from a LithoView
  * with FBStory as root. If you would like to be able to find the `Story` component, see
  * [findDirectComponentInLithoView]
@@ -184,10 +185,10 @@ private fun findAllComponentsViaBreadthFirstSearch(
  * Internal function to handle BFS through a set of components.
  *
  * @param onHandleScopedComponents lambda which handles the scoped components of the particular
- * layout. This enables the caller of the function to properly handle if any of those components
- * match. (For example, if looking for a single component, you would want to return in the lambda if
- * it matches. If looking for multiple, you would simply want to add all matching components to a
- * list.)
+ *   layout. This enables the caller of the function to properly handle if any of those components
+ *   match. (For example, if looking for a single component, you would want to return in the lambda
+ *   if it matches. If looking for multiple, you would simply want to add all matching components to
+ *   a list.)
  */
 private inline fun componentBreadthFirstSearch(
     startingLayoutResult: LithoLayoutResult?,
@@ -221,7 +222,7 @@ private inline fun componentBreadthFirstSearch(
 
 /**
  * @return list of the [ScopedComponentInfo]s, ordered from the head (closest to the root) to the
- * tail.
+ *   tail.
  */
 private fun getOrderedScopedComponentInfos(internalNode: LithoNode): List<ScopedComponentInfo> {
   return internalNode.scopedComponentInfos.reversed()

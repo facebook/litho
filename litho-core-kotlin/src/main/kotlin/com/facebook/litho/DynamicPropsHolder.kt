@@ -22,6 +22,7 @@ import com.facebook.rendercore.Mountable
 /**
  * Class responsible for setting the dynamic value on the content through the [DynamicValuesBinder]
  * that is register as [RenderUnit.DelegateBinder.extension]
+ *
  * @param dynamicValue value that will be set to the content in bind and onValueChange
  * @param defaultValue value that will be set to the content after unbind call
  * @param valueSetter function or function reference that will set the dynamic value on the content

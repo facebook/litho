@@ -27,9 +27,10 @@ internal constructor(context: ComponentContext, renderStateContext: RenderStateC
 
   /**
    * Creates a binding between the dynamic value, and the content’s property.
+   *
    * @param defaultValue value that will be set to the Content after unbind
    * @param valueSetter function or function reference that will set the dynamic value on the
-   * content
+   *   content
    */
   fun <ValueT, ContentT> DynamicValue<ValueT>.bindTo(
       defaultValue: ValueT,
@@ -40,8 +41,9 @@ internal constructor(context: ComponentContext, renderStateContext: RenderStateC
 
   /**
    * Indicates whether the component skips Incremental Mount.
+   *
    * @param shouldExclude if this is true then the Component will not be involved in Incremental
-   * Mount.
+   *   Mount.
    */
   fun excludeFromIncrementalMount(shouldExclude: Boolean) {
     shouldExcludeFromIncrementalMount = shouldExclude

@@ -24,13 +24,10 @@ import com.facebook.litho.widget.RecyclerBinder
  * A wrapper class that exposes methods specific to testing collection children.
  *
  * @property componentTreeHolder The [ComponentTreeHolder] that holds information about the child.
- *
  * @property index The item's index in the collection.
  * @property component The [Component] contained in this child.
- *
  * @property id The id of the child in the collection.
  * @property isSticky True if the component can stick to the top of the collection.
- *
  * @property isFullSpan True if the component spans the whole grid
  * @property spanSize Number of columns the component spans in a grid
  */
