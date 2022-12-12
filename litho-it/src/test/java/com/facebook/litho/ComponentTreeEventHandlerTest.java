@@ -46,7 +46,7 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, component, componentGlobalKey);
 
-    EventHandlersController2 eventHandlersController = mComponentTree.getEventHandlersController();
+    EventHandlersController eventHandlersController = mComponentTree.getEventHandlersController();
 
     EventHandler eventHandler1 =
         Component.newEventHandler(component.getClass(), "TestComponent", scopedContext, 1, null);
@@ -96,7 +96,7 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext2_2 =
         ComponentContext.withComponentScope(mContext, component2_2, componentGlobalKey2);
 
-    EventHandlersController2 eventHandlersController = mComponentTree.getEventHandlersController();
+    EventHandlersController eventHandlersController = mComponentTree.getEventHandlersController();
 
     EventHandler eventHandler1 =
         Component.newEventHandler(component.getClass(), "TestComponent", scopedContext, 1, null);

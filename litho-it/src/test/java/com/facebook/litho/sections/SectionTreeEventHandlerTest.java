@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 import android.util.Pair;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.EventHandlersController2;
+import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class SectionTreeEventHandlerTest {
 
   @Test
   public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
-    EventHandlersController2 eventHandlersController = mSectionTree.getEventHandlersController();
+    EventHandlersController eventHandlersController = mSectionTree.getEventHandlersController();
 
     SectionContext scopedContext = SectionContext.withScope(mContext, mSection);
 
@@ -108,7 +108,7 @@ public class SectionTreeEventHandlerTest {
     SectionContext scopedContext2 = SectionContext.withScope(mContext, section2);
     SectionContext scopedContext2_2 = SectionContext.withScope(mContext, section2_2);
 
-    EventHandlersController2 eventHandlersController = mSectionTree.getEventHandlersController();
+    EventHandlersController eventHandlersController = mSectionTree.getEventHandlersController();
 
     EventHandler eventHandler1 =
         Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext, 1, null);

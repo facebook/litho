@@ -27,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Note: This is a temporary class until we complete the migration of EventHandlersController.
- *
- * <p>Controller which makes sure EventHandler instances are bound to the latest instance of the
+ * Controller which makes sure EventHandler instances are bound to the latest instance of the
  * Component/Section that created them.
  *
  * <p>To see the problem this is trying to solve, consider a Section with a button Component with a
@@ -46,10 +44,29 @@ import java.util.Map;
  * their global key) is given a reference to the same EventDispatchInfo instance. Then on each tree
  * resolution, we update this EventDispatchInfo with the latest instance of the context and
  * component/section.
+ *
+ * <p>## Details of the full flow in the context of Components
+ * <li>- During a resolve or layout (or resolve+layout), we record all Spec-generated EventHandlers
+ *     in a list local to this computation.
+ * <li>- When we create EventHandlers, we create them with the latest ComponentContext and
+ *     EventDispatcher (the two together are what we call DispatchInfo) but don't update any
+ *     existing committed EventHandlers.
+ * <li>- The ResolveResult has just the EventHandlers from resolve, but the LayoutState (result of
+ *     layout computation) has both the EventHandlers created in resolve and the EventHandlers
+ *     created in layout
+ * <li>- If we commit this LayoutState, we 'canonicalize' the DispatchInfos on the EventHandlers we
+ *     created. This means we update the collected EventHandler's DispatchInfos to be the
+ *     'canonical' DispatchInfos we already have for that global key (if we don't have one, that
+ *     DispatchInfo becomes the canonical DispatchInfo for that key)
+ * <li>- Finally, we update the canonical DispatchInfos for each global key to the latest
+ *     ComponentContext/EventDispatcher from the newly committed LayoutState.
+ *
+ *     <p>By having all committed EventHandlers for a global key reference the same DispatchInfo, we
+ *     can update them all at the same time when a new LayoutState is committed.
  */
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class EventHandlersController2 {
+public class EventHandlersController {
 
   private final Map<String, DispatchInfoWrapper> mDispatchInfos = new HashMap<>();
 

@@ -32,6 +32,10 @@ public interface CalculationStateContext {
   @Nullable
   TreeFuture getLayoutStateFuture();
 
+  /**
+   * Records a Spec-generated EventHandler. This EventHandlers are an output of the calculation and
+   * will be used by {@link EventHandlersController} to rebind existing EventHandlers.
+   */
   void recordEventHandler(String globalKey, EventHandler eventHandler);
 
   @Nullable

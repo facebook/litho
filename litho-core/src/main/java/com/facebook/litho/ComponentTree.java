@@ -427,7 +427,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final ErrorEventHandler mErrorEventHandler;
 
-  private final EventHandlersController2 mEventHandlersController = new EventHandlersController2();
+  private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
 
@@ -3834,7 +3834,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @VisibleForTesting
-  EventHandlersController2 getEventHandlersController() {
+  EventHandlersController getEventHandlersController() {
     return mEventHandlersController;
   }
 
