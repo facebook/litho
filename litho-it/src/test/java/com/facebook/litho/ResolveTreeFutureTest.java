@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class RenderTreeFutureTest {
+public class ResolveTreeFutureTest {
   private ComponentContext mComponentContext;
 
   @Before
@@ -54,8 +54,8 @@ public class RenderTreeFutureTest {
             .build();
 
     // Setup the render-tree-future.
-    final RenderTreeFuture renderTreeFuture =
-        new RenderTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
+    final ResolveTreeFuture resolveTreeFuture =
+        new ResolveTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
 
     // Set the render-result holder to be set during a background / async run of the future.
     // Since it will be interrupted and resumed on the main-thread, it's expected this holder to
@@ -77,7 +77,7 @@ public class RenderTreeFutureTest {
 
         // set the render-result-holder here. It is expected to be null.
         resolveResultHolder[0] =
-            renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC).result;
+            resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC).result;
 
         // indicate thread has finished
         backgroundTaskCompleteHolder[1] = true;
@@ -102,7 +102,7 @@ public class RenderTreeFutureTest {
 
     // While still blocked, trigger a sync calculation on the main thread
     final ResolveResult renderResult =
-        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
+        resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     // Wait for the background thread to finish
     waitForMilestone(
@@ -140,11 +140,11 @@ public class RenderTreeFutureTest {
     final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
 
-    final RenderTreeFuture renderTreeFuture =
-        new RenderTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
+    final ResolveTreeFuture resolveTreeFuture =
+        new ResolveTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
 
     final ResolveResult renderResult =
-        renderTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
+        resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     assertThat(renderResult).isNotNull();
 

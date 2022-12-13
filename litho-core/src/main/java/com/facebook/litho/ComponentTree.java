@@ -2606,7 +2606,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder =
         trackAndRunTreeFuture(
-            new RenderTreeFuture(
+            new ResolveTreeFuture(
                 context,
                 root,
                 treeState,

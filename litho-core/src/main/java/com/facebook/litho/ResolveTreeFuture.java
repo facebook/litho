@@ -24,7 +24,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import java.util.List;
 
-public class RenderTreeFuture extends TreeFuture<ResolveResult> {
+public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   private final ComponentContext mComponentContext;
   private final Component mComponent;
   private final TreeState mTreeState;
@@ -39,7 +39,7 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
   // Only needed for resume logic.
   private @Nullable RenderStateContext mRenderStateContextForResume;
 
-  public RenderTreeFuture(
+  public ResolveTreeFuture(
       final ComponentContext c,
       final Component component,
       final TreeState treeState,
@@ -65,7 +65,7 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
    * @deprecated Refactor sync render logic to remove sizes from resolved tree future
    */
   @Deprecated
-  public RenderTreeFuture(
+  public ResolveTreeFuture(
       final ComponentContext c,
       final Component component,
       final TreeState treeState,
@@ -176,11 +176,11 @@ public class RenderTreeFuture extends TreeFuture<ResolveResult> {
 
   @Override
   public boolean isEquivalentTo(TreeFuture that) {
-    if (!(that instanceof RenderTreeFuture)) {
+    if (!(that instanceof ResolveTreeFuture)) {
       return false;
     }
 
-    final RenderTreeFuture thatRtf = (RenderTreeFuture) that;
+    final ResolveTreeFuture thatRtf = (ResolveTreeFuture) that;
 
     if (mComponent.getId() != thatRtf.mComponent.getId()) {
       return false;
