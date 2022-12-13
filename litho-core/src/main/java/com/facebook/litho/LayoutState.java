@@ -1248,7 +1248,7 @@ public class LayoutState
       c.setRenderStateContext(rsc);
 
       // 1. Resolve Tree
-      final @Nullable LithoNode node = Resolver.createResolvedTree(rsc, c, component);
+      final @Nullable LithoNode node = Resolver.resolveTree(rsc, c, component);
 
       c.clearCalculationStateContext();
 

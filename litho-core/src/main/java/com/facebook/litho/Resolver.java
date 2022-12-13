@@ -40,7 +40,7 @@ public class Resolver {
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
-  static @Nullable LithoNode createResolvedTree(
+  static @Nullable LithoNode resolveTree(
       final ResolveStateContext resolveStateContext,
       final ComponentContext c,
       final Component component) {

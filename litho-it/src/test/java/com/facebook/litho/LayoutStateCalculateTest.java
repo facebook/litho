@@ -2262,7 +2262,7 @@ public class LayoutStateCalculateTest {
     int widthSpec = makeSizeSpec(width, AT_MOST);
     int heightSpec = makeSizeSpec(height, AT_MOST);
 
-    final LithoNode lithoNode = Resolver.createResolvedTree(resolveStateContext, c, component);
+    final LithoNode lithoNode = Resolver.resolveTree(resolveStateContext, c, component);
 
     c.clearCalculationStateContext();
 

@@ -664,7 +664,7 @@ public abstract class Component
               new ResolveStateContext(resultCache, treeState, layoutVersion, null, null, null);
           c.setRenderStateContext(nestedRsc);
 
-          node = Resolver.createResolvedTree(nestedRsc, c, this);
+          node = Resolver.resolveTree(nestedRsc, c, this);
         }
 
         if (mainRsc != null && mainRsc.isLayoutInterrupted() && node != null) {
