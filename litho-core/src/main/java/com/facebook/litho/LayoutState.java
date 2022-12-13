@@ -160,7 +160,7 @@ public class LayoutState
   private final @Nullable List<TestOutput> mTestOutputs;
 
   @Nullable LithoNode mRoot;
-  @Nullable RenderStateContext mPartialRenderStateContext;
+  @Nullable ResolveStateContext mPartialResolveStateContext;
   @Nullable LithoNode mPartiallyResolvedRoot;
   @Nullable LithoLayoutResult mLayoutResult;
   @Nullable TransitionId mRootTransitionId;
@@ -1236,8 +1236,8 @@ public class LayoutState
 
       /* ** Resolve: Start ** */
 
-      final RenderStateContext rsc =
-          new RenderStateContext(
+      final ResolveStateContext rsc =
+          new ResolveStateContext(
               new MeasuredResultCache(),
               treeState,
               layoutVersion,
@@ -1268,7 +1268,7 @@ public class LayoutState
 
       // Check if layout was interrupted.
       if (rsc.isLayoutInterrupted() && node != null) {
-        layoutState.mPartialRenderStateContext = rsc;
+        layoutState.mPartialResolveStateContext = rsc;
         layoutState.mPartiallyResolvedRoot = Preconditions.checkNotNull(node);
         layoutState.mRootTransitionId = getTransitionIdForNode(node);
         layoutState.mIsPartialLayoutState = true;
@@ -1389,8 +1389,8 @@ public class LayoutState
 
       // If we already have a LayoutState but the InternalNode is only partially resolved,
       // resume resolving the InternalNode and measure it.
-      final RenderStateContext partialRsc =
-          Preconditions.checkNotNull(layoutState.mPartialRenderStateContext);
+      final ResolveStateContext partialRsc =
+          Preconditions.checkNotNull(layoutState.mPartialResolveStateContext);
 
       if (partialRsc.isFutureReleased()) {
         ComponentsReporter.emitMessage(
@@ -1464,7 +1464,7 @@ public class LayoutState
     // LayoutState is no longer partial. Remove all partial-related information.
     layoutState.mIsPartialLayoutState = false;
     layoutState.mPartiallyResolvedRoot = null;
-    layoutState.mPartialRenderStateContext = null;
+    layoutState.mPartialResolveStateContext = null;
 
     return layoutState;
   }

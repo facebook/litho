@@ -211,7 +211,10 @@ public class ResolveTreeFutureTest {
 
     @Override
     protected RenderResult render(
-        RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+        ResolveStateContext resolveStateContext,
+        ComponentContext c,
+        int widthSpec,
+        int heightSpec) {
       // Hang until the can-render-boolean is set to true
       waitForMilestone(mCanRenderBoolean, 0, "Timeout while BlockedRenderComponent blocked render");
 

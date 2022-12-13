@@ -24,7 +24,7 @@ public final class EmptyComponent extends Component {
 
   @Override
   protected RenderResult render(
-      RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
     return new RenderResult(null);
   }
 }

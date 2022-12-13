@@ -41,9 +41,9 @@ public class ComponentShallowCopyTest {
     mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
 
     final ComponentContext c = new ComponentContext(mContext);
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
-    final MeasuredResultCache resultCache = renderStateContext.getCache();
+    final MeasuredResultCache resultCache = resolveStateContext.getCache();
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c, 100, 100, new Size());
@@ -65,8 +65,8 @@ public class ComponentShallowCopyTest {
     final ComponentContext c2 =
         ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
 
-    final RenderStateContext rsc1 = c1.setRenderStateContextForTests();
-    final RenderStateContext rsc2 = c2.setRenderStateContextForTests();
+    final ResolveStateContext rsc1 = c1.setRenderStateContextForTests();
+    final ResolveStateContext rsc2 = c2.setRenderStateContextForTests();
 
     final MeasuredResultCache resultCache1 = rsc1.getCache();
     final MeasuredResultCache resultCache2 = rsc2.getCache();

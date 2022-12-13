@@ -37,7 +37,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   @Deprecated private final int mSyncHeightSpec;
 
   // Only needed for resume logic.
-  private @Nullable RenderStateContext mRenderStateContextForResume;
+  private @Nullable ResolveStateContext mResolveStateContextForResume;
 
   public ResolveTreeFuture(
       final ComponentContext c,
@@ -93,8 +93,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   protected ResolveResult calculate() {
     LithoStats.incrementResolveCount();
 
-    final RenderStateContext rsc =
-        new RenderStateContext(
+    final ResolveStateContext rsc =
+        new ResolveStateContext(
             new MeasuredResultCache(),
             mTreeState,
             mResolveVersion,
@@ -114,7 +114,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     }
 
     if (rsc.isLayoutInterrupted()) {
-      mRenderStateContextForResume = rsc;
+      mResolveStateContextForResume = rsc;
     } else {
       rsc.getCache().freezeCache();
     }
@@ -143,7 +143,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       throw new IllegalStateException("Cannot resume a partial result with a null node");
     }
 
-    if (mRenderStateContextForResume == null) {
+    if (mResolveStateContextForResume == null) {
       throw new IllegalStateException("RenderStateContext cannot be null during resume");
     }
 
@@ -152,16 +152,16 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
     final @Nullable LithoNode node;
     try {
-      mComponentContext.setRenderStateContext(mRenderStateContextForResume);
-      node = ResolvedTree.resumeResolvingTree(mRenderStateContextForResume, partialResult.node);
+      mComponentContext.setRenderStateContext(mResolveStateContextForResume);
+      node = ResolvedTree.resumeResolvingTree(mResolveStateContextForResume, partialResult.node);
     } finally {
       mComponentContext.setCalculationStateContext(previousStateContext);
     }
 
-    mRenderStateContextForResume.getCache().freezeCache();
+    mResolveStateContextForResume.getCache().freezeCache();
     final List<Pair<String, EventHandler>> createdEventHandlers =
-        mRenderStateContextForResume.getCreatedEventHandlers();
-    mRenderStateContextForResume = null;
+        mResolveStateContextForResume.getCreatedEventHandlers();
+    mResolveStateContextForResume = null;
 
     return new ResolveResult(
         node,

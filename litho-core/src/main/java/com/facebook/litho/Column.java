@@ -105,7 +105,8 @@ public final class Column extends Component {
   }
 
   @Override
-  protected @Nullable LithoNode resolve(RenderStateContext renderStateContext, ComponentContext c) {
+  protected @Nullable LithoNode resolve(
+      ResolveStateContext resolveStateContext, ComponentContext c) {
     LithoNode node = new LithoNode();
     node.flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
@@ -127,14 +128,14 @@ public final class Column extends Component {
 
     if (children != null) {
       for (Component child : children) {
-        if (renderStateContext.isFutureReleased()) {
+        if (resolveStateContext.isFutureReleased()) {
           return null;
         }
 
-        if (renderStateContext.isLayoutInterrupted()) {
+        if (resolveStateContext.isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
-          node.child(renderStateContext, c, child);
+          node.child(resolveStateContext, c, child);
         }
       }
     }

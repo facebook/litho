@@ -33,12 +33,12 @@ abstract class KComponent : Component() {
   }
 
   final override fun render(
-      renderStateContext: RenderStateContext,
+      resolveStateContext: ResolveStateContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult {
-    val componentScope = ComponentScope(c, renderStateContext)
+    val componentScope = ComponentScope(c, resolveStateContext)
     val componentResult = componentScope.render()
     componentScope.cleanUp()
     return RenderResult(
@@ -127,9 +127,9 @@ abstract class KComponent : Component() {
           interStagePropsContainer)
 
   final override fun resolve(
-      renderStateContext: RenderStateContext,
+      resolveStateContext: ResolveStateContext,
       c: ComponentContext
-  ): LithoNode? = super.resolve(renderStateContext, c)
+  ): LithoNode? = super.resolve(resolveStateContext, c)
 
   final override fun shouldUpdate(
       previous: Component?,

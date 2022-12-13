@@ -41,19 +41,19 @@ public class ResolvedTree {
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
   static @Nullable LithoNode createResolvedTree(
-      final RenderStateContext renderStateContext,
+      final ResolveStateContext resolveStateContext,
       final ComponentContext c,
       final Component component) {
 
-    final @Nullable LithoNode current = renderStateContext.getCurrentRoot();
-    final @Nullable PerfEvent layoutStatePerfEvent = renderStateContext.getPerfEventLogger();
+    final @Nullable LithoNode current = resolveStateContext.getCurrentRoot();
+    final @Nullable PerfEvent layoutStatePerfEvent = resolveStateContext.getPerfEventLogger();
 
     final boolean isReconcilable =
         isReconcilable(
-            c, component, Preconditions.checkNotNull(renderStateContext.getTreeState()), current);
+            c, component, Preconditions.checkNotNull(resolveStateContext.getTreeState()), current);
 
     try {
-      renderStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
+      resolveStateContext.getTreeState().applyStateUpdatesEarly(c, component, current, false);
     } catch (Exception ex) {
       ComponentUtils.handleWithHierarchy(c, component, ex);
       return null;
@@ -66,10 +66,10 @@ public class ResolvedTree {
 
     final @Nullable LithoNode node;
     if (!isReconcilable) {
-      node = resolve(renderStateContext, c, component);
+      node = resolve(resolveStateContext, c, component);
 
       // This needs to finish layout on the UI thread.
-      if (node != null && renderStateContext.isLayoutInterrupted()) {
+      if (node != null && resolveStateContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
@@ -77,7 +77,7 @@ public class ResolvedTree {
         return node;
       } else {
         // Layout is complete, disable interruption from this point on.
-        renderStateContext.markLayoutUninterruptible();
+        resolveStateContext.markLayoutUninterruptible();
       }
     } else {
       final String globalKeyToReuse = Preconditions.checkNotNull(current).getHeadComponentKey();
@@ -87,11 +87,11 @@ public class ResolvedTree {
       }
 
       final ComponentContext updatedScopedContext =
-          createScopedContext(renderStateContext, c, component, globalKeyToReuse);
+          createScopedContext(resolveStateContext, c, component, globalKeyToReuse);
 
       node =
           current.reconcile(
-              renderStateContext,
+              resolveStateContext,
               c,
               component,
               updatedScopedContext.getScopedComponentInfo(),
@@ -107,19 +107,19 @@ public class ResolvedTree {
   }
 
   public @Nullable static LithoNode resolve(
-      final RenderStateContext renderStateContext,
+      final ResolveStateContext resolveStateContext,
       final ComponentContext parent,
       final Component component) {
-    return resolveWithGlobalKey(renderStateContext, parent, component, null);
+    return resolveWithGlobalKey(resolveStateContext, parent, component, null);
   }
 
   static @Nullable LithoNode resolveWithGlobalKey(
-      final RenderStateContext renderStateContext,
+      final ResolveStateContext resolveStateContext,
       final ComponentContext parent,
       final Component component,
       final @Nullable String globalKeyToReuse) {
     return resolveImpl(
-        renderStateContext,
+        resolveStateContext,
         parent,
         unspecified(),
         unspecified(),
@@ -129,7 +129,7 @@ public class ResolvedTree {
   }
 
   static @Nullable LithoNode resolveImpl(
-      final RenderStateContext renderStateContext,
+      final ResolveStateContext resolveStateContext,
       final ComponentContext parent,
       final int parentWidthSpec,
       final int parentHeightSpec,
@@ -146,14 +146,14 @@ public class ResolvedTree {
     final ComponentContext c;
     final String globalKey;
     final boolean isNestedTree = isNestedTree(component);
-    final boolean hasCachedNode = hasCachedNode(renderStateContext, component);
+    final boolean hasCachedNode = hasCachedNode(resolveStateContext, component);
     final ScopedComponentInfo scopedComponentInfo;
 
     try {
 
       // 1. Consume the layout created in `willrender`.
       final LithoNode cached =
-          component.consumeLayoutCreatedInWillRender(renderStateContext, parent);
+          component.consumeLayoutCreatedInWillRender(resolveStateContext, parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
@@ -162,7 +162,7 @@ public class ResolvedTree {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = createScopedContext(renderStateContext, parent, component, globalKeyToReuse);
+      c = createScopedContext(resolveStateContext, parent, component, globalKeyToReuse);
       globalKey = c.getGlobalKey();
 
       scopedComponentInfo = c.getScopedComponentInfo();
@@ -175,14 +175,14 @@ public class ResolvedTree {
       if (shouldDeferNestedTreeResolution) {
         node =
             new NestedTreeHolder(
-                c.getTreeProps(), renderStateContext.getCache().getCachedNode(component));
+                c.getTreeProps(), resolveStateContext.getCache().getCachedNode(component));
       }
 
       // If the component can resolve itself resolve it.
       else if (component.canResolve()) {
 
         // Resolve the component into an InternalNode.
-        node = component.resolve(renderStateContext, c);
+        node = component.resolve(resolveStateContext, c);
       }
 
       // If the component is a MountSpec (including MountableComponents).
@@ -194,7 +194,7 @@ public class ResolvedTree {
 
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
         PrepareResult prepareResult =
-            component.prepare(renderStateContext, scopedComponentInfo.getContext());
+            component.prepare(resolveStateContext, scopedComponentInfo.getContext());
 
         if (isMountable(component) && prepareResult == null) {
           throw new RuntimeException(
@@ -212,15 +212,15 @@ public class ResolvedTree {
       else if (isLayoutSpec(component)) {
 
         final RenderResult renderResult =
-            component.render(renderStateContext, c, parentWidthSpec, parentHeightSpec);
+            component.render(resolveStateContext, c, parentWidthSpec, parentHeightSpec);
         final Component root = renderResult.component;
 
         if (root != null) {
           // TODO: (T57741374) this step is required because of a bug in redex.
           if (root == component) {
-            node = root.resolve(renderStateContext, c);
+            node = root.resolve(resolveStateContext, c);
           } else {
-            node = resolve(renderStateContext, c, root);
+            node = resolve(resolveStateContext, c, root);
           }
         } else {
           node = null;
@@ -316,25 +316,25 @@ public class ResolvedTree {
   }
 
   static LithoNode resumeResolvingTree(
-      final RenderStateContext renderStateContext, final LithoNode root) {
+      final ResolveStateContext resolveStateContext, final LithoNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
       final ComponentContext context = root.getTailComponentContext();
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(renderStateContext, context, unresolved.get(i));
+        root.child(resolveStateContext, context, unresolved.get(i));
       }
       unresolved.clear();
     }
 
     for (int i = 0, size = root.getChildCount(); i < size; i++) {
-      resumeResolvingTree(renderStateContext, root.getChildAt(i));
+      resumeResolvingTree(resolveStateContext, root.getChildAt(i));
     }
     return root;
   }
 
   static ComponentContext createScopedContext(
-      final RenderStateContext renderStateContext,
+      final ResolveStateContext resolveStateContext,
       final ComponentContext parent,
       final Component component,
       @Nullable final String globalKeyToReuse) {
@@ -350,7 +350,7 @@ public class ResolvedTree {
       if (specComponent.hasState()) {
         c.getScopedComponentInfo()
             .setStateContainer(
-                renderStateContext
+                resolveStateContext
                     .getTreeState()
                     .createOrGetStateContainerForComponent(c, specComponent, globalKey));
       }

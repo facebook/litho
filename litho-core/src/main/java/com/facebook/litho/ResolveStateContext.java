@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class RenderStateContext implements CalculationStateContext {
+public class ResolveStateContext implements CalculationStateContext {
 
   private final int mLayoutVersion;
   private final MeasuredResultCache mCache;
@@ -39,7 +39,7 @@ public class RenderStateContext implements CalculationStateContext {
   private final @Nullable PerfEvent mPerfEventLogger;
   private @Nullable ArrayList<Pair<String, EventHandler>> mCreatedEventHandlers = null;
 
-  RenderStateContext(
+  ResolveStateContext(
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,

@@ -355,8 +355,8 @@ public class LithoNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
-    final MeasuredResultCache resultCache = renderStateContext.getCache();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
+    final MeasuredResultCache resultCache = resolveStateContext.getCache();
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -380,9 +380,9 @@ public class LithoNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
-    final MeasuredResultCache resultCache = renderStateContext.getCache();
+    final MeasuredResultCache resultCache = resolveStateContext.getCache();
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);

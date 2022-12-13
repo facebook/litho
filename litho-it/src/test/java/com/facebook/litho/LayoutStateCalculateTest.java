@@ -1022,7 +1022,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1032,7 +1032,7 @@ public class LayoutStateCalculateTest {
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final LithoLayoutResult internalNode =
-        renderStateContext.getCache().getCachedResult(innerComponent);
+        resolveStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(internalNode.getWidth());
@@ -1072,7 +1072,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1082,7 +1082,7 @@ public class LayoutStateCalculateTest {
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final LithoLayoutResult internalNode =
-        renderStateContext.getCache().getCachedResult(innerComponent);
+        resolveStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(100);
@@ -1122,7 +1122,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1132,7 +1132,7 @@ public class LayoutStateCalculateTest {
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final LithoLayoutResult internalNode =
-        renderStateContext.getCache().getCachedResult(innerComponent);
+        resolveStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(99);
@@ -1170,7 +1170,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
 
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1180,7 +1180,7 @@ public class LayoutStateCalculateTest {
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final LithoLayoutResult internalNode =
-        renderStateContext.getCache().getCachedResult(innerComponent);
+        resolveStateContext.getCache().getCachedResult(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(50);
@@ -2247,7 +2247,7 @@ public class LayoutStateCalculateTest {
     final int width = 50;
     final int height = 30;
     final ComponentContext c = new ComponentContext(getApplicationContext());
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Component component =
         new InlineLayoutSpec() {
@@ -2262,17 +2262,17 @@ public class LayoutStateCalculateTest {
     int widthSpec = makeSizeSpec(width, AT_MOST);
     int heightSpec = makeSizeSpec(height, AT_MOST);
 
-    final LithoNode lithoNode = ResolvedTree.createResolvedTree(renderStateContext, c, component);
+    final LithoNode lithoNode = ResolvedTree.createResolvedTree(resolveStateContext, c, component);
 
     c.clearCalculationStateContext();
 
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(
-            renderStateContext.getCache(),
+            resolveStateContext.getCache(),
             c,
-            renderStateContext.getTreeState(),
+            resolveStateContext.getTreeState(),
             c.getComponentTree(),
-            renderStateContext.getLayoutVersion(),
+            resolveStateContext.getLayoutVersion(),
             null,
             null);
 
@@ -2524,7 +2524,7 @@ public class LayoutStateCalculateTest {
   public void testWillRenderLayoutsOnce() {
 
     final ComponentContext c = mLegacyLithoViewRule.getContext();
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
     final Component component =
@@ -2539,12 +2539,12 @@ public class LayoutStateCalculateTest {
 
     steps.clear();
 
-    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(renderStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(renderStateContext, c, component);
+    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(renderStateContext)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
 
     assertThat(LifecycleStep.getSteps(steps)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT);
   }
@@ -2552,7 +2552,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testResolveLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
@@ -2561,18 +2561,18 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(renderStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(renderStateContext, c, component);
+    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(renderStateContext)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
   }
 
   @Test
   public void testNewLayoutBuilderUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
@@ -2581,18 +2581,18 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(renderStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(renderStateContext, c, component);
+    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(renderStateContext)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
   }
 
   @Test
   public void testCreateLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
@@ -2601,12 +2601,12 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(renderStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(renderStateContext, c, component);
+    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(renderStateContext)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
   }
 
   @Test
@@ -2633,23 +2633,23 @@ public class LayoutStateCalculateTest {
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY));
     verify(componentSpy, times(1))
-        .render((RenderStateContext) any(), (ComponentContext) any(), eq(0), eq(0));
+        .render((ResolveStateContext) any(), (ComponentContext) any(), eq(0), eq(0));
   }
 
   @Test
   public void testWillRenderTwiceDoesNotReCreateLayout() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
 
     final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
 
     Component.willRender(c, component);
 
-    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(renderStateContext);
+    final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
     assertThat(Component.willRender(c, component)).isTrue();
-    assertThat(component.getLayoutCreatedInWillRender(renderStateContext)).isEqualTo(cachedLayout);
+    assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isEqualTo(cachedLayout);
   }
 
   @Test

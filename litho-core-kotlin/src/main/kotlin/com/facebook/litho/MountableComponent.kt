@@ -30,10 +30,10 @@ import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinde
 abstract class MountableComponent() : Component() {
 
   final override fun prepare(
-      renderStateContext: RenderStateContext,
+      resolveStateContext: ResolveStateContext,
       c: ComponentContext
   ): PrepareResult {
-    val mountableComponentScope = MountableComponentScope(c, renderStateContext)
+    val mountableComponentScope = MountableComponentScope(c, resolveStateContext)
     val mountableRenderResult = mountableComponentScope.render()
 
     mountableComponentScope.cleanUp()
@@ -152,9 +152,9 @@ abstract class MountableComponent() : Component() {
           interStagePropsContainer)
 
   final override fun resolve(
-      renderStateContext: RenderStateContext,
+      resolveStateContext: ResolveStateContext,
       c: ComponentContext
-  ): LithoNode? = super.resolve(renderStateContext, c)
+  ): LithoNode? = super.resolve(resolveStateContext, c)
 
   final override fun shouldUpdate(
       previous: Component?,
@@ -164,12 +164,12 @@ abstract class MountableComponent() : Component() {
   ) = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 
   final override fun render(
-      renderStateContext: RenderStateContext,
+      resolveStateContext: ResolveStateContext,
       c: ComponentContext,
       widthSpec: Int,
       heightSpec: Int
   ): RenderResult {
-    return super.render(renderStateContext, c, widthSpec, heightSpec)
+    return super.render(resolveStateContext, c, widthSpec, heightSpec)
   }
 
   final override fun isEqualivalentTreeProps(

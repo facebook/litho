@@ -98,8 +98,8 @@ public class LayoutStateFutureReleaseTest {
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
-    renderStateContext.setLayoutStateFuture(layoutStateFuture);
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
+    resolveStateContext.setLayoutStateFuture(layoutStateFuture);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -117,7 +117,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Row row = Row.create(mContext).child(child1).child(child2).build();
 
-    final LithoNode result = row.resolve(renderStateContext, c);
+    final LithoNode result = row.resolve(resolveStateContext, c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertNull(result);
@@ -129,8 +129,8 @@ public class LayoutStateFutureReleaseTest {
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
-    final RenderStateContext renderStateContext = c.setRenderStateContextForTests();
-    renderStateContext.setLayoutStateFuture(layoutStateFuture);
+    final ResolveStateContext resolveStateContext = c.setRenderStateContextForTests();
+    resolveStateContext.setLayoutStateFuture(layoutStateFuture);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -148,7 +148,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
-    final LithoNode result = column.resolve(renderStateContext, c);
+    final LithoNode result = column.resolve(resolveStateContext, c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertNull(result);
@@ -264,7 +264,10 @@ public class LayoutStateFutureReleaseTest {
 
     @Override
     protected RenderResult render(
-        RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+        ResolveStateContext resolveStateContext,
+        ComponentContext c,
+        int widthSpec,
+        int heightSpec) {
       if (waitActions != null) {
         waitActions.unblock(c.getLayoutStateFuture());
       }

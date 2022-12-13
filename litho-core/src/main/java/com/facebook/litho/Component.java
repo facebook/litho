@@ -300,7 +300,7 @@ public abstract class Component
    * metadata from that render call such as transitions that should be applied.
    */
   protected RenderResult render(
-      RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
     throw new RuntimeException(
         "Render should not be called on a component which hasn't implemented render! "
             + getSimpleName());
@@ -356,7 +356,7 @@ public abstract class Component
       final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   protected @Nullable PrepareResult prepare(
-      RenderStateContext renderStateContext, ComponentContext c) {
+      ResolveStateContext resolveStateContext, ComponentContext c) {
     // default implementation runs onPrepare(), MountableComponents will override to return a
     // Mountable
     return null;
@@ -364,8 +364,8 @@ public abstract class Component
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected @Nullable LithoNode resolve(
-      final RenderStateContext renderStateContext, final ComponentContext c) {
-    return ResolvedTree.resolve(renderStateContext, c, this);
+      final ResolveStateContext resolveStateContext, final ComponentContext c) {
+    return ResolvedTree.resolve(resolveStateContext, c, this);
   }
 
   protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
@@ -636,9 +636,9 @@ public abstract class Component
     final MeasuredResultCache resultCache =
         shouldCacheResult ? calculationStateContext.getCache() : new MeasuredResultCache();
     final TreeState treeState = calculationStateContext.getTreeState();
-    final RenderStateContext mainRsc =
-        calculationStateContext instanceof RenderStateContext
-            ? (RenderStateContext) calculationStateContext
+    final ResolveStateContext mainRsc =
+        calculationStateContext instanceof ResolveStateContext
+            ? (ResolveStateContext) calculationStateContext
             : null;
 
     LithoLayoutResult lastMeasuredLayout = resultCache.getCachedResult(this);
@@ -660,8 +660,8 @@ public abstract class Component
             && lastMeasuredLayout.mNode != null) {
           node = lastMeasuredLayout.mNode;
         } else {
-          final RenderStateContext nestedRsc =
-              new RenderStateContext(resultCache, treeState, layoutVersion, null, null, null);
+          final ResolveStateContext nestedRsc =
+              new ResolveStateContext(resultCache, treeState, layoutVersion, null, null, null);
           c.setRenderStateContext(nestedRsc);
 
           node = ResolvedTree.createResolvedTree(nestedRsc, c, this);
@@ -738,8 +738,8 @@ public abstract class Component
     }
 
     try {
-      final RenderStateContext tempRsc =
-          new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
+      final ResolveStateContext tempRsc =
+          new ResolveStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
 
       if (c.getComponentTree() == null) {
         c = ComponentContext.withComponentTree(c, ComponentTree.create(c).build());
@@ -758,25 +758,25 @@ public abstract class Component
 
   @Nullable
   final LithoNode consumeLayoutCreatedInWillRender(
-      final @Nullable RenderStateContext renderStateContext, @Nullable ComponentContext context) {
+      final @Nullable ResolveStateContext resolveStateContext, @Nullable ComponentContext context) {
     LithoNode layout;
 
-    if (context == null || renderStateContext == null) {
+    if (context == null || resolveStateContext == null) {
       return null;
     }
 
-    return renderStateContext.consumeLayoutCreatedInWillRender(mId);
+    return resolveStateContext.consumeLayoutCreatedInWillRender(mId);
   }
 
   @VisibleForTesting
   @Nullable
-  final LithoNode getLayoutCreatedInWillRender(final RenderStateContext renderStateContext) {
-    return renderStateContext.getLayoutCreatedInWillRender(mId);
+  final LithoNode getLayoutCreatedInWillRender(final ResolveStateContext resolveStateContext) {
+    return resolveStateContext.getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
-      final RenderStateContext renderStateContext, final @Nullable LithoNode newValue) {
-    renderStateContext.setLayoutCreatedInWillRender(mId, newValue);
+      final ResolveStateContext resolveStateContext, final @Nullable LithoNode newValue) {
+    resolveStateContext.setLayoutCreatedInWillRender(mId, newValue);
   }
 
   /**
@@ -919,8 +919,8 @@ public abstract class Component
     return mCommonProps;
   }
 
-  private boolean hasCachedNode(final RenderStateContext renderStateContext) {
-    final MeasuredResultCache resultCache = renderStateContext.getCache();
+  private boolean hasCachedNode(final ResolveStateContext resolveStateContext) {
+    final MeasuredResultCache resultCache = resolveStateContext.getCache();
     return resultCache.hasCachedNode(this);
   }
 
@@ -937,20 +937,21 @@ public abstract class Component
       return false;
     }
 
-    final RenderStateContext renderStateContext =
+    final ResolveStateContext resolveStateContext =
         Preconditions.checkNotNull(c.getRenderStateContext());
 
     final LithoNode componentLayoutCreatedInWillRender =
-        component.getLayoutCreatedInWillRender(renderStateContext);
+        component.getLayoutCreatedInWillRender(resolveStateContext);
     if (componentLayoutCreatedInWillRender != null) {
-      return willRender(renderStateContext, c, component, componentLayoutCreatedInWillRender);
+      return willRender(resolveStateContext, c, component, componentLayoutCreatedInWillRender);
     }
 
     final LithoNode newLayoutCreatedInWillRender =
-        ResolvedTree.resolve(renderStateContext, c, component);
-    boolean willRender = willRender(renderStateContext, c, component, newLayoutCreatedInWillRender);
+        ResolvedTree.resolve(resolveStateContext, c, component);
+    boolean willRender =
+        willRender(resolveStateContext, c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
-      component.setLayoutCreatedInWillRender(renderStateContext, newLayoutCreatedInWillRender);
+      component.setLayoutCreatedInWillRender(resolveStateContext, newLayoutCreatedInWillRender);
     }
     return willRender;
   }
@@ -981,7 +982,7 @@ public abstract class Component
     return isLayoutSpecWithSizeSpec(component);
   }
 
-  static boolean hasCachedNode(final RenderStateContext context, final Component component) {
+  static boolean hasCachedNode(final ResolveStateContext context, final Component component) {
     return component.hasCachedNode(context);
   }
 
@@ -1008,7 +1009,7 @@ public abstract class Component
   }
 
   private static boolean willRender(
-      final RenderStateContext renderStateContext,
+      final ResolveStateContext resolveStateContext,
       ComponentContext context,
       Component component,
       @Nullable LithoNode node) {
@@ -1021,7 +1022,7 @@ public abstract class Component
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
       component.consumeLayoutCreatedInWillRender(
-          renderStateContext, context); // Clear the layout created in will render
+          resolveStateContext, context); // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");

@@ -256,22 +256,22 @@ public class ComponentContext implements Cloneable {
    * calculation (i.e., including willRender, Layout API, caching, etc).
    */
   @VisibleForTesting
-  public RenderStateContext setRenderStateContextForTests() {
+  public ResolveStateContext setRenderStateContextForTests() {
     if (mComponentTree == null) {
       mComponentTree = ComponentTree.create(this).build();
     }
 
-    final RenderStateContext renderStateContext =
-        new RenderStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
-    setRenderStateContext(renderStateContext);
+    final ResolveStateContext resolveStateContext =
+        new ResolveStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
+    setRenderStateContext(resolveStateContext);
 
-    return renderStateContext;
+    return resolveStateContext;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setRenderStateContext(RenderStateContext renderStateContext) {
+  public void setRenderStateContext(ResolveStateContext resolveStateContext) {
     if (mComponentTree != null) {
-      mComponentTree.setCalculationStateContext(renderStateContext);
+      mComponentTree.setCalculationStateContext(resolveStateContext);
     }
   }
 
@@ -719,11 +719,11 @@ public class ComponentContext implements Cloneable {
   }
 
   @Nullable
-  public RenderStateContext getRenderStateContext() {
+  public ResolveStateContext getRenderStateContext() {
     if (mComponentTree != null) {
       final CalculationStateContext stateContext = mComponentTree.getCalculationStateContext();
-      if (stateContext instanceof RenderStateContext) {
-        return (RenderStateContext) stateContext;
+      if (stateContext instanceof ResolveStateContext) {
+        return (ResolveStateContext) stateContext;
       }
     }
 

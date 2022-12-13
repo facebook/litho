@@ -176,7 +176,7 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Override
   protected RenderResult render(
-      RenderStateContext renderStateContext, ComponentContext c, int widthSpec, int heightSpec) {
+      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
     if (Component.isLayoutSpecWithSizeSpec(this)) {
       return new RenderResult(onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec));
     } else {
@@ -186,7 +186,8 @@ public abstract class SpecGeneratedComponent extends Component
 
   @Nullable
   @Override
-  protected final PrepareResult prepare(RenderStateContext renderStateContext, ComponentContext c) {
+  protected final PrepareResult prepare(
+      ResolveStateContext resolveStateContext, ComponentContext c) {
     onPrepare(c);
     return null;
   }

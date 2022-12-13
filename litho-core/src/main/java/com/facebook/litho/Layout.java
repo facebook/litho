@@ -139,8 +139,8 @@ class Layout {
     final CalculationStateContext prevContext = parentContext.getCalculationStateContext();
 
     try {
-      final RenderStateContext nestedRsc =
-          new RenderStateContext(
+      final ResolveStateContext nestedRsc =
+          new ResolveStateContext(
               layoutStateContext.getCache(),
               layoutStateContext.getTreeState(),
               layoutStateContext.getLayoutVersion(),
