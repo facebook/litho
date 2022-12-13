@@ -79,7 +79,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = ResolvedTree.resolve(mResolveStateContext, mComponentContext, component);
+    LithoNode node = Resolver.resolve(mResolveStateContext, mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getHeadComponent()).isEqualTo(component);
     assertThat(node.getTailComponent()).isInstanceOf(Column.class);
@@ -137,7 +137,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = ResolvedTree.resolve(mResolveStateContext, mComponentContext, component);
+    LithoNode node = Resolver.resolve(mResolveStateContext, mComponentContext, component);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -205,7 +205,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = ResolvedTree.resolve(mResolveStateContext, mComponentContext, component);
+    LithoNode node = Resolver.resolve(mResolveStateContext, mComponentContext, component);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -267,7 +267,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = ResolvedTree.resolve(mResolveStateContext, mComponentContext, component);
+    LithoNode node = Resolver.resolve(mResolveStateContext, mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(SimpleMountSpecTester.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -317,7 +317,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    LithoNode node = ResolvedTree.resolve(mResolveStateContext, mComponentContext, component);
+    LithoNode node = Resolver.resolve(mResolveStateContext, mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -455,7 +455,7 @@ public class LayoutStateCreateTreeTest {
             .stateListAnimator(stateListAnimator)
             .build();
 
-    final LithoNode node = ResolvedTree.resolve(mResolveStateContext, mComponentContext, component);
+    final LithoNode node = Resolver.resolve(mResolveStateContext, mComponentContext, component);
     final LayoutProps output = spy(LayoutProps.class);
     component.getCommonProps().copyLayoutProps(output);
 

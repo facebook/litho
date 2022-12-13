@@ -1212,7 +1212,7 @@ public class LayoutState
         currentRoot = currentLayoutState.mRoot;
         if (!c.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation()) {
           final boolean isReconcilable =
-              ResolvedTree.isReconcilable(
+              Resolver.isReconcilable(
                   c, component, Preconditions.checkNotNull(treeState), currentRoot);
           if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
             currentLayoutState.mRoot = null;
@@ -1248,7 +1248,7 @@ public class LayoutState
       c.setRenderStateContext(rsc);
 
       // 1. Resolve Tree
-      final @Nullable LithoNode node = ResolvedTree.createResolvedTree(rsc, c, component);
+      final @Nullable LithoNode node = Resolver.createResolvedTree(rsc, c, component);
 
       c.clearCalculationStateContext();
 
@@ -1411,7 +1411,7 @@ public class LayoutState
       try {
         c.setRenderStateContext(partialRsc);
 
-        layoutState.mRoot = ResolvedTree.resumeResolvingTree(partialRsc, partialResolvedRoot);
+        layoutState.mRoot = Resolver.resumeResolvingTree(partialRsc, partialResolvedRoot);
 
         partialRsc.getCache().freezeCache();
 

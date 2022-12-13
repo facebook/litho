@@ -33,7 +33,7 @@ import com.facebook.yoga.YogaFlexDirection;
 import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ResolvedTree {
+public class Resolver {
 
   private static final String EVENT_START_CREATE_LAYOUT = "start_create_layout";
   private static final String EVENT_END_CREATE_LAYOUT = "end_create_layout";

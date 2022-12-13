@@ -21,7 +21,7 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.litho.ResolvedTree.applyTransitionsAndUseEffectEntriesToNode;
+import static com.facebook.litho.Resolver.applyTransitionsAndUseEffectEntriesToNode;
 
 import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
@@ -51,7 +51,7 @@ public class TestLayoutState {
       int heightSpec) {
 
     final ComponentContext c =
-        ResolvedTree.createScopedContext(
+        Resolver.createScopedContext(
             resolveStateContext,
             context,
             component,
@@ -325,7 +325,7 @@ public class TestLayoutState {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = ResolvedTree.createScopedContext(resolveStateContext, parent, component, null);
+      c = Resolver.createScopedContext(resolveStateContext, parent, component, null);
       globalKey = c.getGlobalKey();
 
       scopedComponentInfo = c.getScopedComponentInfo();

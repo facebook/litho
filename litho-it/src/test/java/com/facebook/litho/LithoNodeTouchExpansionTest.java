@@ -48,7 +48,7 @@ public class LithoNodeTouchExpansionTest {
 
     final ResolveStateContext resolveStateContext = mContext.setRenderStateContextForTests();
 
-    mNode = ResolvedTree.resolve(resolveStateContext, mContext, Column.create(mContext).build());
+    mNode = Resolver.resolve(resolveStateContext, mContext, Column.create(mContext).build());
     mNode.mutableNodeInfo().setTouchHandler(new EventHandler(null, 1));
 
     mLayoutStateContext =

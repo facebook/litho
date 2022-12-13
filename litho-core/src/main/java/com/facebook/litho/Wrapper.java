@@ -58,7 +58,7 @@ public final class Wrapper extends SpecGeneratedComponent {
       return null;
     }
 
-    return ResolvedTree.resolve(resolveStateContext, c, delegate);
+    return Resolver.resolve(resolveStateContext, c, delegate);
   }
 
   @Override

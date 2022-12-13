@@ -108,7 +108,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     final @Nullable LithoNode node;
     try {
       mComponentContext.setRenderStateContext(rsc);
-      node = ResolvedTree.createResolvedTree(rsc, mComponentContext, mComponent);
+      node = Resolver.createResolvedTree(rsc, mComponentContext, mComponent);
     } finally {
       mComponentContext.setCalculationStateContext(previousStateContext);
     }
@@ -153,7 +153,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     final @Nullable LithoNode node;
     try {
       mComponentContext.setRenderStateContext(mResolveStateContextForResume);
-      node = ResolvedTree.resumeResolvingTree(mResolveStateContextForResume, partialResult.node);
+      node = Resolver.resumeResolvingTree(mResolveStateContextForResume, partialResult.node);
     } finally {
       mComponentContext.setCalculationStateContext(previousStateContext);
     }

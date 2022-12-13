@@ -365,7 +365,7 @@ public abstract class Component
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected @Nullable LithoNode resolve(
       final ResolveStateContext resolveStateContext, final ComponentContext c) {
-    return ResolvedTree.resolve(resolveStateContext, c, this);
+    return Resolver.resolve(resolveStateContext, c, this);
   }
 
   protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
@@ -664,7 +664,7 @@ public abstract class Component
               new ResolveStateContext(resultCache, treeState, layoutVersion, null, null, null);
           c.setRenderStateContext(nestedRsc);
 
-          node = ResolvedTree.createResolvedTree(nestedRsc, c, this);
+          node = Resolver.createResolvedTree(nestedRsc, c, this);
         }
 
         if (mainRsc != null && mainRsc.isLayoutInterrupted() && node != null) {
@@ -947,7 +947,7 @@ public abstract class Component
     }
 
     final LithoNode newLayoutCreatedInWillRender =
-        ResolvedTree.resolve(resolveStateContext, c, component);
+        Resolver.resolve(resolveStateContext, c, component);
     boolean willRender =
         willRender(resolveStateContext, c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)

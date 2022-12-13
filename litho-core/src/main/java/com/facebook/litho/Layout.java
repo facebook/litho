@@ -152,7 +152,7 @@ class Layout {
 
       // 4.b Create a new layout.
       final @Nullable LithoNode newNode =
-          ResolvedTree.resolveImpl(
+          Resolver.resolveImpl(
               nestedRsc,
               parentContext,
               widthSpec,

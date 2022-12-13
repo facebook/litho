@@ -485,7 +485,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   public void child(
       ResolveStateContext resolveStateContext, ComponentContext c, @Nullable Component child) {
     if (child != null) {
-      child(ResolvedTree.resolve(resolveStateContext, c, child));
+      child(Resolver.resolve(resolveStateContext, c, child));
     }
   }
 
@@ -1257,7 +1257,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
         break;
       case ReconciliationMode.RECREATE:
         layout =
-            ResolvedTree.resolveWithGlobalKey(
+            Resolver.resolveWithGlobalKey(
                 resolveStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
         break;
       default:

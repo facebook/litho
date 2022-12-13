@@ -2262,7 +2262,7 @@ public class LayoutStateCalculateTest {
     int widthSpec = makeSizeSpec(width, AT_MOST);
     int heightSpec = makeSizeSpec(height, AT_MOST);
 
-    final LithoNode lithoNode = ResolvedTree.createResolvedTree(resolveStateContext, c, component);
+    final LithoNode lithoNode = Resolver.createResolvedTree(resolveStateContext, c, component);
 
     c.clearCalculationStateContext();
 
@@ -2542,7 +2542,7 @@ public class LayoutStateCalculateTest {
     final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
+    LithoNode result = Resolver.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
 
@@ -2564,7 +2564,7 @@ public class LayoutStateCalculateTest {
     final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
+    LithoNode result = Resolver.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
   }
@@ -2584,7 +2584,7 @@ public class LayoutStateCalculateTest {
     final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
+    LithoNode result = Resolver.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
   }
@@ -2604,7 +2604,7 @@ public class LayoutStateCalculateTest {
     final LithoNode cachedLayout = component.getLayoutCreatedInWillRender(resolveStateContext);
     assertThat(cachedLayout).isNotNull();
 
-    LithoNode result = ResolvedTree.resolve(resolveStateContext, c, component);
+    LithoNode result = Resolver.resolve(resolveStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(resolveStateContext)).isNull();
   }
