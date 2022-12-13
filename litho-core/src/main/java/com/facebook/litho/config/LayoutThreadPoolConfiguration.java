@@ -16,10 +16,16 @@
 
 package com.facebook.litho.config;
 
+import androidx.annotation.Nullable;
+
 public interface LayoutThreadPoolConfiguration {
   int getCorePoolSize();
 
   int getMaxPoolSize();
 
   int getThreadPriority();
+
+  /** Called and set for each new thread immediately after creation */
+  @Nullable
+  Runnable getLayoutThreadInitializer();
 }

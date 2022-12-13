@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.os.Looper;
 import android.os.Process;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,10 +29,12 @@ class LayoutThreadFactory implements ThreadFactory {
   private final AtomicInteger threadNumber = new AtomicInteger(1);
   private int mThreadPriority;
   private final int mThreadPoolId;
+  private final @Nullable Runnable mLayoutThreadInitializer;
 
-  public LayoutThreadFactory(int threadPriority) {
+  public LayoutThreadFactory(int threadPriority, @Nullable Runnable layoutThreadInitializer) {
     mThreadPriority = threadPriority;
     mThreadPoolId = threadPoolId.getAndIncrement();
+    mLayoutThreadInitializer = layoutThreadInitializer;
   }
 
   @Override
@@ -54,6 +57,9 @@ class LayoutThreadFactory implements ThreadFactory {
                * tries to set a lower priority.
                */
               Process.setThreadPriority(mThreadPriority + 1);
+            }
+            if (mLayoutThreadInitializer != null) {
+              mLayoutThreadInitializer.run();
             }
             r.run();
           }

@@ -43,7 +43,8 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
         new LayoutThreadPoolExecutor(
             configuration.getCorePoolSize(),
             configuration.getMaxPoolSize(),
-            configuration.getThreadPriority());
+            configuration.getThreadPriority(),
+            configuration.getLayoutThreadInitializer());
   }
 
   /**

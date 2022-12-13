@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 
@@ -28,15 +29,25 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
   private int mCorePoolSize;
   private int mMaxPoolSize;
   private int mThreadPriority;
+  private @Nullable Runnable mLayoutThreadInitializer;
 
   public LayoutThreadPoolConfigurationImpl(int corePoolSize, int maxPoolSize) {
     this(corePoolSize, maxPoolSize, DEFAULT_BACKGROUND_THREAD_PRIORITY);
   }
 
   public LayoutThreadPoolConfigurationImpl(int corePoolSize, int maxPoolSize, int threadPriority) {
+    this(corePoolSize, maxPoolSize, threadPriority, null);
+  }
+
+  public LayoutThreadPoolConfigurationImpl(
+      int corePoolSize,
+      int maxPoolSize,
+      int threadPriority,
+      @Nullable Runnable layoutThreadInitializer) {
     mCorePoolSize = corePoolSize;
     mMaxPoolSize = maxPoolSize;
     mThreadPriority = threadPriority;
+    mLayoutThreadInitializer = layoutThreadInitializer;
   }
 
   @Override
@@ -52,5 +63,10 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
   @Override
   public int getThreadPriority() {
     return mThreadPriority;
+  }
+
+  @Override
+  public @Nullable Runnable getLayoutThreadInitializer() {
+    return mLayoutThreadInitializer;
   }
 }

@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,13 +28,18 @@ import java.util.concurrent.TimeUnit;
 public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
 
   public LayoutThreadPoolExecutor(int corePoolSize, int maxPoolSize, int priority) {
+    this(corePoolSize, maxPoolSize, priority, null);
+  }
+
+  public LayoutThreadPoolExecutor(
+      int corePoolSize, int maxPoolSize, int priority, @Nullable Runnable layoutThreadInitializer) {
     super(
         corePoolSize,
         maxPoolSize,
         ComponentsConfiguration.layoutThreadKeepAliveTimeMs,
         TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<Runnable>(),
-        new LayoutThreadFactory(priority));
+        new LayoutThreadFactory(priority, layoutThreadInitializer));
     this.allowCoreThreadTimeOut(ComponentsConfiguration.shouldAllowCoreThreadTimeout);
   }
 }
