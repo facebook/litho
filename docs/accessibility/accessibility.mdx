@@ -13,11 +13,11 @@ This page provides details of the Litho components, methods, nodes, events, and 
 For information on how Meta is committed to creating a full UI experience for **all** people, see the [Meta Accessibility](https://en-gb.facebook.com/accessibility/) site.
 :::
 
-## Implementing Accessibility features for Mountable Components
+## Implementing Accessibility features
 
-Accessibility properties and events for mountable components can be implemented by adding them to the `Style` object that will be returned by the `MountableRenderResult` object from the `render()` method.
+Accessibility properties and events for components can be implemented by adding them to the `Style` object.
 
-Following is example of how to combine a `Style`, that was passed to a mountable component, with a newly created `Style` object that implements accessibility properties and events:
+Following is an example of how to combine a `Style`, that was passed to a mountable component, with a newly created `Style` object that implements accessibility properties and events and will be returned on the `MountableRenderResult` object from the `render()` method:
 
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/SimpleImageViewWithAccessibility.kt start=start_simple_mountable_component_with_a11y_example end=end_simple_mountable_component_with_a11y_example
 ```

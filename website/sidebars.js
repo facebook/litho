@@ -53,7 +53,6 @@ module.exports = {
           'mainconcepts/mountablecomponents/mountable-bindto',
           'mainconcepts/mountablecomponents/mountable-controllers',
           'mainconcepts/mountablecomponents/mountable-preallocation',
-          'mainconcepts/mountablecomponents/accessibility',
         ]
       },
       {
@@ -90,7 +89,7 @@ module.exports = {
       // TODO: Kotlin-ify
       'mainconcepts/coordinate-state-actions/visibility-handling',
     ],
-    'Accessibility': ['accessibility/accessibility-overview'],
+    'Accessibility': ['accessibility/accessibility'],
     // TODO: revisit wording to make it clear it's not just the 'kotlin' testing API
     'Testing': [
       'kotlin/testing-getting-started',
@@ -109,6 +108,7 @@ module.exports = {
       'codegen/overview',
       'codegen/layout-specs',
       'codegen/mount-specs',
+      'codegen/accessibility-overview',
       {
         'Sections API': [
           'sections/start',
