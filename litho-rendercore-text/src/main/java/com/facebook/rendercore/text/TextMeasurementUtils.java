@@ -290,11 +290,16 @@ public class TextMeasurementUtils {
     }
 
     final boolean isLocaleDirectionRTL = LayoutUtils.isLayoutDirectionRTL(context);
+    // We ignore the locale direction if the text direction is manually set.
+    final boolean ignoreLocaleDirection;
     if (textStyle.textDirection == null) {
+      ignoreLocaleDirection = false;
       textStyle.textDirection =
           isLocaleDirectionRTL
               ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
               : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
+    } else {
+      ignoreLocaleDirection = true;
     }
     layoutBuilder.setTextDirection(textStyle.textDirection);
 
@@ -305,13 +310,13 @@ public class TextMeasurementUtils {
       default:
       case TEXT_START:
         textAlignment =
-            (isLocaleDirectionRTL == isTextDirectionRTL)
+            ignoreLocaleDirection || (isLocaleDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_NORMAL
                 : Layout.Alignment.ALIGN_OPPOSITE;
         break;
       case TEXT_END:
         textAlignment =
-            (isLocaleDirectionRTL == isTextDirectionRTL)
+            ignoreLocaleDirection || (isLocaleDirectionRTL == isTextDirectionRTL)
                 ? Layout.Alignment.ALIGN_OPPOSITE
                 : Layout.Alignment.ALIGN_NORMAL;
         break;
