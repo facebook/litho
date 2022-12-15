@@ -23,7 +23,6 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoLayoutContextExtraData.LithoLayoutExtraData
 import com.facebook.litho.MeasureScope
@@ -98,7 +97,11 @@ class HorizontalScroll(
     }
 
     val resolvedScrollbarEnabled =
-        getIntAttrValue(context, R.styleable.HorizontalScroll_android_scrollbars, scrollbarEnabled)
+        getIntAttrValue(
+            context,
+            R.styleable.HorizontalScroll_android_scrollbars,
+            R.styleable.HorizontalScroll,
+            scrollbarEnabled)
 
     return MountableRenderResult(
         mountable =
@@ -194,21 +197,6 @@ internal class HorizontalScrollMountable(
   companion object {
     private val DEFAULT_LAYOUT_DIRECTION = YogaDirection.LTR
   }
-}
-
-private fun getIntAttrValue(c: ComponentContext, id: Int, defaultValue: Boolean): Boolean {
-  val a = c.obtainStyledAttributes(R.styleable.HorizontalScroll, 0)
-  var i = 0
-  val size = a.indexCount
-  while (i < size) {
-    val attr = a.getIndex(i)
-    if (attr == id) {
-      return a.getInt(attr, 0) != 0
-    }
-    i++
-  }
-  a.recycle()
-  return defaultValue
 }
 
 internal data class HorizontalScrollLayoutData(

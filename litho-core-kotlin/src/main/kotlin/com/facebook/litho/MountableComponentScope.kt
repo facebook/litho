@@ -49,6 +49,27 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
     shouldExcludeFromIncrementalMount = shouldExclude
   }
 
+  /** Retrieves a styled attribute value for provided {@param id}. */
+  fun getIntAttrValue(
+      c: ComponentContext,
+      id: Int,
+      attrs: IntArray,
+      defaultValue: Boolean
+  ): Boolean {
+    val a = c.obtainStyledAttributes(attrs, 0)
+    var i = 0
+    val size = a.indexCount
+    while (i < size) {
+      val attr = a.getIndex(i)
+      if (attr == id) {
+        return a.getInt(attr, 0) != 0
+      }
+      i++
+    }
+    a.recycle()
+    return defaultValue
+  }
+
   private fun <ValueT, ContentT> addBinder(binder: DynamicPropsHolder<ContentT, ValueT>) {
     binders.add(binder as DynamicPropsHolder<Any?, Mountable<*>>)
   }
