@@ -113,6 +113,7 @@ import com.facebook.samples.litho.kotlin.gettingstarted.ClickableText
 import com.facebook.samples.litho.kotlin.gettingstartedsolution.VerticalSpeller
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
+import com.facebook.samples.litho.kotlin.mountables.SimpleCanvasExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.SimpleImageViewWithAccessibilityExampleComponent
 import com.facebook.samples.litho.kotlin.mountables.bindto.MountableBindToExampleComponent
@@ -246,6 +247,9 @@ class Demos {
                     DemoGrouping(
                         name = "Mountables",
                         listOf(
+                            SingleDemo(
+                                name = "Canvas Component Example",
+                                component = SimpleCanvasExampleComponent()),
                             SingleDemo(
                                 name = "Simple ImageView Mountable Component Example",
                                 component = SimpleImageViewExampleComponent()),

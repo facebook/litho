@@ -26,6 +26,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/NoTitleBarWhiteBG"
+        android:hardwareAccelerated="true"
         tools:ignore="HardcodedDebugMode">
         <activity
             android:name=".SampleRootActivity"
