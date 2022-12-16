@@ -192,6 +192,10 @@ LITHO_RENDERCORE_VISIBILITY_TARGET = make_dep_path("litho-rendercore-visibility:
 
 LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transitions:rendercore-transitions-stub")
 
+LITHO_RENDERCORE_MOUNTABLE_CANVAS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-canvas:mountable-canvas")
+
+LITHO_RENDERCORE_MOUNTABLE_UTILS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-utils:mountable-utils")
+
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
 

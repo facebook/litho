@@ -36,6 +36,8 @@ include ':litho-rendercore-testing'
 include ':litho-rendercore-incremental-mount'
 include ':litho-rendercore-transitions'
 include ':litho-rendercore-visibility'
+include ':litho-mountable-utils'
+include ':litho-mountable-canvas'
 //include ':litho-rendercore-yoga'
 include ':litho-sections-annotations'
 include ':litho-sections-core'
@@ -59,3 +61,5 @@ project(':yoga').projectDir = file('lib/yoga')
 project(':yogajni').projectDir = file('lib/yogajni')
 project(':test-processor').projectDir = file('litho-it/processor')
 project(':test-specs').projectDir = file('litho-it/specs')
+project(':litho-mountable-canvas').projectDir = file("litho-rendercore-mountables/mountable-canvas")
+project(':litho-mountable-utils').projectDir = file("litho-rendercore-mountables/mountable-utils")

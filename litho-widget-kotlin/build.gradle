@@ -47,6 +47,8 @@ dependencies {
     api project(':litho-widget')
     api project(':litho-sections-core')
     api project(':litho-sections-widget')
+    implementation project(':litho-mountable-canvas')
+    api project(':litho-mountable-utils')
 
     compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
