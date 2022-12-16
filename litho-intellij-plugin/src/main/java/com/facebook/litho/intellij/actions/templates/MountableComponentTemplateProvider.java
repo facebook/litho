@@ -18,20 +18,20 @@ package com.facebook.litho.intellij.actions.templates;
 
 import com.facebook.litho.intellij.extensions.TemplateProvider;
 
-public class MountSpecTemplateProvider implements TemplateProvider {
+public class MountableComponentTemplateProvider implements TemplateProvider {
 
   @Override
   public String getTemplateName() {
-    return "MountSpec";
+    return "MountableComponent";
   }
 
   @Override
   public String getClassNameSuffix() {
-    return "Spec";
+    return "";
   }
 
   @Override
   public int getTemplatePriority() {
-    return Integer.MAX_VALUE;
+    return Integer.MIN_VALUE + 1;
   }
 }
