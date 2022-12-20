@@ -20,6 +20,7 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.api.LithoRule
 import com.facebook.litho.testing.api.hasText
+import com.facebook.litho.testing.api.hasTextContaining
 import com.facebook.litho.testing.api.hasType
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
@@ -75,6 +76,21 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
     rule.selectNodes(hasType<Text>()).selectAtIndex(2).assert(hasText("Item #2"))
   }
 
+  @Test
+  fun `should be able to assert correct size of component collection`() {
+    rule.render { CollectionComponent() }
+
+    rule.selectNodes(hasTextContaining("Item")).assertCount(30)
+  }
+
+  @Test
+  fun `should throw an error if count assertion fails`() {
+    rule.render { CollectionComponent() }
+
+    assertThatThrownBy { rule.selectNodes(hasTextContaining("Item")).assertCount(25) }
+        .isInstanceOf(AssertionError::class.java)
+  }
+
   private class CollectionComponent : KComponent() {
 
     override fun ComponentScope.render(): Component {
@@ -83,7 +99,7 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
 
         child(
             LazyList(style = Style.flex(grow = 1f)) {
-              children(items = (0..30), id = { it }) {
+              children(items = 0 until 30, id = { it }) {
                 Text("Item #$it", Style.testKey("item-#$it"))
               }
             })

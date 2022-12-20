@@ -105,6 +105,20 @@ class TestNodeCollectionSelection(
     }
   }
 
+  /**
+   * Asserts that this selection is defined by [count] elements.
+   *
+   * It will throw an [AssertionError] if the number of elements is lower or higher than [count]
+   */
+  fun assertCount(count: Int) {
+    val result = fetchMatchingNodes()
+
+    if (result.size != count) {
+      throw AssertionError(
+          "Failed: assertHasCount. Expected $count components, but found ${result.size}")
+    }
+  }
+
   fun selectAtIndex(index: Int): TestNodeSelection {
     return TestNodeSelection(
         testContext,
