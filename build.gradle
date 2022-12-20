@@ -59,6 +59,13 @@ subprojects {
         }
     }
 
+    tasks.withType(Test) {
+        testLogging {
+            exceptionFormat = 'full'
+            showStackTraces = true
+        }
+    }
+
     afterEvaluate {
         tasks.withType(Test) {
             it.dependsOn copyYogaLibs

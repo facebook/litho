@@ -30,4 +30,12 @@ interface TestNodeSelectionProvider {
    * For usage patterns and concepts, see [TestNodeSelection]
    */
   fun selectNode(matcher: TestNodeMatcher): TestNodeSelection
+
+  /**
+   * Finds a collection of tests nodes that match the given conditions.
+   *
+   * The result is a lazy representation of the matching nodes which can then be evaluated
+   * on-demand. For usage patterns and concepts, see [TestNodeCollectionSelection]
+   */
+  fun selectNodes(matcher: TestNodeMatcher): TestNodeCollectionSelection
 }

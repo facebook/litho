@@ -74,3 +74,48 @@ class TestNodeSelection(
     return selector.map(nodes)
   }
 }
+
+/**
+ * Lazy representation of a collection of test nodes with necessary logic to materialize on-demand.
+ *
+ * Note: materializing the [TestNodeSelection] should result a collection of test node unless the
+ * [assertDoesNotExist] method is used.
+ */
+class TestNodeCollectionSelection(
+    private val testContext: TestContext,
+    private val selector: TestNodeSelector
+) {
+
+  fun assertExists() {
+    val result = fetchMatchingNodes()
+
+    val numResults = result.size
+
+    if (numResults == 0) {
+      throw AssertionError("Failed: assertExists. There are no results for searched test nodes.")
+    }
+  }
+
+  fun assertDoesNotExist() {
+    val result = fetchMatchingNodes()
+
+    if (result.isNotEmpty()) {
+      throw AssertionError(
+          "Failed: assertDoesNotExist. Expected no match, but found ${result.size} test nodes")
+    }
+  }
+
+  fun selectAtIndex(index: Int): TestNodeSelection {
+    return TestNodeSelection(
+        testContext,
+        TestNodeSelector { nodes ->
+          val selectedNodes = selector.map(nodes)
+          listOfNotNull(selectedNodes.getOrNull(index))
+        })
+  }
+
+  private fun fetchMatchingNodes(): List<TestNode> {
+    val nodes = testContext.provideAllTestNodes()
+    return selector.map(nodes)
+  }
+}
