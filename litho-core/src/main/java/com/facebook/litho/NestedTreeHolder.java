@@ -32,6 +32,7 @@ public class NestedTreeHolder extends LithoNode {
   final @Nullable TreeProps mPendingTreeProps;
   final @Nullable LithoNode mCachedNode;
 
+  @Nullable ComponentContext mParentContext;
   @Nullable int[] mNestedBorderEdges;
   @Nullable Edges mNestedTreePadding;
   @Nullable boolean[] mNestedIsPaddingPercentage;
@@ -44,6 +45,14 @@ public class NestedTreeHolder extends LithoNode {
     super();
     mPendingTreeProps = TreeProps.copy(props);
     mCachedNode = cacheNode;
+  }
+
+  protected NestedTreeHolder(
+      @Nullable TreeProps props,
+      @Nullable LithoNode cacheNode,
+      @Nullable ComponentContext parentContext) {
+    this(props, cacheNode);
+    mParentContext = parentContext;
   }
 
   /**
@@ -85,9 +94,8 @@ public class NestedTreeHolder extends LithoNode {
   }
 
   @Override
-  NestedTreeHolderResult createLayoutResult(
-      final YogaNode node, final @Nullable LithoLayoutResult parent) {
-    return new NestedTreeHolderResult(getTailComponentContext(), this, node, parent);
+  NestedTreeHolderResult createLayoutResult(final YogaNode node) {
+    return new NestedTreeHolderResult(getTailComponentContext(), this, node);
   }
 
   public void copyInto(LithoNode target) {

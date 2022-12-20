@@ -175,7 +175,7 @@ public class Resolver {
       if (shouldDeferNestedTreeResolution) {
         node =
             new NestedTreeHolder(
-                c.getTreeProps(), resolveStateContext.getCache().getCachedNode(component));
+                c.getTreeProps(), resolveStateContext.getCache().getCachedNode(component), parent);
       }
 
       // If the component can resolve itself resolve it.

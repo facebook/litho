@@ -51,8 +51,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private final List<LithoLayoutResult> mChildren = new ArrayList<>();
   private final YogaNode mYogaNode;
 
-  private @Nullable LithoLayoutResult mParent;
-
   private boolean mCachedMeasuresValid;
   private @Nullable DiffNode mDiffNode;
 
@@ -72,14 +70,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private boolean mWasMeasured = false;
 
   public LithoLayoutResult(
-      final ComponentContext c,
-      final LithoNode node,
-      final YogaNode yogaNode,
-      final @Nullable LithoLayoutResult parent) {
+      final ComponentContext c, final LithoNode node, final YogaNode yogaNode) {
     mContext = c;
     mNode = node;
     mYogaNode = yogaNode;
-    mParent = parent;
 
     /*
 
@@ -420,20 +414,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   }
 
   public void addChild(LithoLayoutResult child) {
-    child.setParent(this);
     mChildren.add(child);
   }
 
   public int getChildCount() {
     return mChildren.size();
-  }
-
-  public @Nullable LithoLayoutResult getParent() {
-    return mParent;
-  }
-
-  public void setParent(@Nullable LithoLayoutResult parent) {
-    mParent = parent;
   }
 
   public YogaNode getYogaNode() {

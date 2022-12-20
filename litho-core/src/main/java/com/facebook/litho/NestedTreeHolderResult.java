@@ -30,11 +30,8 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
   @Nullable LithoLayoutResult mNestedTree;
 
   public NestedTreeHolderResult(
-      final ComponentContext c,
-      final NestedTreeHolder internalNode,
-      final YogaNode yogaNode,
-      final LithoLayoutResult parent) {
-    super(c, internalNode, yogaNode, parent);
+      final ComponentContext c, final NestedTreeHolder internalNode, final YogaNode yogaNode) {
+    super(c, internalNode, yogaNode);
   }
 
   @Override
@@ -48,9 +45,6 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
 
   public void setNestedResult(@Nullable LithoLayoutResult tree) {
     mNestedTree = tree;
-    if (tree != null) {
-      tree.setParent(this);
-    }
   }
 
   @Override
@@ -68,9 +62,9 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
     final int count = mNode.getComponentCount();
     final ComponentContext parentContext;
     if (count == 1) {
-      if (getParent() != null) {
-        final LithoNode internalNode = getParent().getNode();
-        parentContext = internalNode.getTailComponentContext();
+      final ComponentContext parentFromNode = getNode().mParentContext;
+      if (parentFromNode != null) {
+        parentContext = parentFromNode;
       } else {
         parentContext = context.getRenderContext().mLayoutStateContext.getRootComponentContext();
       }
