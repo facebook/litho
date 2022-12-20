@@ -16,17 +16,18 @@
 
 package com.facebook.litho.testing.api
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
+import com.facebook.litho.RunWithDebugInfoTest
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.collection.LazyList
@@ -38,8 +39,8 @@ import org.junit.runner.RunWith
  * The goal of this set of tests is just to be a health check that basic scenarios of the nodes
  * resolution and verification are working.
  */
-@RunWith(AndroidJUnit4::class)
-class NodeResolutionWithAssertionsTest {
+@RunWith(LithoTestRunner::class)
+class NodeResolutionWithAssertionsTest : RunWithDebugInfoTest() {
 
   @get:Rule val rule: LithoRule = LithoRule()
 

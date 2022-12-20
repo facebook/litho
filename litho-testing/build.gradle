@@ -44,8 +44,6 @@ android {
             //t138559546 exclude the test from gradle
             exclude '/com/facebook/litho/testing/TestCollectionDescriptionHelperTest.class'
 
-            // This test is failing only when ran with gradle
-            exclude '**/NodeResolutionWithAssertionsTest.*'
             forkEvery = 1
             maxParallelForks = Math.ceil(Runtime.runtime.availableProcessors() * 1.5)
         }
