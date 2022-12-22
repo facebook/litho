@@ -179,8 +179,6 @@ public class SectionTree {
   private final boolean mUseBackgroundChangeSets;
   private final @Nullable ChangesetDebugListener mChangesetDebug;
 
-  private final boolean mIsNonMainThreadFocusRequestThrowingEnabled;
-
   private LoadEventsHandler mLoadEventsHandler;
 
   private final CalculateChangeSetRunnable mCalculateChangeSetOnMainThreadRunnable;
@@ -346,8 +344,6 @@ public class SectionTree {
     mTarget = new BatchedTarget(builder.mTarget, mSectionsDebugLogger, mTag);
     mUseBackgroundChangeSets = mTarget.supportsBackgroundChangeSets();
     mFocusDispatcher = new FocusDispatcher(mTarget);
-    mIsNonMainThreadFocusRequestThrowingEnabled =
-        ComponentsConfiguration.isNonMainThreadFocusRequestThrowingEnabled();
 
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
@@ -1632,7 +1628,7 @@ public class SectionTree {
   }
 
   private void maybeThrowIfNotMainThread() {
-    if (mIsNonMainThreadFocusRequestThrowingEnabled && !ThreadUtils.isMainThread()) {
+    if (!ThreadUtils.isMainThread()) {
       throw new RuntimeException(
           "Focus request not called from Main Thread (Current Thread:"
               + Thread.currentThread().getName()
