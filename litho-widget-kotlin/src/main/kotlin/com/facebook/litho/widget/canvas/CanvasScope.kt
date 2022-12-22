@@ -39,7 +39,7 @@ import com.facebook.mountable.utils.types.center
 
 class CanvasScope {
   @PublishedApi
-  @SuppressLint("MissingDataClassGenerateAnnotation")
+  @Suppress("KtDataClass")
   internal data class DrawParams(
       var children: MutableList<CanvasNodeModel> = mutableListOf(),
       var size: Size = Size(0f, 0f)
