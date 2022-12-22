@@ -795,7 +795,7 @@ public class SectionTree {
       return;
     }
 
-    requestFocusWithOffset(sectionKey, id, offset);
+    requestFocusWithOffset(id, offset);
   }
 
   public interface SectionMatcher {
@@ -866,7 +866,7 @@ public class SectionTree {
     }
   }
 
-  void requestFocusWithOffset(final String sectionKey, final Object id, final int offset) {
+  void requestFocusWithOffset(final Object id, final int offset) {
     maybeThrowIfNotMainThread();
     mFocusDispatcher.requestFocusWithOffset(id, offset);
   }
@@ -881,12 +881,7 @@ public class SectionTree {
   }
 
   public void requestSmoothFocusOnRoot(Object id, int offset, SmoothScrollAlignmentType type) {
-    @Nullable final String rootSectionKey = getRootSectionKey();
-    if (rootSectionKey == null) {
-      return;
-    }
-
-    requestSmoothFocus(rootSectionKey, id, offset, type);
+    requestSmoothFocus(id, offset, type);
   }
 
   void requestSmoothFocus(
@@ -902,11 +897,7 @@ public class SectionTree {
     }
   }
 
-  void requestSmoothFocus(
-      final String globalKey,
-      final Object id,
-      final int offset,
-      final SmoothScrollAlignmentType type) {
+  void requestSmoothFocus(final Object id, final int offset, final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
 
     mFocusDispatcher.requestSmoothFocus(id, offset, type);
