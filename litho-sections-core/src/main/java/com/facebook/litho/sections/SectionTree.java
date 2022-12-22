@@ -836,32 +836,17 @@ public class SectionTree {
   void requestFocusEnd(final String sectionKey) {
     maybeThrowIfNotMainThread();
 
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            final SectionLocationInfo locationInfo = findSectionForKey(sectionKey);
-            mFocusDispatcher.requestFocus(
-                locationInfo.mStartIndex + locationInfo.mSection.getCount() - 1);
-          }
-        });
+    final SectionLocationInfo locationInfo = findSectionForKey(sectionKey);
+    mFocusDispatcher.requestFocus(locationInfo.mStartIndex + locationInfo.mSection.getCount() - 1);
   }
 
   private void requestFocus(final String sectionKey, final int index) {
     maybeThrowIfNotMainThread();
 
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
-            if (isFocusValid(sectionLocationInfo, index)) {
-              mFocusDispatcher.requestFocus(sectionLocationInfo.mStartIndex + index);
-            }
-          }
-        });
+    final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
+    if (isFocusValid(sectionLocationInfo, index)) {
+      mFocusDispatcher.requestFocus(sectionLocationInfo.mStartIndex + index);
+    }
   }
 
   void requestFocusWithOffset(Section section, int index, int offset) {
@@ -875,31 +860,15 @@ public class SectionTree {
   void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
     maybeThrowIfNotMainThread();
 
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
-            if (isFocusValid(sectionLocationInfo, index)) {
-              mFocusDispatcher.requestFocusWithOffset(
-                  sectionLocationInfo.mStartIndex + index, offset);
-            }
-          }
-        });
+    final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
+    if (isFocusValid(sectionLocationInfo, index)) {
+      mFocusDispatcher.requestFocusWithOffset(sectionLocationInfo.mStartIndex + index, offset);
+    }
   }
 
   void requestFocusWithOffset(final String sectionKey, final Object id, final int offset) {
     maybeThrowIfNotMainThread();
-
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            mFocusDispatcher.requestFocusWithOffset(id, offset);
-          }
-        });
+    mFocusDispatcher.requestFocusWithOffset(id, offset);
   }
 
   public void requestSmoothFocusOnRoot(int index, int offset, SmoothScrollAlignmentType type) {
@@ -927,18 +896,10 @@ public class SectionTree {
       final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
 
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
-            if (isFocusValid(sectionLocationInfo, index)) {
-              mFocusDispatcher.requestSmoothFocus(
-                  sectionLocationInfo.mStartIndex + index, offset, type);
-            }
-          }
-        });
+    final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
+    if (isFocusValid(sectionLocationInfo, index)) {
+      mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index, offset, type);
+    }
   }
 
   void requestSmoothFocus(
@@ -948,14 +909,7 @@ public class SectionTree {
       final SmoothScrollAlignmentType type) {
     maybeThrowIfNotMainThread();
 
-    focusRequestOnUiThread(
-        mMainThreadHandler,
-        new ThreadTracingRunnable() {
-          @Override
-          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-            mFocusDispatcher.requestSmoothFocus(id, offset, type);
-          }
-        });
+    mFocusDispatcher.requestSmoothFocus(id, offset, type);
   }
 
   public boolean isSectionIndexValid(String globalKey, int index) {
@@ -982,18 +936,6 @@ public class SectionTree {
       return false;
     }
     return true;
-  }
-
-  private static void focusRequestOnUiThread(RunnableHandler mainThreadHandler, Runnable runnable) {
-    if (isMainThread()) {
-      runnable.run();
-    } else {
-      String tag = EMPTY_STRING;
-      if (mainThreadHandler.isTracing()) {
-        tag = "SectionTree.focusRequestOnUiThread";
-      }
-      mainThreadHandler.post(runnable, tag);
-    }
   }
 
   private static Range acquireRange() {
