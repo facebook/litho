@@ -57,7 +57,9 @@ data class CanvasModel(
    * @param canvas a canvas which should be used for executing the drawing commands
    */
   fun draw(canvas: Canvas) {
-    children.forEach { child -> child.draw(canvas, canvasState) }
+    for (i in children.indices) {
+      children[i].draw(canvas, canvasState)
+    }
   }
 
   /**
@@ -74,6 +76,8 @@ data class CanvasModel(
   fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(children = children)
   }
+
+  override fun toString(): String = ""
 }
 
 /**
@@ -104,13 +108,21 @@ data class CanvasGroup(
       canvas.withMatrix(matrix) {
         if (clip != null) {
           val clipPath = state.getOrCreatePath(clip)
-          canvas.withClip(clipPath) { children.forEach { child -> child.draw(canvas, state) } }
+          canvas.withClip(clipPath) {
+            for (i in children.indices) {
+              children[i].draw(canvas, state)
+            }
+          }
         } else if (clipToBounds) {
           canvas.withClip(0f, 0f, size.width, size.height) {
-            children.forEach { child -> child.draw(canvas, state) }
+            for (i in children.indices) {
+              children[i].draw(canvas, state)
+            }
           }
         } else {
-          children.forEach { child -> child.draw(canvas, state) }
+          for (i in children.indices) {
+            children[i].draw(canvas, state)
+          }
         }
       }
     }
@@ -119,6 +131,8 @@ data class CanvasGroup(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(children = children)
   }
+
+  override fun toString(): String = ""
 }
 
 /**
@@ -161,9 +175,15 @@ data class CanvasLayer(
         canvas.withLayer(0f, 0f, size.width, size.height, paint) {
           if (clip != null) {
             val clipPath = state.getOrCreatePath(clip)
-            canvas.withClip(clipPath) { children.forEach { child -> child.draw(canvas, state) } }
+            canvas.withClip(clipPath) {
+              for (i in children.indices) {
+                children[i].draw(canvas, state)
+              }
+            }
           } else {
-            children.forEach { child -> child.draw(canvas, state) }
+            for (i in children.indices) {
+              children[i].draw(canvas, state)
+            }
           }
         }
       }
@@ -173,6 +193,8 @@ data class CanvasLayer(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(blendingMode = blendingMode, children = children)
   }
+
+  override fun toString(): String = ""
 
   companion object {
     const val DEFAULT_ALPHA = 1.0f
@@ -215,6 +237,8 @@ data class CanvasFill(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(shadow = shadow, blendingMode = blendingMode)
   }
+
+  override fun toString(): String = ""
 }
 
 /**
@@ -279,6 +303,8 @@ data class CanvasStroke(
     return checkIfSoftwareLayerNeeded(shadow = shadow, blendingMode = blendingMode)
   }
 
+  override fun toString(): String = ""
+
   // equals and hashCode has to be explicitly declared because of dashLength property which is of
   // FloatArray type and we want to compare it by its contents
   override fun equals(other: Any?): Boolean {
@@ -319,9 +345,9 @@ data class CanvasStroke(
       if (other.dashLengths == null) {
         return false
       }
-      if (!dashLengths.contentEquals(other.dashLengths)) {
-        return false
-      }
+      // if (!dashLengths.contentEquals(other.dashLengths)) {
+      //   return false
+      // }
     } else if (other.dashLengths != null) {
       return false
     }
@@ -341,7 +367,7 @@ data class CanvasStroke(
     result = 31 * result + lineCap.hashCode()
     result = 31 * result + lineJoin.hashCode()
     result = 31 * result + miterLimit.hashCode()
-    result = 31 * result + (dashLengths?.contentHashCode() ?: 0)
+    // result = 31 * result + (dashLengths?.contentHashCode() ?: 0)
     result = 31 * result + dashPhase.hashCode()
     return result
   }
@@ -369,6 +395,8 @@ data class CanvasDrawIntoCanvas(private val block: (Canvas) -> Unit) : CanvasNod
   override fun needsSoftwareLayer(): Boolean {
     return false
   }
+
+  override fun toString(): String = ""
 }
 
 /**
@@ -380,7 +408,8 @@ data class CanvasDrawIntoCanvas(private val block: (Canvas) -> Unit) : CanvasNod
  * probably silently fallbacks to software rendering under the hoods but since it works fine without
  * software layer, we're not checking it here.
  */
-private fun checkIfSoftwareLayerNeeded(
+@Suppress("NOTHING_TO_INLINE")
+private inline fun checkIfSoftwareLayerNeeded(
     shadow: CanvasShadowModel? = null,
     blendingMode: BlendingMode? = null,
     children: List<CanvasNodeModel> = listOf()

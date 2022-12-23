@@ -62,8 +62,12 @@ data class CanvasTransform(
     matrixValues[Matrix.MTRANS_Y] = ty
     matrix.values = matrixValues
 
-    children.forEach { child -> child.applyTo(matrix) }
+    for (i in children.indices) {
+      children[i].applyTo(matrix)
+    }
   }
+
+  override fun toString(): String = ""
 
   companion object {
     val IDENTITY: CanvasTransform =
@@ -87,6 +91,7 @@ data class CanvasInverseTransform(private val transform: CanvasTransformModel) :
       throw IllegalArgumentException("Can't invert matrix: ${matrix.toShortString()} ")
     }
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -103,6 +108,7 @@ data class CanvasTranslate(private val dx: Float, private val dy: Float) :
   override fun applyTo(matrix: Matrix) {
     matrix.postTranslate(dx, dy)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -123,6 +129,7 @@ data class CanvasScale(
   override fun applyTo(matrix: Matrix) {
     matrix.postScale(sx, sy, pivot.x, pivot.y)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -141,6 +148,7 @@ data class CanvasRotate(
   override fun applyTo(matrix: Matrix) {
     matrix.postRotate(degrees, pivot.x, pivot.y)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -161,4 +169,5 @@ data class CanvasSkew(
   override fun applyTo(matrix: Matrix) {
     matrix.postSkew(kx, ky, pivot.x, pivot.y)
   }
+  override fun toString(): String = ""
 }

@@ -49,9 +49,12 @@ data class CanvasPath(
   override fun toAndroidPath(state: CanvasState): Path {
     return Path().apply {
       fillRule.applyTo(this)
-      children.forEach { child -> child.applyTo(this, state) }
+      for (i in children.indices) {
+        children[i].applyTo(this, state)
+      }
     }
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -65,6 +68,7 @@ data class CanvasPathMoveTo(private val point: Point) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.moveTo(point.x, point.y)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -80,6 +84,7 @@ data class CanvasPathLineTo(private val point: Point) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.lineTo(point.x, point.y)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -98,6 +103,7 @@ data class CanvasPathQuadTo(private val controlPoint: Point, private val endPoin
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.quadTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -121,6 +127,7 @@ data class CanvasPathCubicTo(
     androidPath.cubicTo(
         controlPoint1.x, controlPoint1.y, controlPoint2.x, controlPoint2.y, endPoint.x, endPoint.y)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -149,6 +156,7 @@ data class CanvasPathArc(
         startAngle,
         endAngle)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -172,6 +180,7 @@ data class CanvasPathRect(
         cornerRadius,
         Path.Direction.CW)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -189,6 +198,7 @@ data class CanvasPathEllipse(private val topLeft: Point, private val size: Size)
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height),
         Path.Direction.CW)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -204,6 +214,7 @@ data class CanvasPathCircle(private val center: Point, private val radius: Float
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.addCircle(center.x, center.y, radius, Path.Direction.CW)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -237,4 +248,5 @@ data class CanvasPathAdd(
         }
     androidPath.addPath(srcPath)
   }
+  override fun toString(): String = ""
 }

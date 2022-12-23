@@ -42,6 +42,7 @@ data class CanvasShapeLine(private val startPoint: Point, private val endPoint: 
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, paint)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -65,6 +66,7 @@ data class CanvasShapeRect(
         cornerRadius,
         paint)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -80,6 +82,7 @@ data class CanvasShapeCircle(private val center: Point, private val radius: Floa
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawCircle(center.x, center.y, radius, paint)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -110,6 +113,7 @@ data class CanvasShapeArc(
         false,
         paint)
   }
+  override fun toString(): String = ""
 }
 
 /**
@@ -126,4 +130,5 @@ data class CanvasShapeEllipse(private val topLeft: Point, private val size: Size
     canvas.drawOval(
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height), paint)
   }
+  override fun toString(): String = ""
 }

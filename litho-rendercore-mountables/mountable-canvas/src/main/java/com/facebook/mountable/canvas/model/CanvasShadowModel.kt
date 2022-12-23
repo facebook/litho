@@ -32,4 +32,6 @@ data class CanvasShadowModel(
     val dy: Float,
     val radius: Float,
     @ColorInt val color: Int
-)
+) {
+  override fun toString(): String = ""
+}
