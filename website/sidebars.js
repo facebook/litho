@@ -62,7 +62,6 @@ module.exports = {
           'mainconcepts/troubleshooting',
         ],
       },
-      // TODO: Kotlin-ify,
       'mainconcepts/coordinate-state-actions/keys-and-identity',
     ],
     'Building Lists': [
@@ -90,7 +89,6 @@ module.exports = {
       'mainconcepts/coordinate-state-actions/visibility-handling',
     ],
     'Accessibility': ['accessibility/accessibility'],
-    // TODO: revisit wording to make it clear it's not just the 'kotlin' testing API
     'Testing': [
       'kotlin/testing-getting-started',
       'kotlin/testing-assertions',
