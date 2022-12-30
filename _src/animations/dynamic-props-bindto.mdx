@@ -1,0 +1,119 @@
+---
+id: dynamic-props-bindto
+title: Animating View Properties with Dynamic Props
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
+:::note
+Dynamic props are properties that are applied directly to a `View` or `Drawable`. They are updated without computing a layout or remounting. This makes them efficient for use in animations or other dynamic UIs. Dynamic props are initialised and updated using [DynamicValue](pathname:///javadoc/com/facebook/litho/DynamicValue.html).
+:::
+
+## `DynamicValue`
+
+In `KComponents`, a `DynamicValue` can be created using `useBinding()`. You can then keep a reference to the `DynamicValue` and use it to directly set values (such as in a callback or an `Animator`). Use the `set()` function to set new values from the main thread.
+
+:::caution
+`DynamicValue`s should only be updated on the main thread.
+:::
+
+## Common Dynamic Props
+
+The dynamic properties that are available for all `Component`s are:
+
+* Alpha
+* Scale X/Y
+* Translation X/Y
+* Background Color
+* Foreground Color
+* Rotation
+* Elevation (from Lollipop and above)
+
+For `KComponent`s they should be applied as a Style item:
+
+```kotlin
+MyKComponent(style = Style.alpha(dynamicAlpha))
+```
+
+The `DynamicValue` can be updated by calling its [set()](pathname:///javadoc/com/facebook/litho/DynamicValue.html#set-T-) function.
+
+The following code sample shows a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to the DynamicValue's, which are updated by two SeekBars.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CommonDynamicPropsKComponent.kt  start=start_example end=end_example
+```
+
+The following short animation illustrates the component in action.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/common_dynamic_props.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+To see how other common dynamic props can be modified, see the [All Common Dynamic Props](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AllCommonDynamicPropsKComponent.kt) example in the Sample app, which is illustrated in the following animation.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/all_dynamic_props.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+## Custom Dynamic Props for SimpleMountable
+
+Dynamic Mount Props property types enable the value of the property, on the content mounted by the SimpleMountable, to be updated without triggering a new layout (such as when animating the text colour of a Text component).
+
+### BindTo - Dynamic Values API in Practice
+
+To illustrate the use of BindTo API in practice, you will implement a simple `ImageViewComponent` that will have `background`, `rotation` and `scale` properties animated, based on the `SeekBar` value.
+
+Start off by defining each `DynamicValue` by using the `useBinding` hook and attaching it to the `SeekBar.onProgressChanged` callback that will change them accordingly:
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/MountableBindToExampleComponent.kt start=start_bindTo_seekbar_code end=end_bindTo_seekbar_code
+```
+
+The MountableComponent, `ImageViewComponent`, will be defined as a child below the SeekBar children in the `render()` function and will take each `DynamicValue` as a constructor parameter:
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/MountableBindToExampleComponent.kt start=start_bindTo_imagecomponent_def end=end_bindTo_imagecomponent_def
+```
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=start_bindTo_imagecomponent_code end=end_bindTo_imagecomponent_code
+```
+
+Now, in the MountableComponent `render()` call, use the `bindTo` API to bind each `DynamicValue` to the `ImageView` properties.
+
+There are two ways of using `BindTo`:
+
+1. The simpler way is to create a binding between the `DynamicValue` and function reference to the setter of the property.
+   * The setter will be invoked for every update of the DynamicValue.
+1. The more complex binding can be achieved by using a lambda and accessing the view directly, as shown in the following snippet.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/mountables/bindto/ImageViewComponent.kt start=start_bindTo_binding_code end=end_bindTo_binding_code
+```
+
+The following short video shows the BindTo API in action:
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/bindToAPI.mov")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+### Key points for the BindTo API
+
+* A `DynamicValue` has to be bound to the SimpleMountable in `MountableComponentScope.render()`.
+* A SimpleMountable can have several dynamic props.
+* It is possible to automatically unbind the `DynamicValue` by setting the default value after `unmount()` is called.
+
+## Animating Dynamic Props
+
+Dynamic Props values can be used with Android Animators to create custom animations. The following example uses a [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) to animate the dynamic value `time`, defined in the previous value.
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AnimateDynamicPropsKComponent.kt  start=start_example end=end_example
+```
+
+A `DynamicValue` is used to represent time.  This is passed to the `Component` as a prop and kept as a reference to it so it can be updated. In a click event, a ValueAnimator is set up that updates the time `DynamicValue` each frame (see the following animation). The [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) is stored in a reference so that it can be cancelled if necessary.
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px" muted="true">
+  <source type="video/webm" src={useBaseUrl("/videos/custom_prop_animation.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+For more examples of creating Animations using Common Dynamic Props, see the [Animations Cook Book](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/animations/animationcookbook) in the Sample App.

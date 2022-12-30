@@ -3,6 +3,11 @@ id: mount-specs
 title: "Mount Specs"
 ---
 
+:::caution
+This section contains information about the old Java Spec API.
+For new development, the Kotlin API is recommended (see the [Mountable Components](mainconcepts/mountablecomponents/overview.mdx) section in the 'Main Concepts' section).
+:::
+
 :::info
 A *mount spec* defines a component that can render views or drawables; it should only be created when there is a need to integrate views/drawables with Litho.
 :::

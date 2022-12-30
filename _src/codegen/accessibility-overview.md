@@ -3,6 +3,11 @@ id: accessibility-overview
 title: Making the UI Accessible
 ---
 
+:::caution
+This section contains information about the old Java Spec API.
+For new development, the Kotlin API is recommended (see the [Accessibility](accessibility/accessibility.mdx) page in the 'Accessibility' section).
+:::
+
 ## Why Accessibility is important
 
 The fundamental purpose of an interface is to provide people with access to information. Accessibility is the foundation of an interface. All people experience limitations in their abilities, whether it's temporary, situational or permanent. The aim of accessibility is to remove any obstacles that reduce the experience of using, understanding, and navigating the interface.
