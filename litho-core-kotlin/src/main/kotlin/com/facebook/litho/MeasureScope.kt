@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import com.facebook.litho.utils.MeasureUtils
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.utils.MeasureSpecUtils
@@ -38,25 +37,23 @@ class MeasureScope(val layoutContext: LayoutContext<*>, val previousLayoutData: 
 
   /**
    * Measure according to an aspect ratio an width and height constraints. This version of
-   * measureWithAspectRatio will respect the intrinsic size of the component being measured.
+   * forAspectRatio will respect the intrinsic size of the component being measured.
    *
    * @param widthSpec A SizeSpec for the width
    * @param heightSpec A SizeSpec for the height
    * @param intrinsicWidth A pixel value for the intrinsic width of the measured component
    * @param intrinsicHeight A pixel value for the intrinsic height of the measured component
    * @param aspectRatio The aspect ration size against
-   * @param outputSize The output size of this measurement
    */
-  fun withAspectRatio(
+  fun forAspectRatio(
       widthSpec: Int,
       heightSpec: Int,
       intrinsicWidth: Int,
       intrinsicHeight: Int,
-      aspectRatio: Float,
-      outputSize: Size
-  ) =
-      MeasureUtils.measureWithAspectRatio(
-          widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, outputSize)
+      aspectRatio: Float
+  ): MeasureResult =
+      MeasureResult.forAspectRatio(
+          widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio)
 
   /**
    * Returns a {@link MeasureResult} to respect both size specs and try to keep both width and

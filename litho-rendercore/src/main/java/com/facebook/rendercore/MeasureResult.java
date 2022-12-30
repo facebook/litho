@@ -181,6 +181,106 @@ public class MeasureResult {
     }
   }
 
+  /**
+   * Measure according to an aspect ratio an width and height constraints. This version of
+   * forAspectRatio will respect the intrinsic size of the component being measured.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   * @param intrinsicWidth A pixel value for the intrinsic width of the measured component
+   * @param intrinsicHeight A pixel value for the intrinsic height of the measured component
+   * @param aspectRatio The aspect ration size against
+   */
+  public static MeasureResult forAspectRatio(
+      int widthSpec, int heightSpec, int intrinsicWidth, int intrinsicHeight, float aspectRatio) {
+    if (MeasureSpecUtils.getMode(widthSpec) == AT_MOST
+        && MeasureSpecUtils.getSize(widthSpec) > intrinsicWidth) {
+
+      widthSpec = MeasureSpecUtils.atMost(intrinsicWidth);
+    }
+
+    if (MeasureSpecUtils.getMode(heightSpec) == AT_MOST
+        && MeasureSpecUtils.getSize(heightSpec) > intrinsicHeight) {
+
+      heightSpec = MeasureSpecUtils.atMost(intrinsicHeight);
+    }
+
+    return forAspectRatio(widthSpec, heightSpec, aspectRatio);
+  }
+
+  /**
+   * Measure according to an aspect ratio an width and height constraints.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   * @param aspectRatio The aspect ration size against
+   */
+  public static MeasureResult forAspectRatio(int widthSpec, int heightSpec, float aspectRatio) {
+    if (aspectRatio < 0) {
+      throw new IllegalArgumentException("The aspect ratio must be a positive number");
+    }
+
+    final int widthMode = MeasureSpecUtils.getMode(widthSpec);
+    final int widthSize = MeasureSpecUtils.getSize(widthSpec);
+    final int heightMode = MeasureSpecUtils.getMode(heightSpec);
+    final int heightSize = MeasureSpecUtils.getSize(heightSpec);
+    final int widthBasedHeight = (int) Math.ceil(widthSize / aspectRatio);
+    final int heightBasedWidth = (int) Math.ceil(heightSize * aspectRatio);
+
+    int outputWidth = 0;
+    int outputHeight = 0;
+
+    if (widthMode == UNSPECIFIED && heightMode == UNSPECIFIED) {
+      // default to size {0, 0} because both width and height are UNSPECIFIED
+      return new MeasureResult(0, 0);
+    }
+
+    // Both modes are AT_MOST, find the largest possible size which respects both constraints.
+    if (widthMode == AT_MOST && heightMode == AT_MOST) {
+      if (widthBasedHeight > heightSize) {
+        outputWidth = heightBasedWidth;
+        outputHeight = heightSize;
+      } else {
+        outputWidth = widthSize;
+        outputHeight = widthBasedHeight;
+      }
+    }
+    // Width is set to exact measurement and the height is either unspecified or is allowed to be
+    // large enough to accommodate the given aspect ratio.
+    else if (widthMode == EXACTLY) {
+      outputWidth = widthSize;
+
+      if (heightMode == UNSPECIFIED || widthBasedHeight <= heightSize) {
+        outputHeight = widthBasedHeight;
+      } else {
+        outputHeight = heightSize;
+      }
+    }
+    // Height is set to exact measurement and the width is either unspecified or is allowed to be
+    // large enough to accommodate the given aspect ratio.
+    else if (heightMode == EXACTLY) {
+      outputHeight = heightSize;
+
+      if (widthMode == UNSPECIFIED || heightBasedWidth <= widthSize) {
+        outputWidth = heightBasedWidth;
+      } else {
+        outputWidth = widthSize;
+      }
+    }
+    // Width is set to at most measurement. If that is the case heightMode must be unspecified.
+    else if (widthMode == AT_MOST) {
+      outputWidth = widthSize;
+      outputHeight = widthBasedHeight;
+    }
+    // Height is set to at most measurement. If that is the case widthMode must be unspecified.
+    else if (heightMode == AT_MOST) {
+      outputWidth = heightBasedWidth;
+      outputHeight = heightSize;
+    }
+
+    return new MeasureResult(outputWidth, outputHeight);
+  }
+
   public static MeasureResult error() {
     return new MeasureResult();
   }

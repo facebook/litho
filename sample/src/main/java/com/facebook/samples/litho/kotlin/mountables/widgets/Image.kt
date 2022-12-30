@@ -28,7 +28,6 @@ import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
 import com.facebook.litho.SimpleMountable
-import com.facebook.litho.Size
 import com.facebook.litho.SizeSpec
 import com.facebook.litho.SizeSpec.UNSPECIFIED
 import com.facebook.litho.Style
@@ -68,36 +67,37 @@ internal class ImageMountable(
   }
 
   override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult {
-    val size = Size()
-
     val intrinsicWidth = drawable.intrinsicWidth
     val intrinsicHeight = drawable.intrinsicHeight
 
-    if (SizeSpec.getMode(widthSpec) == UNSPECIFIED && SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
-      size.width = intrinsicWidth
-      size.height = intrinsicHeight
-    } else {
-      val aspectRatio = intrinsicWidth.toFloat() / intrinsicHeight.toFloat()
-
-      // measureWithAspectRatio will appropriately set sizes on the size object
-      withAspectRatio(widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size)
-    }
+    val result =
+        if (SizeSpec.getMode(widthSpec) == UNSPECIFIED &&
+            SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
+          MeasureResult(intrinsicWidth, intrinsicHeight)
+        } else {
+          forAspectRatio(
+              widthSpec,
+              heightSpec,
+              intrinsicWidth,
+              intrinsicHeight,
+              intrinsicWidth.toFloat() / intrinsicHeight.toFloat())
+        }
 
     val matrix =
         if (scaleType == ScaleType.FIT_XY || intrinsicWidth <= 0 || intrinsicHeight <= 0) {
           null
         } else {
-          DrawableMatrix.create(drawable, scaleType, size.width, size.height)
+          DrawableMatrix.create(drawable, scaleType, result.width, result.height)
         }
 
     val useLayoutSize = ScaleType.FIT_XY == scaleType || intrinsicWidth <= 0 || intrinsicHeight <= 0
 
     return MeasureResult(
-        size.width,
-        size.height,
+        result.width,
+        result.height,
         ImageLayoutData(
-            if (useLayoutSize) size.width else intrinsicWidth,
-            if (useLayoutSize) size.height else intrinsicHeight,
+            if (useLayoutSize) result.width else intrinsicWidth,
+            if (useLayoutSize) result.height else intrinsicHeight,
             matrix))
   }
 
