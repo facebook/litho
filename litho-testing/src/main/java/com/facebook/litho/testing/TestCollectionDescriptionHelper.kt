@@ -16,9 +16,16 @@
 
 package com.facebook.litho.testing
 
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentHost
 import com.facebook.litho.DebugComponent
 import com.facebook.litho.LithoViewTestHelper
+import com.facebook.litho.testing.viewtree.ViewExtractors
+import com.facebook.litho.testing.viewtree.ViewTree
 
 object TestCollectionDescriptionHelper {
 
@@ -36,8 +43,11 @@ object TestCollectionDescriptionHelper {
   private fun itemToString(item: TestCollectionItem): String {
     val testCollectionItemHeader =
         "\n└── index ${item.index}: Collection Item (id: ${item.id}, isVisible: ${item.isVisible})"
-    // TODO: support views, in addition to components
-    return "$testCollectionItemHeader${getComponentInfo(item)}"
+
+    val itemDescription =
+        if (item.renderInfo.rendersView()) getViewInfo(item, item.recyclerView)
+        else getComponentInfo(item)
+    return "$testCollectionItemHeader${itemDescription}"
   }
 
   private fun getComponentInfo(item: TestCollectionItem): String {
@@ -52,5 +62,39 @@ object TestCollectionDescriptionHelper {
     // This can be null when working with a mock, so we fallback in that case to the class name info
     val componentString = component.toString() ?: component::class.java.simpleName
     return "\n$DEPTH_3_LEADING_SPACE$componentString{${component.hashCode()}}\n"
+  }
+
+  private fun getViewInfo(item: TestCollectionItem, recyclerView: RecyclerView): String {
+    val itemView =
+        recyclerView.findViewHolderForAdapterPosition(item.index)?.itemView
+            ?: return "\n${DEPTH_3_LEADING_SPACE}Found null item view (no additional information available)\n"
+    val viewTreeString =
+        ViewTree.of(itemView).makeString(ITEM_STARTING_DEPTH, ::viewExtraTextExtractor)
+
+    return "$viewTreeString\n"
+  }
+
+  private fun viewExtraTextExtractor(view: View?): String? {
+    if (view is TextView || view is ComponentHost) {
+      val textOutput =
+          ViewExtractors.GET_TEXT_FUNCTION.apply(view)?.takeUnless {
+            it.startsWith("No text found")
+          }
+      if (textOutput != null) {
+        return textOutput
+      }
+    }
+
+    if (view is ImageView || view is ComponentHost) {
+      val textOutput =
+          ViewExtractors.GET_DRAWABLE_FUNCTION.apply(view)?.takeUnless {
+            it.startsWith("No drawable found")
+          }
+      if (textOutput != null) {
+        return textOutput
+      }
+    }
+
+    return null
   }
 }

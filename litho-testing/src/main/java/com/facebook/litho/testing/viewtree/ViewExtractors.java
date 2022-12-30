@@ -31,7 +31,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /** Function objects used for extracting specific information out of Android classes */
-final class ViewExtractors {
+public final class ViewExtractors {
 
   private ViewExtractors() {}
 

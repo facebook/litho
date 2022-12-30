@@ -90,6 +90,23 @@ public final class ViewTree {
     return makeString(extraTextFunction, mView, 0);
   }
 
+  /**
+   * Generates a string describing the views tree using the views' toString methods and an extra
+   * information function with formatting starting at the given depth.
+   *
+   * <p>The output is a string, with each view of the tree in its own line, indented according to
+   * its depth in the tree, and then the extra information supplied by teh function.
+   *
+   * <p>This can be used, for example, to print all views and their respective text and is useful
+   * for when assertions fail.
+   *
+   * @param startingDepth the starting depth of the tree for spacing
+   * @return a string describing the tree
+   */
+  public String makeString(final int startingDepth, Function<View, String> extraTextFunction) {
+    return makeString(extraTextFunction, mView, startingDepth);
+  }
+
   private String makeString(Function<View, String> extraTextFunction, View view, int depth) {
     final StringBuilder builder = new StringBuilder();
     if (depth > 0) {
