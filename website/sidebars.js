@@ -50,7 +50,6 @@ module.exports = {
           'mainconcepts/mountablecomponents/mountable-component',
           'mainconcepts/mountablecomponents/mountable',
           'mainconcepts/mountablecomponents/mountable-measuring',
-          'mainconcepts/mountablecomponents/mountable-bindto',
           'mainconcepts/mountablecomponents/mountable-controllers',
           'mainconcepts/mountablecomponents/mountable-preallocation',
         ]
@@ -76,7 +75,7 @@ module.exports = {
       'animations/transition-types',
       'animations/transition-all-layout',
       'animations/transition-choreography',
-      'animations/dynamic-props',
+      'animations/dynamic-props-bindto',
       {
         'Advanced': [
           'animations/transition-definitions',
@@ -106,6 +105,7 @@ module.exports = {
       'codegen/overview',
       'codegen/layout-specs',
       'codegen/mount-specs',
+      'codegen/dynamic-props',
       'codegen/accessibility-overview',
       {
         'Sections API': [

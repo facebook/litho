@@ -14,7 +14,7 @@ Dynamic props are properties that are applied directly to a `View` or `Drawable`
 
 ## `DynamicValue`
 
-To control a dynamic prop, you should create a `DynamicValue` and assign it to that prop. You can then keep a reference to the `DynamicValue` and use it to directly set values (such as in a callback or an `Animator`). Use the `set()` function to set new values from the main thread. In `KComponents`, a `DynamicValue` can be created using `useBinding()`.
+To control a dynamic prop, you should create a `DynamicValue` and assign it to that prop. You can then keep a reference to the `DynamicValue` and use it to directly set values (such as in a callback or an `Animator`). Use the `set()` function to set new values from the main thread.
 
 :::caution
 `DynamicValue`s should only be updated on the main thread.
@@ -40,37 +40,12 @@ For Spec components these props can be set in the builder:
 MyComponent.create(c).alpha(dynamicAlpha).build()
 ```
 
-For `KComponent`s they should be applied as a Style item:
-
-```kotlin
-MyKComponent(style = Style.alpha(dynamicAlpha))
-```
-
 The `DynamicValue` can be updated by calling its [`set()`](pathname:///javadoc/com/facebook/litho/DynamicValue.html#set-T-) function.
 
 The following code sample shows a `Component` that renders a square in the middle of the screen. The alpha and scale props have been set to the DynamicValue's, which are updated by two SeekBars.
 
-<Tabs
-  groupId="state"
-  defaultValue="kcomponent_state"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_state'},
-    {label: 'Spec', value: 'spec_state'},
-  ]}>
-  <TabItem value="kcomponent_state">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CommonDynamicPropsKComponent.kt  start=start_example end=end_example
-```
-
-  </TabItem>
-  <TabItem value="spec_state">
-
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CommonDynamicPropsComponentSpec.kt  start=start_example end=end_example
 ```
-
-  </TabItem>
-
-</Tabs>
 
 The following short animation illustrates the component in action.
 
@@ -88,10 +63,6 @@ To see how other common dynamic props can be modified, see the [All Common Dynam
 
 ## Custom Dynamic Props for MountSpecs
 
-:::note
-`MountSpec`s are only available in the Spec API.  There is currently no equivalent in the KComponent API.
-:::
-
 `MountSpec`s can define custom dynamic props. Props annotated with `@Prop(dynamic = true)` can be set to a `DynamicValue`. Setting this value will trigger a custom `@OnBindDynamicValue` function in the component.
 
 Consider a `MountSpec` that renders a clock face:
@@ -103,27 +74,8 @@ Here, the `MountSpec` delegates the drawing of a clock face to `SimpleClockView`
 
 Next, consider a slider to set the time on the clock face.
 
-<Tabs
-  groupId="state"
-  defaultValue="kcomponent_state"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_state'},
-    {label: 'Spec', value: 'spec_state'},
-  ]}>
-  <TabItem value="kcomponent_state">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CustomDynamicPropsKComponent.kt  start=start_example end=end_example
-```
-
-  </TabItem>
-  <TabItem value="spec_state">
-
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/CustomDynamicPropsComponentSpec.kt  start=start_example end=end_example
 ```
-
-  </TabItem>
-
-</Tabs>
 
 This is illustrated in the following short animation.
 
@@ -136,27 +88,8 @@ This is illustrated in the following short animation.
 
 Dynamic Props values can be used with Android Animators to create custom animations. The following example uses a [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) to animate the dynamic value `time`, defined in the previous value.
 
-<Tabs
-  groupId="state"
-  defaultValue="kcomponent_state"
-  values={[
-    {label: 'KComponent', value: 'kcomponent_state'},
-    {label: 'Spec', value: 'spec_state'},
-  ]}>
-  <TabItem value="kcomponent_state">
-
-```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AnimateDynamicPropsKComponent.kt  start=start_example end=end_example
-```
-
-  </TabItem>
-  <TabItem value="spec_state">
-
 ```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/animations/dynamicprops/AnimateDynamicPropsComponentSpec.kt  start=start_example end=end_example
 ```
-
-  </TabItem>
-
-</Tabs>
 
 A `DynamicValue` is used to represent time.  This is passed to the `Component` as a prop and kept as a reference to it so it can be updated. In a click event, a ValueAnimator is set up that updates the time `DynamicValue` each frame (see the following animation). The [ValueAnimator](https://developer.android.com/reference/android/animation/ValueAnimator) is stored in a reference so that it can be cancelled if necessary.
 

@@ -171,7 +171,7 @@ module.exports = {
             from: ['/docs'],
           },
           {
-            to: '/docs/animations/dynamic-props',
+            to: '/docs/codegen/dynamic-props',
             from: [
               '/docs/dynamic-props',
               '/docs/mainconcepts/coordinate-state-actions/dynamic-props',
