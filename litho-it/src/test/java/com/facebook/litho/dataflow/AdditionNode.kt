@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.dataflow;
+package com.facebook.litho.dataflow
 
 /** Multi-input node for unit tests */
-public class AdditionNode extends ValueNode {
-
-  @Override
-  protected float calculateValue(long frameTimeNanos) {
-    return getInput("a").getValue() + getInput("b").getValue();
-  }
+class AdditionNode : ValueNode() {
+  override fun calculateValue(frameTimeNanos: Long): Float =
+      getInput("a").value + getInput("b").value
 }

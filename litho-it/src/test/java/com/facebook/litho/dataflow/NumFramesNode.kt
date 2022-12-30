@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.dataflow;
+package com.facebook.litho.dataflow
 
-/** Test node that only serves as an output node. */
-public class OutputOnlyNode extends ValueNode {
+/** Test node whose value is based on the number of frames it's seen. */
+class NumFramesNode : ValueNode(), NodeCanFinish {
 
-  @Override
-  protected float calculateValue(long frameTimeNanos) {
-    return getInput().getValue();
+  private var numFramesSeen = 0
+  private var lastFrameTime = Long.MIN_VALUE
+
+  override fun calculateValue(frameTimeNanos: Long): Float {
+    if (lastFrameTime != frameTimeNanos) {
+      lastFrameTime = frameTimeNanos
+      numFramesSeen++
+    }
+    return numFramesSeen.toFloat()
   }
+
+  override fun isFinished(): Boolean = false
 }

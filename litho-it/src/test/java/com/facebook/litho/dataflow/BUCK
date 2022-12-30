@@ -97,11 +97,10 @@ litho_android_library(
     name = "nodes",
     srcs = glob(
         [
-            "*Node.java",
+            "*Node.kt",
         ],
     ),
     autoglob = False,
-    language = "JAVA",
     source = "8",
     target = "8",
     visibility = [

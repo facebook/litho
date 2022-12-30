@@ -14,24 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.dataflow;
+package com.facebook.litho.dataflow
 
-/** Test node that allows setting of its next value. */
-public class SettableNode extends ValueNode implements NodeCanFinish {
-
-  private float mValue;
-
-  public void setValue(float value) {
-    mValue = value;
-  }
-
-  @Override
-  protected float calculateValue(long frameTimeNanos) {
-    return mValue;
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+/** Test node that only serves as an output node. */
+class OutputOnlyNode : ValueNode() {
+  override fun calculateValue(frameTimeNanos: Long): Float = input.value
 }

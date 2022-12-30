@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.dataflow;
+package com.facebook.litho.dataflow
 
-/** Test node whose value is based on the number of frames it's seen. */
-public class NumFramesNode extends ValueNode implements NodeCanFinish {
+/** Test node that allows setting of its next value. */
+class SettableNode : ValueNode(), NodeCanFinish {
 
-  private int mNumFramesSeen = 0;
-  private long mLastFrameTime = Long.MIN_VALUE;
+  private var value = 0f
 
-  @Override
-  protected float calculateValue(long frameTimeNanos) {
-    if (mLastFrameTime != frameTimeNanos) {
-      mLastFrameTime = frameTimeNanos;
-      mNumFramesSeen++;
-    }
-    return (float) mNumFramesSeen;
+  override fun setValue(value: Float) {
+    this.value = value
   }
 
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+  override fun calculateValue(frameTimeNanos: Long): Float = value
+
+  override fun isFinished(): Boolean = false
 }
