@@ -3,6 +3,10 @@ id: builtin-widgets
 title: Built-in widgets
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import VersionedCodeBlock from '@theme/VersionedCodeBlock';
+
 This page covers the basic built-in widgets. For the full list of components and APIs, see the [com.facebook.litho.widget](pathname:///javadoc/index.html?com/facebook/litho/widget/package-summary.html) package in javadocs.
 
 ## Text
@@ -19,7 +23,20 @@ Shows simple text (the equivalent of an Android `TextView` within Litho).
 
 A full list of the optional props is available in the [javadocs](pathname:///javadoc/com/facebook/litho/widget/Text.html).
 
-Most props directly accept resources ids:
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_text_widget_example end=end_text_widget_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
 
 ```java
 final Component component =
@@ -30,6 +47,10 @@ final Component component =
         .textAlignment(Layout.Alignment.ALIGN_CENTER)
         .build();
  ```
+
+  </TabItem>
+
+</Tabs>
 
 ## TextInput
 
@@ -47,6 +68,21 @@ As this component is backed by Android's `EditText`, many native capabilities ar
 * Change the input representation by passing an `android.text.InputType` constant.
 * For performance reasons, avoid recreating the Component with different props to change its configuration. Instead, use Event triggers `OnTrigger` to update text, request view focus or set selection. For example, `TextInput.setText(c, "myTextInputKey", "myText")`.
 
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_textinput_widget_example end=end_textinput_widget_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
+
 ```java
 private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
 Component component =
@@ -60,6 +96,10 @@ Component component =
         .build();
  ```
 
+  </TabItem>
+
+</Tabs>
+
 ## Image
 
 Displays a drawable.
@@ -70,6 +110,21 @@ Displays a drawable.
 
 ### Usage
 
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_image_example end=end_image_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
+
 ```java
 Component component =
     Image.create(c)
@@ -78,6 +133,10 @@ Component component =
         .build();
 ```
 
+  </TabItem>
+
+</Tabs>
+
 ## Card
 
 The Litho equivalent of an Android `CardView`. `Card` applies borders with shadows/elevation to a given component.
@@ -85,9 +144,24 @@ If your card is rendered on top of a dynamically coloured background that cannot
 
 ### Required Prop
 
-* `Component content` - the component to decorate.
+* `Component child` - the component to decorate.
 
 ### Usage
+
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_card_example end=end_card_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
 
 ```java
 Component component =
@@ -98,15 +172,34 @@ Component component =
         .build();
 ```
 
+  </TabItem>
+
+</Tabs>
+
 ## SolidColor
 
-Renders solid colour.
+Renders solid color.
 
 ### Required Prop
 
-* `int color` - colour to display.
+* `int color` - color to display.
 
 ### Usage
+
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_solidcolor_example end=end_solidcolor_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
 
 ```java
 Component component =
@@ -115,6 +208,10 @@ Component component =
         .alpha(0.5)
         .build();
 ```
+
+  </TabItem>
+
+</Tabs>
 
 ## Progress
 
@@ -126,12 +223,31 @@ None.
 
 ### Usage
 
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_progress_example end=end_progress_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
+
 ```java
 Component component =
 	  Progress.create(c)
         .indeterminateDrawableRes(R.drawable.my_loading_spinner)
         .build();
 ```
+
+  </TabItem>
+
+</Tabs>
 
 ## Spinner
 
@@ -144,6 +260,21 @@ A simple spinner (dropdown) component. Derived from the standard Android `Spinne
 
 ### Usage
 
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_spinner_example end=end_spinner_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
+
 ```java
 List<String> myOptions = ...
 Component component =
@@ -153,15 +284,34 @@ Component component =
         .build();
 ```
 
+  </TabItem>
+
+</Tabs>
+
 ## VerticalScroll
 
 Wraps another component, allowing it to be vertically scrollable. It's analogous to Android's `ScrollView`.
 
 ### Required Prop
 
-* `Component childComponent` - a component to vertically scroll.
+* `Component child` - a component to vertically scroll.
 
 ### Usage
+
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_verticalscroll_example end=end_verticalscroll_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
 
 ```java
 Component component =
@@ -172,15 +322,34 @@ Component component =
         .build();
 ```
 
+  </TabItem>
+
+</Tabs>
+
 ## HorizontalScroll
 
 Wraps another component, allowing it to be horizontally scrollable. It's analogous to Android's `HorizontalScrollView`.
 
 ### Required Prop
 
-* `Component contentProps` - a Component to horizontally scroll.
+* `Component child` - a component to horizontally scroll.
 
 ### Usage
+
+<Tabs
+  groupId="widget"
+  defaultValue="kcomponent_widget"
+  values={[
+    {label: 'KComponent', value: 'kcomponent_widget'},
+    {label: 'Spec API', value: 'specapi_widget'},
+  ]}>
+  <TabItem value="kcomponent_widget">
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/widgets/WidgetsExamplesComponent.kt start=start_horizontalscroll_example end=end_horizontalscroll_example
+```
+
+  </TabItem>
+  <TabItem value="specapi_widget">
 
 ```java
 Component component =
@@ -188,6 +357,10 @@ Component component =
         .contentProps(myComponentToScroll)
         .build();
 ```
+
+  </TabItem>
+
+</Tabs>
 
 ## Recycler
 
