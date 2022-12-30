@@ -76,7 +76,7 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: identifier, isVisible: true\)
+          |└── index 0: Collection Item \(id: identifier, visibility: full\)
           |      litho.Column\{\w+ V.E..... .. 0,0-100,50\}
           |
         """
@@ -98,7 +98,7 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: identifier, isVisible: true\)
+          |└── index 0: Collection Item \(id: identifier, visibility: partial\)
           |      litho.Column\{\w+ V.E..... .. 0,0-100,150\}
           |
         """
@@ -118,7 +118,7 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: \d+:1, isVisible: false\)
+          |└── index 0: Collection Item \(id: \d+:1, visibility: none\)
           |      litho.Column\{\w+ V.E..... .. 0,0-100,0\}
           |
         """
@@ -142,13 +142,13 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: \d+:1, isVisible: true\)
+          |└── index 0: Collection Item \(id: \d+:1, visibility: full\)
           |      litho.Column\{\w+ V.E..... .. 0,0-100,10\}
           |
-          |└── index 1: Collection Item \(id: row, isVisible: true\)
+          |└── index 1: Collection Item \(id: row, visibility: partial\)
           |      litho.Row\{\w+ V.E..... .. 0,0-100,100\}
           |
-          |└── index 2: Collection Item \(id: \d+:1, isVisible: false\)
+          |└── index 2: Collection Item \(id: \d+:1, visibility: none\)
           |      Text\{\w+\}
           |
         """
@@ -183,10 +183,10 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: null, isVisible: false\)
+          |└── index 0: Collection Item \(id: null, visibility: none\)
           |      litho.null\{\w+ V.E..... .. 0,0-100,0\}
           |
-          |└── index 1: Collection Item \(id: null, isVisible: false\)
+          |└── index 1: Collection Item \(id: null, visibility: none\)
           |      Component${ESCAPED_DOLLAR_SIGN}MockitoMock${ESCAPED_DOLLAR_SIGN}\w+\{\w+\}
           |
         """
@@ -232,7 +232,7 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: null, isVisible: true\)
+          |└── index 0: Collection Item \(id: null, visibility: full\)
           |      LinearLayout@\w+
           |        TextView@\w+ \(Found text: "An embedded view! 100", view is visible\)
           |
@@ -280,7 +280,7 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: null, isVisible: true\)
+          |└── index 0: Collection Item \(id: null, visibility: full\)
           |      LinearLayout@\w+
           |        ImageView@\w+ \(Found drawable: "$gradientDrawable", view is visible\)
           |
@@ -326,15 +326,15 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: null, isVisible: true\)
+          |└── index 0: Collection Item \(id: null, visibility: full\)
           |      LinearLayout@\w+
           |        TextView@\w+ \(Found text: "An embedded view! 100", view is visible\)
           |
-          |└── index 1: Collection Item \(id: null, isVisible: true\)
+          |└── index 1: Collection Item \(id: null, visibility: partial\)
           |      LinearLayout@\w+
           |        TextView@\w+ \(Found text: "An embedded view! 200", view is visible\)
           |
-          |└── index 2: Collection Item \(id: null, isVisible: false\)
+          |└── index 2: Collection Item \(id: null, visibility: none\)
           |      Found null item view \(no additional information available\)
           |
         """
@@ -386,10 +386,10 @@ class TestCollectionDescriptionHelperTest {
         .matches(
             """
           |${testCollection.recyclerView}
-          |└── index 0: Collection Item \(id: null, isVisible: true\)
+          |└── index 0: Collection Item \(id: null, visibility: full\)
           |      litho.Text\{\w+ V.E..... .. 0,0-100,\d+ text="A Litho Component: 0"\}
           |
-          |└── index 1: Collection Item \(id: null, isVisible: true\)
+          |└── index 1: Collection Item \(id: null, visibility: full\)
           |      LinearLayout@\w+
           |        TextView@\w+ \(Found text: "An embedded view! 1", view is visible\)
           |

@@ -42,7 +42,7 @@ object TestCollectionDescriptionHelper {
 
   private fun itemToString(item: TestCollectionItem): String {
     val testCollectionItemHeader =
-        "\n└── index ${item.index}: Collection Item (id: ${item.id}, isVisible: ${item.isVisible})"
+        "\n└── index ${item.index}: Collection Item (id: ${item.id}, visibility: ${getVisibility(item)})"
 
     val itemDescription =
         if (item.renderInfo.rendersView()) getViewInfo(item, item.recyclerView)
@@ -97,4 +97,11 @@ object TestCollectionDescriptionHelper {
 
     return null
   }
+
+  private fun getVisibility(item: TestCollectionItem): String =
+      when {
+        item.isFullyVisible && item.isVisible -> "full" // checks both to handle mocks in odd states
+        item.isVisible -> "partial"
+        else -> "none"
+      }
 }
