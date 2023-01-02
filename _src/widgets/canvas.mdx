@@ -1,0 +1,119 @@
+---
+id: canvas
+title: Canvas
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+The Canvas component provides a means for drawing simple 2D graphics. It has many uses, including drawing decorations, backgrounds, data visualization, and animation.
+
+## Concepts
+
+### Canvas
+
+A top-level element, which defines the drawing area. All drawing operations are executed with enabled anti-aliasing.
+
+#### Hardware Acceleration
+
+Drawing on a Canvas component is hardware accelerated by default.
+
+On Android, the following features are not hardware accelerated prior to API 28:
+
+ - `BlendingMode.Darken`
+ - `BlendingMode.Lighten`
+ - `BlendingMode.Overlay`
+ - `Shadow`
+
+In order to turn off hardware acceleration, you can pass `CanvasLayerType.Software` as an argument to `CanvasComponent`. By default, `CanvasLayerType.Auto` is used,  which means that hardware acceleration will be automatically disabled on Android versions older than API 28 if any of the features from the list above is used. For more information about hardware acceleartion on Android, see the [Android drawing models](https://fburl.com/7nkyeyo7) page at developer.android.com.
+
+#### Coordinate system
+
+The origin of the Canvas coordinate system is in the top-left corner. Y axis is pointing down and X axis is pointing right.
+
+### Group
+
+A group allows for grouping of the drawing commands and applying clip/transform to the whole group at once. Groups can be nested within each other and, in contrast to Layer, are not clipped to their bounds by default (there is an attribute that allows for changing that behavior).
+
+### Layer
+
+A Layer is similar to Group but allocates and redirects drawing to an offscreen rendering target. Elements drawn outside of a Layer region won’t be visible. It may be useful in such cases as applying transparency or blending modes to a group of drawing commands. Layers should be as small as possible and should be used only when necessary (especially on Android) because they may cause performance issues if used incorrectly.
+
+### Coordinate system transformations
+
+Canvas enables the application of affine transformation to Groups and Layers to project its coordinate space. The transformation can be used to specify the position, scale, rotation or skew of a Group or a Layer in the parent’s coordinate space and is applied prior to executing drawing commands inside the Group/Layer, or applying the clip mask.
+
+### Shape
+
+Canvas uses shapes to describe what should be drawn on the screen.
+
+A shape is one of:
+
+ - Line
+ - Rect
+ - Circle
+ - Ellipse
+ - Arc
+
+#### Path
+
+A Path is a special type of Shape. It describes complex geometric shapes consisting of straight line segments, quadratic curves, and cubic curves. It can be drawn on a Canvas, or it can be used to describe the clipping region of a Group or Layer.
+
+### Drawing
+
+Canvas supports two drawing operations:
+
+ - **Fill** - draws a filled shape
+ - **Stroke** - draws a stroked (outlined) shape
+
+### Shading
+
+Shading defines the way the pixels of the shape will be drawn.
+
+Canvas supports two shading variants:
+
+ - solid color
+ - gradient (linear or radial)
+
+## Examples
+
+### Fill shape with color and gradient
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawShapeCanvasKComponent.kt start=start_example end=end_example
+```
+
+<img width="300" src={useBaseUrl('images/litho-canvas-filled-circles.png')} />
+
+### Fill path with color and gradient
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawPathCanvasKComponent.kt start=start_example end=end_example
+```
+
+<img width="300" src={useBaseUrl('images/litho-canvas-filled-hearts.png')} />
+
+### Stroke shape with color and gradient
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawStrokedShapeCanvasKComponent.kt start=start_example end=end_example
+```
+
+<img width="300" src={useBaseUrl('images/litho-canvas-stroked-dashed-ellipses.png')} />
+
+### Rotate a Group
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawRotatedGroupCanvasKComponent.kt start=start_example end=end_example
+```
+
+<img width="300" src={useBaseUrl('images/litho-canvas-rotated-group.png')} />
+
+### Cut a hole in a rectangle
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawTransparentHoleCanvasKComponent.kt start=start_example end=end_example
+```
+
+<img width="300" src={useBaseUrl('images/litho-canvas-layer-hole.png')} />
+
+### Animations
+
+```kotlin file=sample/src/main/java/com/facebook/samples/litho/kotlin/canvas/DrawAnimatedSquareCanvasKComponent.kt start=start_example end=end_example
+```
+
+<img width="300" src={useBaseUrl('images/litho-canvas-rotating-square.gif')} />
