@@ -345,9 +345,9 @@ data class CanvasStroke(
       if (other.dashLengths == null) {
         return false
       }
-      // if (!dashLengths.contentEquals(other.dashLengths)) {
-      //   return false
-      // }
+      if (!dashLengths.contentEquals(other.dashLengths)) {
+        return false
+      }
     } else if (other.dashLengths != null) {
       return false
     }
@@ -367,7 +367,7 @@ data class CanvasStroke(
     result = 31 * result + lineCap.hashCode()
     result = 31 * result + lineJoin.hashCode()
     result = 31 * result + miterLimit.hashCode()
-    // result = 31 * result + (dashLengths?.contentHashCode() ?: 0)
+    result = 31 * result + (dashLengths?.contentHashCode() ?: 0)
     result = 31 * result + dashPhase.hashCode()
     return result
   }
