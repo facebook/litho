@@ -92,6 +92,12 @@ import com.facebook.samples.litho.kotlin.animations.expandableelement.Expandable
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponentKotlin
+import com.facebook.samples.litho.kotlin.canvas.DrawAnimatedSquareCanvasKComponent
+import com.facebook.samples.litho.kotlin.canvas.DrawPathCanvasKComponent
+import com.facebook.samples.litho.kotlin.canvas.DrawRotatedGroupCanvasKComponent
+import com.facebook.samples.litho.kotlin.canvas.DrawShapeCanvasKComponent
+import com.facebook.samples.litho.kotlin.canvas.DrawStrokedShapeCanvasKComponent
+import com.facebook.samples.litho.kotlin.canvas.DrawTransparentHoleCanvasKComponent
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
@@ -264,6 +270,25 @@ class Demos {
                                 component = MountableBindToExampleComponent()),
                             SingleDemo(
                                 name = "Controllers", component = ControllersExampleComponent()),
+                        )),
+                    DemoGrouping(
+                        name = "Canvas",
+                        listOf(
+                            SingleDemo(
+                                name = "Draw Shape", component = DrawShapeCanvasKComponent()),
+                            SingleDemo(name = "Draw Path", component = DrawPathCanvasKComponent()),
+                            SingleDemo(
+                                name = "Draw Stroked Shape",
+                                component = DrawStrokedShapeCanvasKComponent()),
+                            SingleDemo(
+                                name = "Draw Rotated Group",
+                                component = DrawRotatedGroupCanvasKComponent()),
+                            SingleDemo(
+                                name = "Draw Transparent Hole",
+                                component = DrawTransparentHoleCanvasKComponent()),
+                            SingleDemo(
+                                name = "Draw Animated Square",
+                                component = DrawAnimatedSquareCanvasKComponent()),
                         )),
                     DemoGrouping(
                         name = "Errors",

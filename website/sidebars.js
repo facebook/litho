@@ -95,6 +95,7 @@ module.exports = {
     ],
     'Widgets': [
       'widgets/builtin-widgets',
+      'widgets/canvas',
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
     'Adopting Litho': [
