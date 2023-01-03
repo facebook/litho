@@ -1682,7 +1682,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return mMountState.needsRemount();
   }
 
-  @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public MountDelegateTarget getMountDelegateTarget() {
     return mMountState;
