@@ -115,6 +115,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               mResolveResult.createdEventHandlers, lsc.getCreatedEventHandlers()));
     } finally {
       c.setCalculationStateContext(prevContext);
+      lsc.releaseReference();
     }
 
     LithoStats.incrementComponentCalculateLayoutCount();
