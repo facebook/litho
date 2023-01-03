@@ -68,6 +68,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private @Nullable Object mLayoutData;
 
   private boolean mWasMeasured = false;
+  private boolean mMeasureHadExceptions = false;
 
   public LithoLayoutResult(
       final ComponentContext c, final LithoNode node, final YogaNode yogaNode) {
@@ -437,6 +438,10 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mWasMeasured;
   }
 
+  boolean measureHadExceptions() {
+    return mMeasureHadExceptions;
+  }
+
   MeasureResult measure(
       final LayoutContext<LithoRenderContext> context, final int widthSpec, final int heightSpec) {
 
@@ -502,6 +507,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+
+    mMeasureHadExceptions = size.mHadExceptions;
 
     return size;
   }

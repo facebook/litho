@@ -303,8 +303,8 @@ public class LayoutState
       LayoutState layoutState,
       @Nullable RenderTreeNode parent) {
 
-    if (isLayoutSpec(node.getTailComponent())) {
-      // back out when dealing with Layout Specs
+    if (isLayoutSpec(node.getTailComponent()) || result.measureHadExceptions()) {
+      // back out when dealing with Layout Specs or if there was an error during measure
       return null;
     }
 
@@ -604,7 +604,8 @@ public class LayoutState
       @Nullable RenderTreeNode parent,
       final @Nullable DiffNode parentDiffNode,
       final @Nullable DebugHierarchy.Node parentHierarchy) {
-    if (layoutStateContext.isFutureReleased()) {
+    if (layoutStateContext.isFutureReleased() || result.measureHadExceptions()) {
+      // Exit early if the layout future as been released or if this result had exceptions.
       return;
     }
 
@@ -767,6 +768,7 @@ public class LayoutState
         }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(context, component, e);
+        return;
       } finally {
         if (isTracing) {
           ComponentsSystrace.endSection();

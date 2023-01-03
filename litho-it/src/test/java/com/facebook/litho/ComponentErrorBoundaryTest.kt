@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.Rect
+import com.facebook.litho.LayoutOutput.getLayoutOutput
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
@@ -661,6 +662,21 @@ class ComponentErrorBoundaryTest {
             .child(crashingComponent)
             .build()
     lithoViewRule.attachToWindow().setRoot(component).measure().layout()
+
+    // The crashing mountable component should not get added to
+    // the RenderTree if the error is thrown before mount.
+    if (crashFromStep == LifecycleStep.ON_PREPARE ||
+        crashFromStep == LifecycleStep.ON_MEASURE ||
+        crashFromStep == LifecycleStep.ON_BOUNDS_DEFINED) {
+      val count = lithoViewRule.lithoView.mountDelegateTarget.renderUnitCount
+      for (i in 0 until count) {
+        val item = lithoViewRule.lithoView.mountDelegateTarget.getMountItemAt(i)
+        item?.renderTreeNode?.let {
+          assertThat(getLayoutOutput(it).component).isNotInstanceOf(CrashingMountable::class.java)
+        }
+      }
+    }
+
     if (unmountAfter) {
       lithoViewRule.lithoView.unmountAllItems()
     }
