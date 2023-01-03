@@ -42,6 +42,7 @@ litho_android_library(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/componentsfinder:componentsfinder"),
+        "//fbandroid/third-party/java/guava:guava",
     ],
     exported_deps = [
         LITHO_ASSERTJ_TARGET,
