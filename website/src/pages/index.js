@@ -27,6 +27,7 @@ import styles from './styles.module.scss';
 const features = [
   {
     title: <>Declarative</>,
+    alt: 'Declarative',
     imageUrl: 'images/home-code.png',
     description: (
       <>
@@ -41,6 +42,7 @@ const features = [
   },
   {
     title: <>Asynchronous layout</>,
+    alt: 'Asynchronous layout',
     imageUrl: 'images/home-async.png',
     description: (
       <>
@@ -53,6 +55,7 @@ const features = [
   },
   {
     title: <>Flatter view hierarchies</>,
+    alt: 'Flatter view hierarchies',
     imageUrl: 'images/home-flat-not-flat.png',
     description: (
       <>
@@ -66,6 +69,7 @@ const features = [
   },
   {
     title: <>Fine-grained recycling</>,
+    alt: 'Fine-grained recycling',
     imageUrl: 'images/home-incremental-mount.png',
     description: (
       <>
@@ -80,7 +84,7 @@ const features = [
   },
 ];
 
-function Feature({imageUrl, title, description, dark}) {
+function Feature({imageUrl, alt, title, description, dark}) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
     <section
@@ -89,7 +93,7 @@ function Feature({imageUrl, title, description, dark}) {
         !dark && styles.lightFeature,
       )}>
       <div className={styles.featureContent}>
-        <img className={styles.featureImage} src={imgUrl} alt={title} />
+        <img className={styles.featureImage} src={imgUrl} alt={alt} />
         <div className={styles.featureText}>
           <h3 className={styles.featureTitle}>{title}</h3>
           <p className={styles.featureBody}>{description}</p>
