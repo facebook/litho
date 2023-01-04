@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import android.view.ViewGroup;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -137,7 +136,7 @@ public class RecyclerBinderSubAdapterTest {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List payloads) {
+    public void onBindViewHolder(ViewHolder holder, int position, List payloads) {
       getAdapter(position).onBindViewHolder(holder, correctPosition(position), payloads);
     }
 
@@ -151,16 +150,15 @@ public class RecyclerBinderSubAdapterTest {
       return getAdapter(position).getItemId(correctPosition(position));
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       return viewType == 1
           ? mFirst.createViewHolder(parent, 0)
           : mSecond.createViewHolder(parent, 0);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
       getAdapter(position).onBindViewHolder(holder, correctPosition(position));
     }
 
