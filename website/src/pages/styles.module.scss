@@ -94,29 +94,10 @@
 
 // --- css for the video container ---
 
-.ytVideo {
-  width: 560px;
-  height: 315px;
-  margin: auto;
-  @media screen and (max-width: 600px) {
-    position: relative;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
-    padding-top: 56.25%;
-  }
-}
-
 .ytVideoIframe {
-  width: 100%;
-  height: 100%;
-  @media screen and (max-width: 600px) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-  }
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 16/9;
 }
 
 // --- css for the features --- 
