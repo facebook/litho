@@ -5,6 +5,7 @@
 load("@fbsource//tools/build_defs/android:litho_jni.bzl", "LITHO_JNI_DEPS")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_SWIPEREFRESHLAYOUT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET",
     "LITHO_ASSERTJ_TARGET",
@@ -44,6 +45,7 @@ litho_robolectric4_test(
         LITHO_YOGA_TARGET,
         LITHO_TESTING_CORE_TARGET,
         LITHO_TESTING_TEST_RUNNER_TARGET,
+        LITHO_ANDROIDSUPPORT_SWIPEREFRESHLAYOUT_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/api:api"),
     ],
 )
