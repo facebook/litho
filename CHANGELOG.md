@@ -9,6 +9,7 @@ _release-date_
 _2023-01-05_
 
 * [New] [Canvas component](https://fblitho.com/docs/widgets/canvas/) provides a means for drawing simple 2D graphics.
+* [New] LayoutThreadFactory can now be customized via an optional Runnable; for example to set a StrictMode ThreadPolicy.
 * [Testing] Several improvements to testings APIs: matching with text, content description.
 * [Deprecated] SizeSpecMountWrapperComponentSpec. Use `@OnCreateLayoutWithSizeSpec` instead.
 * [Internal] Render logic has been split into 2 classes: Resolver and Layout.
