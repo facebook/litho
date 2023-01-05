@@ -1,10 +1,20 @@
 # Changelog
 
-## Version 0.46.0-SNAPSHOT
+## Version 0.47.0-SNAPSHOT
 
 _release-date_
 
-* TBA
+## Version 0.46.0
+
+_2023-01-05_
+
+* [New] [Canvas component](https://fblitho.com/docs/widgets/canvas/) provides a means for drawing simple 2D graphics.
+* [Testing] Several improvements to testings APIs: matching with text, content description.
+* [Deprecated] SizeSpecMountWrapperComponentSpec. Use `@OnCreateLayoutWithSizeSpec` instead.
+* [Internal] Render logic has been split into 2 classes: Resolver and Layout.
+* [Internal] LayoutStateFuture has been generalised into a TreeFuture, and there are several related changes.
+* [Internal] State generated during layout is now collected in a different StateHandler.
+* [Internal] Improved reliability of rebinding EventHandlers.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.45.0...master).
 
