@@ -63,6 +63,17 @@ fb_native.remote_file(
 )
 
 fb_native.android_prebuilt_aar(
+    name = "androidx-legacy-support-core-ui-aar",
+    aar = ":androidx-legacy-support-core-ui.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-legacy-support-core-ui.aar",
+    sha1 = "61a264f996046e059f889914050fae1e75d3b702",
+    url = "mvn:androidx.legacy:legacy-support-core-ui:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
     name = "androidx-legacy-support-core-utils-aar",
     aar = ":androidx-legacy-support-core-utils.aar",
 )
@@ -249,16 +260,6 @@ fb_native.remote_file(
     url = "mvn:androidx.swiperefreshlayout:swiperefreshlayout:aar:1.0.0",
 )
 
-litho_android_library(
-    name = "androidx-swiperefreshlayout",
-    autoglob = False,
-    language = "JAVA",
-    visibility = LITHO_VISIBILITY,
-    exported_deps = [
-        ":androidx-swiperefreshlayout-aar",
-    ],
-)
-
 fb_native.android_prebuilt_aar(
     name = "androidx-interpolator-aar",
     aar = ":androidx-interpolator.aar",
@@ -280,6 +281,7 @@ fb_java_library(
         ":androidx-core-aar",
         ":androidx-customview-aar",
         ":androidx-fragment-aar",
+        ":androidx-legacy-support-core-ui-aar",
         ":androidx-legacy-support-core-utils-aar",
         ":androidx-lifecycle-extensions",
         ":androidx-savedstate-aar",
@@ -318,6 +320,7 @@ litho_android_library(
     exported_deps = [
         ":androidx-interpolator-aar",
         ":androidx-recyclerview-aar",
+        ":androidx-swiperefreshlayout-aar",
     ],
 )
 
