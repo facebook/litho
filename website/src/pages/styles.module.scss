@@ -92,6 +92,14 @@
   border-color: var(--litho-light);
 }
 
+// --- css for the video container ---
+
+.ytVideoIframe {
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 16/9;
+}
+
 // --- css for the features --- 
 
 main section {

@@ -111,8 +111,7 @@ function VideoContainer() {
           <h2>Check it out in the intro video</h2>
           <div className={styles.ytVideo}>
             <iframe
-              width="560"
-              height="315"
+              className={styles.ytVideoIframe}
               src="https://www.youtube.com/embed/RFI-fuiMRK4"
               title="Explain Like I'm 5: Litho"
               frameBorder="0"
