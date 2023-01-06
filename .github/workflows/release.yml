@@ -67,9 +67,9 @@ jobs:
       with:
         java-version: '11'
     - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9.16'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9.16'
     - name: Fetch buck
       run: |
         (rm -rf buck && mkdir buck && \
@@ -95,9 +95,9 @@ jobs:
       with:
         java-version: '11'
     - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9.16'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9.16'
     - name: Fetch buck
       run: |
         (rm -rf buck && mkdir buck && \
@@ -119,9 +119,9 @@ jobs:
       with:
         java-version: '11'
     - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9.16'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9.16'
     - name: Write GPG Sec Ring
       run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
     - name: Update gradle.properties
