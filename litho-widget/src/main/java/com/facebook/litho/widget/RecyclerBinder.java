@@ -52,6 +52,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentTree.WorkingRangeAndPositionHolder;
+import com.facebook.litho.ComponentTree.WorkingRangeHolder;
 import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
@@ -220,6 +222,8 @@ public class RecyclerBinder
   private @Nullable ComponentWarmer mComponentWarmer;
   private final RunnableHandler mPreallocateMountContentHandler;
   private final boolean mPreallocatePerMountSpec;
+
+  private @Nullable WorkingRangeHolder mPendingWorkingRange;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -1185,7 +1189,8 @@ public class RecyclerBinder
   public void setSubAdapterModeRecyclerView(RecyclerView recyclerView) {
     if (!mIsSubAdapter) {
       throw new IllegalStateException(
-          "Cannot set a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+          "Cannot set a subadapter RecyclerView on a RecyclerBinder which is not in subadapter"
+              + " mode.");
     }
 
     registerDrawListener(recyclerView);
@@ -1196,7 +1201,8 @@ public class RecyclerBinder
   public void removeSubAdapterModeRecyclerView(RecyclerView recyclerView) {
     if (!mIsSubAdapter) {
       throw new IllegalStateException(
-          "Cannot remove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+          "Cannot remove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter"
+              + " mode.");
     }
 
     unregisterDrawListener(recyclerView);
@@ -2336,7 +2342,8 @@ public class RecyclerBinder
         shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
     if (mHasManualEstimatedViewportCount && shouldMeasureItemForSize) {
       throw new RuntimeException(
-          "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to determine its size!");
+          "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to"
+              + " determine its size!");
     }
 
     mIsInMeasure.set(true);
@@ -3331,26 +3338,36 @@ public class RecyclerBinder
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex) {
+    onNewWorkingRange(
+        new WorkingRangeHolder(
+            firstVisibleIndex, lastVisibleIndex, firstFullyVisibleIndex, lastFullyVisibleIndex));
+  }
+
+  private void onNewWorkingRange(WorkingRangeHolder workingRange) {
     if (mEstimatedViewportCount == UNSET
-        || firstVisibleIndex == RecyclerView.NO_POSITION
-        || lastVisibleIndex == RecyclerView.NO_POSITION) {
+        || workingRange.firstVisibleIndex == RecyclerView.NO_POSITION
+        || workingRange.lastVisibleIndex == RecyclerView.NO_POSITION) {
+      if (ComponentsConfiguration.useReliableWorkingRange) {
+        mPendingWorkingRange = workingRange;
+      }
       return;
     }
 
-    final int rangeSize = Math.max(mEstimatedViewportCount, lastVisibleIndex - firstVisibleIndex);
+    final int rangeSize =
+        Math.max(
+            mEstimatedViewportCount,
+            workingRange.lastVisibleIndex - workingRange.firstVisibleIndex);
     final int layoutRangeSize = (int) (rangeSize * mRangeRatio);
-    final int rangeStart = Math.max(0, firstVisibleIndex - layoutRangeSize);
+    final int rangeStart = Math.max(0, workingRange.firstVisibleIndex - layoutRangeSize);
     final int rangeEnd =
-        Math.min(firstVisibleIndex + rangeSize + layoutRangeSize, mComponentTreeHolders.size() - 1);
+        Math.min(
+            workingRange.firstVisibleIndex + rangeSize + layoutRangeSize,
+            mComponentTreeHolders.size() - 1);
 
     for (int position = rangeStart; position <= rangeEnd; position++) {
       final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
       holder.checkWorkingRangeAndDispatch(
-          position,
-          firstVisibleIndex,
-          lastVisibleIndex,
-          firstFullyVisibleIndex,
-          lastFullyVisibleIndex);
+          new WorkingRangeAndPositionHolder(position, workingRange));
     }
   }
 
@@ -3374,7 +3391,15 @@ public class RecyclerBinder
     final boolean didRangeExtremitiesChange;
 
     synchronized (this) {
-      if (!isMeasured() || mEstimatedViewportCount == UNSET) {
+      // When mHasDynamicItemHeight is set, isMeasured() always returns false, to trigger re-measure
+      // of the RecyclerView whenever a new child item is measured. However, this causes this
+      // function to return early, preventing layout ranges from being applied.
+      boolean isMeasured =
+          ComponentsConfiguration.useReliableWorkingRange && mHasDynamicItemHeight
+              ? mIsMeasured.get()
+              : isMeasured();
+
+      if (!isMeasured || mEstimatedViewportCount == UNSET) {
         return;
       }
 
