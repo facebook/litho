@@ -228,7 +228,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   /** Starts a sys-trace. The systrace's section will be named after the class name + a suffix. */
   private void startTrace(final String suffix) {
     addSystraceArgs(
-            ComponentsSystrace.beginSectionWithArgs(getClass().getSimpleName() + "." + suffix))
+            ComponentsSystrace.beginSectionWithArgs(
+                "<cls>" + getClass().getName() + "</cls>." + suffix))
         .arg("runningThreadId", mRunningThreadId.get())
         .flush();
   }
