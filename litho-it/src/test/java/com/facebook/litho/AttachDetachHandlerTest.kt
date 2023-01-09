@@ -96,10 +96,10 @@ class AttachDetachHandlerTest {
     val c = legacyLithoViewRule.context
     val c3 = AttachDetachTester.create(c).name("c3")
     val c4 = AttachDetachTester.create(c).name("c4")
-    val c1 = AttachDetachTester.create(c).name("c1").children(arrayOf(c3, c4))
+    val c1 = AttachDetachTester.create(c).name("c1").children(listOf(c3, c4))
     val c2 = AttachDetachTester.create(c).name("c2")
     val steps: MutableList<String> = ArrayList()
-    val r1 = AttachDetachTester.create(c).children(arrayOf(c1, c2)).name("r1").steps(steps).build()
+    val r1 = AttachDetachTester.create(c).children(listOf(c1, c2)).name("r1").steps(steps).build()
     legacyLithoViewRule.setRoot(r1)
     legacyLithoViewRule.attachToWindow().measure().layout()
     assertThat(steps)
@@ -123,8 +123,8 @@ class AttachDetachHandlerTest {
     */
     val c5 = AttachDetachTester.create(c).name("c5")
     val c7 = AttachDetachTester.create(c).name("c7")
-    val c6 = AttachDetachTester.create(c).name("c6").children(arrayOf(c7))
-    val r2 = AttachDetachTester.create(c).children(arrayOf(c5, c6)).name("r2").steps(steps).build()
+    val c6 = AttachDetachTester.create(c).name("c6").children(listOf(c7))
+    val r2 = AttachDetachTester.create(c).children(listOf(c5, c6)).name("r2").steps(steps).build()
     legacyLithoViewRule.setRoot(r2)
     assertThat(steps)
         .describedAs("Should call @OnDetached and @OnAttached methods in expect order")
@@ -143,7 +143,7 @@ class AttachDetachHandlerTest {
                    c7
     */
     val c8 = AttachDetachTester.create(c).name("c8")
-    val r3 = AttachDetachTester.create(c).children(arrayOf(c8)).name("r3").steps(steps).build()
+    val r3 = AttachDetachTester.create(c).children(listOf(c8)).name("r3").steps(steps).build()
     legacyLithoViewRule.setRoot(r3)
     assertThat(steps)
         .describedAs("Should call @OnDetached methods in expect order")
@@ -157,10 +157,10 @@ class AttachDetachHandlerTest {
     val c = legacyLithoViewRule.context
     val c3 = AttachDetachTester.create(c).name("c3")
     val c4 = AttachDetachTester.create(c).name("c4")
-    val c1 = AttachDetachTester.create(c).name("c1").children(arrayOf(c3, c4))
+    val c1 = AttachDetachTester.create(c).name("c1").children(listOf(c3, c4))
     val c2 = AttachDetachTester.create(c).name("c2")
     val steps: MutableList<String> = ArrayList()
-    val r1 = AttachDetachTester.create(c).children(arrayOf(c1, c2)).name("r1").steps(steps).build()
+    val r1 = AttachDetachTester.create(c).children(listOf(c1, c2)).name("r1").steps(steps).build()
     legacyLithoViewRule.setRoot(r1)
     legacyLithoViewRule.attachToWindow().measure().layout()
     assertThat(steps)
@@ -184,10 +184,10 @@ class AttachDetachHandlerTest {
     */
     val c5 = AttachDetachTester.create(c).name("c5")
     val c7 = AttachDetachTester.create(c).name("c7")
-    val c6 = AttachDetachTester.create(c).name("c6").children(arrayOf(c7))
+    val c6 = AttachDetachTester.create(c).name("c6").children(listOf(c7))
     val r2 =
         AttachDetachTester.create(c)
-            .children(arrayOf(c5, c6))
+            .children(listOf(c5, c6))
             .name("r2")
             .key("newKey")
             .steps(steps)
@@ -214,7 +214,7 @@ class AttachDetachHandlerTest {
     val steps: MutableList<String> = ArrayList()
     val c1 = AttachDetachTester.create(c).name("c1")
     val component =
-        AttachDetachTester.create(c).name("root").steps(steps).children(arrayOf(c1)).build()
+        AttachDetachTester.create(c).name("root").steps(steps).children(listOf(c1)).build()
     legacyLithoViewRule.setRootAndSizeSpecSync(
         component,
         SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
@@ -244,7 +244,7 @@ class AttachDetachHandlerTest {
     val steps: List<String> = ArrayList()
     val c1 = AttachDetachTester.create(c).name("c1")
     val component =
-        AttachDetachTester.create(c).name("root").steps(steps).children(arrayOf(c1)).build()
+        AttachDetachTester.create(c).name("root").steps(steps).children(listOf(c1)).build()
     val componentTree = legacyLithoViewRule.componentTree
     val latch1 = CountDownLatch(1)
     val thread1 = Thread {

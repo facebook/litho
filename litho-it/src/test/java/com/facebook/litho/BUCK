@@ -6,6 +6,7 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
+    "LITHO_ANDROIDSUPPORT_SWIPEREFRESHLAYOUT_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ASSERTJ_TARGET",
@@ -70,6 +71,7 @@ litho_robolectric4_test(
         "//fbandroid/java/com/facebook/testing/automock/fbktx:fbktx",
         "//third-party/kotlin/mockito-kotlin2:mockito-kotlin2",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ANDROIDSUPPORT_SWIPEREFRESHLAYOUT_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ASSERTJ_TARGET,
