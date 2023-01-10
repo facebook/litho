@@ -85,12 +85,19 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
   @SuppressLint({"BadMethodUse-java.lang.Class.getName", "ReflectionMethodUse"})
   public String getMessage() {
     final Throwable cause = getDeepestCause();
-    final StringBuilder msg =
-        new StringBuilder("Real Cause => ")
-            .append(cause.getClass().getCanonicalName())
-            .append(": ")
-            .append(cause.getMessage())
-            .append("\nLitho Context:\n");
+    final StringBuilder msg = new StringBuilder("Real Cause");
+
+    if (mComponentContext != null && mComponentContext.getComponentScope() != null) {
+      msg.append(" at <cls>")
+          .append(mComponentContext.getComponentScope().getClass().getName())
+          .append("</cls>");
+    }
+
+    msg.append(" => ")
+        .append(cause.getClass().getCanonicalName())
+        .append(": ")
+        .append(cause.getMessage())
+        .append("\nLitho Context:\n");
     if (!mComponentNameLayoutStack.isEmpty()) {
       msg.append("  layout_stack: ");
       for (int i = mComponentNameLayoutStack.size() - 1; i >= 0; i--) {
@@ -118,12 +125,6 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     if (componentTree != null && componentTree.getRoot() != null) {
       msg.append("  tree_root: <cls>")
           .append(componentTree.getRoot().getClass().getName())
-          .append("</cls>\n");
-    }
-
-    if (mComponentContext != null && mComponentContext.getComponentScope() != null) {
-      msg.append("  component_scope: <cls>")
-          .append(mComponentContext.getComponentScope().getClass().getName())
           .append("</cls>\n");
     }
 

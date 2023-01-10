@@ -216,7 +216,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("log_tag: myLogTag");
     mExpectedException.expectMessage(
-        "component_scope: <cls>com.facebook.litho.widget.OnClickCallbackComponent</cls>");
+        "<cls>com.facebook.litho.widget.OnClickCallbackComponent</cls>");
 
     final ComponentContext c =
         new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
@@ -250,7 +250,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("log_tag: myLogTag");
     mExpectedException.expectMessage(
-        "component_scope: <cls>com.facebook.litho.widget.TriggerCallbackComponent</cls>");
+        "<cls>com.facebook.litho.widget.TriggerCallbackComponent</cls>");
 
     final ComponentContext c =
         new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
@@ -362,7 +362,7 @@ public class LithoMetadataExceptionWrapperTest {
   public void onMeasureCrash_showsDebugMetadata() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage(
-        "component_scope: <cls>com.facebook.litho.widget.OnMeasureCallbackComponent</cls>");
+        "<cls>com.facebook.litho.widget.OnMeasureCallbackComponent</cls>");
 
     final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
@@ -389,7 +389,7 @@ public class LithoMetadataExceptionWrapperTest {
   @Test
   public void onCrash_withMultipleNestedExceptions_showsDeepestException() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("Real Cause => java.lang.RuntimeException: Exception Level 3");
+    mExpectedException.expectMessage("java.lang.RuntimeException: Exception Level 3");
 
     final ComponentContext c = mLegacyLithoViewRule.getContext();
     final Component component =
