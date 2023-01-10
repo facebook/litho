@@ -313,6 +313,12 @@ public class ComponentsConfiguration {
 
   public static boolean enableStateUpdatesBatching = true;
 
+  /** Debug option to highlight interactive areas in mounted components. */
+  public static boolean debugHighlightInteractiveBounds = false;
+
+  /** Debug option to highlight mount bounds of mounted components. */
+  public static boolean debugHighlightMountBounds = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

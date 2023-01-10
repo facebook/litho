@@ -4,6 +4,8 @@
 
 _release-date_
 
+* [New] Adds debug overlay for to show components bounds, and interactive elements. Set the following configs to enable the feature: `debugHighlightInteractiveBounds`, `debugHighlightMountBounds`.  
+
 ## Version 0.46.0
 
 _2023-01-05_
