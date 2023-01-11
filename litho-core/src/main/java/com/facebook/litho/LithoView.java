@@ -529,7 +529,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     if (canAnimateRootBounds) {
       // We might need to collect transitions before mount to know whether this LithoView has
       // width or height animation.
-      mComponentTree.maybeCollectTransitions();
+      maybeCollectAllTransitions();
 
       final int initialAnimatedWidth =
           getInitialAnimatedLithoViewWidth(upToDateWidth, mHasNewComponentTree);
@@ -549,8 +549,21 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     mIsMeasuring = false;
   }
 
-  void maybeCollectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  /**
+   * If we have transition key on root component we might run bounds animation on LithoView which
+   * requires to know animating value in {@link LithoView#onMeasure(int, int)}. In such case we need
+   * to collect all transitions before mount happens but after layout computation is finalized.
+   */
+  void maybeCollectAllTransitions() {
     if (mIsMountStateDirty) {
+      if (mComponentTree == null) {
+        return;
+      }
+
+      final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
+      if (layoutState == null || layoutState.getRootTransitionId() == null) {
+        return;
+      }
       // TODO: can this be a generic callback?
       if (mLithoHostListenerCoordinator != null) {
         mLithoHostListenerCoordinator.collectAllTransitions(layoutState);
