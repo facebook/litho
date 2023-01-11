@@ -21,7 +21,6 @@ import static com.facebook.rendercore.testing.ViewAssertions.MatchAssertionBuild
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.rendercore.RootHost;
 import java.util.ArrayList;
 import org.assertj.core.api.Java6Assertions;
 
@@ -64,6 +63,7 @@ public class ViewMatchNode extends MatchNode {
   private Rect mBounds;
   private Rect mPadding;
   private Rect mAbsoluteBounds;
+  private Class mRootType;
 
   private ViewMatchNode(Class type) {
     super(type);
@@ -79,8 +79,10 @@ public class ViewMatchNode extends MatchNode {
     return this;
   }
 
-  public ViewMatchNode absoluteBounds(int x, int y, int width, int height) {
+  public ViewMatchNode absoluteBoundsForRootType(
+      int x, int y, int width, int height, Class rootType) {
     mAbsoluteBounds = new Rect(x, y, width, height);
+    mRootType = rootType;
     return this;
   }
 
@@ -107,7 +109,7 @@ public class ViewMatchNode extends MatchNode {
     }
 
     if (mAbsoluteBounds != null) {
-      final Rect bounds = getAbsoluteBounds(view);
+      final Rect bounds = getAbsoluteBounds(view, mRootType);
       Java6Assertions.assertThat(bounds)
           .describedAs(getDescription("Absolute bounds on " + viewToString(view)))
           .isEqualTo(mAbsoluteBounds);
@@ -139,11 +141,11 @@ public class ViewMatchNode extends MatchNode {
     }
   }
 
-  public static Rect getAbsoluteBounds(View target) {
+  public static Rect getAbsoluteBounds(View target, Class rootType) {
     View parent = (View) target.getParent();
     int x = target.getLeft();
     int y = target.getTop();
-    while (parent != null && !(parent instanceof RootHost)) {
+    while (parent != null && !(rootType.isInstance(parent))) {
       x += parent.getLeft();
       y += parent.getTop();
       parent = (View) parent.getParent();

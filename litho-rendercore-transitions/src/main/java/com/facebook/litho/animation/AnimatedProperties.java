@@ -21,7 +21,6 @@ import android.view.View;
 import com.facebook.litho.AnimatableItem;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import com.facebook.rendercore.transitions.TransitionUtils;
@@ -109,7 +108,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      if (mountContent instanceof Host && mountContent instanceof RootHost) {
+      if (mountContent instanceof Host && mountContent instanceof AnimatedRootHost) {
         return ((Host) mountContent).getX();
       } else if (mountContent instanceof View) {
         return getPositionRelativeToRootHost((View) mountContent, true);
@@ -130,7 +129,7 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof Host && mountContent instanceof RootHost) {
+      if (mountContent instanceof Host && mountContent instanceof AnimatedRootHost) {
         ((View) mountContent).setX(value);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
@@ -166,7 +165,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      if (mountContent instanceof Host && mountContent instanceof RootHost) {
+      if (mountContent instanceof Host && mountContent instanceof AnimatedRootHost) {
         return ((Host) mountContent).getY();
       } else if (mountContent instanceof View) {
         return getPositionRelativeToRootHost((View) mountContent, false);
@@ -187,7 +186,7 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof Host && mountContent instanceof RootHost) {
+      if (mountContent instanceof Host && mountContent instanceof AnimatedRootHost) {
         ((View) mountContent).setY(value);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
@@ -515,7 +514,7 @@ public final class AnimatedProperties {
       if (currentView == null || !(currentView.getParent() instanceof View)) {
         return pos;
       }
-      if (currentView instanceof Host && currentView instanceof RootHost) {
+      if (currentView instanceof Host && currentView instanceof AnimatedRootHost) {
         return pos;
       }
       pos += getX ? currentView.getX() : currentView.getY();

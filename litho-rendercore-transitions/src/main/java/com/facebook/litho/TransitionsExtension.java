@@ -34,7 +34,6 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
-import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -699,7 +698,7 @@ public class TransitionsExtension
 
     if (mountItem.getRenderTreeNode().getRenderUnit() instanceof TransitionRenderUnit
         && (content instanceof Host)
-        && !(content instanceof RootHost)) {
+        && !(content instanceof AnimatedRootHost)) {
       final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
