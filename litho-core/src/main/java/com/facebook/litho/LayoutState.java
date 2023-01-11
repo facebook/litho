@@ -191,7 +191,7 @@ public class LayoutState
   private @Nullable AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
 
-  private @Nullable TreeState mTreeState;
+  private final TreeState mTreeState;
   private @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable TransitionId mCurrentTransitionId;
   private @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
@@ -1900,16 +1900,13 @@ public class LayoutState
   }
 
   /**
-   * Returns the state handler instance currently held by LayoutState and nulls it afterwards.
+   * Returns the state handler instance currently held by LayoutState.
    *
    * @return the state handler
    */
-  @Nullable
   @CheckReturnValue
-  TreeState consumeTreeState() {
-    final TreeState treeState = mTreeState;
-    mTreeState = null;
-    return treeState;
+  TreeState getTreeState() {
+    return mTreeState;
   }
 
   @Nullable
@@ -2051,11 +2048,10 @@ public class LayoutState
   @Nullable
   @Override
   public List<Transition> getMountTimeTransitions() {
-    final ComponentTree componentTree = mContext.getComponentTree();
-    if (componentTree == null || componentTree.getTreeState() == null) {
+    if (mTreeState == null) {
       return null;
     }
-    componentTree.getTreeState().applyPreviousRenderData(this);
+    mTreeState.applyPreviousRenderData(this);
 
     List<Transition> mountTimeTransitions = null;
 
@@ -2077,7 +2073,7 @@ public class LayoutState
       }
     }
 
-    final List<Transition> updateStateTransitions = componentTree.getStateUpdateTransitions();
+    final List<Transition> updateStateTransitions = mTreeState.getPendingStateUpdateTransitions();
     if (updateStateTransitions != null) {
       if (mountTimeTransitions == null) {
         mountTimeTransitions = new ArrayList<>();

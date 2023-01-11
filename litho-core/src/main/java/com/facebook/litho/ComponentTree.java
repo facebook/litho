@@ -1867,10 +1867,6 @@ public class ComponentTree implements LithoLifecycleListener {
         ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
   }
 
-  synchronized @Nullable List<Transition> getStateUpdateTransitions() {
-    return mTreeState == null ? null : mTreeState.getPendingStateUpdateTransitions();
-  }
-
   /**
    * @see #showTooltip(LithoTooltip, String, int, int)
    * @deprecated
@@ -2633,7 +2629,7 @@ public class ComponentTree implements LithoLifecycleListener {
         logFinishLayout(source, extraAttribution, layoutState, committedNewLayout);
       }
 
-      final TreeState localTreeState = layoutState.consumeTreeState();
+      final TreeState localTreeState = layoutState.getTreeState();
       if (committedNewLayout) {
         scopedSpecComponentInfos = layoutState.consumeScopedSpecComponentInfos();
         createdEventHandlers = layoutState.consumeCreatedEventHandlers();

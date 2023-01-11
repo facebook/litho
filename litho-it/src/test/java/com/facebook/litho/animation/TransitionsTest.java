@@ -129,6 +129,9 @@ public class TransitionsTest {
     // Mount gets scheduled on main thread.
     // Wait for all tasks scheduled on main thread to finish.
     ShadowLooper.idleMainLooper();
+    assertThat(redView.getX()).describedAs("redView after 10 frames").isEqualTo(1040);
+    assertThat(greenView.getX()).describedAs("greenView after 10 frames").isEqualTo(1040);
+    assertThat(blueView.getX()).describedAs("blueView after 10 frames").isEqualTo(1040);
 
     mTransitionTestRule.step(10);
 
