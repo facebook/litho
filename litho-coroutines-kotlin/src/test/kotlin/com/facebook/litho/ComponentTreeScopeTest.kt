@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.app.Activity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.mock
+import org.robolectric.Robolectric
 
 /** Unit tests for [ComponentTreeScope]. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +41,7 @@ class ComponentTreeScopeTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   private val testDispatcher = TestCoroutineDispatcher()
+  private val context = Robolectric.buildActivity(Activity::class.java).create().get()
 
   @Before
   fun setUp() {
@@ -51,7 +53,7 @@ class ComponentTreeScopeTest {
   fun `componentTreeScope can start when LithoView is attached`() {
     val events = mutableListOf<String>()
 
-    val tree = ComponentTree.create(mock()).build()
+    val tree = ComponentTree.create(ComponentContext(context)).build()
 
     tree.componentTreeScope.launch { events += "launch" }
     testDispatcher.runCurrent()
@@ -63,7 +65,7 @@ class ComponentTreeScopeTest {
   fun `componentTreeScope is canceled when LithoView is detached`() {
     val events = mutableListOf<String>()
 
-    val tree = ComponentTree.create(mock()).build()
+    val tree = ComponentTree.create(ComponentContext(context)).build()
 
     tree.componentTreeScope.launch {
       try {
@@ -84,7 +86,7 @@ class ComponentTreeScopeTest {
 
   @Test
   fun `componentTreeScope starts as canceled if view is detached`() {
-    val tree = ComponentTree.create(mock()).build()
+    val tree = ComponentTree.create(ComponentContext(context)).build()
     tree.release()
 
     assertThat(tree.componentTreeScope.coroutineContext.job.isCancelled).isTrue

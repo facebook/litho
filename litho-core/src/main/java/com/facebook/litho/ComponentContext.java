@@ -83,6 +83,8 @@ public class ComponentContext implements Cloneable {
 
   private boolean isNestedTreeContext;
 
+  private final ThreadLocal<CalculationStateContext> mCalculationStateContextThreadLocal;
+
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
@@ -105,6 +107,7 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
+    mCalculationStateContextThreadLocal = new ThreadLocal<>();
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
@@ -135,6 +138,7 @@ public class ComponentContext implements Cloneable {
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
+    mCalculationStateContextThreadLocal = context.mCalculationStateContextThreadLocal;
   }
 
   ComponentContext makeNewCopy() {
@@ -151,7 +155,11 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentTree(
       ComponentContext context, ComponentTree componentTree) {
-    ComponentContext componentContext = new ComponentContext(context, null);
+    ComponentContext componentContext =
+        new ComponentContext(
+            context.getAndroidContext(), context.mLogTag, context.mLogger, context.mTreeProps);
+    componentContext.mParentTreeProps = context.mParentTreeProps;
+    componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
 
@@ -223,25 +231,17 @@ public class ComponentContext implements Cloneable {
   /** Returns the current calculate state context */
   @Nullable
   CalculationStateContext getCalculationStateContext() {
-    if (mComponentTree != null) {
-      return mComponentTree.getCalculationStateContext();
-    }
-
-    return null;
+    return mCalculationStateContextThreadLocal.get();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContext(LayoutStateContext layoutStateContext) {
-    if (mComponentTree != null) {
-      mComponentTree.setCalculationStateContext(layoutStateContext);
-    }
+    mCalculationStateContextThreadLocal.set(layoutStateContext);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void clearCalculationStateContext() {
-    if (mComponentTree != null) {
-      mComponentTree.setCalculationStateContext(null);
-    }
+    mCalculationStateContextThreadLocal.set(null);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -269,10 +269,8 @@ public class ComponentContext implements Cloneable {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setRenderStateContext(ResolveStateContext resolveStateContext) {
-    if (mComponentTree != null) {
-      mComponentTree.setCalculationStateContext(resolveStateContext);
-    }
+  public void setRenderStateContext(ResolveStateContext renderStateContext) {
+    mCalculationStateContextThreadLocal.set(renderStateContext);
   }
 
   /**
@@ -280,18 +278,12 @@ public class ComponentContext implements Cloneable {
    * thread local, making it unique per ComponentTree, per Thread.
    */
   void setCalculationStateContext(@Nullable CalculationStateContext context) {
-    if (mComponentTree != null) {
-      mComponentTree.setCalculationStateContext(context);
-    }
+    mCalculationStateContextThreadLocal.set(context);
   }
 
   /** Returns true if this method is called during layout creation. */
   boolean isCreateLayoutInProgress() {
-    if (mComponentTree != null) {
-      return mComponentTree.getCalculationStateContext() != null;
-    }
-
-    return false;
+    return mCalculationStateContextThreadLocal.get() != null;
   }
 
   public final Context getAndroidContext() {
@@ -368,12 +360,9 @@ public class ComponentContext implements Cloneable {
   @Nullable
   @VisibleForTesting
   public TreeFuture getLayoutStateFuture() {
-    if (mComponentTree != null) {
-      return Preconditions.checkNotNull(mComponentTree.getCalculationStateContext())
-          .getLayoutStateFuture();
-    }
-
-    return null;
+    return mCalculationStateContextThreadLocal.get() != null
+        ? mCalculationStateContextThreadLocal.get().getLayoutStateFuture()
+        : null;
   }
 
   /**
@@ -616,13 +605,10 @@ public class ComponentContext implements Cloneable {
   }
 
   public int getLayoutVersion() {
-    if (mComponentTree != null) {
-      final CalculationStateContext calculationStateContext =
-          mComponentTree.getCalculationStateContext();
-
-      if (calculationStateContext != null) {
-        return calculationStateContext.getLayoutVersion();
-      }
+    final CalculationStateContext calculationStateContext =
+        mCalculationStateContextThreadLocal.get();
+    if (calculationStateContext != null) {
+      return calculationStateContext.getLayoutVersion();
     }
 
     throw new IllegalStateException(
@@ -708,11 +694,9 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public LayoutStateContext getLayoutStateContext() {
-    if (mComponentTree != null) {
-      final CalculationStateContext stateContext = mComponentTree.getCalculationStateContext();
-      if (stateContext instanceof LayoutStateContext) {
-        return (LayoutStateContext) stateContext;
-      }
+    final CalculationStateContext stateContext = mCalculationStateContextThreadLocal.get();
+    if (stateContext instanceof LayoutStateContext) {
+      return (LayoutStateContext) stateContext;
     }
 
     return null;
@@ -720,11 +704,9 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public ResolveStateContext getRenderStateContext() {
-    if (mComponentTree != null) {
-      final CalculationStateContext stateContext = mComponentTree.getCalculationStateContext();
-      if (stateContext instanceof ResolveStateContext) {
-        return (ResolveStateContext) stateContext;
-      }
+    final CalculationStateContext stateContext = mCalculationStateContextThreadLocal.get();
+    if (stateContext instanceof ResolveStateContext) {
+      return (ResolveStateContext) stateContext;
     }
 
     return null;

@@ -260,9 +260,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static final ThreadLocal<WeakReference<RunnableHandler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
 
-  private final ThreadLocal<CalculationStateContext> mCalculationStateContextThreadLocal =
-      new ThreadLocal<CalculationStateContext>();
-
   private final @Nullable IncrementalMountHelper mIncrementalMountHelper;
   private final boolean mShouldPreallocatePerMountSpec;
   private final Runnable mPreAllocateMountContentRunnable =
@@ -544,15 +541,6 @@ public class ComponentTree implements LithoLifecycleListener {
     return ComponentsConfiguration.isIncrementalMountGloballyDisabled;
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void setCalculationStateContext(@Nullable CalculationStateContext stateContext) {
-    mCalculationStateContextThreadLocal.set(stateContext);
-  }
-
-  @Nullable
-  public CalculationStateContext getCalculationStateContext() {
-    return mCalculationStateContextThreadLocal.get();
-  }
   /**
    * The provided measureListener will be called when a valid layout is commited.
    *
