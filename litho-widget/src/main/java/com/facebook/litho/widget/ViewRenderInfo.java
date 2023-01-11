@@ -116,7 +116,7 @@ public class ViewRenderInfo extends BaseRenderInfo {
     }
 
     public ViewRenderInfo build() {
-      if (viewCreator == null || viewBinder == null) {
+      if (this.viewCreator == null || this.viewBinder == null) {
         throw new IllegalStateException("Both viewCreator and viewBinder must be provided.");
       }
 
