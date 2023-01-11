@@ -257,9 +257,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultResolveThreadLooper;
 
-  @GuardedBy("ComponentTree.class")
-  private static volatile Looper sDefaultPreallocateMountContentThreadLooper;
-
   private static final ThreadLocal<WeakReference<RunnableHandler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
 
