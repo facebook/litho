@@ -92,6 +92,8 @@ public class LayoutState
         PotentiallyPartialResult {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
+  @Nullable private Transition.RootBoundsTransition mRootWidthAnimation;
+  @Nullable private Transition.RootBoundsTransition mRootHeightAnimation;
 
   @IntDef({
     CalculateLayoutSource.TEST,
@@ -2042,11 +2044,8 @@ public class LayoutState
   public void setInitialRootBoundsForAnimation(
       @Nullable Transition.RootBoundsTransition rootWidth,
       @Nullable Transition.RootBoundsTransition rootHeight) {
-    final ComponentTree componentTree = mContext.getComponentTree();
-    if (componentTree != null) {
-      componentTree.setRootWidthAnimation(rootWidth);
-      componentTree.setRootHeightAnimation(rootHeight);
-    }
+    mRootWidthAnimation = rootWidth;
+    mRootHeightAnimation = rootHeight;
   }
 
   @Nullable
@@ -2221,5 +2220,15 @@ public class LayoutState
   @Deprecated
   public static LayoutState createTestInstance(ComponentContext c) {
     return new LayoutState(c);
+  }
+
+  @Nullable
+  public Transition.RootBoundsTransition getRootHeightAnimation() {
+    return mRootHeightAnimation;
+  }
+
+  @Nullable
+  public Transition.RootBoundsTransition getRootWidthAnimation() {
+    return mRootWidthAnimation;
   }
 }
