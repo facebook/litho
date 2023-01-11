@@ -108,8 +108,8 @@ public class ComponentTree implements LithoLifecycleListener {
       "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold:";
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
-  private final boolean mAreTransitionsEnabled;
   private final ComponentsConfiguration mComponentsConfiguration;
+  private final LithoConfiguration mLithoConfiguration;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -284,9 +284,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private boolean mIsMeasuring;
 
   @ThreadConfined(ThreadConfined.UI)
-  private final boolean mIncrementalMountEnabled;
-
-  @ThreadConfined(ThreadConfined.UI)
   private final boolean mVisibilityProcessingEnabled;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -402,13 +399,9 @@ public class ComponentTree implements LithoLifecycleListener {
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
 
-  private final boolean isReconciliationEnabled;
-
   private final boolean isResolveAndLayoutFuturesSplitEnabled;
 
   private final boolean useSeparateThreadHandlersForResolveAndLayout;
-
-  private final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
 
   private final boolean mMoveLayoutsBetweenThreads;
 
@@ -443,8 +436,23 @@ public class ComponentTree implements LithoLifecycleListener {
   protected ComponentTree(Builder builder) {
     mComponentsConfiguration = builder.componentsConfiguration;
 
-    mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = builder.root;
+    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
+
+    mLithoConfiguration =
+        new LithoConfiguration(
+            AnimationsDebug.areTransitionsEnabled(builder.context.getAndroidContext()),
+            mComponentsConfiguration.keepLithoNodeAndLayoutResultTreeWithReconciliation(),
+            ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure,
+            mComponentsConfiguration.shouldReuseOutputs(),
+            ComponentsConfiguration.overrideReconciliation != null
+                ? ComponentsConfiguration.overrideReconciliation
+                : builder.isReconciliationEnabled,
+            mVisibilityProcessingEnabled,
+            mPreAllocateMountContentHandler,
+            builder.incrementalMountEnabled && !incrementalMountGloballyDisabled());
+    mContext = ComponentContext.withComponentTree(builder.context, this);
+
     if (builder.mLifecycleProvider != null) {
       subscribeToLifecycleProvider(builder.mLifecycleProvider);
     }
@@ -455,9 +463,6 @@ public class ComponentTree implements LithoLifecycleListener {
       mBatchedStateUpdatesStrategy = null;
     }
 
-    mIncrementalMountEnabled =
-        builder.incrementalMountEnabled && !incrementalMountGloballyDisabled();
-    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     if (ComponentsConfiguration.overrideLayoutDiffing != null) {
       mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;
     } else {
@@ -469,13 +474,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     addMeasureListener(builder.mMeasureListener);
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
-    if (ComponentsConfiguration.overrideReconciliation != null) {
-      isReconciliationEnabled = ComponentsConfiguration.overrideReconciliation;
-    } else {
-      isReconciliationEnabled = builder.isReconciliationEnabled;
-    }
-    isReuseLastMeasuredNodeInComponentMeasureEnabled =
-        ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
+
     isResolveAndLayoutFuturesSplitEnabled =
         ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
     useSeparateThreadHandlersForResolveAndLayout =
@@ -522,7 +521,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
     mLogger = builder.logger;
     mLogTag = builder.logTag;
-    mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
   }
 
   private Object getResolveThreadHandlerLock() {
@@ -570,10 +568,6 @@ public class ComponentTree implements LithoLifecycleListener {
         mMeasureListeners.remove(measureListener);
       }
     }
-  }
-
-  boolean areTransitionsEnabled() {
-    return mAreTransitionsEnabled;
   }
 
   private static RunnableHandler ensureAndInstrumentLayoutThreadHandler(
@@ -1107,18 +1101,17 @@ public class ComponentTree implements LithoLifecycleListener {
         + SizeSpec.toSimpleString(heightSpec);
   }
 
+  LithoConfiguration getLithoConfiguration() {
+    return mLithoConfiguration;
+  }
+
   /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
-    return mIncrementalMountEnabled;
+    return mLithoConfiguration.incrementalMountEnabled;
   }
 
   boolean isVisibilityProcessingEnabled() {
-    return mVisibilityProcessingEnabled;
-  }
-
-  @Nullable
-  RunnableHandler getMountContentPreallocationHandler() {
-    return mPreAllocateMountContentHandler;
+    return mLithoConfiguration.isVisibilityProcessingEnabled;
   }
 
   public boolean shouldReuseOutputs() {
@@ -1126,15 +1119,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   public boolean isReconciliationEnabled() {
-    return isReconciliationEnabled;
-  }
-
-  public boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
-    return isReuseLastMeasuredNodeInComponentMeasureEnabled;
-  }
-
-  public boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {
-    return mComponentsConfiguration.keepLithoNodeAndLayoutResultTreeWithReconciliation();
+    return mLithoConfiguration.isReconciliationEnabled;
   }
 
   public ErrorEventHandler getErrorEventHandler() {
@@ -3613,6 +3598,38 @@ public class ComponentTree implements LithoLifecycleListener {
     @Override
     public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
+    }
+  }
+
+  public static final class LithoConfiguration {
+    final boolean areTransitionsEnabled;
+    final boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
+    final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
+    final boolean shouldReuseOutputs;
+    final boolean isReconciliationEnabled;
+    final boolean isVisibilityProcessingEnabled;
+    @Nullable final RunnableHandler mountContentPreallocationHandler;
+    final boolean incrementalMountEnabled;
+
+    public LithoConfiguration(
+        boolean areTransitionsEnabled,
+        boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation,
+        boolean isReuseLastMeasuredNodeInComponentMeasureEnabled,
+        boolean shouldReuseOutputs,
+        boolean isReconciliationEnabled,
+        boolean isVisibilityProcessingEnabled,
+        @Nullable RunnableHandler mountContentPreallocationHandler,
+        boolean incrementalMountEnabled) {
+      this.areTransitionsEnabled = areTransitionsEnabled;
+      this.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation =
+          shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
+      this.isReuseLastMeasuredNodeInComponentMeasureEnabled =
+          isReuseLastMeasuredNodeInComponentMeasureEnabled;
+      this.shouldReuseOutputs = shouldReuseOutputs;
+      this.isReconciliationEnabled = isReconciliationEnabled;
+      this.isVisibilityProcessingEnabled = isVisibilityProcessingEnabled;
+      this.mountContentPreallocationHandler = mountContentPreallocationHandler;
+      this.incrementalMountEnabled = incrementalMountEnabled;
     }
   }
 

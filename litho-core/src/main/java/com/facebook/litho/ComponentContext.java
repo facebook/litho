@@ -31,6 +31,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
 
@@ -45,6 +46,7 @@ public class ComponentContext implements Cloneable {
   // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
   private final @Nullable ComponentsLogger mLogger;
+  private LithoConfiguration mLithoConfiguration;
 
   private @Nullable String mNoStateUpdatesMethod;
 
@@ -107,6 +109,15 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, treeProps, null);
+  }
+
+  public ComponentContext(
+      Context context,
+      @Nullable String logTag,
+      @Nullable ComponentsLogger logger,
+      @Nullable TreeProps treeProps,
+      @Nullable LithoConfiguration lithoConfiguration) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -119,6 +130,7 @@ public class ComponentContext implements Cloneable {
     mTreeProps = treeProps;
     mLogger = logger;
     mLogTag = logTag;
+    mLithoConfiguration = lithoConfiguration;
   }
 
   public ComponentContext(ComponentContext context) {
@@ -139,6 +151,7 @@ public class ComponentContext implements Cloneable {
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
     mCalculationStateContextThreadLocal = context.mCalculationStateContextThreadLocal;
+    mLithoConfiguration = context.mLithoConfiguration;
   }
 
   ComponentContext makeNewCopy() {
@@ -157,12 +170,15 @@ public class ComponentContext implements Cloneable {
       ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
         new ComponentContext(
-            context.getAndroidContext(), context.mLogTag, context.mLogger, context.mTreeProps);
+            context.getAndroidContext(),
+            context.mLogTag,
+            context.mLogger,
+            context.mTreeProps,
+            componentTree.getLithoConfiguration());
     componentContext.mParentTreeProps = context.mParentTreeProps;
     componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
-
     return componentContext;
   }
 
@@ -180,10 +196,8 @@ public class ComponentContext implements Cloneable {
       final @Nullable String globalKey) {
     ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mComponentScope = scope;
-    componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
     componentContext.mParentTreeProps = parentContext.mTreeProps;
-
     // TODO: T124275447 make these Component Context fields final
     // Either this component is nested tree or descendant of nested tree component
     componentContext.isNestedTreeContext =
@@ -673,20 +687,22 @@ public class ComponentContext implements Cloneable {
    * static to avoid polluting the ComponentContext API.
    */
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
-    return c.mComponentTree == null || c.mComponentTree.isIncrementalMountEnabled();
+    return c.mLithoConfiguration == null || c.mLithoConfiguration.incrementalMountEnabled;
   }
 
   public static @Nullable RunnableHandler getMountContentPreallocationHandler(ComponentContext c) {
-    return c.mComponentTree == null ? null : c.mComponentTree.getMountContentPreallocationHandler();
+    return c.mLithoConfiguration == null
+        ? null
+        : c.mLithoConfiguration.mountContentPreallocationHandler;
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {
-    return c.mComponentTree == null || c.mComponentTree.isVisibilityProcessingEnabled();
+    return c.mLithoConfiguration == null || c.mLithoConfiguration.isVisibilityProcessingEnabled;
   }
 
   public boolean isReconciliationEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isReconciliationEnabled();
+    if (mLithoConfiguration != null) {
+      return mLithoConfiguration.isReconciliationEnabled;
     } else {
       return ComponentsConfiguration.isReconciliationEnabled;
     }
@@ -727,12 +743,12 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldReuseOutputs() {
-    return mComponentTree != null && mComponentTree.shouldReuseOutputs();
+    return mLithoConfiguration != null && mLithoConfiguration.shouldReuseOutputs;
   }
 
   boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isReuseLastMeasuredNodeInComponentMeasureEnabled();
+    if (mLithoConfiguration != null) {
+      return mLithoConfiguration.isReuseLastMeasuredNodeInComponentMeasureEnabled;
     } else {
       return ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
     }
@@ -743,8 +759,8 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {
-    return getComponentTree() != null
-        && getComponentTree().shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation();
+    return mLithoConfiguration != null
+        && mLithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
   /**
@@ -754,9 +770,9 @@ public class ComponentContext implements Cloneable {
    * @return true if transitions are enabled.
    */
   boolean areTransitionsEnabled() {
-    if (getComponentTree() == null) {
+    if (mLithoConfiguration == null) {
       return AnimationsDebug.areTransitionsEnabled(null);
     }
-    return getComponentTree().areTransitionsEnabled();
+    return mLithoConfiguration.areTransitionsEnabled;
   }
 }
