@@ -69,9 +69,7 @@ import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.Systracer;
 import java.lang.ref.WeakReference;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -102,9 +100,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static final String DEFAULT_RESOLVE_THREAD_NAME = "ComponentResolveThread";
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String EMPTY_STRING = "";
-  private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
-      "ComponentTree:ReentrantMountsExceedMaxAttempts";
-  private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
   private static final String CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT =
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
   private static final String M_LITHO_VIEW_IS_NULL =
@@ -121,6 +116,18 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private boolean mReleased;
 
+  void setIsMounting(boolean isMounting) {
+    mIsMounting = isMounting;
+    if (isMounting && !mHasMounted) {
+      mIsFirstMount = true;
+      mHasMounted = true;
+    }
+    if (!isMounting) {
+      mRootHeightAnimation = null;
+      mRootWidthAnimation = null;
+    }
+  }
+
   interface OnReleaseListener {
 
     /** Called when this ComponentTree is released. */
@@ -132,7 +139,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private String mReleasedComponent;
   private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
-  private @Nullable Deque<ReentrantMount> mReentrantMounts;
 
   private @Nullable DebugComponentTimeMachine.TreeRevisions mTimeline;
 
@@ -900,7 +906,7 @@ public class ComponentTree implements LithoLifecycleListener {
       } else {
         final Rect visibleRect = new Rect();
         mLithoView.getCorrectedLocalVisibleRect(visibleRect);
-        mountComponent(visibleRect, true);
+        mLithoView.mountComponent(visibleRect, true);
       }
 
       return true;
@@ -944,7 +950,7 @@ public class ComponentTree implements LithoLifecycleListener {
         // It might not be yet visible but animating from 0 height/width in which case we still
         // need to mount them to trigger animation.
         || animatingRootBoundsFromZero(currentVisibleArea)) {
-      mountComponent(currentVisibleArea, true);
+      mLithoView.mountComponent(currentVisibleArea, true);
     }
   }
 
@@ -1027,104 +1033,6 @@ public class ComponentTree implements LithoLifecycleListener {
         || isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec);
   }
 
-  @UiThread
-  void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
-    assertMainThread();
-
-    if (mIsMounting) {
-      collectReentrantMount(new ReentrantMount(currentVisibleArea, processVisibilityOutputs));
-      return;
-    }
-
-    mountComponentInternal(currentVisibleArea, processVisibilityOutputs);
-
-    consumeReentrantMounts();
-  }
-
-  private void mountComponentInternal(
-      @Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
-    final LayoutState layoutState = mMainThreadLayoutState;
-    if (layoutState == null) {
-      Log.w(TAG, "Main Thread Layout state is not found");
-      return;
-    }
-
-    // We are investigating a crash where mLithoView becomes null during the execution of this
-    // function. Use a local copy.
-    final LithoView lithoViewRef = mLithoView;
-    if (lithoViewRef == null) {
-      return;
-    }
-    final boolean isDirtyMount = lithoViewRef.isMountStateDirty();
-
-    mIsMounting = true;
-
-    if (!mHasMounted) {
-      mIsFirstMount = true;
-      mHasMounted = true;
-    }
-
-    // currentVisibleArea null or empty => mount all
-    try {
-      lithoViewRef.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
-      if (isDirtyMount) {
-        recordRenderData(layoutState);
-      }
-    } catch (Exception e) {
-      throw ComponentUtils.wrapWithMetadata(this, e);
-    } finally {
-      mIsMounting = false;
-      mRootHeightAnimation = null;
-      mRootWidthAnimation = null;
-
-      if (isDirtyMount) {
-        lithoViewRef.onDirtyMountComplete();
-        if (mLithoView == null) {
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.WARNING,
-              M_LITHO_VIEW_IS_NULL,
-              "mLithoView is unexpectedly null");
-        }
-      }
-    }
-  }
-
-  private void collectReentrantMount(ReentrantMount reentrantMount) {
-    if (mReentrantMounts == null) {
-      mReentrantMounts = new ArrayDeque<>();
-    } else if (mReentrantMounts.size() > REENTRANT_MOUNTS_MAX_ATTEMPTS) {
-      logReentrantMountsExceedMaxAttempts();
-      mReentrantMounts.clear();
-      return;
-    }
-    mReentrantMounts.add(reentrantMount);
-  }
-
-  private void consumeReentrantMounts() {
-    if (mReentrantMounts != null) {
-      final Deque<ReentrantMount> reentrantMounts = new ArrayDeque<>(mReentrantMounts);
-      mReentrantMounts.clear();
-
-      while (!reentrantMounts.isEmpty()) {
-        final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
-        mLithoView.setMountStateDirty();
-        mountComponentInternal(
-            reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
-      }
-    }
-  }
-
-  private void logReentrantMountsExceedMaxAttempts() {
-    final String message =
-        "Reentrant mounts exceed max attempts"
-            + ", view="
-            + (mLithoView != null ? LithoViewTestHelper.toDebugString(mLithoView) : null)
-            + ", component="
-            + (mRoot != null ? mRoot : getSimpleName());
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.FATAL, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message);
-  }
-
   void applyPreviousRenderData(LayoutState layoutState) {
     final List<ScopedComponentInfo> scopedComponentInfos =
         layoutState.getScopedComponentInfosNeedingPreviousRenderData();
@@ -1143,7 +1051,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mPreviousRenderState.applyPreviousRenderData(scopedComponentInfos);
   }
 
-  private void recordRenderData(LayoutState layoutState) {
+  void recordRenderData(LayoutState layoutState) {
     final List<ScopedComponentInfo> scopedComponentInfos =
         layoutState.getScopedComponentInfosNeedingPreviousRenderData();
     if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
@@ -3951,20 +3859,6 @@ public class ComponentTree implements LithoLifecycleListener {
     @Override
     public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
-    }
-  }
-
-  /**
-   * An encapsulation of currentVisibleArea and processVisibilityOutputs for each re-entrant mount.
-   */
-  private static final class ReentrantMount {
-
-    final @Nullable Rect currentVisibleArea;
-    final boolean processVisibilityOutputs;
-
-    private ReentrantMount(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
-      this.currentVisibleArea = currentVisibleArea;
-      this.processVisibilityOutputs = processVisibilityOutputs;
     }
   }
 

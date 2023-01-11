@@ -32,6 +32,7 @@ import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
@@ -48,6 +49,7 @@ import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -62,7 +64,10 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
+  private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
+      "ComponentTree:ReentrantMountsExceedMaxAttempts";
   private static final String TAG = LithoView.class.getSimpleName();
+  private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
 
   private boolean mIsMountStateDirty;
   private final MountState mMountState;
@@ -71,6 +76,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   private boolean mVisibilityHintIsVisible;
   private boolean mSkipMountingIfNotVisible;
   private @Nullable LithoLifecycleProvider mLifecycleProvider;
+  private @Nullable Deque<ReentrantMount> mReentrantMounts;
 
   private final boolean mIsLithoViewSelfManagingViewPortChanges;
   private final Rect mCachedCorrectedVisibleRect = new Rect();
@@ -1393,13 +1399,92 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
       ComponentsSystrace.beginSection("LithoView.notifyVisibleBoundsChangedWithRect");
     }
     if (mComponentTree.isIncrementalMountEnabled()) {
-      mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
+      mountComponent(visibleRect, processVisibilityOutputs);
     } else if (processVisibilityOutputs) {
       processVisibilityOutputs(visibleRect);
     }
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+  }
+
+  @UiThread
+  void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
+    assertMainThread();
+
+    if (mComponentTree.isMounting()) {
+      collectReentrantMount(new ReentrantMount(currentVisibleArea, processVisibilityOutputs));
+      return;
+    }
+
+    mountComponentInternal(currentVisibleArea, processVisibilityOutputs);
+
+    consumeReentrantMounts();
+  }
+
+  private void collectReentrantMount(ReentrantMount reentrantMount) {
+    if (mReentrantMounts == null) {
+      mReentrantMounts = new ArrayDeque<>();
+    } else if (mReentrantMounts.size() > REENTRANT_MOUNTS_MAX_ATTEMPTS) {
+      logReentrantMountsExceedMaxAttempts();
+      mReentrantMounts.clear();
+      return;
+    }
+    mReentrantMounts.add(reentrantMount);
+  }
+
+  private void consumeReentrantMounts() {
+    if (mReentrantMounts != null) {
+      final Deque<ReentrantMount> reentrantMounts = new ArrayDeque<>(mReentrantMounts);
+      mReentrantMounts.clear();
+
+      while (!reentrantMounts.isEmpty()) {
+        final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
+        setMountStateDirty();
+        mountComponentInternal(
+            reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
+      }
+    }
+  }
+
+  private void mountComponentInternal(
+      @Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
+    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
+    if (layoutState == null) {
+      Log.w(TAG, "Main Thread Layout state is not found");
+      return;
+    }
+
+    final boolean isDirtyMount = isMountStateDirty();
+
+    mComponentTree.setIsMounting(true);
+
+    // currentVisibleArea null or empty => mount all
+    try {
+      mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+      if (isDirtyMount) {
+        mComponentTree.recordRenderData(layoutState);
+      }
+    } catch (Exception e) {
+      throw ComponentUtils.wrapWithMetadata(mComponentTree, e);
+    } finally {
+      mComponentTree.setIsMounting(false);
+
+      if (isDirtyMount) {
+        onDirtyMountComplete();
+      }
+    }
+  }
+
+  private void logReentrantMountsExceedMaxAttempts() {
+    final String message =
+        "Reentrant mounts exceed max attempts"
+            + ", view="
+            + LithoViewTestHelper.toDebugString(this)
+            + ", component="
+            + (mComponentTree != null ? mComponentTree.getSimpleName() : null);
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.FATAL, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message);
   }
 
   @Override
@@ -1997,5 +2082,19 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     lithoSpecific.put("tree", ComponentTreeDumpingHelper.dumpContextTree(tree.getContext()));
 
     return metadata;
+  }
+
+  /**
+   * An encapsulation of currentVisibleArea and processVisibilityOutputs for each re-entrant mount.
+   */
+  private static final class ReentrantMount {
+
+    final @Nullable Rect currentVisibleArea;
+    final boolean processVisibilityOutputs;
+
+    private ReentrantMount(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
+      this.currentVisibleArea = currentVisibleArea;
+      this.processVisibilityOutputs = processVisibilityOutputs;
+    }
   }
 }

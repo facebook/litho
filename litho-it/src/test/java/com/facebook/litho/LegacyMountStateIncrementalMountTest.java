@@ -63,7 +63,7 @@ public class LegacyMountStateIncrementalMountTest {
     lithoView.unmountAllItems();
     assertThat(lithoView.getContentDescription()).isNull();
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    lithoView.mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
   }
 

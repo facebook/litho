@@ -18,31 +18,21 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import androidx.viewpager.widget.ViewPager;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
-import com.facebook.rendercore.MountDelegateTarget;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 @RunWith(LithoTestRunner.class)
 public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
-  private LithoView mLithoView;
+  private TestLithoView mLithoView;
   private ComponentTree mComponentTree;
 
   private final Rect mMountedRect = new Rect();
@@ -56,104 +46,88 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
             .layoutDiffing(false)
             .build();
 
-    mLithoView = mock(TestLithoView.class);
-    when(mLithoView.getMountDelegateTarget()).thenReturn(mock(MountDelegateTarget.class));
-    Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
+    mLithoView = new TestLithoView(context);
+    mLithoView.setComponentTree(mComponentTree);
     Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
-
-    // Can't use verify as the rect is reset when it is released back to the pool, which occurs
-    // before we can check it.
-    doAnswer(
-            new Answer() {
-              @Override
-              public Void answer(InvocationOnMock invocation) throws Throwable {
-                mMountedRect.set((Rect) invocation.getArguments()[1]);
-                return null;
-              }
-            })
-        .when(mLithoView)
-        .mount((LayoutState) any(), (Rect) any(), eq(true));
   }
 
   @Test
   public void testGetLocalVisibleBounds() {
-    doAnswer(
-            new Answer<Boolean>() {
-              @Override
-              public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                Rect rect = (Rect) invocation.getArguments()[0];
-                rect.set(new Rect(10, 5, 20, 15));
-                return true;
-              }
-            })
-        .when(mLithoView)
-        .getCorrectedLocalVisibleRect((Rect) any());
-
+    mLithoView.shouldRetundCorrectedVisibleRect = new Rect(10, 5, 20, 15);
     mComponentTree.incrementalMountComponent();
     assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
   }
 
   @Test
   public void testViewPagerInHierarchy() {
-    doAnswer(
-            new Answer<Boolean>() {
-              @Override
-              public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                return false;
-              }
-            })
-        .when(mLithoView)
-        .getCorrectedLocalVisibleRect((Rect) any());
+    mLithoView.shouldRetundCorrectedVisibleRect = null;
+    final ViewPager.OnPageChangeListener[] listener = new ViewPager.OnPageChangeListener[1];
+    final Runnable[] runnable = new Runnable[1];
+    ViewPager viewPager =
+        new ViewPager(mComponentTree.getContext().getAndroidContext()) {
+          @Override
+          public void addOnPageChangeListener(OnPageChangeListener l) {
+            listener[0] = l;
+            super.addOnPageChangeListener(l);
+          }
 
-    ViewPager viewPager = mock(ViewPager.class);
-    when(mLithoView.getParent()).thenReturn(viewPager);
+          @Override
+          public void postOnAnimation(Runnable action) {
+            runnable[0] = action;
+            super.postOnAnimation(action);
+          }
+
+          @Override
+          public void removeOnPageChangeListener(OnPageChangeListener l) {
+            listener[0] = null;
+            super.removeOnPageChangeListener(l);
+          }
+        };
+    viewPager.addView(mLithoView);
 
     mComponentTree.attach();
 
     // This is set to null by mComponentTree.attach(), so set it again here.
     Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
 
-    ArgumentCaptor<ViewPager.OnPageChangeListener> listenerArgumentCaptor =
-        ArgumentCaptor.forClass(ViewPager.OnPageChangeListener.class);
-    verify(viewPager).addOnPageChangeListener(listenerArgumentCaptor.capture());
-
-    doAnswer(
-            new Answer<Boolean>() {
-              @Override
-              public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                Rect rect = (Rect) invocation.getArguments()[0];
-                rect.set(new Rect(10, 5, 20, 15));
-                return true;
-              }
-            })
-        .when(mLithoView)
-        .getCorrectedLocalVisibleRect((Rect) any());
-
-    listenerArgumentCaptor.getValue().onPageScrolled(10, 10, 10);
+    assertThat(listener[0]).isNotNull();
+    mLithoView.shouldRetundCorrectedVisibleRect = new Rect(10, 5, 20, 15);
+    listener[0].onPageScrolled(10, 10, 10);
     assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
-
     mComponentTree.detach();
-
-    ArgumentCaptor<Runnable> runnableArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
-    verify(viewPager).postOnAnimation(runnableArgumentCaptor.capture());
-
-    runnableArgumentCaptor.getValue().run();
-    verify(viewPager).removeOnPageChangeListener(listenerArgumentCaptor.getValue());
+    assertThat(runnable[0]).isNotNull();
+    runnable[0].run();
+    assertThat(listener[0]).isNull();
   }
 
   /**
    * Required in order to ensure that {@link LithoView#mount(LayoutState, Rect, boolean)} is mocked
    * correctly (it needs protected access to be mocked).
    */
-  public static class TestLithoView extends LithoView {
+  public class TestLithoView extends LithoView {
 
-    public TestLithoView(Context context) {
+    public TestLithoView(ComponentContext context) {
       super(context);
     }
 
+    Rect shouldRetundCorrectedVisibleRect = null;
+
     protected void mount(
         LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
-      super.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+      if (processVisibilityOutputs) {
+        mMountedRect.set(currentVisibleArea);
+      }
+      // We don't actually call mount. LayoutState is a mock :(
+    }
+
+    @Override
+    boolean getCorrectedLocalVisibleRect(Rect outRect) {
+      if (shouldRetundCorrectedVisibleRect != null) {
+        outRect.set(shouldRetundCorrectedVisibleRect);
+        return true;
+      }
+
+      return false;
     }
   }
 }

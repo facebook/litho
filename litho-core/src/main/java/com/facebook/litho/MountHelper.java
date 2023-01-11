@@ -28,6 +28,9 @@ public class MountHelper {
    */
   public static void requestMount(
       ComponentTree componentTree, Rect visibleRect, boolean processVisibilityOutputs) {
-    componentTree.mountComponent(visibleRect, processVisibilityOutputs);
+    final LithoView lithoView = componentTree.getLithoView();
+    if (lithoView != null) {
+      lithoView.mountComponent(visibleRect, processVisibilityOutputs);
+    }
   }
 }

@@ -45,7 +45,7 @@ public class BenchmarkTestHelper {
   }
 
   public static void mountLithoView(LithoView lithoView) {
-    lithoView.getComponentTree().mountComponent(null, true);
+    lithoView.mountComponent(null, true);
   }
 
   public static void unmountLithoView(LithoView lithoView) {

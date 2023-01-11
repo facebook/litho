@@ -77,7 +77,7 @@ class DynamicPropsExtensionTest {
         .describedAs("alpha should be applied from the dynamic value")
         .isEqualTo(0.2f)
 
-    lithoViewRule.componentTree.mountComponent(Rect(0, -10, 1080, -5), true)
+    lithoViewRule.lithoView.mountComponent(Rect(0, -10, 1080, -5), true)
 
     assertThat(lithoViewRule.lithoView.alpha)
         .describedAs("alpha should be restored to default value")
