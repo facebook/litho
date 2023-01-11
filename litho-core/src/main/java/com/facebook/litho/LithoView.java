@@ -118,6 +118,10 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
         }
       };
 
+  boolean isMounting() {
+    return mIsMounting;
+  }
+
   public interface OnDirtyMountListener {
     /**
      * Called when finishing a mount where the mount state was dirty. This indicates that there were
@@ -165,7 +169,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   @Nullable private String mNullComponentCause;
   @Nullable private MountStartupLoggingInfo mMountStartupLoggingInfo;
   @Nullable private LithoHostListenerCoordinator mLithoHostListenerCoordinator;
-
+  private boolean mIsMounting;
   public final int mViewAttributeFlags;
 
   /**
@@ -704,7 +708,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   @Override
   protected boolean shouldRequestLayout() {
     // Don't bubble up layout requests while mounting.
-    if (mComponentTree != null && mComponentTree.isMounting()) {
+    if (mComponentTree != null && mIsMounting) {
       return false;
     }
 
@@ -1476,7 +1480,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 
-    if (mComponentTree.isMounting()) {
+    if (mIsMounting) {
       collectReentrantMount(new ReentrantMount(currentVisibleArea, processVisibilityOutputs));
       return;
     }
@@ -1522,6 +1526,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     final boolean isDirtyMount = isMountStateDirty();
 
     mComponentTree.setIsMounting(true);
+    mIsMounting = true;
 
     // currentVisibleArea null or empty => mount all
     try {
@@ -1533,6 +1538,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
       throw ComponentUtils.wrapWithMetadata(mComponentTree, e);
     } finally {
       mComponentTree.setIsMounting(false);
+      mIsMounting = false;
 
       if (isDirtyMount) {
         onDirtyMountComplete();

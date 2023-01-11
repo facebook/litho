@@ -115,7 +115,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private boolean mReleased;
 
   void setIsMounting(boolean isMounting) {
-    mIsMounting = isMounting;
     if (isMounting && !mHasMounted) {
       mIsFirstMount = true;
       mHasMounted = true;
@@ -294,9 +293,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private @Nullable RunnableHandler mPreAllocateMountContentHandler;
 
   // These variables are only accessed from the main thread.
-  @ThreadConfined(ThreadConfined.UI)
-  private boolean mIsMounting;
-
   @ThreadConfined(ThreadConfined.UI)
   private boolean mIsMeasuring;
 
@@ -876,11 +872,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private static boolean hasSameRootContext(Context context1, Context context2) {
     return ContextUtils.getRootContext(context1) == ContextUtils.getRootContext(context2);
-  }
-
-  @ThreadConfined(ThreadConfined.UI)
-  boolean isMounting() {
-    return mIsMounting;
   }
 
   /**
@@ -2964,7 +2955,7 @@ public class ComponentTree implements LithoLifecycleListener {
    */
   public void release() {
     assertMainThread();
-    if (mIsMounting) {
+    if (mLithoView != null && mLithoView.isMounting()) {
       throw new IllegalStateException("Releasing a ComponentTree that is currently being mounted");
     }
 
