@@ -170,6 +170,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   @Nullable private MountStartupLoggingInfo mMountStartupLoggingInfo;
   @Nullable private LithoHostListenerCoordinator mLithoHostListenerCoordinator;
   private boolean mIsMounting;
+  @Nullable private TreeState.TreeMountInfo mMountInfo;
   public final int mViewAttributeFlags;
 
   /**
@@ -518,11 +519,12 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     if (height == 0) {
       maybeLogInvalidZeroHeight();
     }
+    final boolean hasMounted = mMountInfo != null && mMountInfo.mHasMounted;
 
     final boolean canAnimateRootBounds =
         !mSuppressMeasureComponentTree
             && mComponentTree != null
-            && (!mHasNewComponentTree || !mComponentTree.hasMounted());
+            && (!mHasNewComponentTree || !hasMounted);
 
     if (canAnimateRootBounds) {
       // We might need to collect transitions before mount to know whether this LithoView has
@@ -664,8 +666,10 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
+    final boolean hasMounted = mMountInfo != null && mMountInfo.mHasMounted;
+
     return mComponentTree != null
-        && !mComponentTree.hasMounted()
+        && !hasMounted
         && mComponentTree.getMainThreadLayoutState() != null
         && ((mComponentTree.getMainThreadLayoutState().getRootHeightAnimation() != null
                 && currentVisibleArea.height() == 0)
@@ -798,6 +802,11 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     }
 
     mComponentTree = componentTree;
+    if (componentTree != null && componentTree.getTreeState() != null) {
+      mMountInfo = componentTree.getTreeState().getMountInfo();
+    } else {
+      mMountInfo = null;
+    }
 
     setupMountExtensions();
 
@@ -1525,7 +1534,10 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
 
     final boolean isDirtyMount = isMountStateDirty();
 
-    mComponentTree.setIsMounting(true);
+    if (mMountInfo != null && !mMountInfo.mHasMounted) {
+      mMountInfo.mIsFirstMount = true;
+      mMountInfo.mHasMounted = true;
+    }
     mIsMounting = true;
 
     // currentVisibleArea null or empty => mount all
@@ -1537,9 +1549,10 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     } catch (Exception e) {
       throw ComponentUtils.wrapWithMetadata(mComponentTree, e);
     } finally {
-      mComponentTree.setIsMounting(false);
+      if (mMountInfo != null) {
+        mMountInfo.mIsFirstMount = false;
+      }
       mIsMounting = false;
-
       if (isDirtyMount) {
         onDirtyMountComplete();
       }
@@ -1610,6 +1623,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
+      mMountInfo = null;
       mNullComponentCause = "release_CT";
     }
   }
@@ -2188,7 +2202,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     if (rootBoundsTransition == null) {
       return -1;
     }
-    final boolean hasMounted = mComponentTree.hasMounted();
+    final boolean hasMounted = mMountInfo != null && mMountInfo.mHasMounted;
     if (!hasMounted && rootBoundsTransition.appearTransition != null) {
       return (int)
           Transition.getRootAppearFromValue(

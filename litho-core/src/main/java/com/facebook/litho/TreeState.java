@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.arch.core.util.Function;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.annotations.UIState;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,17 +29,28 @@ import java.util.Set;
 public class TreeState {
 
   private final StateHandler mRenderStateHandler;
-
   private final StateHandler mLayoutStateHandler;
+  @UIState private final TreeMountInfo mTreeMountInfo;
+
+  /**
+   * This class represents whether this Litho tree has been mounted before. The usage is a bit
+   * convoluted and will need to be cleaned out properly in the future.
+   */
+  public static class TreeMountInfo {
+    public volatile boolean mHasMounted = false;
+    public volatile boolean mIsFirstMount = false;
+  }
 
   public TreeState() {
     mRenderStateHandler = new StateHandler(null);
     mLayoutStateHandler = new StateHandler(null);
+    mTreeMountInfo = new TreeMountInfo();
   }
 
   public TreeState(TreeState treeState) {
     mRenderStateHandler = new StateHandler(treeState.mRenderStateHandler);
     mLayoutStateHandler = new StateHandler(treeState.mLayoutStateHandler);
+    mTreeMountInfo = treeState.mTreeMountInfo;
   }
 
   // TODO: Remove this method
@@ -269,5 +281,9 @@ public class TreeState {
     return stateHandler
         .getInitialStateContainer()
         .createOrGetInitialHookState(key, hookStateIndex, initializer);
+  }
+
+  public TreeMountInfo getMountInfo() {
+    return mTreeMountInfo;
   }
 }

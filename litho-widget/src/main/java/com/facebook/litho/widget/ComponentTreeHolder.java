@@ -93,9 +93,6 @@ public class ComponentTreeHolder {
   private boolean mIsInserted = true;
 
   @GuardedBy("this")
-  private boolean mHasMounted = false;
-
-  @GuardedBy("this")
   private int mLastMeasuredHeight;
 
   @GuardedBy("this")
@@ -257,7 +254,6 @@ public class ComponentTreeHolder {
       acquireTreeState();
     }
 
-    acquireAnimationState();
     releaseTree();
   }
 
@@ -490,7 +486,6 @@ public class ComponentTreeHolder {
               mComponentTreeMeasureListenerFactory == null
                   ? null
                   : mComponentTreeMeasureListenerFactory.create(this))
-          .hasMounted(mHasMounted)
           .incrementalMount(mIncrementalMount)
           .visibilityProcessing(mVisibilityProcessingEnabled)
           .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
@@ -576,15 +571,6 @@ public class ComponentTreeHolder {
     }
 
     mTreeState = mComponentTree.acquireTreeState();
-  }
-
-  @GuardedBy("this")
-  private void acquireAnimationState() {
-    if (mComponentTree == null) {
-      return;
-    }
-
-    mHasMounted = mComponentTree.hasMounted();
   }
 
   /** Lifecycle controlled by a ComponentTreeHolder. */

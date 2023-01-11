@@ -30,6 +30,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.TreeState;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -106,7 +107,13 @@ public class ComponentTreeHolderTest {
     ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
     assertThat(holder.getComponentTree().hasMounted()).isFalse();
-    Whitebox.setInternalState(holder.getComponentTree(), "mHasMounted", true);
+    TreeState treeState = holder.getComponentTree().getTreeState();
+    if (treeState == null) {
+      treeState = new TreeState();
+    }
+    TreeState.TreeMountInfo treeMountInfo = treeState.getMountInfo();
+    treeMountInfo.mHasMounted = true;
+    Whitebox.setInternalState(holder.getComponentTree(), "mTreeState", treeState);
 
     // component goes out of range
     holder.acquireStateAndReleaseTree(true);

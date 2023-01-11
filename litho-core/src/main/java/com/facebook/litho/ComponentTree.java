@@ -114,13 +114,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private boolean mReleased;
 
-  void setIsMounting(boolean isMounting) {
-    if (isMounting && !mHasMounted) {
-      mIsFirstMount = true;
-      mHasMounted = true;
-    }
-  }
-
   interface OnReleaseListener {
 
     /** Called when this ComponentTree is released. */
@@ -360,9 +353,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private @Nullable FutureExecutionListener mFutureExecutionListener;
 
-  private volatile boolean mHasMounted;
-  private volatile boolean mIsFirstMount;
-
   @GuardedBy("this")
   private @Nullable Component mRoot;
 
@@ -486,8 +476,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
-    mHasMounted = builder.hasMounted;
-    mIsFirstMount = builder.isFirstMount;
     addMeasureListener(builder.mMeasureListener);
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     if (ComponentsConfiguration.overrideReconciliation != null) {
@@ -640,15 +628,27 @@ public class ComponentTree implements LithoLifecycleListener {
 
   /** Whether this ComponentTree has been mounted at least once. */
   public boolean hasMounted() {
-    return mHasMounted;
+    final TreeState treeState = getTreeState();
+    if (treeState == null) {
+      return false;
+    }
+    return treeState.getMountInfo().mHasMounted;
   }
 
   public boolean isFirstMount() {
-    return mIsFirstMount;
+    final TreeState treeState = getTreeState();
+    if (treeState == null) {
+      return false;
+    }
+    return treeState.getMountInfo().mIsFirstMount;
   }
 
   public void setIsFirstMount(boolean isFirstMount) {
-    mIsFirstMount = isFirstMount;
+    final TreeState treeState = getTreeState();
+    if (treeState == null) {
+      return;
+    }
+    treeState.getMountInfo().mIsFirstMount = isFirstMount;
   }
 
   public void setNewLayoutStateReadyListener(@Nullable NewLayoutStateReadyListener listener) {
@@ -1622,7 +1622,8 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @Nullable
-  synchronized TreeState getTreeState() {
+  @VisibleForTesting
+  public synchronized TreeState getTreeState() {
     return mTreeState;
   }
 
@@ -3725,8 +3726,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
-    private boolean hasMounted = false;
-    private boolean isFirstMount = false;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -3899,20 +3898,6 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder overrideRenderUnitIdMap(ComponentTree prevComponentTree) {
       this.mRenderUnitIdGenerator = prevComponentTree.getRenderUnitIdGenerator();
-      return this;
-    }
-
-    /**
-     * Sets whether the 'hasMounted' flag should be set on this ComponentTree (for use with appear
-     * animations).
-     */
-    public Builder hasMounted(boolean hasMounted) {
-      this.hasMounted = hasMounted;
-      return this;
-    }
-
-    public Builder isFirstMount(boolean isFirstMount) {
-      this.isFirstMount = isFirstMount;
       return this;
     }
 
