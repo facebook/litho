@@ -389,8 +389,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   protected final int mId;
 
-  private final ErrorEventHandler mErrorEventHandler;
-
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -450,7 +448,8 @@ public class ComponentTree implements LithoLifecycleListener {
                 : builder.isReconciliationEnabled,
             mVisibilityProcessingEnabled,
             mPreAllocateMountContentHandler,
-            builder.incrementalMountEnabled && !incrementalMountGloballyDisabled());
+            builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
+            builder.errorEventHandler);
     mContext = ComponentContext.withComponentTree(builder.context, this);
 
     if (builder.mLifecycleProvider != null) {
@@ -480,7 +479,6 @@ public class ComponentTree implements LithoLifecycleListener {
     useSeparateThreadHandlersForResolveAndLayout =
         isResolveAndLayoutFuturesSplitEnabled
             && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
-    mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
 
@@ -1120,10 +1118,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isReconciliationEnabled() {
     return mLithoConfiguration.isReconciliationEnabled;
-  }
-
-  public ErrorEventHandler getErrorEventHandler() {
-    return mErrorEventHandler;
   }
 
   synchronized @Nullable Component getRoot() {
@@ -3610,6 +3604,7 @@ public class ComponentTree implements LithoLifecycleListener {
     final boolean isVisibilityProcessingEnabled;
     @Nullable final RunnableHandler mountContentPreallocationHandler;
     final boolean incrementalMountEnabled;
+    final ErrorEventHandler errorEventHandler;
 
     public LithoConfiguration(
         boolean areTransitionsEnabled,
@@ -3619,7 +3614,8 @@ public class ComponentTree implements LithoLifecycleListener {
         boolean isReconciliationEnabled,
         boolean isVisibilityProcessingEnabled,
         @Nullable RunnableHandler mountContentPreallocationHandler,
-        boolean incrementalMountEnabled) {
+        boolean incrementalMountEnabled,
+        @Nullable ErrorEventHandler errorEventHandler) {
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation =
           shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
@@ -3630,6 +3626,8 @@ public class ComponentTree implements LithoLifecycleListener {
       this.isVisibilityProcessingEnabled = isVisibilityProcessingEnabled;
       this.mountContentPreallocationHandler = mountContentPreallocationHandler;
       this.incrementalMountEnabled = incrementalMountEnabled;
+      this.errorEventHandler =
+          errorEventHandler == null ? DefaultErrorEventHandler.INSTANCE : errorEventHandler;
     }
   }
 

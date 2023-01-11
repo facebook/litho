@@ -358,15 +358,15 @@ public class ComponentContext implements Cloneable {
           return errorEventHandler;
         }
       } catch (IllegalStateException e) {
-        if (mComponentTree != null) {
-          return mComponentTree.getErrorEventHandler();
+        if (mLithoConfiguration != null) {
+          return mLithoConfiguration.errorEventHandler;
         }
         return DefaultErrorEventHandler.INSTANCE;
       }
     }
 
-    if (mComponentTree != null) {
-      return mComponentTree.getErrorEventHandler();
+    if (mLithoConfiguration != null) {
+      return mLithoConfiguration.errorEventHandler;
     }
     return DefaultErrorEventHandler.INSTANCE;
   }
