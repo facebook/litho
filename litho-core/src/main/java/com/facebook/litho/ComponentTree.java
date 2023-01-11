@@ -803,7 +803,7 @@ public class ComponentTree implements LithoLifecycleListener {
     if (needsAndroidLayout) {
       mLithoView.requestLayout();
     } else {
-      mountComponentIfNeeded();
+      mLithoView.mountComponentIfNeeded();
     }
 
     if (DEBUG_LOGS) {
@@ -897,74 +897,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @ThreadConfined(ThreadConfined.UI)
   boolean isMounting() {
     return mIsMounting;
-  }
-
-  private boolean mountComponentIfNeeded() {
-    if (mLithoView.isMountStateDirty() || mLithoView.mountStateNeedsRemount()) {
-      if (mIncrementalMountEnabled) {
-        incrementalMountComponent();
-      } else {
-        final Rect visibleRect = new Rect();
-        mLithoView.getCorrectedLocalVisibleRect(visibleRect);
-        mLithoView.mountComponent(visibleRect, true);
-      }
-
-      return true;
-    }
-
-    return false;
-  }
-
-  @UiThread
-  void incrementalMountComponent() {
-    if (!mIncrementalMountEnabled) {
-      throw new IllegalStateException(
-          "Calling incrementalMountComponent() but incremental mount is not enabled");
-    }
-    notifyVisibleBoundsChanged();
-  }
-
-  @UiThread
-  void notifyVisibleBoundsChanged() {
-    assertMainThread();
-
-    if (mLithoView == null) {
-      return;
-    }
-
-    // Per ComponentTree visible area. Because LithoViews can be nested and mounted
-    // not in "depth order", this variable cannot be static.
-    final Rect currentVisibleArea = new Rect();
-    final boolean hasNonEmptyVisibleRect =
-        mLithoView.getCorrectedLocalVisibleRect(currentVisibleArea);
-
-    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
-        && !hasNonEmptyVisibleRect) {
-      // Set to pure empty to allow for easy comparisons.
-      currentVisibleArea.setEmpty();
-    }
-
-    if (ComponentsConfiguration.shouldContinueIncrementalMountWhenVisibileRectIsEmpty
-        || hasNonEmptyVisibleRect
-        || hasComponentsExcludedFromIncrementalMount(mMainThreadLayoutState)
-        // It might not be yet visible but animating from 0 height/width in which case we still
-        // need to mount them to trigger animation.
-        || animatingRootBoundsFromZero(currentVisibleArea)) {
-      mLithoView.mountComponent(currentVisibleArea, true);
-    }
-  }
-
-  // Check if we should ignore the result of visible rect checking and continue doing
-  // IncrementalMount.
-  private static boolean hasComponentsExcludedFromIncrementalMount(
-      @Nullable LayoutState layoutState) {
-    return layoutState != null && layoutState.hasComponentsExcludedFromIncrementalMount();
-  }
-
-  private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
-    return !mHasMounted
-        && ((mRootHeightAnimation != null && currentVisibleArea.height() == 0)
-            || (mRootWidthAnimation != null && currentVisibleArea.width() == 0));
   }
 
   /**
@@ -1327,13 +1259,6 @@ public class ComponentTree implements LithoLifecycleListener {
         + SizeSpec.toSimpleString(widthSpec)
         + ", h: "
         + SizeSpec.toSimpleString(heightSpec);
-  }
-
-  /** Returns {@code true} if the layout call mounted the component. */
-  boolean layout() {
-    assertMainThread();
-
-    return mountComponentIfNeeded();
   }
 
   /** Returns whether incremental mount is enabled or not in this component. */

@@ -52,7 +52,7 @@ public class LithoViewMountTest {
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
 
-    mLithoView = new TestLithoView(mContext.getAndroidContext());
+    mLithoView = spy(new TestLithoView(mContext.getAndroidContext()));
     mComponent =
         new InlineLayoutSpec() {
           @Override
@@ -76,12 +76,12 @@ public class LithoViewMountTest {
     mLithoView.onAttachedToWindow();
 
     mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
-    verify(mComponentTree).incrementalMountComponent();
+    verify(mLithoView).performIncrementalMountForVisibleBoundsChange();
 
     mLithoView.unmountAllItems();
 
     mLithoView.performLayout(false, 0, 0, WIDTH, HEIGHT);
-    verify(mComponentTree, times(2)).incrementalMountComponent();
+    verify(mLithoView, times(2)).performIncrementalMountForVisibleBoundsChange();
   }
 
   @Test

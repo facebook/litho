@@ -54,7 +54,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
   @Test
   public void testGetLocalVisibleBounds() {
     mLithoView.shouldRetundCorrectedVisibleRect = new Rect(10, 5, 20, 15);
-    mComponentTree.incrementalMountComponent();
+    mLithoView.performIncrementalMountForVisibleBoundsChange();
     assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
   }
 

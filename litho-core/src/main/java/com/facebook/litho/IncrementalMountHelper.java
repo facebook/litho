@@ -101,8 +101,8 @@ class IncrementalMountHelper {
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       final ComponentTree componentTree = mComponentTree.get();
-      if (componentTree != null) {
-        componentTree.incrementalMountComponent();
+      if (componentTree != null && componentTree.getLithoView() != null) {
+        componentTree.getLithoView().performIncrementalMountForVisibleBoundsChange();
       }
     }
 
