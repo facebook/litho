@@ -2052,10 +2052,10 @@ public class LayoutState
   @Override
   public List<Transition> getMountTimeTransitions() {
     final ComponentTree componentTree = mContext.getComponentTree();
-    if (componentTree == null) {
+    if (componentTree == null || componentTree.getTreeState() == null) {
       return null;
     }
-    componentTree.applyPreviousRenderData(this);
+    componentTree.getTreeState().applyPreviousRenderData(this);
 
     List<Transition> mountTimeTransitions = null;
 

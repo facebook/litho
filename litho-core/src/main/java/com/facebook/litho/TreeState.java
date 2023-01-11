@@ -31,6 +31,7 @@ public class TreeState {
   private final StateHandler mRenderStateHandler;
   private final StateHandler mLayoutStateHandler;
   @UIState private final TreeMountInfo mTreeMountInfo;
+  @UIState private final RenderState mRenderState;
 
   /**
    * This class represents whether this Litho tree has been mounted before. The usage is a bit
@@ -45,12 +46,14 @@ public class TreeState {
     mRenderStateHandler = new StateHandler(null);
     mLayoutStateHandler = new StateHandler(null);
     mTreeMountInfo = new TreeMountInfo();
+    mRenderState = new RenderState();
   }
 
   public TreeState(TreeState treeState) {
     mRenderStateHandler = new StateHandler(treeState.mRenderStateHandler);
     mLayoutStateHandler = new StateHandler(treeState.mLayoutStateHandler);
     mTreeMountInfo = treeState.mTreeMountInfo;
+    mRenderState = treeState.mRenderState;
   }
 
   // TODO: Remove this method
@@ -285,5 +288,32 @@ public class TreeState {
 
   public TreeMountInfo getMountInfo() {
     return mTreeMountInfo;
+  }
+
+  void applyPreviousRenderData(@Nullable List<ScopedComponentInfo> scopedComponentInfos) {
+    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
+      return;
+    }
+
+    if (mRenderState == null) {
+      return;
+    }
+
+    mRenderState.applyPreviousRenderData(scopedComponentInfos);
+  }
+
+  void applyPreviousRenderData(LayoutState layoutState) {
+    final List<ScopedComponentInfo> scopedComponentInfos =
+        layoutState.getScopedComponentInfosNeedingPreviousRenderData();
+    applyPreviousRenderData(scopedComponentInfos);
+  }
+
+  void recordRenderData(LayoutState layoutState) {
+    final List<ScopedComponentInfo> scopedComponentInfos =
+        layoutState.getScopedComponentInfosNeedingPreviousRenderData();
+    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
+      return;
+    }
+    mRenderState.recordRenderData(scopedComponentInfos);
   }
 }

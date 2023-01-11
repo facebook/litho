@@ -1556,8 +1556,8 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     // currentVisibleArea null or empty => mount all
     try {
       mount(layoutState, currentVisibleArea, processVisibilityOutputs);
-      if (isDirtyMount) {
-        mComponentTree.recordRenderData(layoutState);
+      if (isDirtyMount && mComponentTree.getTreeState() != null) {
+        mComponentTree.getTreeState().recordRenderData(layoutState);
       }
     } catch (Exception e) {
       throw ComponentUtils.wrapWithMetadata(mComponentTree, e);

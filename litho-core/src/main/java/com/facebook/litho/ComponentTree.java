@@ -396,9 +396,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private @Nullable TreeState mTreeState;
 
-  @ThreadConfined(ThreadConfined.UI)
-  private @Nullable RenderState mPreviousRenderState;
-
   protected final int mId;
 
   private final ErrorEventHandler mErrorEventHandler;
@@ -493,10 +490,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mErrorEventHandler = builder.errorEventHandler;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
-
-    if (builder.previousRenderState != null) {
-      mPreviousRenderState = builder.previousRenderState;
-    }
 
     if (builder.overrideComponentTreeId != -1) {
       mId = builder.overrideComponentTreeId;
@@ -863,38 +856,6 @@ public class ComponentTree implements LithoLifecycleListener {
   public synchronized boolean hasCompatibleLayout(int widthSpec, int heightSpec) {
     return isCompatibleSpec(mMainThreadLayoutState, widthSpec, heightSpec)
         || isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec);
-  }
-
-  void applyPreviousRenderData(LayoutState layoutState) {
-    final List<ScopedComponentInfo> scopedComponentInfos =
-        layoutState.getScopedComponentInfosNeedingPreviousRenderData();
-    applyPreviousRenderData(scopedComponentInfos);
-  }
-
-  void applyPreviousRenderData(@Nullable List<ScopedComponentInfo> scopedComponentInfos) {
-    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
-      return;
-    }
-
-    if (mPreviousRenderState == null) {
-      return;
-    }
-
-    mPreviousRenderState.applyPreviousRenderData(scopedComponentInfos);
-  }
-
-  void recordRenderData(LayoutState layoutState) {
-    final List<ScopedComponentInfo> scopedComponentInfos =
-        layoutState.getScopedComponentInfosNeedingPreviousRenderData();
-    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
-      return;
-    }
-
-    if (mPreviousRenderState == null) {
-      mPreviousRenderState = new RenderState();
-    }
-
-    mPreviousRenderState.recordRenderData(scopedComponentInfos);
   }
 
   void detach() {
@@ -1908,19 +1869,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   synchronized @Nullable List<Transition> getStateUpdateTransitions() {
     return mTreeState == null ? null : mTreeState.getPendingStateUpdateTransitions();
-  }
-
-  /**
-   * Takes ownership of the {@link RenderState} object from this ComponentTree - this allows the
-   * RenderState to be persisted somewhere and then set back on another ComponentTree using the
-   * {@link Builder}. See {@link RenderState} for more information on the purpose of this object.
-   */
-  @ThreadConfined(ThreadConfined.UI)
-  public @Nullable RenderState consumePreviousRenderState() {
-    final RenderState previousRenderState = mPreviousRenderState;
-
-    mPreviousRenderState = null;
-    return previousRenderState;
   }
 
   /**
@@ -3025,7 +2973,6 @@ public class ComponentTree implements LithoLifecycleListener {
       mMainThreadLayoutState = null;
       mCommittedLayoutState = null;
       mTreeState = null;
-      mPreviousRenderState = null;
       mMeasureListeners = null;
       mCommittedResolveResult = null;
     }
