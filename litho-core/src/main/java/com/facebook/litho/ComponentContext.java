@@ -506,17 +506,17 @@ public class ComponentContext implements Cloneable {
   @Nullable
   public String getLogTag() {
     // TODO: T48229786 use CT field only
-    return mComponentTree == null || mComponentTree.getLogTag() == null
+    return mLithoConfiguration == null || mLithoConfiguration.logTag == null
         ? mLogTag
-        : mComponentTree.getLogTag();
+        : mLithoConfiguration.logTag;
   }
 
   @Nullable
   public ComponentsLogger getLogger() {
     // TODO: T48229786 use CT field only
-    return mComponentTree == null || mComponentTree.getLogger() == null
+    return mLithoConfiguration == null || mLithoConfiguration.logger == null
         ? mLogger
-        : mComponentTree.getLogger();
+        : mLithoConfiguration.logger;
   }
 
   /**

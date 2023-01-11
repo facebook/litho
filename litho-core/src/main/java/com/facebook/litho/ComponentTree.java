@@ -403,10 +403,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
-  private final @Nullable String mLogTag;
-
-  private final @Nullable ComponentsLogger mLogger;
-
   private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
 
   public static Builder create(ComponentContext context) {
@@ -449,7 +445,9 @@ public class ComponentTree implements LithoLifecycleListener {
             mVisibilityProcessingEnabled,
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
-            builder.errorEventHandler);
+            builder.errorEventHandler,
+            builder.logTag,
+            builder.logger);
     mContext = ComponentContext.withComponentTree(builder.context, this);
 
     if (builder.mLifecycleProvider != null) {
@@ -516,9 +514,6 @@ public class ComponentTree implements LithoLifecycleListener {
               ? instrumentHandler(builder.resolveThreadHandler)
               : instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
     }
-
-    mLogger = builder.logger;
-    mLogTag = builder.logTag;
   }
 
   private Object getResolveThreadHandlerLock() {
@@ -3051,15 +3046,15 @@ public class ComponentTree implements LithoLifecycleListener {
 
   // TODO: T48569046 remove this method and use mLogger
   private @Nullable ComponentsLogger getContextLogger() {
-    return mLogger == null ? mContext.getLogger() : mLogger;
+    return mLithoConfiguration.logger == null ? mContext.getLogger() : mLithoConfiguration.logger;
   }
 
   public @Nullable ComponentsLogger getLogger() {
-    return mLogger;
+    return mLithoConfiguration.logger;
   }
 
   public @Nullable String getLogTag() {
-    return mLogTag;
+    return mLithoConfiguration.logTag;
   }
 
   /*
@@ -3605,6 +3600,8 @@ public class ComponentTree implements LithoLifecycleListener {
     @Nullable final RunnableHandler mountContentPreallocationHandler;
     final boolean incrementalMountEnabled;
     final ErrorEventHandler errorEventHandler;
+    final String logTag;
+    @Nullable final ComponentsLogger logger;
 
     public LithoConfiguration(
         boolean areTransitionsEnabled,
@@ -3615,7 +3612,9 @@ public class ComponentTree implements LithoLifecycleListener {
         boolean isVisibilityProcessingEnabled,
         @Nullable RunnableHandler mountContentPreallocationHandler,
         boolean incrementalMountEnabled,
-        @Nullable ErrorEventHandler errorEventHandler) {
+        @Nullable ErrorEventHandler errorEventHandler,
+        String logTag,
+        @Nullable ComponentsLogger logger) {
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation =
           shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
@@ -3628,6 +3627,8 @@ public class ComponentTree implements LithoLifecycleListener {
       this.incrementalMountEnabled = incrementalMountEnabled;
       this.errorEventHandler =
           errorEventHandler == null ? DefaultErrorEventHandler.INSTANCE : errorEventHandler;
+      this.logTag = logTag;
+      this.logger = logger;
     }
   }
 
