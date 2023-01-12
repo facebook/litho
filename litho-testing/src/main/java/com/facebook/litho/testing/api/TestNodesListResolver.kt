@@ -16,113 +16,34 @@
 
 package com.facebook.litho.testing.api
 
-import android.annotation.SuppressLint
-import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
-import com.facebook.litho.LithoLayoutResult
-import com.facebook.litho.LithoNode
 import com.facebook.litho.LithoView
-import com.facebook.litho.NestedTreeHolderResult
-import com.facebook.litho.ScopedComponentInfo
-import com.facebook.litho.sections.widget.SectionBinderTarget
-import com.facebook.litho.testing.Whitebox
-import com.facebook.litho.widget.Binder
-import com.facebook.litho.widget.Recycler
-import com.facebook.litho.widget.RecyclerBinder
 
 class TestNodesListResolver {
 
+  private val lithoViewComponentsTraverser = LithoViewComponentsTraverser()
+
   fun getCurrentTestNodes(lithoView: LithoView): List<TestNode> {
-    val rootLayoutResult = getLayoutRoot(lithoView) ?: return emptyList()
-    return searchTestNodesWithBFS(rootLayoutResult)
-  }
+    val componentToTestTreeNode: MutableMap<Component, TestNode> = mutableMapOf()
 
-  @SuppressLint("RestrictedApi")
-  private fun getLayoutRoot(lithoView: LithoView): LithoLayoutResult? {
-    val commitedLayoutState =
-        lithoView.componentTree?.committedLayoutState
-            ?: throw IllegalStateException(
-                "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
-    return commitedLayoutState.rootLayoutResult
-  }
+    lithoViewComponentsTraverser.traverse(lithoView) { component, parentComponent ->
+      // 1. create the test data
+      val componentTestNode = TestNode(component)
 
-  private fun searchTestNodesWithBFS(layoutResult: LithoLayoutResult?): List<TestNode> {
-    val testNodes = mutableListOf<TestNode>()
+      // 2. store the association between component and test node
+      componentToTestTreeNode[component] = componentTestNode
 
-    componentBreadthFirstSearch(layoutResult) { scopedComponents ->
-      val recyclers: List<Recycler> = scopedComponents.filterIsInstance<Recycler>()
-      recyclers.forEach { recycler ->
-        val recyclerBinder: RecyclerBinder = recycler.binder
+      // 3. attempt to store parent data if exists
+      val parentTestNode = parentComponent?.let { componentToTestTreeNode[it] }
+      componentTestNode.parent = parentTestNode
 
-        (0 until recyclerBinder.itemCount).forEach { recyclerItemIndex ->
-          val holder = recyclerBinder.getComponentTreeHolderAt(recyclerItemIndex)
-          val holderLithoView = holder.componentTree?.lithoView
-
-          holderLithoView?.let {
-            val holderSubcomponents = getCurrentTestNodes(holderLithoView)
-            testNodes.addAll(holderSubcomponents)
-          }
-        }
-      }
-
-      testNodes.addAll(scopedComponents.map { TestNode(it) })
-    }
-
-    return testNodes
-  }
-
-  /**
-   * Internal function to handle BFS through a set of components.
-   *
-   * @param onHandleScopedComponents lambda which handles the scoped components of the particular
-   *   layout. This enables the caller of the function to properly handle if any of those components
-   *   match. (For example, if looking for a single component, you would want to return in the
-   *   lambda if it matches. If looking for multiple, you would simply want to add all matching
-   *   components to a list.)
-   */
-  private inline fun componentBreadthFirstSearch(
-      startingLayoutResult: LithoLayoutResult?,
-      onHandleScopedComponents: (List<Component>) -> Unit
-  ) {
-    startingLayoutResult ?: return
-
-    val enqueuedLayouts = mutableSetOf(startingLayoutResult)
-    val layoutsQueue = ArrayDeque(enqueuedLayouts)
-
-    while (layoutsQueue.isNotEmpty()) {
-      val currentLayoutResult = layoutsQueue.removeFirst()
-
-      val internalNode = currentLayoutResult.node
-      onHandleScopedComponents(getOrderedScopedComponentInfos(internalNode).map { it.component })
-
-      if (currentLayoutResult is NestedTreeHolderResult) {
-        val nestedLayout =
-            currentLayoutResult.nestedResult?.takeUnless { it in enqueuedLayouts } ?: continue
-        layoutsQueue.add(nestedLayout)
-        continue
-      }
-
-      for (i in 0 until internalNode.childCount) {
-        val childLayout =
-            currentLayoutResult.getChildAt(i).takeUnless { it in enqueuedLayouts } ?: continue
-        layoutsQueue.add(childLayout)
+      // 4. attempt to update children's of the parent
+      if (parentTestNode != null) {
+        val siblings = parentTestNode.children + componentTestNode
+        parentTestNode.children = siblings
       }
     }
+
+    return componentToTestTreeNode.values.toList()
   }
-
-  /**
-   * @return list of the [ScopedComponentInfo], ordered from the head (closest to the root) to the
-   *   tail.
-   */
-  private fun getOrderedScopedComponentInfos(internalNode: LithoNode): List<ScopedComponentInfo> {
-    return internalNode.scopedComponentInfos.reversed()
-  }
-
-  private val Recycler.binder: RecyclerBinder
-    get() {
-      val binder =
-          Whitebox.getInternalState<Binder<RecyclerView>>(this, "binder") as SectionBinderTarget
-
-      return Whitebox.getInternalState(binder, "mRecyclerBinder")
-    }
 }

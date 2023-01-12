@@ -73,7 +73,7 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
   fun `should be able to select an item of a collection`() {
     rule.render { CollectionComponent() }
 
-    rule.selectNodes(hasType<Text>()).selectAtIndex(2).assert(hasText("Item #2"))
+    rule.selectNodes(hasType<Text>()).selectAtIndex(2).assert(hasText("Item #1"))
   }
 
   @Test

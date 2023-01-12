@@ -43,4 +43,8 @@ class TestNode(private val component: Component) {
     get() = component.commonProps?.clickHandler
 
   fun <T> getAttribute(key: AttributeKey<T>): T = component.getAttribute(key)
+
+  var parent: TestNode? = null
+
+  var children: List<TestNode> = mutableListOf()
 }
