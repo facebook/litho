@@ -69,6 +69,62 @@ class TestNodeSelection(
     }
   }
 
+  /**
+   * Returns a [TestNodeSelection] that further filters the current one, by selecting the child
+   * [TestNode] at [index].
+   *
+   * This assumes that there is order in the `Component`s children. For example, the first one
+   * defined inside a `Column` or `Row` will be the one at index 0.
+   *
+   * If the current [TestNodeSelection] has no children or a child at the given [index] then it will
+   * throw an [AssertionError].
+   */
+  fun selectChildAt(index: Int): TestNodeSelection {
+    return TestNodeSelection(
+        testContext,
+        TestNodeSelector { nodes ->
+          val selectedNodes = selector.map(nodes)
+          if (selectedNodes.size != 1) {
+            throw AssertionError("selectChildAt: expected selection to be a single node")
+          }
+
+          val selectedNode = selectedNodes.first()
+          val child =
+              selectedNode.children.getOrNull(index)
+                  ?: throw AssertionError("selectChildAt: expected child at $index to not be null")
+
+          listOf(child)
+        })
+  }
+
+  /**
+   * Returns a [TestNodeCollectionSelection] that further defines the current one, by defining a
+   * collection of [TestNode] composed by its children.
+   *
+   * The usage of this API assumes that the previous selection materializes into a single
+   * [TestNode], so that the children can be extracted from.
+   *
+   * An example usage:
+   * ```
+   * rule.selectNode(hasType<Column>())
+   *  .selectChildren()
+   *  .assertCount(2)
+   * ```
+   */
+  fun selectChildren(): TestNodeCollectionSelection {
+    return TestNodeCollectionSelection(
+        testContext,
+        TestNodeSelector { nodes ->
+          val selectedNodes = selector.map(nodes)
+          if (selectedNodes.size != 1) {
+            throw AssertionError("selectChildren: expected selection to be a single node")
+          }
+
+          val selectedNode = selectedNodes.first()
+          selectedNode.children
+        })
+  }
+
   private fun fetchMatchingNodes(): List<TestNode> {
     val nodes = testContext.provideAllTestNodes()
     return selector.map(nodes)
