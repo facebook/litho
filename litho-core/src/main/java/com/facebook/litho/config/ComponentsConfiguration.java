@@ -254,8 +254,6 @@ public class ComponentsConfiguration {
 
   public static int recyclerBinderStrategy = 0;
 
-  public static boolean enableMountableComponents = false;
-
   public static boolean enableMountableRecycler = false;
 
   public static boolean enableMountableTwoBindersRecycler = false;
