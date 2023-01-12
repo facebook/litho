@@ -192,8 +192,6 @@ public class ComponentsConfiguration {
    */
   public static boolean enableNestedTreePreallocation = false;
 
-  public static boolean enableTransitionsExtension = true;
-
   /**
    * These params are part of an experiment to try to re-enable host recycling while avoiding native
    * RenderThread crashes we've seen when trying to reuse ComponentHosts.
