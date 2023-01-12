@@ -80,6 +80,7 @@ dependencies {
     implementation deps.supportTestRunner
     compileOnly deps.supportAnnotations
 
+    kaptTest project(':litho-processor')
     testImplementation deps.supportTestJunit
 }
 
