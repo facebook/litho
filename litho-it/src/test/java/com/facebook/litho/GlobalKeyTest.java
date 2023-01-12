@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class StatelessComponentGlobalKeyTest {
+public class GlobalKeyTest {
 
   private static final String mLogTag = "logTag";
 

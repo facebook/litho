@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class LegacyStatelessComponentGlobalKeyTest {
+public class GlobalKeyWithoutRootHostTest {
 
   private ComponentContext mContext;
 
