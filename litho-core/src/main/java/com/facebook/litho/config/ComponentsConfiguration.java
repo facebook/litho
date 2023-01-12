@@ -34,10 +34,10 @@ import java.util.Set;
  * <p>These values are safe defaults and should not require manual changes.
  *
  * <p>This class hosts all the config parameters that the ComponentTree configures it self ....
- * enable and disable features ... A Component tree uses the {@link defaultComponentsConfiguration}
+ * enable and disable features ... A Component tree uses the {@link #defaultComponentsConfiguration}
  * by default but a {@link Builder} can be used to create new instances of the config to override
  * the default parameters ... The default config values can also be overridden by manually setting
- * their values in {@link defaultBuilder}
+ * their values in {@link #defaultBuilder}
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentsConfiguration {
