@@ -97,7 +97,7 @@ fun hasParent(matcher: TestNodeMatcher): TestNodeMatcher {
 
 /**
  * Returns a [TestNodeMatcher] that will match [TestNode]s which have an ancestor that match with
- * the the given [matcher].
+ * the given [matcher].
  *
  * We consider an ancestor to be any [TestNode] in the direct line of parents. This is the direct
  * parent, the parent of the parent, and so on...
@@ -105,6 +105,34 @@ fun hasParent(matcher: TestNodeMatcher): TestNodeMatcher {
 fun hasAncestor(matcher: TestNodeMatcher): TestNodeMatcher {
   return TestNodeMatcher("has ancestor that ${matcher.description}") { testNode: TestNode ->
     testNode.ancestors.any { ancestor -> matcher.matches(ancestor) }
+  }
+}
+
+/**
+ * Returns a [TestNodeMatcher] that will match [TestNode]s which have one child that matches with
+ * the given [matcher].
+ */
+fun hasChild(matcher: TestNodeMatcher): TestNodeMatcher {
+  return TestNodeMatcher("has child that ${matcher.description}") { testNode: TestNode ->
+    testNode.children.any { child -> matcher.matches(child) }
+  }
+}
+
+/**
+ * Returns a [TestNodeMatcher] that will match [TestNode]s which have one descendant that matches
+ * the given [matcher].
+ *
+ * We consider a descendant of a [TestNode] to be any node that is part of its subtree.
+ */
+fun hasDescendant(matcher: TestNodeMatcher): TestNodeMatcher {
+  fun checkHasDescendant(node: TestNode, matcher: TestNodeMatcher): Boolean {
+    if (node.children.any(matcher::matches)) return true
+
+    return node.children.any { child -> checkHasDescendant(child, matcher) }
+  }
+
+  return TestNodeMatcher("has descendant that ${matcher.description}") { testNode: TestNode ->
+    checkHasDescendant(testNode, matcher)
   }
 }
 
