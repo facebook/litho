@@ -76,3 +76,48 @@ fun <T> hasAttribute(key: AttributeKey<T>, value: T): TestNodeMatcher {
     testNode.getAttribute(key) == value
   }
 }
+
+/**
+ * Returns a [TestNodeMatcher] that verifies if a [TestNode] has a parent [TestNode] that matches
+ * the given [matcher].
+ *
+ * If the [TestNode] has no parent (it is the root) then the returned [TestNodeMatcher] will never
+ * be matched.
+ */
+fun hasParent(matcher: TestNodeMatcher): TestNodeMatcher {
+  return TestNodeMatcher("has parent that ${matcher.description}") { testNode: TestNode ->
+    val parent = testNode.parent
+    if (parent == null) {
+      false
+    } else {
+      matcher.matches(parent)
+    }
+  }
+}
+
+/**
+ * Returns a [TestNodeMatcher] that will match [TestNode]s which have an ancestor that match with
+ * the the given [matcher].
+ *
+ * We consider an ancestor to be any [TestNode] in the direct line of parents. This is the direct
+ * parent, the parent of the parent, and so on...
+ */
+fun hasAncestor(matcher: TestNodeMatcher): TestNodeMatcher {
+  return TestNodeMatcher("has ancestor that ${matcher.description}") { testNode: TestNode ->
+    testNode.ancestors.any { ancestor -> matcher.matches(ancestor) }
+  }
+}
+
+private val TestNode.ancestors: Iterable<TestNode>
+  get() =
+      object : Iterable<TestNode> {
+        override fun iterator(): Iterator<TestNode> =
+            object : Iterator<TestNode> {
+
+              private var next = parent
+
+              override fun hasNext(): Boolean = next != null
+
+              override fun next(): TestNode = next!!.also { next = it.parent }
+            }
+      }
