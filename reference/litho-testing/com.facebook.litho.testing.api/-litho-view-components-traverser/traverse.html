@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>scrollTo</title>
+    <title>traverse</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -46,12 +46,12 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" id="content" pageids="litho-testing::com.facebook.litho.testing/InteractionUtil/scrollTo/#androidx.recyclerview.widget.RecyclerView#int/PointingToDeclaration//1342111716">
-  <div class="breadcrumbs"><a href="../../index.html">litho-testing</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.testing</a><span class="delimiter">/</span><a href="index.html">InteractionUtil</a><span class="delimiter">/</span><span class="current">scrollTo</span></div>
+<div class="main-content" id="content" pageids="litho-testing::com.facebook.litho.testing.api/LithoViewComponentsTraverser/traverse/#com.facebook.litho.LithoView#kotlin.Function2[com.facebook.litho.Component,com.facebook.litho.Component?,kotlin.Unit]/PointingToDeclaration//1342111716">
+  <div class="breadcrumbs"><a href="../../index.html">litho-testing</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho.testing.api</a><span class="delimiter">/</span><a href="index.html">LithoViewComponentsTraverser</a><span class="delimiter">/</span><span class="current">traverse</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>scroll</span><wbr><span><span>To</span></span></h1>
+    <h1 class="cover"><span><span>traverse</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="scroll-to.html"><span class="token function"><strike>scrollTo</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">recyclerView<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.html">RecyclerView</a><span class="token punctuation">, </span></span><span class="parameter ">targetScrollY<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="deprecation-content"><h3 class="">Deprecated</h3></div><span class="kdoc-tag"><h4 class="">Deprecated</h4><p class="paragraph">as it is based on <a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.html#computeVerticalScrollOffset--">computeVerticalScrollOffset</a> which only returns estimated scroll position, which may lead to the method hanging forever (or until hitting max iterations count) Please, consider using <a href="-scroller/index.html">Scroller</a> instead</p></span></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-testing:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="traverse.html"><span class="token function">traverse</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">lithoView<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-litho-view/index.html">LithoView</a><span class="token punctuation">, </span></span><span class="parameter ">onComponentFound<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span>component<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token punctuation">, </span><span class="token keyword"></span>parent<span class="token operator">: </span><a href="../../../litho-core/com.facebook.litho/-component/index.html">Component</a><span class="token operator">?</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
 </div>
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
