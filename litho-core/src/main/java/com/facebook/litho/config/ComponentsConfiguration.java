@@ -367,20 +367,6 @@ public class ComponentsConfiguration {
     return mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
-  /**
-   * Defines whether or not we should throw an exception when focus requests which happen on threads
-   * different than the Main Thread.
-   */
-  private static boolean isNonMainThreadFocusRequestThrowingEnabled = true;
-
-  public static void setIsNonMainThreadFocusRequestThrowingEnabled(boolean enabled) {
-    isNonMainThreadFocusRequestThrowingEnabled = enabled;
-  }
-
-  public static boolean isNonMainThreadFocusRequestThrowingEnabled() {
-    return isNonMainThreadFocusRequestThrowingEnabled || isDebugModeEnabled;
-  }
-
   public static ComponentsConfiguration.Builder create() {
     return create(defaultComponentsConfiguration);
   }
