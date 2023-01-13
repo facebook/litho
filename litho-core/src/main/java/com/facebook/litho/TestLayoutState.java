@@ -71,7 +71,6 @@ public class TestLayoutState {
             resolveStateContext.getCache(),
             c,
             resolveStateContext.getTreeState(),
-            c.getComponentTree(),
             resolveStateContext.getLayoutVersion(),
             null,
             null);

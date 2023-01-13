@@ -1293,7 +1293,6 @@ public class LayoutState
               new MeasuredResultCache(rsc.getCache()),
               c,
               treeState,
-              c.getComponentTree(),
               layoutVersion,
               diffTreeRoot,
               layoutStateFuture);
@@ -1424,7 +1423,6 @@ public class LayoutState
                 new MeasuredResultCache(partialRsc.getCache()),
                 c,
                 partialRsc.getTreeState(),
-                c.getComponentTree(),
                 partialRsc.getLayoutVersion(),
                 layoutState.mDiffTreeRoot,
                 partialRsc.getLayoutStateFuture());

@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.util.Pair;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
@@ -35,7 +34,6 @@ import java.util.List;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutStateContext implements CalculationStateContext {
 
-  private final @Nullable ComponentTree mComponentTree;
   private @Nullable TreeState mTreeState;
   private @Nullable TreeFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
@@ -56,22 +54,19 @@ public class LayoutStateContext implements CalculationStateContext {
 
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
-    return new LayoutStateContext(
-        new MeasuredResultCache(), c, new TreeState(), c.getComponentTree(), 0, null, null);
+    return new LayoutStateContext(new MeasuredResultCache(), c, new TreeState(), 0, null, null);
   }
 
   LayoutStateContext(
       final MeasuredResultCache cache,
       final ComponentContext rootComponentContext,
       final TreeState treeState,
-      final @Nullable ComponentTree componentTree,
       final int layoutVersion,
       final @Nullable DiffNode currentDiffTree,
       final @Nullable TreeFuture layoutStateFuture) {
     mCache = cache;
     mRootComponentContext = rootComponentContext;
     mTreeState = treeState;
-    mComponentTree = componentTree;
     mLayoutVersion = layoutVersion;
     mCurrentDiffTree = currentDiffTree;
     mLayoutStateFuture = layoutStateFuture;
@@ -110,12 +105,6 @@ public class LayoutStateContext implements CalculationStateContext {
   @Override
   public boolean isFutureReleased() {
     return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
-  }
-
-  @Nullable
-  @VisibleForTesting
-  public ComponentTree getComponentTree() {
-    return mComponentTree;
   }
 
   @Override

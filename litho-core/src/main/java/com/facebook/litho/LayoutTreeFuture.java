@@ -80,7 +80,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
             new MeasuredResultCache(renderPhaseCache),
             c,
             treeState,
-            c.getComponentTree(),
             mLayoutVersion,
             mDiffTreeRoot,
             this);

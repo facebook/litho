@@ -674,8 +674,7 @@ public abstract class Component
         }
 
         final LayoutStateContext nestedLsc =
-            new LayoutStateContext(
-                resultCache, c, treeState, c.getComponentTree(), layoutVersion, null, null);
+            new LayoutStateContext(resultCache, c, treeState, layoutVersion, null, null);
 
         lastMeasuredLayout =
             Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);

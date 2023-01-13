@@ -177,7 +177,6 @@ class Layout {
               nestedRsc.getCache(),
               parentContext,
               nestedRsc.getTreeState(),
-              parentContext.getComponentTree(),
               nestedRsc.getLayoutVersion(),
               layoutStateContext.getCurrentDiffTree(),
               null);
