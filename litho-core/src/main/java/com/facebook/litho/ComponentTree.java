@@ -85,7 +85,7 @@ import javax.annotation.concurrent.GuardedBy;
  * </code>
  */
 @ThreadSafe
-public class ComponentTree implements LithoLifecycleListener {
+public class ComponentTree implements LithoLifecycleListener, StateUpdater {
 
   private static final boolean DEBUG_LOGS = false;
 
@@ -1252,7 +1252,8 @@ public class ComponentTree implements LithoLifecycleListener {
     updateStateLazy(componentKey, stateUpdate, false);
   }
 
-  synchronized void updateStateLazy(
+  @Override
+  public synchronized void updateStateLazy(
       String componentKey, StateUpdate stateUpdate, boolean isNestedTree) {
     if (mRoot == null) {
       return;
@@ -1267,7 +1268,8 @@ public class ComponentTree implements LithoLifecycleListener {
    * @return a StateContainer with lazy state updates applied. This may be the same container passed
    *     in if there were no updates to apply. This method won't mutate the passed container.
    */
-  synchronized StateContainer applyLazyStateUpdatesForContainer(
+  @Override
+  public synchronized StateContainer applyLazyStateUpdatesForContainer(
       String componentKey, StateContainer container, boolean isNestedTree) {
 
     if (mRoot == null || mTreeState == null) {
@@ -1286,7 +1288,8 @@ public class ComponentTree implements LithoLifecycleListener {
     updateStateSync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress, false);
   }
 
-  void updateStateSync(
+  @Override
+  public void updateStateSync(
       String componentKey,
       StateUpdate stateUpdate,
       String attribution,
@@ -1306,7 +1309,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @VisibleForTesting
-  void updateStateAsync(
+  public void updateStateAsync(
       String componentKey,
       StateUpdate stateUpdate,
       String attribution,
@@ -1314,7 +1317,8 @@ public class ComponentTree implements LithoLifecycleListener {
     updateStateAsync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress, false);
   }
 
-  void updateStateAsync(
+  @Override
+  public void updateStateAsync(
       String componentKey,
       StateUpdate stateUpdate,
       String attribution,
@@ -1340,7 +1344,8 @@ public class ComponentTree implements LithoLifecycleListener {
     onAsyncStateUpdateEnqueued(attribution, isCreateLayoutInProgress);
   }
 
-  final void updateHookStateSync(
+  @Override
+  public final void updateHookStateSync(
       String globalKey,
       HookUpdater updater,
       String attribution,
@@ -1359,7 +1364,8 @@ public class ComponentTree implements LithoLifecycleListener {
     ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
   }
 
-  final void updateHookStateAsync(
+  @Override
+  public final void updateHookStateAsync(
       String globalKey,
       HookUpdater updater,
       String attribution,
@@ -2961,7 +2967,9 @@ public class ComponentTree implements LithoLifecycleListener {
     return mRoot == null ? null : mRoot.getSimpleName();
   }
 
-  synchronized @Nullable Object getCachedValue(Object cachedValueInputs, boolean isNestedTree) {
+  @Override
+  public synchronized @Nullable Object getCachedValue(
+      Object cachedValueInputs, boolean isNestedTree) {
     if (mReleased || mTreeState == null) {
       return null;
     }
@@ -2974,7 +2982,8 @@ public class ComponentTree implements LithoLifecycleListener {
     return mAttachDetachHandler;
   }
 
-  synchronized void putCachedValue(
+  @Override
+  public synchronized void putCachedValue(
       Object cachedValueInputs, Object cachedValue, boolean isNestedTree) {
     if (mReleased || mTreeState == null) {
       return;

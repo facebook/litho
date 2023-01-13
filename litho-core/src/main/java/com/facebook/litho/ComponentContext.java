@@ -67,7 +67,7 @@ public class ComponentContext implements Cloneable {
   private boolean mIsParentTreePropsCloned;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private ComponentTree mComponentTree;
+  private @Nullable ComponentTree mComponentTree;
 
   // Used to hold styling information applied to components
   @StyleRes
@@ -84,8 +84,11 @@ public class ComponentContext implements Cloneable {
 
   private final ThreadLocal<CalculationStateContext> mCalculationStateContextThreadLocal;
 
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable StateUpdater mStateUpdater;
+
   public ComponentContext(Context context) {
-    this(context, null, null, null);
+    this(context, null, null);
   }
 
   /**
@@ -106,7 +109,7 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, treeProps, buildDefaultLithoConfiguration(context, logTag, logger));
+    this(context, treeProps, buildDefaultLithoConfiguration(context, logTag, logger), null);
   }
 
   private static LithoConfiguration buildDefaultLithoConfiguration(
@@ -129,7 +132,10 @@ public class ComponentContext implements Cloneable {
   }
 
   public ComponentContext(
-      Context context, @Nullable TreeProps treeProps, LithoConfiguration lithoConfiguration) {
+      Context context,
+      @Nullable TreeProps treeProps,
+      LithoConfiguration lithoConfiguration,
+      @Nullable StateUpdater stateUpdater) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
     if (lithoConfiguration.logger != null && lithoConfiguration.logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -141,6 +147,7 @@ public class ComponentContext implements Cloneable {
             context, ResourceCache.getLatest(context.getResources().getConfiguration()));
     mTreeProps = treeProps;
     mLithoConfiguration = lithoConfiguration;
+    mStateUpdater = stateUpdater;
   }
 
   public ComponentContext(ComponentContext context) {
@@ -152,6 +159,7 @@ public class ComponentContext implements Cloneable {
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
+    mStateUpdater = context.mStateUpdater;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
@@ -202,10 +210,12 @@ public class ComponentContext implements Cloneable {
             : componentTree.getLithoConfiguration();
 
     ComponentContext componentContext =
-        new ComponentContext(context.getAndroidContext(), context.mTreeProps, lithoConfiguration);
+        new ComponentContext(
+            context.getAndroidContext(), context.mTreeProps, lithoConfiguration, componentTree);
     componentContext.mParentTreeProps = context.mParentTreeProps;
     componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
+    componentContext.mStateUpdater = componentTree;
     componentContext.mComponentScope = null;
 
     return componentContext;
@@ -267,7 +277,8 @@ public class ComponentContext implements Cloneable {
     return new ComponentContext(
         parentTreeContext.getAndroidContext(),
         parentTreeContext.getTreePropsCopy(),
-        parentTreeContext.mLithoConfiguration);
+        parentTreeContext.mLithoConfiguration,
+        parentTreeContext.mStateUpdater);
   }
 
   /** Returns the current calculate state context */
@@ -301,6 +312,7 @@ public class ComponentContext implements Cloneable {
   public ResolveStateContext setRenderStateContextForTests() {
     if (mComponentTree == null) {
       mComponentTree = ComponentTree.create(this).build();
+      mStateUpdater = mComponentTree;
     }
 
     final ResolveStateContext resolveStateContext =
@@ -409,11 +421,11 @@ public class ComponentContext implements Cloneable {
   public void updateStateSync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return;
     }
 
-    mComponentTree.updateStateSync(
+    mStateUpdater.updateStateSync(
         getGlobalKey(),
         stateUpdate,
         attribution,
@@ -429,11 +441,11 @@ public class ComponentContext implements Cloneable {
   public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return;
     }
 
-    mComponentTree.updateStateAsync(
+    mStateUpdater.updateStateAsync(
         getGlobalKey(),
         stateUpdate,
         attribution,
@@ -446,22 +458,22 @@ public class ComponentContext implements Cloneable {
   }
 
   public void updateStateLazy(StateUpdate stateUpdate) {
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return;
     }
 
-    mComponentTree.updateStateLazy(getGlobalKey(), stateUpdate, isNestedTreeContext());
+    mStateUpdater.updateStateLazy(getGlobalKey(), stateUpdate, isNestedTreeContext());
   }
 
   final void updateHookStateAsync(String globalKey, HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return;
     }
 
     final Component scope = getComponentScope();
-    mComponentTree.updateHookStateAsync(
+    mStateUpdater.updateHookStateAsync(
         globalKey,
         updateBlock,
         scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
@@ -472,12 +484,12 @@ public class ComponentContext implements Cloneable {
   final void updateHookStateSync(String globalKey, HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return;
     }
 
     final Component scope = getComponentScope();
-    mComponentTree.updateHookStateSync(
+    mStateUpdater.updateHookStateSync(
         globalKey,
         updateBlock,
         scope != null ? scope.getSimpleName() : "hook",
@@ -490,11 +502,11 @@ public class ComponentContext implements Cloneable {
    *     in if there were no updates to apply. This method won't mutate the passed container.
    */
   public StateContainer applyLazyStateUpdatesForContainer(StateContainer container) {
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return container;
     }
 
-    return mComponentTree.applyLazyStateUpdatesForContainer(
+    return mStateUpdater.applyLazyStateUpdatesForContainer(
         getGlobalKey(), container, isNestedTreeContext());
   }
 
@@ -668,17 +680,17 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public Object getCachedValue(Object cachedValueInputs) {
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return null;
     }
-    return mComponentTree.getCachedValue(cachedValueInputs, isNestedTreeContext());
+    return mStateUpdater.getCachedValue(cachedValueInputs, isNestedTreeContext());
   }
 
   public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
-    if (mComponentTree == null) {
+    if (mStateUpdater == null) {
       return;
     }
-    mComponentTree.putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
+    mStateUpdater.putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
   /**
