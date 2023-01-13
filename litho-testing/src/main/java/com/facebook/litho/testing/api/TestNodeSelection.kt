@@ -184,7 +184,7 @@ class TestNodeCollectionSelection(
         })
   }
 
-  private fun fetchMatchingNodes(): List<TestNode> {
+  fun fetchMatchingNodes(): List<TestNode> {
     val nodes = testContext.provideAllTestNodes()
     return selector.map(nodes)
   }
