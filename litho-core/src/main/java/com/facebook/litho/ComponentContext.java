@@ -303,18 +303,12 @@ public class ComponentContext implements Cloneable {
   }
 
   /**
-   * For test usage. This method will ensure this ComponentContext has a ComponentTree, and then
-   * generate a RenderStateContext, set it on the ComponentTree, and return the same RSC. This is
+   * For test usage. This method will ensure this ComponentContext has a RenderStateContex. This is
    * critical for tests that trigger layout calculation functionality outside of a LayoutState
    * calculation (i.e., including willRender, Layout API, caching, etc).
    */
   @VisibleForTesting
   public ResolveStateContext setRenderStateContextForTests() {
-    if (mComponentTree == null) {
-      mComponentTree = ComponentTree.create(this).build();
-      mStateUpdater = mComponentTree;
-    }
-
     final ResolveStateContext resolveStateContext =
         new ResolveStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
     setRenderStateContext(resolveStateContext);
