@@ -85,7 +85,7 @@ import javax.annotation.concurrent.GuardedBy;
  * </code>
  */
 @ThreadSafe
-public class ComponentTree implements LithoLifecycleListener, StateUpdater {
+public class ComponentTree implements LithoLifecycleListener, StateUpdater, MountedViewReference {
 
   private static final boolean DEBUG_LOGS = false;
 
@@ -3045,6 +3045,12 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater {
 
   public ComponentContext getContext() {
     return mContext;
+  }
+
+  @Nullable
+  @Override
+  public View getMountedView() {
+    return mLithoView;
   }
 
   // TODO: T48569046 remove this method and use mLogger

@@ -69,6 +69,9 @@ public class ComponentContext implements Cloneable {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable ComponentTree mComponentTree;
 
+  @ThreadConfined(ThreadConfined.UI)
+  private @Nullable MountedViewReference mMountedViewReference;
+
   // Used to hold styling information applied to components
   @StyleRes
   @ThreadConfined(ThreadConfined.ANY)
@@ -159,6 +162,7 @@ public class ComponentContext implements Cloneable {
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
+    mMountedViewReference = context.mMountedViewReference;
     mStateUpdater = context.mStateUpdater;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
@@ -215,6 +219,7 @@ public class ComponentContext implements Cloneable {
     componentContext.mParentTreeProps = context.mParentTreeProps;
     componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
+    componentContext.mMountedViewReference = componentTree;
     componentContext.mStateUpdater = componentTree;
     componentContext.mComponentScope = null;
 
@@ -558,17 +563,17 @@ public class ComponentContext implements Cloneable {
   public @Nullable <T extends View> T findViewWithTag(Object tag) {
     ThreadUtils.assertMainThread();
 
-    if (mComponentTree == null) {
+    if (mMountedViewReference == null) {
       throw new RuntimeException(
-          "Calling findViewWithTag on a ComponentContext which isn't associated with a ComponentTree. Make sure it's one received in `render` or `onCreateLayout`");
+          "Calling findViewWithTag on a ComponentContext which isn't associated with a MountedViewReference. Make sure it's one received in `render` or `onCreateLayout`");
     }
-    final LithoView lithoView = mComponentTree.getLithoView();
-    // LithoView isn't mounted
-    if (lithoView == null) {
+    final View mountedView = mMountedViewReference.getMountedView();
+    // The tree isn't mounted
+    if (mountedView == null) {
       return null;
     }
 
-    return lithoView.findViewWithTag(tag);
+    return mountedView.findViewWithTag(tag);
   }
 
   /**
