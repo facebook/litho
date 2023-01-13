@@ -444,9 +444,11 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   }
 
   private void onMeasureInternal(int widthMeasureSpec, int heightMeasureSpec) {
-    widthMeasureSpec =
-        DoubleMeasureFixUtil.correctWidthSpecForAndroidDoubleMeasureBug(
-            getResources(), getContext().getPackageManager(), widthMeasureSpec);
+    if (ComponentsConfiguration.enableDoubleMeasureFix) {
+      widthMeasureSpec =
+          DoubleMeasureFixUtil.correctWidthSpecForAndroidDoubleMeasureBug(
+              getResources(), getContext().getPackageManager(), widthMeasureSpec);
+    }
 
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
     final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;
