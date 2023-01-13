@@ -78,6 +78,15 @@ fun <T> hasAttribute(key: AttributeKey<T>, value: T): TestNodeMatcher {
 }
 
 /**
+ * Returns a [TestNodeMatcher] that verifies if a [TestNode] is the root of a component tree.
+ *
+ * A root node is the node that has no associated parent.
+ */
+fun isRoot(): TestNodeMatcher {
+  return TestNodeMatcher("is root") { node -> node.parent == null }
+}
+
+/**
  * Returns a [TestNodeMatcher] that verifies if a [TestNode] has a parent [TestNode] that matches
  * the given [matcher].
  *
