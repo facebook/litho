@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho.testing.api
 
 import com.facebook.litho.config.ComponentsConfiguration
 import org.junit.After

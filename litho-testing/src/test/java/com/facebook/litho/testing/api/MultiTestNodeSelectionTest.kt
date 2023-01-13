@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho.testing.api
 
+import com.facebook.litho.Column
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.Row
+import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.kotlin.widget.Image
 import com.facebook.litho.kotlin.widget.Text
-import com.facebook.litho.testing.api.LithoRule
-import com.facebook.litho.testing.api.hasText
-import com.facebook.litho.testing.api.hasTextContaining
-import com.facebook.litho.testing.api.hasType
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.testKey
 import com.facebook.litho.widget.Image

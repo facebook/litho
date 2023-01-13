@@ -27,7 +27,6 @@ import com.facebook.litho.ComponentTree
 import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Row
-import com.facebook.litho.RunWithDebugInfoTest
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.api.helpers.LayoutWithSizeSpecs
