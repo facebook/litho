@@ -39,7 +39,7 @@ class TestNodeSelection(
     return result.first()
   }
 
-  fun assertExists() {
+  fun assertExists(): TestNodeSelection {
     val result = fetchMatchingNodes()
 
     val numResults = result.size
@@ -51,22 +51,28 @@ class TestNodeSelection(
     if (numResults > 1) {
       throw AssertionError("There is more than one result for the matched test nodes.")
     }
+
+    return this
   }
 
-  fun assertDoesNotExist() {
+  fun assertDoesNotExist(): TestNodeSelection {
     val result = fetchMatchingNodes()
 
     check(result.isEmpty()) {
       "Failed: assertDoesNotExist. Expected no match, but found ${result.size} test nodes"
     }
+
+    return this
   }
 
-  fun assert(matcher: TestNodeMatcher) {
+  fun assert(matcher: TestNodeMatcher): TestNodeSelection {
     val testNode = fetchTestNode()
 
     if (!matcher.matches(testNode)) {
       throw AssertionError("Failed assertion: ${matcher.description}")
     }
+
+    return this
   }
 
   /**
@@ -142,7 +148,7 @@ class TestNodeCollectionSelection(
     private val selector: TestNodeSelector
 ) {
 
-  fun assertExists() {
+  fun assertExists(): TestNodeCollectionSelection {
     val result = fetchMatchingNodes()
 
     val numResults = result.size
@@ -150,15 +156,19 @@ class TestNodeCollectionSelection(
     if (numResults == 0) {
       throw AssertionError("Failed: assertExists. There are no results for searched test nodes.")
     }
+
+    return this
   }
 
-  fun assertDoesNotExist() {
+  fun assertDoesNotExist(): TestNodeCollectionSelection {
     val result = fetchMatchingNodes()
 
     if (result.isNotEmpty()) {
       throw AssertionError(
           "Failed: assertDoesNotExist. Expected no match, but found ${result.size} test nodes")
     }
+
+    return this
   }
 
   /**
@@ -166,13 +176,15 @@ class TestNodeCollectionSelection(
    *
    * It will throw an [AssertionError] if the number of elements is lower or higher than [count]
    */
-  fun assertCount(count: Int) {
+  fun assertCount(count: Int): TestNodeCollectionSelection {
     val result = fetchMatchingNodes()
 
     if (result.size != count) {
       throw AssertionError(
           "Failed: assertHasCount. Expected $count components, but found ${result.size}")
     }
+
+    return this
   }
 
   fun selectAtIndex(index: Int): TestNodeSelection {

@@ -72,25 +72,19 @@ class NodeResolutionWithAssertionsTest : RunWithDebugInfoTest() {
     rule
         .render { SimpleComponent() }
         .selectNode(isRoot())
-        .run {
-          assertExists()
-          assert(hasType<SimpleComponent>())
-        }
+        .assertExists()
+        .assert(hasType<SimpleComponent>())
 
     rule
         .render { ParentComponent() }
         .selectNode(isRoot())
-        .run {
-          assertExists()
-          assert(hasType<ParentComponent>())
-        }
+        .assertExists()
+        .assert(hasType<ParentComponent>())
     rule
         .render { CollectionComponent() }
         .selectNode(isRoot())
-        .run {
-          assertExists()
-          assert(hasType<CollectionComponent>())
-        }
+        .assertExists()
+        .assert(hasType<CollectionComponent>())
   }
 
   private class SimpleComponent : KComponent() {
