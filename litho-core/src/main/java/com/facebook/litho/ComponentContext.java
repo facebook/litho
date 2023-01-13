@@ -124,7 +124,8 @@ public class ComponentContext implements Cloneable {
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
         DefaultErrorEventHandler.INSTANCE,
         logTag,
-        logger);
+        logger,
+        null); // TODO check if we can make this not nullable and always instantiate one
   }
 
   public ComponentContext(
@@ -173,7 +174,8 @@ public class ComponentContext implements Cloneable {
         lithoConfiguration.incrementalMountEnabled,
         lithoConfiguration.errorEventHandler,
         logTag != null ? logTag : lithoConfiguration.logTag,
-        logger != null ? logger : lithoConfiguration.logger);
+        logger != null ? logger : lithoConfiguration.logger,
+        lithoConfiguration.renderUnitIdGenerator);
   }
 
   ComponentContext makeNewCopy() {
@@ -575,11 +577,11 @@ public class ComponentContext implements Cloneable {
    * @param type The output type @see OutputUnitType
    */
   public long calculateLayoutOutputId(final String componentKey, final @OutputUnitType int type) {
-    if (mComponentTree == null) {
-      throw new IllegalStateException("Cannot generate IDs with a null Component Tree");
+    if (mLithoConfiguration.renderUnitIdGenerator == null) {
+      throw new IllegalStateException("Cannot generate IDs with a null renderUnitIdGenerator");
     }
 
-    return mComponentTree.getRenderUnitIdGenerator().calculateLayoutOutputId(componentKey, type);
+    return mLithoConfiguration.renderUnitIdGenerator.calculateLayoutOutputId(componentKey, type);
   }
 
   ComponentTree getComponentTree() {
@@ -774,5 +776,10 @@ public class ComponentContext implements Cloneable {
    */
   boolean areTransitionsEnabled() {
     return mLithoConfiguration.areTransitionsEnabled;
+  }
+
+  @Nullable
+  RenderUnitIdGenerator getRenderUnitIdGenerator() {
+    return mLithoConfiguration.renderUnitIdGenerator;
   }
 }

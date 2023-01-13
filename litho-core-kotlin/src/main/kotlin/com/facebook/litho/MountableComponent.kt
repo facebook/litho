@@ -43,7 +43,7 @@ abstract class MountableComponent() : Component() {
     mountableRenderResult.style?.applyToComponent(c, this)
 
     // generate ID and set it on the Mountable
-    val idGenerator = c.componentTree.renderUnitIdGenerator
+    val idGenerator = c.renderUnitIdGenerator
     if (idGenerator == null) {
       throw IllegalStateException("Attempt to use a released RenderStateContext")
     } else {

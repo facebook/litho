@@ -131,7 +131,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
-  private final RenderUnitIdGenerator mRenderUnitIdGenerator;
   private boolean mInAttach = false;
 
   // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
@@ -191,10 +190,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
     return mLifecycleProvider != null;
-  }
-
-  RenderUnitIdGenerator getRenderUnitIdGenerator() {
-    return mRenderUnitIdGenerator;
   }
 
   public interface MeasureListener {
@@ -432,7 +427,21 @@ public class ComponentTree implements LithoLifecycleListener {
 
     mRoot = builder.root;
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
-
+    if (builder.overrideComponentTreeId != -1) {
+      mId = builder.overrideComponentTreeId;
+    } else {
+      mId = generateComponentTreeId();
+    }
+    final RenderUnitIdGenerator renderUnitIdGenerator;
+    if (builder.mRenderUnitIdGenerator != null) {
+      renderUnitIdGenerator = builder.mRenderUnitIdGenerator;
+      if (mId != renderUnitIdGenerator.getComponentTreeId()) {
+        throw new IllegalStateException(
+            "Copying RenderUnitIdGenerator is only allowed if the ComponentTree IDs match");
+      }
+    } else {
+      renderUnitIdGenerator = new RenderUnitIdGenerator(mId);
+    }
     mLithoConfiguration =
         new LithoConfiguration(
             AnimationsDebug.areTransitionsEnabled(builder.context.getAndroidContext()),
@@ -447,7 +456,8 @@ public class ComponentTree implements LithoLifecycleListener {
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
             builder.logTag != null ? builder.logTag : mRoot.getSimpleName(),
-            builder.logger);
+            builder.logger,
+            renderUnitIdGenerator);
     mContext = ComponentContext.withComponentTree(builder.context, this);
 
     if (builder.mLifecycleProvider != null) {
@@ -479,22 +489,6 @@ public class ComponentTree implements LithoLifecycleListener {
             && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
-
-    if (builder.overrideComponentTreeId != -1) {
-      mId = builder.overrideComponentTreeId;
-    } else {
-      mId = generateComponentTreeId();
-    }
-
-    if (builder.mRenderUnitIdGenerator != null) {
-      mRenderUnitIdGenerator = builder.mRenderUnitIdGenerator;
-      if (mId != mRenderUnitIdGenerator.getComponentTreeId()) {
-        throw new IllegalStateException(
-            "Copying RenderUnitIdGenerator is only allowed if the ComponentTree IDs match");
-      }
-    } else {
-      mRenderUnitIdGenerator = new RenderUnitIdGenerator(mId);
-    }
 
     mIncrementalMountHelper =
         ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
@@ -3602,6 +3596,7 @@ public class ComponentTree implements LithoLifecycleListener {
     final ErrorEventHandler errorEventHandler;
     final String logTag;
     @Nullable final ComponentsLogger logger;
+    final RenderUnitIdGenerator renderUnitIdGenerator;
 
     public LithoConfiguration(
         boolean areTransitionsEnabled,
@@ -3614,7 +3609,8 @@ public class ComponentTree implements LithoLifecycleListener {
         boolean incrementalMountEnabled,
         @Nullable ErrorEventHandler errorEventHandler,
         String logTag,
-        @Nullable ComponentsLogger logger) {
+        @Nullable ComponentsLogger logger,
+        RenderUnitIdGenerator renderUnitIdGenerator) {
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation =
           shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
@@ -3629,6 +3625,7 @@ public class ComponentTree implements LithoLifecycleListener {
           errorEventHandler == null ? DefaultErrorEventHandler.INSTANCE : errorEventHandler;
       this.logTag = logTag;
       this.logger = logger;
+      this.renderUnitIdGenerator = renderUnitIdGenerator;
     }
   }
 
@@ -3823,7 +3820,7 @@ public class ComponentTree implements LithoLifecycleListener {
      * @param prevComponentTree Previous ComponentTree to override the render unit id map
      */
     public Builder overrideRenderUnitIdMap(ComponentTree prevComponentTree) {
-      this.mRenderUnitIdGenerator = prevComponentTree.getRenderUnitIdGenerator();
+      this.mRenderUnitIdGenerator = prevComponentTree.getLithoConfiguration().renderUnitIdGenerator;
       return this;
     }
 
