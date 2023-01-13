@@ -446,7 +446,7 @@ public class ComponentTree implements LithoLifecycleListener {
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
-            builder.logTag,
+            builder.logTag != null ? builder.logTag : mRoot.getSimpleName(),
             builder.logger);
     mContext = ComponentContext.withComponentTree(builder.context, this);
 

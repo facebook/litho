@@ -43,9 +43,6 @@ public class ComponentContext implements Cloneable {
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
-  // TODO: T48229786 move to CT
-  private final @Nullable String mLogTag;
-  private final @Nullable ComponentsLogger mLogger;
   private LithoConfiguration mLithoConfiguration;
 
   private @Nullable String mNoStateUpdatesMethod;
@@ -109,17 +106,31 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, treeProps, null);
+    this(context, treeProps, buildDefaultLithoConfiguration(context, logTag, logger));
+  }
+
+  private static LithoConfiguration buildDefaultLithoConfiguration(
+      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
+    return new LithoConfiguration(
+        AnimationsDebug.areTransitionsEnabled(context),
+        false,
+        ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure,
+        false,
+        ComponentsConfiguration.overrideReconciliation != null
+            ? ComponentsConfiguration.overrideReconciliation
+            : true,
+        true,
+        null,
+        !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
+        DefaultErrorEventHandler.INSTANCE,
+        logTag,
+        logger);
   }
 
   public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger,
-      @Nullable TreeProps treeProps,
-      @Nullable LithoConfiguration lithoConfiguration) {
+      Context context, @Nullable TreeProps treeProps, LithoConfiguration lithoConfiguration) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
-    if (logger != null && logTag == null) {
+    if (lithoConfiguration.logger != null && lithoConfiguration.logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
@@ -128,8 +139,6 @@ public class ComponentContext implements Cloneable {
         new ResourceResolver(
             context, ResourceCache.getLatest(context.getResources().getConfiguration()));
     mTreeProps = treeProps;
-    mLogger = logger;
-    mLogTag = logTag;
     mLithoConfiguration = lithoConfiguration;
   }
 
@@ -142,16 +151,29 @@ public class ComponentContext implements Cloneable {
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
-    mLogger = context.mLogger;
-    mLogTag =
-        context.mLogTag != null || mComponentTree == null
-            ? context.mLogTag
-            : mComponentTree.getSimpleName();
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
     mCalculationStateContextThreadLocal = context.mCalculationStateContextThreadLocal;
     mLithoConfiguration = context.mLithoConfiguration;
+  }
+
+  private static LithoConfiguration mergeConfigurationWithNewLogTagAndLogger(
+      LithoConfiguration lithoConfiguration,
+      @Nullable String logTag,
+      @Nullable ComponentsLogger logger) {
+    return new LithoConfiguration(
+        lithoConfiguration.areTransitionsEnabled,
+        lithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation,
+        lithoConfiguration.isReuseLastMeasuredNodeInComponentMeasureEnabled,
+        lithoConfiguration.shouldReuseOutputs,
+        lithoConfiguration.isReconciliationEnabled,
+        lithoConfiguration.isVisibilityProcessingEnabled,
+        lithoConfiguration.mountContentPreallocationHandler,
+        lithoConfiguration.incrementalMountEnabled,
+        lithoConfiguration.errorEventHandler,
+        logTag != null ? logTag : lithoConfiguration.logTag,
+        logger != null ? logger : lithoConfiguration.logger);
   }
 
   ComponentContext makeNewCopy() {
@@ -168,17 +190,22 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentTree(
       ComponentContext context, ComponentTree componentTree) {
+    final String contextLogTag = context.mLithoConfiguration.logTag;
+    final ComponentsLogger contextLogger = context.mLithoConfiguration.logger;
+
+    final LithoConfiguration lithoConfiguration =
+        (contextLogTag != null || contextLogger != null)
+            ? mergeConfigurationWithNewLogTagAndLogger(
+                componentTree.getLithoConfiguration(), contextLogTag, contextLogger)
+            : componentTree.getLithoConfiguration();
+
     ComponentContext componentContext =
-        new ComponentContext(
-            context.getAndroidContext(),
-            context.mLogTag,
-            context.mLogger,
-            context.mTreeProps,
-            componentTree.getLithoConfiguration());
+        new ComponentContext(context.getAndroidContext(), context.mTreeProps, lithoConfiguration);
     componentContext.mParentTreeProps = context.mParentTreeProps;
     componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
+
     return componentContext;
   }
 
@@ -237,9 +264,8 @@ public class ComponentContext implements Cloneable {
   public static ComponentContext makeCopyForNestedTree(ComponentContext parentTreeContext) {
     return new ComponentContext(
         parentTreeContext.getAndroidContext(),
-        parentTreeContext.getLogTag(),
-        parentTreeContext.getLogger(),
-        parentTreeContext.getTreePropsCopy());
+        parentTreeContext.getTreePropsCopy(),
+        parentTreeContext.mLithoConfiguration);
   }
 
   /** Returns the current calculate state context */
@@ -358,17 +384,11 @@ public class ComponentContext implements Cloneable {
           return errorEventHandler;
         }
       } catch (IllegalStateException e) {
-        if (mLithoConfiguration != null) {
-          return mLithoConfiguration.errorEventHandler;
-        }
-        return DefaultErrorEventHandler.INSTANCE;
+        return mLithoConfiguration.errorEventHandler;
       }
     }
 
-    if (mLithoConfiguration != null) {
-      return mLithoConfiguration.errorEventHandler;
-    }
-    return DefaultErrorEventHandler.INSTANCE;
+    return mLithoConfiguration.errorEventHandler;
   }
 
   @Nullable
@@ -505,18 +525,12 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public String getLogTag() {
-    // TODO: T48229786 use CT field only
-    return mLithoConfiguration == null || mLithoConfiguration.logTag == null
-        ? mLogTag
-        : mLithoConfiguration.logTag;
+    return mLithoConfiguration.logTag;
   }
 
   @Nullable
   public ComponentsLogger getLogger() {
-    // TODO: T48229786 use CT field only
-    return mLithoConfiguration == null || mLithoConfiguration.logger == null
-        ? mLogger
-        : mLithoConfiguration.logger;
+    return mLithoConfiguration.logger;
   }
 
   /**
@@ -687,25 +701,19 @@ public class ComponentContext implements Cloneable {
    * static to avoid polluting the ComponentContext API.
    */
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
-    return c.mLithoConfiguration == null || c.mLithoConfiguration.incrementalMountEnabled;
+    return c.mLithoConfiguration.incrementalMountEnabled;
   }
 
   public static @Nullable RunnableHandler getMountContentPreallocationHandler(ComponentContext c) {
-    return c.mLithoConfiguration == null
-        ? null
-        : c.mLithoConfiguration.mountContentPreallocationHandler;
+    return c.mLithoConfiguration.mountContentPreallocationHandler;
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {
-    return c.mLithoConfiguration == null || c.mLithoConfiguration.isVisibilityProcessingEnabled;
+    return c.mLithoConfiguration.isVisibilityProcessingEnabled;
   }
 
   public boolean isReconciliationEnabled() {
-    if (mLithoConfiguration != null) {
-      return mLithoConfiguration.isReconciliationEnabled;
-    } else {
-      return ComponentsConfiguration.isReconciliationEnabled;
-    }
+    return mLithoConfiguration.isReconciliationEnabled;
   }
 
   @Nullable
@@ -743,15 +751,11 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldReuseOutputs() {
-    return mLithoConfiguration != null && mLithoConfiguration.shouldReuseOutputs;
+    return mLithoConfiguration.shouldReuseOutputs;
   }
 
   boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
-    if (mLithoConfiguration != null) {
-      return mLithoConfiguration.isReuseLastMeasuredNodeInComponentMeasureEnabled;
-    } else {
-      return ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
-    }
+    return mLithoConfiguration.isReuseLastMeasuredNodeInComponentMeasureEnabled;
   }
 
   boolean isNestedTreeContext() {
@@ -759,8 +763,7 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {
-    return mLithoConfiguration != null
-        && mLithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
+    return mLithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
   /**
@@ -770,9 +773,6 @@ public class ComponentContext implements Cloneable {
    * @return true if transitions are enabled.
    */
   boolean areTransitionsEnabled() {
-    if (mLithoConfiguration == null) {
-      return AnimationsDebug.areTransitionsEnabled(null);
-    }
     return mLithoConfiguration.areTransitionsEnabled;
   }
 }
