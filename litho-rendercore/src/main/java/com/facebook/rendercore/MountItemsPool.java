@@ -389,7 +389,7 @@ public class MountItemsPool {
     void maybePreallocateContent(Context c, ContentAllocator poolableMountContent);
   }
 
-  static class DefaultItemPool implements ItemPool {
+  public static class DefaultItemPool implements ItemPool {
 
     private final Pools.SimplePool<Object> mPool;
     private final Object mLifecycle;
@@ -400,7 +400,7 @@ public class MountItemsPool {
     }
 
     @Override
-    public Object acquire(Context c, ContentAllocator poolableMountContent) {
+    public @Nullable Object acquire(Context c, ContentAllocator poolableMountContent) {
       return mPool.acquire();
     }
 
