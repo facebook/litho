@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.os.Process;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,30 +40,27 @@ class LayoutThreadFactory implements ThreadFactory {
 
   @Override
   public Thread newThread(final Runnable r) {
-
     final Runnable wrapperRunnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            if (Looper.myLooper() == null) {
-              Looper.prepare();
-            }
-
-            try {
-              Process.setThreadPriority(mThreadPriority);
-            } catch (SecurityException e) {
-              /**
-               * From {@link Process#THREAD_PRIORITY_DISPLAY}, some applications can not change the
-               * thread priority to that of the main thread. This catches that potential error and
-               * tries to set a lower priority.
-               */
-              Process.setThreadPriority(mThreadPriority + 1);
-            }
-            if (mLayoutThreadInitializer != null) {
-              mLayoutThreadInitializer.run();
-            }
-            r.run();
+        () -> {
+          if (ComponentsConfiguration.runLooperPrepareForLayoutThreadFactory
+              && Looper.myLooper() == null) {
+            Looper.prepare();
           }
+
+          try {
+            Process.setThreadPriority(mThreadPriority);
+          } catch (SecurityException e) {
+            /**
+             * From {@link Process#THREAD_PRIORITY_DISPLAY}, some applications can not change the
+             * thread priority to that of the main thread. This catches that potential error and
+             * tries to set a lower priority.
+             */
+            Process.setThreadPriority(mThreadPriority + 1);
+          }
+          if (mLayoutThreadInitializer != null) {
+            mLayoutThreadInitializer.run();
+          }
+          r.run();
         };
 
     final Thread thread =
