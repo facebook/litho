@@ -36,9 +36,9 @@ public class TrackingMountContentPool extends DefaultMountContentPool {
   }
 
   @Override
-  public void release(Object item) {
-    super.release(item);
+  public boolean release(Object item) {
     mReleaseCount++;
+    return super.release(item);
   }
 
   public int getAcquireCount() {

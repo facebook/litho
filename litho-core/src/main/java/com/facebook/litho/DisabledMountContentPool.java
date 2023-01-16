@@ -33,7 +33,9 @@ public class DisabledMountContentPool implements MountContentPool {
   }
 
   @Override
-  public void release(Object item) {}
+  public boolean release(Object item) {
+    return false;
+  }
 
   @Override
   public void maybePreallocateContent(Context c, ContentAllocator component) {}

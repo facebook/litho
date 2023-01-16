@@ -375,8 +375,9 @@ public class MountItemsPool {
      * Called when an item is released and can return to the pool
      *
      * @param item the item to release to the pool
+     * @return {@code true} iff the {@param item} is released to the pool.
      */
-    void release(Object item);
+    boolean release(Object item);
 
     /**
      * Called early in the lifecycle to allow the pool implementation to preallocate items in the
@@ -404,9 +405,9 @@ public class MountItemsPool {
     }
 
     @Override
-    public void release(Object item) {
+    public boolean release(Object item) {
       try {
-        mPool.release(item);
+        return mPool.release(item);
       } catch (IllegalStateException e) {
         String metadata =
             "Lifecycle: "

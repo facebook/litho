@@ -58,15 +58,15 @@ public class RecyclePool<T> implements PoolWithDebugInfo {
     return item;
   }
 
-  public void release(T item) {
+  public boolean release(T item) {
     if (mIsSync) {
       synchronized (this) {
-        mPool.release(item);
         mCurrentSize = Math.min(mMaxSize, mCurrentSize + 1);
+        return mPool.release(item);
       }
     } else {
-      mPool.release(item);
       mCurrentSize = Math.min(mMaxSize, mCurrentSize + 1);
+      return mPool.release(item);
     }
   }
 

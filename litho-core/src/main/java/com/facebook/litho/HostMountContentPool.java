@@ -45,17 +45,17 @@ public class HostMountContentPool extends RecyclePool implements MountContentPoo
   }
 
   @Override
-  public void release(Object item) {
+  public boolean release(Object item) {
     if (!mIsEnabled) {
-      return;
+      return false;
     }
 
     // See ComponentHost#hadChildWithDuplicateParentState() for reason for this check
     if (((ComponentHost) item).hadChildWithDuplicateParentState()) {
-      return;
+      return false;
     }
 
-    super.release(item);
+    return super.release(item);
   }
 
   @Override
