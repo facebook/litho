@@ -28,7 +28,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Tests for [ExperimentalCardClip] */
+/** Tests for [CardClip] */
 @RunWith(LithoTestRunner::class)
 class CardClipTest {
 
@@ -39,10 +39,10 @@ class CardClipTest {
     val testLithoView =
         lithoViewRule.render { CardClip(style = Style.width(100.px).height(100.px)) }
 
-    // should find an ExperimentalCardClip in the tree
+    // should find an CardClip in the tree
     assertNotNull(testLithoView.findComponent(CardClip::class))
 
-    // should mount an ExperimentalCardClip
+    // should mount an CardClip
     assertThat(testLithoView.lithoView.mountItemCount).isEqualTo(1)
   }
 }

@@ -34,7 +34,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Tests for [ExperimentalVerticalScroll] */
+/** Tests for [VerticalScroll] */
 @RunWith(LithoTestRunner::class)
 class VerticalScrollTest {
 

@@ -33,7 +33,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Tests for [ExperimentalHorizontalScroll] */
+/** Tests for [HorizontalScroll] */
 @RunWith(LithoTestRunner::class)
 class HorizontalScrollTest {
   @Rule @JvmField val lithoViewRule: LithoViewRule = LithoViewRule()

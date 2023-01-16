@@ -28,7 +28,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Tests for [ExperimentalTransparencyEnabledCardClip] */
+/** Tests for [TransparencyEnabledCardClip] */
 @RunWith(LithoTestRunner::class)
 class TransparencyEnabledCardClipTest {
 
