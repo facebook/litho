@@ -32,9 +32,11 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.TrackedItemPool
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.MountItemsPool
+import com.facebook.rendercore.MountItemsPool.getMountItemPools
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -108,7 +110,8 @@ class ContentPoolingTest {
         .lithoView
         .unmountAllItems()
 
-    assertThat(MountItemsPool.getMountItemPools().size).isEqualTo(1)
+    assertThat(getMountItemPools().size).isEqualTo(1)
+    assertThat((getMountItemPools()[0] as TrackedItemPool).currentSize).isEqualTo(10)
   }
 }
 
@@ -136,6 +139,10 @@ class DrawableMountable(
   override fun mount(c: Context, content: Drawable, layoutData: Any?) = Unit
 
   override fun unmount(c: Context, content: Drawable, layoutData: Any?) = Unit
+
+  override fun onCreateMountContentPool(): MountItemsPool.ItemPool {
+    return TrackedItemPool(this, poolSize())
+  }
 }
 
 class TestTextViewMountableComponent(val style: Style? = null) : MountableComponent() {

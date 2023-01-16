@@ -57,7 +57,7 @@ public interface ContentAllocator<Content> {
    */
   @Nullable
   default MountItemsPool.ItemPool createRecyclingPool() {
-    return null;
+    return onCreateMountContentPool();
   }
 
   /**
