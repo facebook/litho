@@ -72,6 +72,8 @@ public class ComponentContext implements Cloneable {
   @ThreadConfined(ThreadConfined.UI)
   private @Nullable MountedViewReference mMountedViewReference;
 
+  private @Nullable ErrorComponentReceiver mErrorComponentReceiver;
+
   // Used to hold styling information applied to components
   @StyleRes
   @ThreadConfined(ThreadConfined.ANY)
@@ -163,6 +165,7 @@ public class ComponentContext implements Cloneable {
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
     mMountedViewReference = context.mMountedViewReference;
+    mErrorComponentReceiver = context.mErrorComponentReceiver;
     mStateUpdater = context.mStateUpdater;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
@@ -220,6 +223,7 @@ public class ComponentContext implements Cloneable {
     componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
     componentContext.mMountedViewReference = componentTree;
+    componentContext.mErrorComponentReceiver = componentTree;
     componentContext.mStateUpdater = componentTree;
     componentContext.mComponentScope = null;
 
@@ -574,6 +578,10 @@ public class ComponentContext implements Cloneable {
     }
 
     return mountedView.findViewWithTag(tag);
+  }
+
+  public @Nullable ErrorComponentReceiver getErrorComponentReceiver() {
+    return mErrorComponentReceiver;
   }
 
   /**

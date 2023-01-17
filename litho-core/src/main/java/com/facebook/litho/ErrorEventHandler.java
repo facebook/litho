@@ -43,10 +43,9 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
       final Exception e = ((ErrorEvent) eventState).exception;
       final ComponentContext cc =
           Preconditions.checkNotNull(((ErrorEvent) eventState).componentContext);
-      final ComponentTree ct = Preconditions.checkNotNull(cc.getComponentTree());
       final Component component = onError(cc, e);
-      if (component != null) {
-        ct.setRoot(component);
+      if (component != null && cc.getErrorComponentReceiver() != null) {
+        cc.getErrorComponentReceiver().onErrorComponent(component);
       }
     }
     return null;
