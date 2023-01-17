@@ -279,9 +279,6 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
   private boolean mIsMeasuring;
 
   @ThreadConfined(ThreadConfined.UI)
-  private final boolean mVisibilityProcessingEnabled;
-
-  @ThreadConfined(ThreadConfined.UI)
   private final boolean mIsLayoutDiffingEnabled;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -426,7 +423,6 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
     mComponentsConfiguration = builder.componentsConfiguration;
 
     mRoot = builder.root;
-    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     if (builder.overrideComponentTreeId != -1) {
       mId = builder.overrideComponentTreeId;
     } else {
@@ -451,7 +447,7 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
             ComponentsConfiguration.overrideReconciliation != null
                 ? ComponentsConfiguration.overrideReconciliation
                 : builder.isReconciliationEnabled,
-            mVisibilityProcessingEnabled,
+            builder.visibilityProcessingEnabled,
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
