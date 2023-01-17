@@ -556,12 +556,12 @@ public class StateUpdatesTest {
     final ErrorEventHandler errorEventHandler =
         new ErrorEventHandler() {
           @Override
-          public void onError(ComponentTree ct, Exception e) {
+          public Component onError(ComponentContext cc, Exception e) {
             numOfTimesOnErrorWasCalled.getAndIncrement();
             if (numOfTimesOnErrorWasCalled.get() > 1) {
               throw new RuntimeException("onError should be called only once");
             }
-            ct.setRoot(Column.create(mContext).build());
+            return Column.create(mContext).build();
           }
         };
 

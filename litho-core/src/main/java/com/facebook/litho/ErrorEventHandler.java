@@ -44,7 +44,10 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
       final ComponentContext cc =
           Preconditions.checkNotNull(((ErrorEvent) eventState).componentContext);
       final ComponentTree ct = Preconditions.checkNotNull(cc.getComponentTree());
-      onError(ct, e);
+      final Component component = onError(cc, e);
+      if (component != null) {
+        ct.setRoot(component);
+      }
     }
     return null;
   }
@@ -60,5 +63,6 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   }
 
   /** Action performed when exception occurred. */
-  public abstract void onError(ComponentTree ct, Exception e);
+  @Nullable
+  public abstract Component onError(ComponentContext cc, Exception e);
 }

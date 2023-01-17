@@ -24,9 +24,10 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
   static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
 
   @Override
-  public void onError(ComponentTree ct, Exception e) {
-    if (ct != null && ct.getRoot() != null) {
-      String categoryKey = DEFAULT_ERROR_EVENT_HANDLER + ":" + ct.getRoot().getSimpleName();
+  public Component onError(ComponentContext cc, Exception e) {
+    if (cc != null) {
+      String categoryKey =
+          DEFAULT_ERROR_EVENT_HANDLER + ":" + cc.getComponentTree().getLithoConfiguration().logTag;
       if (e instanceof ReThrownException) {
         e = ((ReThrownException) e).original;
       }
@@ -42,5 +43,7 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
     }
 
     ComponentUtils.rethrow(e);
+
+    return null;
   }
 }

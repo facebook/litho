@@ -512,8 +512,7 @@ public class ComponentUtils {
       metadataWrapper.lastHandler = lastHandler;
       throw metadataWrapper;
     } else if (nextHandler instanceof ErrorEventHandler) { // at the root
-      ((ErrorEventHandler) nextHandler)
-          .onError(parent != null ? parent.getComponentTree() : null, metadataWrapper);
+      ((ErrorEventHandler) nextHandler).onError(parent, metadataWrapper);
     } else { // Handle again with new handler
       try {
         dispatchErrorEvent(parent, exceptionToThrow);
