@@ -2084,9 +2084,7 @@ public class LayoutState
 
   @Override
   public boolean isIncrementalMountEnabled() {
-    return mContext != null
-        && mContext.getComponentTree() != null
-        && mContext.getComponentTree().isIncrementalMountEnabled();
+    return mContext != null && ComponentContext.isIncrementalMountEnabled(mContext);
   }
 
   @Override
