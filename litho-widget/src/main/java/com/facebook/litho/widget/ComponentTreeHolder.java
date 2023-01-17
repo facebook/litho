@@ -506,8 +506,6 @@ public class ComponentTreeHolder {
         mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
     final Object layoutDiffingEnabledAttr =
         mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
-    final Object errorEventHandlerAttr =
-        mRenderInfo.getCustomAttribute(ComponentRenderInfo.ERROR_EVENT_HANDLER);
 
     // If the custom attribute is NOT set, defer to the value from the builder.
     if (isReconciliationEnabledAttr != null) {
@@ -522,9 +520,7 @@ public class ComponentTreeHolder {
       builder.layoutDiffing(mIsLayoutDiffingEnabled);
     }
 
-    if (errorEventHandlerAttr instanceof ErrorEventHandler) {
-      builder.errorHandler((ErrorEventHandler) errorEventHandlerAttr);
-    } else if (mErrorEventHandler != null) {
+    if (mErrorEventHandler != null) {
       builder.errorHandler(mErrorEventHandler);
     }
   }
