@@ -32,6 +32,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.key
 import com.facebook.litho.px
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertMatches
@@ -40,6 +41,7 @@ import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
+import com.facebook.litho.transition.transitionKey
 import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -631,6 +633,28 @@ class ViewStylesTest {
 
     val node = LegacyLithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.node
     assertThat(node?.testKey).isEqualTo("test")
+  }
+
+  @Test
+  fun transitionOwnerKey_whenSet_isFromCorrectComponentContext() {
+    class TestKComponent(private val style: Style) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Row(style = style)
+      }
+    }
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return key("testKcomponent") {
+          TestKComponent(style = Style.transitionKey(context, "test"))
+        }
+      }
+    }
+
+    val node =
+        LegacyLithoViewRule.getRootLayout(lithoViewRule, key("root") { TestComponent() })?.node
+    assertThat(node?.transitionKey).isEqualTo("test")
+    assertThat(node?.transitionOwnerKey).isEqualTo("\$root")
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {

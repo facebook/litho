@@ -44,7 +44,7 @@ internal data class TransitionKeyStyleItem(
 ) : StyleItem<TransitionKeyStyleItemValue> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
-    commonProps.transitionKey(transitionKey, context.globalKey)
+    commonProps.transitionKey(transitionKey, this.context.globalKey)
     commonProps.transitionKeyType(transitionKeyType)
   }
 
