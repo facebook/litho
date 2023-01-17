@@ -41,7 +41,9 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == Component.ERROR_EVENT_HANDLER_ID) {
       final Exception e = ((ErrorEvent) eventState).exception;
-      final ComponentTree ct = Preconditions.checkNotNull(((ErrorEvent) eventState).componentTree);
+      final ComponentContext cc =
+          Preconditions.checkNotNull(((ErrorEvent) eventState).componentContext);
+      final ComponentTree ct = Preconditions.checkNotNull(cc.getComponentTree());
       onError(ct, e);
     }
     return null;

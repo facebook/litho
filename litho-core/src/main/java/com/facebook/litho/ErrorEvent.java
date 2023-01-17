@@ -26,7 +26,7 @@ import com.facebook.litho.annotations.Event;
 @Event
 public class ErrorEvent {
   /** The {@link ComponentTree} the the error happened in. */
-  public @Nullable ComponentTree componentTree;
+  public @Nullable ComponentContext componentContext;
 
   /** The exception that caused the error event to be raised. */
   public Exception exception;

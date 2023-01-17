@@ -471,7 +471,7 @@ public class ComponentUtils {
   static void dispatchErrorEvent(ComponentContext c, Exception e) {
     final ErrorEvent event = new ErrorEvent();
     event.exception = e;
-    event.componentTree = c != null ? c.getComponentTree() : null;
+    event.componentContext = c;
     dispatchErrorEvent(c, event);
   }
 

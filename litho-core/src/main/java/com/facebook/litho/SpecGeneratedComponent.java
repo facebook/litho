@@ -429,7 +429,7 @@ public abstract class SpecGeneratedComponent extends Component
     }
     ErrorEvent errorEvent = new ErrorEvent();
     errorEvent.exception = e;
-    errorEvent.componentTree = c != null ? c.getComponentTree() : null;
+    errorEvent.componentContext = c;
     eventHandler.dispatchEvent(errorEvent);
   }
 
