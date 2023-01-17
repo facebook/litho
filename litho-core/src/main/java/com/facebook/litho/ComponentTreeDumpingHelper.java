@@ -34,13 +34,8 @@ public class ComponentTreeDumpingHelper {
 
   /** Dumps the tree related to the provided component context */
   @Nullable
-  public static String dumpContextTree(@Nullable ComponentContext componentContext) {
-    if (componentContext == null) {
-      return "ComponentContext is null";
-    }
-
+  public static String dumpContextTree(ComponentTree componentTree) {
     // Getting the base of the tree
-    ComponentTree componentTree = componentContext.getComponentTree();
     DebugComponent rootComponent = DebugComponent.getRootInstance(componentTree);
     if (rootComponent == null) {
       return null;

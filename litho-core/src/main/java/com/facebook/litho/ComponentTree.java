@@ -2228,7 +2228,7 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
               + ", root="
               + root.getSimpleName()
               + ", ContextTree="
-              + ComponentTreeDumpingHelper.dumpContextTree(mContext);
+              + ComponentTreeDumpingHelper.dumpContextTree(this);
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,
@@ -3180,7 +3180,7 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
               + ", root="
               + root.getSimpleName()
               + ", ContextTree="
-              + ComponentTreeDumpingHelper.dumpContextTree(context);
+              + ComponentTreeDumpingHelper.dumpContextTree(this);
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,

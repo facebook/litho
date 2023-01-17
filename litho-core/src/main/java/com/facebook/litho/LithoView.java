@@ -2174,7 +2174,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     }
 
     lithoSpecific.put("root", tree.getRoot().getSimpleName());
-    lithoSpecific.put("tree", ComponentTreeDumpingHelper.dumpContextTree(tree.getContext()));
+    lithoSpecific.put("tree", ComponentTreeDumpingHelper.dumpContextTree(tree));
 
     return metadata;
   }
