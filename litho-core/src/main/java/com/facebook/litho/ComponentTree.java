@@ -423,7 +423,7 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
     mComponentsConfiguration = builder.componentsConfiguration;
 
     mRoot = builder.root;
-    if (builder.overrideComponentTreeId != -1) {
+    if (builder.overrideComponentTreeId != INVALID_ID) {
       mId = builder.overrideComponentTreeId;
     } else {
       mId = generateComponentTreeId();
@@ -3659,7 +3659,7 @@ public class ComponentTree implements LithoLifecycleListener, StateUpdater, Moun
     private @Nullable TreeState treeState;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
-    private int overrideComponentTreeId = -1;
+    private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
