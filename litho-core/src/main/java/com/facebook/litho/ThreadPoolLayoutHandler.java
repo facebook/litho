@@ -22,10 +22,15 @@ import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import javax.annotation.Nullable;
 
 /** LithoHandler implementation that uses a thread pool to calculate the layout. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThreadPoolLayoutHandler implements RunnableHandler {
+
+  public static final LayoutThreadPoolConfiguration SINGLE_THREADED_POOL_CONFIGURATION =
+      new LayoutThreadPoolConfigurationImpl(
+          1, 1, ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY);
 
   public static final LayoutThreadPoolConfiguration DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION =
       new LayoutThreadPoolConfigurationImpl(
@@ -54,6 +59,11 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
    * @return default {@code ThreadPoolLayoutHandler}.
    */
   public static RunnableHandler getDefaultInstance() {
+    final RunnableHandler overridingConfiguration = getOverridingConfiguration();
+    if (overridingConfiguration != null) {
+      return overridingConfiguration;
+    }
+
     return DefaultThreadPoolHolder.INSTANCE;
   }
 
@@ -66,7 +76,24 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
    * @return new instance with a separate {@code ThreadPoolExecutor} with specified configuration.
    */
   public static RunnableHandler getNewInstance(LayoutThreadPoolConfiguration configuration) {
+    final RunnableHandler overridingConfiguration = getOverridingConfiguration();
+    if (overridingConfiguration != null) {
+      return overridingConfiguration;
+    }
+
     return new ThreadPoolLayoutHandler(configuration);
+  }
+
+  private static @Nullable RunnableHandler getOverridingConfiguration() {
+    // at most one of the configuration parameters should be true, otherwise the experiment has been
+    // misconfigured
+    if (ComponentsConfiguration.layoutCalculationAlwaysUseDefaultThread) {
+      return new DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper());
+    } else if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThreadedPool) {
+      return new ThreadPoolLayoutHandler(SINGLE_THREADED_POOL_CONFIGURATION);
+    } else {
+      return null;
+    }
   }
 
   @Override
