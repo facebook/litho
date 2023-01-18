@@ -3900,6 +3900,53 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testRenderCompleteEventHandlerWithCustomItemView() {
+    // We introduced the `RecyclerBinderAdapterDelegate` for IG, which allows us to be able to
+    // customize the root view of each item.
+    FrameLayout rootView = new FrameLayout(mComponentContext.getAndroidContext());
+    RecyclerView.LayoutParams layoutParams =
+        new RecyclerView.LayoutParams(
+            RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
+    rootView.setLayoutParams(layoutParams);
+
+    TestViewHolder testViewHolder = spy(new TestViewHolder(mComponentContext, rootView));
+    LithoView lithoView = new LithoView(mComponentContext);
+    when(testViewHolder.getLithoView()).thenReturn(lithoView);
+
+    final RecyclerBinderAdapterDelegate delegate = mock(RecyclerBinderAdapterDelegate.class);
+    when(delegate.onCreateViewHolder(any(), anyInt())).thenReturn(testViewHolder);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .setAdapterDelegate(delegate)
+            .build(mComponentContext);
+    final RecyclerView recyclerView = new RecyclerView(mComponentContext.getAndroidContext());
+    recyclerBinder.mount(recyclerView);
+
+    final Component component = SimpleMountSpecTester.create(mComponentContext).build();
+    final EventHandler<RenderCompleteEvent> renderCompleteEventHandler =
+        (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .component(component)
+            .renderCompleteHandler(renderCompleteEventHandler)
+            .build();
+
+    recyclerBinder.insertItemAt(0, renderInfo);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_UNINITIALIZED);
+
+    // To trigger an event of render complete manually
+    recyclerView.getAdapter().onBindViewHolder(testViewHolder, 0);
+    recyclerView.layout(0, 0, 100, 100);
+    testViewHolder.getLithoView().draw(mock(Canvas.class));
+
+    assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_DRAWN);
+  }
+
+  @Test
   public void testOnDataBound() {
     final ChangeSetCompleteCallback changeSetCompleteCallback1 =
         mock(ChangeSetCompleteCallback.class);
@@ -5836,6 +5883,38 @@ public class RecyclerBinderTest {
 
     public void setComputingLayout(boolean computingLayout) {
       mIsComputingLayout = computingLayout;
+    }
+  }
+
+  /*
+   * ViewHolder that provides custom root view for testing.
+   */
+  private static class TestViewHolder extends RecyclerBinderViewHolder {
+
+    private final ViewGroup mRootView;
+
+    public TestViewHolder(ComponentContext context, View itemView) {
+      super(itemView);
+      mRootView = (ViewGroup) itemView;
+      LithoView lithoView = new LithoView(context);
+      mRootView.addView(lithoView);
+    }
+
+    @Nullable
+    @Override
+    public LithoView getLithoView() {
+      return (LithoView) mRootView.getChildAt(0);
+    }
+
+    @Override
+    public void setLithoViewLayoutParams(
+        LithoView lithoView,
+        int width,
+        int height,
+        int widthSpec,
+        int heightSpec,
+        boolean isFullSpan) {
+      // no ops
     }
   }
 }
