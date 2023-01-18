@@ -198,6 +198,8 @@ LITHO_RENDERCORE_MOUNTABLE_CANVAS_TARGET = make_dep_path("litho-rendercore-mount
 
 LITHO_RENDERCORE_MOUNTABLE_UTILS_TARGET = make_dep_path("litho-rendercore-mountables/mountable-utils:mountable-utils")
 
+LITHO_RENDERCORE_PRIMITIVES_TARGET = make_dep_path("litho-rendercore-primitives:rendercore-primitives")
+
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
 

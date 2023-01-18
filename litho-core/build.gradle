@@ -64,6 +64,7 @@ dependencies {
     api project(':litho-rendercore-incremental-mount')
     api project(':litho-rendercore-visibility')
     api project(':litho-rendercore-transitions')
+    api project(':litho-rendercore-primitives')
 
     // Annotations
     compileOnly deps.jsr305
