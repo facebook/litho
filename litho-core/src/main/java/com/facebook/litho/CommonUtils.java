@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.primitives.Equivalence;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

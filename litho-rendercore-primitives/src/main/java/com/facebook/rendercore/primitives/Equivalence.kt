@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.facebook.rendercore.primitives
 
-package com.facebook.litho;
-
-/** Equivalence is a Component/Section concept to have a custom equal-like method. */
-public interface Equivalence<T> {
-
-  boolean isEquivalentTo(T other);
+/** Equivalence is a concept to have a custom equal-like method. */
+fun interface Equivalence<T> {
+  fun isEquivalentTo(other: T): Boolean
 }

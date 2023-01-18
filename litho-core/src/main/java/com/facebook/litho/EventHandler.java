@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.primitives.Equivalence;
 
 public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 

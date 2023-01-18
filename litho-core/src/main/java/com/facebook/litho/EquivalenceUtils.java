@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.primitives.Equivalence;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;

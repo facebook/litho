@@ -24,6 +24,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType;
+import com.facebook.rendercore.primitives.Equivalence;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

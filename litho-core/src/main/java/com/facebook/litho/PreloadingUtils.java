@@ -21,6 +21,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
+import com.facebook.rendercore.primitives.Equivalence;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
