@@ -30,9 +30,11 @@ import java.util.Locale;
 public class MeasureSpecUtils {
 
   private static final float DELTA = 0.5f;
+  private static final int UNSPECIFIED =
+      View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 
   public static int unspecified() {
-    return View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+    return UNSPECIFIED;
   }
 
   public static int atMost(int px) {

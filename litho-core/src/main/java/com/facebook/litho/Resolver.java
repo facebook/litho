@@ -39,6 +39,7 @@ public class Resolver {
   private static final String EVENT_END_CREATE_LAYOUT = "end_create_layout";
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
+  private static final int MEASURE_SPEC_UNSPECIFIED = unspecified();
 
   static @Nullable LithoNode resolveTree(
       final ResolveStateContext resolveStateContext,
@@ -110,7 +111,14 @@ public class Resolver {
       final ResolveStateContext resolveStateContext,
       final ComponentContext parent,
       final Component component) {
-    return resolveWithGlobalKey(resolveStateContext, parent, component, null);
+    return resolveImpl(
+        resolveStateContext,
+        parent,
+        MEASURE_SPEC_UNSPECIFIED,
+        MEASURE_SPEC_UNSPECIFIED,
+        component,
+        false,
+        null);
   }
 
   static @Nullable LithoNode resolveWithGlobalKey(
@@ -121,8 +129,8 @@ public class Resolver {
     return resolveImpl(
         resolveStateContext,
         parent,
-        unspecified(),
-        unspecified(),
+        MEASURE_SPEC_UNSPECIFIED,
+        MEASURE_SPEC_UNSPECIFIED,
         component,
         false,
         globalKeyToReuse);
