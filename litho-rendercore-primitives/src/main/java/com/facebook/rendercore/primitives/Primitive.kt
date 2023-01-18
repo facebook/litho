@@ -16,4 +16,22 @@
 
 package com.facebook.rendercore.primitives
 
-class Primitive
+import android.graphics.drawable.Drawable
+import android.view.View
+
+/**
+ * Primitive is the fundamental building block of a UI component that can be shared across
+ * frameworks such as Bloks and Litho. It's two main responsibilities are:
+ * - Laying itself out (along with laying out and placing children if applicable)
+ * - Optionally, mounting and configuring a [View] or a [Drawable]
+ *
+ * A Primitive component must be immutable, and not cause side effects.
+ *
+ * @property layoutBehavior - defines how a Primitive lays out itself and its children (if present)
+ * @property mountBehavior - defines how a Primitive mounts and configures a [View] or a [Drawable]
+ *   associated with that Primitive
+ */
+class Primitive<ContentType : Any>(
+    private val layoutBehavior: LayoutBehavior,
+    private val mountBehavior: MountBehavior<ContentType>? = null
+)
