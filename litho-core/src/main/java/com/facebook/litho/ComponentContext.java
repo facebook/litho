@@ -810,4 +810,10 @@ public class ComponentContext implements Cloneable {
   public LithoLifecycleProvider getLifecycleProvider() {
     return mLifecycleProvider;
   }
+
+  @VisibleForTesting
+  @Nullable
+  View getMountedView() {
+    return mMountedViewReference.getMountedView();
+  }
 }

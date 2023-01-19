@@ -287,8 +287,7 @@ public final class DebugComponent {
   @Nullable
   public LithoView getLithoView() {
     final ComponentContext c = mResult.getContext();
-    final ComponentTree tree = c == null ? null : c.getComponentTree();
-    return tree == null ? null : tree.getLithoView();
+    return c == null ? null : (LithoView) c.getMountedView();
   }
 
   /** @return The bounds of this component relative to its hosting {@link LithoView}. */
@@ -548,8 +547,7 @@ public final class DebugComponent {
     }
 
     final ComponentContext context = mResult.getContext();
-    final ComponentTree tree = context == null ? null : context.getComponentTree();
-    final LithoView view = tree == null ? null : tree.getLithoView();
+    final LithoView view = context == null ? null : (LithoView) context.getMountedView();
     final MountDelegateTarget mountDelegateTarget =
         view == null ? null : view.getMountDelegateTarget();
 
