@@ -26,8 +26,7 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
   @Override
   public Component onError(ComponentContext cc, Exception e) {
     if (cc != null) {
-      String categoryKey =
-          DEFAULT_ERROR_EVENT_HANDLER + ":" + cc.getComponentTree().getLithoConfiguration().logTag;
+      String categoryKey = DEFAULT_ERROR_EVENT_HANDLER + ":" + cc.getLogTag();
       if (e instanceof ReThrownException) {
         e = ((ReThrownException) e).original;
       }
