@@ -166,8 +166,7 @@ public final class DebugComponent {
   }
 
   private static String generateGlobalKey(ComponentContext context, String componentKey) {
-    final ComponentTree tree = context.getComponentTree();
-    return System.identityHashCode(tree) + componentKey;
+    return System.identityHashCode(context.getStateUpdater()) + componentKey;
   }
 
   static void applyOverrides(ComponentContext context, Component component, String componentKey) {

@@ -704,6 +704,10 @@ public class ComponentContext implements Cloneable {
     mStateUpdater.putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
+  StateUpdater getStateUpdater() {
+    return mStateUpdater;
+  }
+
   /**
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */
