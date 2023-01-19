@@ -132,6 +132,7 @@ public class LithoViewAttributesExtension
 
   @Override
   public boolean shouldUpdateItem(
+      final ExtensionState<LithoViewAttributesState> extensionState,
       final RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final RenderUnit<?> nextRenderUnit,

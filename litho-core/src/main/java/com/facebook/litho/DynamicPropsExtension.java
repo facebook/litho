@@ -75,6 +75,7 @@ public class DynamicPropsExtension
 
   @Override
   public boolean shouldUpdateItem(
+      final ExtensionState<DynamicPropsExtensionState> extensionState,
       final RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final RenderUnit<?> nextRenderUnit,

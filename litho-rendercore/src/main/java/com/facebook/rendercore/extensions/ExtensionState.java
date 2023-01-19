@@ -142,6 +142,6 @@ public class ExtensionState<State> {
       RenderUnit<?> nextRenderUnit,
       Object nextLayoutData) {
     return mExtension.shouldUpdateItem(
-        previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData);
+        this, previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData);
   }
 }

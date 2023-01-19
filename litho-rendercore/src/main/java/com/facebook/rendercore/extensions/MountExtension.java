@@ -80,6 +80,7 @@ public abstract class MountExtension<Input, State> {
    * will be rebound
    */
   public boolean shouldUpdateItem(
+      final ExtensionState<State> extensionState,
       final RenderUnit<?> previousRenderUnit,
       final @Nullable Object previousLayoutData,
       final RenderUnit<?> nextRenderUnit,
