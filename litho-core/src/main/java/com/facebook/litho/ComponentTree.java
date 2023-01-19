@@ -2981,6 +2981,14 @@ public class ComponentTree
     mTreeState.putCachedValue(cachedValueInputs, cachedValue, isNestedTree);
   }
 
+  @Override
+  public void removePendingStateUpdate(String key, boolean nestedTreeContext) {
+    if (mReleased || mTreeState == null) {
+      return;
+    }
+    mTreeState.removePendingStateUpdate(key, nestedTreeContext);
+  }
+
   public static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
       final HandlerThread defaultThread =

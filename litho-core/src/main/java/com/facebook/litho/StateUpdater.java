@@ -41,4 +41,6 @@ public interface StateUpdater {
   Object getCachedValue(Object cachedValueInputs, boolean nestedTreeContext);
 
   void putCachedValue(Object cachedValueInputs, Object cachedValue, boolean nestedTreeContext);
+
+  void removePendingStateUpdate(String key, boolean nestedTreeContext);
 }

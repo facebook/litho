@@ -820,4 +820,10 @@ public class ComponentContext implements Cloneable {
   View getMountedView() {
     return mMountedViewReference.getMountedView();
   }
+
+  void removePendingStateUpdate(String key, boolean nestedTreeContext) {
+    if (mStateUpdater != null) {
+      mStateUpdater.removePendingStateUpdate(key, nestedTreeContext);
+    }
+  }
 }
