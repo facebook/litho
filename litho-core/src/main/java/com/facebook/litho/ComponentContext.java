@@ -74,6 +74,8 @@ public class ComponentContext implements Cloneable {
 
   private @Nullable ErrorComponentReceiver mErrorComponentReceiver;
 
+  private @Nullable LithoLifecycleProvider mLifecycleProvider;
+
   // Used to hold styling information applied to components
   @StyleRes
   @ThreadConfined(ThreadConfined.ANY)
@@ -165,6 +167,7 @@ public class ComponentContext implements Cloneable {
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
     mMountedViewReference = context.mMountedViewReference;
+    mLifecycleProvider = context.mLifecycleProvider;
     mErrorComponentReceiver = context.mErrorComponentReceiver;
     mStateUpdater = context.mStateUpdater;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
@@ -225,6 +228,7 @@ public class ComponentContext implements Cloneable {
     componentContext.mMountedViewReference = componentTree;
     componentContext.mErrorComponentReceiver = componentTree;
     componentContext.mStateUpdater = componentTree;
+    componentContext.mLifecycleProvider = componentTree.getLifecycleProvider();
     componentContext.mComponentScope = null;
 
     return componentContext;
@@ -800,5 +804,10 @@ public class ComponentContext implements Cloneable {
   @Nullable
   RenderUnitIdGenerator getRenderUnitIdGenerator() {
     return mLithoConfiguration.renderUnitIdGenerator;
+  }
+
+  @Nullable
+  public LithoLifecycleProvider getLifecycleProvider() {
+    return mLifecycleProvider;
   }
 }

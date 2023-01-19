@@ -31,8 +31,8 @@ public class SimpleNestedTreeLifecycleProvider
   private final LithoLifecycleProviderDelegate mLithoLifecycleDelegate =
       new LithoLifecycleProviderDelegate();
 
-  public SimpleNestedTreeLifecycleProvider(ComponentTree parentComponentTree) {
-    final LithoLifecycleProvider parentLifecycle = parentComponentTree.mLifecycleProvider;
+  public SimpleNestedTreeLifecycleProvider(LithoLifecycleProvider parentLifecycleProvider) {
+    final LithoLifecycleProvider parentLifecycle = parentLifecycleProvider;
     if (parentLifecycle != null) {
       parentLifecycle.addListener(this);
     }

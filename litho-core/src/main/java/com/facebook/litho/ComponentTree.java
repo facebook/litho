@@ -1787,9 +1787,7 @@ public class ComponentTree
   }
 
   public static @Nullable LithoLifecycleProvider getLifecycleProvider(ComponentContext context) {
-    return context.getComponentTree() == null
-        ? null
-        : context.getComponentTree().mLifecycleProvider;
+    return context.getLifecycleProvider();
   }
 
   public @Nullable LithoLifecycleProvider getLifecycleProvider() {
@@ -1808,16 +1806,11 @@ public class ComponentTree
    */
   public static ComponentTree.Builder createNestedComponentTree(
       final ComponentContext parentContext, Component component) {
-    final ComponentTree parentComponentTree = parentContext.getComponentTree();
-    if (parentComponentTree == null) {
-      throw new IllegalStateException(
-          "Cannot create a nested ComponentTree with a null parent ComponentTree.");
-    }
 
     final SimpleNestedTreeLifecycleProvider lifecycleProvider =
-        parentComponentTree.mLifecycleProvider == null
+        parentContext.getLifecycleProvider() == null
             ? null
-            : new SimpleNestedTreeLifecycleProvider(parentComponentTree);
+            : new SimpleNestedTreeLifecycleProvider(parentContext.getLifecycleProvider());
 
     return ComponentTree.create(
         ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
