@@ -29,7 +29,7 @@ litho_robolectric4_test(
     srcs = glob(
         [
             "**/*.java",
-            "*.kt",
+            "**/*.kt",
         ],
     ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
