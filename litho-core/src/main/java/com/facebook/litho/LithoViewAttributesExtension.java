@@ -28,7 +28,6 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -47,7 +46,6 @@ import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderUnit;
-import com.facebook.rendercore.RenderUnit.Binder;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.HashMap;
@@ -206,24 +204,6 @@ public class LithoViewAttributesExtension
   public void onUnmount(ExtensionState<LithoViewAttributesState> extensionState) {
     extensionState.getState().mCurrentOutputs = null;
     extensionState.getState().mNewOutputs = null;
-  }
-
-  static @Nullable LayoutOutput getLayoutOutput(RenderUnit<?> unit) {
-    final LayoutOutput output;
-    if (unit instanceof LithoRenderUnit) {
-      final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) unit;
-      output = lithoRenderUnit.getLayoutOutput();
-    } else {
-      final @Nullable ViewAttributeBinder binder =
-          unit.findAttachBinderByClass(ViewAttributeBinder.class);
-      if (binder != null) {
-        output = binder.mOutput;
-      } else {
-        output = null;
-      }
-    }
-
-    return output;
   }
 
   static void setViewAttributes(Object content, LayoutOutput output) {
@@ -1001,42 +981,5 @@ public class LithoViewAttributesExtension
 
   public interface ViewAttributesInput {
     Map<Long, LayoutOutput> getLayoutOutputsWithViewAttributes();
-  }
-
-  /**
-   * This Binder is only used to hold the LayoutOutput for the component. The bind and unbind are
-   * deliberately null. When this extension can be converted into a Binder then the implementation
-   * of the extension will move into this Binder.
-   */
-  public static final class ViewAttributeBinder implements Binder<RenderUnit<?>, Object> {
-
-    final LayoutOutput mOutput;
-
-    public ViewAttributeBinder(final LayoutOutput output) {
-      mOutput = output;
-    }
-
-    @Override
-    public boolean shouldUpdate(
-        final RenderUnit<?> currentModel,
-        final RenderUnit<?> newModel,
-        final @Nullable Object currentLayoutData,
-        final @Nullable Object nextLayoutData) {
-      return false;
-    }
-
-    @Override
-    public void bind(
-        final Context context,
-        final Object content,
-        final RenderUnit<?> renderUnit,
-        final @Nullable Object layoutData) {}
-
-    @Override
-    public void unbind(
-        final Context context,
-        final Object content,
-        final RenderUnit<?> renderUnit,
-        final @Nullable Object layoutData) {}
   }
 }

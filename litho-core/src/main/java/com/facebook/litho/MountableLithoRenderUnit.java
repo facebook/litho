@@ -16,13 +16,10 @@
 
 package com.facebook.litho;
 
-import static com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder;
-
 import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.LithoViewAttributesExtension.ViewAttributeBinder;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.Mountable;
@@ -57,12 +54,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
     final LayoutOutput output =
         new LayoutOutput(
             component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
-
-    // Only add the ViewAttributeBinder if the content is a view and has view attributes
-    if (mountable.getRenderType() == RenderType.VIEW && output.getViewNodeInfo() != null) {
-      mountable.addAttachBinder(createDelegateBinder(mountable, new ViewAttributeBinder(output)));
-    }
-
     return new MountableLithoRenderUnit(output, mountable, context);
   }
 
