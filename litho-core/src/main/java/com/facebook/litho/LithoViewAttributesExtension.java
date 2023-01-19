@@ -30,6 +30,7 @@ import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
@@ -41,6 +42,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.LithoViewAttributesExtension.LithoViewAttributesState;
+import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderUnit;
@@ -52,7 +55,7 @@ import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoViewAttributesExtension
-    extends MountExtension<Void, LithoViewAttributesExtension.LithoViewAttributesState> {
+    extends MountExtension<ViewAttributesInput, LithoViewAttributesState> {
 
   private static final LithoViewAttributesExtension sInstance = new LithoViewAttributesExtension();
 
@@ -69,6 +72,8 @@ public class LithoViewAttributesExtension
 
   static class LithoViewAttributesState {
     private Map<Long, Integer> mDefaultViewAttributes = new HashMap<>();
+    private @Nullable Map<Long, LayoutOutput> mCurrentOutputs;
+    private @Nullable Map<Long, LayoutOutput> mNewOutputs;
 
     void setDefaultViewAttributes(long renderUnitId, int flags) {
       mDefaultViewAttributes.put(renderUnitId, flags);
@@ -87,6 +92,32 @@ public class LithoViewAttributesExtension
     boolean hasDefaultViewAttributes(long renderUnitId) {
       return mDefaultViewAttributes.containsKey(renderUnitId);
     }
+
+    @Nullable
+    LayoutOutput getCurrentLayoutOutput(long id) {
+      return mCurrentOutputs != null ? mCurrentOutputs.get(id) : null;
+    }
+
+    @Nullable
+    LayoutOutput getNewLayoutOutput(long id) {
+      return mNewOutputs != null ? mNewOutputs.get(id) : null;
+    }
+  }
+
+  @Override
+  public void beforeMount(
+      final ExtensionState<LithoViewAttributesState> extensionState,
+      final @Nullable ViewAttributesInput viewAttributesInput,
+      final Rect localVisibleRect) {
+    if (viewAttributesInput != null) {
+      extensionState.getState().mNewOutputs =
+          viewAttributesInput.getLayoutOutputsWithViewAttributes();
+    }
+  }
+
+  @Override
+  public void afterMount(ExtensionState<LithoViewAttributesState> extensionState) {
+    extensionState.getState().mCurrentOutputs = extensionState.getState().mNewOutputs;
   }
 
   @Override
@@ -97,7 +128,7 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     final LithoViewAttributesState state = extensionState.getState();
     final long id = renderUnit.getId();
-    final @Nullable LayoutOutput output = getLayoutOutput(renderUnit);
+    final @Nullable LayoutOutput output = state.getNewLayoutOutput(id);
 
     if (output != null) {
       // Get the initial view attribute flags for the root LithoView.
@@ -122,7 +153,7 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     final LithoViewAttributesState state = extensionState.getState();
     final long id = renderUnit.getId();
-    final @Nullable LayoutOutput output = getLayoutOutput(renderUnit);
+    final @Nullable LayoutOutput output = state.getCurrentLayoutOutput(id);
 
     if (output != null) {
       final int flags = state.getDefaultViewAttributes(id);
@@ -141,6 +172,11 @@ public class LithoViewAttributesExtension
       return false;
     }
 
+    final long id = previousRenderUnit.getId();
+    final LithoViewAttributesState state = extensionState.getState();
+    final @Nullable LayoutOutput current = state.getCurrentLayoutOutput(id);
+    final @Nullable LayoutOutput next = state.getNewLayoutOutput(id);
+
     if (previousRenderUnit instanceof LithoRenderUnit
         && nextRenderUnit instanceof LithoRenderUnit) {
 
@@ -157,18 +193,19 @@ public class LithoViewAttributesExtension
           || shouldUpdateViewInfo(
               nextLithoRenderUnit.getLayoutOutput(), prevLithoRenderUnit.getLayoutOutput());
     } else {
-      final @Nullable ViewAttributeBinder prevBinder =
-          previousRenderUnit.findAttachBinderByClass(ViewAttributeBinder.class);
 
-      final @Nullable ViewAttributeBinder nextBinder =
-          nextRenderUnit.findAttachBinderByClass(ViewAttributeBinder.class);
-
-      if (prevBinder == null || nextBinder == null) {
-        return prevBinder != null || nextBinder != null;
+      if (current == null || next == null) {
+        return current != null || next != null;
       }
 
-      return shouldUpdateViewInfo(nextBinder.mOutput, prevBinder.mOutput);
+      return shouldUpdateViewInfo(next, current);
     }
+  }
+
+  @Override
+  public void onUnmount(ExtensionState<LithoViewAttributesState> extensionState) {
+    extensionState.getState().mCurrentOutputs = null;
+    extensionState.getState().mNewOutputs = null;
   }
 
   static @Nullable LayoutOutput getLayoutOutput(RenderUnit<?> unit) {
@@ -960,6 +997,10 @@ public class LithoViewAttributesExtension
     final NodeInfo currentNodeInfo = currentLayoutOutput.getNodeInfo();
     return (currentNodeInfo == null && nextNodeInfo != null)
         || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
+  }
+
+  public interface ViewAttributesInput {
+    Map<Long, LayoutOutput> getLayoutOutputsWithViewAttributes();
   }
 
   /**

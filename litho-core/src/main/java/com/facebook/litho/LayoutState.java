@@ -44,6 +44,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
+import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutContext;
@@ -89,7 +90,8 @@ public class LayoutState
         VisibilityExtensionInput,
         TransitionsExtensionInput,
         EndToEndTestingExtensionInput,
-        PotentiallyPartialResult {
+        PotentiallyPartialResult,
+        ViewAttributesInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   @Nullable private Transition.RootBoundsTransition mRootWidthAnimation;
@@ -153,6 +155,7 @@ public class LayoutState
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
+  private final Map<Long, LayoutOutput> mLayoutOutputsWithViewAttributes = new HashMap<>(8);
   private final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs = new LinkedHashMap<>(8);
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
@@ -1792,6 +1795,11 @@ public class LayoutState
   }
 
   @Override
+  public Map<Long, LayoutOutput> getLayoutOutputsWithViewAttributes() {
+    return mLayoutOutputsWithViewAttributes;
+  }
+
+  @Override
   public @Nullable IncrementalMountOutput getIncrementalMountOutputForId(long id) {
     return mIncrementalMountOutputs.get(id);
   }
@@ -2018,6 +2026,10 @@ public class LayoutState
         || node.getRenderUnit().doesMountRenderTreeHosts()) {
 
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
+    }
+
+    if (layoutOutput.getViewNodeInfo() != null || layoutOutput.getNodeInfo() != null) {
+      layoutState.mLayoutOutputsWithViewAttributes.put(id, layoutOutput);
     }
 
     final AnimatableItem animatableItem =
