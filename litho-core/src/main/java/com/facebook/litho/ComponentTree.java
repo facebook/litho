@@ -123,8 +123,6 @@ public class ComponentTree
   private String mReleasedComponent;
   private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
 
-  private @Nullable DebugComponentTimeMachine.TreeRevisions mTimeline;
-
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
@@ -1125,76 +1123,6 @@ public class ComponentTree
         INVALID_LAYOUT_VERSION,
         null,
         null);
-  }
-
-  /**
-   * Similar to setRoot. This method allows setting a new root with cached TreeProps and
-   * StateHandler. It is used to enable time-traveling through external editors such as Flipper
-   *
-   * @param selectedRevision the revision of the tree we're resetting to
-   * @param root component to set the newState for
-   * @param props the props of the tree
-   * @param newState the cached state
-   * @see DebugComponentTimeMachine
-   * @see ComponentTree#getTimeline()
-   */
-  @UiThread
-  synchronized void resetState(
-      long selectedRevision, Component root, TreeProps props, TreeState newTreeState) {
-    ThreadUtils.assertMainThread();
-    mTreeState = newTreeState;
-    mRootTreeProps = props;
-    final DebugComponentTimeMachine.TreeRevisions timeline = mTimeline;
-    if (timeline != null) {
-      timeline.setSelected(selectedRevision);
-    }
-
-    setRootAndSizeSpecInternal(
-        root,
-        SIZE_UNINITIALIZED,
-        SIZE_UNINITIALIZED,
-        false /* isAsync */,
-        null /* output */,
-        CalculateLayoutSource.RELOAD_PREVIOUS_STATE,
-        INVALID_LAYOUT_VERSION,
-        null,
-        null,
-        false,
-        true);
-  }
-
-  /**
-   * The business logic for this method resides in DebugComponentTimeMachine. ComponentTree only
-   * stores its own timeline
-   *
-   * @see DebugComponentTimeMachine
-   */
-  @Nullable
-  DebugComponentTimeMachine.TreeRevisions getTimeline() {
-    final DebugComponentTimeMachine.TreeRevisions timeline = mTimeline;
-    return timeline != null ? timeline.shallowCopy() : null;
-  }
-
-  /**
-   * The business logic for this method resides in DebugComponentTimeMachine. ComponentTree only
-   * stores its own timeline
-   *
-   * @see DebugComponentTimeMachine
-   */
-  @GuardedBy("this")
-  void appendTimeline(
-      Component root,
-      TreeState treeState,
-      TreeProps props,
-      @LayoutState.CalculateLayoutSource int source,
-      @Nullable String attribution) {
-    assertHoldsLock(this);
-    if (mTimeline == null) {
-      mTimeline =
-          new DebugComponentTimeMachine.TreeRevisions(root, treeState, props, source, attribution);
-    } else {
-      mTimeline.setLatest(root, treeState, props, source, attribution);
-    }
   }
 
   /**
@@ -2506,11 +2434,6 @@ public class ComponentTree
         if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
-            if (ComponentsConfiguration.isTimelineEnabled) {
-              DebugComponentTimeMachine.saveTimelineSnapshot(
-                  this, rootComponent, treeState, treeProps, source, extraAttribution);
-            }
-
             if (isResolveAndLayoutFuturesSplitEnabled) {
               // Render state was committed during resolve
               treeState.commitLayoutState(localTreeState);

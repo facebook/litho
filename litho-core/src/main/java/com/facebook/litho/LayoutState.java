@@ -108,7 +108,6 @@ public class LayoutState
     CalculateLayoutSource.UPDATE_STATE_ASYNC,
     CalculateLayoutSource.MEASURE_SET_SIZE_SPEC,
     CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC,
-    CalculateLayoutSource.RELOAD_PREVIOUS_STATE,
   })
   public @interface CalculateLayoutSource {
     int TEST = -2;
@@ -121,7 +120,6 @@ public class LayoutState
     int UPDATE_STATE_ASYNC = 5;
     int MEASURE_SET_SIZE_SPEC = 6;
     int MEASURE_SET_SIZE_SPEC_ASYNC = 7;
-    int RELOAD_PREVIOUS_STATE = 8;
   }
 
   public static boolean isFromSyncLayout(@CalculateLayoutSource int source) {
@@ -130,7 +128,6 @@ public class LayoutState
       case CalculateLayoutSource.SET_ROOT_SYNC:
       case CalculateLayoutSource.UPDATE_STATE_SYNC:
       case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
-      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
         return true;
       default:
         return false;
@@ -1670,8 +1667,6 @@ public class LayoutState
         return "measure_setSizeSpecAsync";
       case CalculateLayoutSource.TEST:
         return "test";
-      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
-        return "reloadState";
       case CalculateLayoutSource.NONE:
         return "none";
       default:

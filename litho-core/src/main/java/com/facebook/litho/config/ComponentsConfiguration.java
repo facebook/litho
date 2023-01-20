@@ -193,11 +193,6 @@ public class ComponentsConfiguration {
 
   public static @Nullable Set<String> componentPreallocationBlocklist = null;
 
-  /** When {@code true} ComponentTree records state change snapshots */
-  public static boolean isTimelineEnabled = isDebugModeEnabled;
-
-  public static @Nullable String timelineDocsLink = null;
-
   /** Initialize sticky header during layout when its component tree is null */
   public static boolean initStickyHeaderInLayoutWhenComponentTreeIsNull = false;
 
