@@ -167,15 +167,15 @@ public class LithoTooltipController {
       @Nullable String anchorKey,
       int xOffset,
       int yOffset) {
-    final ComponentTree componentTree = c.getComponentTree();
     final Component rootComponent = c.getComponentScope();
+    final View mountedView = c.getMountedView();
 
-    if (componentTree == null
-        || componentTree.isReleased()
-        || !componentTree.hasMounted()
-        || componentTree.getMainThreadLayoutState() == null) {
+    if (mountedView == null
+        || !(mountedView instanceof LithoView)
+        || ((LithoView) mountedView).getMountedLayoutState() == null) {
       return;
     }
+    final LithoView lithoView = (LithoView) mountedView;
 
     final String anchorGlobalKey;
     if (rootComponent == null && anchorKey == null) {
@@ -188,7 +188,13 @@ public class LithoTooltipController {
       anchorGlobalKey = ComponentKeyUtils.getKeyWithSeparator(c.getGlobalKey(), anchorKey);
     }
 
-    componentTree.showTooltip(lithoTooltip, anchorGlobalKey, xOffset, yOffset);
+    ComponentTree.showTooltip(
+        lithoView.getMountedLayoutState(),
+        lithoView,
+        lithoTooltip,
+        anchorGlobalKey,
+        xOffset,
+        yOffset);
   }
 
   /**
@@ -262,19 +268,29 @@ public class LithoTooltipController {
       TooltipPosition tooltipPosition,
       int xOffset,
       int yOffset) {
-    final ComponentTree componentTree = c.getComponentTree();
     final Component rootComponent = c.getComponentScope();
+    final View mountedView = c.getMountedView();
 
-    if (componentTree == null) {
+    if (mountedView == null
+        || !(mountedView instanceof LithoView)
+        || ((LithoView) mountedView).getMountedLayoutState() == null) {
       return;
     }
+    final LithoView lithoView = (LithoView) mountedView;
 
     final String anchorGlobalKey =
         rootComponent == null
             ? anchorKey
             : ComponentKeyUtils.getKeyWithSeparator(c.getGlobalKey(), anchorKey);
 
-    componentTree.showTooltip(tooltip, anchorGlobalKey, tooltipPosition, xOffset, yOffset);
+    ComponentTree.showTooltip(
+        lithoView.getMountedLayoutState(),
+        lithoView,
+        tooltip,
+        anchorGlobalKey,
+        tooltipPosition,
+        xOffset,
+        yOffset);
   }
 
   @Deprecated

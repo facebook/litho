@@ -1821,7 +1821,9 @@ public class ComponentTree
    * @deprecated
    */
   @Deprecated
-  void showTooltip(
+  static void showTooltip(
+      LayoutState layoutState,
+      LithoView lithoView,
       DeprecatedLithoTooltip tooltip,
       String anchorGlobalKey,
       TooltipPosition tooltipPosition,
@@ -1830,7 +1832,7 @@ public class ComponentTree
     assertMainThread();
 
     final Map<String, Rect> componentKeysToBounds;
-    componentKeysToBounds = mMainThreadLayoutState.getComponentKeyToBounds();
+    componentKeysToBounds = layoutState.getComponentKeyToBounds();
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
       ComponentsReporter.emitMessage(
@@ -1842,7 +1844,7 @@ public class ComponentTree
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
     LithoTooltipController.showOnAnchor(
-        tooltip, anchorBounds, mLithoView, tooltipPosition, xOffset, yOffset);
+        tooltip, anchorBounds, lithoView, tooltipPosition, xOffset, yOffset);
   }
 
   void showTooltipOnHandle(
@@ -1874,13 +1876,17 @@ public class ComponentTree
     lithoTooltip.showLithoTooltip(mLithoView, anchorBounds, xOffset, yOffset);
   }
 
-  void showTooltip(LithoTooltip lithoTooltip, String anchorGlobalKey, int xOffset, int yOffset) {
+  static void showTooltip(
+      LayoutState layoutState,
+      LithoView lithoView,
+      LithoTooltip lithoTooltip,
+      String anchorGlobalKey,
+      int xOffset,
+      int yOffset) {
     assertMainThread();
 
     final Map<String, Rect> componentKeysToBounds;
-    synchronized (this) {
-      componentKeysToBounds = mMainThreadLayoutState.getComponentKeyToBounds();
-    }
+    componentKeysToBounds = layoutState.getComponentKeyToBounds();
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
       ComponentsReporter.emitMessage(
@@ -1891,7 +1897,7 @@ public class ComponentTree
     }
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
-    lithoTooltip.showLithoTooltip(mLithoView, anchorBounds, xOffset, yOffset);
+    lithoTooltip.showLithoTooltip(lithoView, anchorBounds, xOffset, yOffset);
   }
 
   /**

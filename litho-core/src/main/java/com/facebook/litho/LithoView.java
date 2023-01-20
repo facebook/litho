@@ -122,6 +122,10 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     return mIsMounting;
   }
 
+  LayoutState getMountedLayoutState() {
+    return mComponentTree.getMainThreadLayoutState();
+  }
+
   public interface OnDirtyMountListener {
     /**
      * Called when finishing a mount where the mount state was dirty. This indicates that there were
