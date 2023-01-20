@@ -1,0 +1,78 @@
+
+Facebook
+/
+ litografía
+Público
+Código
+Cuestiones
+80
+Solicitudes de extracción
+39
+Comportamiento
+Proyectos
+Seguridad
+Perspectivas
+litografía/ CONTRIBUYENDO.md
+@passy
+Dependencias de compilación de passy Unify ( #413 )
+…
+ 1 colaborador
+74 líneas (49 sloc)  2.86KB
+Contribuyendo a Litho
+Queremos que contribuir a este proyecto sea lo más fácil y transparente posible.
+
+Construyendo desde la fuente
+Clona el repositorio.
+Asegúrese de que su SDK de Android tenga las dependencias correctas. Para construir Litho necesitas:
+El NDK de Android y las herramientas de compilación (NDK, CMake, LLDB)
+SDK de Android 8.0 (API 26)
+Versión 27.0.3 de las herramientas de compilación del SDK de Android.
+Importe el proyecto seleccionando el directorio raíz del repositorio. ¡Deberías poder sincronizar con éxito el proyecto gradle ahora!
+Nuestro proceso de desarrollo
+Desarrollamos en una sucursal privada internamente en Facebook. Actualizamos regularmente este proyecto de github con los cambios del repositorio interno. Las solicitudes de extracción externas se seleccionan en nuestro repositorio y luego se eliminan.
+
+Pruebas
+Al realizar cambios en el código base, asegúrese de que se superen las pruebas existentes y de que cubra las nuevas características de forma adecuada. Puede ejecutar el conjunto de pruebas
+
+con dólar: buck test ..., o
+con gradle: ./gradlew test.
+Solicitudes de extracción
+¡Agradecemos activamente sus solicitudes de incorporación de cambios!
+
+Bifurque el repositorio y cree su rama desde el maestro.
+Si ha agregado código que debe probarse, agregue pruebas.
+Si ha cambiado las API, actualice la documentación (en /docs)
+Asegúrese de que el conjunto de pruebas pase.
+Si aún no lo ha hecho, complete el Acuerdo de licencia de colaborador ("CLA").
+Revisaremos su código y lo fusionaremos.
+Acuerdo de licencia de colaborador ("CLA")
+Para aceptar su solicitud de extracción, necesitamos que envíe un CLA. Solo necesita hacer esto una vez para trabajar en cualquiera de los proyectos de código abierto de Facebook.
+
+Completa tu CLA aquí: https://code.facebook.com/cla .
+
+Cuestiones
+Usamos problemas de GitHub para rastrear errores públicos. Cuando informe un problema, cuanta más información, mejor. Aquí hay algunas cosas que lo ayudarán a obtener una respuesta más rápido:
+
+Un título, así como un cuerpo para el problema.
+
+Una captura de pantalla o un video del problema.
+
+Salida de Logcat, si su aplicación falla
+
+Un fragmento del código en cuestión.
+
+Coloque el código en bloques para que se lea como código:
+
+```java (or xml)
+your code here
+```(terminating backticks)
+errores de seguridad
+Facebook tiene un programa de recompensas por la divulgación segura de errores de seguridad. En esos casos, siga el proceso descrito en esa página y no presente un problema público.
+
+Estilo de codificación
+Utilice 2 espacios para sangría en lugar de tabulaciones. Seguimos el estilo Java de Google . Puede usar la herramienta google-java-format para formatear su código en consecuencia.
+
+Lo más importante es ser coherente con el código existente. Mire alrededor de la base de código y haga coincidir el estilo.
+
+Licencia
+Al contribuir con Litho, acepta que sus contribuciones se licenciarán bajo su licencia Apache-2.
