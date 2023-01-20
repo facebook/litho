@@ -178,10 +178,13 @@ public class ComponentTree
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
 
-    if (lifecycleProvider instanceof AOSPLithoLifecycleProvider) {
-      setInternalTreeProp(
-          LifecycleOwner.class,
-          ((AOSPLithoLifecycleProvider) lifecycleProvider).getLifecycleOwner());
+    if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
+      LifecycleOwner lifecycleOwner =
+          ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
+
+      if (lifecycleOwner != null) {
+        setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
+      }
     }
   }
 

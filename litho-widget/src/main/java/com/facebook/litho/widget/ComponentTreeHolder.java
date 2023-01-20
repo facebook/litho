@@ -22,6 +22,8 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LifecycleOwner;
+import com.facebook.litho.AOSPLifecycleOwnerProvider;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -571,7 +573,7 @@ public class ComponentTreeHolder {
 
   /** Lifecycle controlled by a ComponentTreeHolder. */
   private class ComponentTreeHolderLifecycleProvider
-      implements LithoLifecycleProvider, LithoLifecycleListener {
+      implements LithoLifecycleProvider, LithoLifecycleListener, AOSPLifecycleOwnerProvider {
     public LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
 
     public ComponentTreeHolderLifecycleProvider() {
@@ -621,6 +623,16 @@ public class ComponentTreeHolder {
     @Override
     public synchronized void removeListener(LithoLifecycleListener listener) {
       mLithoLifecycleProviderDelegate.removeListener(listener);
+    }
+
+    @Override
+    @Nullable
+    public LifecycleOwner getLifecycleOwner() {
+      if (mParentLifecycle != null && mParentLifecycle instanceof AOSPLifecycleOwnerProvider) {
+        return ((AOSPLifecycleOwnerProvider) mParentLifecycle).getLifecycleOwner();
+      }
+
+      return null;
     }
   }
 }

@@ -27,6 +27,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 import com.facebook.infer.annotation.Nullsafe;
+import javax.annotation.Nullable;
 
 /**
  * This LithoLifecycleProvider implementation dispatches to the registered observers the lifecycle
@@ -35,7 +36,8 @@ import com.facebook.infer.annotation.Nullsafe;
  * changes.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class AOSPLithoLifecycleProvider implements LithoLifecycleProvider, LifecycleObserver {
+public class AOSPLithoLifecycleProvider
+    implements LithoLifecycleProvider, LifecycleObserver, AOSPLifecycleOwnerProvider {
   private LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
   private LifecycleOwner mLifecycleOwner;
 
@@ -80,6 +82,8 @@ public class AOSPLithoLifecycleProvider implements LithoLifecycleProvider, Lifec
     moveToLifecycle(DESTROYED);
   }
 
+  @Override
+  @Nullable
   public LifecycleOwner getLifecycleOwner() {
     return mLifecycleOwner;
   }
