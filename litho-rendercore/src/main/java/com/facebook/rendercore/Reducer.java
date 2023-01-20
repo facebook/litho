@@ -43,9 +43,7 @@ public class Reducer {
       final ArrayList<RenderTreeNode> flattenedTree,
       final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> extensions) {
 
-    // If width & height are 0 then do not return the tree.
-    // TODO: T102760805 follow up on null check.
-    if ((layoutResult == null) || (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0)) {
+    if (layoutResult == null) {
       return;
     }
 
