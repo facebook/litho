@@ -16,12 +16,17 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+
 import android.graphics.Rect;
 import android.view.View;
 import android.widget.PopupWindow;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public class LithoTooltipController {
+  private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
+  private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
 
   /**
    * Show the given tooltip with the specified offsets from the bottom-left corner of the root
@@ -87,7 +92,41 @@ public class LithoTooltipController {
       return;
     }
 
-    componentTree.showTooltipOnHandle(c, lithoTooltip, handle, xOffset, yOffset);
+    showTooltipOnHandle(
+        componentTree.getMainThreadLayoutState(),
+        componentTree.getLithoView(),
+        c,
+        lithoTooltip,
+        handle,
+        xOffset,
+        yOffset);
+  }
+
+  static void showTooltipOnHandle(
+      LayoutState layoutState,
+      LithoView lithoView,
+      ComponentContext componentContext,
+      LithoTooltip lithoTooltip,
+      Handle handle,
+      int xOffset,
+      int yOffset) {
+    assertMainThread();
+
+    final Map<Handle, Rect> componentHandleToBounds = layoutState.getComponentHandleToBounds();
+    final Rect anchorBounds = componentHandleToBounds.get(handle);
+
+    if (handle == null || anchorBounds == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_HANDLE,
+          "Cannot find a component with handle "
+              + handle
+              + " to use as anchor.\nComponent: "
+              + componentContext.getComponentScope().getSimpleName());
+      return;
+    }
+
+    lithoTooltip.showLithoTooltip(lithoView, anchorBounds, xOffset, yOffset);
   }
 
   /**
@@ -188,13 +227,64 @@ public class LithoTooltipController {
       anchorGlobalKey = ComponentKeyUtils.getKeyWithSeparator(c.getGlobalKey(), anchorKey);
     }
 
-    ComponentTree.showTooltip(
+    showTooltip(
         lithoView.getMountedLayoutState(),
         lithoView,
         lithoTooltip,
         anchorGlobalKey,
         xOffset,
         yOffset);
+  }
+
+  private static void showTooltip(
+      LayoutState layoutState,
+      LithoView lithoView,
+      LithoTooltip lithoTooltip,
+      String anchorGlobalKey,
+      int xOffset,
+      int yOffset) {
+    assertMainThread();
+
+    final Map<String, Rect> componentKeysToBounds;
+    componentKeysToBounds = layoutState.getComponentKeyToBounds();
+
+    if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_KEY,
+          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+      return;
+    }
+
+    final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
+    lithoTooltip.showLithoTooltip(lithoView, anchorBounds, xOffset, yOffset);
+  }
+
+  @Deprecated
+  private static void showTooltip(
+      LayoutState layoutState,
+      LithoView lithoView,
+      DeprecatedLithoTooltip tooltip,
+      String anchorGlobalKey,
+      TooltipPosition tooltipPosition,
+      int xOffset,
+      int yOffset) {
+    assertMainThread();
+
+    final Map<String, Rect> componentKeysToBounds;
+    componentKeysToBounds = layoutState.getComponentKeyToBounds();
+
+    if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_KEY,
+          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+      return;
+    }
+
+    final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
+    LithoTooltipController.showOnAnchor(
+        tooltip, anchorBounds, lithoView, tooltipPosition, xOffset, yOffset);
   }
 
   /**
@@ -283,7 +373,7 @@ public class LithoTooltipController {
             ? anchorKey
             : ComponentKeyUtils.getKeyWithSeparator(c.getGlobalKey(), anchorKey);
 
-    ComponentTree.showTooltip(
+    showTooltip(
         lithoView.getMountedLayoutState(),
         lithoView,
         tooltip,

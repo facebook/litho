@@ -818,7 +818,7 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting
   @Nullable
   View getMountedView() {
-    return mMountedViewReference.getMountedView();
+    return mMountedViewReference != null ? mMountedViewReference.getMountedView() : null;
   }
 
   void removePendingStateUpdate(String key, boolean nestedTreeContext) {

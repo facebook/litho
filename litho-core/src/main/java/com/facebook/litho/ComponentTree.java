@@ -40,7 +40,6 @@ import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROU
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -69,7 +68,6 @@ import com.facebook.rendercore.Systracer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
@@ -92,8 +90,6 @@ public class ComponentTree
 
   public static final int INVALID_LAYOUT_VERSION = -1;
   public static final int INVALID_ID = -1;
-  private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
-  private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
   private static final String TAG = ComponentTree.class.getSimpleName();
   public static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_RESOLVE_THREAD_NAME = "ComponentResolveThread";
@@ -1814,90 +1810,6 @@ public class ComponentTree
 
     return ComponentTree.create(
         ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
-  }
-
-  /**
-   * @see #showTooltip(LithoTooltip, String, int, int)
-   * @deprecated
-   */
-  @Deprecated
-  static void showTooltip(
-      LayoutState layoutState,
-      LithoView lithoView,
-      DeprecatedLithoTooltip tooltip,
-      String anchorGlobalKey,
-      TooltipPosition tooltipPosition,
-      int xOffset,
-      int yOffset) {
-    assertMainThread();
-
-    final Map<String, Rect> componentKeysToBounds;
-    componentKeysToBounds = layoutState.getComponentKeyToBounds();
-
-    if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          INVALID_KEY,
-          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
-      return;
-    }
-
-    final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
-    LithoTooltipController.showOnAnchor(
-        tooltip, anchorBounds, lithoView, tooltipPosition, xOffset, yOffset);
-  }
-
-  void showTooltipOnHandle(
-      ComponentContext componentContext,
-      LithoTooltip lithoTooltip,
-      Handle handle,
-      int xOffset,
-      int yOffset) {
-    assertMainThread();
-
-    final Map<Handle, Rect> componentHandleToBounds;
-    synchronized (this) {
-      componentHandleToBounds = mMainThreadLayoutState.getComponentHandleToBounds();
-    }
-
-    final Rect anchorBounds = componentHandleToBounds.get(handle);
-
-    if (handle == null || anchorBounds == null) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          INVALID_HANDLE,
-          "Cannot find a component with handle "
-              + handle
-              + " to use as anchor.\nComponent: "
-              + componentContext.getComponentScope().getSimpleName());
-      return;
-    }
-
-    lithoTooltip.showLithoTooltip(mLithoView, anchorBounds, xOffset, yOffset);
-  }
-
-  static void showTooltip(
-      LayoutState layoutState,
-      LithoView lithoView,
-      LithoTooltip lithoTooltip,
-      String anchorGlobalKey,
-      int xOffset,
-      int yOffset) {
-    assertMainThread();
-
-    final Map<String, Rect> componentKeysToBounds;
-    componentKeysToBounds = layoutState.getComponentKeyToBounds();
-
-    if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          INVALID_KEY,
-          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
-      return;
-    }
-
-    final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
-    lithoTooltip.showLithoTooltip(lithoView, anchorBounds, xOffset, yOffset);
   }
 
   /**
