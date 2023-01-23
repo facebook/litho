@@ -173,14 +173,12 @@ public class ComponentTree
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
 
+    LifecycleOwner lifecycleOwner = null;
     if (lifecycleProvider instanceof AOSPLifecycleOwnerProvider) {
-      LifecycleOwner lifecycleOwner =
-          ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
-
-      if (lifecycleOwner != null) {
-        setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
-      }
+      lifecycleOwner = ((AOSPLifecycleOwnerProvider) lifecycleProvider).getLifecycleOwner();
     }
+
+    setInternalTreeProp(LifecycleOwner.class, lifecycleOwner);
   }
 
   public synchronized boolean isSubscribedToLifecycleProvider() {
@@ -1458,7 +1456,7 @@ public class ComponentTree
    *
    * <p>It will make sure that the tree properties are properly cloned and stored.
    */
-  private void setInternalTreeProp(Class key, Object value) {
+  private void setInternalTreeProp(Class key, @Nullable Object value) {
     if (!mContext.isParentTreePropsCloned()) {
       mContext.setTreeProps(TreeProps.acquire(mContext.getTreeProps()));
       mContext.setParentTreePropsCloned(true);
