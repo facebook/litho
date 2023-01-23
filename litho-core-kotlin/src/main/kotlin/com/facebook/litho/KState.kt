@@ -153,21 +153,20 @@ internal constructor(
   }
 
   private fun canSkip(newValue: T): Boolean {
-    return context.componentTree.treeState?.canSkipStateUpdate(
+    return context.stateUpdater?.canSkipStateUpdate(
         context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext())
         ?: false
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
-    val treeState = context.componentTree.treeState
-    return treeState?.canSkipStateUpdate(
+    return context.stateUpdater?.canSkipStateUpdate(
         newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext())
         ?: false
   }
 
   /**
-   * We consider two state objects equal if they 1) belong to the same ComponentTree, 2) have the
-   * same global key and hook index, and 3) have the same value (according to its own .equals check)
+   * We consider two state objects equal if they 1) belong to the same Tree, 2) have the same global
+   * key and hook index, and 3) have the same value (according to its own .equals check)
    */
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -178,7 +177,7 @@ internal constructor(
       return false
     }
 
-    return context.componentTree === other.context.componentTree &&
+    return context.stateUpdater === other.context.stateUpdater &&
         context.globalKey == other.context.globalKey &&
         hookStateIndex == other.hookStateIndex &&
         value == other.value

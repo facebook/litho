@@ -53,6 +53,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.arch.core.util.Function;
 import androidx.core.util.Preconditions;
 import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -595,6 +596,34 @@ public class ComponentTree
       return false;
     }
     return treeState.getMountInfo().mIsFirstMount;
+  }
+
+  @Override
+  public <T> boolean canSkipStateUpdate(
+      final String globalKey,
+      final int hookStateIndex,
+      final @Nullable T newValue,
+      final boolean isNestedTree) {
+    final TreeState treeState = getTreeState();
+    if (treeState == null) {
+      return false;
+    }
+
+    return treeState.canSkipStateUpdate(globalKey, hookStateIndex, newValue, isNestedTree);
+  }
+
+  @Override
+  public <T> boolean canSkipStateUpdate(
+      final Function<T, T> newValueFunction,
+      final String globalKey,
+      final int hookStateIndex,
+      final boolean isNestedTree) {
+    final TreeState treeState = getTreeState();
+    if (treeState == null) {
+      return false;
+    }
+
+    return treeState.canSkipStateUpdate(newValueFunction, globalKey, hookStateIndex, isNestedTree);
   }
 
   @Override

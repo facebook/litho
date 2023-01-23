@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
+import androidx.arch.core.util.Function;
+
 /**
  * StateUpdater lets a Component rendered with a scoped ComponentContext interact with Litho's state
  * An implementation of StateUpdater is responsible for collecting state update operations and
@@ -91,4 +94,16 @@ public interface StateUpdater {
 
   /** sets whether this tree has ever been mounted before */
   void setIsFirstMount(boolean needsToRerunTransitions);
+
+  <T> boolean canSkipStateUpdate(
+      final String globalKey,
+      final int hookStateIndex,
+      final @Nullable T newValue,
+      final boolean isNestedTree);
+
+  <T> boolean canSkipStateUpdate(
+      final Function<T, T> newValueFunction,
+      final String globalKey,
+      final int hookStateIndex,
+      final boolean isNestedTree);
 }
