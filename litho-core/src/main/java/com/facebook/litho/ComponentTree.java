@@ -588,6 +588,7 @@ public class ComponentTree
     return treeState.getMountInfo().mHasMounted;
   }
 
+  @Override
   public boolean isFirstMount() {
     final TreeState treeState = getTreeState();
     if (treeState == null) {
@@ -596,6 +597,7 @@ public class ComponentTree
     return treeState.getMountInfo().mIsFirstMount;
   }
 
+  @Override
   public void setIsFirstMount(boolean isFirstMount) {
     final TreeState treeState = getTreeState();
     if (treeState == null) {

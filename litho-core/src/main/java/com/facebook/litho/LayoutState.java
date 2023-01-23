@@ -2178,12 +2178,12 @@ public class LayoutState
 
   @Override
   public boolean needsToRerunTransitions() {
-    return mContext.getComponentTree().isFirstMount();
+    return mContext.getStateUpdater().isFirstMount();
   }
 
   @Override
   public void setNeedsToRerunTransitions(boolean needsToRerunTransitions) {
-    mContext.getComponentTree().setIsFirstMount(needsToRerunTransitions);
+    mContext.getStateUpdater().setIsFirstMount(needsToRerunTransitions);
   }
 
   boolean isCommitted() {
