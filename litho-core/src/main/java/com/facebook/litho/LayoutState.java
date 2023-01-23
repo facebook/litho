@@ -969,7 +969,7 @@ public class LayoutState
       // checkers cover tests, the scope and tree should not be null at this point of the layout
       // calculation.
       final ComponentContext delegateScopedContext = node.getComponentContextAt(i);
-      if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
+      if (delegateScopedContext != null) {
         if (layoutState.mScopedSpecComponentInfos != null
             && delegate instanceof SpecGeneratedComponent) {
           layoutState.mScopedSpecComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
