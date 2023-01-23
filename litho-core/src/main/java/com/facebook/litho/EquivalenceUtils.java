@@ -18,8 +18,10 @@ package com.facebook.litho;
 
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.primitives.utils.ExperimentalEquivalenceUtils;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +31,10 @@ public class EquivalenceUtils {
 
   /** Checks if objects are equal. */
   public static boolean equals(@Nullable Object a, @Nullable Object b) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.equals(a, b);
+    }
+
     if (a == b) {
       return true;
     }
@@ -42,6 +48,10 @@ public class EquivalenceUtils {
 
   /** Checks if {@link SparseArray} objects are equal. */
   public static boolean equals(@Nullable SparseArray<?> a, @Nullable SparseArray<?> b) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.equals(a, b);
+    }
+
     if (a == b) {
       return true;
     }
@@ -71,6 +81,10 @@ public class EquivalenceUtils {
 
   /** Checks if {@link Equivalence} objects are equivalent. */
   public static <T extends Equivalence<T>> boolean isEquivalentTo(@Nullable T a, @Nullable T b) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.isEquivalentTo(a, b);
+    }
+
     if (a == b) {
       return true;
     }
@@ -87,6 +101,10 @@ public class EquivalenceUtils {
    * objects field by field.
    */
   public static <T> boolean isEqualOrEquivalentTo(@Nullable T a, @Nullable T b) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.isEqualOrEquivalentTo(a, b);
+    }
+
     if (a instanceof Equivalence && b instanceof Equivalence) {
       return isEquivalentTo((Equivalence) a, (Equivalence) b);
     } else {
@@ -97,12 +115,20 @@ public class EquivalenceUtils {
   /** Compare all private final fields in an object */
   @SuppressWarnings("unchecked")
   public static boolean hasEquivalentFields(Object a, Object b) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.hasEquivalentFields(a, b);
+    }
+
     return hasEquivalentFields(a, b, true);
   }
 
   /** Compare all private final fields in an object */
   @SuppressWarnings("unchecked")
   public static boolean hasEquivalentFields(Object a, Object b, boolean shouldCompareCommonProps) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.hasEquivalentFields(a, b);
+    }
+
     if (a == b) {
       return true;
     }
@@ -139,6 +165,10 @@ public class EquivalenceUtils {
   @SuppressWarnings("unchecked")
   public static boolean areObjectsEquivalent(
       @Nullable Object val1, @Nullable Object val2, boolean shouldCompareCommonProps) {
+    if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
+      return ExperimentalEquivalenceUtils.INSTANCE.areObjectsEquivalent(val1, val2);
+    }
+
     if (val1 == val2) {
       return true;
     }
