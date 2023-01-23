@@ -180,15 +180,15 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (!CommonUtils.equals(mPadding, other.mPadding)) {
+    if (!EquivalenceUtils.equals(mPadding, other.mPadding)) {
       return false;
     }
 
-    if (!CommonUtils.equals(mTouchBoundsExpansion, other.mTouchBoundsExpansion)) {
+    if (!EquivalenceUtils.equals(mTouchBoundsExpansion, other.mTouchBoundsExpansion)) {
       return false;
     }
 
-    if (!CommonUtils.equals(mLayoutDirection, other.mLayoutDirection)) {
+    if (!EquivalenceUtils.equals(mLayoutDirection, other.mLayoutDirection)) {
       return false;
     }
 
@@ -197,7 +197,7 @@ class ViewNodeInfo {
     }
 
     // TODO: (T33421916) We need compare StateListAnimators more accurately
-    if (!CommonUtils.equals(mStateListAnimator, other.mStateListAnimator)) {
+    if (!EquivalenceUtils.equals(mStateListAnimator, other.mStateListAnimator)) {
       return false;
     }
 

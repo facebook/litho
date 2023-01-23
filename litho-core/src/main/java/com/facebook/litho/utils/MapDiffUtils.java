@@ -18,7 +18,7 @@ package com.facebook.litho.utils;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.CommonUtils;
+import com.facebook.litho.EquivalenceUtils;
 import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -39,7 +39,7 @@ public final class MapDiffUtils {
     }
 
     for (Map.Entry<K, V> entry : prev.entrySet()) {
-      if (!CommonUtils.equals(entry.getValue(), next.get(entry.getKey()))) {
+      if (!EquivalenceUtils.equals(entry.getValue(), next.get(entry.getKey()))) {
         return false;
       }
     }

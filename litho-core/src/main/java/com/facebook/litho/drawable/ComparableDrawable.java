@@ -17,6 +17,7 @@
 package com.facebook.litho.drawable;
 
 import android.graphics.drawable.Drawable;
+import com.facebook.rendercore.primitives.Equivalence;
 
 /**
  * Comparable Drawable allows drawables to be compared by explicitly implementing the {@link
@@ -26,7 +27,7 @@ import android.graphics.drawable.Drawable;
  *
  * @see ComparableColorDrawable
  */
-public interface ComparableDrawable {
+public interface ComparableDrawable extends Equivalence<ComparableDrawable> {
 
   /**
    * @param other The other drawable

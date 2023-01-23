@@ -37,7 +37,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getAccessibilityRole(), y.getAccessibilityRole())) {
+    if (!EquivalenceUtils.equals(x.getAccessibilityRole(), y.getAccessibilityRole())) {
       return false;
     }
 
@@ -45,7 +45,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(x.getClickHandler(), y.getClickHandler())) {
+    if (!EquivalenceUtils.isEquivalentTo(x.getClickHandler(), y.getClickHandler())) {
       return false;
     }
 
@@ -57,11 +57,11 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getContentDescription(), y.getContentDescription())) {
+    if (!EquivalenceUtils.equals(x.getContentDescription(), y.getContentDescription())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getDispatchPopulateAccessibilityEventHandler(),
         y.getDispatchPopulateAccessibilityEventHandler())) {
       return false;
@@ -71,7 +71,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(x.getFocusChangeHandler(), y.getFocusChangeHandler())) {
+    if (!EquivalenceUtils.isEquivalentTo(x.getFocusChangeHandler(), y.getFocusChangeHandler())) {
       return false;
     }
 
@@ -79,47 +79,48 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(x.getInterceptTouchHandler(), y.getInterceptTouchHandler())) {
+    if (!EquivalenceUtils.isEquivalentTo(
+        x.getInterceptTouchHandler(), y.getInterceptTouchHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(x.getLongClickHandler(), y.getLongClickHandler())) {
+    if (!EquivalenceUtils.isEquivalentTo(x.getLongClickHandler(), y.getLongClickHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getOnInitializeAccessibilityEventHandler(),
         y.getOnInitializeAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getOnInitializeAccessibilityNodeInfoHandler(),
         y.getOnInitializeAccessibilityNodeInfoHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getOnPopulateAccessibilityEventHandler(), y.getOnPopulateAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getOnPopulateAccessibilityNodeHandler(), y.getOnPopulateAccessibilityNodeHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getOnRequestSendAccessibilityEventHandler(),
         y.getOnRequestSendAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getOutlineProvider(), y.getOutlineProvider())) {
+    if (!EquivalenceUtils.equals(x.getOutlineProvider(), y.getOutlineProvider())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getPerformAccessibilityActionHandler(), y.getPerformAccessibilityActionHandler())) {
       return false;
     }
@@ -136,12 +137,12 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getSendAccessibilityEventHandler(), y.getSendAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(
+    if (!EquivalenceUtils.isEquivalentTo(
         x.getSendAccessibilityEventUncheckedHandler(),
         y.getSendAccessibilityEventUncheckedHandler())) {
       return false;
@@ -159,15 +160,15 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.isEquivalentTo(x.getTouchHandler(), y.getTouchHandler())) {
+    if (!EquivalenceUtils.isEquivalentTo(x.getTouchHandler(), y.getTouchHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getViewTag(), y.getViewTag())) {
+    if (!EquivalenceUtils.equals(x.getViewTag(), y.getViewTag())) {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getViewTags(), y.getViewTags())) {
+    if (!EquivalenceUtils.equals(x.getViewTags(), y.getViewTags())) {
       return false;
     }
 

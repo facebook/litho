@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.primitives.Equivalence;
@@ -26,13 +27,68 @@ import java.util.Iterator;
 
 public class EquivalenceUtils {
 
+  /** Checks if objects are equal. */
+  public static boolean equals(@Nullable Object a, @Nullable Object b) {
+    if (a == b) {
+      return true;
+    }
+
+    if (a == null || b == null) {
+      return false;
+    }
+
+    return a.equals(b);
+  }
+
+  /** Checks if {@link SparseArray} objects are equal. */
+  public static boolean equals(@Nullable SparseArray<?> a, @Nullable SparseArray<?> b) {
+    if (a == b) {
+      return true;
+    }
+
+    if (a == null || b == null) {
+      return false;
+    }
+
+    if (a.size() != b.size()) {
+      return false;
+    }
+
+    int size = a.size();
+
+    for (int i = 0; i < size; i++) {
+      if (a.keyAt(i) != b.keyAt(i)) {
+        return false;
+      }
+
+      if (!equals(a.valueAt(i), b.valueAt(i))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /** Checks if {@link Equivalence} objects are equivalent. */
+  public static <T extends Equivalence<T>> boolean isEquivalentTo(@Nullable T a, @Nullable T b) {
+    if (a == b) {
+      return true;
+    }
+
+    if (a == null || b == null) {
+      return false;
+    }
+
+    return a.isEquivalentTo(b);
+  }
+
   /**
    * Checks if to objects are equivalent if they implement {@link Equivalence} or compares the
    * objects field by field.
    */
   public static <T> boolean isEqualOrEquivalentTo(@Nullable T a, @Nullable T b) {
     if (a instanceof Equivalence && b instanceof Equivalence) {
-      return CommonUtils.isEquivalentTo((Equivalence) a, (Equivalence) b);
+      return isEquivalentTo((Equivalence) a, (Equivalence) b);
     } else {
       return hasEquivalentFields(a, b, false);
     }

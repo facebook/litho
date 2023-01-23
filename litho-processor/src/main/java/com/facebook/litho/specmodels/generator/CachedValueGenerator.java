@@ -366,7 +366,7 @@ public class CachedValueGenerator {
       return CodeBlock.builder()
           .beginControlFlow(
               "if (!$L.equals($L, $L))",
-              ClassNames.COMMON_UTILS,
+              ClassNames.EQUIVALENCE_UTILS,
               getName(),
               otherObjectName + "." + getName())
           .addStatement("return false")

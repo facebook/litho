@@ -28,7 +28,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
-import com.facebook.litho.CommonUtils;
+import com.facebook.litho.EquivalenceUtils;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
@@ -345,7 +345,7 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
 
     BorderColorDrawable that = (BorderColorDrawable) o;
 
-    return CommonUtils.equals(mState, that.mState);
+    return EquivalenceUtils.equals(mState, that.mState);
   }
 
   @Override
@@ -403,7 +403,7 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
           && mBorderTopColor == state.mBorderTopColor
           && mBorderRightColor == state.mBorderRightColor
           && mBorderBottomColor == state.mBorderBottomColor
-          && CommonUtils.equals(mPathEffect, state.mPathEffect)
+          && EquivalenceUtils.equals(mPathEffect, state.mPathEffect)
           && Arrays.equals(mBorderRadius, state.mBorderRadius);
     }
   }

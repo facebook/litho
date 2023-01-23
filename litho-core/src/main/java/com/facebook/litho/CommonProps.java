@@ -693,11 +693,11 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
         && mDefStyleAttr == other.mDefStyleAttr
         && mDefStyleRes == other.mDefStyleRes
         && DrawableUtils.isEquivalentTo(mBackground, other.mBackground)
-        && CommonUtils.isEquivalentTo(mOtherProps, other.mOtherProps)
-        && CommonUtils.isEquivalentTo(mNodeInfo, other.mNodeInfo)
-        && CommonUtils.isEquivalentTo(mLayoutProps, other.mLayoutProps)
-        && CommonUtils.equals(mTestKey, other.mTestKey)
-        && CommonUtils.equals(mComponentTag, other.mComponentTag);
+        && EquivalenceUtils.isEquivalentTo(mOtherProps, other.mOtherProps)
+        && EquivalenceUtils.isEquivalentTo(mNodeInfo, other.mNodeInfo)
+        && EquivalenceUtils.isEquivalentTo(mLayoutProps, other.mLayoutProps)
+        && EquivalenceUtils.equals(mTestKey, other.mTestKey)
+        && EquivalenceUtils.equals(mComponentTag, other.mComponentTag);
   }
 
   private static final class OtherProps implements Equivalence<OtherProps> {
@@ -933,19 +933,20 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
           && mLayerType == other.mLayerType
           && Float.compare(other.mVisibleHeightRatio, mVisibleHeightRatio) == 0
           && Float.compare(other.mVisibleWidthRatio, mVisibleWidthRatio) == 0
-          && CommonUtils.equals(mTransitionKeyType, other.mTransitionKeyType)
-          && CommonUtils.equals(mStateListAnimator, other.mStateListAnimator)
-          && CommonUtils.equals(mLayerPaint, other.mLayerPaint)
-          && CommonUtils.isEquivalentTo(mVisibleHandler, other.mVisibleHandler)
-          && CommonUtils.isEquivalentTo(mFocusedHandler, other.mFocusedHandler)
-          && CommonUtils.isEquivalentTo(mUnfocusedHandler, other.mUnfocusedHandler)
-          && CommonUtils.isEquivalentTo(mFullImpressionHandler, other.mFullImpressionHandler)
-          && CommonUtils.isEquivalentTo(mInvisibleHandler, other.mInvisibleHandler)
-          && CommonUtils.isEquivalentTo(mVisibilityChangedHandler, other.mVisibilityChangedHandler)
-          && CommonUtils.isEquivalentTo(mTouchExpansions, other.mTouchExpansions)
-          && CommonUtils.isEquivalentTo(mBorder, other.mBorder)
-          && CommonUtils.equals(mTransitionOwnerKey, other.mTransitionOwnerKey)
-          && CommonUtils.equals(mTransitionKey, other.mTransitionKey)
+          && EquivalenceUtils.equals(mTransitionKeyType, other.mTransitionKeyType)
+          && EquivalenceUtils.equals(mStateListAnimator, other.mStateListAnimator)
+          && EquivalenceUtils.equals(mLayerPaint, other.mLayerPaint)
+          && EquivalenceUtils.isEquivalentTo(mVisibleHandler, other.mVisibleHandler)
+          && EquivalenceUtils.isEquivalentTo(mFocusedHandler, other.mFocusedHandler)
+          && EquivalenceUtils.isEquivalentTo(mUnfocusedHandler, other.mUnfocusedHandler)
+          && EquivalenceUtils.isEquivalentTo(mFullImpressionHandler, other.mFullImpressionHandler)
+          && EquivalenceUtils.isEquivalentTo(mInvisibleHandler, other.mInvisibleHandler)
+          && EquivalenceUtils.isEquivalentTo(
+              mVisibilityChangedHandler, other.mVisibilityChangedHandler)
+          && EquivalenceUtils.isEquivalentTo(mTouchExpansions, other.mTouchExpansions)
+          && EquivalenceUtils.isEquivalentTo(mBorder, other.mBorder)
+          && EquivalenceUtils.equals(mTransitionOwnerKey, other.mTransitionOwnerKey)
+          && EquivalenceUtils.equals(mTransitionKey, other.mTransitionKey)
           && DrawableUtils.isEquivalentTo(mForeground, other.mForeground);
     }
   }
@@ -1423,17 +1424,17 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
           && mLayoutDirection == other.mLayoutDirection
           && mAlignSelf == other.mAlignSelf
           && mPositionType == other.mPositionType
-          && CommonUtils.isEquivalentTo(mPositions, other.mPositions)
-          && CommonUtils.isEquivalentTo(mMargins, other.mMargins)
-          && CommonUtils.isEquivalentTo(mMarginPercents, other.mMarginPercents)
-          && CommonUtils.isEquivalentTo(mPaddings, other.mPaddings)
-          && CommonUtils.isEquivalentTo(mPaddingPercents, other.mPaddingPercents)
-          && CommonUtils.isEquivalentTo(mPositionPercents, other.mPositionPercents)
+          && EquivalenceUtils.isEquivalentTo(mPositions, other.mPositions)
+          && EquivalenceUtils.isEquivalentTo(mMargins, other.mMargins)
+          && EquivalenceUtils.isEquivalentTo(mMarginPercents, other.mMarginPercents)
+          && EquivalenceUtils.isEquivalentTo(mPaddings, other.mPaddings)
+          && EquivalenceUtils.isEquivalentTo(mPaddingPercents, other.mPaddingPercents)
+          && EquivalenceUtils.isEquivalentTo(mPositionPercents, other.mPositionPercents)
           && mHeightAuto == other.mHeightAuto
           && mWidthAuto == other.mWidthAuto
           && mFlexBasisAuto == other.mFlexBasisAuto
-          && CommonUtils.isEquivalentTo(mBorderEdges, other.mBorderEdges)
-          && CommonUtils.equals(mMarginAutos, other.mMarginAutos);
+          && EquivalenceUtils.isEquivalentTo(mBorderEdges, other.mBorderEdges)
+          && EquivalenceUtils.equals(mMarginAutos, other.mMarginAutos);
     }
   }
 }

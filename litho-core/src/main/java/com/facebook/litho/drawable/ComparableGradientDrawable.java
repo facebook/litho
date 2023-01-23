@@ -22,7 +22,7 @@ import android.os.Build;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.OkToExtend;
-import com.facebook.litho.CommonUtils;
+import com.facebook.litho.EquivalenceUtils;
 import java.util.Arrays;
 
 /** A comparable gradient drawable. */
@@ -63,7 +63,7 @@ public class ComparableGradientDrawable extends GradientDrawable implements Comp
     ComparableGradientDrawable that = (ComparableGradientDrawable) o;
 
     return color == that.color
-        && CommonUtils.equals(colorStateList, that.colorStateList)
+        && EquivalenceUtils.equals(colorStateList, that.colorStateList)
         && cornerRadius == that.cornerRadius
         && gradientType == that.gradientType
         && gradientRadius == that.gradientRadius
@@ -77,7 +77,7 @@ public class ComparableGradientDrawable extends GradientDrawable implements Comp
         && getOrientationOrNullOnAPI15() == that.getOrientationOrNullOnAPI15()
         && Arrays.equals(colors, that.colors)
         && Arrays.equals(cornerRadii, that.cornerRadii)
-        && CommonUtils.equals(strokeColorStateList, that.strokeColorStateList);
+        && EquivalenceUtils.equals(strokeColorStateList, that.strokeColorStateList);
   }
 
   @Override
