@@ -16,7 +16,9 @@
 
 package com.facebook.litho;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.arch.core.util.Function;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.annotations.UIState;
@@ -32,7 +34,8 @@ public class TreeState {
   private final StateHandler mLayoutStateHandler;
   @UIState private final TreeMountInfo mTreeMountInfo;
   @UIState private final RenderState mRenderState;
-
+  private final EventTriggersContainer mEventTriggersContainer;
+  private final EventHandlersController mEventHandlersController;
   /**
    * This class represents whether this Litho tree has been mounted before. The usage is a bit
    * convoluted and will need to be cleaned out properly in the future.
@@ -47,6 +50,8 @@ public class TreeState {
     mLayoutStateHandler = new StateHandler(null);
     mTreeMountInfo = new TreeMountInfo();
     mRenderState = new RenderState();
+    mEventTriggersContainer = new EventTriggersContainer();
+    mEventHandlersController = new EventHandlersController();
   }
 
   public TreeState(TreeState treeState) {
@@ -54,6 +59,8 @@ public class TreeState {
     mLayoutStateHandler = new StateHandler(treeState.mLayoutStateHandler);
     mTreeMountInfo = treeState.mTreeMountInfo;
     mRenderState = treeState.mRenderState;
+    mEventTriggersContainer = treeState.mEventTriggersContainer;
+    mEventHandlersController = treeState.mEventHandlersController;
   }
 
   // TODO: Remove this method
@@ -315,5 +322,53 @@ public class TreeState {
       return;
     }
     mRenderState.recordRenderData(scopedComponentInfos);
+  }
+
+  @Nullable
+  EventTrigger getEventTrigger(String triggerKey) {
+    synchronized (mEventTriggersContainer) {
+      return mEventTriggersContainer.getEventTrigger(triggerKey);
+    }
+  }
+
+  @Nullable
+  EventTrigger getEventTrigger(Handle handle, int methodId) {
+    synchronized (mEventTriggersContainer) {
+      return mEventTriggersContainer.getEventTrigger(handle, methodId);
+    }
+  }
+
+  void clearUnusedTriggerHandlers() {
+    synchronized (mEventTriggersContainer) {
+      mEventTriggersContainer.clear();
+    }
+  }
+
+  void bindEventAndTriggerHandlers(
+      final @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
+      final @Nullable List<ScopedComponentInfo> scopedSpecComponentInfos) {
+    synchronized (mEventTriggersContainer) {
+      clearUnusedTriggerHandlers();
+      if (createdEventHandlers != null) {
+        mEventHandlersController.canonicalizeEventDispatchInfos(createdEventHandlers);
+      }
+      if (scopedSpecComponentInfos != null) {
+        for (ScopedComponentInfo scopedSpecComponentInfo : scopedSpecComponentInfos) {
+          final SpecGeneratedComponent component =
+              (SpecGeneratedComponent) scopedSpecComponentInfo.getComponent();
+          final ComponentContext scopedContext = scopedSpecComponentInfo.getContext();
+          mEventHandlersController.updateEventDispatchInfoForGlobalKey(
+              scopedContext, component, scopedContext.getGlobalKey());
+          component.recordEventTrigger(scopedContext, mEventTriggersContainer);
+        }
+      }
+    }
+
+    mEventHandlersController.clearUnusedEventDispatchInfos();
+  }
+
+  @VisibleForTesting
+  EventHandlersController getEventHandlersController() {
+    return mEventHandlersController;
   }
 }

@@ -376,10 +376,6 @@ public class ComponentTree
 
   protected final int mId;
 
-  private final EventHandlersController mEventHandlersController = new EventHandlersController();
-
-  private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
-
   @GuardedBy("this")
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
@@ -1480,23 +1476,14 @@ public class ComponentTree
     return mTreeState;
   }
 
-  @GuardedBy("mEventTriggersContainer")
-  private void clearUnusedTriggerHandlers() {
-    mEventTriggersContainer.clear();
-  }
-
   @Nullable
   EventTrigger getEventTrigger(String triggerKey) {
-    synchronized (mEventTriggersContainer) {
-      return mEventTriggersContainer.getEventTrigger(triggerKey);
-    }
+    return mTreeState.getEventTrigger(triggerKey);
   }
 
   @Nullable
   EventTrigger getEventTrigger(Handle handle, int methodId) {
-    synchronized (mEventTriggersContainer) {
-      return mEventTriggersContainer.getEventTrigger(handle, methodId);
-    }
+    return mTreeState.getEventTrigger(handle, methodId);
   }
 
   /**
@@ -2468,6 +2455,7 @@ public class ComponentTree
               treeState.commitRenderState(localTreeState);
               treeState.commitLayoutState(localTreeState);
             }
+            treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
           }
         }
 
@@ -2509,8 +2497,6 @@ public class ComponentTree
                   || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
         }
       }
-
-      bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
 
       postBackgroundLayoutStateUpdated();
 
@@ -2627,29 +2613,6 @@ public class ComponentTree
         isCreateLayoutInProgress,
         treeProps,
         root);
-  }
-
-  private void bindEventAndTriggerHandlers(
-      final @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
-      final @Nullable List<ScopedComponentInfo> scopedSpecComponentInfos) {
-    synchronized (mEventTriggersContainer) {
-      clearUnusedTriggerHandlers();
-      if (createdEventHandlers != null) {
-        mEventHandlersController.canonicalizeEventDispatchInfos(createdEventHandlers);
-      }
-      if (scopedSpecComponentInfos != null) {
-        for (ScopedComponentInfo scopedSpecComponentInfo : scopedSpecComponentInfos) {
-          final SpecGeneratedComponent component =
-              (SpecGeneratedComponent) scopedSpecComponentInfo.getComponent();
-          final ComponentContext scopedContext = scopedSpecComponentInfo.getContext();
-          mEventHandlersController.updateEventDispatchInfoForGlobalKey(
-              scopedContext, component, scopedContext.getGlobalKey());
-          component.recordEventTrigger(scopedContext, mEventTriggersContainer);
-        }
-      }
-    }
-
-    mEventHandlersController.clearUnusedEventDispatchInfos();
   }
 
   /**
@@ -2803,9 +2766,8 @@ public class ComponentTree
         listener.onReleased();
       }
     }
-
-    synchronized (mEventTriggersContainer) {
-      clearUnusedTriggerHandlers();
+    if (mTreeState != null) {
+      mTreeState.clearUnusedTriggerHandlers();
     }
   }
 
@@ -3122,6 +3084,11 @@ public class ComponentTree
     }
   }
 
+  @VisibleForTesting
+  EventHandlersController getEventHandlersController() {
+    return mTreeState.getEventHandlersController();
+  }
+
   class LayoutStateFuture extends TreeFuture<LayoutState> {
     private final Object loggerMutex = new Object();
     private final ComponentContext context;
@@ -3352,11 +3319,6 @@ public class ComponentTree
 
   public static int generateComponentTreeId() {
     return sIdGenerator.getAndIncrement();
-  }
-
-  @VisibleForTesting
-  EventHandlersController getEventHandlersController() {
-    return mEventHandlersController;
   }
 
   private class DoLayoutRunnable extends ThreadTracingRunnable {
