@@ -69,10 +69,8 @@ public class ComponentContext implements Cloneable {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable ComponentTree mComponentTree;
 
-  @ThreadConfined(ThreadConfined.UI)
-  private @Nullable MountedViewReference mMountedViewReference;
-
-  private @Nullable ErrorComponentReceiver mErrorComponentReceiver;
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable LithoTree mLithoTree;
 
   private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
@@ -90,9 +88,6 @@ public class ComponentContext implements Cloneable {
   private boolean isNestedTreeContext;
 
   private final ThreadLocal<CalculationStateContext> mCalculationStateContextThreadLocal;
-
-  @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable StateUpdater mStateUpdater;
 
   public ComponentContext(Context context) {
     this(context, null, null);
@@ -142,7 +137,7 @@ public class ComponentContext implements Cloneable {
       Context context,
       @Nullable TreeProps treeProps,
       LithoConfiguration lithoConfiguration,
-      @Nullable StateUpdater stateUpdater) {
+      @Nullable LithoTree lithoTree) {
     mCalculationStateContextThreadLocal = new ThreadLocal<>();
     if (lithoConfiguration.logger != null && lithoConfiguration.logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -154,7 +149,7 @@ public class ComponentContext implements Cloneable {
             context, ResourceCache.getLatest(context.getResources().getConfiguration()));
     mTreeProps = treeProps;
     mLithoConfiguration = lithoConfiguration;
-    mStateUpdater = stateUpdater;
+    mLithoTree = lithoTree;
   }
 
   public ComponentContext(ComponentContext context) {
@@ -166,10 +161,8 @@ public class ComponentContext implements Cloneable {
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
-    mMountedViewReference = context.mMountedViewReference;
     mLifecycleProvider = context.mLifecycleProvider;
-    mErrorComponentReceiver = context.mErrorComponentReceiver;
-    mStateUpdater = context.mStateUpdater;
+    mLithoTree = context.mLithoTree;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
@@ -219,15 +212,13 @@ public class ComponentContext implements Cloneable {
                 componentTree.getLithoConfiguration(), contextLogTag, contextLogger)
             : componentTree.getLithoConfiguration();
 
+    final LithoTree lithoTree = new LithoTree(componentTree, componentTree, componentTree);
     ComponentContext componentContext =
         new ComponentContext(
-            context.getAndroidContext(), context.mTreeProps, lithoConfiguration, componentTree);
+            context.getAndroidContext(), context.mTreeProps, lithoConfiguration, lithoTree);
     componentContext.mParentTreeProps = context.mParentTreeProps;
     componentContext.mGlobalKey = context.mGlobalKey;
     componentContext.mComponentTree = componentTree;
-    componentContext.mMountedViewReference = componentTree;
-    componentContext.mErrorComponentReceiver = componentTree;
-    componentContext.mStateUpdater = componentTree;
     componentContext.mLifecycleProvider = componentTree.getLifecycleProvider();
     componentContext.mComponentScope = null;
 
@@ -291,7 +282,7 @@ public class ComponentContext implements Cloneable {
         parentTreeContext.getAndroidContext(),
         parentTreeContext.getTreePropsCopy(),
         parentTreeContext.mLithoConfiguration,
-        parentTreeContext.mStateUpdater);
+        null);
   }
 
   /** Returns the current calculate state context */
@@ -428,16 +419,18 @@ public class ComponentContext implements Cloneable {
   public void updateStateSync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return;
     }
 
-    mStateUpdater.updateStateSync(
-        getGlobalKey(),
-        stateUpdate,
-        attribution,
-        isCreateLayoutInProgress(),
-        isNestedTreeContext());
+    mLithoTree
+        .getStateUpdater()
+        .updateStateSync(
+            getGlobalKey(),
+            stateUpdate,
+            attribution,
+            isCreateLayoutInProgress(),
+            isNestedTreeContext());
   }
 
   /**
@@ -448,16 +441,18 @@ public class ComponentContext implements Cloneable {
   public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return;
     }
 
-    mStateUpdater.updateStateAsync(
-        getGlobalKey(),
-        stateUpdate,
-        attribution,
-        isCreateLayoutInProgress(),
-        isNestedTreeContext());
+    mLithoTree
+        .getStateUpdater()
+        .updateStateAsync(
+            getGlobalKey(),
+            stateUpdate,
+            attribution,
+            isCreateLayoutInProgress(),
+            isNestedTreeContext());
   }
 
   public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
@@ -465,43 +460,49 @@ public class ComponentContext implements Cloneable {
   }
 
   public void updateStateLazy(StateUpdate stateUpdate) {
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return;
     }
 
-    mStateUpdater.updateStateLazy(getGlobalKey(), stateUpdate, isNestedTreeContext());
+    mLithoTree
+        .getStateUpdater()
+        .updateStateLazy(getGlobalKey(), stateUpdate, isNestedTreeContext());
   }
 
   final void updateHookStateAsync(String globalKey, HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return;
     }
 
     final Component scope = getComponentScope();
-    mStateUpdater.updateHookStateAsync(
-        globalKey,
-        updateBlock,
-        scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
-        isCreateLayoutInProgress(),
-        isNestedTreeContext());
+    mLithoTree
+        .getStateUpdater()
+        .updateHookStateAsync(
+            globalKey,
+            updateBlock,
+            scope != null ? "<cls>" + scope.getClass().getName() + "</cls>" : "hook",
+            isCreateLayoutInProgress(),
+            isNestedTreeContext());
   }
 
   final void updateHookStateSync(String globalKey, HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return;
     }
 
     final Component scope = getComponentScope();
-    mStateUpdater.updateHookStateSync(
-        globalKey,
-        updateBlock,
-        scope != null ? scope.getSimpleName() : "hook",
-        isCreateLayoutInProgress(),
-        isNestedTreeContext());
+    mLithoTree
+        .getStateUpdater()
+        .updateHookStateSync(
+            globalKey,
+            updateBlock,
+            scope != null ? scope.getSimpleName() : "hook",
+            isCreateLayoutInProgress(),
+            isNestedTreeContext());
   }
 
   /**
@@ -509,12 +510,13 @@ public class ComponentContext implements Cloneable {
    *     in if there were no updates to apply. This method won't mutate the passed container.
    */
   public StateContainer applyLazyStateUpdatesForContainer(StateContainer container) {
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return container;
     }
 
-    return mStateUpdater.applyLazyStateUpdatesForContainer(
-        getGlobalKey(), container, isNestedTreeContext());
+    return mLithoTree
+        .getStateUpdater()
+        .applyLazyStateUpdatesForContainer(getGlobalKey(), container, isNestedTreeContext());
   }
 
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
@@ -571,11 +573,11 @@ public class ComponentContext implements Cloneable {
   public @Nullable <T extends View> T findViewWithTag(Object tag) {
     ThreadUtils.assertMainThread();
 
-    if (mMountedViewReference == null) {
+    if (mLithoTree == null) {
       throw new RuntimeException(
-          "Calling findViewWithTag on a ComponentContext which isn't associated with a MountedViewReference. Make sure it's one received in `render` or `onCreateLayout`");
+          "Calling findViewWithTag on a ComponentContext which isn't associated with a Tree. Make sure it's one received in `render` or `onCreateLayout`");
     }
-    final View mountedView = mMountedViewReference.getMountedView();
+    final View mountedView = mLithoTree.getMountedViewReference().getMountedView();
     // The tree isn't mounted
     if (mountedView == null) {
       return null;
@@ -585,7 +587,7 @@ public class ComponentContext implements Cloneable {
   }
 
   public @Nullable ErrorComponentReceiver getErrorComponentReceiver() {
-    return mErrorComponentReceiver;
+    return mLithoTree.getErrorComponentReceiver();
   }
 
   /**
@@ -609,6 +611,11 @@ public class ComponentContext implements Cloneable {
 
   ComponentTree getComponentTree() {
     return mComponentTree;
+  }
+
+  @Nullable
+  LithoTree getLithoTree() {
+    return mLithoTree;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -691,21 +698,23 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public Object getCachedValue(Object cachedValueInputs) {
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return null;
     }
-    return mStateUpdater.getCachedValue(cachedValueInputs, isNestedTreeContext());
+    return mLithoTree.getStateUpdater().getCachedValue(cachedValueInputs, isNestedTreeContext());
   }
 
   public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
-    if (mStateUpdater == null) {
+    if (mLithoTree == null) {
       return;
     }
-    mStateUpdater.putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
+    mLithoTree
+        .getStateUpdater()
+        .putCachedValue(cachedValueInputs, cachedValue, isNestedTreeContext());
   }
 
   StateUpdater getStateUpdater() {
-    return mStateUpdater;
+    return mLithoTree != null ? mLithoTree.getStateUpdater() : null;
   }
 
   /**
@@ -818,12 +827,15 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting
   @Nullable
   View getMountedView() {
-    return mMountedViewReference != null ? mMountedViewReference.getMountedView() : null;
+    if (mLithoTree == null) {
+      return null;
+    }
+    return mLithoTree.getMountedViewReference().getMountedView();
   }
 
   void removePendingStateUpdate(String key, boolean nestedTreeContext) {
-    if (mStateUpdater != null) {
-      mStateUpdater.removePendingStateUpdate(key, nestedTreeContext);
+    if (mLithoTree != null) {
+      mLithoTree.getStateUpdater().removePendingStateUpdate(key, nestedTreeContext);
     }
   }
 }

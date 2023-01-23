@@ -177,7 +177,7 @@ internal constructor(
       return false
     }
 
-    return context.stateUpdater === other.context.stateUpdater &&
+    return context.lithoTree === other.context.lithoTree &&
         context.globalKey == other.context.globalKey &&
         hookStateIndex == other.hookStateIndex &&
         value == other.value

@@ -741,7 +741,7 @@ public abstract class Component
       final ResolveStateContext tempRsc =
           new ResolveStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
 
-      if (c.getStateUpdater() == null) {
+      if (c.getLithoTree() == null) {
         // This is a temporary tree that will be only used as a way of measuring a component.
         // we could be using a treeless context here as well. Might be worth revisiting later.
         c = ComponentContext.withComponentTree(c, ComponentTree.create(c).build());
