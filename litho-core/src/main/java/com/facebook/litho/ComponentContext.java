@@ -212,7 +212,8 @@ public class ComponentContext implements Cloneable {
                 componentTree.getLithoConfiguration(), contextLogTag, contextLogger)
             : componentTree.getLithoConfiguration();
 
-    final LithoTree lithoTree = new LithoTree(componentTree, componentTree, componentTree);
+    final LithoTree lithoTree =
+        new LithoTree(componentTree, componentTree, componentTree, componentTree);
     ComponentContext componentContext =
         new ComponentContext(
             context.getAndroidContext(), context.mTreeProps, lithoConfiguration, lithoTree);

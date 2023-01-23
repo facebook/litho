@@ -59,6 +59,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
+import com.facebook.litho.LithoTreeLifecycleProvider.OnReleaseListener;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.perfboost.LithoPerfBooster;
@@ -85,7 +86,11 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @ThreadSafe
 public class ComponentTree
-    implements LithoLifecycleListener, StateUpdater, MountedViewReference, ErrorComponentReceiver {
+    implements LithoLifecycleListener,
+        StateUpdater,
+        MountedViewReference,
+        ErrorComponentReceiver,
+        LithoTreeLifecycleProvider {
 
   private static final boolean DEBUG_LOGS = false;
 
@@ -112,12 +117,6 @@ public class ComponentTree
   @GuardedBy("this")
   private boolean mReleased;
 
-  interface OnReleaseListener {
-
-    /** Called when this ComponentTree is released. */
-    void onReleased();
-  }
-
   @ThreadConfined(ThreadConfined.UI)
   private @Nullable List<OnReleaseListener> mOnReleaseListeners;
 
@@ -128,9 +127,6 @@ public class ComponentTree
   private int mStateUpdatesFromCreateLayoutCount;
 
   private boolean mInAttach = false;
-
-  // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
-  final AtomicReference<Object> mInternalScopeRef = new AtomicReference<>();
 
   @Override
   public void onMovedToState(LithoLifecycle state) {
@@ -2908,6 +2904,7 @@ public class ComponentTree
         && layoutState.isCompatibleAccessibility();
   }
 
+  @Override
   public synchronized boolean isReleased() {
     return mReleased;
   }
@@ -3087,7 +3084,8 @@ public class ComponentTree
     return handler;
   }
 
-  void addOnReleaseListener(OnReleaseListener onReleaseListener) {
+  @Override
+  public void addOnReleaseListener(OnReleaseListener onReleaseListener) {
     assertMainThread();
     if (mOnReleaseListeners == null) {
       mOnReleaseListeners = new ArrayList<>();

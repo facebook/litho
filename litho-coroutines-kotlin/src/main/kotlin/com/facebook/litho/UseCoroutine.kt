@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @Hook
 fun ComponentScope.useCoroutine(vararg keys: Any?, onLaunch: suspend CoroutineScope.() -> Unit) {
   useEffect(*keys) {
-    val job = context.componentTree.componentTreeScope.launch { onLaunch() }
-    onCleanup { job.cancel() }
+    val job = context.lithoTree?.lithoTreeScope?.launch { onLaunch() }
+    onCleanup { job?.cancel() }
   }
 }

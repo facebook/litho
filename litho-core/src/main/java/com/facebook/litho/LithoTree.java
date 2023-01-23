@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.ThreadConfined;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Represents a pointer to the Tree that a ComponentContext is attached to */
 public class LithoTree {
@@ -28,14 +29,20 @@ public class LithoTree {
   private final MountedViewReference mMountedViewReference;
 
   private final ErrorComponentReceiver mErrorComponentReceiver;
+  private final LithoTreeLifecycleProvider mLithoTreeLifecycleProvider;
+
+  // Used to lazily store a CoroutineScope, if coroutine helper methods are used.
+  final AtomicReference<Object> mInternalScopeRef = new AtomicReference<>();
 
   public LithoTree(
       StateUpdater stateUpdater,
       MountedViewReference mountedViewReference,
-      ErrorComponentReceiver errorComponentReceiver) {
+      ErrorComponentReceiver errorComponentReceiver,
+      LithoTreeLifecycleProvider lifecycleProvider) {
     mStateUpdater = stateUpdater;
     mMountedViewReference = mountedViewReference;
     mErrorComponentReceiver = errorComponentReceiver;
+    mLithoTreeLifecycleProvider = lifecycleProvider;
   }
 
   public StateUpdater getStateUpdater() {
@@ -48,5 +55,9 @@ public class LithoTree {
 
   public ErrorComponentReceiver getErrorComponentReceiver() {
     return mErrorComponentReceiver;
+  }
+
+  public LithoTreeLifecycleProvider getLithoTreeLifecycleProvider() {
+    return mLithoTreeLifecycleProvider;
   }
 }

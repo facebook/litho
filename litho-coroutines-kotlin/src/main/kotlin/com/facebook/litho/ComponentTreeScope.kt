@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
  * Lazily creates a [CoroutineScope] that will be active as long as the [ComponentTree] is not
  * released. This scope will be canceled when the ComponentTree is released.
  */
-val ComponentTree.componentTreeScope: CoroutineScope
+val LithoTree.lithoTreeScope: CoroutineScope
   get() {
     while (true) {
       val existing = mInternalScopeRef.get() as? CoroutineScope
@@ -50,12 +50,12 @@ val ComponentTree.componentTreeScope: CoroutineScope
  * If the tree is already released, this scope will immediately be canceled.
  */
 class ComponentTreeScope(
-    private val componentTree: ComponentTree,
+    private val lithoTree: LithoTree,
     override val coroutineContext: CoroutineContext,
 ) : CoroutineScope {
 
   init {
-    if (componentTree.isReleased) {
+    if (lithoTree.lithoTreeLifecycleProvider.isReleased) {
       coroutineContext.cancel()
     }
   }
@@ -66,10 +66,10 @@ class ComponentTreeScope(
 
   fun register() {
     launch(Dispatchers.Main.immediate) {
-      if (componentTree.isReleased) {
+      if (lithoTree.lithoTreeLifecycleProvider.isReleased) {
         cancelScopeContext()
       } else {
-        componentTree.addOnReleaseListener { cancelScopeContext() }
+        lithoTree.lithoTreeLifecycleProvider.addOnReleaseListener { cancelScopeContext() }
       }
     }
   }
