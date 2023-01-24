@@ -32,7 +32,7 @@ public class EquivalenceUtils {
   /** Checks if objects are equal. */
   public static boolean equals(@Nullable Object a, @Nullable Object b) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.equals(a, b);
+      return ExperimentalEquivalenceUtils.equals(a, b);
     }
 
     if (a == b) {
@@ -49,7 +49,7 @@ public class EquivalenceUtils {
   /** Checks if {@link SparseArray} objects are equal. */
   public static boolean equals(@Nullable SparseArray<?> a, @Nullable SparseArray<?> b) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.equals(a, b);
+      return ExperimentalEquivalenceUtils.equals(a, b);
     }
 
     if (a == b) {
@@ -82,7 +82,7 @@ public class EquivalenceUtils {
   /** Checks if {@link Equivalence} objects are equivalent. */
   public static <T extends Equivalence<T>> boolean isEquivalentTo(@Nullable T a, @Nullable T b) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.isEquivalentTo(a, b);
+      return ExperimentalEquivalenceUtils.isEquivalentTo(a, b);
     }
 
     if (a == b) {
@@ -102,7 +102,7 @@ public class EquivalenceUtils {
    */
   public static <T> boolean isEqualOrEquivalentTo(@Nullable T a, @Nullable T b) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.isEqualOrEquivalentTo(a, b);
+      return ExperimentalEquivalenceUtils.isEqualOrEquivalentTo(a, b);
     }
 
     if (a instanceof Equivalence && b instanceof Equivalence) {
@@ -116,7 +116,7 @@ public class EquivalenceUtils {
   @SuppressWarnings("unchecked")
   public static boolean hasEquivalentFields(Object a, Object b) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.hasEquivalentFields(a, b);
+      return ExperimentalEquivalenceUtils.hasEquivalentFields(a, b);
     }
 
     return hasEquivalentFields(a, b, true);
@@ -126,7 +126,7 @@ public class EquivalenceUtils {
   @SuppressWarnings("unchecked")
   public static boolean hasEquivalentFields(Object a, Object b, boolean shouldCompareCommonProps) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.hasEquivalentFields(a, b);
+      return ExperimentalEquivalenceUtils.hasEquivalentFields(a, b);
     }
 
     if (a == b) {
@@ -166,7 +166,7 @@ public class EquivalenceUtils {
   public static boolean areObjectsEquivalent(
       @Nullable Object val1, @Nullable Object val2, boolean shouldCompareCommonProps) {
     if (ComponentsConfiguration.enableKotlinEquivalenceUtil) {
-      return ExperimentalEquivalenceUtils.INSTANCE.areObjectsEquivalent(val1, val2);
+      return ExperimentalEquivalenceUtils.areObjectsEquivalent(val1, val2);
     }
 
     if (val1 == val2) {

@@ -22,19 +22,13 @@ import com.facebook.rendercore.primitives.Equivalence
 object ExperimentalEquivalenceUtils {
 
   /** Checks if two objects are equal. */
+  @JvmStatic
   fun equals(a: Any?, b: Any?): Boolean {
-    if (a === b) {
-      return true
-    }
-
-    return if (a == null || b == null) {
-      false
-    } else {
-      a == b
-    }
+    return a == b
   }
 
   /** Checks if two [SparseArray] objects are equal. */
+  @JvmStatic
   fun equals(a: SparseArray<*>?, b: SparseArray<*>?): Boolean {
     if (a === b) {
       return true
@@ -44,17 +38,14 @@ object ExperimentalEquivalenceUtils {
       return false
     }
 
-    if (a.size() != b.size()) {
+    val size = a.size()
+    if (size != b.size()) {
       return false
     }
 
-    val size = a.size()
-    for (i in 0 until size) {
-      if (a.keyAt(i) != b.keyAt(i)) {
-        return false
-      }
-
-      if (!equals(a.valueAt(i), b.valueAt(i))) {
+    for (index in 0 until size) {
+      val key: Int = a.keyAt(index)
+      if (!equals(a.valueAt(index), b.get(key))) {
         return false
       }
     }
@@ -63,12 +54,11 @@ object ExperimentalEquivalenceUtils {
   }
 
   /** Checks if two [Equivalence] objects are equivalent. */
+  @JvmStatic
   fun <T : Equivalence<T>> isEquivalentTo(a: T?, b: T?): Boolean {
-    if (a === b) {
-      return true
-    }
-
-    return if (a == null || b == null) {
+    return if (a === b) {
+      true
+    } else if (a == null || b == null) {
       false
     } else {
       a.isEquivalentTo(b)
@@ -80,17 +70,21 @@ object ExperimentalEquivalenceUtils {
    * field by field.
    */
   @Suppress("UNCHECKED_CAST")
+  @JvmStatic
   fun <T> isEqualOrEquivalentTo(a: T?, b: T?): Boolean {
-    return if (a is Equivalence<*> && b is Equivalence<*>) {
+    return if (a === b) {
+      true
+    } else if (a == null || b == null) {
+      false
+    } else if (a is Equivalence<*> && b is Equivalence<*>) {
       isEquivalentTo(a as Equivalence<Any>, b as Equivalence<Any>)
-    } else if (a != null && b != null) {
-      hasEquivalentFields(a, b)
     } else {
-      a === b
+      hasEquivalentFields(a, b)
     }
   }
 
   /** Checks if all private final fields in two objects are equivalent. */
+  @JvmStatic
   fun hasEquivalentFields(a: Any, b: Any): Boolean {
     if (a === b) {
       return true
@@ -127,6 +121,7 @@ object ExperimentalEquivalenceUtils {
 
   /** Checks if two objects are equivalent. */
   @Suppress("UNCHECKED_CAST")
+  @JvmStatic
   fun areObjectsEquivalent(val1: Any?, val2: Any?): Boolean {
     if (val1 === val2) {
       return true
@@ -141,6 +136,8 @@ object ExperimentalEquivalenceUtils {
       val1 is Double -> val1.compareTo(val2 as Double) == 0
       val1 is Equivalence<*> -> (val1 as Equivalence<Any>).isEquivalentTo(val2)
       val1.javaClass.isArray -> areArraysEquivalent(val1, val2)
+      val1 is List<*> && val1 is RandomAccess ->
+          areRandomAccessListsEquivalent(val1, val2 as List<*>)
       val1 is Collection<*> -> areCollectionsEquivalent(val1, val2 as Collection<*>)
       else -> val1 == val2
     }
@@ -148,6 +145,7 @@ object ExperimentalEquivalenceUtils {
 
   /** Checks if two arrays are equivalent. */
   @Suppress("UNCHECKED_CAST")
+  @JvmStatic
   private fun areArraysEquivalent(val1: Any, val2: Any): Boolean {
     return when (val1) {
       is ByteArray -> val1.contentEquals(val2 as ByteArray)
@@ -178,7 +176,24 @@ object ExperimentalEquivalenceUtils {
     }
   }
 
+  /** Checks if two random access lists are equivalent. */
+  @JvmStatic
+  private fun areRandomAccessListsEquivalent(val1: List<*>, val2: List<*>): Boolean {
+    if (val1.size != val2.size) {
+      return false
+    }
+
+    for (index in 0 until val1.size) {
+      if (!areObjectsEquivalent(val1[index], val2[index])) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   /** Checks if two collections are equivalent. */
+  @JvmStatic
   private fun areCollectionsEquivalent(val1: Collection<*>, val2: Collection<*>): Boolean {
     if (val1.size != val2.size) {
       return false

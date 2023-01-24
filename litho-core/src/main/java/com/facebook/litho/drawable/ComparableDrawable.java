@@ -33,5 +33,6 @@ public interface ComparableDrawable extends Equivalence<ComparableDrawable> {
    * @param other The other drawable
    * @return {@code true} iff this drawable is equivalent to the {@param other}.
    */
+  @Override
   boolean isEquivalentTo(ComparableDrawable other);
 }
