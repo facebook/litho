@@ -138,7 +138,7 @@ public class RecyclerBinder
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
-  private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
+  private final @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
@@ -153,7 +153,7 @@ public class RecyclerBinder
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final ComponentsConfiguration mComponentsConfiguration;
 
-  private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
+  private final AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
 
   @GuardedBy("this")
@@ -217,7 +217,7 @@ public class RecyclerBinder
 
   private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private @Nullable ComponentWarmer mComponentWarmer;
-  private final RunnableHandler mPreallocateMountContentHandler;
+  private final @Nullable RunnableHandler mPreallocateMountContentHandler;
   private final boolean mPreallocatePerMountSpec;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
@@ -273,7 +273,7 @@ public class RecyclerBinder
   private int mLastWidthSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private Size mMeasuredSize;
-  private RecyclerView mMountedView;
+  private @Nullable RecyclerView mMountedView;
   /**
    * Can be set for RecyclerBinder instances which do not have control over the RecyclerView which
    * the adapter sends operations to, and it does not mount or measure it. Only for subadapter mode.
@@ -297,16 +297,16 @@ public class RecyclerBinder
   private int mHighestRangeStartSinceDeletes = Integer.MIN_VALUE;
 
   private StickyHeaderController mStickyHeaderController;
-  private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
+  private final @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
   private final @Nullable RunnableHandler mLayoutThreadPoolHandler;
   private final @Nullable RunnableHandler mResolveThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
-  private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
+  private @Nullable EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
   private boolean mHasFilledViewport = false;
-  private @Nullable LithoStartupLogger mStartupLogger;
+  private final @Nullable LithoStartupLogger mStartupLogger;
   private String mStartupLoggerAttribution = "";
   private final boolean[] mFirstMountLogged = new boolean[1];
   private final boolean[] mLastMountLogged = new boolean[1];
@@ -403,7 +403,7 @@ public class RecyclerBinder
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean isReconciliationEnabled,
         boolean isLayoutDiffingEnabled,
-        RunnableHandler preallocateHandler,
+        @Nullable RunnableHandler preallocateHandler,
         boolean preallocatePerMountSpec,
         @Nullable LithoLifecycleProvider lifecycleProvider,
         @Nullable ErrorEventHandler errorEventHandler);
@@ -477,7 +477,7 @@ public class RecyclerBinder
     private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private RunnableHandler preallocateMountContentHandler;
+    private @Nullable RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;

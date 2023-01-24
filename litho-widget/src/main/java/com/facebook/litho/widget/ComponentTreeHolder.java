@@ -77,7 +77,7 @@ public class ComponentTreeHolder {
   private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
-  private final RunnableHandler mPreallocateMountContentHandler;
+  private final @Nullable RunnableHandler mPreallocateMountContentHandler;
   private final boolean mShouldPreallocatePerMountSpec;
   private final boolean mIncrementalMount;
   private final boolean mVisibilityProcessingEnabled;
@@ -277,7 +277,7 @@ public class ComponentTreeHolder {
   }
 
   public void computeLayoutSync(
-      ComponentContext context, int widthSpec, int heightSpec, Size size) {
+      ComponentContext context, int widthSpec, int heightSpec, @Nullable Size size) {
 
     final ComponentTree componentTree;
     final Component component;

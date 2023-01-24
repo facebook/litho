@@ -1638,7 +1638,7 @@ public class ComponentTree
   }
 
   public void setRootAndSizeSpecSync(
-      @Nullable Component root, int widthSpec, int heightSpec, Size output) {
+      @Nullable Component root, int widthSpec, int heightSpec, @Nullable Size output) {
     setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
@@ -1655,7 +1655,7 @@ public class ComponentTree
       @Nullable Component root,
       int widthSpec,
       int heightSpec,
-      Size output,
+      @Nullable Size output,
       @Nullable TreeProps treeProps) {
     setRootAndSizeSpecAndWrapper(
         root,
@@ -1673,7 +1673,7 @@ public class ComponentTree
       @Nullable Component root,
       int widthSpec,
       int heightSpec,
-      Size output,
+      @Nullable Size output,
       @Nullable TreeProps treeProps,
       int externalRootVersion) {
     setRootAndSizeSpecAndWrapper(
@@ -1692,7 +1692,7 @@ public class ComponentTree
       @Nullable Component root,
       int widthSpec,
       int heightSpec,
-      Size output,
+      @Nullable Size output,
       @Nullable TreeProps treeProps,
       int externalRootVersion) {
     setRootAndSizeSpecAndWrapper(
