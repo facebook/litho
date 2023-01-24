@@ -24,7 +24,7 @@ import org.junit.Test
 
 class SelectionTest {
 
-  private val identitySelector = TestNodeSelector { it.toList() }
+  private val identitySelector = TestNodeSelector("identity") { SelectionResult(it) }
 
   @Test
   fun `materializing exactly 1 match completes successfully`() {

@@ -25,51 +25,44 @@ package com.facebook.litho.testing.api
  */
 class TestNodeSelection(
     private val testContext: TestContext,
-    private val selector: TestNodeSelector
+    internal val selector: TestNodeSelector
 ) {
 
-  fun fetchTestNode(): TestNode {
+  fun fetchTestNode(errorOnFail: String = "Failed"): TestNode {
     val result = fetchMatchingNodes()
 
-    if (result.size != 1) {
-      val errorMessage = "Failed: expected exactly 1 test node. Found ${result.size}"
-      throw AssertionError(errorMessage)
-    }
+    if (result.nodes.size != 1)
+        when {
+          result.selectionError != null ->
+              throw AssertionError("$errorOnFail\n${result.selectionError}")
+          result.nodes.isEmpty() -> throwNoMatchingNodeForSelectionError(errorOnFail, selector)
+          else -> throwCountMismatchError(errorOnFail, selector, 1, result.nodes)
+        }
 
-    return result.first()
+    return result.nodes.first()
   }
 
   fun assertExists(): TestNodeSelection {
-    val result = fetchMatchingNodes()
-
-    val numResults = result.size
-
-    if (numResults == 0) {
-      throw AssertionError("There are no results for searched test node.")
-    }
-
-    if (numResults > 1) {
-      throw AssertionError("There is more than one result for the matched test nodes.")
-    }
+    fetchTestNode("Failed: assertExists")
 
     return this
   }
 
   fun assertDoesNotExist(): TestNodeSelection {
-    val result = fetchMatchingNodes()
+    val result = fetchMatchingNodes().nodes
 
-    check(result.isEmpty()) {
-      "Failed: assertDoesNotExist. Expected no match, but found ${result.size} test nodes"
+    if (result.isNotEmpty()) {
+      throwCountMismatchError("Failed: assertDoesNotExist", selector, 0, result)
     }
 
     return this
   }
 
   fun assert(matcher: TestNodeMatcher): TestNodeSelection {
-    val testNode = fetchTestNode()
+    val testNode = fetchTestNode("Failed assertion: ${matcher.description}")
 
     if (!matcher.matches(testNode)) {
-      throw AssertionError("Failed assertion: ${matcher.description}")
+      throwGeneralError("Failed assertion: ${matcher.description}", selector, testNode)
     }
 
     return this
@@ -82,25 +75,11 @@ class TestNodeSelection(
    * This assumes that there is order in the `Component`s children. For example, the first one
    * defined inside a `Column` or `Row` will be the one at index 0.
    *
-   * If the current [TestNodeSelection] has no children or a child at the given [index] then it will
-   * throw an [AssertionError].
+   * If the current [TestNodeSelection] has no children or a child at the given [index] then
+   * assertions (other than assertDoesNotExist) on the result will throw an [AssertionError].
    */
   fun selectChildAt(index: Int): TestNodeSelection {
-    return TestNodeSelection(
-        testContext,
-        TestNodeSelector { nodes ->
-          val selectedNodes = selector.map(nodes)
-          if (selectedNodes.size != 1) {
-            throw AssertionError("selectChildAt: expected selection to be a single node")
-          }
-
-          val selectedNode = selectedNodes.first()
-          val child =
-              selectedNode.children.getOrNull(index)
-                  ?: throw AssertionError("selectChildAt: expected child at $index to not be null")
-
-          listOf(child)
-        })
+    return selectChildren().selectAtIndex(index)
   }
 
   /**
@@ -119,19 +98,10 @@ class TestNodeSelection(
    */
   fun selectChildren(): TestNodeCollectionSelection {
     return TestNodeCollectionSelection(
-        testContext,
-        TestNodeSelector { nodes ->
-          val selectedNodes = selector.map(nodes)
-          if (selectedNodes.size != 1) {
-            throw AssertionError("selectChildren: expected selection to be a single node")
-          }
-
-          val selectedNode = selectedNodes.first()
-          selectedNode.children
-        })
+        testContext, selector.plusSingleToManySelector("children") { it.children })
   }
 
-  private fun fetchMatchingNodes(): List<TestNode> {
+  private fun fetchMatchingNodes(): SelectionResult {
     val nodes = testContext.provideAllTestNodes()
     return selector.map(nodes)
   }
@@ -151,10 +121,8 @@ class TestNodeCollectionSelection(
   fun assertExists(): TestNodeCollectionSelection {
     val result = fetchMatchingNodes()
 
-    val numResults = result.size
-
-    if (numResults == 0) {
-      throw AssertionError("Failed: assertExists. There are no results for searched test nodes.")
+    if (result.isEmpty()) {
+      throwNoMatchingNodeForSelectionError("Failed: assertExists", selector)
     }
 
     return this
@@ -164,8 +132,7 @@ class TestNodeCollectionSelection(
     val result = fetchMatchingNodes()
 
     if (result.isNotEmpty()) {
-      throw AssertionError(
-          "Failed: assertDoesNotExist. Expected no match, but found ${result.size} test nodes")
+      throwCountMismatchError("Failed: assertDoesNotExist", selector, 0, result)
     }
 
     return this
@@ -174,30 +141,24 @@ class TestNodeCollectionSelection(
   /**
    * Asserts that this selection is defined by [count] elements.
    *
-   * It will throw an [AssertionError] if the number of elements is lower or higher than [count]
+   * It will throw an [AssertionError] if the number of elements is not equal to [count]
    */
   fun assertCount(count: Int): TestNodeCollectionSelection {
     val result = fetchMatchingNodes()
 
     if (result.size != count) {
-      throw AssertionError(
-          "Failed: assertHasCount. Expected $count components, but found ${result.size}")
+      throwCountMismatchError("Failed: assertCount", selector, count, result)
     }
 
     return this
   }
 
   fun selectAtIndex(index: Int): TestNodeSelection {
-    return TestNodeSelection(
-        testContext,
-        TestNodeSelector { nodes ->
-          val selectedNodes = selector.map(nodes)
-          listOfNotNull(selectedNodes.getOrNull(index))
-        })
+    return TestNodeSelection(testContext, selector.plusIndexNodeSelector(index))
   }
 
   fun fetchMatchingNodes(): List<TestNode> {
     val nodes = testContext.provideAllTestNodes()
-    return selector.map(nodes)
+    return selector.map(nodes).nodes
   }
 }

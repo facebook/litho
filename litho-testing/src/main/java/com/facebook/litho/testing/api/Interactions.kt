@@ -24,10 +24,12 @@ import com.facebook.litho.ClickEvent
  * It will throw an exception if this selection is invalid.
  */
 fun TestNodeSelection.performClick() {
-  val node = fetchTestNode()
+  val node = fetchTestNode("Failed: performClick")
 
   val clickHandler =
-      node.clickHandler ?: throw AssertionError("The selected node has no click handler")
+      node.clickHandler
+          ?: throwGeneralError(
+              "Failed performClick: the selected node has no click handler", selector, node)
 
   clickHandler.dispatchEvent(ClickEvent())
 }

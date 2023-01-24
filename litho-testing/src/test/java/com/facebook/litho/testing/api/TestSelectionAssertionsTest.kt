@@ -25,7 +25,7 @@ import org.junit.Test
 
 class TestSelectionAssertionsTest {
 
-  private val identitySelector = TestNodeSelector { it.toList() }
+  private val identitySelector = TestNodeSelector("identity") { SelectionResult(it) }
 
   @Test
   fun `if assertion succeeds it should not throw an assertion error`() {
@@ -45,7 +45,8 @@ class TestSelectionAssertionsTest {
 
     Assertions.assertThat(error)
         .isInstanceOf(AssertionError::class.java)
-        .hasMessage("Failed assertion: is a component of type com.facebook.litho.widget.Text")
+        .hasMessageStartingWith(
+            "Failed assertion: is a component of type com.facebook.litho.widget.Text")
   }
 
   private class FakeTestContext(private val nodes: List<TestNode>) : TestContext {

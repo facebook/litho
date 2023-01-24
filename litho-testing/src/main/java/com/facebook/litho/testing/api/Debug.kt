@@ -56,13 +56,7 @@ fun TestNodeCollectionSelection.printToString(maxDepth: Int = 0): String {
  * @see [TestNodeSelection.printToString]
  */
 fun TestNodeSelection.printTo(appendable: Appendable, maxDepth: Int = Int.MAX_VALUE) {
-  fetchTestNode()
-      .printTo(
-          appendable,
-          indentLevel = 0,
-          indentLevelPrefix = "",
-          maxIndentLevel = maxDepth,
-          hasNextSibling = false)
+  fetchTestNode("Failed: printNode").printTo(appendable, maxDepth)
 }
 
 /**
@@ -78,14 +72,20 @@ fun TestNodeSelection.printTo(appendable: Appendable, maxDepth: Int = Int.MAX_VA
 fun TestNodeCollectionSelection.printTo(appendable: Appendable, maxDepth: Int = 0) {
   val nodes = fetchMatchingNodes()
   appendable.appendLine("Found ${nodes.size} matching node(s)")
-  nodes.forEach { node ->
-    node.printTo(
-        appendable,
-        indentLevel = 0,
-        indentLevelPrefix = "",
-        maxIndentLevel = maxDepth,
-        hasNextSibling = false)
-  }
+  nodes.printTo(appendable, maxDepth)
+}
+
+internal fun List<TestNode>.printTo(appendable: Appendable, maxDepth: Int = 0) {
+  forEach { node -> node.printTo(appendable, maxDepth) }
+}
+
+internal fun TestNode.printTo(appendable: Appendable, maxDepth: Int = Int.MAX_VALUE) {
+  printTo(
+      appendable,
+      indentLevel = 0,
+      indentLevelPrefix = "",
+      maxIndentLevel = maxDepth,
+      hasNextSibling = false)
 }
 
 private fun TestNode.printTo(
