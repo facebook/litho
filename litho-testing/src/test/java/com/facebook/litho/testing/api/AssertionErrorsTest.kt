@@ -198,6 +198,58 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
                 .trimIndent())
   }
 
+  @Test
+  fun `select first on an empty collection`() {
+    Assertions.assertThatThrownBy {
+          rule
+              .render { CollectionComponent() }
+              .selectNodes(hasType<Image>())
+              .selectFirst()
+              .assertExists()
+        }
+        .hasMessage(
+            """
+            Failed: assertExists
+            Failed selection
+            Reason: Could not find any matching node for selection
+            Selector used: is a component of type com.facebook.litho.widget.Image => first node
+            
+            """
+                .trimIndent())
+  }
+
+  @Test
+  fun `select one with more than one result`() {
+    Assertions.assertThatThrownBy {
+          // A more compact version of this without the secondary select is simply:
+          // selectNode(hasTextContaining("Item"))
+          rule
+              .render { CollectionComponent() }
+              .selectNodes(hasTextContaining("Item"))
+              .select(TestNodeMatcher("single node") { true })
+              .assertExists()
+        }
+        .hasMessage(
+            """
+            Failed: assertExists
+            Reason: Expected exactly 1 node(s), but found 5
+            Node(s) found:
+            - Node(componentType=Text, testKey=item-#0, isEnabled=false)
+              Attrs: [text='Item #0']
+            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+              Attrs: [text='Item #1']
+            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+              Attrs: [text='Item #2']
+            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+              Attrs: [text='Item #3']
+            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+              Attrs: [text='Item #4']
+            Selector used: has text containing "Item" => single node
+            
+            """
+                .trimIndent())
+  }
+
   private class CollectionComponent : KComponent() {
 
     override fun ComponentScope.render(): Component {

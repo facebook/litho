@@ -45,12 +45,21 @@ internal fun throwNoMatchingNodeForSelectionError(
     failedAssertionMessage: String,
     selector: TestNodeSelector
 ): Nothing {
-  val message = buildString {
-    appendLine(failedAssertionMessage)
-    appendLine("Reason: Could not find any matching node for selection")
-    appendLine("Selector used: ${selector.description}")
+  throw AssertionError(buildNoMatchingNodeForSelectionError(failedAssertionMessage, selector))
+}
+
+internal fun buildNoMatchingNodeForSelectionError(
+    failedAssertionMessage: String,
+    selector: TestNodeSelector,
+    nodes: List<TestNode> = emptyList()
+): String = buildString {
+  appendLine(failedAssertionMessage)
+  appendLine("Reason: Could not find any matching node for selection")
+  if (nodes.isNotEmpty()) {
+    appendLine("Node(s) found:")
+    nodes.printTo(this)
   }
-  throw AssertionError(message)
+  appendLine("Selector used: ${selector.description}")
 }
 
 internal fun throwGeneralError(

@@ -157,6 +157,42 @@ class TestNodeCollectionSelection(
     return TestNodeSelection(testContext, selector.plusIndexNodeSelector(index))
   }
 
+  fun selectFirst(): TestNodeSelection {
+    return TestNodeSelection(
+        testContext, selector.plusManyToSingleSelector("first node") { it.firstOrNull() })
+  }
+
+  fun selectLast(): TestNodeSelection {
+    return TestNodeSelection(
+        testContext, selector.plusManyToSingleSelector("last node") { it.lastOrNull() })
+  }
+
+  /**
+   * Attempts to select all subsequent nodes that match the given [matcher].
+   *
+   * @return a new [TestNodeCollectionSelection]
+   */
+  fun selectAll(matcher: TestNodeMatcher): TestNodeCollectionSelection {
+    return TestNodeCollectionSelection(testContext, selector.plusManyToManySelector(matcher))
+  }
+
+  /**
+   * Attempts to select the only node that matches the given [matcher].
+   *
+   * This method returns a [TestNodeSelection] so it expects to find exactly 1 match. Materializing
+   * without this condition holding true will result in an [AssertionError] unless asserted via
+   * [assertDoesNotExist]
+   */
+  fun select(matcher: TestNodeMatcher): TestNodeSelection {
+    return TestNodeSelection(
+        testContext,
+        // Using many to many here even though we're returning a TestNodeSelection (and not a
+        // collection) because we want the result to be exactly 1. In the case where this doesn't
+        // happen, the error trigger is delegated to TestNodeSelection which already handles 0 and
+        // more results correctly
+        selector.plusManyToManySelector(matcher))
+  }
+
   fun fetchMatchingNodes(): List<TestNode> {
     val nodes = testContext.provideAllTestNodes()
     return selector.map(nodes).nodes

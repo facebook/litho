@@ -75,6 +75,44 @@ internal fun TestNodeSelector.plusSingleToManySelector(
 }
 
 /**
+ * Should be used for secondary selectors of a [TestNodeCollectionSelection] as they would typically
+ * expect a collection of test nodes as their input.
+ */
+internal fun TestNodeSelector.plusManyToSingleSelector(
+    description: String,
+    newSelector: (List<TestNode>) -> TestNode?
+): TestNodeSelector {
+  return TestNodeSelector(
+      description = "${this.description} => $description",
+      parentSelector = this,
+      throwOnSelectionError = false,
+      selector = { nodes ->
+        when (val node = newSelector(nodes)) {
+          null ->
+              SelectionResult(
+                  emptyList(),
+                  buildNoMatchingNodeForSelectionError("Failed selection", this, nodes))
+          else -> SelectionResult(listOf(node))
+        }
+      })
+}
+
+/**
+ * Should be used for secondary selectors of a [TestNodeCollectionSelection] as they would typically
+ * expect a collection of test nodes as their input.
+ */
+internal fun TestNodeSelector.plusManyToManySelector(matcher: TestNodeMatcher): TestNodeSelector {
+  return TestNodeSelector(
+      description = "${this.description} => ${matcher.description}",
+      parentSelector = this,
+      throwOnSelectionError = false,
+      selector = { nodes ->
+        val filteredNodes = nodes.filter { matcher.matches(it) }
+        SelectionResult(filteredNodes)
+      })
+}
+
+/**
  * Should be used for secondary selectors of a [TestNodeCollectionSelection] specifically for cases
  * where we simply need to pick a node at the given index in the collection.
  */
