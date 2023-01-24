@@ -123,7 +123,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mAsyncComponentTreeHolders = new ArrayList<>();
 
-  private volatile LayoutInfo mLayoutInfo;
+  private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
@@ -4054,21 +4054,6 @@ public class RecyclerBinder
   @GuardedBy("this")
   private int getNormalizedPosition(int position) {
     return mIsCircular ? position % mComponentTreeHolders.size() : position;
-  }
-
-  /**
-   * Reset the LayoutInfo for this RecyclerBinder, should only be used in the scenario where you
-   * cannot provide the LayoutInfo when RecyclerBinder is created.
-   *
-   * @param layoutInfo an implementation of {@link LayoutInfo} that will expose information about
-   *     the {@link LayoutManager} this RecyclerBinder will use.
-   */
-  public void resetLayoutInfo(LayoutInfo layoutInfo) {
-    if (layoutInfo == null) {
-      throw new IllegalArgumentException("LayoutInfo must not be null.");
-    }
-    ThreadUtils.assertMainThread();
-    this.mLayoutInfo = layoutInfo;
   }
 
   public static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
