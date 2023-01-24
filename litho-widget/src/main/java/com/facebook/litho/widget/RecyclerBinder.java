@@ -42,7 +42,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.recyclerview.widget.RecyclerViewAccessibilityDelegate;
@@ -1596,7 +1595,7 @@ public class RecyclerBinder
         shouldMeasureItemForSize(parentWidthSpec, parentHeightSpec, scrollDirection, canRemeasure);
 
     switch (scrollDirection) {
-      case OrientationHelper.VERTICAL:
+      case VERTICAL:
         measuredHeight = SizeSpec.getSize(parentHeightSpec);
 
         if (!shouldMeasureItemForSize) {
@@ -1608,7 +1607,7 @@ public class RecyclerBinder
         }
         break;
 
-      case OrientationHelper.HORIZONTAL:
+      case HORIZONTAL:
       default:
         measuredWidth = SizeSpec.getSize(parentWidthSpec);
 
@@ -2393,7 +2392,7 @@ public class RecyclerBinder
         // At this point we might still not have a range. In this situation we should return the
         // best size we can detect from the size spec and update it when the first item comes in.
         switch (scrollDirection) {
-          case OrientationHelper.VERTICAL:
+          case VERTICAL:
             if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
             } else {
@@ -2402,7 +2401,7 @@ public class RecyclerBinder
             }
             break;
 
-          case OrientationHelper.HORIZONTAL:
+          case HORIZONTAL:
           default:
             if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler =
@@ -3588,7 +3587,7 @@ public class RecyclerBinder
       return UNSET;
     }
 
-    return mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL
+    return mLayoutInfo.getScrollDirection() == HORIZONTAL
         ? mSizeForMeasure.height
         : mSizeForMeasure.width;
   }
@@ -3897,8 +3896,7 @@ public class RecyclerBinder
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
         }
-        final boolean isOrientationVertical =
-            mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
+        final boolean isOrientationVertical = mLayoutInfo.getScrollDirection() == VERTICAL;
 
         final int width;
         final int height;
