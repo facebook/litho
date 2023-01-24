@@ -106,4 +106,10 @@ public interface StateUpdater {
       final String globalKey,
       final int hookStateIndex,
       final boolean isNestedTree);
+
+  @Nullable
+  EventTrigger getEventTrigger(String s);
+
+  @Nullable
+  EventTrigger getEventTrigger(Handle handle, int id);
 }

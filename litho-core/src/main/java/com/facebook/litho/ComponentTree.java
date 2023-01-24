@@ -1475,12 +1475,14 @@ public class ComponentTree
   }
 
   @Nullable
-  EventTrigger getEventTrigger(String triggerKey) {
+  @Override
+  public EventTrigger getEventTrigger(String triggerKey) {
     return mTreeState.getEventTrigger(triggerKey);
   }
 
   @Nullable
-  EventTrigger getEventTrigger(Handle handle, int methodId) {
+  @Override
+  public EventTrigger getEventTrigger(Handle handle, int methodId) {
     return mTreeState.getEventTrigger(handle, methodId);
   }
 
@@ -3078,7 +3080,7 @@ public class ComponentTree
   private static void bindHandlesToComponentTree(
       ComponentTree componentTree, LayoutState layoutState) {
     for (Handle handle : layoutState.getComponentHandles()) {
-      handle.setComponentTree(componentTree);
+      handle.setStateUpdaterAndRootViewReference(componentTree, componentTree);
     }
   }
 

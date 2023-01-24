@@ -83,23 +83,21 @@ public class LithoTooltipController {
    */
   public static void showTooltipOnHandle(
       ComponentContext c, LithoTooltip lithoTooltip, Handle handle, int xOffset, int yOffset) {
-    final ComponentTree componentTree = handle.getComponentTree();
-
-    if (componentTree == null
-        || componentTree.isReleased()
-        || !componentTree.hasMounted()
-        || componentTree.getMainThreadLayoutState() == null) {
+    if (handle.getMountedViewReference() == null) {
       return;
     }
 
+    final View mountedView = handle.getMountedViewReference().getMountedView();
+
+    if (mountedView == null
+        || !(mountedView instanceof LithoView)
+        || ((LithoView) mountedView).getMountedLayoutState() == null) {
+      return;
+    }
+    final LithoView lithoView = (LithoView) mountedView;
+
     showTooltipOnHandle(
-        componentTree.getMainThreadLayoutState(),
-        componentTree.getLithoView(),
-        c,
-        lithoTooltip,
-        handle,
-        xOffset,
-        yOffset);
+        lithoView.getMountedLayoutState(), lithoView, c, lithoTooltip, handle, xOffset, yOffset);
   }
 
   static void showTooltipOnHandle(

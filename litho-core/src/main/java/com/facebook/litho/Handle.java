@@ -28,25 +28,33 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class Handle {
 
-  private @Nullable ComponentTree mComponentTree;
+  private @Nullable StateUpdater mStateUpdater;
+  private @Nullable MountedViewReference mMountedViewReference;
 
   /**
-   * @param componentTree Set {@link ComponentTree} when binding trigger handles so that this handle
+   * @param stateUpdater Set {@link StateUpdater} when binding trigger handles so that this handle
    *     can be associated with only one ComponentTree and we can access the right event trigger
    *     later.
    */
-  void setComponentTree(final ComponentTree componentTree) {
-    mComponentTree = componentTree;
+  void setStateUpdaterAndRootViewReference(
+      final StateUpdater stateUpdater, MountedViewReference mountedViewReference) {
+    mStateUpdater = stateUpdater;
+    mMountedViewReference = mountedViewReference;
+  }
+
+  @Nullable
+  public MountedViewReference getMountedViewReference() {
+    return mMountedViewReference;
   }
 
   /**
-   * @return {@link ComponentTree} associated with this handle object which is used to find the
+   * @return {@link StateUpdater} associated with this handle object which is used to find the
    *     correct event trigger as handle can be used across multiple component trees. For example if
    *     handle is set on a Component and we want to trigger event on it from one of the children in
    *     Section list, we should have access to Component's component tree.
    */
   @Nullable
-  ComponentTree getComponentTree() {
-    return mComponentTree;
+  public StateUpdater getStateUpdater() {
+    return mStateUpdater;
   }
 }

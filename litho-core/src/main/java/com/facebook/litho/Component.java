@@ -441,16 +441,16 @@ public abstract class Component
       return null;
     }
 
-    return c.getComponentTree().getEventTrigger(c.getGlobalKey() + id + key);
+    return c.getStateUpdater().getEventTrigger(c.getGlobalKey() + id + key);
   }
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, Handle handle) {
-    if (handle.getComponentTree() == null) {
+    if (handle.getStateUpdater() == null) {
       return null;
     }
 
-    return handle.getComponentTree().getEventTrigger(handle, id);
+    return handle.getStateUpdater().getEventTrigger(handle, id);
   }
 
   protected static <E> EventHandler<E> newEventHandler(
