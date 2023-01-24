@@ -91,3 +91,36 @@ internal fun buildInvalidIndexError(
   }
   appendLine("Selector used: ${selector.description}")
 }
+
+internal fun throwAssertAnyFailError(
+    matcher: TestNodeMatcher,
+    selector: TestNodeSelector,
+    nodes: List<TestNode>
+): Nothing {
+  val message = buildString {
+    appendLine("Failed: assertAny(${matcher.description})")
+    if (nodes.isEmpty()) {
+      appendLine("Reason: Could not find any matching node for selection")
+    } else {
+      appendLine("Reason: None of the selected nodes match the expected condition")
+      appendLine("Node(s) found:")
+      nodes.printTo(this)
+    }
+    appendLine("Selector used: ${selector.description}")
+  }
+  throw AssertionError(message)
+}
+
+internal fun throwAssertAllFailError(
+    matcher: TestNodeMatcher,
+    selector: TestNodeSelector,
+    failedNodes: List<TestNode>
+): Nothing {
+  val message = buildString {
+    appendLine("Failed: assertAll(${matcher.description})")
+    appendLine("Reason: The following nodes do not match the expected condition:")
+    failedNodes.printTo(this)
+    appendLine("Selector used: ${selector.description}")
+  }
+  throw AssertionError(message)
+}

@@ -94,6 +94,42 @@ class MultiTestNodeSelectionTest : RunWithDebugInfoTest() {
         .isInstanceOf(AssertionError::class.java)
   }
 
+  @Test
+  fun `should assert that all selected nodes match a condition`() {
+    rule.render { CollectionComponent() }
+
+    rule.selectNodes(hasTextContaining("Item")).assertAll(hasType<Text>())
+  }
+
+  @Test
+  fun `should throw an error if not all of the selected nodes match a condition`() {
+    rule.render { CollectionComponent() }
+
+    assertThatThrownBy {
+          rule.selectNodes(hasTextContaining("Item")).assertAll(hasTestKey("item-#1"))
+        }
+        .isInstanceOf(AssertionError::class.java)
+        .hasMessageStartingWith("Failed: assertAll")
+  }
+
+  @Test
+  fun `should assert that any of the selected nodes match a condition`() {
+    rule.render { CollectionComponent() }
+
+    rule.selectNodes(hasType<Text>()).assertAny(hasText("Hello world"))
+  }
+
+  @Test
+  fun `should throw an error if none of the selected nodes match a condition`() {
+    rule.render { CollectionComponent() }
+
+    assertThatThrownBy {
+          rule.selectNodes(hasType<Text>()).assertAny(hasTextContaining("Goodbye world"))
+        }
+        .isInstanceOf(AssertionError::class.java)
+        .hasMessageStartingWith("Failed: assertAny")
+  }
+
   private class CollectionComponent : KComponent() {
 
     override fun ComponentScope.render(): Component {

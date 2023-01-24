@@ -153,6 +153,41 @@ class TestNodeCollectionSelection(
     return this
   }
 
+  /**
+   * Asserts that all the nodes in the collection are matching the given [matcher].
+   *
+   * It will throw an [AssertionError] if there is at least one node that does not match.
+   *
+   * Note: An empty collection with pass this assertion because it technically doesn't have any node
+   * that fails the condition.
+   */
+  fun assertAll(matcher: TestNodeMatcher): TestNodeCollectionSelection {
+    val result = fetchMatchingNodes()
+    val failedNodes = result.filterNot { matcher.matches(it) }
+    if (failedNodes.isNotEmpty()) {
+      throwAssertAllFailError(matcher, selector, failedNodes)
+    }
+
+    return this
+  }
+
+  /**
+   * Asserts that there is at least one node in the selection that matches [matcher].
+   *
+   * It will throw an [AssertionError] if there are no matching nodes.
+   *
+   * Note: An empty collection will also result in [AssertionError] since it technically doesn't
+   * have any matching node
+   */
+  fun assertAny(matcher: TestNodeMatcher): TestNodeCollectionSelection {
+    val result = fetchMatchingNodes()
+    if (!result.any(matcher::matches)) {
+      throwAssertAnyFailError(matcher, selector, result)
+    }
+
+    return this
+  }
+
   fun selectAtIndex(index: Int): TestNodeSelection {
     return TestNodeSelection(testContext, selector.plusIndexNodeSelector(index))
   }

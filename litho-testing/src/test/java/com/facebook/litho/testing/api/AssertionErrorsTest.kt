@@ -250,6 +250,79 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
                 .trimIndent())
   }
 
+  @Test
+  fun `TestNodeCollectionSelection assertAll`() {
+    Assertions.assertThatThrownBy {
+          rule
+              .render { CollectionComponent() }
+              .selectNodes(hasTextContaining("Item"))
+              .assertAll(hasTestKey("item-#0"))
+        }
+        .hasMessage(
+            """
+            Failed: assertAll(has test key "item-#0")
+            Reason: The following nodes do not match the expected condition:
+            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+              Attrs: [text='Item #1']
+            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+              Attrs: [text='Item #2']
+            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+              Attrs: [text='Item #3']
+            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+              Attrs: [text='Item #4']
+            Selector used: has text containing "Item"
+            
+            """
+                .trimIndent())
+  }
+
+  @Test
+  fun `TestNodeCollectionSelection assertAny`() {
+    Assertions.assertThatThrownBy {
+          rule
+              .render { CollectionComponent() }
+              .selectNodes(hasTextContaining("Item"))
+              .assertAny(hasType<Image>())
+        }
+        .hasMessage(
+            """
+            Failed: assertAny(is a component of type com.facebook.litho.widget.Image)
+            Reason: None of the selected nodes match the expected condition
+            Node(s) found:
+            - Node(componentType=Text, testKey=item-#0, isEnabled=false)
+              Attrs: [text='Item #0']
+            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+              Attrs: [text='Item #1']
+            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+              Attrs: [text='Item #2']
+            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+              Attrs: [text='Item #3']
+            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+              Attrs: [text='Item #4']
+            Selector used: has text containing "Item"
+            
+            """
+                .trimIndent())
+  }
+
+  @Test
+  fun `TestNodeCollectionSelection assertAny on empty collection`() {
+    Assertions.assertThatThrownBy {
+          rule
+              .render { CollectionComponent() }
+              .selectNodes(hasType<Image>())
+              .assertAny(hasTextContaining("Item"))
+        }
+        .hasMessage(
+            """
+            Failed: assertAny(has text containing "Item")
+            Reason: Could not find any matching node for selection
+            Selector used: is a component of type com.facebook.litho.widget.Image
+            
+            """
+                .trimIndent())
+  }
+
   private class CollectionComponent : KComponent() {
 
     override fun ComponentScope.render(): Component {
