@@ -2715,7 +2715,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void maybeScheduleAsyncLayoutsDuringInitRange(
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
-    if (mComponentTreeHolders == null || mComponentTreeHolders.isEmpty()) {
+    if (mComponentTreeHolders.isEmpty()) {
       // checked null for tests
       return;
     }
@@ -2731,10 +2731,7 @@ public class RecyclerBinder
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
     final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
 
-    if (mComponentTreeHolders == null
-        || mComponentTreeHolders.isEmpty()
-        || nextHolder == null
-        || mEstimatedViewportCount != UNSET) {
+    if (mComponentTreeHolders.isEmpty() || nextHolder == null || mEstimatedViewportCount != UNSET) {
       // checked null for tests
       return;
     }
