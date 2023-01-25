@@ -28,7 +28,13 @@ public class DefaultComponentsSystrace implements Systracer {
   public void beginSection(String name) {
     if (ComponentsConfiguration.IS_INTERNAL_BUILD
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      Trace.beginSection(name);
+
+      String normalizedName =
+          (name.length() > MAX_CHARACTERS_SECTION_NAME)
+              ? name.substring(0, MAX_CHARACTERS_SECTION_NAME - 1).concat("…")
+              : name;
+
+      Trace.beginSection(normalizedName);
     }
   }
 
@@ -72,4 +78,16 @@ public class DefaultComponentsSystrace implements Systracer {
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
         && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || Trace.isEnabled());
   }
+
+  /**
+   * In android.os.Trace there is a limit to the section name (127 characters). If {@link
+   * Trace#beginSection(String)} is called with a String bigger than 127, it will throw an
+   * exception.
+   *
+   * <p>We handle this case in our scenario and will trim it in case it is bigger than the valid
+   * limit.
+   *
+   * @see <a href="https://fburl.com/7bngmv5x">android.os.Trace</a>
+   */
+  private static final int MAX_CHARACTERS_SECTION_NAME = 127;
 }
