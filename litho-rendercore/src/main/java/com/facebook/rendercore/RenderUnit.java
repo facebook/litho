@@ -46,12 +46,17 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     VIEW,
   }
 
+  private static final int MAX_FIXED_MOUNT_BINDERS_COUNT = 64;
+
   private final RenderType mRenderType;
 
   // These maps are used to match a binder with its Binder class.
   // Every RenderUnit should have only one Binder per type.
   private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mMountBinderTypeToDelegateMap;
   private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mMountBinders;
+  // Fixed mount binders are binders that are always there for a given RenderUnit type, and they're
+  // always in the same order.
+  private final List<DelegateBinder<?, ? super MOUNT_CONTENT>> mFixedMountBinders;
 
   private @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>> mAttachBinderTypeToDelegateMap;
   private @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> mAttachBinders;
@@ -60,6 +65,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     this(
         renderType,
         Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
         Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
   }
 
@@ -67,6 +73,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       RenderType renderType, List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountBinders) {
     this(
         renderType,
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
         mountBinders,
         Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList());
   }
@@ -75,11 +82,31 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       RenderType type,
       List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountBinders,
       List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachBinders) {
+    this(
+        type,
+        Collections.<DelegateBinder<?, ? super MOUNT_CONTENT>>emptyList(),
+        mountBinders,
+        attachBinders);
+  }
+
+  public RenderUnit(
+      RenderType type,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> fixedMountBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> mountBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> attachBinders) {
+    if (fixedMountBinders != null && fixedMountBinders.size() > MAX_FIXED_MOUNT_BINDERS_COUNT) {
+      throw new IllegalStateException(
+          "Too many fixed mount binders. Max is " + MAX_FIXED_MOUNT_BINDERS_COUNT);
+    }
+
     mRenderType = type;
-    for (DelegateBinder<?, ? super MOUNT_CONTENT> binder : mountBinders) {
+    mFixedMountBinders = fixedMountBinders;
+    for (int i = 0; i < mountBinders.size(); i++) {
+      final DelegateBinder<?, ? super MOUNT_CONTENT> binder = mountBinders.get(i);
       addMountBinder(binder);
     }
-    for (DelegateBinder<?, ? super MOUNT_CONTENT> binder : attachBinders) {
+    for (int i = 0; i < attachBinders.size(); i++) {
+      final DelegateBinder<?, ? super MOUNT_CONTENT> binder = attachBinders.get(i);
       addAttachBinder(binder);
     }
   }
@@ -236,15 +263,33 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     return false;
   }
 
+  /** Bind all fixed mountUnmount binder functions. */
+  private void mountFixedBinders(
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+    final boolean isTracing = tracer.isTracing();
+    for (int i = 0; i < mFixedMountBinders.size(); i++) {
+      final DelegateBinder binder = mFixedMountBinders.get(i);
+      if (isTracing) {
+        tracer.beginSection("RenderUnit.mountFixedBinder:" + binder.getSimpleName());
+      }
+      binder.bind(context, content, layoutData);
+      if (isTracing) {
+        tracer.endSection();
+      }
+    }
+  }
+
   /** Bind all mountUnmount binder functions. */
   protected void mountBinders(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+    mountFixedBinders(context, content, layoutData, tracer);
     if (mMountBinders == null) {
       return;
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (DelegateBinder binder : mMountBinders) {
+    for (int i = 0; i < mMountBinders.size(); i++) {
+      final DelegateBinder binder = mMountBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.mountBinder:" + binder.getSimpleName());
       }
@@ -255,24 +300,40 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
   }
 
-  /** Unbind all mountUnmount binder functions. */
-  protected void unmountBinders(
+  /** Unbind all fixed mountUnmount binder functions. */
+  private void unmountFixedBinders(
       Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
-    if (mMountBinders == null) {
-      return;
-    }
-
     final boolean isTracing = tracer.isTracing();
-    for (int i = mMountBinders.size() - 1; i >= 0; i--) {
-      final DelegateBinder binder = mMountBinders.get(i);
+    for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
+      final DelegateBinder binder = mFixedMountBinders.get(i);
       if (isTracing) {
-        tracer.beginSection("RenderUnit.unmountBinder:" + binder.getSimpleName());
+        tracer.beginSection("RenderUnit.unmountFixedBinder:" + binder.getSimpleName());
       }
       binder.unbind(context, content, layoutData);
       if (isTracing) {
         tracer.endSection();
       }
     }
+  }
+
+  /** Unbind all mountUnmount binder functions. */
+  protected void unmountBinders(
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData, Systracer tracer) {
+    if (mMountBinders != null) {
+      final boolean isTracing = tracer.isTracing();
+      for (int i = mMountBinders.size() - 1; i >= 0; i--) {
+        final DelegateBinder binder = mMountBinders.get(i);
+        if (isTracing) {
+          tracer.beginSection("RenderUnit.unmountBinder:" + binder.getSimpleName());
+        }
+        binder.unbind(context, content, layoutData);
+        if (isTracing) {
+          tracer.endSection();
+        }
+      }
+    }
+
+    unmountFixedBinders(context, content, layoutData, tracer);
   }
 
   /** Bind all attachDetach binder functions. */
@@ -283,7 +344,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     final boolean isTracing = tracer.isTracing();
-    for (DelegateBinder binder : mAttachBinders) {
+    for (int i = 0; i < mAttachBinders.size(); i++) {
+      final DelegateBinder binder = mAttachBinders.get(i);
       if (isTracing) {
         tracer.beginSection("RenderUnit.attachBinder:" + binder.getSimpleName());
       }
@@ -335,7 +397,15 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final List<DelegateBinder> mountBindersForUnbind =
         new ArrayList<>(sizeOrZero(currentRenderUnit.getMountBinders()));
 
-    // 1. Diff the binders to resolve what's to bind/unbind.
+    // 1. Resolve fixed mount binders which should update.
+    long fixedMountBindersToUpdate =
+        resolveFixedMountBindersToUpdate(
+            currentRenderUnit.mFixedMountBinders,
+            mFixedMountBinders,
+            currentLayoutData,
+            newLayoutData);
+
+    // 2. Diff the binders to resolve what's to bind/unbind.
     resolveBindersToUpdate(
         currentRenderUnit.getAttachBinders(),
         getAttachBinders(),
@@ -363,7 +433,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       extensionStatesToUpdate = null;
     }
 
-    // 2. unbind all attach binders which should update (only if currently attached).
+    // 3. Unbind all attach binders which should update (only if currently attached).
     if (isAttached) {
       if (mountDelegate != null && extensionStatesToUpdate != null) {
         MountDelegate.onUnbindItemWhichRequiresUpdate(
@@ -380,7 +450,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       }
     }
 
-    // 3. unbind all mount binders which should update.
+    // 4. Unbind all dynamic and fixed mount binders which should update.
     if (mountDelegate != null && extensionStatesToUpdate != null) {
       MountDelegate.onUnmountItemWhichRequiresUpdate(
           extensionStatesToUpdate,
@@ -394,9 +464,26 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       final DelegateBinder binder = mountBindersForUnbind.get(i);
       binder.unbind(context, content, currentLayoutData);
     }
+    if (fixedMountBindersToUpdate != 0) {
+      for (int i = mFixedMountBinders.size() - 1; i >= 0; i--) {
+        if ((fixedMountBindersToUpdate & ((long) 0x1 << i)) != 0) {
+          final DelegateBinder binder = currentRenderUnit.mFixedMountBinders.get(i);
+          binder.unbind(context, content, currentLayoutData);
+        }
+      }
+    }
 
-    // 4. rebind all mount binders which did update.
-    for (DelegateBinder binder : mountBindersForBind) {
+    // 5. Rebind all fixed and dynamic mount binders which did update.
+    if (fixedMountBindersToUpdate != 0) {
+      for (int i = 0; i < mFixedMountBinders.size(); i++) {
+        if ((fixedMountBindersToUpdate & (0x1L << i)) != 0) {
+          final DelegateBinder binder = mFixedMountBinders.get(i);
+          binder.bind(context, content, newLayoutData);
+        }
+      }
+    }
+    for (int i = 0; i < mountBindersForBind.size(); i++) {
+      final DelegateBinder binder = mountBindersForBind.get(i);
       binder.bind(context, content, newLayoutData);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
@@ -409,8 +496,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
           content);
     }
 
-    // 5. rebind all attach binders which did update.
-    for (DelegateBinder binder : attachBindersForBind) {
+    // 6. Rebind all attach binders which did update.
+    for (int i = 0; i < attachBindersForBind.size(); i++) {
+      final DelegateBinder binder = attachBindersForBind.get(i);
       binder.bind(context, content, newLayoutData);
     }
     if (mountDelegate != null && extensionStatesToUpdate != null) {
@@ -435,6 +523,43 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     return (T) binder.binder;
+  }
+
+  /**
+   * This methods validates current and new fixed mount binders, calling shouldUpdate if needed, and
+   * returning a long value with bits set to 1 for all fixed binders that need to be updated.
+   */
+  private static <MOUNT_CONTENT> long resolveFixedMountBindersToUpdate(
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> currentFixedBinders,
+      List<DelegateBinder<?, ? super MOUNT_CONTENT>> newFixedBinders,
+      @Nullable Object currentLayoutData,
+      @Nullable Object newLayoutData) {
+    long fixedMountBindersToUpdate = 0;
+
+    if (currentFixedBinders.isEmpty() && newFixedBinders.isEmpty()) {
+      return fixedMountBindersToUpdate;
+    }
+
+    if (currentFixedBinders.size() != newFixedBinders.size()) {
+      throw new IllegalStateException(
+          "Current and new fixed Mount Binders are of sync: \n"
+              + "currentFixedBinders.size() = "
+              + currentFixedBinders.size()
+              + "\n"
+              + "newFixedBinders.size() = "
+              + newFixedBinders.size());
+    }
+
+    for (int i = 0; i < currentFixedBinders.size(); i++) {
+      final DelegateBinder currentBinder = currentFixedBinders.get(i);
+      final DelegateBinder newBinder = newFixedBinders.get(i);
+
+      if (newBinder.shouldUpdate(currentBinder, currentLayoutData, newLayoutData)) {
+        fixedMountBindersToUpdate = fixedMountBindersToUpdate | ((long) 0x1 << i);
+      }
+    }
+
+    return fixedMountBindersToUpdate;
   }
 
   /**
@@ -469,7 +594,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     final Map<Class<?>, Boolean> binderToShouldUpdate = new HashMap<>(newBinders.size());
 
     // Parse all new binders and resolve which ones are to bind.
-    for (DelegateBinder newBinder : newBinders) {
+    for (int i = 0; i < newBinders.size(); i++) {
+      final DelegateBinder newBinder = newBinders.get(i);
       final Class<?> binderClass = newBinder.binder.getClass();
       final @Nullable DelegateBinder currentBinder = currentBinderTypeToBinderMap.get(binderClass);
 
@@ -489,7 +615,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     }
 
     // Parse all current binders and resolve which ones are to unbind.
-    for (DelegateBinder currentBinder : currentBinders) {
+    for (int i = 0; i < currentBinders.size(); i++) {
+      final DelegateBinder currentBinder = currentBinders.get(i);
       final Class<?> binderClass = currentBinder.binder.getClass();
       if (!binderToShouldUpdate.containsKey(binderClass) || binderToShouldUpdate.get(binderClass)) {
         // Found a current binder which either is not in the new RenderUnit or shouldUpdate is
