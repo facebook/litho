@@ -185,7 +185,6 @@ public final class StateUpdatesTestHelper {
 
     Whitebox.setInternalState(context, "mGlobalKey", "$bogusKeyForTest");
     Whitebox.setInternalState(context, "mComponentScope", component);
-    Whitebox.setInternalState(context, "mComponentTree", componentTree);
     Whitebox.setInternalState(
         context,
         "mLithoTree",

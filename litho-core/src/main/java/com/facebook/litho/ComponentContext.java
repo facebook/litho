@@ -67,9 +67,6 @@ public class ComponentContext implements Cloneable {
   private boolean mIsParentTreePropsCloned;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable ComponentTree mComponentTree;
-
-  @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LithoTree mLithoTree;
 
   private @Nullable LithoLifecycleProvider mLifecycleProvider;
@@ -160,7 +157,6 @@ public class ComponentContext implements Cloneable {
     mContext = context.mContext;
     mResourceResolver = context.mResourceResolver;
     mComponentScope = context.mComponentScope;
-    mComponentTree = context.mComponentTree;
     mLifecycleProvider = context.mLifecycleProvider;
     mLithoTree = context.mLithoTree;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
@@ -219,7 +215,6 @@ public class ComponentContext implements Cloneable {
             context.getAndroidContext(), context.mTreeProps, lithoConfiguration, lithoTree);
     componentContext.mParentTreeProps = context.mParentTreeProps;
     componentContext.mGlobalKey = context.mGlobalKey;
-    componentContext.mComponentTree = componentTree;
     componentContext.mLifecycleProvider = componentTree.getLifecycleProvider();
     componentContext.mComponentScope = null;
 
@@ -608,10 +603,6 @@ public class ComponentContext implements Cloneable {
     }
 
     return mLithoConfiguration.renderUnitIdGenerator.calculateLayoutOutputId(componentKey, type);
-  }
-
-  ComponentTree getComponentTree() {
-    return mComponentTree;
   }
 
   @Nullable
