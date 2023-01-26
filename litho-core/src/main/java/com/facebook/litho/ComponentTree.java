@@ -1477,13 +1477,13 @@ public class ComponentTree
   @Nullable
   @Override
   public EventTrigger getEventTrigger(String triggerKey) {
-    return mTreeState.getEventTrigger(triggerKey);
+    return mTreeState == null ? null : mTreeState.getEventTrigger(triggerKey);
   }
 
   @Nullable
   @Override
   public EventTrigger getEventTrigger(Handle handle, int methodId) {
-    return mTreeState.getEventTrigger(handle, methodId);
+    return mTreeState == null ? null : mTreeState.getEventTrigger(handle, methodId);
   }
 
   /**
