@@ -823,8 +823,9 @@ public class TransitionsExtension
     // Get left/top position of the item's host first
     Host host = originalHost;
     while (host != rootHost) {
-      left += host.getLeft();
-      top += host.getTop();
+      // We use getX/Y here to also account for translation set on the parent.
+      left += host.getX();
+      top += host.getY();
       host = (Host) host.getParent();
     }
 

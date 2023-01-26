@@ -33,6 +33,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.DynamicValue;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateCaller;
@@ -1492,6 +1493,179 @@ public class AnimationTest {
     view = testLithoView.findViewWithTag(TRANSITION_KEY);
     assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
     assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
+  }
+
+  @Test
+  public void animation_disappearAnimationWhichRemountsToRoot_shouldPreserveInitialXandY() {
+    final StateCaller innerStateCaller = new StateCaller();
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.ALPHA)
+                    .disappearTo(0))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Column.create(componentContext)
+                        .wrapInView()
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.YELLOW))
+                        .child(
+                            TestAnimationMount.create(componentContext)
+                                .stateCaller(innerStateCaller))
+                        .child(
+                            Row.create(componentContext)
+                                .wrapInView()
+                                .child(
+                                    !state
+                                        ? Row.create(componentContext)
+                                            .heightDip(50)
+                                            .widthDip(50)
+                                            .backgroundColor(Color.RED)
+                                            .viewTag(TRANSITION_KEY)
+                                            .transitionKey(TRANSITION_KEY)
+                                            .key(TRANSITION_KEY)
+                                        : null))
+                        .build();
+                  }
+                })
+            .build();
+    TestLithoView testLithoView = mLithoViewRule.render(componentScope -> component);
+    mActivityController.get().setContentView(testLithoView.getLithoView());
+    mActivityController.resume().visible();
+
+    int[] location = new int[2];
+    View animatingView = testLithoView.findViewWithTag(TRANSITION_KEY);
+    animatingView.getLocationOnScreen(location);
+    int initialX = location[0];
+    int initialY = location[1];
+
+    // Update state on both
+    mStateCaller.update();
+    innerStateCaller.update();
+
+    // We look for the same view
+    animatingView = testLithoView.findViewWithTag(TRANSITION_KEY);
+
+    animatingView.getLocationOnScreen(location);
+    assertThat(animatingView.getAlpha()).isEqualTo(1f);
+    assertThat(location[0]).describedAs("initial x should be the same").isEqualTo(initialX);
+    assertThat(location[1]).describedAs("initial y should be the same").isEqualTo(initialY);
+
+    mTransitionTestRule.step(2);
+
+    animatingView.getLocationOnScreen(location);
+    assertThat(animatingView.getAlpha()).isGreaterThan(0f).isLessThan(1f);
+    assertThat(location[0])
+        .describedAs("x during animation should be the same")
+        .isEqualTo(initialX);
+    assertThat(location[1])
+        .describedAs("y during animation should be the same")
+        .isEqualTo(initialY);
+
+    mTransitionTestRule.step(100);
+
+    assertThat(testLithoView.findViewWithTagOrNull(TRANSITION_KEY)).isNull();
+  }
+
+  /**
+   * Same as animation_disappearAnimationWhichRemountsToRoot_shouldPreserveInitialXandY but with
+   * parents with translation set.
+   */
+  @Test
+  public void
+      animation_disappearAnimationWhichRemountsToRoot_shouldPreserveInitialXandYWithParentTranslation() {
+    final DynamicValue<Float> translation = new DynamicValue<>(10f);
+
+    final StateCaller innerStateCaller = new StateCaller();
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.ALPHA)
+                    .disappearTo(0))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Column.create(componentContext)
+                        .translationX(translation)
+                        .translationY(translation)
+                        .wrapInView()
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.YELLOW))
+                        .child(
+                            TestAnimationMount.create(componentContext)
+                                .stateCaller(innerStateCaller))
+                        .child(
+                            Row.create(componentContext)
+                                .translationX(translation)
+                                .translationY(translation)
+                                .wrapInView()
+                                .child(
+                                    !state
+                                        ? Row.create(componentContext)
+                                            .heightDip(50)
+                                            .widthDip(50)
+                                            .backgroundColor(Color.RED)
+                                            .viewTag(TRANSITION_KEY)
+                                            .transitionKey(TRANSITION_KEY)
+                                            .key(TRANSITION_KEY)
+                                        : null))
+                        .build();
+                  }
+                })
+            .build();
+    TestLithoView testLithoView = mLithoViewRule.render(componentScope -> component);
+    mActivityController.get().setContentView(testLithoView.getLithoView());
+    mActivityController.resume().visible();
+
+    int[] location = new int[2];
+    View animatingView = testLithoView.findViewWithTag(TRANSITION_KEY);
+    animatingView.getLocationOnScreen(location);
+    int initialX = location[0];
+    int initialY = location[1];
+
+    // Update state on both
+    mStateCaller.update();
+    innerStateCaller.update();
+
+    // We look for the same view
+    animatingView = testLithoView.findViewWithTag(TRANSITION_KEY);
+
+    animatingView.getLocationOnScreen(location);
+    assertThat(animatingView.getAlpha()).isEqualTo(1f);
+    assertThat(location[0]).describedAs("initial x should be the same").isEqualTo(initialX);
+    assertThat(location[1]).describedAs("initial y should be the same").isEqualTo(initialY);
+
+    mTransitionTestRule.step(2);
+
+    animatingView.getLocationOnScreen(location);
+    assertThat(animatingView.getAlpha()).isGreaterThan(0f).isLessThan(1f);
+    assertThat(location[0])
+        .describedAs("x during animation should be the same")
+        .isEqualTo(initialX);
+    assertThat(location[1])
+        .describedAs("y during animation should be the same")
+        .isEqualTo(initialY);
+
+    mTransitionTestRule.step(100);
+
+    assertThat(testLithoView.findViewWithTagOrNull(TRANSITION_KEY)).isNull();
   }
 
   @Test
