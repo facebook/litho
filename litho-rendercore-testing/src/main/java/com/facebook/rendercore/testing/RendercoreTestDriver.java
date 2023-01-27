@@ -178,8 +178,8 @@ public class RendercoreTestDriver {
           0, 0, rootHostAsView.getMeasuredWidth(), rootHostAsView.getMeasuredHeight());
     }
 
-    private static RenderState.LazyTree createLazyTree(final Node rootNode) {
-      return new RenderState.LazyTree() {
+    private static RenderState.ResolveFunc createLazyTree(final Node rootNode) {
+      return new RenderState.ResolveFunc() {
         @Override
         public Pair<Node, Object> resolve() {
           return new Pair<>(rootNode, null);

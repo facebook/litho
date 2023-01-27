@@ -20,24 +20,24 @@ import android.content.Context;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.rendercore.RenderState.LazyTree;
+import com.facebook.rendercore.RenderState.ResolveFunc;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 
 /**
- * Result from resolving a {@link LazyTree}. A {@link RenderResult} from a previous computation will
- * make the next computation of a new {@link LazyTree} more efficient with internal caching.
+ * Result from resolving a {@link ResolveFunc}. A {@link RenderResult} from a previous computation
+ * will make the next computation of a new {@link ResolveFunc} more efficient with internal caching.
  */
 public class RenderResult<State> {
   private final RenderTree mRenderTree;
-  private final LazyTree mLazyTree;
+  private final ResolveFunc mResolveFunc;
   private final Node mNodeTree;
   private final LayoutCache.CachedData mLayoutCacheData;
   @Nullable private final State mState;
 
   public static <State, RenderContext> RenderResult<State> resolve(
       final Context context,
-      final LazyTree<State> lazyTree,
+      final ResolveFunc<State> resolveFunc,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State> previousResult,
@@ -50,10 +50,10 @@ public class RenderResult<State> {
     RenderCoreSystrace.beginSection("RC Create Tree");
     final Pair<Node, State> result;
 
-    if (previousResult != null && lazyTree == previousResult.getLazyTree()) {
+    if (previousResult != null && resolveFunc == previousResult.getResolveFunc()) {
       result = new Pair<>(previousTree, previousState);
     } else {
-      result = lazyTree.resolve();
+      result = resolveFunc.resolve();
     }
     final RenderResult renderResult;
 
@@ -61,7 +61,7 @@ public class RenderResult<State> {
       renderResult =
           new RenderResult<>(
               previousResult.getRenderTree(),
-              lazyTree,
+              resolveFunc,
               result.first,
               previousResult.getLayoutCacheData(),
               result.second);
@@ -84,7 +84,7 @@ public class RenderResult<State> {
               layoutContext,
               result.first,
               layoutResult,
-              lazyTree,
+              resolveFunc,
               widthSpec,
               heightSpec,
               result.second);
@@ -101,14 +101,14 @@ public class RenderResult<State> {
       final LayoutContext c,
       final Node node,
       final Node.LayoutResult layoutResult,
-      final LazyTree<State> lazyTree,
+      final ResolveFunc<State> resolveFunc,
       final int widthSpec,
       final int heightSpec,
       final @Nullable State state) {
     return new RenderResult<>(
         Reducer.getReducedTree(
             c.getAndroidContext(), layoutResult, widthSpec, heightSpec, c.getExtensions()),
-        lazyTree,
+        resolveFunc,
         node,
         c.getLayoutCache().getWriteCacheData(),
         state);
@@ -134,12 +134,12 @@ public class RenderResult<State> {
 
   private RenderResult(
       RenderTree renderTree,
-      LazyTree lazyTree,
+      ResolveFunc resolveFunc,
       Node nodeTree,
       LayoutCache.CachedData layoutCacheData,
       @Nullable State state) {
     mRenderTree = renderTree;
-    mLazyTree = lazyTree;
+    mResolveFunc = resolveFunc;
     mNodeTree = nodeTree;
     mLayoutCacheData = layoutCacheData;
     mState = state;
@@ -149,8 +149,8 @@ public class RenderResult<State> {
     return mRenderTree;
   }
 
-  LazyTree getLazyTree() {
-    return mLazyTree;
+  ResolveFunc getResolveFunc() {
+    return mResolveFunc;
   }
 
   Node getNodeTree() {
@@ -171,12 +171,12 @@ public class RenderResult<State> {
     return previousCache != null ? new LayoutCache(previousCache) : new LayoutCache(null);
   }
 
-  public static LazyTree<Void> wrapInLazyTree(Node node) {
-    return wrapInLazyTree(node, (Void) null);
+  public static ResolveFunc<Void> wrapInResolveFunc(Node node) {
+    return wrapInResolveFunc(node, (Void) null);
   }
 
-  public static <T> LazyTree<T> wrapInLazyTree(final Node node, final @Nullable T state) {
-    return new LazyTree<T>() {
+  public static <T> ResolveFunc<T> wrapInResolveFunc(final Node node, final @Nullable T state) {
+    return new ResolveFunc<T>() {
       @Override
       public Pair<Node, T> resolve() {
         return new Pair<>(node, state);

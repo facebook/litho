@@ -39,7 +39,7 @@ public class RenderResultFuture<State, RenderContext> {
 
   public RenderResultFuture(
       final Context context,
-      final RenderState.LazyTree<State> lazyTree,
+      final RenderState.ResolveFunc<State> resolveFunc,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State> previousResult,
@@ -58,7 +58,7 @@ public class RenderResultFuture<State, RenderContext> {
                   public RenderResult<State> call() {
                     return RenderResult.resolve(
                         context,
-                        lazyTree,
+                        resolveFunc,
                         renderContext,
                         extensions,
                         mPreviousResult,

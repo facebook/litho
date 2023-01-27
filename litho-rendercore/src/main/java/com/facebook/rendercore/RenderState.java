@@ -44,10 +44,10 @@ public class RenderState<State, RenderContext> {
    *     committed
    */
   @ThreadSafe
-  public interface LazyTree<State> {
+  public interface ResolveFunc<State> {
     /**
-     * Resolves the tree represented by this LazyTree. Results for resolve might be cached. The
-     * assumption is that multiple resolve calls on a LazyTree would return equivalent trees.
+     * Resolves the tree represented by this ResolveFunc. Results for resolve might be cached. The
+     * assumption is that multiple resolve calls on a ResolveFunc would return equivalent trees.
      */
     Pair<Node, State> resolve();
   }
@@ -79,7 +79,7 @@ public class RenderState<State, RenderContext> {
 
   private @Nullable RenderTree mUIRenderTree;
   private @Nullable RenderResult<State> mCommittedRenderResult;
-  private @Nullable LazyTree<State> mLatestLazyTree;
+  private @Nullable ResolveFunc<State> mLatestResolveFunc;
   private int mExternalRootVersion = -1;
   private @Nullable RenderResultFuture<State, RenderContext> mRenderResultFuture;
   private int mNextSetRootId = 0;
@@ -100,21 +100,21 @@ public class RenderState<State, RenderContext> {
 
   @ThreadConfined(ThreadConfined.ANY)
   public void setVersionedTree(
-      LazyTree<State> lazyTree,
+      ResolveFunc<State> resolveFunc,
       int version,
       int widthSpec,
       int heightSpec,
       @Nullable int[] measureOutput) {
-    setTreeInternal(lazyTree, version, widthSpec, heightSpec, measureOutput);
+    setTreeInternal(resolveFunc, version, widthSpec, heightSpec, measureOutput);
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(LazyTree<State> lazyTree) {
-    setTreeInternal(lazyTree, -1, UNSET, UNSET, null);
+  public void setTree(ResolveFunc<State> resolveFunc) {
+    setTreeInternal(resolveFunc, -1, UNSET, UNSET, null);
   }
 
   private void setTreeInternal(
-      LazyTree<State> lazyTree,
+      ResolveFunc<State> resolveFunc,
       int version,
       int widthSpec,
       int heightSpec,
@@ -140,7 +140,7 @@ public class RenderState<State, RenderContext> {
 
       previousRenderResult = mCommittedRenderResult;
       mExternalRootVersion = version;
-      mLatestLazyTree = lazyTree;
+      mLatestResolveFunc = resolveFunc;
 
       if (widthSpec != UNSET) {
         mWidthSpec = widthSpec;
@@ -158,7 +158,7 @@ public class RenderState<State, RenderContext> {
       future =
           new RenderResultFuture<>(
               mContext,
-              lazyTree,
+              resolveFunc,
               mRenderContext,
               mExtensions,
               mCommittedRenderResult,
@@ -256,7 +256,7 @@ public class RenderState<State, RenderContext> {
         return;
       }
 
-      if (mLatestLazyTree == null) {
+      if (mLatestResolveFunc == null) {
         if (measureOutput != null) {
           measureOutput[0] = 0;
           measureOutput[1] = 0;
@@ -272,7 +272,7 @@ public class RenderState<State, RenderContext> {
         future =
             new RenderResultFuture<>(
                 mContext,
-                mLatestLazyTree,
+                mLatestResolveFunc,
                 mRenderContext,
                 mExtensions,
                 mCommittedRenderResult,

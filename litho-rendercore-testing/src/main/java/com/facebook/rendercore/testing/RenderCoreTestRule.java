@@ -197,7 +197,7 @@ public class RenderCoreTestRule implements TestRule {
     final View rootHostView = (View) getRootHost();
 
     renderState = getRenderState();
-    renderState.setTree(new SimpleLazyTree(getRootNode()));
+    renderState.setTree(new IdentityResolveFunc(getRootNode()));
     getRootHost().setRenderState(renderState);
 
     rootHostView.measure(getWidthSpec(), getHeightSpec());
@@ -217,7 +217,7 @@ public class RenderCoreTestRule implements TestRule {
     final RenderResult renderResult =
         RenderResult.resolve(
             rootHost.getContext(),
-            new SimpleLazyTree(getRootNode()),
+            new IdentityResolveFunc(getRootNode()),
             null,
             null,
             null,
@@ -245,11 +245,15 @@ public class RenderCoreTestRule implements TestRule {
     }
   }
 
-  public static class SimpleLazyTree implements RenderState.LazyTree {
+  /**
+   * A simple resolve function that returns an already resolved tree. This function doesn't
+   * currently support returning state.
+   */
+  public static class IdentityResolveFunc implements RenderState.ResolveFunc {
 
     private final Node root;
 
-    public SimpleLazyTree(Node root) {
+    public IdentityResolveFunc(Node root) {
       this.root = root;
     }
 
