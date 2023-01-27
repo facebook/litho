@@ -139,7 +139,7 @@ class HostComponent extends SpecGeneratedComponent {
 
   @Override
   boolean hasCommonDynamicProps() {
-    return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
+    return CollectionsUtils.isNotNullOrEmpty(mCommonDynamicProps);
   }
 
   /**

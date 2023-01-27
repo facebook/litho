@@ -19,6 +19,7 @@ package com.facebook.litho.sections.debug;
 import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionDebugUtil;
@@ -43,7 +44,7 @@ public final class DebugSection {
 
   /** The root represents a DebugSection with information about the root of the SectionTree. */
   public static @Nullable DebugSection getRootInstance(List<View> lithoViews) {
-    if (lithoViews == null || lithoViews.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(lithoViews)) {
       return null;
     }
 

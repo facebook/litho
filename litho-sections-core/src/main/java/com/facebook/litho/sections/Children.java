@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class Children {
     }
 
     public Builder child(@Nullable List<Section> sectionList) {
-      if (sectionList == null || sectionList.isEmpty()) {
+      if (CollectionsUtils.isNullOrEmpty(sectionList)) {
         return this;
       }
 
@@ -79,7 +80,7 @@ public class Children {
     }
 
     public Builder children(@Nullable List<Section.Builder<?>> sectionBuilderList) {
-      if (sectionBuilderList == null || sectionBuilderList.isEmpty()) {
+      if (CollectionsUtils.isNullOrEmpty(sectionBuilderList)) {
         return this;
       }
 

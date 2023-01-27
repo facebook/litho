@@ -124,11 +124,11 @@ public class StateHandler {
    *     source-of-truth StateHandler on the ComponentTree.
    */
   synchronized boolean hasUncommittedUpdates() {
-    return (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty())
-        || (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty())
+    return (CollectionsUtils.isNotNullOrEmpty(mPendingStateUpdates))
+        || (CollectionsUtils.isNotNullOrEmpty(mPendingHookUpdates))
         // Because we immediately apply Kotlin state updates at the beginning of layout, we need to
         // also check applied state updates to see if this StateHandler has uncommitted updates.
-        || (mAppliedHookUpdates != null && !mAppliedHookUpdates.isEmpty());
+        || (CollectionsUtils.isNotNullOrEmpty(mAppliedHookUpdates));
   }
 
   /**
@@ -235,7 +235,7 @@ public class StateHandler {
         }
         mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
 
-        if (transitionsFromStateUpdate != null && !transitionsFromStateUpdate.isEmpty()) {
+        if (CollectionsUtils.isNotNullOrEmpty(transitionsFromStateUpdate)) {
           maybeInitPendingStateUpdateTransitions();
           mPendingStateUpdateTransitions.put(key, transitionsFromStateUpdate);
         }
@@ -337,7 +337,7 @@ public class StateHandler {
           mPendingLazyStateUpdates == null ? null : mPendingLazyStateUpdates.get(componentKey);
     }
 
-    if (stateUpdatesForKey == null || stateUpdatesForKey.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(stateUpdatesForKey)) {
       return container;
     }
 
@@ -491,8 +491,8 @@ public class StateHandler {
       @Nullable Map<String, List<StateUpdate>> pendingLazyStateUpdates,
       @Nullable Map<String, List<StateUpdate>> appliedStateUpdates) {
 
-    if ((pendingStateUpdates == null || pendingStateUpdates.isEmpty())
-        && (appliedStateUpdates == null || appliedStateUpdates.isEmpty())) {
+    if (CollectionsUtils.isNullOrEmpty(pendingStateUpdates)
+        && CollectionsUtils.isNullOrEmpty(appliedStateUpdates)) {
       return;
     }
 
@@ -566,7 +566,7 @@ public class StateHandler {
 
   private void copyPendingStateTransitions(
       @Nullable Map<String, List<Transition>> pendingStateUpdateTransitions) {
-    if (pendingStateUpdateTransitions == null || pendingStateUpdateTransitions.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(pendingStateUpdateTransitions)) {
       return;
     }
 
@@ -619,7 +619,7 @@ public class StateHandler {
 
   @VisibleForTesting
   int getPendingHookUpdatesCount() {
-    if (mPendingHookUpdates == null || mPendingHookUpdates.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(mPendingHookUpdates)) {
       return 0;
     }
 
@@ -640,7 +640,6 @@ public class StateHandler {
    * @param other the ComponentTree's source-of-truth StateHandler where pending state updates are
    *     collected
    */
-  @SuppressWarnings("unchecked")
   private void runHooks(StateHandler other) {
     if (other.mPendingHookUpdates != null) {
       Map<String, List<HookUpdater>> updates = getHookUpdatesCopy(other.mPendingHookUpdates);

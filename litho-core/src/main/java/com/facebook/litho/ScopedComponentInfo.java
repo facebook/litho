@@ -136,7 +136,7 @@ public class ScopedComponentInfo implements Cloneable {
   }
 
   void addWorkingRangeToNode(LithoNode node) {
-    if (mWorkingRangeRegistrations != null && !mWorkingRangeRegistrations.isEmpty()) {
+    if (CollectionsUtils.isNotNullOrEmpty(mWorkingRangeRegistrations)) {
       node.addWorkingRanges(mWorkingRangeRegistrations);
     }
   }

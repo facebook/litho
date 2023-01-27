@@ -129,7 +129,7 @@ class TouchExpansionDelegate extends TouchDelegate {
   }
 
   private void releaseScrapDelegatesIfNeeded() {
-    if (mScrapDelegates != null && mScrapDelegates.size() == 0) {
+    if (CollectionsUtils.isEmpty(mScrapDelegates)) {
       mScrapDelegates = null;
     }
   }

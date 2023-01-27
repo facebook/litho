@@ -929,7 +929,7 @@ public class LayoutState
 
     // 9. Extract the Working Range registrations.
     List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
-    if (registrations != null && !registrations.isEmpty()) {
+    if (CollectionsUtils.isNotNullOrEmpty(registrations)) {
       if (layoutState.mWorkingRangeContainer == null) {
         layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
       }

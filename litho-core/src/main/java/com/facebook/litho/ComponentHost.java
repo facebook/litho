@@ -264,7 +264,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   boolean hasDisappearingItems() {
-    return mDisappearingItems != null && !mDisappearingItems.isEmpty();
+    return CollectionsUtils.isNotNullOrEmpty(mDisappearingItems);
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
@@ -1273,11 +1273,11 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void releaseScrapDataStructuresIfNeeded() {
-    if (mScrapMountItemsArray != null && mScrapMountItemsArray.size() == 0) {
+    if (CollectionsUtils.isEmpty(mScrapMountItemsArray)) {
       mScrapMountItemsArray = null;
     }
 
-    if (mScrapViewMountItemsArray != null && mScrapViewMountItemsArray.size() == 0) {
+    if (CollectionsUtils.isEmpty(mScrapViewMountItemsArray)) {
       mScrapViewMountItemsArray = null;
     }
   }

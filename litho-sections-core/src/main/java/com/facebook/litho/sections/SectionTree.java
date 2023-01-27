@@ -35,6 +35,7 @@ import android.util.Pair;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
@@ -632,7 +633,7 @@ public class SectionTree {
     }
 
     final List<Section> children = root.getChildren();
-    if (children == null || children.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(children)) {
       return null;
     }
 
@@ -2082,7 +2083,7 @@ public class SectionTree {
       if (completed != null && current != null) {
         current.removeAll(completed);
       }
-      if (current != null && !current.isEmpty()) {
+      if (CollectionsUtils.isNotNullOrEmpty(current)) {
         currentStateUpdates.put(key, current);
       }
     }

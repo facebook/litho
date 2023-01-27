@@ -860,7 +860,7 @@ public abstract class Component
    * @see DynamicPropsManager
    */
   boolean hasCommonDynamicProps() {
-    return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
+    return CollectionsUtils.isNotNullOrEmpty(mCommonDynamicProps);
   }
 
   /** @return if has a handle set */

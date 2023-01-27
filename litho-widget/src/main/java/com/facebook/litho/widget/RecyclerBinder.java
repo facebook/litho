@@ -46,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.recyclerview.widget.RecyclerViewAccessibilityDelegate;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.CollectionsUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
@@ -2715,7 +2716,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void maybeScheduleAsyncLayoutsDuringInitRange(
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
-    if (mComponentTreeHolders.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(mComponentTreeHolders)) {
       // checked null for tests
       return;
     }
@@ -2731,7 +2732,9 @@ public class RecyclerBinder
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
     final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
 
-    if (mComponentTreeHolders.isEmpty() || nextHolder == null || mEstimatedViewportCount != UNSET) {
+    if (CollectionsUtils.isNullOrEmpty(mComponentTreeHolders)
+        || nextHolder == null
+        || mEstimatedViewportCount != UNSET) {
       // checked null for tests
       return;
     }

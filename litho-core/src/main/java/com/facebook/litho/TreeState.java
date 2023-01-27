@@ -298,7 +298,7 @@ public class TreeState {
   }
 
   void applyPreviousRenderData(@Nullable List<ScopedComponentInfo> scopedComponentInfos) {
-    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(scopedComponentInfos)) {
       return;
     }
 
@@ -318,7 +318,7 @@ public class TreeState {
   void recordRenderData(LayoutState layoutState) {
     final List<ScopedComponentInfo> scopedComponentInfos =
         layoutState.getScopedComponentInfosNeedingPreviousRenderData();
-    if (scopedComponentInfos == null || scopedComponentInfos.isEmpty()) {
+    if (CollectionsUtils.isNullOrEmpty(scopedComponentInfos)) {
       return;
     }
     mRenderState.recordRenderData(scopedComponentInfos);
