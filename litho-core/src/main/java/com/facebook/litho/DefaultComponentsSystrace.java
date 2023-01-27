@@ -26,9 +26,7 @@ public class DefaultComponentsSystrace implements Systracer {
 
   @Override
   public void beginSection(String name) {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-
+    if (isTracing()) {
       String normalizedName =
           (name.length() > MAX_CHARACTERS_SECTION_NAME)
               ? name.substring(0, MAX_CHARACTERS_SECTION_NAME - 1).concat("…")
@@ -56,8 +54,7 @@ public class DefaultComponentsSystrace implements Systracer {
 
   @Override
   public void endSection() {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (isTracing()) {
       Trace.endSection();
     }
   }
