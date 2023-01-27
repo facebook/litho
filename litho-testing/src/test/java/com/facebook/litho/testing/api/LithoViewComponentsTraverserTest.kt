@@ -29,6 +29,7 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.kotlin.widget.VerticalScroll
 import com.facebook.litho.testing.api.helpers.LayoutWithSizeSpecs
 import com.facebook.litho.testing.api.helpers.SimpleLayoutWithSizeSpecs
 import com.facebook.litho.testing.testrunner.LithoTestRunner
@@ -188,6 +189,45 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
 
     Assertions.assertThat(actual).isEqualTo(expected)
   }
+
+  @Test
+  fun `traverse should be able to traverser a complex hierarchy with a vertical scroll wrapper`() {
+    val lithoView = renderLithoViewWithComponent(ComponentWithVerticalScroll())
+
+    val result = StringBuilder()
+
+    traverser.traverse(lithoView) { component, parent ->
+      result.appendComponentData("component", component)
+      parent?.let {
+        result.append("  ")
+        result.appendComponentData("parent", parent)
+      }
+      result.append('\n')
+    }
+
+    val actual = result.toString()
+    val expected =
+        """
+        component[type=ComponentWithVerticalScroll]
+        component[type=VerticalScroll]  parent[type=ComponentWithVerticalScroll]
+        component[type=Column]  parent[type=VerticalScroll]
+        component[type=Header]  parent[type=Column]
+        component[type=Row]  parent[type=Header]
+        component[type=Text, testKey=first-name]  parent[type=Row]
+        component[type=Text, testKey=last-name]  parent[type=Row]
+        component[type=RootComponent]  parent[type=Column]
+        component[type=Column]  parent[type=RootComponent]
+        component[type=Text, testKey=hello]  parent[type=Column]
+        component[type=Header]  parent[type=Column]
+        component[type=Row]  parent[type=Header]
+        component[type=Text, testKey=first-name]  parent[type=Row]
+        component[type=Text, testKey=last-name]  parent[type=Row]
+    
+        """
+            .trimIndent()
+
+    Assertions.assertThat(actual).isEqualTo(expected)
+  }
   private fun renderLithoViewWithComponent(component: Component): LithoView {
     val componentContext = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     val lithoView = LithoView(componentContext)
@@ -291,6 +331,17 @@ class LithoViewComponentsTraverserTest : RunWithDebugInfoTest() {
             })
 
         child(Text("Footer", Style.testKey("footer")))
+      }
+    }
+  }
+
+  private class ComponentWithVerticalScroll : KComponent() {
+    override fun ComponentScope.render(): Component {
+      return VerticalScroll {
+        Column {
+          child(Header())
+          child(RootComponent())
+        }
       }
     }
   }

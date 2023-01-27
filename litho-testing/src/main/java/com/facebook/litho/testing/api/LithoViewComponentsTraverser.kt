@@ -17,16 +17,12 @@
 package com.facebook.litho.testing.api
 
 import android.annotation.SuppressLint
-import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
+import com.facebook.litho.HasLithoViewChildren
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.NestedTreeHolderResult
-import com.facebook.litho.sections.widget.SectionBinderTarget
-import com.facebook.litho.testing.Whitebox
-import com.facebook.litho.widget.Binder
-import com.facebook.litho.widget.Recycler
-import com.facebook.litho.widget.RecyclerBinder
+import com.facebook.litho.getMountedContent
 import java.util.LinkedList
 
 /**
@@ -41,18 +37,8 @@ class LithoViewComponentsTraverser {
       lithoView: LithoView,
       onComponentFound: (component: Component, parent: Component?) -> Unit
   ) {
-    traverse(layoutResult = extractRootLayoutResult(lithoView), onComponentFound = onComponentFound)
-  }
-
-  @SuppressLint("RestrictedApi")
-  private fun extractRootLayoutResult(lithoView: LithoView?): LithoLayoutResult? {
-    val committedLayoutState = lithoView?.componentTree?.committedLayoutState
-
-    check(committedLayoutState != null) {
-      "No ComponentTree/Committed Layout/Layout Root found. Please call render() first"
-    }
-
-    return committedLayoutState.rootLayoutResult
+    val rootLayoutResult = lithoView.extractLayoutResult(isRoot = true)
+    traverse(layoutResult = rootLayoutResult, onComponentFound = onComponentFound)
   }
 
   private fun traverse(
@@ -67,9 +53,7 @@ class LithoViewComponentsTraverser {
     layoutsStack.push(TraverseNode(layoutResult, null))
 
     while (layoutsStack.isNotEmpty()) {
-      val traverseNode = layoutsStack.pop()
-
-      val currentLayoutResult = traverseNode.lithoLayoutResult
+      val (currentLayoutResult, parentComponent) = layoutsStack.pop()
 
       if (currentLayoutResult in visited) {
         continue
@@ -116,51 +100,47 @@ class LithoViewComponentsTraverser {
          * */
         if (nestedResult != null &&
             (nestedResult.node.childCount > 0 || nestedResult is NestedTreeHolderResult)) {
-          layoutsStack.push(TraverseNode(nestedResult, traverseNode.parentComponent))
+          layoutsStack.push(TraverseNode(nestedResult, parentComponent))
           continue
         }
       }
 
-      (listOf(traverseNode.parentComponent) + components).zipWithNext {
+      (listOf(parentComponent) + components).zipWithNext {
           currentParent: Component?,
           child: Component? ->
         if (child == null) error("Child should never be null")
         onComponentFound(child, currentParent)
       }
 
-      if (lastScopedComponent is Recycler) {
-        val binder = lastScopedComponent.binder
-
-        (binder.itemCount - 1 downTo 0).forEach { recyclerItemIndex ->
-          val holder = binder.getComponentTreeHolderAt(recyclerItemIndex)
-          val holderLithoView = holder.componentTree?.lithoView
-          val holderLithoLayoutResult = extractRootLayoutResult(holderLithoView)
-
-          if (holderLithoLayoutResult != null) {
-            layoutsStack.push(TraverseNode(holderLithoLayoutResult, lastScopedComponent))
-          }
-        }
+      currentLayoutResult.getChildResults().forEach { child ->
+        layoutsStack.push(TraverseNode(child, lastScopedComponent))
       }
-
-      // add children layout results to be processed
-      (lithoNode.childCount - 1 downTo 0)
-          .map { childIndex -> currentLayoutResult.getChildAt(childIndex) }
-          .forEach { childLayoutResult ->
-            layoutsStack.push(TraverseNode(childLayoutResult, lastScopedComponent))
-          }
     }
   }
 
-  data class TraverseNode(
-      val lithoLayoutResult: LithoLayoutResult,
+  @SuppressLint("RestrictedApi")
+  private fun LithoView.extractLayoutResult(isRoot: Boolean): LithoLayoutResult? {
+    val committedLayoutState = componentTree?.committedLayoutState
+
+    check(!isRoot || committedLayoutState != null) {
+      "No ComponentTree/Committed Layout/Layout Root found. Please call render() first"
+    }
+
+    return committedLayoutState?.rootLayoutResult
+  }
+
+  private fun LithoLayoutResult.getChildResults(): List<LithoLayoutResult> {
+    val mountedContent = getMountedContent()
+    if (mountedContent is HasLithoViewChildren) {
+      val children = buildList(mountedContent::obtainLithoViewChildren)
+      val results = children.mapNotNull { it.extractLayoutResult(isRoot = false) }
+      if (results.isNotEmpty()) return results.asReversed()
+    }
+    return (childCount - 1 downTo 0).map { getChildAt(it) }
+  }
+
+  internal data class TraverseNode(
+      val layoutResult: LithoLayoutResult,
       val parentComponent: Component?
   )
-
-  private val Recycler.binder: RecyclerBinder
-    get() {
-      val binder =
-          Whitebox.getInternalState<Binder<RecyclerView>>(this, "binder") as SectionBinderTarget
-
-      return Whitebox.getInternalState(binder, "mRecyclerBinder")
-    }
 }
