@@ -55,12 +55,12 @@ public class RenderState<State, RenderContext> {
   public interface Delegate<State> {
     void commit(
         int layoutVersion,
-        RenderTree current,
+        @Nullable RenderTree current,
         RenderTree next,
-        State currentState,
-        State nextState);
+        @Nullable State currentState,
+        @Nullable State nextState);
 
-    void commitToUI(RenderTree tree, State state);
+    void commitToUI(RenderTree tree, @Nullable State state);
   }
 
   public interface HostListener {
@@ -169,38 +169,7 @@ public class RenderState<State, RenderContext> {
     }
 
     final RenderResult<State> result = future.runAndGet();
-
-    boolean committedNewLayout = false;
-    synchronized (this) {
-      // We don't want to compute, layout, or reduce trees while holding a lock. However this means
-      // that another thread could compute a layout and commit it before we get to this point. To
-      // handle this, we make sure that the committed setRootId is only ever increased, meaning
-      // we only go "forward in time" and will eventually get to the latest layout.
-      if (setRootId > mCommittedSetRootId) {
-        mCommittedSetRootId = setRootId;
-        mCommittedRenderResult = result;
-        committedNewLayout = true;
-      }
-
-      if (measureOutput != null && mCommittedRenderResult != null) {
-        measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
-        measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
-      }
-
-      if (mRenderResultFuture == future) {
-        mRenderResultFuture = null;
-      }
-    }
-
-    if (committedNewLayout) {
-      mDelegate.commit(
-          setRootId,
-          previousRenderResult != null ? previousRenderResult.getRenderTree() : null,
-          result.getRenderTree(),
-          previousRenderResult != null ? previousRenderResult.getState() : null,
-          result.getState());
-      schedulePromoteCommittedTreeToUI();
-    }
+    commitRenderResult(result, setRootId, future, previousRenderResult, measureOutput);
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -284,9 +253,21 @@ public class RenderState<State, RenderContext> {
     }
 
     final RenderResult<State> result = future.runAndGet();
+    commitRenderResult(result, setRootId, future, previousResult, measureOutput);
+  }
 
+  private void commitRenderResult(
+      RenderResult<State> result,
+      int setRootId,
+      RenderResultFuture<State, RenderContext> future,
+      @Nullable RenderResult<State> previousResult,
+      @Nullable int[] measureOutput) {
     boolean committedNewLayout = false;
     synchronized (this) {
+      // We don't want to compute, layout, or reduce trees while holding a lock. However this means
+      // that another thread could compute a layout and commit it before we get to this point. To
+      // handle this, we make sure that the committed setRootId is only ever increased, meaning
+      // we only go "forward in time" and will eventually get to the latest layout.
       if (setRootId > mCommittedSetRootId) {
         mCommittedSetRootId = setRootId;
         mCommittedRenderResult = result;
@@ -297,7 +278,7 @@ public class RenderState<State, RenderContext> {
         mRenderResultFuture = null;
       }
 
-      if (measureOutput != null) {
+      if (measureOutput != null && mCommittedRenderResult != null) {
         measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
         measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
       }
