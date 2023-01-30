@@ -23,8 +23,8 @@ import com.facebook.infer.annotation.Nullsafe;
 /**
  * Defines a class that can provide mountable content and have it be pooled.
  *
- * <p>Instances must implement at least createContent method to allocate the RenderUnit content
- * (View or Drawable).
+ * <p>Instances must implement at least createContent and getRenderType methods to allocate the
+ * RenderUnit content (View or Drawable) and to make it possible to query the type of the content.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ContentAllocator<Content> {
@@ -34,6 +34,9 @@ public interface ContentAllocator<Content> {
 
   /** Allocates the mountable content (View or Drawable). */
   Content createContent(Context context);
+
+  /** Returns the [RenderUnit.RenderType] of the mountable content. */
+  RenderUnit.RenderType getRenderType();
 
   /** Creates a mount-content that can be pooled. This is typically a View or Drawable subclass. */
   default Content createPoolableContent(Context context) {

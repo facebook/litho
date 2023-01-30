@@ -30,6 +30,7 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.RenderUnit;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -518,6 +519,13 @@ public abstract class SpecGeneratedComponent extends Component
   @Override
   public Object createContent(Context context) {
     return createMountContent(context);
+  }
+
+  @Override
+  public RenderUnit.RenderType getRenderType() {
+    return getMountType() == Component.MountType.DRAWABLE
+        ? RenderUnit.RenderType.DRAWABLE
+        : RenderUnit.RenderType.VIEW;
   }
 
   @Override

@@ -54,6 +54,7 @@ import com.facebook.rendercore.ContentAllocator
 import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Mountable
+import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
@@ -66,7 +67,6 @@ import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.junit.runners.model.FrameworkMethod
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -1116,9 +1116,15 @@ class NonLithoViewMountable(
   }
 
   override fun getContentAllocator(): ContentAllocator<View> {
-    return ContentAllocator {
-      steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
-      view
+    return object : ContentAllocator<View> {
+      override fun createContent(context: Context): View {
+        steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT))
+        return view
+      }
+
+      override fun getRenderType(): RenderUnit.RenderType {
+        return RenderType.VIEW
+      }
     }
   }
 }
