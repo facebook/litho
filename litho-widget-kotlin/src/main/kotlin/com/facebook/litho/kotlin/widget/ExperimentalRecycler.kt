@@ -712,22 +712,23 @@ internal class ExperimentalRecyclerMountable(
 
   init {
     if (useTwoBindersRecycler) {
-      addMountBinders(
+      addOptionalMountBinders(
           DelegateBinder.createDelegateBinder(this, MOUNT_BINDER),
       )
       addAttachBinder(
           DelegateBinder.createDelegateBinder(this, ATTACH_BINDER),
       )
     } else {
-      addMountBinder(DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER))
+      addOptionalMountBinder(DelegateBinder.createDelegateBinder(this, ITEM_DECORATOR_BINDER))
       if (enableSeparateAnimatorBinder) {
-        addMountBinders(
+        addOptionalMountBinders(
             DelegateBinder.createDelegateBinder(this, ANIMATOR_BINDER),
             DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER_WITHOUT_ANIMATOR))
       } else {
-        addMountBinder(DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER))
+        addOptionalMountBinder(
+            DelegateBinder.createDelegateBinder(this, CONSTANT_PROPS_MOUNT_BINDER))
       }
-      addMountBinder(
+      addOptionalMountBinder(
           DelegateBinder.createDelegateBinder(binder, CONTENT_MOUNT_BINDER),
       )
       addAttachBinders(

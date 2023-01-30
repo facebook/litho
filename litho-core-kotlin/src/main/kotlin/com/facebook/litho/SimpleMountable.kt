@@ -31,7 +31,7 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
     Mountable<ContentT>(renderType), ContentAllocator<ContentT> {
 
   init {
-    addMountBinder(
+    addOptionalMountBinder(
         DelegateBinder.createDelegateBinder(
             this, BINDER as Binder<SimpleMountable<ContentT>, ContentT>))
   }

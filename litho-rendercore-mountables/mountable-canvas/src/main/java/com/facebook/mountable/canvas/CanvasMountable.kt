@@ -43,8 +43,8 @@ class CanvasMountable(
 ) : Mountable<CanvasView>(RenderType.VIEW), ContentAllocator<CanvasView> {
 
   init {
-    addMountBinder(DelegateBinder.createDelegateBinder(Unit, CANVAS_MODEL_BINDER))
-    addMountBinder(DelegateBinder.createDelegateBinder(layerType, CANVAS_LAYER_TYPE_BINDER))
+    addOptionalMountBinder(DelegateBinder.createDelegateBinder(Unit, CANVAS_MODEL_BINDER))
+    addOptionalMountBinder(DelegateBinder.createDelegateBinder(layerType, CANVAS_LAYER_TYPE_BINDER))
   }
 
   override fun createContent(context: Context): CanvasView = CanvasView(context)

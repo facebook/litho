@@ -1053,7 +1053,7 @@ class NonLithoViewMountable(
 ) : Mountable<View>(RenderType.VIEW) {
 
   init {
-    addMountBinder(
+    addOptionalMountBinder(
         createDelegateBinder(
             this,
             object : Binder<NonLithoViewMountable, View> {

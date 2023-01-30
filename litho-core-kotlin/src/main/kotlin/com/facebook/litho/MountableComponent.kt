@@ -51,7 +51,7 @@ abstract class MountableComponent() : Component() {
           idGenerator.calculateLayoutOutputId(c.globalKey, OutputUnitType.CONTENT)
     }
 
-    mountableRenderResult.mountable.addMountBinder(
+    mountableRenderResult.mountable.addOptionalMountBinder(
         createDelegateBinder(
             mountableRenderResult.mountable, DynamicValuesBinder(mountableComponentScope.binders)))
     if (mountableComponentScope.shouldExcludeFromIncrementalMount) {
