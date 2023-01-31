@@ -65,6 +65,6 @@ class SeekBarMountable(
     }
 
     override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
-        fromSpecs(widthSpec, heightSpec)
+        withEqualSize(widthSpec, heightSpec)
   }
 }
