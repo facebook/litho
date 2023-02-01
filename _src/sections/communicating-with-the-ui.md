@@ -2,6 +2,11 @@
 id: communicating-with-the-ui
 title: Scrolling and communicating with the UI
 ---
+
+:::caution
+This page covers the older Java codegen-based Sections API. If using the Kotlin Lazy Collection API, refer to the [interactions docs for Lazy Collection](../kotlin/lazycollections/lazycollections-interactions.mdx) for similar relevant content.
+:::
+
 ## Introduction
 Data flows through the section hierarchy before they are eventually represented on the UI by components.
 Section provides a set of functionalities to allow you to respond to the data and interact with the UI.
