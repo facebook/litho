@@ -117,6 +117,7 @@ module.exports = {
           {
             'Advanced': [
               'sections/working-ranges',
+              'sections/communicating-with-the-ui',
               'sections/services',
               'sections/view-support',
               'sections/diff-sections',
@@ -232,7 +233,7 @@ module.exports = {
           ],
           'Reference': ['common-props', 'cached-values'],
           'Handling Events': ['events-touch-handling'],
-          'Sections': ['sections-tutorial', 'communicating-with-the-ui'],
+          'Sections': ['sections-tutorial'],
           'Common use cases': [
             'updating-ui',
             'borders',

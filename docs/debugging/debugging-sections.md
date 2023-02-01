@@ -100,7 +100,7 @@ RecyclerView will try to maintain the current scroll position whenever the adapt
 
 This is a commonly occurring scenario that can occur in surfaces that consist of Sections that use different data sources. Imagine a typical feed-like surface that has a header Section followed by the feed stories Section. The two Sections will receive data from different sources, each source being queried independently. This means that the response can return at different times. If the feed stories data is fetched first, these items will be inserted immediately, and the header data will be inserted at the top of the feed items later when the request completes.
 
-If your Section surface is using data queried from multiple sources, and it can be inserted out of order, you can maintain scroll position at the first item in the list by manually scrolling to the top, after the data reaches the adapter, using the [requestFocus APIs](../communicating-with-the-ui.md#scrolling-requestfocus):
+If your Section surface is using data queried from multiple sources, and it can be inserted out of order, you can maintain scroll position at the first item in the list by manually scrolling to the top, after the data reaches the adapter, using the [requestFocus APIs](../sections/communicating-with-the-ui.md#scrolling-requestfocus):
 
 #scrolling-requestfocus
 
