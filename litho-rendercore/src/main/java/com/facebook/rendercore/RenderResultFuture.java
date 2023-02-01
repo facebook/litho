@@ -56,7 +56,7 @@ public class RenderResultFuture<State, RenderContext> {
                 new Callable<RenderResult<State, RenderContext>>() {
                   @Override
                   public RenderResult<State, RenderContext> call() {
-                    return RenderResult.resolve(
+                    return RenderResult.render(
                         context,
                         resolveFunc,
                         renderContext,

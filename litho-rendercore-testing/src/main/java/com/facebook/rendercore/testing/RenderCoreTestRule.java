@@ -217,7 +217,7 @@ public class RenderCoreTestRule implements TestRule {
     final View rootHost = (View) getRenderTreeHost();
 
     final RenderResult renderResult =
-        RenderResult.resolve(
+        RenderResult.render(
             rootHost.getContext(),
             new IdentityResolveFunc(getRootNode()),
             null,

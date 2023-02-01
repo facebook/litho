@@ -33,12 +33,11 @@ import java.util.List;
  */
 public class RenderResult<State, RenderContext> {
   private final RenderTree mRenderTree;
-  private final ResolveFunc<State, RenderContext> mResolveFunc;
   private final Node<RenderContext> mNodeTree;
   private final LayoutCache.CachedData mLayoutCacheData;
   @Nullable private final State mState;
 
-  public static <State, RenderContext> RenderResult<State, RenderContext> resolve(
+  public static <State, RenderContext> RenderResult<State, RenderContext> render(
       final Context context,
       final ResolveFunc<State, RenderContext> resolveFunc,
       final @Nullable RenderContext renderContext,
@@ -47,67 +46,71 @@ public class RenderResult<State, RenderContext> {
       final int layoutVersion,
       final int widthSpec,
       final int heightSpec) {
-    final Node<RenderContext> previousTree =
-        previousResult != null ? previousResult.getNodeTree() : null;
-    final State previousState = previousResult != null ? previousResult.getState() : null;
-
     RenderCoreSystrace.beginSection("RC Create Tree");
     final Pair<Node<RenderContext>, State> result;
 
-    if (previousResult != null && resolveFunc == previousResult.getResolveFunc()) {
-      result = new Pair<>(previousTree, previousState);
-    } else {
-      result =
-          resolveFunc.resolve(
-              new ResolveContext(
-                  new StateUpdateReceiver<State>() {
-                    @Override
-                    public void enqueueStateUpdate(StateUpdate<State> stateUpdate) {
-                      // Does nothing. This will go away once we refactor RenderResult.resolve
-                    }
-                  }),
-              null,
-              null,
-              Collections.emptyList());
-    }
+    result =
+        resolveFunc.resolve(
+            new ResolveContext(
+                new StateUpdateReceiver() {
+                  @Override
+                  public void enqueueStateUpdate(StateUpdate stateUpdate) {
+                    // Does nothing. This will go away once we refactor RenderResult.resolve
+                  }
+                }),
+            null,
+            null,
+            Collections.emptyList());
     final RenderResult<State, RenderContext> renderResult;
 
     if (shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
       renderResult =
           new RenderResult<>(
               previousResult.getRenderTree(),
-              resolveFunc,
               result.first,
               previousResult.getLayoutCacheData(),
               result.second);
     } else {
-      RenderCoreSystrace.beginSection("RC Layout");
-
-      final LayoutCache layoutCache =
-          buildCache(previousResult == null ? null : previousResult.getLayoutCacheData());
-
-      final LayoutContext<RenderContext> layoutContext =
-          new LayoutContext<>(context, renderContext, layoutVersion, layoutCache, extensions);
-
-      final Node.LayoutResult layoutResult =
-          result.first.calculateLayout(layoutContext, widthSpec, heightSpec);
-      RenderCoreSystrace.endSection();
-
-      RenderCoreSystrace.beginSection("RC Reduce");
-      renderResult =
-          create(
-              layoutContext,
-              result.first,
-              layoutResult,
-              resolveFunc,
-              widthSpec,
-              heightSpec,
-              result.second);
-      RenderCoreSystrace.endSection();
-      layoutContext.clearCache();
+      final LayoutContext layoutContext =
+          createLayoutContext(previousResult, renderContext, context, layoutVersion, extensions);
+      renderResult = layout(layoutContext, result.first, result.second, widthSpec, heightSpec);
     }
 
     RenderCoreSystrace.endSection();
+
+    return renderResult;
+  }
+
+  public static <RenderContext> LayoutContext<RenderContext> createLayoutContext(
+      @Nullable RenderResult previousResult,
+      RenderContext renderContext,
+      Context context,
+      int layoutVersion,
+      RenderCoreExtension<?, ?>[] extensions) {
+    final LayoutCache layoutCache =
+        buildCache(previousResult == null ? null : previousResult.getLayoutCacheData());
+
+    return new LayoutContext<>(context, renderContext, layoutVersion, layoutCache, extensions);
+  }
+
+  public static <RenderContext, State> RenderResult layout(
+      LayoutContext<RenderContext> layoutContext,
+      Node<RenderContext> node,
+      @Nullable State state,
+      int widthSpec,
+      int heightSpec) {
+
+    RenderCoreSystrace.beginSection("RC Layout");
+
+    final Node.LayoutResult layoutResult =
+        node.calculateLayout(layoutContext, widthSpec, heightSpec);
+    RenderCoreSystrace.endSection();
+
+    RenderCoreSystrace.beginSection("RC Reduce");
+    RenderResult renderResult =
+        create(layoutContext, node, layoutResult, widthSpec, heightSpec, state);
+    RenderCoreSystrace.endSection();
+    layoutContext.clearCache();
 
     return renderResult;
   }
@@ -116,14 +119,12 @@ public class RenderResult<State, RenderContext> {
       final LayoutContext<RenderContext> c,
       final Node<RenderContext> node,
       final Node.LayoutResult layoutResult,
-      final ResolveFunc<State, RenderContext> resolveFunc,
       final int widthSpec,
       final int heightSpec,
       final @Nullable State state) {
     return new RenderResult<>(
         Reducer.getReducedTree(
             c.getAndroidContext(), layoutResult, widthSpec, heightSpec, c.getExtensions()),
-        resolveFunc,
         node,
         c.getLayoutCache().getWriteCacheData(),
         state);
@@ -149,12 +150,10 @@ public class RenderResult<State, RenderContext> {
 
   private RenderResult(
       RenderTree renderTree,
-      ResolveFunc<State, RenderContext> resolveFunc,
       Node<RenderContext> nodeTree,
       LayoutCache.CachedData layoutCacheData,
       @Nullable State state) {
     mRenderTree = renderTree;
-    mResolveFunc = resolveFunc;
     mNodeTree = nodeTree;
     mLayoutCacheData = layoutCacheData;
     mState = state;
@@ -162,10 +161,6 @@ public class RenderResult<State, RenderContext> {
 
   public RenderTree getRenderTree() {
     return mRenderTree;
-  }
-
-  ResolveFunc<State, RenderContext> getResolveFunc() {
-    return mResolveFunc;
   }
 
   Node<RenderContext> getNodeTree() {
