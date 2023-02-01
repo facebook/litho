@@ -33,16 +33,16 @@ public class RenderResultFuture<State, RenderContext> {
   private final int mSetRootId;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final RunnableFuture<RenderResult<State>> mFutureTask;
+  private final RunnableFuture<RenderResult<State, RenderContext>> mFutureTask;
   private final AtomicInteger mRunningThreadId = new AtomicInteger(-1);
-  private volatile @Nullable RenderResult<State> mPreviousResult;
+  private volatile @Nullable RenderResult<State, RenderContext> mPreviousResult;
 
   public RenderResultFuture(
       final Context context,
-      final RenderState.ResolveFunc<State, ?> resolveFunc,
+      final RenderState.ResolveFunc<State, RenderContext> resolveFunc,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
-      final @Nullable RenderResult<State> previousResult,
+      final @Nullable RenderResult<State, RenderContext> previousResult,
       final int setRootId,
       final int widthSpec,
       final int heightSpec) {
@@ -53,9 +53,9 @@ public class RenderResultFuture<State, RenderContext> {
     mFutureTask =
         FutureInstrumenter.instrument(
             new FutureTask<>(
-                new Callable<RenderResult<State>>() {
+                new Callable<RenderResult<State, RenderContext>>() {
                   @Override
-                  public RenderResult<State> call() {
+                  public RenderResult<State, RenderContext> call() {
                     return RenderResult.resolve(
                         context,
                         resolveFunc,
@@ -70,7 +70,7 @@ public class RenderResultFuture<State, RenderContext> {
             "RenderResultFuture_resolve");
   }
 
-  public RenderResult<State> runAndGet() {
+  public RenderResult<State, RenderContext> runAndGet() {
     if (mRunningThreadId.compareAndSet(-1, Process.myTid())) {
       mFutureTask.run();
       try {
@@ -93,7 +93,7 @@ public class RenderResultFuture<State, RenderContext> {
   }
 
   @Nullable
-  public RenderResult<State> getLatestAvailableRenderResult() {
+  public RenderResult<State, RenderContext> getLatestAvailableRenderResult() {
     return isDone() ? runAndGet() : mPreviousResult;
   }
 

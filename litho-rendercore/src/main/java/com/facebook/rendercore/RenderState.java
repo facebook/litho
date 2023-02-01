@@ -89,8 +89,8 @@ public class RenderState<State, RenderContext> {
   private @Nullable HostListener mHostListener;
 
   private @Nullable RenderTree mUIRenderTree;
-  private @Nullable RenderResult<State> mCommittedRenderResult;
-  private @Nullable ResolveFunc<State, ?> mLatestResolveFunc;
+  private @Nullable RenderResult<State, RenderContext> mCommittedRenderResult;
+  private @Nullable ResolveFunc<State, RenderContext> mLatestResolveFunc;
   private int mExternalRootVersion = -1;
   private @Nullable RenderResultFuture<State, RenderContext> mRenderResultFuture;
   private int mNextSetRootId = 0;
@@ -111,7 +111,7 @@ public class RenderState<State, RenderContext> {
 
   @ThreadConfined(ThreadConfined.ANY)
   public void setVersionedTree(
-      ResolveFunc<State, ?> resolveFunc,
+      ResolveFunc<State, RenderContext> resolveFunc,
       int version,
       int widthSpec,
       int heightSpec,
@@ -120,19 +120,19 @@ public class RenderState<State, RenderContext> {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(ResolveFunc<State, ?> resolveFunc) {
+  public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
     setTreeInternal(resolveFunc, -1, UNSET, UNSET, null);
   }
 
   private void setTreeInternal(
-      ResolveFunc<State, ?> resolveFunc,
+      ResolveFunc<State, RenderContext> resolveFunc,
       int version,
       int widthSpec,
       int heightSpec,
       @Nullable int[] measureOutput) {
     final int setRootId;
     final RenderResultFuture<State, RenderContext> future;
-    final RenderResult<State> previousRenderResult;
+    final RenderResult<State, RenderContext> previousRenderResult;
 
     synchronized (this) {
       if (version > -1) {
@@ -179,7 +179,7 @@ public class RenderState<State, RenderContext> {
       mRenderResultFuture = future;
     }
 
-    final RenderResult<State> result = future.runAndGet();
+    final RenderResult<State, RenderContext> result = future.runAndGet();
     commitRenderResult(result, setRootId, future, previousRenderResult, measureOutput);
   }
 
@@ -222,7 +222,7 @@ public class RenderState<State, RenderContext> {
   private void measureImpl(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
     final int setRootId;
     final RenderResultFuture<State, RenderContext> future;
-    final RenderResult<State> previousResult;
+    final RenderResult<State, RenderContext> previousResult;
     synchronized (this) {
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
@@ -263,15 +263,15 @@ public class RenderState<State, RenderContext> {
       }
     }
 
-    final RenderResult<State> result = future.runAndGet();
+    final RenderResult<State, RenderContext> result = future.runAndGet();
     commitRenderResult(result, setRootId, future, previousResult, measureOutput);
   }
 
   private void commitRenderResult(
-      RenderResult<State> result,
+      RenderResult<State, RenderContext> result,
       int setRootId,
       RenderResultFuture<State, RenderContext> future,
-      @Nullable RenderResult<State> previousResult,
+      @Nullable RenderResult<State, RenderContext> previousResult,
       @Nullable int[] measureOutput) {
     boolean committedNewLayout = false;
     synchronized (this) {

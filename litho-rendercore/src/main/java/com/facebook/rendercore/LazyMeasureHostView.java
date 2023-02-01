@@ -32,9 +32,11 @@ public class LazyMeasureHostView extends HostView implements RenderCoreExtension
   private @Nullable LazyRenderTreeProvider mLazyRenderTreeProvider;
   private @Nullable RenderResult mCurrentRenderResult;
 
-  public interface LazyRenderTreeProvider {
-    RenderResult getRenderTreeForSize(
-        int widthSpec, int heightSpec, @Nullable RenderResult previousRenderResult);
+  public interface LazyRenderTreeProvider<RenderContext> {
+    RenderResult<?, RenderContext> getRenderTreeForSize(
+        int widthSpec,
+        int heightSpec,
+        @Nullable RenderResult<?, RenderContext> previousRenderResult);
   }
 
   private final MountState mMountState;

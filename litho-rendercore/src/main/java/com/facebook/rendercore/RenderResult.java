@@ -31,27 +31,28 @@ import java.util.List;
  * Result from resolving a {@link ResolveFunc}. A {@link RenderResult} from a previous computation
  * will make the next computation of a new {@link ResolveFunc} more efficient with internal caching.
  */
-public class RenderResult<State> {
+public class RenderResult<State, RenderContext> {
   private final RenderTree mRenderTree;
-  private final ResolveFunc mResolveFunc;
-  private final Node mNodeTree;
+  private final ResolveFunc<State, RenderContext> mResolveFunc;
+  private final Node<RenderContext> mNodeTree;
   private final LayoutCache.CachedData mLayoutCacheData;
   @Nullable private final State mState;
 
-  public static <State, RenderContext> RenderResult<State> resolve(
+  public static <State, RenderContext> RenderResult<State, RenderContext> resolve(
       final Context context,
-      final ResolveFunc<State, ?> resolveFunc,
+      final ResolveFunc<State, RenderContext> resolveFunc,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
-      final @Nullable RenderResult<State> previousResult,
+      final @Nullable RenderResult<State, RenderContext> previousResult,
       final int layoutVersion,
       final int widthSpec,
       final int heightSpec) {
-    final Node previousTree = previousResult != null ? previousResult.getNodeTree() : null;
+    final Node<RenderContext> previousTree =
+        previousResult != null ? previousResult.getNodeTree() : null;
     final State previousState = previousResult != null ? previousResult.getState() : null;
 
     RenderCoreSystrace.beginSection("RC Create Tree");
-    final Pair<Node, State> result;
+    final Pair<Node<RenderContext>, State> result;
 
     if (previousResult != null && resolveFunc == previousResult.getResolveFunc()) {
       result = new Pair<>(previousTree, previousState);
@@ -59,17 +60,17 @@ public class RenderResult<State> {
       result =
           resolveFunc.resolve(
               new ResolveContext(
-                  new StateUpdateReceiver() {
+                  new StateUpdateReceiver<State>() {
                     @Override
-                    public void enqueueStateUpdate(StateUpdate stateUpdate) {
+                    public void enqueueStateUpdate(StateUpdate<State> stateUpdate) {
                       // Does nothing. This will go away once we refactor RenderResult.resolve
                     }
                   }),
               null,
               null,
-              Collections.EMPTY_LIST);
+              Collections.emptyList());
     }
-    final RenderResult renderResult;
+    final RenderResult<State, RenderContext> renderResult;
 
     if (shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
       renderResult =
@@ -111,11 +112,11 @@ public class RenderResult<State> {
     return renderResult;
   }
 
-  public static <State> RenderResult<State> create(
-      final LayoutContext c,
-      final Node node,
+  public static <State, RenderContext> RenderResult<State, RenderContext> create(
+      final LayoutContext<RenderContext> c,
+      final Node<RenderContext> node,
       final Node.LayoutResult layoutResult,
-      final ResolveFunc<State, ?> resolveFunc,
+      final ResolveFunc<State, RenderContext> resolveFunc,
       final int widthSpec,
       final int heightSpec,
       final @Nullable State state) {
@@ -128,11 +129,11 @@ public class RenderResult<State> {
         state);
   }
 
-  public static <State> boolean shouldReuseResult(
-      final Node node,
+  public static <State, RenderContext> boolean shouldReuseResult(
+      final Node<RenderContext> node,
       final int widthSpec,
       final int heightSpec,
-      @Nullable final RenderResult<State> previousResult) {
+      @Nullable final RenderResult<State, RenderContext> previousResult) {
     if (previousResult == null) {
       return false;
     }
@@ -148,8 +149,8 @@ public class RenderResult<State> {
 
   private RenderResult(
       RenderTree renderTree,
-      ResolveFunc resolveFunc,
-      Node nodeTree,
+      ResolveFunc<State, RenderContext> resolveFunc,
+      Node<RenderContext> nodeTree,
       LayoutCache.CachedData layoutCacheData,
       @Nullable State state) {
     mRenderTree = renderTree;
@@ -163,11 +164,11 @@ public class RenderResult<State> {
     return mRenderTree;
   }
 
-  ResolveFunc getResolveFunc() {
+  ResolveFunc<State, RenderContext> getResolveFunc() {
     return mResolveFunc;
   }
 
-  Node getNodeTree() {
+  Node<RenderContext> getNodeTree() {
     return mNodeTree;
   }
 
@@ -185,7 +186,7 @@ public class RenderResult<State> {
     return previousCache != null ? new LayoutCache(previousCache) : new LayoutCache(null);
   }
 
-  public static ResolveFunc<Void, ?> wrapInResolveFunc(Node node) {
+  public static <T, R> ResolveFunc<T, R> wrapInResolveFunc(Node<R> node) {
     return wrapInResolveFunc(node, null);
   }
 
