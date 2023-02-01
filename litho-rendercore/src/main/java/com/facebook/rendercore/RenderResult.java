@@ -86,14 +86,14 @@ public class RenderResult<State, RenderContext> {
       RenderContext renderContext,
       Context context,
       int layoutVersion,
-      RenderCoreExtension<?, ?>[] extensions) {
+      @Nullable RenderCoreExtension<?, ?>[] extensions) {
     final LayoutCache layoutCache =
         buildCache(previousResult == null ? null : previousResult.getLayoutCacheData());
 
     return new LayoutContext<>(context, renderContext, layoutVersion, layoutCache, extensions);
   }
 
-  public static <RenderContext, State> RenderResult layout(
+  public static <State, RenderContext> RenderResult<State, RenderContext> layout(
       LayoutContext<RenderContext> layoutContext,
       Node<RenderContext> node,
       @Nullable State state,
