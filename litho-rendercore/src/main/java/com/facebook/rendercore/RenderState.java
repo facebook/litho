@@ -23,9 +23,11 @@ import android.os.Message;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.rendercore.StateUpdateReceiver.StateUpdate;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -44,12 +46,21 @@ public class RenderState<State, RenderContext> {
    *     committed
    */
   @ThreadSafe
-  public interface ResolveFunc<State> {
+  public interface ResolveFunc<State, RenderContext> {
     /**
      * Resolves the tree represented by this ResolveFunc. Results for resolve might be cached. The
      * assumption is that multiple resolve calls on a ResolveFunc would return equivalent trees.
+     *
+     * @param resolveContext
+     * @param committedTree
+     * @param committedState
+     * @param stateUpdatesToApply
      */
-    Pair<Node, State> resolve();
+    Pair<Node<RenderContext>, State> resolve(
+        ResolveContext resolveContext,
+        @Nullable Node<RenderContext> committedTree,
+        @Nullable State committedState,
+        List<StateUpdate<State>> stateUpdatesToApply);
   }
 
   public interface Delegate<State> {
@@ -79,7 +90,7 @@ public class RenderState<State, RenderContext> {
 
   private @Nullable RenderTree mUIRenderTree;
   private @Nullable RenderResult<State> mCommittedRenderResult;
-  private @Nullable ResolveFunc<State> mLatestResolveFunc;
+  private @Nullable ResolveFunc<State, ?> mLatestResolveFunc;
   private int mExternalRootVersion = -1;
   private @Nullable RenderResultFuture<State, RenderContext> mRenderResultFuture;
   private int mNextSetRootId = 0;
@@ -100,7 +111,7 @@ public class RenderState<State, RenderContext> {
 
   @ThreadConfined(ThreadConfined.ANY)
   public void setVersionedTree(
-      ResolveFunc<State> resolveFunc,
+      ResolveFunc<State, ?> resolveFunc,
       int version,
       int widthSpec,
       int heightSpec,
@@ -109,12 +120,12 @@ public class RenderState<State, RenderContext> {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(ResolveFunc<State> resolveFunc) {
+  public void setTree(ResolveFunc<State, ?> resolveFunc) {
     setTreeInternal(resolveFunc, -1, UNSET, UNSET, null);
   }
 
   private void setTreeInternal(
-      ResolveFunc<State> resolveFunc,
+      ResolveFunc<State, ?> resolveFunc,
       int version,
       int widthSpec,
       int heightSpec,

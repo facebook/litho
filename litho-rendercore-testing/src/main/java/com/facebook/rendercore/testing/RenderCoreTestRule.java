@@ -32,9 +32,11 @@ import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderTreeHostView;
+import com.facebook.rendercore.ResolveContext;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.RootHostView;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import java.util.List;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -258,7 +260,11 @@ public class RenderCoreTestRule implements TestRule {
     }
 
     @Override
-    public Pair<Node, Object> resolve() {
+    public Pair<Node, Object> resolve(
+        ResolveContext resolveContext,
+        Node committedTree,
+        Object committedState,
+        List stateUpdatesToApply) {
       return new Pair<>(root, null);
     }
   }

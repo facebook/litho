@@ -21,8 +21,11 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.RenderState.ResolveFunc;
+import com.facebook.rendercore.StateUpdateReceiver.StateUpdate;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Result from resolving a {@link ResolveFunc}. A {@link RenderResult} from a previous computation
@@ -37,7 +40,7 @@ public class RenderResult<State> {
 
   public static <State, RenderContext> RenderResult<State> resolve(
       final Context context,
-      final ResolveFunc<State> resolveFunc,
+      final ResolveFunc<State, ?> resolveFunc,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State> previousResult,
@@ -53,7 +56,18 @@ public class RenderResult<State> {
     if (previousResult != null && resolveFunc == previousResult.getResolveFunc()) {
       result = new Pair<>(previousTree, previousState);
     } else {
-      result = resolveFunc.resolve();
+      result =
+          resolveFunc.resolve(
+              new ResolveContext(
+                  new StateUpdateReceiver() {
+                    @Override
+                    public void enqueueStateUpdate(StateUpdate stateUpdate) {
+                      // Does nothing. This will go away once we refactor RenderResult.resolve
+                    }
+                  }),
+              null,
+              null,
+              Collections.EMPTY_LIST);
     }
     final RenderResult renderResult;
 
@@ -101,7 +115,7 @@ public class RenderResult<State> {
       final LayoutContext c,
       final Node node,
       final Node.LayoutResult layoutResult,
-      final ResolveFunc<State> resolveFunc,
+      final ResolveFunc<State, ?> resolveFunc,
       final int widthSpec,
       final int heightSpec,
       final @Nullable State state) {
@@ -171,14 +185,19 @@ public class RenderResult<State> {
     return previousCache != null ? new LayoutCache(previousCache) : new LayoutCache(null);
   }
 
-  public static ResolveFunc<Void> wrapInResolveFunc(Node node) {
-    return wrapInResolveFunc(node, (Void) null);
+  public static ResolveFunc<Void, ?> wrapInResolveFunc(Node node) {
+    return wrapInResolveFunc(node, null);
   }
 
-  public static <T> ResolveFunc<T> wrapInResolveFunc(final Node node, final @Nullable T state) {
-    return new ResolveFunc<T>() {
+  public static <T, R> ResolveFunc<T, R> wrapInResolveFunc(
+      final Node<R> node, final @Nullable T state) {
+    return new ResolveFunc<T, R>() {
       @Override
-      public Pair<Node, T> resolve() {
+      public Pair<Node<R>, T> resolve(
+          ResolveContext resolveContext,
+          @Nullable Node<R> committedTree,
+          @Nullable T committedState,
+          List<StateUpdate<T>> stateUpdatesToApply) {
         return new Pair<>(node, state);
       }
     };

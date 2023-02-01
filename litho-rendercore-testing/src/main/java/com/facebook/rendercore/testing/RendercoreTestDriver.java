@@ -25,7 +25,9 @@ import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeHost;
+import com.facebook.rendercore.ResolveContext;
 import com.facebook.rendercore.RootHost;
+import java.util.List;
 
 /**
  * Utility methods to render a RenderCore {@link Node} into a {@link RootHost}.
@@ -181,7 +183,11 @@ public class RendercoreTestDriver {
     private static RenderState.ResolveFunc createLazyTree(final Node rootNode) {
       return new RenderState.ResolveFunc() {
         @Override
-        public Pair<Node, Object> resolve() {
+        public Pair<Node, Object> resolve(
+            ResolveContext resolveContext,
+            @Nullable Node committedTree,
+            @Nullable Object committedState,
+            List stateUpdatesToApply) {
           return new Pair<>(rootNode, null);
         }
       };
