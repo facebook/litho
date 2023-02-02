@@ -141,6 +141,7 @@ import com.facebook.samples.litho.onboarding.UserFeedWithStoriesKComponent
 import com.facebook.samples.litho.onboarding.model.FEED
 import com.facebook.samples.litho.onboarding.model.NEBULAS_POST
 import com.facebook.samples.litho.onboarding.model.USER_STORIES
+import com.facebook.samples.litho.playground.XMLPlaygroundActivity
 
 class Demos {
   companion object {
@@ -157,8 +158,10 @@ class Demos {
                               PlaygroundComponent.create(context).build()
                             },
                             SingleDemo(
-                                name = "Kotlin API Playground",
-                                component = PlaygroundKComponent()))))),
+                                name = "Kotlin API Playground", component = PlaygroundKComponent()),
+                            SingleDemo(
+                                name = "XML Playground",
+                                klass = XMLPlaygroundActivity::class.java))))),
             // Please keep this alphabetical with consistent naming and casing!
             DemoList(
                 name = "Kotlin API Demos",

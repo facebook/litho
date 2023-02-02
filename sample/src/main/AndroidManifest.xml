@@ -64,6 +64,9 @@
             android:name=".java.animations.transitions.TransitionsActivity"
             android:exported="true" />
         <activity
+            android:name=".playground.XMLPlaygroundActivity"
+            android:exported="true" />
+        <activity
             android:name=".java.animations.animationcallbacks.AnimationCallbacksActivity"
             android:exported="true" />
         <activity
