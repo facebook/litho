@@ -138,7 +138,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     void onPostDraw();
   }
 
-  @Nullable private ComponentTree mComponentTree;
+  private @Nullable ComponentTree mComponentTree;
   private final ComponentContext mComponentContext;
   private boolean mIsAttached;
   private boolean mIsAttachedForTest;
@@ -153,7 +153,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   private int mAnimatedHeight = -1;
   private OnDirtyMountListener mOnDirtyMountListener = null;
   private final Rect mRect = new Rect();
-  @Nullable private OnPostDrawListener mOnPostDrawListener = null;
+  private @Nullable OnPostDrawListener mOnPostDrawListener = null;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -168,13 +168,13 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   private ComponentTree mTemporaryDetachedComponent;
   private int mTransientStateCount;
   private boolean mDoMeasureInLayout;
-  @Nullable private Map<String, ComponentLogParams> mInvalidStateLogParams;
-  @Nullable private String mPreviousComponentSimpleName;
-  @Nullable private String mNullComponentCause;
-  @Nullable private MountStartupLoggingInfo mMountStartupLoggingInfo;
-  @Nullable private LithoHostListenerCoordinator mLithoHostListenerCoordinator;
+  private @Nullable Map<String, ComponentLogParams> mInvalidStateLogParams;
+  private @Nullable String mPreviousComponentSimpleName;
+  private @Nullable String mNullComponentCause;
+  private @Nullable MountStartupLoggingInfo mMountStartupLoggingInfo;
+  private @Nullable LithoHostListenerCoordinator mLithoHostListenerCoordinator;
   private boolean mIsMounting;
-  @Nullable private TreeState.TreeMountInfo mMountInfo;
+  private @Nullable TreeState.TreeMountInfo mMountInfo;
   public final int mViewAttributeFlags;
 
   /**
