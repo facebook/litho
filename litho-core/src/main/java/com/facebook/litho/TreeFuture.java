@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.WorkContinuationInstrumenter.markFailure;
@@ -70,18 +69,20 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
             new FutureTask<>(
                 new Callable<TreeFutureResult<T>>() {
                   @Override
-                  public @Nullable TreeFutureResult<T> call() {
+                  public TreeFutureResult<T> call() {
                     synchronized (TreeFuture.this) {
                       if (mReleased) {
-                        return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RELEASED);
+                        return TreeFutureResult.interruptWithMessage(
+                            FUTURE_RESULT_NULL_REASON_RELEASED);
                       }
                     }
                     final T result = calculate();
                     synchronized (TreeFuture.this) {
                       if (mReleased) {
-                        return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RELEASED);
+                        return TreeFutureResult.interruptWithMessage(
+                            FUTURE_RESULT_NULL_REASON_RELEASED);
                       } else {
-                        return new TreeFutureResult<T>(result);
+                        return TreeFutureResult.finishWithResult(result);
                       }
                     }
                   }
@@ -282,7 +283,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     final boolean shouldWaitForResult = !mFutureTask.isDone() && notRunningOnMyThread;
 
     if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
-      return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD);
+      return TreeFutureResult.interruptWithMessage(
+          FUTURE_RESULT_NULL_REASON_SYNC_RESULT_NON_MAIN_THREAD);
     }
 
     if (isMainThread() && shouldWaitForResult) {
@@ -299,7 +301,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
           ThreadUtils.tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
       didRaiseThreadPriority = true;
     } else {
-      originalThreadPriority = THREAD_PRIORITY_DEFAULT;
+      originalThreadPriority = Process.THREAD_PRIORITY_DEFAULT;
       didRaiseThreadPriority = false;
     }
 
@@ -344,7 +346,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
           mContinuationToken = null;
           try {
             // Resuming here. We are on the main-thread.
-            treeFutureResult = new TreeFutureResult<T>(resumeCalculation(treeFutureResult.result));
+            treeFutureResult =
+                TreeFutureResult.finishWithResult(resumeCalculation(treeFutureResult.result));
           } catch (Throwable th) {
             markFailure(token, th);
             throw th;
@@ -355,7 +358,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
           // This means that the bg task was interrupted and the UI thread will pick up the rest
           // of the work. No need to return a LayoutState.
           treeFutureResult =
-              new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD);
+              TreeFutureResult.interruptWithMessage(
+                  FUTURE_RESULT_NULL_REASON_RESUME_NON_MAIN_THREAD);
           mContinuationToken = onOfferWorkForContinuation("offerPartial", mInterruptToken);
 
           mInterruptToken = null;
@@ -376,7 +380,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
 
     synchronized (TreeFuture.this) {
       if (mReleased) {
-        return new TreeFutureResult<T>(FUTURE_RESULT_NULL_REASON_RELEASED);
+        return TreeFutureResult.interruptWithMessage(FUTURE_RESULT_NULL_REASON_RELEASED);
       }
       return treeFutureResult;
     }
@@ -391,18 +395,28 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     public final @Nullable String message;
 
     /** Initialise the TreeFutureResult with a non-null result. */
-    public TreeFutureResult(T result) {
+    private TreeFutureResult(T result) {
       this.result = result;
       this.message = null;
     }
 
     /**
      * Initialise the TreeFutureResult with a message explaining why the result is null. Use this
-     * ctor when null results should be produced.
+     * constructor when null results should be produced.
      */
-    public TreeFutureResult(String message) {
+    private TreeFutureResult(String message) {
       this.result = null;
       this.message = message;
+    }
+
+    public static <T extends PotentiallyPartialResult> TreeFutureResult<T> finishWithResult(
+        T result) {
+      return new TreeFutureResult<>(result);
+    }
+
+    public static <T extends PotentiallyPartialResult> TreeFutureResult<T> interruptWithMessage(
+        String message) {
+      return new TreeFutureResult<>(message);
     }
   }
 }
