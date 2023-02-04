@@ -18,23 +18,33 @@ package com.facebook.samples.lithobarebones;
 
 import android.app.Activity;
 import android.os.Bundle;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.sections.widget.RecyclerCollectionEventsController;
 
 public class SampleActivity extends Activity {
+
+  private RecyclerCollectionEventsController controller;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    controller = new RecyclerCollectionEventsController();
 
     final ComponentContext context = new ComponentContext(this);
+    final MySimpleCallback callback = new MySimpleCallback();
+    final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
 
+    // We use a wrapper layout, so we can set visibility events.
     final Component component =
-        RecyclerCollectionComponent.create(context)
-            .disablePTR(true)
-            .section(ListSection.create(new SectionContext(context)).build())
+        MyLayout.create(context)
+            .eventsController(controller)
+            .callback(callback)
+            .itemTouchHelper(itemTouchHelper)
             .build();
 
     setContentView(LithoView.create(context, component));
