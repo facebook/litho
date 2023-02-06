@@ -31,6 +31,7 @@ import com.facebook.litho.StateUpdateTestComponent.TestStateContainer;
 import com.facebook.litho.components.StateUpdateTestLayout;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
@@ -362,11 +363,8 @@ public class StateUpdatesTest {
         new Thread() {
           @Override
           public void run() {
-            try {
-              waitForFirstThreadToStart.await();
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+
+            ThreadTestingUtils.failSilentlyIfInterrupted(waitForFirstThreadToStart::await);
             componentTree.setRootAndSizeSpecSync(
                 StateUpdateTestLayout.create(mContext)
                     .awaitable(null)
@@ -383,11 +381,7 @@ public class StateUpdatesTest {
     thread1.start();
     thread2.start();
 
-    try {
-      check.await(5000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(() -> check.await(5000, TimeUnit.MILLISECONDS));
 
     assertThat(getRenderStateHandler().getInitialStateContainer().mInitialStates.isEmpty())
         .isTrue();

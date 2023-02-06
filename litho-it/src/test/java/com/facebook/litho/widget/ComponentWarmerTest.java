@@ -34,6 +34,7 @@ import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -176,11 +177,11 @@ public class ComponentWarmerTest {
             childrenResolved[0] = true;
 
             waitToResolveChild.countDown();
-            try {
-              waitToCancel.await(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+
+            ThreadTestingUtils.failSilentlyIfInterrupted(
+                () -> {
+                  waitToCancel.await(5, TimeUnit.SECONDS);
+                });
 
             return Row.create(c).build();
           }
@@ -205,14 +206,12 @@ public class ComponentWarmerTest {
 
     warmer.prepareAsync("tag1", ComponentRenderInfo.create().component(component).build());
 
-    try {
-      waitToResolveChild.await(5, TimeUnit.SECONDS);
-      warmer.cancelPrepare("tag1");
-      waitToCancel.countDown();
-
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> {
+          waitToResolveChild.await(5, TimeUnit.SECONDS);
+          warmer.cancelPrepare("tag1");
+          waitToCancel.countDown();
+        });
 
     assertThat(childrenResolved[0]).isTrue();
     assertThat(childrenResolved[1]).isFalse();
@@ -247,11 +246,9 @@ public class ComponentWarmerTest {
           protected Component onCreateLayout(ComponentContext c) {
             childrenResolved[0] = true;
             waitToResolveChild.countDown();
-            try {
-              boolean wait = waitToCancel.await(7, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+
+            ThreadTestingUtils.failSilentlyIfInterrupted(
+                () -> waitToCancel.await(7, TimeUnit.SECONDS));
 
             return Row.create(c).build();
           }
@@ -283,20 +280,14 @@ public class ComponentWarmerTest {
           }
         });
 
-    try {
-      waitToResolveChild.await(5, TimeUnit.SECONDS);
-      warmer.cancelPrepare("tag1");
-      waitToCancel.countDown();
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> {
+          waitToResolveChild.await(5, TimeUnit.SECONDS);
+          warmer.cancelPrepare("tag1");
+          waitToCancel.countDown();
+        });
 
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-    try {
-      waitToAssert.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(() -> waitToAssert.await(5, TimeUnit.SECONDS));
 
     assertThat(childrenResolved[0]).isTrue();
     assertThat(childrenResolved[1]).isFalse();

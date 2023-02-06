@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.RenderTree;
@@ -180,11 +181,7 @@ public class ResolveTreeFutureTest {
 
   /** Puts the current thread to sleep for 20 milliseconds. */
   private static void shortWait() {
-    try {
-      Thread.sleep(20);
-    } catch (InterruptedException e) {
-      // Ignore
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(() -> Thread.sleep(20));
   }
 
   /**

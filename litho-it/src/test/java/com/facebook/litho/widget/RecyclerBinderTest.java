@@ -67,6 +67,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -4590,21 +4591,17 @@ public class RecyclerBinderTest {
               syncLayouts.set(finalI, ThreadUtils.isMainThread() ? SYNC : ASYNC);
 
               if (finalI == 1) {
-                try {
-                  lockInitRangeFinishes1.await(5, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                  e.printStackTrace();
-                }
+
+                ThreadTestingUtils.failSilentlyIfInterrupted(
+                    () -> lockInitRangeFinishes1.await(5, TimeUnit.SECONDS));
 
                 lockTest.countDown();
               }
 
               if (finalI == 2) {
-                try {
-                  lockInitRangeFinishes2.await(5, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                  e.printStackTrace();
-                }
+
+                ThreadTestingUtils.failSilentlyIfInterrupted(
+                    () -> lockInitRangeFinishes2.await(5, TimeUnit.SECONDS));
 
                 lockTest.countDown();
               }
@@ -4635,20 +4632,13 @@ public class RecyclerBinderTest {
             0, recyclerBinder.getComponentTreeHolders()),
         OrientationHelper.VERTICAL);
 
-    try {
-      lockRangeIsNotNull.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> lockRangeIsNotNull.await(5, TimeUnit.SECONDS));
 
     lockInitRangeFinishes1.countDown();
     lockInitRangeFinishes2.countDown();
 
-    try {
-      lockTest.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(() -> lockTest.await(5, TimeUnit.SECONDS));
 
     assertThat(recyclerBinder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
     assertThat(syncLayouts.get(0)).isEqualTo(SYNC);
@@ -4694,11 +4684,9 @@ public class RecyclerBinderTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            try {
-              lockInitRangeLayout.await(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+
+            ThreadTestingUtils.failSilentlyIfInterrupted(
+                () -> lockInitRangeLayout.await(5, TimeUnit.SECONDS));
 
             syncLayouts.set(0, ThreadUtils.isMainThread() ? SYNC : ASYNC);
             lockTest.countDown();
@@ -4748,11 +4736,7 @@ public class RecyclerBinderTest {
             0, recyclerBinder.getComponentTreeHolders()),
         OrientationHelper.VERTICAL);
 
-    try {
-      lockTest.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(() -> lockTest.await(5, TimeUnit.SECONDS));
 
     assertThat(recyclerBinder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
     assertThat(syncLayouts.get(0)).isEqualTo(SYNC);
@@ -5817,11 +5801,8 @@ public class RecyclerBinderTest {
             })
         .start();
 
-    try {
-      assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
+    ThreadTestingUtils.failIfInterrupted(
+        () -> assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue());
   }
 
   private static class NoOpChangeSetCompleteCallback implements ChangeSetCompleteCallback {

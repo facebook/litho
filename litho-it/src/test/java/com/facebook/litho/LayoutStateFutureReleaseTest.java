@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import android.os.Looper;
 import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.RunnableHandler;
@@ -199,11 +200,8 @@ public class LayoutStateFutureReleaseTest {
               lsf.release();
               scheduleSyncLayout.countDown();
 
-              try {
-                finishBgLayout.await(5000, TimeUnit.MILLISECONDS);
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              }
+              ThreadTestingUtils.failSilentlyIfInterrupted(
+                  () -> finishBgLayout.await(5000, TimeUnit.MILLISECONDS));
 
               waitBeforeAsserts.countDown();
             } else {
@@ -216,19 +214,14 @@ public class LayoutStateFutureReleaseTest {
     componentTree.setRootAndSizeSpecAsync(column, mWidthSpec, mHeightSpec);
     runToEndOfTasks();
 
-    try {
-      scheduleSyncLayout.await(5000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> scheduleSyncLayout.await(5000, TimeUnit.MILLISECONDS));
 
     componentTree.setRootAndSizeSpecSync(column, mWidthSpec, mHeightSpec, new Size());
 
-    try {
-      waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS));
+
     assertNotNull(layoutStateFutures[0]);
     assertNotNull(layoutStateFutures[1]);
   }
@@ -274,11 +267,7 @@ public class LayoutStateFutureReleaseTest {
       }
 
       if (wait != null) {
-        try {
-          wait.await(5000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+        ThreadTestingUtils.failSilentlyIfInterrupted(() -> wait.await(5000, TimeUnit.MILLISECONDS));
       }
 
       hasRunLayout = true;

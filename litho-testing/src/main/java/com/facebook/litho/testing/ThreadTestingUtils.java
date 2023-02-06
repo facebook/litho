@@ -54,4 +54,47 @@ public class ThreadTestingUtils {
             })
         .start();
   }
+
+  /**
+   * Ignore the InterruptedException if that happens, instead of throwing.
+   *
+   * <p>Example:
+   *
+   * <pre><code>
+   *   failSilentlyIfInterrupted(() ->
+   *      // execute method that may throw InterruptedException
+   *   );
+   * </code></pre>
+   */
+  public static void failSilentlyIfInterrupted(final RunnableWithInterruptedException runnable) {
+    try {
+      runnable.run();
+    } catch (InterruptedException ignore) {
+      // no ops
+    }
+  }
+
+  /**
+   * Fail with RuntimeException instead of InterruptedException if that happens.
+   *
+   * <p>Example:
+   *
+   * <pre><code>
+   *   failIfInterrupted(() ->
+   *      // execute method that may throw InterruptedException
+   *   );
+   * </code></pre>
+   */
+  public static void failIfInterrupted(final RunnableWithInterruptedException runnable) {
+    try {
+      runnable.run();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @FunctionalInterface
+  public interface RunnableWithInterruptedException {
+    void run() throws InterruptedException;
+  }
 }

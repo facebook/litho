@@ -40,6 +40,7 @@ import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.ThreadTestingUtils;
 import com.facebook.litho.testing.TimeOutSemaphore;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -288,12 +289,13 @@ public class ComponentTreeTest {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
 
-            try {
-              syncLatch.countDown();
-              assertThat(asyncLatch.await(5, TimeUnit.SECONDS)).describedAs("Timeout!").isTrue();
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+            ThreadTestingUtils.failSilentlyIfInterrupted(
+                () -> {
+                  syncLatch.countDown();
+                  assertThat(asyncLatch.await(5, TimeUnit.SECONDS))
+                      .describedAs("Timeout!")
+                      .isTrue();
+                });
             innerComponentTree.setVersionedRootAndSizeSpec(
                 new InlineLayoutSpec() {},
                 asyncWidthSpec,
@@ -2131,11 +2133,8 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(root2);
 
-    try {
-      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS));
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
     ComponentTree.LayoutStateFuture layoutStateFuture =
@@ -2187,11 +2186,8 @@ public class ComponentTreeTest {
     componentTree.setRootAsync(root2);
 
     // Wait for first thread to get into onCreateLayout
-    try {
-      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS));
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
 
@@ -2249,11 +2245,8 @@ public class ComponentTreeTest {
     componentTree.setRootAsync(root2);
 
     // Wait for first thread to get into onCreateLayout
-    try {
-      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    ThreadTestingUtils.failSilentlyIfInterrupted(
+        () -> unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS));
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
 
@@ -2401,11 +2394,7 @@ public class ComponentTreeTest {
     ComponentTree.LayoutStateFuture future = componentTree.getLayoutStateFutures().get(0);
     int timeSpentWaiting = 0;
     while (future.getWaitingCount() != expectedCount && timeSpentWaiting < 5000) {
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      ThreadTestingUtils.failIfInterrupted(() -> Thread.sleep(10));
       timeSpentWaiting += 10;
     }
 
@@ -2419,11 +2408,7 @@ public class ComponentTreeTest {
   private static void waitForFutureToBecomeInterrupted(ComponentTree.LayoutStateFuture future) {
     int timeSpentWaiting = 0;
     while (!future.isInterruptRequested() && timeSpentWaiting < 5000) {
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      ThreadTestingUtils.failIfInterrupted(() -> Thread.sleep(10));
       timeSpentWaiting += 10;
     }
 
