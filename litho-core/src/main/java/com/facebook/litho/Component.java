@@ -1072,6 +1072,8 @@ public abstract class Component
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
         Component component) {
+      Preconditions.checkNotNull(c);
+
       mResourceResolver = c.getResourceResolver();
       mComponent = component;
       mContext = c;
