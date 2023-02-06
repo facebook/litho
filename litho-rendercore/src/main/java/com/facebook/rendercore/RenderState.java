@@ -57,7 +57,7 @@ public class RenderState<State, RenderContext> {
      * @param stateUpdatesToApply
      */
     Pair<Node<RenderContext>, State> resolve(
-        ResolveContext resolveContext,
+        ResolveContext<RenderContext> resolveContext,
         @Nullable Node<RenderContext> committedTree,
         @Nullable State committedState,
         List<StateUpdate<State>> stateUpdatesToApply);

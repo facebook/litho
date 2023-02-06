@@ -51,7 +51,8 @@ public class RenderResult<State, RenderContext> {
 
     result =
         resolveFunc.resolve(
-            new ResolveContext(
+            new ResolveContext<>(
+                renderContext,
                 new StateUpdateReceiver() {
                   @Override
                   public void enqueueStateUpdate(StateUpdate stateUpdate) {
@@ -190,7 +191,7 @@ public class RenderResult<State, RenderContext> {
     return new ResolveFunc<T, R>() {
       @Override
       public Pair<Node<R>, T> resolve(
-          ResolveContext resolveContext,
+          ResolveContext<R> resolveContext,
           @Nullable Node<R> committedTree,
           @Nullable T committedState,
           List<StateUpdate<T>> stateUpdatesToApply) {
