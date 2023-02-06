@@ -3119,10 +3119,8 @@ public class RecyclerBinder
           .registerPostDispatchDrawListener(mPostDispatchDrawListener);
     } else if (view.getViewTreeObserver() != null) {
       view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
-      if (ComponentsConfiguration.fixMemoryLeakInRecyclerBinder) {
-        // To make sure we unregister the OnPreDrawListener before RecyclerView is detached.
-        view.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
-      }
+      // To make sure we unregister the OnPreDrawListener before RecyclerView is detached.
+      view.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
     }
   }
 
