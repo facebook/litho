@@ -2103,8 +2103,12 @@ public class ComponentTree
                 currentNode,
                 null,
                 localResolveVersion,
-                mMoveLayoutsBetweenThreads
-                    || mComponentsConfiguration.getUseCancelableLayoutFutures(),
+                // If sync operations are interruptible and happen on background thread, which could
+                // end up being moved to UI thread with null result and causing crash later. To
+                // prevent that we mark it as Non-Interruptible.
+                !LayoutState.isFromSyncLayout(source)
+                    && (mMoveLayoutsBetweenThreads
+                        || mComponentsConfiguration.getUseCancelableLayoutFutures()),
                 widthSpec,
                 heightSpec),
             mResolveResultFutures,
@@ -3130,8 +3134,7 @@ public class ComponentTree
     @Override
     protected LayoutState calculate() {
       @Nullable
-      LayoutStateFuture layoutStateFuture =
-          mMoveOperationsBetweenThreads ? LayoutStateFuture.this : null;
+      LayoutStateFuture layoutStateFuture = mIsInterruptionEnabled ? LayoutStateFuture.this : null;
 
       final ComponentContext contextWithStateHandler;
       final LayoutState previousLayoutState;

@@ -186,8 +186,7 @@ public class LayoutStateFutureReleaseTest {
     final TreeFuture[] layoutStateFutures = new TreeFuture[2];
 
     // Testing scenario: we schedule a LSF on bg thread which gets released before compat UI thread
-    // layout
-    // is scheduled.
+    // layout is scheduled.
     child1.waitActions =
         new WaitActions() {
           @Override
@@ -244,18 +243,20 @@ public class LayoutStateFutureReleaseTest {
 
   class TestChildComponent extends Component {
 
-    private WaitActions waitActions;
+    private @Nullable WaitActions waitActions;
+    private @Nullable CountDownLatch wait;
+    private @Nullable CountDownLatch unlockFinishedLayout;
+    private final List<TreeFuture> mLayoutStateFutureList;
     boolean hasRunLayout;
-    CountDownLatch wait;
-    CountDownLatch unlockFinishedLayout;
-    List<TreeFuture> mLayoutStateFutureList;
 
     protected TestChildComponent() {
       this(null, null, null);
     }
 
     protected TestChildComponent(
-        CountDownLatch wait, CountDownLatch unlockFinishedLayout, WaitActions waitActions) {
+        @Nullable CountDownLatch wait,
+        @Nullable CountDownLatch unlockFinishedLayout,
+        @Nullable WaitActions waitActions) {
       this.wait = wait;
       this.unlockFinishedLayout = unlockFinishedLayout;
       this.waitActions = waitActions;

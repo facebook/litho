@@ -58,12 +58,15 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   private volatile boolean mReleased = false;
 
   protected final RunnableFuture<TreeFutureResult<T>> mFutureTask;
-  protected final boolean mMoveOperationsBetweenThreads;
+  protected final boolean mIsInterruptionEnabled;
 
   protected boolean mEnableEarlyInterrupt = false;
 
-  public TreeFuture(boolean moveOperationsBetweenThreads) {
-    mMoveOperationsBetweenThreads = moveOperationsBetweenThreads;
+  public TreeFuture(boolean isInterruptionEnabled) {
+    mIsInterruptionEnabled = isInterruptionEnabled;
+    if (!isInterruptionEnabled) {
+      mInterruptState.set(NON_INTERRUPTIBLE);
+    }
     this.mFutureTask =
         FutureInstrumenter.instrument(
             new FutureTask<>(
@@ -124,6 +127,11 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     return mInterruptState.get() == INTERRUPTED;
   }
 
+  /** @return {@code true} if this future is interruptible. */
+  boolean isInterruptible() {
+    return mInterruptState.get() == INTERRUPTIBLE;
+  }
+
   void unregisterForResponse() {
     final int newRefCount = mRefCount.decrementAndGet();
 
@@ -140,7 +148,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    * <p>The usage of AtomicInteger for interrupt state is just to make it lockless.
    */
   boolean tryRegisterForResponse(boolean waitingFromSyncLayout) {
-    if (waitingFromSyncLayout && mMoveOperationsBetweenThreads && !isMainThread()) {
+    if (waitingFromSyncLayout && mIsInterruptionEnabled && !isMainThread()) {
       int state = mInterruptState.get();
       if (state == INTERRUPTED) {
         return false;
@@ -256,7 +264,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     final boolean isRunningOnDifferentThread =
         !mFutureTask.isDone() && runningThreadId != -1 && runningThreadId != Process.myTid();
 
-    if (mMoveOperationsBetweenThreads && isRunningOnDifferentThread && isMainThread()) {
+    if (mIsInterruptionEnabled && isRunningOnDifferentThread && isMainThread()) {
       tryMoveToInterruptedState();
     }
   }
@@ -290,7 +298,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     if (isMainThread() && shouldWaitForResult) {
       // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
       // the bg task is interrupted.
-      if (mMoveOperationsBetweenThreads) {
+      if (mIsInterruptionEnabled) {
         if (tryMoveToInterruptedState()) {
           mInterruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculate");
