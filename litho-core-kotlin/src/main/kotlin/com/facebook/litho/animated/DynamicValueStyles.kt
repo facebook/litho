@@ -33,7 +33,6 @@ import com.facebook.litho.DynamicValue
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.exhaustive
 import com.facebook.litho.getOrCreateCommonDynamicPropsHolder
 
 /** Enums for [DynamicStyleItem]. */
@@ -72,7 +71,7 @@ internal data class DynamicStyleItem(
       DynamicField.SCALE_Y -> dynamicProps.put(KEY_SCALE_Y, value)
       DynamicField.TRANSLATION_X -> dynamicProps.put(KEY_TRANSLATION_X, value)
       DynamicField.TRANSLATION_Y -> dynamicProps.put(KEY_TRANSLATION_Y, value)
-    }.exhaustive
+    }
   }
 }
 

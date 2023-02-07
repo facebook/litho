@@ -23,7 +23,6 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaDirection
@@ -88,7 +87,7 @@ internal data class FlexboxDimenStyleItem(
       FlexboxDimenField.POSITION_HORIZONTAL ->
           commonProps.positionPx(YogaEdge.HORIZONTAL, pixelValue)
       FlexboxDimenField.POSITION_VERTICAL -> commonProps.positionPx(YogaEdge.VERTICAL, pixelValue)
-    }.exhaustive
+    }
   }
 }
 
@@ -104,7 +103,7 @@ internal class FloatStyleItem(override val field: FlexboxFloatField, override va
       FlexboxFloatField.FLEX_SHRINK -> commonProps.flexShrink(value)
       FlexboxFloatField.FLEX_BASIS_PERCENT -> commonProps.flexBasisPercent(value)
       FlexboxFloatField.ASPECT_RATIO -> commonProps.aspectRatio(value)
-    }.exhaustive
+    }
   }
 }
 
@@ -127,7 +126,7 @@ internal class FlexboxObjectStyleItem(
           value?.let { commonProps.isReferenceBaseline(it as Boolean) }
       FlexboxObjectField.USE_HEIGHT_AS_BASELINE ->
           value?.let { commonProps.useHeightAsBaseline(it as Boolean) }
-    }.exhaustive
+    }
   }
 }
 

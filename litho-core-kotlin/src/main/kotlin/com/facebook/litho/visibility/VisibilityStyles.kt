@@ -28,7 +28,6 @@ import com.facebook.litho.UnfocusedVisibleEvent
 import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
 import com.facebook.litho.eventHandler
-import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [VisibilityStyleItem]. */
@@ -71,7 +70,7 @@ internal data class VisibilityStyleItem(
       VisibilityField.ON_VISIBILITY_CHANGED, ->
           commonProps.visibilityChangedHandler(
               eventHandler(value as (VisibilityChangedEvent) -> Unit))
-    }.exhaustive
+    }
   }
 }
 
@@ -85,7 +84,7 @@ internal class VisibilityFloatStyleItem(
     when (field) {
       VisibilityFloatField.VISIBLE_HEIGHT_RATIO -> commonProps.visibleHeightRatio(value)
       VisibilityFloatField.VISIBLE_WIDTH_RATIO -> commonProps.visibleWidthRatio(value)
-    }.exhaustive
+    }
   }
 }
 

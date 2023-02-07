@@ -21,9 +21,3 @@ import android.app.Activity
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))
 }
-
-/**
- * Tiny trick to make the compiler think a when result is used and enforce exhaustiveness of cases.
- */
-internal val Any?.exhaustive: Unit
-  get() = Unit

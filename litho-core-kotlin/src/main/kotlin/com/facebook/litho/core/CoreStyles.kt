@@ -22,7 +22,6 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.StyleItemField
-import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaEdge
 
@@ -101,7 +100,7 @@ internal data class CoreDimenStyleItem(
       CoreDimenField.MARGIN_HORIZONTAL -> commonProps.marginPx(YogaEdge.HORIZONTAL, pixelValue)
       CoreDimenField.MARGIN_VERTICAL -> commonProps.marginPx(YogaEdge.VERTICAL, pixelValue)
       CoreDimenField.MARGIN_ALL -> commonProps.marginPx(YogaEdge.ALL, pixelValue)
-    }.exhaustive
+    }
   }
 }
 
@@ -119,7 +118,7 @@ internal class CoreFloatStyleItem(override val field: CoreFloatField, override v
       CoreFloatField.MAX_WIDTH_PERCENT -> commonProps.maxWidthPercent(value)
       CoreFloatField.MIN_HEIGHT_PERCENT -> commonProps.minHeightPercent(value)
       CoreFloatField.MAX_HEIGHT_PERCENT -> commonProps.maxHeightPercent(value)
-    }.exhaustive
+    }
   }
 }
 

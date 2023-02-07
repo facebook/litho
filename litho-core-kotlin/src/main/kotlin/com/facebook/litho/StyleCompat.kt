@@ -332,7 +332,7 @@ class JavaStyle {
       YogaEdge.END -> style = style.margin(end = valueDip)
       YogaEdge.HORIZONTAL -> style = style.margin(horizontal = valueDip)
       YogaEdge.ALL -> style = style.margin(all = valueDip)
-    }.exhaustive
+    }
     return this
   }
 
@@ -348,7 +348,7 @@ class JavaStyle {
       YogaEdge.END -> style = style.margin(end = valuePx)
       YogaEdge.HORIZONTAL -> style = style.margin(horizontal = valuePx)
       YogaEdge.ALL -> style = style.margin(all = valuePx)
-    }.exhaustive
+    }
     return this
   }
 
@@ -364,7 +364,7 @@ class JavaStyle {
       YogaEdge.END -> style = style.padding(end = valueDip)
       YogaEdge.HORIZONTAL -> style = style.padding(horizontal = valueDip)
       YogaEdge.ALL -> style = style.padding(all = valueDip)
-    }.exhaustive
+    }
     return this
   }
 
@@ -380,7 +380,7 @@ class JavaStyle {
       YogaEdge.END -> style = style.padding(end = valuePx)
       YogaEdge.HORIZONTAL -> style = style.padding(horizontal = valuePx)
       YogaEdge.ALL -> style = style.padding(all = valuePx)
-    }.exhaustive
+    }
     return this
   }
 
@@ -396,7 +396,7 @@ class JavaStyle {
       YogaEdge.END -> style = style.position(end = valueDip)
       YogaEdge.HORIZONTAL -> style = style.position(horizontal = valueDip)
       YogaEdge.ALL -> style = style.position(all = valueDip)
-    }.exhaustive
+    }
     return this
   }
 
@@ -412,7 +412,7 @@ class JavaStyle {
       YogaEdge.END -> style = style.position(end = valuePx)
       YogaEdge.HORIZONTAL -> style = style.position(horizontal = valuePx)
       YogaEdge.ALL -> style = style.position(all = valuePx)
-    }.exhaustive
+    }
     return this
   }
 

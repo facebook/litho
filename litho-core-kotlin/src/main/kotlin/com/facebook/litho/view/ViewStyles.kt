@@ -36,7 +36,6 @@ import com.facebook.litho.TouchEvent
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
-import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaEdge
 
@@ -136,7 +135,7 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
       ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
       ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
       ObjectField.ENABLED -> commonProps.enabled(value as Boolean)
-    }.exhaustive
+    }
   }
 }
 
@@ -152,7 +151,7 @@ internal data class FloatStyleItem(override val field: FloatField, override val 
       FloatField.ROTATION_X -> commonProps.rotationX(value)
       FloatField.ROTATION_Y -> commonProps.rotationY(value)
       FloatField.SCALE -> commonProps.scale(value)
-    }.exhaustive
+    }
   }
 }
 
@@ -176,7 +175,7 @@ internal data class DimenStyleItem(override val field: DimenField, override val 
           commonProps.touchExpansionPx(YogaEdge.VERTICAL, pixelValue)
       DimenField.TOUCH_EXPANSION_ALL -> commonProps.touchExpansionPx(YogaEdge.ALL, pixelValue)
       DimenField.ELEVATION -> commonProps.shadowElevationPx(pixelValue.toFloat())
-    }.exhaustive
+    }
   }
 }
 

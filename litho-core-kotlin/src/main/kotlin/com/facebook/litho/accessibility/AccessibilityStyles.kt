@@ -35,7 +35,6 @@ import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_AC
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES
 import com.facebook.litho.eventHandler
-import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [AccessibilityStyleItem]. */
@@ -96,7 +95,7 @@ internal data class AccessibilityStyleItem(
       AccessibilityField.SEND_ACCESSIBILITY_EVENT_UNCHECKED ->
           commonProps.sendAccessibilityEventUncheckedHandler(
               eventHandler(value as (SendAccessibilityEventUncheckedEvent) -> Unit))
-    }.exhaustive
+    }
   }
 }
 
