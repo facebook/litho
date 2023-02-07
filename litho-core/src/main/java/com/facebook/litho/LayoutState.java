@@ -1207,27 +1207,13 @@ public class LayoutState
       @Nullable LayoutState currentLayoutState,
       final @Nullable PerfEvent logLayoutState) {
 
-    final @Nullable DiffNode diffTreeRoot;
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    @Nullable DiffNode diffTreeRoot = null;
     final @Nullable LithoNode currentRoot;
 
-    if (currentLayoutState != null) {
-      synchronized (currentLayoutState) {
-        diffTreeRoot = currentLayoutState.mDiffTreeRoot;
-        currentRoot = currentLayoutState.mRoot;
-        if (!c.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation()) {
-          final boolean isReconcilable =
-              Resolver.isReconcilable(
-                  c, component, Preconditions.checkNotNull(treeState), currentRoot);
-          if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
-            currentLayoutState.mRoot = null;
-            currentLayoutState.mLayoutResult = null;
-          }
-        }
-      }
-    } else {
-      diffTreeRoot = null;
-      currentRoot = null;
-    }
+    ResolveStateContext rsc;
+    LithoNode node;
+    LayoutState layoutState;
 
     // Need to save and restore the previous state context is only relevant for tests.
     // In certain tests that update state (sync), the state update triggers a layout calculation
@@ -1237,10 +1223,32 @@ public class LayoutState
     final @Nullable CalculationStateContext prevContextInTests = c.getCalculationStateContext();
 
     try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("resolve:" + component.getSimpleName());
+      }
+
+      if (currentLayoutState != null) {
+        synchronized (currentLayoutState) {
+          diffTreeRoot = currentLayoutState.mDiffTreeRoot;
+          currentRoot = currentLayoutState.mRoot;
+          if (!c.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation()) {
+            final boolean isReconcilable =
+                Resolver.isReconcilable(
+                    c, component, Preconditions.checkNotNull(treeState), currentRoot);
+            // Release the current InternalNode tree if it is not reconcilable.
+            if (!isReconcilable) {
+              currentLayoutState.mRoot = null;
+              currentLayoutState.mLayoutResult = null;
+            }
+          }
+        }
+      } else {
+        currentRoot = null;
+      }
 
       /* ** Resolve: Start ** */
 
-      final ResolveStateContext rsc =
+      rsc =
           new ResolveStateContext(
               new MeasuredResultCache(),
               treeState,
@@ -1252,13 +1260,13 @@ public class LayoutState
       c.setRenderStateContext(rsc);
 
       // 1. Resolve Tree
-      final @Nullable LithoNode node = Resolver.resolveTree(rsc, c, component);
+      node = Resolver.resolveTree(rsc, c, component);
 
       c.clearCalculationStateContext();
 
       /* ** Resolve: End ** */
 
-      final LayoutState layoutState = new LayoutState(c, component, treeState, currentLayoutState);
+      layoutState = new LayoutState(c, component, treeState, currentLayoutState);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
@@ -1282,7 +1290,18 @@ public class LayoutState
       // cache should be frozen for a completely resolved tree
       rsc.getCache().freezeCache();
 
-      /* ** Layout: Start ** */
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+
+    /* ** Layout: Start ** */
+
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("layout:" + component.getSimpleName());
+      }
 
       layoutState.mRoot = node;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
@@ -1339,6 +1358,10 @@ public class LayoutState
       return layoutState;
 
     } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+
       // Restore the previous context. Should only be non-null in test cases.
       c.setCalculationStateContext(prevContextInTests);
     }

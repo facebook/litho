@@ -50,22 +50,11 @@ class Layout {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    final LithoLayoutResult result;
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("measureTree:" + node.getHeadComponent().getSimpleName());
-    }
-
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
             androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
 
-    result = node.calculateLayout(context, widthSpec, heightSpec);
-
-    if (isTracing) {
-      ComponentsSystrace.endSection(/* measureTree */ );
-    }
+    final LithoLayoutResult result = node.calculateLayout(context, widthSpec, heightSpec);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");

@@ -3134,45 +3134,42 @@ public class ComponentTree
 
     @Override
     protected LayoutState calculate() {
-      @Nullable
-      LayoutStateFuture layoutStateFuture = mIsInterruptionEnabled ? LayoutStateFuture.this : null;
-
-      final ComponentContext contextWithStateHandler;
-      final LayoutState previousLayoutState;
-
-      final TreeState treeState;
-      synchronized (ComponentTree.this) {
-        treeState =
-            ComponentTree.this.mTreeState == null
-                ? new TreeState()
-                : new TreeState(ComponentTree.this.mTreeState);
-
-        previousLayoutState = mCommittedLayoutState;
-        contextWithStateHandler = new ComponentContext(context, treeProps);
-
-        treeState.registerRenderState();
-        treeState.registerLayoutState();
-      }
 
       final boolean isTracing = ComponentsSystrace.isTracing();
       if (isTracing) {
         if (extraAttribution != null) {
           ComponentsSystrace.beginSection("extra:" + extraAttribution);
         }
-        ComponentsSystrace.beginSectionWithArgs(
-                new StringBuilder("LayoutState.calculate_")
-                    .append(root.getSimpleName())
-                    .append("_")
-                    .append(layoutSourceToString(source))
-                    .toString())
+        ComponentsSystrace.beginSectionWithArgs("render:" + root.getSimpleName())
             .arg("treeId", ComponentTree.this.mId)
             .arg("rootId", root.getId())
             .arg("widthSpec", SizeSpec.toString(widthSpec))
             .arg("heightSpec", SizeSpec.toString(heightSpec))
             .flush();
       }
-
       try {
+
+        @Nullable
+        LayoutStateFuture layoutStateFuture =
+            mIsInterruptionEnabled ? LayoutStateFuture.this : null;
+
+        final ComponentContext contextWithStateHandler;
+        final LayoutState previousLayoutState;
+
+        final TreeState treeState;
+        synchronized (ComponentTree.this) {
+          treeState =
+              ComponentTree.this.mTreeState == null
+                  ? new TreeState()
+                  : new TreeState(ComponentTree.this.mTreeState);
+
+          previousLayoutState = mCommittedLayoutState;
+          contextWithStateHandler = new ComponentContext(context, treeProps);
+
+          treeState.registerRenderState();
+          treeState.registerLayoutState();
+        }
+
         final ComponentsLogger logger = contextWithStateHandler.getLogger();
         final PerfEvent logLayoutState =
             logger != null
