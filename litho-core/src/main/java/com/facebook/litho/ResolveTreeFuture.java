@@ -170,31 +170,48 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       throw new IllegalStateException("RenderStateContext cannot be null during resume");
     }
 
-    final @Nullable CalculationStateContext previousStateContext =
-        mComponentContext.getCalculationStateContext();
-
-    final @Nullable LithoNode node;
+    final boolean isTracing = ComponentsSystrace.isTracing();
     try {
-      mComponentContext.setRenderStateContext(mResolveStateContextForResume);
-      node = Resolver.resumeResolvingTree(mResolveStateContextForResume, partialResult.node);
+      if (isTracing) {
+        if (mExtraAttribution != null) {
+          ComponentsSystrace.beginSection("extra:" + mExtraAttribution);
+        }
+        ComponentsSystrace.beginSection("resume:" + mComponent.getSimpleName());
+      }
+
+      final @Nullable CalculationStateContext previousStateContext =
+          mComponentContext.getCalculationStateContext();
+
+      final @Nullable LithoNode node;
+      try {
+        mComponentContext.setRenderStateContext(mResolveStateContextForResume);
+        node = Resolver.resumeResolvingTree(mResolveStateContextForResume, partialResult.node);
+      } finally {
+        mComponentContext.setCalculationStateContext(previousStateContext);
+      }
+
+      mResolveStateContextForResume.getCache().freezeCache();
+      final List<Pair<String, EventHandler>> createdEventHandlers =
+          mResolveStateContextForResume.getCreatedEventHandlers();
+      mResolveStateContextForResume = null;
+
+      return new ResolveResult(
+          node,
+          mComponentContext,
+          partialResult.component,
+          partialResult.consumeCache(),
+          partialResult.treeState,
+          false,
+          mResolveVersion,
+          createdEventHandlers);
     } finally {
-      mComponentContext.setCalculationStateContext(previousStateContext);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+        if (mExtraAttribution != null) {
+          ComponentsSystrace.endSection();
+        }
+      }
     }
-
-    mResolveStateContextForResume.getCache().freezeCache();
-    final List<Pair<String, EventHandler>> createdEventHandlers =
-        mResolveStateContextForResume.getCreatedEventHandlers();
-    mResolveStateContextForResume = null;
-
-    return new ResolveResult(
-        node,
-        mComponentContext,
-        partialResult.component,
-        partialResult.consumeCache(),
-        partialResult.treeState,
-        false,
-        mResolveVersion,
-        createdEventHandlers);
   }
 
   @Override
