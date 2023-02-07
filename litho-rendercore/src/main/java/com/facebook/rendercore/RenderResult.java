@@ -194,7 +194,7 @@ public class RenderResult<State, RenderContext> {
           ResolveContext<R> resolveContext,
           @Nullable Node<R> committedTree,
           @Nullable T committedState,
-          List<StateUpdate<T>> stateUpdatesToApply) {
+          List<? extends StateUpdate> stateUpdatesToApply) {
         return new Pair<>(node, state);
       }
     };

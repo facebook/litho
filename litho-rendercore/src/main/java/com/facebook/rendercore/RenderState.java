@@ -60,7 +60,7 @@ public class RenderState<State, RenderContext> {
         ResolveContext<RenderContext> resolveContext,
         @Nullable Node<RenderContext> committedTree,
         @Nullable State committedState,
-        List<StateUpdate<State>> stateUpdatesToApply);
+        List<? extends StateUpdate> stateUpdatesToApply);
   }
 
   public interface Delegate<State> {
