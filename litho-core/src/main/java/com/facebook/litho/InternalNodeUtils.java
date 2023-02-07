@@ -367,13 +367,6 @@ public class InternalNodeUtils {
           mountable);
     }
 
-    if (isMountable(component)) {
-      throw new RuntimeException(
-          "Component is a MountableComponent, and we should've created MountableLRU for it,"
-              + " but we didn't. Is Mountable null? "
-              + (mountable == null));
-    }
-
     return MountSpecLithoRenderUnit.create(
         id,
         component,

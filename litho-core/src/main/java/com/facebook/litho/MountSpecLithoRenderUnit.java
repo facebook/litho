@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LithoLayoutData.getInterStageProps;
 import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
@@ -93,10 +92,6 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   @Override
   public Object createContent(Context c) {
-    if (isMountable(output.getComponent())) {
-      throw new RuntimeException(
-          "We're about to call createMountContent on a MountableComponent, which should be impossible");
-    }
     return output.getComponent().createMountContent(c);
   }
 
@@ -192,10 +187,6 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
       final Component component = output.getComponent();
-      if (!(component instanceof SpecGeneratedComponent)) {
-        throw new IllegalStateException(
-            "Trying to call bind on non-Spec component: " + component.getSimpleName());
-      }
       ((SpecGeneratedComponent) component)
           .mount(getComponentContext(unit), content, getInterStageProps(data));
     }
