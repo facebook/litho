@@ -2110,7 +2110,8 @@ public class ComponentTree
                     && (mMoveLayoutsBetweenThreads
                         || mComponentsConfiguration.getUseCancelableLayoutFutures()),
                 widthSpec,
-                heightSpec),
+                heightSpec,
+                extraAttribution),
             mResolveResultFutures,
             source,
             mResolveResultFutureLock,

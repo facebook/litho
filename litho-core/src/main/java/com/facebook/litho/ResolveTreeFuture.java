@@ -31,6 +31,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   private final @Nullable LithoNode mCurrentRootNode;
   private final @Nullable PerfEvent mPerfEvent;
   private final int mResolveVersion;
+  private final @Nullable String mExtraAttribution;
 
   // TODO(T137275959): Refactor sync render logic to remove sizes from resolved tree future
   @Deprecated private final int mSyncWidthSpec;
@@ -46,7 +47,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final @Nullable LithoNode currentRootNode,
       final @Nullable PerfEvent perfEvent,
       final int resolveVersion,
-      final boolean useCancellableFutures) {
+      final boolean useCancellableFutures,
+      final @Nullable String extraAttribution) {
     this(
         c,
         component,
@@ -56,7 +58,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         resolveVersion,
         useCancellableFutures,
         SIZE_UNINITIALIZED,
-        SIZE_UNINITIALIZED);
+        SIZE_UNINITIALIZED,
+        extraAttribution);
   }
 
   /**
@@ -74,7 +77,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final int resolveVersion,
       final boolean useCancellableFutures,
       final int syncWidthSpec,
-      final int syncHeightSpec) {
+      final int syncHeightSpec,
+      final @Nullable String extraAttribution) {
     super(useCancellableFutures);
     mComponentContext = c;
     mComponent = component;
@@ -82,6 +86,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     mCurrentRootNode = currentRootNode;
     mPerfEvent = perfEvent;
     mResolveVersion = resolveVersion;
+    mExtraAttribution = extraAttribution;
     mSyncWidthSpec = syncWidthSpec;
     mSyncHeightSpec = syncHeightSpec;
 

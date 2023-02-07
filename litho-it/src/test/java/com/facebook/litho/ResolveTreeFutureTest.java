@@ -56,7 +56,8 @@ public class ResolveTreeFutureTest {
 
     // Setup the render-tree-future.
     final ResolveTreeFuture resolveTreeFuture =
-        new ResolveTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
+        new ResolveTreeFuture(
+            mComponentContext, component, new TreeState(), null, null, 0, true, null);
 
     // Set the render-result holder to be set during a background / async run of the future.
     // Since it will be interrupted and resumed on the main-thread, it's expected this holder to
@@ -142,7 +143,8 @@ public class ResolveTreeFutureTest {
     final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
 
     final ResolveTreeFuture resolveTreeFuture =
-        new ResolveTreeFuture(mComponentContext, component, new TreeState(), null, null, 0, true);
+        new ResolveTreeFuture(
+            mComponentContext, component, new TreeState(), null, null, 0, true, null);
 
     final ResolveResult renderResult =
         resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
