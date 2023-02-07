@@ -30,8 +30,8 @@ import com.facebook.litho.widget.SnapUtil
  *
  * @param orientation @see [RecyclerView.Orientation]
  * @param snapMode How contents snaps to position after a scroll @see [SnapUtil.SnapMode]
- * @param reverse Reverse item traversal and layout order @see
- *   [LinearLayoutManager#setReverseLayout]
+ * @param reverse Reverse item traversal and layout
+ *   order @see [LinearLayoutManager#setReverseLayout]
  */
 abstract class CollectionLayout(
     @RecyclerView.Orientation orientation: Int,
