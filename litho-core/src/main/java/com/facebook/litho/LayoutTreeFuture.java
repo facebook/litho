@@ -58,71 +58,87 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
     LithoStats.incrementLayoutCount();
 
-    final LithoNode node = mResolveResult.node;
-    final TreeState treeState = mResolveResult.treeState;
-    final MeasuredResultCache renderPhaseCache = mResolveResult.consumeCache();
-    final ComponentContext c = mResolveResult.context;
-
-    final LayoutState layoutState =
-        new LayoutState(
-            c,
-            mResolveResult.component,
-            treeState,
-            mCurrentLayoutState,
-            node,
-            mWidthSpec,
-            mHeightSpec,
-            mComponentTreeId,
-            mIsLayoutDiffingEnabled);
-
-    final LayoutStateContext lsc =
-        new LayoutStateContext(
-            new MeasuredResultCache(renderPhaseCache),
-            c,
-            treeState,
-            mLayoutVersion,
-            mDiffTreeRoot,
-            this);
-
-    if (mLogLayoutStatePerfEvent != null) {
-      lsc.setPerfEvent(mLogLayoutStatePerfEvent);
-    }
-
-    final CalculationStateContext prevContext = c.getCalculationStateContext();
-
+    final boolean isTracing = ComponentsSystrace.isTracing();
     try {
-      c.setLayoutStateContext(lsc);
-
-      final @Nullable LithoLayoutResult root =
-          Layout.measureTree(
-              lsc, c.getAndroidContext(), node, mWidthSpec, mHeightSpec, mLogLayoutStatePerfEvent);
-
-      layoutState.mLayoutResult = root;
-
-      if (mLogLayoutStatePerfEvent != null) {
-        mLogLayoutStatePerfEvent.markerPoint("start_collect_results");
+      if (isTracing) {
+        ComponentsSystrace.beginSection("layout:" + mResolveResult.component.getSimpleName());
       }
 
-      LayoutState.setSizeAfterMeasureAndCollectResults(c, lsc, layoutState);
+      final LithoNode node = mResolveResult.node;
+      final TreeState treeState = mResolveResult.treeState;
+      final MeasuredResultCache renderPhaseCache = mResolveResult.consumeCache();
+      final ComponentContext c = mResolveResult.context;
+
+      final LayoutState layoutState =
+          new LayoutState(
+              c,
+              mResolveResult.component,
+              treeState,
+              mCurrentLayoutState,
+              node,
+              mWidthSpec,
+              mHeightSpec,
+              mComponentTreeId,
+              mIsLayoutDiffingEnabled);
+
+      final LayoutStateContext lsc =
+          new LayoutStateContext(
+              new MeasuredResultCache(renderPhaseCache),
+              c,
+              treeState,
+              mLayoutVersion,
+              mDiffTreeRoot,
+              this);
 
       if (mLogLayoutStatePerfEvent != null) {
-        mLogLayoutStatePerfEvent.markerPoint("end_collect_results");
+        lsc.setPerfEvent(mLogLayoutStatePerfEvent);
       }
 
-      layoutState.setCreatedEventHandlers(
-          CommonUtils.mergeLists(
-              mResolveResult.createdEventHandlers, lsc.getCreatedEventHandlers()));
+      final CalculationStateContext prevContext = c.getCalculationStateContext();
+
+      try {
+        c.setLayoutStateContext(lsc);
+
+        final @Nullable LithoLayoutResult root =
+            Layout.measureTree(
+                lsc,
+                c.getAndroidContext(),
+                node,
+                mWidthSpec,
+                mHeightSpec,
+                mLogLayoutStatePerfEvent);
+
+        layoutState.mLayoutResult = root;
+
+        if (mLogLayoutStatePerfEvent != null) {
+          mLogLayoutStatePerfEvent.markerPoint("start_collect_results");
+        }
+
+        LayoutState.setSizeAfterMeasureAndCollectResults(c, lsc, layoutState);
+
+        if (mLogLayoutStatePerfEvent != null) {
+          mLogLayoutStatePerfEvent.markerPoint("end_collect_results");
+        }
+
+        layoutState.setCreatedEventHandlers(
+            CommonUtils.mergeLists(
+                mResolveResult.createdEventHandlers, lsc.getCreatedEventHandlers()));
+      } finally {
+        c.setCalculationStateContext(prevContext);
+        lsc.releaseReference();
+      }
+
+      LithoStats.incrementComponentCalculateLayoutCount();
+      if (ThreadUtils.isMainThread()) {
+        LithoStats.incrementComponentCalculateLayoutOnUICount();
+      }
+
+      return layoutState;
     } finally {
-      c.setCalculationStateContext(prevContext);
-      lsc.releaseReference();
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
-
-    LithoStats.incrementComponentCalculateLayoutCount();
-    if (ThreadUtils.isMainThread()) {
-      LithoStats.incrementComponentCalculateLayoutOnUICount();
-    }
-
-    return layoutState;
   }
 
   @Override
