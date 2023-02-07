@@ -98,41 +98,59 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   protected ResolveResult calculate() {
     LithoStats.incrementResolveCount();
 
-    final ResolveStateContext rsc =
-        new ResolveStateContext(
-            new MeasuredResultCache(),
-            mTreeState,
-            mResolveVersion,
-            this,
-            mCurrentRootNode,
-            mPerfEvent);
-
-    final @Nullable CalculationStateContext previousStateContext =
-        mComponentContext.getCalculationStateContext();
-
-    final @Nullable LithoNode node;
+    final boolean isTracing = ComponentsSystrace.isTracing();
     try {
-      mComponentContext.setRenderStateContext(rsc);
-      node = Resolver.resolveTree(rsc, mComponentContext, mComponent);
+      if (isTracing) {
+        if (mExtraAttribution != null) {
+          ComponentsSystrace.beginSection("extra:" + mExtraAttribution);
+        }
+        ComponentsSystrace.beginSection("resolve:" + mComponent.getSimpleName());
+      }
+
+      final ResolveStateContext rsc =
+          new ResolveStateContext(
+              new MeasuredResultCache(),
+              mTreeState,
+              mResolveVersion,
+              this,
+              mCurrentRootNode,
+              mPerfEvent);
+
+      final @Nullable CalculationStateContext previousStateContext =
+          mComponentContext.getCalculationStateContext();
+
+      final @Nullable LithoNode node;
+      try {
+        mComponentContext.setRenderStateContext(rsc);
+        node = Resolver.resolveTree(rsc, mComponentContext, mComponent);
+      } finally {
+        mComponentContext.setCalculationStateContext(previousStateContext);
+      }
+
+      if (rsc.isLayoutInterrupted()) {
+        mResolveStateContextForResume = rsc;
+      } else {
+        rsc.getCache().freezeCache();
+      }
+
+      return new ResolveResult(
+          node,
+          mComponentContext,
+          mComponent,
+          rsc.getCache(),
+          mTreeState,
+          rsc.isLayoutInterrupted(),
+          mResolveVersion,
+          rsc.getCreatedEventHandlers());
+
     } finally {
-      mComponentContext.setCalculationStateContext(previousStateContext);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+        if (mExtraAttribution != null) {
+          ComponentsSystrace.endSection();
+        }
+      }
     }
-
-    if (rsc.isLayoutInterrupted()) {
-      mResolveStateContextForResume = rsc;
-    } else {
-      rsc.getCache().freezeCache();
-    }
-
-    return new ResolveResult(
-        node,
-        mComponentContext,
-        mComponent,
-        rsc.getCache(),
-        mTreeState,
-        rsc.isLayoutInterrupted(),
-        mResolveVersion,
-        rsc.getCreatedEventHandlers());
   }
 
   @Override
