@@ -289,11 +289,7 @@ class MountableComponentsTest {
     }
 
     assertThat(LifecycleStep.getSteps(steps))
-        .containsExactly(
-            LifecycleStep.RENDER,
-            LifecycleStep.SHOULD_UPDATE,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT)
+        .containsExactly(LifecycleStep.RENDER, LifecycleStep.SHOULD_UPDATE)
   }
 
   @Test
@@ -324,11 +320,7 @@ class MountableComponentsTest {
     }
 
     assertThat(LifecycleStep.getSteps(steps))
-        .containsExactly(
-            LifecycleStep.RENDER,
-            LifecycleStep.SHOULD_UPDATE,
-            LifecycleStep.ON_UNMOUNT,
-            LifecycleStep.ON_MOUNT)
+        .containsExactly(LifecycleStep.RENDER, LifecycleStep.SHOULD_UPDATE)
   }
 
   @Test
@@ -680,6 +672,7 @@ class MountableComponentsTest {
     assertThat(child1.tag).isEqualTo("1")
   }
 
+  @Test
   fun `Mountable that renders tree host notifies them about visibility bounds changes`() {
     val steps = mutableListOf<LifecycleStep.StepInfo>()
 
@@ -943,7 +936,6 @@ open class ViewMountable(
     open val view: View,
     open val steps: MutableList<LifecycleStep.StepInfo>? = null,
     open val updateState: ((String) -> Unit)? = null,
-    open val shouldUpdate: Boolean = true,
 ) : SimpleMountable<View>(RenderType.VIEW) {
 
   override fun createContent(context: Context): View {
@@ -988,7 +980,7 @@ open class ViewMountable(
       nextLayoutData: Any?
   ): Boolean {
     steps?.add(LifecycleStep.StepInfo(LifecycleStep.SHOULD_UPDATE))
-    return shouldUpdate
+    return super.shouldUpdate(newMountable, currentLayoutData, nextLayoutData)
   }
 }
 
@@ -1049,7 +1041,6 @@ class NonLithoViewMountable(
     val identity: Int = 0,
     val view: View,
     val steps: MutableList<LifecycleStep.StepInfo>? = null,
-    val shouldUpdate: Boolean = true
 ) : Mountable<View>(RenderType.VIEW) {
 
   init {
@@ -1066,7 +1057,9 @@ class NonLithoViewMountable(
                 steps?.add(LifecycleStep.StepInfo(LifecycleStep.SHOULD_UPDATE))
                 currentLayoutData as TestLayoutData
                 nextLayoutData as TestLayoutData
-                return shouldUpdate
+
+                return currentLayoutData != nextLayoutData ||
+                    !EquivalenceUtils.isEqualOrEquivalentTo(currentModel, newModel)
               }
 
               override fun bind(
@@ -1172,7 +1165,7 @@ internal class TestVerticalScrollMountable(
   override fun unmount(c: Context, content: LithoScrollView, layoutData: Any?) = Unit
 }
 
-class TestLayoutData(val width: Int, val height: Int)
+data class TestLayoutData(val width: Int, val height: Int)
 
 class NonLithoMountableTestRunConfig : LithoLocalTestRunConfiguration {
 
