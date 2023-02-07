@@ -20,7 +20,6 @@ import static com.facebook.litho.Component.hasCachedNode;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
-import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.rendercore.utils.MeasureSpecUtils.unspecified;
@@ -203,11 +202,6 @@ public class Resolver {
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
         PrepareResult prepareResult =
             component.prepare(resolveStateContext, scopedComponentInfo.getContext());
-
-        if (isMountable(component) && prepareResult == null) {
-          throw new RuntimeException(
-              "PrepareResult is null for a MountableComponent in Layout.create()");
-        }
 
         if (prepareResult != null) {
           node.setMountable(prepareResult.mountable);

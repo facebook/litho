@@ -188,9 +188,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public void setMountable(Mountable<?> mountable) {
-    if (mountable == null) {
-      throw new RuntimeException("Mountable is null in LithoNode.setMountable()");
-    }
     mMountable = mountable;
   }
 
