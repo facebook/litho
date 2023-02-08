@@ -2095,7 +2095,7 @@ public class ComponentTree
     treeState.registerRenderState();
 
     final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder =
-        trackAndRunTreeFuture(
+        TreeFuture.trackAndRunTreeFuture(
             new ResolveTreeFuture(
                 context,
                 root,
@@ -2263,7 +2263,7 @@ public class ComponentTree
     resolveResult.treeState.registerLayoutState();
 
     final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder =
-        trackAndRunTreeFuture(
+        TreeFuture.trackAndRunTreeFuture(
             new LayoutTreeFuture(
                 resolveResult,
                 currentLayoutState,
@@ -2322,94 +2322,6 @@ public class ComponentTree
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   void setFutureExecutionListener(final @Nullable FutureExecutionListener futureExecutionListener) {
     mFutureExecutionListener = futureExecutionListener;
-  }
-
-  /**
-   * Given a provided tree-future, this method will track it via a given list, and run it.
-   *
-   * <p>If an equivalent tree-future is found in the given list of futures, the sequence in this
-   * method will attempt to reuse it and increase the wait-count on it if successful.
-   *
-   * <p>If an async operation is requested and an equivalent future is already running, it will be
-   * discarded and return null.
-   *
-   * <p>If no equivalent running future was found in the provided list, it will be added to the list
-   * for the duration of the run, and then, provided it has a 0 wait-count, it will be removed from
-   * the provided list.
-   *
-   * @param treeFuture The future to executed
-   * @param futureList The list of futures this future will be added to
-   * @param source The source of the calculation
-   * @param mutex A mutex to use to synchronize access to the provided future list
-   * @param futureExecutionListener optional listener that will be invoked just before the future is
-   *     run
-   * @param <T> The generic type of the provided future & expected result
-   * @return The result holder of running the future. It will contain the result if there were no
-   *     issues running the future, or a message explaining why the result is null.
-   */
-  private static <T extends PotentiallyPartialResult>
-      TreeFuture.TreeFutureResult<T> trackAndRunTreeFuture(
-          TreeFuture<T> treeFuture,
-          final List<TreeFuture<T>> futureList,
-          final @CalculateLayoutSource int source,
-          final Object mutex,
-          final @Nullable FutureExecutionListener futureExecutionListener) {
-    final boolean isSync = isFromSyncLayout(source);
-    boolean isReusingFuture = false;
-
-    synchronized (mutex) {
-      // Iterate over the running futures to see if an equivalent one is running
-      for (final TreeFuture<T> runningFuture : futureList) {
-        if (!runningFuture.isReleased()
-            && runningFuture.isEquivalentTo(treeFuture)
-            && runningFuture.tryRegisterForResponse(isSync)) {
-          // An equivalent running future was found, and can be reused (tryRegisterForResponse
-          // returned true). Discard the provided future, and use the running future instead.
-          // tryRegisterForResponse returned true, and also increased the wait-count, so no need
-          // explicity call that.
-          treeFuture = runningFuture;
-          isReusingFuture = true;
-          break;
-        }
-      }
-
-      // Not reusing so mark as NON_INTERRUPTIBLE, increase the wait count, add the new future to
-      // the list.
-      if (!isReusingFuture) {
-        if (!treeFuture.tryRegisterForResponse(isSync)) {
-          throw new RuntimeException("Failed to register to tree future");
-        }
-
-        futureList.add(treeFuture);
-      }
-    }
-
-    if (futureExecutionListener != null) {
-      final FutureExecutionType executionType;
-      if (isReusingFuture) {
-        executionType = FutureExecutionType.REUSE_FUTURE;
-      } else {
-        executionType = FutureExecutionType.NEW_FUTURE;
-      }
-
-      futureExecutionListener.onPreExecution(executionType);
-    }
-
-    // Run and get the result
-    final TreeFuture.TreeFutureResult<T> result = treeFuture.runAndGet(source);
-
-    synchronized (mutex) {
-      // Unregister for response, decreasing the wait count
-      treeFuture.unregisterForResponse();
-
-      // If the wait count is 0, release the future and remove it from the list
-      if (treeFuture.getWaitingCount() == 0) {
-        treeFuture.release();
-        futureList.remove(treeFuture);
-      }
-    }
-
-    return result;
   }
 
   private void commitLayoutState(
