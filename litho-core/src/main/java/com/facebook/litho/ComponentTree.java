@@ -2834,37 +2834,10 @@ public class ComponentTree
       return;
     }
 
-    if (isResolveAndLayoutFuturesSplitEnabled) {
-      synchronized (mResolveResultFutureLock) {
-        for (TreeFuture rtf : mResolveResultFutures) {
-          rtf.release();
-        }
-      }
-
-      synchronized (mLayoutStateFutureLock) {
-        for (TreeFuture ltf : mLayoutTreeFutures) {
-          ltf.release();
-        }
-      }
-    } else {
-      synchronized (mLayoutStateFutureLock) {
-        for (int i = 0, size = mLayoutStateFutures.size(); i < size; i++) {
-          mLayoutStateFutures.get(i).release();
-        }
-      }
-    }
-
     if (ThreadUtils.isMainThread()) {
       release();
     } else {
-      mMainThreadHandler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              release();
-            }
-          },
-          "Release");
+      mMainThreadHandler.post(this::release, "Release");
     }
   }
 
