@@ -5,6 +5,7 @@
 _release-date_
 
 * [New] Adds debug overlay for to show components bounds, and interactive elements. Set the following configs to enable the feature: `debugHighlightInteractiveBounds`, `debugHighlightMountBounds`.  
+* [Deprecated] `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. All of those will be removed in one of subsequent versions.
 
 ## Version 0.46.0
 

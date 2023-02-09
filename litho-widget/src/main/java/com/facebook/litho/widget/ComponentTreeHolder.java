@@ -187,6 +187,7 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    @Deprecated
     public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
       this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
       return this;

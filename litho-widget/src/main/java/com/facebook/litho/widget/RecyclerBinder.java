@@ -759,6 +759,7 @@ public class RecyclerBinder
      * Experimental, do not use! If enabled, a layout computation can be interrupted on a bg thread
      * and resumed on the UI thread if it's needed immediately.
      */
+    @Deprecated
     public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
       this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
       return this;
