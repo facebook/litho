@@ -149,7 +149,7 @@ public class RenderResult<State, RenderContext> {
             prevRenderTree.getHeightSpec(), heightSpec, prevRenderTree.getHeight());
   }
 
-  private RenderResult(
+  RenderResult(
       RenderTree renderTree,
       Node<RenderContext> nodeTree,
       LayoutCache.CachedData layoutCacheData,
