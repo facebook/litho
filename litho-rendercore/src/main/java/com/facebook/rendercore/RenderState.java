@@ -99,7 +99,6 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
 
   private @Nullable RenderResult<State, RenderContext> mCommittedRenderResult;
 
-  private int mExternalRootVersion = -1;
   private int mResolveVersionCounter = 0;
   private int mLayoutVersionCounter = 0;
   private int mCommittedResolveVersion = UNSET;
@@ -120,52 +119,11 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setVersionedTree(
-      ResolveFunc<State, RenderContext> resolveFunc,
-      int version,
-      int widthSpec,
-      int heightSpec,
-      @Nullable int[] measureOutput) {
-    setTreeInternal(resolveFunc, version, widthSpec, heightSpec, measureOutput);
-  }
-
-  @ThreadConfined(ThreadConfined.ANY)
   public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
-    setTreeInternal(resolveFunc, -1, UNSET, UNSET, null);
-  }
 
-  private void setTreeInternal(
-      ResolveFunc<State, RenderContext> resolveFunc,
-      int version,
-      int widthSpec,
-      int heightSpec,
-      @Nullable int[] measureOutput) {
     final ResolveFuture<State, RenderContext> future;
 
     synchronized (this) {
-      if (version > -1) {
-        if (mExternalRootVersion > version) {
-          // Since this layout is not really valid we can just return early.
-          return;
-        }
-      } else {
-        if (mExternalRootVersion > -1) {
-          throw new IllegalStateException(
-              "Setting an unversioned tree after calling setVersionedTree is not "
-                  + "supported. If this RenderState takes its version from a parent tree make "
-                  + "sure to always call setVersionedTree");
-        }
-      }
-
-      if (widthSpec != UNSET) {
-        mWidthSpec = widthSpec;
-      }
-
-      if (heightSpec != UNSET) {
-        mHeightSpec = heightSpec;
-      }
-
-      mExternalRootVersion = version;
       mLatestResolveFunc = resolveFunc;
 
       future =
@@ -181,7 +139,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
 
     final Pair<Node<RenderContext>, State> result = future.runAndGet();
     if (maybeCommitResolveResult(result, future)) {
-      layoutAndMaybeCommitInternal(measureOutput);
+      layoutAndMaybeCommitInternal(null);
     }
   }
 
