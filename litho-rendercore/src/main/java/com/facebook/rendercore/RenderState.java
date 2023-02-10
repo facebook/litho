@@ -29,6 +29,7 @@ import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -119,8 +120,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
-
+  public void setTree(ResolveFunc<State, RenderContext> resolveFunc, @Nullable Executor executor) {
     final ResolveFuture<State, RenderContext> future;
 
     synchronized (this) {
@@ -136,11 +136,29 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
               mResolveVersionCounter++);
       mResolveFuture = future;
     }
+    if (executor != null) {
+      executor.execute(
+          new Runnable() {
+            @Override
+            public void run() {
+              resolveTreeAndMaybeCommit(future);
+            }
+          });
+    } else {
+      resolveTreeAndMaybeCommit(future);
+    }
+  }
 
+  private void resolveTreeAndMaybeCommit(ResolveFuture<State, RenderContext> future) {
     final Pair<Node<RenderContext>, State> result = future.runAndGet();
     if (maybeCommitResolveResult(result, future)) {
       layoutAndMaybeCommitInternal(null);
     }
+  }
+
+  @ThreadConfined(ThreadConfined.ANY)
+  public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
+    setTree(resolveFunc, null);
   }
 
   private synchronized boolean maybeCommitResolveResult(
