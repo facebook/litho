@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load(
+    "@fbsource//tools/build_defs/android:primary_dex_patterns.bzl",
+    "NORMAL_PRIMARY_DEX_PATTERNS",
+)
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
@@ -23,9 +27,11 @@ load(
 fb_native.android_binary(
     name = "sample",
     aapt_mode = "aapt2",
+    allow_r_dot_java_in_secondary_dex = True,
     includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
+    primary_dex_patterns = NORMAL_PRIMARY_DEX_PATTERNS,
     use_split_dex = True,
     visibility = [
         "PUBLIC",
