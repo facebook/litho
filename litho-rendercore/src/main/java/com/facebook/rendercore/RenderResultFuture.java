@@ -17,25 +17,17 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
-import android.os.Process;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
-import com.facebook.rendercore.instrumentation.FutureInstrumenter;
-import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class RenderResultFuture<State, RenderContext> {
+public class RenderResultFuture<State, RenderContext>
+    extends ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>> {
 
   private final int mSetRootId;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final RunnableFuture<RenderResult<State, RenderContext>> mFutureTask;
-  private final AtomicInteger mRunningThreadId = new AtomicInteger(-1);
-  private volatile @Nullable RenderResult<State, RenderContext> mPreviousResult;
+  private final @Nullable RenderResult<State, RenderContext> mPreviousResult;
 
   public RenderResultFuture(
       final Context context,
@@ -46,71 +38,32 @@ public class RenderResultFuture<State, RenderContext> {
       final int setRootId,
       final int widthSpec,
       final int heightSpec) {
+    super(
+        new Callable<RenderResult<State, RenderContext>>() {
+          @Override
+          public RenderResult<State, RenderContext> call() {
+            return RenderResult.render(
+                context,
+                resolveFunc,
+                renderContext,
+                extensions,
+                previousResult,
+                setRootId,
+                widthSpec,
+                heightSpec);
+          }
+        },
+        "RenderResultFuture");
+
     mPreviousResult = previousResult;
     mSetRootId = setRootId;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
-    mFutureTask =
-        FutureInstrumenter.instrument(
-            new FutureTask<>(
-                new Callable<RenderResult<State, RenderContext>>() {
-                  @Override
-                  public RenderResult<State, RenderContext> call() {
-                    return RenderResult.render(
-                        context,
-                        resolveFunc,
-                        renderContext,
-                        extensions,
-                        mPreviousResult,
-                        mSetRootId,
-                        mWidthSpec,
-                        mHeightSpec);
-                  }
-                }),
-            "RenderResultFuture_resolve");
-  }
-
-  public RenderResult<State, RenderContext> runAndGet() {
-    if (mRunningThreadId.compareAndSet(-1, Process.myTid())) {
-      mFutureTask.run();
-      try {
-        return mFutureTask.get();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      } catch (ExecutionException e) {
-        // Unwrap so that stacktraces are more clear in logs
-        if (e.getCause() instanceof RuntimeException) {
-          throw (RuntimeException) e.getCause();
-        } else {
-          throw new RuntimeException(e.getCause());
-        }
-      } finally {
-        mPreviousResult = null;
-      }
-    }
-
-    return ThreadUtils.getResultInheritingPriority(mFutureTask, mRunningThreadId.get());
   }
 
   @Nullable
   public RenderResult<State, RenderContext> getLatestAvailableRenderResult() {
     return isDone() ? runAndGet() : mPreviousResult;
-  }
-
-  public boolean isDone() {
-    return mFutureTask.isDone();
-  }
-
-  public boolean isRunning() {
-    return mRunningThreadId.get() != -1;
-  }
-
-  public void cancel() {
-    mFutureTask.cancel(false);
-  }
-
-  public boolean isCanceled() {
-    return mFutureTask.isCancelled();
   }
 
   public int getSetRootId() {
