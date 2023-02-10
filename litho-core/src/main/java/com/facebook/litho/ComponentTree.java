@@ -37,6 +37,7 @@ import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
+import static com.facebook.litho.debugutils.LayoutCalculationDebugUtilsKt.flash;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.content.Context;
@@ -3089,6 +3090,10 @@ public class ComponentTree
                 previousLayoutState,
                 logLayoutState);
 
+        if (enableDebugFlash() && ThreadUtils.isMainThread() && mLithoView != null) {
+          flash(mLithoView);
+        }
+
         if (logLayoutState != null) {
           Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
         }
@@ -3201,6 +3206,10 @@ public class ComponentTree
 
       return true;
     }
+  }
+
+  private boolean enableDebugFlash() {
+    return ComponentsConfiguration.debugFlashComponentOnRender;
   }
 
   public static int generateComponentTreeId() {

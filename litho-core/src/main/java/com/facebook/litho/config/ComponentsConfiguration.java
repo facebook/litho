@@ -323,6 +323,9 @@ public class ComponentsConfiguration {
   /** Debug option to highlight mount bounds of mounted components. */
   public static boolean debugHighlightMountBounds = false;
 
+  /** Debug option to flash component whenever it is re-rendered. */
+  public static boolean debugFlashComponentOnRender = false;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();

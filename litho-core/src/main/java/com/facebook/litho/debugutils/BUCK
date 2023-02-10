@@ -1,0 +1,10 @@
+load("@fbsource//tools/build_defs/android:fb_android_library.bzl", "fb_android_library")
+load("@fbsource//xplat/pfh/FBApp_UIFrameworks_Litho_Litho:DEFS.bzl", "FBApp_UIFrameworks_Litho_Litho")
+
+fb_android_library(
+    name = "debugutils",
+    feature = FBApp_UIFrameworks_Litho_Litho,  # see https://fburl.com/wiki/anozt0ry
+    oncall = "fbapp_product_perf",
+    deps = [
+    ],
+)
