@@ -21,27 +21,17 @@ import org.junit.runners.model.FrameworkMethod;
 
 public class SplitBuildAndLayoutTestRunConfiguration implements LithoTestRunConfiguration {
 
-  private final boolean defaultReuseLastMeasuredNodeInComponentMeasure =
-      ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure;
-  private final boolean defaultIsSplitFuturesEnabled =
-      ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
   private final boolean defaultIsInterruptEarlyEnabled =
       ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
 
   @Override
   public void beforeTest(FrameworkMethod method) {
-    ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
-        !defaultReuseLastMeasuredNodeInComponentMeasure;
-    ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled = !defaultIsSplitFuturesEnabled;
     ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled =
         !defaultIsInterruptEarlyEnabled;
   }
 
   @Override
   public void afterTest(FrameworkMethod method) {
-    ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure =
-        defaultReuseLastMeasuredNodeInComponentMeasure;
-    ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled = defaultIsSplitFuturesEnabled;
     ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled =
         defaultIsInterruptEarlyEnabled;
   }

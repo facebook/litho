@@ -219,7 +219,7 @@ public class ComponentsConfiguration {
    * LithoResolutionResult, which will allow subsequent layouts to reuse that result to produce a
    * LayoutState.
    */
-  public static boolean isResolveAndLayoutFuturesSplitEnabled = false;
+  public static boolean isResolveAndLayoutFuturesSplitEnabled = true;
 
   /**
    * When enabled, and coupled with isResolveAndLayoutFuturesSplitEnabled being enabled, split
@@ -241,7 +241,7 @@ public class ComponentsConfiguration {
     return isResolveAndLayoutFuturesSplitEnabled && useSeparateThreadHandlersForResolveAndLayout;
   }
 
-  public static boolean reuseLastMeasuredNodeInComponentMeasure = false;
+  public static boolean reuseLastMeasuredNodeInComponentMeasure = true;
 
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 

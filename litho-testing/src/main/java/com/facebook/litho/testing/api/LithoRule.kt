@@ -24,7 +24,9 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BaseThreadLooperController
+import com.facebook.litho.testing.ResolveAndLayoutThreadLooperController
 import com.facebook.litho.testing.ThreadLooperController
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -41,6 +43,7 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
   override fun apply(statement: Statement, description: Description): Statement =
       object : Statement() {
         override fun evaluate() {
+          ensureThreadLooperType()
           try {
             componentContext = ComponentContext(getApplicationContext<Context>())
             threadLooperController.init()
@@ -93,6 +96,16 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
   private fun idle() {
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
+  }
+
+  private fun ensureThreadLooperType() {
+    if (ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
+        threadLooperController is ThreadLooperController) {
+      threadLooperController = ResolveAndLayoutThreadLooperController()
+    } else if (!ComponentsConfiguration.isSplitResolveAndLayoutWithSplitHandlers() &&
+        threadLooperController is ResolveAndLayoutThreadLooperController) {
+      threadLooperController = ThreadLooperController()
+    }
   }
 
   companion object {

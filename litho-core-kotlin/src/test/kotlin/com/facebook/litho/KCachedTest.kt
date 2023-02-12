@@ -27,10 +27,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useCached]. */
 @Suppress("MagicNumber")
 @RunWith(LithoTestRunner::class)
+@LooperMode(LooperMode.Mode.LEGACY)
 class KCachedTest {
 
   private lateinit var context: ComponentContext

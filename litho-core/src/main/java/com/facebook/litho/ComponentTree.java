@@ -37,10 +37,12 @@ import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
-import static com.facebook.litho.debugutils.LayoutCalculationDebugUtilsKt.flash;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PaintDrawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -1125,7 +1127,7 @@ public class ComponentTree
     return mLithoConfiguration.isReconciliationEnabled;
   }
 
-  synchronized @Nullable Component getRoot() {
+  public synchronized @Nullable Component getRoot() {
     return mRoot;
   }
 
@@ -1178,6 +1180,19 @@ public class ComponentTree
     if (event != null) {
       logger.logPerfEvent(event);
     }
+  }
+
+  public void setRootSync(@Nullable Component root) {
+    setRootAndSizeSpecAndWrapper(
+        root,
+        SIZE_UNINITIALIZED,
+        SIZE_UNINITIALIZED,
+        false /* isAsync */,
+        null /* output */,
+        CalculateLayoutSource.SET_ROOT_SYNC,
+        INVALID_LAYOUT_VERSION,
+        null,
+        null);
   }
 
   public void setRootAsync(@Nullable Component root) {
@@ -2978,6 +2993,21 @@ public class ComponentTree
   @VisibleForTesting
   EventHandlersController getEventHandlersController() {
     return mTreeState.getEventHandlersController();
+  }
+
+  private static void flash(View view) {
+    Drawable d = new PaintDrawable(Color.RED);
+    d.setAlpha(128);
+    view.post(
+        () -> {
+          d.setBounds(0, 0, view.getWidth(), view.getHeight());
+          view.getOverlay().add(d);
+          view.postDelayed(
+              () -> {
+                view.getOverlay().remove(d);
+              },
+              500);
+        });
   }
 
   class LayoutStateFuture extends TreeFuture<LayoutState> {

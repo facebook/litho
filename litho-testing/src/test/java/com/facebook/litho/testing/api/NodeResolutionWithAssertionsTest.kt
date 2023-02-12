@@ -33,12 +33,14 @@ import com.facebook.litho.widget.collection.LazyList
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 /**
  * The goal of this set of tests is just to be a health check that basic scenarios of the nodes
  * resolution and verification are working.
  */
 @RunWith(LithoTestRunner::class)
+@LooperMode(LooperMode.Mode.LEGACY)
 class NodeResolutionWithAssertionsTest : RunWithDebugInfoTest() {
 
   @get:Rule val rule: LithoRule = LithoRule()

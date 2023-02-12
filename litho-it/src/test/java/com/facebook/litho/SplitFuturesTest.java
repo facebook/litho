@@ -804,6 +804,11 @@ public class SplitFuturesTest {
       return;
     }
 
+    // This isn't written to run without early interruption
+    if (!ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled) {
+      return;
+    }
+
     final ComponentContext c = mLegacyLithoViewRule.context;
 
     final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();

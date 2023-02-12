@@ -35,8 +35,10 @@ import org.assertj.core.api.Assertions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 @RunWith(LithoTestRunner::class)
+@LooperMode(LooperMode.Mode.LEGACY)
 class DebugLogTest : RunWithDebugInfoTest() {
 
   @get:Rule val rule: LithoRule = LithoRule()
