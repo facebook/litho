@@ -6,7 +6,6 @@ com.facebook.litho.annotations
 module:litho-core
 com.facebook.litho
 com.facebook.litho.config
-com.facebook.litho.debugutils
 com.facebook.litho.drawable
 com.facebook.litho.internal
 com.facebook.litho.perfboost
