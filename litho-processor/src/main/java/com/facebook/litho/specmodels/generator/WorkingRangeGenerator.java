@@ -59,7 +59,8 @@ public class WorkingRangeGenerator {
             .addAnnotation(Override.class)
             .returns(TypeName.VOID)
             .addParameter(specModel.getContextClass(), "c")
-            .addParameter(ClassNames.STRING, "name");
+            .addParameter(ClassNames.STRING, "name")
+            .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, "interStageProps");
 
     methodBuilder.beginControlFlow("switch (name)");
 
@@ -67,7 +68,7 @@ public class WorkingRangeGenerator {
       if (model.enteredRangeModel != null && model.enteredRangeModel.typeModel != null) {
         final String nameInAnnotation = model.enteredRangeModel.typeModel.name;
         methodBuilder.beginControlFlow("case \"$L\":", nameInAnnotation);
-        methodBuilder.addStatement("$L(c)", model.enteredRangeModel.name);
+        methodBuilder.addStatement("$L(c, interStageProps)", model.enteredRangeModel.name);
         methodBuilder.addStatement("return");
         methodBuilder.endControlFlow();
       }
@@ -84,7 +85,8 @@ public class WorkingRangeGenerator {
             .addAnnotation(Override.class)
             .returns(TypeName.VOID)
             .addParameter(specModel.getContextClass(), "c")
-            .addParameter(ClassNames.STRING, "name");
+            .addParameter(ClassNames.STRING, "name")
+            .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, "interStageProps");
 
     methodBuilder.beginControlFlow("switch (name)");
 
@@ -92,7 +94,7 @@ public class WorkingRangeGenerator {
       if (model.exitedRangeModel != null && model.exitedRangeModel.typeModel != null) {
         final String nameInAnnotation = model.exitedRangeModel.typeModel.name;
         methodBuilder.beginControlFlow("case \"$L\":", nameInAnnotation);
-        methodBuilder.addStatement("$L(c)", model.exitedRangeModel.name);
+        methodBuilder.addStatement("$L(c, interStageProps)", model.exitedRangeModel.name);
         methodBuilder.addStatement("return");
         methodBuilder.endControlFlow();
       }
@@ -124,7 +126,8 @@ public class WorkingRangeGenerator {
         MethodSpec.methodBuilder(methodModel.name.toString())
             .addModifiers(Modifier.PRIVATE)
             .returns(TypeName.VOID)
-            .addParameter(ClassNames.COMPONENT_CONTEXT, "c");
+            .addParameter(ClassNames.COMPONENT_CONTEXT, "c")
+            .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, "interStageProps");
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
@@ -134,7 +137,7 @@ public class WorkingRangeGenerator {
           "$L $L = $L",
           ClassNames.INTER_STAGE_PROPS_CONTAINER,
           ComponentBodyGenerator.LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME,
-          "null");
+          "interStageProps");
     }
 
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);

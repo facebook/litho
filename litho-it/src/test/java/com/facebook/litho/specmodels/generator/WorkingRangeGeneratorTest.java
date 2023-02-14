@@ -83,14 +83,15 @@ public class WorkingRangeGeneratorTest {
     assertThat(WorkingRangeGenerator.generateDispatchOnEnteredRangeMethod(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public void dispatchOnEnteredRange(com.facebook.litho.ComponentContext c, java.lang.String name) {\n"
+                + "public void dispatchOnEnteredRange(com.facebook.litho.ComponentContext c, java.lang.String name,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  switch (name) {\n"
                 + "    case \"enter\": {\n"
-                + "      testEnteredRangeMethod(c);\n"
+                + "      testEnteredRangeMethod(c, interStageProps);\n"
                 + "      return;\n"
                 + "    }\n"
                 + "    case \"prefetch\": {\n"
-                + "      testEnteredPrefetchMethod(c);\n"
+                + "      testEnteredPrefetchMethod(c, interStageProps);\n"
                 + "      return;\n"
                 + "    }\n"
                 + "  }\n"
@@ -102,14 +103,15 @@ public class WorkingRangeGeneratorTest {
     assertThat(WorkingRangeGenerator.generateDispatchOnExitedRangeMethod(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public void dispatchOnExitedRange(com.facebook.litho.ComponentContext c, java.lang.String name) {\n"
+                + "public void dispatchOnExitedRange(com.facebook.litho.ComponentContext c, java.lang.String name,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  switch (name) {\n"
                 + "    case \"exit\": {\n"
-                + "      testExitedRangeMethod(c);\n"
+                + "      testExitedRangeMethod(c, interStageProps);\n"
                 + "      return;\n"
                 + "    }\n"
                 + "    case \"prefetch\": {\n"
-                + "      testExitedPrefetchMethod(c);\n"
+                + "      testExitedPrefetchMethod(c, interStageProps);\n"
                 + "      return;\n"
                 + "    }\n"
                 + "  }\n"
@@ -125,7 +127,8 @@ public class WorkingRangeGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private void testEnteredRangeMethod(com.facebook.litho.ComponentContext c) {\n"
+            "private void testEnteredRangeMethod(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  TestSpec.testEnteredRangeMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) arg0,\n"
@@ -134,7 +137,8 @@ public class WorkingRangeGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "private void testExitedRangeMethod(com.facebook.litho.ComponentContext c) {\n"
+            "private void testExitedRangeMethod(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  TestSpec.testExitedRangeMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (T) arg2,\n"
@@ -143,7 +147,8 @@ public class WorkingRangeGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
-            "private void testEnteredPrefetchMethod(com.facebook.litho.ComponentContext c) {\n"
+            "private void testEnteredPrefetchMethod(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  TestSpec.testEnteredPrefetchMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) arg0,\n"
@@ -152,7 +157,8 @@ public class WorkingRangeGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(3).toString())
         .isEqualTo(
-            "private void testExitedPrefetchMethod(com.facebook.litho.ComponentContext c) {\n"
+            "private void testExitedPrefetchMethod(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
                 + "  TestSpec.testExitedPrefetchMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (T) arg2,\n"

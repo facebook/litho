@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -71,7 +72,7 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testRegisterWorkingRange() {
-    mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mScopedComponentInfo);
+    mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mScopedComponentInfo, null);
 
     final Map<String, RangeTuple> workingRanges =
         mWorkingRangeContainer.getWorkingRangesForTestOnly();
@@ -88,7 +89,7 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testIsEnteredRange() {
-    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mScopedComponentInfo);
+    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mScopedComponentInfo, null);
     WorkingRange workingRange = rangeTuple.mWorkingRange;
 
     assertThat(WorkingRangeContainer.isEnteringRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(true);
@@ -97,7 +98,7 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testIsExitedRange() {
-    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mScopedComponentInfo);
+    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mScopedComponentInfo, null);
     WorkingRange workingRange = rangeTuple.mWorkingRange;
 
     assertThat(WorkingRangeContainer.isExitingRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(false);
@@ -107,28 +108,28 @@ public class WorkingRangeContainerTest {
   @Test
   public void testDispatchOnExitedRangeIfNeeded() {
     TestWorkingRange workingRange = new TestWorkingRange();
-    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange, mScopedComponentInfo);
+    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange, mScopedComponentInfo, null);
 
     TestWorkingRange workingRange2 = new TestWorkingRange();
-    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mScopedComponentInfo2);
+    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mScopedComponentInfo2, null);
 
     final WorkingRangeStatusHandler statusHandler = new WorkingRangeStatusHandler();
     statusHandler.setStatus(
         NAME, mComponent, "component", WorkingRangeStatusHandler.STATUS_IN_RANGE);
     doNothing()
         .when(mComponent)
-        .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
+        .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class), isNull());
 
     statusHandler.setStatus(
         NAME, mComponent2, "component2", WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
     doNothing()
         .when(mComponent2)
-        .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
+        .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class), isNull());
 
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler);
 
-    verify(mComponent, times(1)).dispatchOnExitedRange(mComponentContext, NAME);
-    verify(mComponent2, times(0)).dispatchOnExitedRange(mComponentContext, NAME);
+    verify(mComponent, times(1)).dispatchOnExitedRange(mComponentContext, NAME, null);
+    verify(mComponent2, times(0)).dispatchOnExitedRange(mComponentContext, NAME, null);
   }
 
   private static class TestWorkingRange implements WorkingRange {

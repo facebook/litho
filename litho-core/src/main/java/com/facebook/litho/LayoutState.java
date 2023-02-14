@@ -926,8 +926,19 @@ public class LayoutState
       }
 
       for (WorkingRangeContainer.Registration registration : registrations) {
-        layoutState.mWorkingRangeContainer.registerWorkingRange(
-            registration.mName, registration.mWorkingRange, registration.mScopedComponentInfo);
+        if (component instanceof SpecGeneratedComponent) {
+          layoutState.mWorkingRangeContainer.registerWorkingRange(
+              registration.mName,
+              registration.mWorkingRange,
+              registration.mScopedComponentInfo,
+              (InterStagePropsContainer) result.getLayoutData());
+        } else {
+          layoutState.mWorkingRangeContainer.registerWorkingRange(
+              registration.mName,
+              registration.mWorkingRange,
+              registration.mScopedComponentInfo,
+              null);
+        }
       }
     }
 

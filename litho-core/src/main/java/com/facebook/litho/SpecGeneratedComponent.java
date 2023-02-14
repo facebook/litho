@@ -276,11 +276,17 @@ public abstract class SpecGeneratedComponent extends Component
     return null;
   }
 
-  protected void dispatchOnEnteredRange(ComponentContext c, String name) {
+  protected void dispatchOnEnteredRange(
+      final ComponentContext c,
+      final String name,
+      final @Nullable InterStagePropsContainer interStageProps) {
     // Do nothing by default
   }
 
-  protected void dispatchOnExitedRange(ComponentContext c, String name) {
+  protected void dispatchOnExitedRange(
+      final ComponentContext c,
+      final String name,
+      final @Nullable InterStagePropsContainer interStageProps) {
     // Do nothing by default
   }
 

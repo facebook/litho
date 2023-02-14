@@ -41,7 +41,8 @@ class WorkingRangeContainer {
   void registerWorkingRange(
       final String name,
       final WorkingRange workingRange,
-      final ScopedComponentInfo scopedComponentInfo) {
+      final ScopedComponentInfo scopedComponentInfo,
+      final @Nullable InterStagePropsContainer interStageProps) {
     if (mWorkingRanges == null) {
       mWorkingRanges = new LinkedHashMap<>();
     }
@@ -49,7 +50,8 @@ class WorkingRangeContainer {
     final String key = name + "_" + workingRange.hashCode();
     final RangeTuple rangeTuple = mWorkingRanges.get(key);
     if (rangeTuple == null) {
-      mWorkingRanges.put(key, new RangeTuple(name, workingRange, scopedComponentInfo));
+      mWorkingRanges.put(
+          key, new RangeTuple(name, workingRange, scopedComponentInfo, interStageProps));
     } else {
       rangeTuple.addComponent(scopedComponentInfo);
     }
@@ -88,7 +90,8 @@ class WorkingRangeContainer {
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
           try {
-            component.dispatchOnEnteredRange(scopedContext, rangeTuple.mName);
+            component.dispatchOnEnteredRange(
+                scopedContext, rangeTuple.mName, rangeTuple.mInterStagePropsContainer);
           } catch (Exception e) {
             ComponentUtils.handle(scopedContext, e);
           }
@@ -103,7 +106,8 @@ class WorkingRangeContainer {
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
           try {
-            component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
+            component.dispatchOnExitedRange(
+                scopedContext, rangeTuple.mName, rangeTuple.mInterStagePropsContainer);
           } catch (Exception e) {
             ComponentUtils.handle(scopedContext, e);
           }
@@ -134,7 +138,8 @@ class WorkingRangeContainer {
         String globalKey = scopedContext.getGlobalKey();
         if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)) {
           try {
-            component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
+            component.dispatchOnExitedRange(
+                scopedContext, rangeTuple.mName, rangeTuple.mInterStagePropsContainer);
           } catch (Exception e) {
             ComponentUtils.handle(scopedContext, e);
           }
@@ -189,15 +194,18 @@ class WorkingRangeContainer {
     final String mName;
     final WorkingRange mWorkingRange;
     final List<ScopedComponentInfo> mScopedComponentInfos;
+    final @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
     RangeTuple(
         final String name,
         final WorkingRange workingRange,
-        final ScopedComponentInfo scopedComponentInfo) {
+        final ScopedComponentInfo scopedComponentInfo,
+        final @Nullable InterStagePropsContainer interStagePropsContainer) {
       mName = name;
       mWorkingRange = workingRange;
       mScopedComponentInfos = new ArrayList<>();
       mScopedComponentInfos.add(scopedComponentInfo);
+      mInterStagePropsContainer = interStagePropsContainer;
     }
 
     void addComponent(final ScopedComponentInfo scopedComponentInfo) {
