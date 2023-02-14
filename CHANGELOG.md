@@ -1,11 +1,26 @@
 # Changelog
 
-## Version 0.47.0-SNAPSHOT
+## Version 0.48.0-SNAPSHOT
 
 _release-date_
 
+* TBD
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.47.0...master).
+
+## Version 0.47.0
+
+_2023-02-13_
+
 * [New] Adds debug overlay for to show components bounds, and interactive elements. Set the following configs to enable the feature: `debugHighlightInteractiveBounds`, `debugHighlightMountBounds`.  
 * [Deprecated] `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. All of those will be removed in one of subsequent versions.
+* [BREAKING] Introduces several new API to replace the ComponentTree in ComponentContext.
+  * Use `ComponentContext#getLithoTree` to get access to API previous accessed from the `ComponentTree`.
+  * `ComponentTree` removed from the `OnError` API; Use `ComponentContext#getErrorComponentReceiver` to set the root on error.
+* [BREAKING] `equivalence` utility method have moved from `CommonUtils` to `EquivalenceUtils`.
+* The logic to trigger mount has be simplified; there are now fewer hops between LithoView and ComponentTree.
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.46.0...0.47.0).
 
 ## Version 0.46.0
 
@@ -20,7 +35,7 @@ _2023-01-05_
 * [Internal] State generated during layout is now collected in a different StateHandler.
 * [Internal] Improved reliability of rebinding EventHandlers.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.45.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.45.0...v0.46.0).
 
 ## Version 0.45.0
 
