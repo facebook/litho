@@ -48,13 +48,10 @@ public class DynamicPropsExtension
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
       final DynamicPropsExtensionState state = extensionState.getState();
 
       state.mDynamicPropsManager.onBindComponentToContent(
-          output.getComponent(),
-          LithoRenderUnit.getComponentContext((LithoRenderUnit) renderUnit),
-          content);
+          lithoRenderUnit.getComponent(), lithoRenderUnit.getComponentContext(), content);
     }
   }
 
@@ -66,10 +63,9 @@ public class DynamicPropsExtension
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderUnit;
-      final LayoutOutput output = lithoRenderUnit.getLayoutOutput();
       final DynamicPropsExtensionState state = extensionState.getState();
 
-      state.mDynamicPropsManager.onUnbindComponent(output.getComponent(), content);
+      state.mDynamicPropsManager.onUnbindComponent(lithoRenderUnit.getComponent(), content);
     }
   }
 

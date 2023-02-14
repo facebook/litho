@@ -23,12 +23,12 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountable;
-import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE;
-import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
-import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
-import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.LithoLayoutResult.willMountView;
+import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
+import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
+import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
@@ -82,10 +82,10 @@ public class InternalNodeUtils {
         node,
         node.getImportantForAccessibility(),
         previousId != id
-            ? LayoutOutput.STATE_UNKNOWN
+            ? LithoRenderUnit.STATE_UNKNOWN
             : result.areCachedMeasuresValid()
-                ? LayoutOutput.STATE_UPDATED
-                : LayoutOutput.STATE_DIRTY,
+                ? LithoRenderUnit.STATE_UPDATED
+                : LithoRenderUnit.STATE_DIRTY,
         layoutState.getCurrentShouldDuplicateParentState(),
         false,
         needsHostView(result, layoutState),
@@ -115,14 +115,14 @@ public class InternalNodeUtils {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       id = ROOT_HOST_ID;
-      updateState = LayoutOutput.STATE_DIRTY;
+      updateState = LithoRenderUnit.STATE_DIRTY;
     } else {
       id =
           result
               .getContext()
               .calculateLayoutOutputId(node.getTailComponentKey(), OutputUnitType.HOST);
 
-      updateState = LayoutOutput.STATE_UNKNOWN;
+      updateState = LithoRenderUnit.STATE_UNKNOWN;
     }
 
     return createRenderUnit(
@@ -227,8 +227,7 @@ public class InternalNodeUtils {
     if (recycle != null) {
       try {
         isCachedOutputUpdated =
-            !component.shouldComponentUpdate(
-                null, recycle.getLayoutOutput().getComponent(), null, component);
+            !component.shouldComponentUpdate(null, recycle.getComponent(), null, component);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
         isCachedOutputUpdated = false;
@@ -267,8 +266,8 @@ public class InternalNodeUtils {
         node,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         previousId != id
-            ? LayoutOutput.STATE_UNKNOWN
-            : isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY,
+            ? LithoRenderUnit.STATE_UNKNOWN
+            : isCachedOutputUpdated ? LithoRenderUnit.STATE_UPDATED : LithoRenderUnit.STATE_DIRTY,
         layoutState.getCurrentShouldDuplicateParentState(),
         false,
         needsHostView(result, layoutState),

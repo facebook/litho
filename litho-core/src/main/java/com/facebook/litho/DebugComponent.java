@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -403,7 +401,7 @@ public final class DebugComponent {
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
-          mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
+          mountItem == null ? null : LithoRenderUnit.getRenderUnit(mountItem).getComponent();
       if (mountItemComponent != null) {
         final Object content = mountItem.getContent();
 
@@ -436,7 +434,7 @@ public final class DebugComponent {
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
-          mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
+          mountItem == null ? null : LithoRenderUnit.getRenderUnit(mountItem).getComponent();
       if (mountItemComponent != null && mountItemComponent.getId() == component.getId()) {
         final Object content = mountItem.getContent();
         final StringBuilder sb = new StringBuilder();
@@ -468,7 +466,7 @@ public final class DebugComponent {
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
-          mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
+          mountItem == null ? null : LithoRenderUnit.getRenderUnit(mountItem).getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
         return (ComponentHost) mountItem.getHost();
       }
@@ -554,7 +552,7 @@ public final class DebugComponent {
       for (int i = 0, count = mountDelegateTarget.getMountItemCount(); i < count; i++) {
         final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
         final Component component =
-            mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
+            mountItem == null ? null : LithoRenderUnit.getRenderUnit(mountItem).getComponent();
 
         if (component != null && component == mNode.getTailComponent()) {
           return mountItem.getContent();
