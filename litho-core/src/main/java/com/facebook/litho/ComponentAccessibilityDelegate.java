@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoRenderUnit.getComponentContext;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -90,8 +90,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // Coalesce the accessible mount item's information with the
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
-      final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-      final Component component = layoutOutput.getComponent();
+      final Component component = getRenderUnit(mountItem).getComponent();
       final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       try {
         dispatchOnPopulateAccessibilityNodeEvent(host, node);
@@ -143,11 +142,11 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    if (!(layoutOutput.getComponent() instanceof SpecGeneratedComponent)) {
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
+    if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
       return;
     }
-    final SpecGeneratedComponent component = (SpecGeneratedComponent) layoutOutput.getComponent();
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
@@ -180,11 +179,11 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    if (!(layoutOutput.getComponent() instanceof SpecGeneratedComponent)) {
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
+    if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
       return;
     }
-    final SpecGeneratedComponent component = (SpecGeneratedComponent) layoutOutput.getComponent();
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);
 
     node.setClassName(component.getClass().getName());
@@ -224,11 +223,11 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    if (!(layoutOutput.getComponent() instanceof SpecGeneratedComponent)) {
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
+    if (!(renderUnit.getComponent() instanceof SpecGeneratedComponent)) {
       return INVALID_ID;
     }
-    final SpecGeneratedComponent component = (SpecGeneratedComponent) layoutOutput.getComponent();
+    final SpecGeneratedComponent component = (SpecGeneratedComponent) renderUnit.getComponent();
     final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
@@ -276,8 +275,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
-    if (mountItem != null && getLayoutOutput(mountItem) != null) {
-      final Component component = getLayoutOutput(mountItem).getComponent();
+    if (mountItem != null && getRenderUnit(mountItem) != null) {
+      final Component component = getRenderUnit(mountItem).getComponent();
       if ((component instanceof SpecGeneratedComponent
           && ((SpecGeneratedComponent) component).implementsExtraAccessibilityNodes())) {
         return super.getAccessibilityNodeProvider(host);

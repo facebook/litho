@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-import static com.facebook.litho.LayoutOutput.isTouchableDisabled;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
+import static com.facebook.litho.LithoRenderUnit.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.annotation.SuppressLint;
@@ -154,18 +154,18 @@ public class ComponentHost extends Host implements DisappearingHost {
    */
   public void mount(int index, MountItem mountItem, Rect bounds) {
     final Object content = mountItem.getContent();
-    final LayoutOutput output = getLayoutOutput(mountItem);
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
     if (content instanceof Drawable) {
       mountDrawable(index, mountItem, bounds);
     } else if (content instanceof View) {
       mViewMountItems.put(index, mountItem);
-      mountView((View) content, output.getFlags());
+      mountView((View) content, renderUnit.getFlags());
       maybeRegisterTouchExpansion(index, mountItem);
-      maybeRegisterViewForAccessibility(output, (View) content);
+      maybeRegisterViewForAccessibility(renderUnit, (View) content);
     }
 
     mMountItems.put(index, mountItem);
-    updateAccessibilityState(output);
+    updateAccessibilityState(renderUnit);
   }
 
   private void ensureDisappearingItems() {
@@ -212,7 +212,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-    updateAccessibilityState(getLayoutOutput(mountItem));
+    updateAccessibilityState(getRenderUnit(mountItem));
   }
 
   /**
@@ -258,7 +258,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       mIsChildDrawingOrderDirty = true;
     }
 
-    updateAccessibilityState(getLayoutOutput(disappearingItem));
+    updateAccessibilityState(getRenderUnit(disappearingItem));
 
     return true;
   }
@@ -268,7 +268,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
-    final ViewNodeInfo viewNodeInfo = getLayoutOutput(item).getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = getRenderUnit(item).getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -282,8 +282,8 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void maybeRegisterTouchExpansion(int index, MountItem item) {
-    final LayoutOutput output = getLayoutOutput(item);
-    final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
+    final LithoRenderUnit renderUnit = getRenderUnit(item);
+    final ViewNodeInfo viewNodeInfo = renderUnit.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -344,7 +344,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);
       // For inexplicable reason, item is null sometimes.
-      if (item != null && getLayoutOutput(item).isAccessible()) {
+      if (item != null && getRenderUnit(item).isAccessible()) {
         return item;
       }
     }
@@ -605,10 +605,10 @@ public class ComponentHost extends Host implements DisappearingHost {
     return mOnTouchListener;
   }
 
-  private void updateAccessibilityState(final LayoutOutput output) {
+  private void updateAccessibilityState(final LithoRenderUnit renderUnit) {
     // If the item has extra A11Y nodes then virtual views are implemented.
-    Component component = output.getComponent();
-    if (output.isAccessible()
+    Component component = renderUnit.getComponent();
+    if (renderUnit.isAccessible()
         && component instanceof SpecGeneratedComponent
         && ((SpecGeneratedComponent) component).implementsExtraAccessibilityNodes()) {
       setImplementsVirtualViews(true);
@@ -622,8 +622,9 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
   }
 
-  private void maybeRegisterViewForAccessibility(final LayoutOutput output, final View view) {
-    Component component = output.getComponent();
+  private void maybeRegisterViewForAccessibility(
+      final LithoRenderUnit renderUnit, final View view) {
+    Component component = renderUnit.getComponent();
     if (view instanceof ComponentHost) {
       // We already registered the accessibility delegate when building the host.
       return;
@@ -691,7 +692,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   public List<CharSequence> getContentDescriptions() {
     final List<CharSequence> contentDescriptions = new ArrayList<>();
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
-      final NodeInfo nodeInfo = getLayoutOutput(mDrawableMountItems.valueAt(i)).getNodeInfo();
+      final NodeInfo nodeInfo = getRenderUnit(mDrawableMountItems.valueAt(i)).getNodeInfo();
       if (nodeInfo == null) {
         continue;
       }
@@ -710,13 +711,13 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void mountView(View view, int flags) {
-    final boolean childShouldDuplicateParentState = LayoutOutput.isDuplicateParentState(flags);
+    final boolean childShouldDuplicateParentState = LithoRenderUnit.isDuplicateParentState(flags);
     if (childShouldDuplicateParentState) {
       view.setDuplicateParentStateEnabled(true);
       mHadChildWithDuplicateParentState = true;
     }
 
-    if (view instanceof ComponentHost && LayoutOutput.isDuplicateChildrenStates(flags)) {
+    if (view instanceof ComponentHost && LithoRenderUnit.isDuplicateChildrenStates(flags)) {
       ((ComponentHost) view).setAddStatesFromChildren(true);
     }
 
@@ -767,7 +768,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       for (int i = 0; i < mountItemCount; i++) {
         MountItem item = mMountItems.get(i);
         componentNames.append(
-            (item != null) ? getLayoutOutput(item).getComponent().getSimpleName() : "null");
+            (item != null) ? getRenderUnit(item).getComponent().getSimpleName() : "null");
         if (i < mountItemCount - 1) {
           componentNames.append(", ");
         } else {
@@ -834,7 +835,7 @@ public class ComponentHost extends Host implements DisappearingHost {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
         if (item.getContent() instanceof Touchable
-            && !isTouchableDisabled(getLayoutOutput(item).getFlags())) {
+            && !isTouchableDisabled(getRenderUnit(item).getFlags())) {
           final Touchable t = (Touchable) item.getContent();
           if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
             handled = true;
@@ -898,9 +899,9 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      final LayoutOutput output = getLayoutOutput(mountItem);
+      final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
       maybeSetDrawableState(
-          this, (Drawable) mountItem.getContent(), output.getFlags(), output.getNodeInfo());
+          this, (Drawable) mountItem.getContent(), renderUnit.getFlags(), renderUnit.getNodeInfo());
     }
   }
 
@@ -1219,7 +1220,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((getLayoutOutput(mountItem).getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
+      if ((getRenderUnit(mountItem).getFlags() & LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
           != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
@@ -1288,13 +1289,13 @@ public class ComponentHost extends Host implements DisappearingHost {
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
 
-    final LayoutOutput output = getLayoutOutput(mountItem);
+    final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
     drawable.setVisible(getVisibility() == View.VISIBLE, false);
     drawable.setCallback(this);
 
     // If mount data is LithoMountData then Litho need to manually set drawable state.
     if (mountItem.getMountData() instanceof LithoMountData) {
-      maybeSetDrawableState(this, drawable, output.getFlags(), output.getNodeInfo());
+      maybeSetDrawableState(this, drawable, renderUnit.getFlags(), renderUnit.getNodeInfo());
     }
     invalidate(bounds);
   }
@@ -1399,7 +1400,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private static String getMountItemName(MountItem mountItem) {
-    return getLayoutOutput(mountItem).getComponent().getSimpleName();
+    return getRenderUnit(mountItem).getComponent().getSimpleName();
   }
 
   @Override

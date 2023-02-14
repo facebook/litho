@@ -78,7 +78,7 @@ class ComponentHostUtils {
       View view, Drawable drawable, int flags, @Nullable NodeInfo nodeInfo) {
     final boolean shouldSetState =
         (nodeInfo != null && nodeInfo.hasTouchEventHandlers())
-            || LayoutOutput.isDuplicateParentState(flags);
+            || LithoRenderUnit.isDuplicateParentState(flags);
 
     if (shouldSetState && drawable.isStateful()) {
       drawable.setState(view.getDrawableState());

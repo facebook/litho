@@ -16,6 +16,10 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
@@ -43,18 +47,64 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
   @Retention(RetentionPolicy.SOURCE)
   public @interface UpdateState {}
 
+  private final @Nullable NodeInfo mNodeInfo;
+  private final @Nullable ViewNodeInfo mViewNodeInfo;
+  private @Nullable DebugHierarchy.Node mHierarchy; // TODO: remove
+  private final Component mComponent;
+  private final int mFlags;
+
+  private final int mImportantForAccessibility;
+
+  private final int mUpdateState;
+
   protected final long mId;
   protected final LayoutOutput output;
   protected final @Nullable ComponentContext mContext;
 
+  @Deprecated
   protected LithoRenderUnit(
       long id, LayoutOutput output, RenderType renderType, @Nullable ComponentContext context) {
+    this(
+        id,
+        output.getComponent(),
+        output.getNodeInfo(),
+        output.getViewNodeInfo(),
+        output.getFlags(),
+        output.getImportantForAccessibility(),
+        output.getUpdateState(),
+        renderType,
+        context);
+  }
+
+  protected LithoRenderUnit(
+      long id,
+      final Component component,
+      final @Nullable NodeInfo nodeInfo,
+      final @Nullable ViewNodeInfo viewNodeInfo,
+      final int flags,
+      final int importantForAccessibility,
+      final @UpdateState int updateState,
+      RenderType renderType,
+      @Nullable ComponentContext context) {
     super(renderType);
     this.mContext = context;
-    this.output = output;
+    mNodeInfo = nodeInfo;
+    mViewNodeInfo = viewNodeInfo;
+    mComponent = component;
+    mFlags = flags;
+    mImportantForAccessibility =
+        importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
+            ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
+            : importantForAccessibility;
+    mUpdateState = updateState;
+    // temporary. will remove in following diff
+    output =
+        new LayoutOutput(
+            component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
     this.mId = id;
   }
 
+  @Deprecated
   public LayoutOutput getLayoutOutput() {
     return output;
   }
@@ -70,7 +120,53 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
 
   @Override
   public boolean getMatchHostBounds() {
-    return (output.getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
+    return (getFlags() & LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
+  }
+
+  Component getComponent() {
+    return mComponent;
+  }
+
+  int getFlags() {
+    return mFlags;
+  }
+
+  @Nullable
+  DebugHierarchy.Node getHierarchy() {
+    return mHierarchy;
+  }
+
+  void setHierarchy(@Nullable DebugHierarchy.Node node) {
+    mHierarchy = node;
+  }
+
+  @Nullable
+  NodeInfo getNodeInfo() {
+    return mNodeInfo;
+  }
+
+  @UpdateState
+  public int getUpdateState() {
+    return mUpdateState;
+  }
+
+  public int getImportantForAccessibility() {
+    return mImportantForAccessibility;
+  }
+
+  boolean isAccessible() {
+    if (mImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_NO) {
+      return false;
+    }
+
+    return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
+        || (mComponent instanceof SpecGeneratedComponent
+            && ((SpecGeneratedComponent) mComponent).implementsAccessibility());
+  }
+
+  @Nullable
+  ViewNodeInfo getViewNodeInfo() {
+    return mViewNodeInfo;
   }
 
   static @Nullable ComponentContext getComponentContext(MountItem item) {
@@ -83,6 +179,30 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
 
   static @Nullable ComponentContext getComponentContext(LithoRenderUnit unit) {
     return unit.getComponentContext();
+  }
+
+  static LithoRenderUnit getRenderUnit(MountItem item) {
+    return getRenderUnit(item.getRenderTreeNode());
+  }
+
+  static LithoRenderUnit getRenderUnit(RenderTreeNode node) {
+    return (LithoRenderUnit) node.getRenderUnit();
+  }
+
+  static boolean isDuplicateParentState(int flags) {
+    return (flags & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) == LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+  }
+
+  static boolean isDuplicateChildrenStates(int flags) {
+    return (flags & LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES) == LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
+  }
+
+  static boolean isTouchableDisabled(int flags) {
+    return (flags & LAYOUT_FLAG_DISABLE_TOUCHABLE) == LAYOUT_FLAG_DISABLE_TOUCHABLE;
+  }
+
+  static boolean areDrawableOutputsDisabled(int flags) {
+    return (flags & LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED) != 0;
   }
 
   public static boolean isMountableView(RenderUnit unit) {

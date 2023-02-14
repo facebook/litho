@@ -436,7 +436,7 @@ public class LayoutState
     int b = t + result.getHeight();
 
     if (useNodePadding) {
-      if (isMountable(unit.output.getComponent())) {
+      if (isMountable(unit.getComponent())) {
         if (!isMountableView(unit)) {
           if (!hasExactSize) {
             l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
