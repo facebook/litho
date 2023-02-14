@@ -70,8 +70,8 @@ public class LithoViewAttributesExtension
 
   static class LithoViewAttributesState {
     private Map<Long, Integer> mDefaultViewAttributes = new HashMap<>();
-    private @Nullable Map<Long, LayoutOutput> mCurrentOutputs;
-    private @Nullable Map<Long, LayoutOutput> mNewOutputs;
+    private @Nullable Map<Long, LithoRenderUnit> mCurentUnits;
+    private @Nullable Map<Long, LithoRenderUnit> mNewUnits;
 
     void setDefaultViewAttributes(long renderUnitId, int flags) {
       mDefaultViewAttributes.put(renderUnitId, flags);
@@ -92,13 +92,13 @@ public class LithoViewAttributesExtension
     }
 
     @Nullable
-    LayoutOutput getCurrentLayoutOutput(long id) {
-      return mCurrentOutputs != null ? mCurrentOutputs.get(id) : null;
+    LithoRenderUnit getCurrentRenderUnit(long id) {
+      return mCurentUnits != null ? mCurentUnits.get(id) : null;
     }
 
     @Nullable
-    LayoutOutput getNewLayoutOutput(long id) {
-      return mNewOutputs != null ? mNewOutputs.get(id) : null;
+    LithoRenderUnit getNewRenderUnit(long id) {
+      return mNewUnits != null ? mNewUnits.get(id) : null;
     }
   }
 
@@ -108,14 +108,13 @@ public class LithoViewAttributesExtension
       final @Nullable ViewAttributesInput viewAttributesInput,
       final Rect localVisibleRect) {
     if (viewAttributesInput != null) {
-      extensionState.getState().mNewOutputs =
-          viewAttributesInput.getLayoutOutputsWithViewAttributes();
+      extensionState.getState().mNewUnits = viewAttributesInput.getRenderUnitsWithViewAttributes();
     }
   }
 
   @Override
   public void afterMount(ExtensionState<LithoViewAttributesState> extensionState) {
-    extensionState.getState().mCurrentOutputs = extensionState.getState().mNewOutputs;
+    extensionState.getState().mCurentUnits = extensionState.getState().mNewUnits;
   }
 
   @Override
@@ -126,9 +125,9 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     final LithoViewAttributesState state = extensionState.getState();
     final long id = renderUnit.getId();
-    final @Nullable LayoutOutput output = state.getNewLayoutOutput(id);
+    final @Nullable LithoRenderUnit outputUnit = state.getNewRenderUnit(id);
 
-    if (output != null) {
+    if (outputUnit != null) {
       // Get the initial view attribute flags for the root LithoView.
       if (!state.hasDefaultViewAttributes(id)) {
         final int flags;
@@ -139,7 +138,7 @@ public class LithoViewAttributesExtension
         }
         state.setDefaultViewAttributes(id, flags);
       }
-      setViewAttributes(content, output);
+      setViewAttributes(content, outputUnit);
     }
   }
 
@@ -151,11 +150,11 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     final LithoViewAttributesState state = extensionState.getState();
     final long id = renderUnit.getId();
-    final @Nullable LayoutOutput output = state.getCurrentLayoutOutput(id);
+    final @Nullable LithoRenderUnit outputUnit = state.getCurrentRenderUnit(id);
 
-    if (output != null) {
+    if (outputUnit != null) {
       final int flags = state.getDefaultViewAttributes(id);
-      unsetViewAttributes(content, output, flags);
+      unsetViewAttributes(content, outputUnit, flags);
     }
   }
 
@@ -172,8 +171,9 @@ public class LithoViewAttributesExtension
 
     final long id = previousRenderUnit.getId();
     final LithoViewAttributesState state = extensionState.getState();
-    final @Nullable LayoutOutput current = state.getCurrentLayoutOutput(id);
-    final @Nullable LayoutOutput next = state.getNewLayoutOutput(id);
+    // Do we still need these since we already have previousRenderUnit & nextRenderUnit?
+    final @Nullable LithoRenderUnit currentUnit = state.getCurrentRenderUnit(id);
+    final @Nullable LithoRenderUnit nextUnit = state.getNewRenderUnit(id);
 
     if (previousRenderUnit instanceof LithoRenderUnit
         && nextRenderUnit instanceof LithoRenderUnit) {
@@ -188,32 +188,31 @@ public class LithoViewAttributesExtension
                   (MountSpecLithoRenderUnit) nextLithoRenderUnit,
                   previousLayoutData,
                   nextLayoutData))
-          || shouldUpdateViewInfo(
-              nextLithoRenderUnit.getLayoutOutput(), prevLithoRenderUnit.getLayoutOutput());
+          || shouldUpdateViewInfo(nextLithoRenderUnit, prevLithoRenderUnit);
     } else {
 
-      if (current == null || next == null) {
-        return current != null || next != null;
+      if (currentUnit == null || nextUnit == null) {
+        return currentUnit != null || nextUnit != null;
       }
 
-      return shouldUpdateViewInfo(next, current);
+      return shouldUpdateViewInfo(nextUnit, currentUnit);
     }
   }
 
   @Override
   public void onUnmount(ExtensionState<LithoViewAttributesState> extensionState) {
-    extensionState.getState().mCurrentOutputs = null;
-    extensionState.getState().mNewOutputs = null;
+    extensionState.getState().mCurentUnits = null;
+    extensionState.getState().mNewUnits = null;
   }
 
-  static void setViewAttributes(Object content, LayoutOutput output) {
-    final Component component = output.getComponent();
+  static void setViewAttributes(Object content, LithoRenderUnit unit) {
+    final Component component = unit.getComponent();
     if (!(content instanceof View)) {
       return;
     }
 
     final View view = (View) content;
-    final NodeInfo nodeInfo = output.getNodeInfo();
+    final NodeInfo nodeInfo = unit.getNodeInfo();
 
     if (nodeInfo != null) {
       setClickHandler(nodeInfo.getClickHandler(), view);
@@ -248,14 +247,14 @@ public class LithoViewAttributesExtension
       setTransitionName(view, nodeInfo.getTransitionName());
     }
 
-    setImportantForAccessibility(view, output.getImportantForAccessibility());
+    setImportantForAccessibility(view, unit.getImportantForAccessibility());
 
-    final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = unit.getViewNodeInfo();
     if (viewNodeInfo != null) {
       final boolean isHostSpec = isHostSpec(component);
       setViewLayerType(view, viewNodeInfo);
       setViewStateListAnimator(view, viewNodeInfo);
-      if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
+      if (LithoRenderUnit.areDrawableOutputsDisabled(unit.getFlags())) {
         setViewBackground(view, viewNodeInfo);
         ViewUtils.setViewForeground(view, viewNodeInfo.getForeground());
 
@@ -282,8 +281,8 @@ public class LithoViewAttributesExtension
   }
 
   static void unsetViewAttributes(
-      final Object content, final LayoutOutput output, final int mountFlags) {
-    final Component component = output.getComponent();
+      final Object content, final LithoRenderUnit unit, final int mountFlags) {
+    final Component component = unit.getComponent();
     final boolean isHostView = isHostSpec(component);
 
     if (!(content instanceof View)) {
@@ -291,7 +290,7 @@ public class LithoViewAttributesExtension
     }
 
     final View view = (View) content;
-    final NodeInfo nodeInfo = output.getNodeInfo();
+    final NodeInfo nodeInfo = unit.getNodeInfo();
 
     if (nodeInfo != null) {
       if (nodeInfo.getClickHandler() != null) {
@@ -342,23 +341,23 @@ public class LithoViewAttributesExtension
     unsetEnabled(view, mountFlags);
     unsetSelected(view, mountFlags);
 
-    if (output.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+    if (unit.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
     }
 
     unsetAccessibilityDelegate(view);
 
-    final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = unit.getViewNodeInfo();
     if (viewNodeInfo != null) {
       unsetViewStateListAnimator(view, viewNodeInfo);
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
-      if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
+      if (LithoRenderUnit.areDrawableOutputsDisabled(unit.getFlags())) {
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
       }
       if (!isHostView) {
-        unsetViewPadding(view, output, viewNodeInfo);
+        unsetViewPadding(view, unit, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
         unsetViewLayoutDirection(view);
@@ -833,7 +832,7 @@ public class LithoViewAttributesExtension
         viewNodeInfo.getPaddingBottom());
   }
 
-  private static void unsetViewPadding(View view, LayoutOutput output, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewPadding(View view, LithoRenderUnit unit, ViewNodeInfo viewNodeInfo) {
     if (!viewNodeInfo.hasPadding()) {
       return;
     }
@@ -846,7 +845,7 @@ public class LithoViewAttributesExtension
           .report(
               LogLevel.ERROR,
               "LITHO:NPE:UNSET_PADDING",
-              "From component: " + output.getComponent().getSimpleName(),
+              "From component: " + unit.getComponent().getSimpleName(),
               e,
               0,
               null);
@@ -963,23 +962,23 @@ public class LithoViewAttributesExtension
   }
 
   static boolean shouldUpdateViewInfo(
-      final LayoutOutput nextLayoutOutput, final LayoutOutput currentLayoutOutput) {
+      final LithoRenderUnit nextUnit, final LithoRenderUnit currentUnit) {
 
-    final ViewNodeInfo nextViewNodeInfo = nextLayoutOutput.getViewNodeInfo();
-    final ViewNodeInfo currentViewNodeInfo = currentLayoutOutput.getViewNodeInfo();
+    final ViewNodeInfo nextViewNodeInfo = nextUnit.getViewNodeInfo();
+    final ViewNodeInfo currentViewNodeInfo = currentUnit.getViewNodeInfo();
     if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
         || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
 
       return true;
     }
 
-    final NodeInfo nextNodeInfo = nextLayoutOutput.getNodeInfo();
-    final NodeInfo currentNodeInfo = currentLayoutOutput.getNodeInfo();
+    final NodeInfo nextNodeInfo = nextUnit.getNodeInfo();
+    final NodeInfo currentNodeInfo = currentUnit.getNodeInfo();
     return (currentNodeInfo == null && nextNodeInfo != null)
         || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
   }
 
   public interface ViewAttributesInput {
-    Map<Long, LayoutOutput> getLayoutOutputsWithViewAttributes();
+    Map<Long, LithoRenderUnit> getRenderUnitsWithViewAttributes();
   }
 }

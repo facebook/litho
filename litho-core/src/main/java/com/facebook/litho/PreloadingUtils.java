@@ -143,7 +143,6 @@ public class PreloadingUtils {
                       InternalNodeUtils.class,
                       SizeSpec.class,
                       TransitionId.class,
-                      LayoutOutput.class,
                       OutputUnitsAffinityGroup.class,
                       LithoAnimtableItem.class,
                       WorkingRangeContainer.class,
