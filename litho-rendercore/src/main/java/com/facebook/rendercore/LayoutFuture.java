@@ -18,7 +18,6 @@ public class LayoutFuture<State, RenderContext>
   private final int mVersionId;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final Node<RenderContext> mTree;
 
   public LayoutFuture(
       Context context,
@@ -52,7 +51,6 @@ public class LayoutFuture<State, RenderContext>
     mVersionId = layoutVersion;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
-    mTree = node;
   }
 
   public int getVersion() {
@@ -65,9 +63,5 @@ public class LayoutFuture<State, RenderContext>
 
   public int getHeightSpec() {
     return mHeightSpec;
-  }
-
-  public Node<RenderContext> getTree() {
-    return mTree;
   }
 }
