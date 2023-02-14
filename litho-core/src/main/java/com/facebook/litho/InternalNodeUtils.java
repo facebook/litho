@@ -110,7 +110,7 @@ public class InternalNodeUtils {
     hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getScopedComponentInfos()));
 
     final long id;
-    final @LayoutOutput.UpdateState int updateState;
+    final @LithoRenderUnit.UpdateState int updateState;
     if (isRoot) {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
@@ -284,7 +284,7 @@ public class InternalNodeUtils {
       LithoLayoutResult result,
       LithoNode node,
       int importantForAccessibility,
-      @LayoutOutput.UpdateState int updateState,
+      @LithoRenderUnit.UpdateState int updateState,
       boolean duplicateParentState,
       boolean duplicateChildrenStates,
       boolean hasHostView,

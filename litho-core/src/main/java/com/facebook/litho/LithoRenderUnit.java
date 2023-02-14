@@ -16,15 +16,32 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
+
+  public static final int STATE_UNKNOWN = 0;
+  public static final int STATE_UPDATED = 1;
+  public static final int STATE_DIRTY = 2;
+
+  static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
+  static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
+  static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
+  static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
+  static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
+
+  @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface UpdateState {}
 
   protected final long mId;
   protected final LayoutOutput output;

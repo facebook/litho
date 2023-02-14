@@ -20,30 +20,26 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /** The output of a layout pass for a given {@link Component}. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class LayoutOutput implements Cloneable {
-  public static final int STATE_UNKNOWN = 0;
-  public static final int STATE_UPDATED = 1;
-  public static final int STATE_DIRTY = 2;
+  public static final int STATE_UNKNOWN = LithoRenderUnit.STATE_UNKNOWN;
+  public static final int STATE_UPDATED = LithoRenderUnit.STATE_UPDATED;
+  public static final int STATE_DIRTY = LithoRenderUnit.STATE_DIRTY;
 
-  static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
-  static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
-  static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
-  static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
-  static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
-
-  @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
-  @Retention(RetentionPolicy.SOURCE)
-  public @interface UpdateState {}
+  static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE =
+      LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+  static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+  static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
+  static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED =
+      LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
+  static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES =
+      LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
 
   private final @Nullable NodeInfo mNodeInfo;
   private final @Nullable ViewNodeInfo mViewNodeInfo;
@@ -61,7 +57,7 @@ class LayoutOutput implements Cloneable {
       final @Nullable ViewNodeInfo viewNodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @UpdateState int updateState) {
+      final @LithoRenderUnit.UpdateState int updateState) {
 
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
@@ -96,7 +92,7 @@ class LayoutOutput implements Cloneable {
     return mNodeInfo;
   }
 
-  @UpdateState
+  @LithoRenderUnit.UpdateState
   public int getUpdateState() {
     return mUpdateState;
   }

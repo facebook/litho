@@ -55,7 +55,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       final @Nullable ViewNodeInfo viewNodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @LayoutOutput.UpdateState int updateState) {
+      final @LithoRenderUnit.UpdateState int updateState) {
     final LayoutOutput output =
         new LayoutOutput(
             component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
@@ -266,7 +266,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       final @Nullable LithoLayoutData currentLayoutData,
       final @Nullable ComponentContext currentContext,
       final boolean useUpdateValueFromLayoutOutput) {
-    @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
+    @LithoRenderUnit.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
     final Component currentComponent = currentLayoutOutput.getComponent();
     final Component nextComponent = nextLayoutOutput.getComponent();
 

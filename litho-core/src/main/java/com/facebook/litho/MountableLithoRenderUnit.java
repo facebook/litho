@@ -49,7 +49,7 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final @Nullable ViewNodeInfo viewNodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @LayoutOutput.UpdateState int updateState,
+      final @LithoRenderUnit.UpdateState int updateState,
       final Mountable mountable) {
     final LayoutOutput output =
         new LayoutOutput(

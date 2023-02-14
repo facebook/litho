@@ -125,7 +125,7 @@ public class LegacyTreeDiffingTest {
   }
 
   private static void assertOutputsState(
-      LayoutState layoutState, @LayoutOutput.UpdateState int state) {
+      LayoutState layoutState, @LithoRenderUnit.UpdateState int state) {
     assertThat(STATE_DIRTY)
         .isEqualTo(getLayoutOutput(layoutState.getMountableOutputAt(0)).getUpdateState());
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
