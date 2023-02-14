@@ -61,21 +61,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
   protected final LayoutOutput output;
   protected final @Nullable ComponentContext mContext;
 
-  @Deprecated
-  protected LithoRenderUnit(
-      long id, LayoutOutput output, RenderType renderType, @Nullable ComponentContext context) {
-    this(
-        id,
-        output.getComponent(),
-        output.getNodeInfo(),
-        output.getViewNodeInfo(),
-        output.getFlags(),
-        output.getImportantForAccessibility(),
-        output.getUpdateState(),
-        renderType,
-        context);
-  }
-
   protected LithoRenderUnit(
       long id,
       final Component component,

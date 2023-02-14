@@ -37,8 +37,24 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   private boolean mCachedShouldUpdateResult;
 
   private MountSpecLithoRenderUnit(
-      long id, LayoutOutput output, @Nullable ComponentContext context) {
-    super(id, output, getRenderType(output), context);
+      long id,
+      final Component component,
+      final @Nullable NodeInfo nodeInfo,
+      final @Nullable ViewNodeInfo viewNodeInfo,
+      final int flags,
+      final int importantForAccessibility,
+      final @UpdateState int updateState,
+      @Nullable ComponentContext context) {
+    super(
+        id,
+        component,
+        nodeInfo,
+        viewNodeInfo,
+        flags,
+        importantForAccessibility,
+        updateState,
+        getRenderType(component),
+        context);
     addOptionalMountBinders(
         DelegateBinder.createDelegateBinder(
             this, MountSpecLithoRenderUnit.LithoMountBinder.INSTANCE));
@@ -56,11 +72,16 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       final int flags,
       final int importantForAccessibility,
       final @LithoRenderUnit.UpdateState int updateState) {
-    final LayoutOutput output =
-        new LayoutOutput(
-            component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
 
-    return new MountSpecLithoRenderUnit(id, output, context);
+    return new MountSpecLithoRenderUnit(
+        id,
+        component,
+        nodeInfo,
+        viewNodeInfo,
+        flags,
+        importantForAccessibility,
+        updateState,
+        context);
   }
 
   @Override
@@ -78,7 +99,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   @Nullable
   public MountItemsPool.ItemPool createRecyclingPool() {
     try {
-      final Component component = output.getComponent();
+      final Component component = getComponent();
       return (component instanceof SpecGeneratedComponent)
           ? ((SpecGeneratedComponent) component).createRecyclingPool()
           : null;
@@ -92,7 +113,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   @Override
   public Object createContent(Context c) {
-    return output.getComponent().createMountContent(c);
+    return getComponent().createMountContent(c);
   }
 
   @Override
@@ -102,14 +123,14 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   @Override
   public boolean isRecyclingDisabled() {
-    final Component component = output.getComponent();
+    final Component component = getComponent();
     return (component instanceof SpecGeneratedComponent)
         && ((SpecGeneratedComponent) component).isRecyclingDisabled();
   }
 
   @Override
   public String getDescription() {
-    return output.getComponent().getSimpleName();
+    return getComponent().getSimpleName();
   }
 
   @Override
@@ -119,7 +140,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   @Override
   public Class<?> getRenderContentType() {
-    return output.getComponent().getClass();
+    return getComponent().getClass();
   }
 
   public static boolean shouldUpdateMountItem(
@@ -144,10 +165,10 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
     final boolean result =
         shouldUpdateMountItem(
-            next.output,
+            next,
             (LithoLayoutData) nextData,
             nextContext,
-            current.output,
+            current,
             (LithoLayoutData) currentData,
             currentContext,
             updateValueFromLayoutOutput);
@@ -172,7 +193,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final MountSpecLithoRenderUnit next,
         final @Nullable Object currentData,
         final @Nullable Object nextData) {
-      if (next.output.getComponent() instanceof HostComponent) {
+      if (next.getComponent() instanceof HostComponent) {
         return false;
       }
 
@@ -185,8 +206,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final Object content,
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      final Component component = output.getComponent();
+      final Component component = unit.getComponent();
       ((SpecGeneratedComponent) component)
           .mount(getComponentContext(unit), content, getInterStageProps(data));
     }
@@ -197,8 +217,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final Object content,
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      ((SpecGeneratedComponent) output.getComponent())
+      ((SpecGeneratedComponent) unit.getComponent())
           .unmount(getComponentContext(unit), content, getInterStageProps(data));
     }
   }
@@ -224,16 +243,15 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final Object content,
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
       if (content instanceof Drawable) {
         final Drawable drawable = (Drawable) content;
         if (drawable.getCallback() instanceof View) {
           final View view = (View) drawable.getCallback();
-          maybeSetDrawableState(view, drawable, output.getFlags(), output.getNodeInfo());
+          maybeSetDrawableState(view, drawable, unit.getFlags(), unit.getNodeInfo());
         }
       }
 
-      ((SpecGeneratedComponent) output.getComponent())
+      ((SpecGeneratedComponent) unit.getComponent())
           .bind(getComponentContext(unit), content, getInterStageProps(data));
     }
 
@@ -243,32 +261,31 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final Object content,
         final MountSpecLithoRenderUnit unit,
         final @Nullable Object data) {
-      final LayoutOutput output = unit.output;
-      ((SpecGeneratedComponent) output.getComponent())
+      ((SpecGeneratedComponent) unit.getComponent())
           .unbind(getComponentContext(unit), content, getInterStageProps(data));
     }
   }
 
-  private static RenderUnit.RenderType getRenderType(LayoutOutput output) {
-    if (output == null) {
+  private static RenderUnit.RenderType getRenderType(Component component) {
+    if (component == null) {
       throw new IllegalArgumentException("Null output used for LithoRenderUnit.");
     }
-    return output.getComponent().getMountType() == Component.MountType.DRAWABLE
+    return component.getMountType() == Component.MountType.DRAWABLE
         ? RenderUnit.RenderType.DRAWABLE
         : RenderUnit.RenderType.VIEW;
   }
 
   static boolean shouldUpdateMountItem(
-      final LayoutOutput nextLayoutOutput,
+      final LithoRenderUnit nextRenderUnit,
       final @Nullable LithoLayoutData nextLayoutData,
       final @Nullable ComponentContext nextContext,
-      final LayoutOutput currentLayoutOutput,
+      final LithoRenderUnit currentRenderUnit,
       final @Nullable LithoLayoutData currentLayoutData,
       final @Nullable ComponentContext currentContext,
       final boolean useUpdateValueFromLayoutOutput) {
-    @LithoRenderUnit.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
-    final Component currentComponent = currentLayoutOutput.getComponent();
-    final Component nextComponent = nextLayoutOutput.getComponent();
+    @LithoRenderUnit.UpdateState final int updateState = nextRenderUnit.getUpdateState();
+    final Component currentComponent = currentRenderUnit.getComponent();
+    final Component nextComponent = nextRenderUnit.getComponent();
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
@@ -281,13 +298,13 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
     }
 
     if (useUpdateValueFromLayoutOutput) {
-      if (updateState == LayoutOutput.STATE_UPDATED) {
+      if (updateState == LithoRenderUnit.STATE_UPDATED) {
 
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
             && shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
-      } else if (updateState == LayoutOutput.STATE_DIRTY) {
+      } else if (updateState == LithoRenderUnit.STATE_DIRTY) {
         return true;
       }
     }

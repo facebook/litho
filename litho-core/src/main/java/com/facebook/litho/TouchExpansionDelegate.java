@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -147,7 +147,7 @@ class TouchExpansionDelegate extends TouchDelegate {
 
     @Nullable
     Rect getDelegateBounds() {
-      final ViewNodeInfo info = getLayoutOutput(mItem).getViewNodeInfo();
+      final ViewNodeInfo info = getRenderUnit(mItem).getViewNodeInfo();
       if (info == null) {
         return null;
       }

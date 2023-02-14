@@ -34,10 +34,24 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   private final Mountable<Object> mMountable;
 
   private MountableLithoRenderUnit(
-      final LayoutOutput output,
+      final Component component,
+      final @Nullable NodeInfo nodeInfo,
+      final @Nullable ViewNodeInfo viewNodeInfo,
+      final int flags,
+      final int importantForAccessibility,
+      final @UpdateState int updateState,
       final Mountable mountable,
       final @Nullable ComponentContext context) {
-    super(mountable.getId(), output, mountable.getRenderType(), context);
+    super(
+        mountable.getId(),
+        component,
+        nodeInfo,
+        viewNodeInfo,
+        flags,
+        importantForAccessibility,
+        updateState,
+        mountable.getRenderType(),
+        context);
 
     mMountable = mountable;
   }
@@ -51,10 +65,15 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final int importantForAccessibility,
       final @LithoRenderUnit.UpdateState int updateState,
       final Mountable mountable) {
-    final LayoutOutput output =
-        new LayoutOutput(
-            component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
-    return new MountableLithoRenderUnit(output, mountable, context);
+    return new MountableLithoRenderUnit(
+        component,
+        nodeInfo,
+        viewNodeInfo,
+        flags,
+        importantForAccessibility,
+        updateState,
+        mountable,
+        context);
   }
 
   @Override
@@ -158,7 +177,7 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   @Override
   public String getDescription() {
     // TODO: have a similar API for Mountable.
-    return output.getComponent().getSimpleName();
+    return getComponent().getSimpleName();
   }
 
   public Mountable<?> getMountable() {
