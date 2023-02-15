@@ -2434,4 +2434,8 @@ public abstract class Component
   public <T> T getAttribute(AttributeKey<T> attributeKey) {
     return mAttributesHolder.get(attributeKey);
   }
+
+  public Map<AttributeKey<?>, Object> getAttributes() {
+    return mAttributesHolder.getAttributes();
+  }
 }

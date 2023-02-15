@@ -49,18 +49,29 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed: assertExists
             Reason: Expected exactly 1 node(s), but found 6
             Node(s) found:
-            - Text(isEnabled=false)
-              Attrs: [text='Hello world']
-            - Text(testKey=item-#0, isEnabled=false)
-              Attrs: [text='Item #0']
-            - Text(testKey=item-#1, isEnabled=false)
-              Attrs: [text='Item #1']
-            - Text(testKey=item-#2, isEnabled=false)
-              Attrs: [text='Item #2']
-            - Text(testKey=item-#3, isEnabled=false)
-              Attrs: [text='Item #3']
-            - Text(testKey=item-#4, isEnabled=false)
-              Attrs: [text='Item #4']
+            -Text
+               isEnabled = false
+               text = Hello world
+            -Text
+               testKey = item-#0
+               isEnabled = false
+               text = Item #0
+            -Text
+               testKey = item-#1
+               isEnabled = false
+               text = Item #1
+            -Text
+               testKey = item-#2
+               isEnabled = false
+               text = Item #2
+            -Text
+               testKey = item-#3
+               isEnabled = false
+               text = Item #3
+            -Text
+               testKey = item-#4
+               isEnabled = false
+               text = Item #4
             Selector used: is a component of type com.facebook.litho.widget.Text
             
             """
@@ -96,9 +107,11 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
         .hasMessage(
             """
             Failed assertion: has child that is a component of type com.facebook.litho.widget.Text and has test key "invalid"
-            - Row(isEnabled=false, children=1)
-              |-Text(isEnabled=false)
-                Attrs: [text='Hello world']
+            -Row(children=1)
+               isEnabled = false
+             |-Text
+                isEnabled = false
+                text = Hello world
             Selector used: is a component of type com.facebook.litho.Row
             
             """
@@ -139,18 +152,29 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed selection: index is out of bounds
             Reason: Requested a node at index 10, but only 6 nodes are available
             Node(s) found:
-            - Text(isEnabled=false)
-              Attrs: [text='Hello world']
-            - Text(testKey=item-#0, isEnabled=false)
-              Attrs: [text='Item #0']
-            - Text(testKey=item-#1, isEnabled=false)
-              Attrs: [text='Item #1']
-            - Text(testKey=item-#2, isEnabled=false)
-              Attrs: [text='Item #2']
-            - Text(testKey=item-#3, isEnabled=false)
-              Attrs: [text='Item #3']
-            - Text(testKey=item-#4, isEnabled=false)
-              Attrs: [text='Item #4']
+            -Text
+               isEnabled = false
+               text = Hello world
+            -Text
+               testKey = item-#0
+               isEnabled = false
+               text = Item #0
+            -Text
+               testKey = item-#1
+               isEnabled = false
+               text = Item #1
+            -Text
+               testKey = item-#2
+               isEnabled = false
+               text = Item #2
+            -Text
+               testKey = item-#3
+               isEnabled = false
+               text = Item #3
+            -Text
+               testKey = item-#4
+               isEnabled = false
+               text = Item #4
             Selector used: is a component of type com.facebook.litho.widget.Text => node at index 10
             
             """
@@ -191,7 +215,8 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed selection: index is out of bounds
             Reason: Requested a node at index 2, but only 1 node is available
             Node(s) found:
-            - Column(isEnabled=false, children=2)
+            -Column(children=2)
+               isEnabled = false
             Selector used: is a component of type com.facebook.litho.Column => node at index 2
             
             """
@@ -234,16 +259,26 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed: assertExists
             Reason: Expected exactly 1 node(s), but found 5
             Node(s) found:
-            - Text(testKey=item-#0, isEnabled=false)
-              Attrs: [text='Item #0']
-            - Text(testKey=item-#1, isEnabled=false)
-              Attrs: [text='Item #1']
-            - Text(testKey=item-#2, isEnabled=false)
-              Attrs: [text='Item #2']
-            - Text(testKey=item-#3, isEnabled=false)
-              Attrs: [text='Item #3']
-            - Text(testKey=item-#4, isEnabled=false)
-              Attrs: [text='Item #4']
+            -Text
+               testKey = item-#0
+               isEnabled = false
+               text = Item #0
+            -Text
+               testKey = item-#1
+               isEnabled = false
+               text = Item #1
+            -Text
+               testKey = item-#2
+               isEnabled = false
+               text = Item #2
+            -Text
+               testKey = item-#3
+               isEnabled = false
+               text = Item #3
+            -Text
+               testKey = item-#4
+               isEnabled = false
+               text = Item #4
             Selector used: has text containing "Item" => single node
             
             """
@@ -262,14 +297,22 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             """
             Failed: assertAll(has test key "item-#0")
             Reason: The following nodes do not match the expected condition:
-            - Text(testKey=item-#1, isEnabled=false)
-              Attrs: [text='Item #1']
-            - Text(testKey=item-#2, isEnabled=false)
-              Attrs: [text='Item #2']
-            - Text(testKey=item-#3, isEnabled=false)
-              Attrs: [text='Item #3']
-            - Text(testKey=item-#4, isEnabled=false)
-              Attrs: [text='Item #4']
+            -Text
+               testKey = item-#1
+               isEnabled = false
+               text = Item #1
+            -Text
+               testKey = item-#2
+               isEnabled = false
+               text = Item #2
+            -Text
+               testKey = item-#3
+               isEnabled = false
+               text = Item #3
+            -Text
+               testKey = item-#4
+               isEnabled = false
+               text = Item #4
             Selector used: has text containing "Item"
             
             """
@@ -289,16 +332,26 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed: assertAny(is a component of type com.facebook.litho.widget.Image)
             Reason: None of the selected nodes match the expected condition
             Node(s) found:
-            - Text(testKey=item-#0, isEnabled=false)
-              Attrs: [text='Item #0']
-            - Text(testKey=item-#1, isEnabled=false)
-              Attrs: [text='Item #1']
-            - Text(testKey=item-#2, isEnabled=false)
-              Attrs: [text='Item #2']
-            - Text(testKey=item-#3, isEnabled=false)
-              Attrs: [text='Item #3']
-            - Text(testKey=item-#4, isEnabled=false)
-              Attrs: [text='Item #4']
+            -Text
+               testKey = item-#0
+               isEnabled = false
+               text = Item #0
+            -Text
+               testKey = item-#1
+               isEnabled = false
+               text = Item #1
+            -Text
+               testKey = item-#2
+               isEnabled = false
+               text = Item #2
+            -Text
+               testKey = item-#3
+               isEnabled = false
+               text = Item #3
+            -Text
+               testKey = item-#4
+               isEnabled = false
+               text = Item #4
             Selector used: has text containing "Item"
             
             """
@@ -307,6 +360,7 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
 
   @Test
   fun `TestNodeCollectionSelection assertAny on empty collection`() {
+
     Assertions.assertThatThrownBy {
           rule
               .render { CollectionComponent() }

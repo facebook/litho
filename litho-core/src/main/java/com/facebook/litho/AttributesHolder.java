@@ -32,4 +32,8 @@ public class AttributesHolder implements AttributesAcceptor {
   public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
     mAttributes.put(attributeKey, value);
   }
+
+  public Map<AttributeKey<?>, Object> getAttributes() {
+    return mAttributes;
+  }
 }

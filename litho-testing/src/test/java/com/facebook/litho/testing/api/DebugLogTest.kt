@@ -49,9 +49,10 @@ class DebugLogTest : RunWithDebugInfoTest() {
         rule.render { SimpleComponent() }.selectNode(hasType<Text>()).printToString().trim()
     val expected =
         """
-        - Text(isEnabled=false)
-          Attrs: [text='Hello']
-          Actns: [click]
+        -Text
+           isEnabled = false
+           text = Hello
+           Actns = [click]
         """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -63,9 +64,11 @@ class DebugLogTest : RunWithDebugInfoTest() {
         rule.render { StyledComponent() }.selectNode(isRoot()).printToString(maxDepth = 1).trim()
     val expected =
         """
-        - StyledComponent(isEnabled=false, children=1)
-          |-Column(isEnabled=false, children=1)
-        """
+        -StyledComponent(children=1)
+           isEnabled = false
+         |-Column(children=1)
+            isEnabled = false
+          """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
   }
@@ -76,12 +79,15 @@ class DebugLogTest : RunWithDebugInfoTest() {
         rule.render { CollectionComponent() }.selectNode(hasType<Row>()).printToString().trim()
     val expected =
         """
-        - Row(isEnabled=false, children=2)
-          |-Text(isEnabled=false)
-          | Attrs: [text='Hello world']
-          |-Text(isEnabled=false)
-            Attrs: [text='Info']
-            Actns: [click]
+        -Row(children=2)
+           isEnabled = false
+         |-Text
+         |  isEnabled = false
+         |  text = Hello world
+         |-Text
+            isEnabled = false
+            text = Info
+            Actns = [click]
         """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -92,10 +98,13 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val actual = rule.render { StyledComponent() }.selectNode(isRoot()).printToString().trim()
     val expected =
         """
-        - StyledComponent(isEnabled=false, children=1)
-          |-Column(isEnabled=false, children=1)
-            |-Text(isEnabled=false)
-              Attrs: [text='Hello world']
+        -StyledComponent(children=1)
+           isEnabled = false
+         |-Column(children=1)
+            isEnabled = false
+          |-Text
+             isEnabled = false
+             text = Hello world
         """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -106,38 +115,66 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val actual = rule.render { CollectionComponent() }.selectNode(isRoot()).printToString().trim()
     val expected =
         """
-        - CollectionComponent(isEnabled=false, children=1)
-          |-Column(isEnabled=false, children=2)
-            |-Row(isEnabled=false, children=2)
-            | |-Text(isEnabled=false)
-            | | Attrs: [text='Hello world']
-            | |-Text(isEnabled=false)
-            |   Attrs: [text='Info']
-            |   Actns: [click]
-            |-LazyCollection(isEnabled=false, children=1)
-              |-CollectionRecycler(isEnabled=false, children=1)
-                |-Recycler(isEnabled=false, children=10)
-                  |-Text(testKey=item-#1, isEnabled=false)
-                  | Attrs: [text='Item #1']
-                  |-Text(testKey=item-#2, isEnabled=false)
-                  | Attrs: [text='Item #2']
-                  |-Text(testKey=item-#3, isEnabled=false)
-                  | Attrs: [text='Item #3']
-                  |-Text(testKey=item-#4, isEnabled=false)
-                  | Attrs: [text='Item #4']
-                  |-Text(testKey=item-#5, isEnabled=false)
-                  | Attrs: [text='Item #5']
-                  |-Text(testKey=item-#6, isEnabled=false)
-                  | Attrs: [text='Item #6']
-                  |-Text(testKey=item-#7, isEnabled=false)
-                  | Attrs: [text='Item #7']
-                  |-Text(testKey=item-#8, isEnabled=false)
-                  | Attrs: [text='Item #8']
-                  |-Text(testKey=item-#9, isEnabled=false)
-                  | Attrs: [text='Item #9']
-                  |-Text(testKey=item-#10, isEnabled=false)
-                    Attrs: [text='Item #10']
-        """
+        -CollectionComponent(children=1)
+           isEnabled = false
+         |-Column(children=2)
+            isEnabled = false
+          |-Row(children=2)
+          |  isEnabled = false
+           |-Text
+           |  isEnabled = false
+           |  text = Hello world
+           |-Text
+              isEnabled = false
+              text = Info
+              Actns = [click]
+          |-LazyCollection(children=1)
+             isEnabled = false
+           |-CollectionRecycler(children=1)
+              isEnabled = false
+            |-Recycler(children=10)
+               isEnabled = false
+             |-Text
+             |  testKey = item-#1
+             |  isEnabled = false
+             |  text = Item #1
+             |-Text
+             |  testKey = item-#2
+             |  isEnabled = false
+             |  text = Item #2
+             |-Text
+             |  testKey = item-#3
+             |  isEnabled = false
+             |  text = Item #3
+             |-Text
+             |  testKey = item-#4
+             |  isEnabled = false
+             |  text = Item #4
+             |-Text
+             |  testKey = item-#5
+             |  isEnabled = false
+             |  text = Item #5
+             |-Text
+             |  testKey = item-#6
+             |  isEnabled = false
+             |  text = Item #6
+             |-Text
+             |  testKey = item-#7
+             |  isEnabled = false
+             |  text = Item #7
+             |-Text
+             |  testKey = item-#8
+             |  isEnabled = false
+             |  text = Item #8
+             |-Text
+             |  testKey = item-#9
+             |  isEnabled = false
+             |  text = Item #9
+             |-Text
+                testKey = item-#10
+                isEnabled = false
+                text = Item #10
+          """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
   }
@@ -149,32 +186,54 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val expected =
         """
         Found 12 matching node(s)
-        - Text(isEnabled=false)
-          Attrs: [text='Hello world']
-        - Text(isEnabled=false)
-          Attrs: [text='Info']
-          Actns: [click]
-        - Text(testKey=item-#1, isEnabled=false)
-          Attrs: [text='Item #1']
-        - Text(testKey=item-#2, isEnabled=false)
-          Attrs: [text='Item #2']
-        - Text(testKey=item-#3, isEnabled=false)
-          Attrs: [text='Item #3']
-        - Text(testKey=item-#4, isEnabled=false)
-          Attrs: [text='Item #4']
-        - Text(testKey=item-#5, isEnabled=false)
-          Attrs: [text='Item #5']
-        - Text(testKey=item-#6, isEnabled=false)
-          Attrs: [text='Item #6']
-        - Text(testKey=item-#7, isEnabled=false)
-          Attrs: [text='Item #7']
-        - Text(testKey=item-#8, isEnabled=false)
-          Attrs: [text='Item #8']
-        - Text(testKey=item-#9, isEnabled=false)
-          Attrs: [text='Item #9']
-        - Text(testKey=item-#10, isEnabled=false)
-          Attrs: [text='Item #10']
-        """
+        -Text
+           isEnabled = false
+           text = Hello world
+        -Text
+           isEnabled = false
+           text = Info
+           Actns = [click]
+        -Text
+           testKey = item-#1
+           isEnabled = false
+           text = Item #1
+        -Text
+           testKey = item-#2
+           isEnabled = false
+           text = Item #2
+        -Text
+           testKey = item-#3
+           isEnabled = false
+           text = Item #3
+        -Text
+           testKey = item-#4
+           isEnabled = false
+           text = Item #4
+        -Text
+           testKey = item-#5
+           isEnabled = false
+           text = Item #5
+        -Text
+           testKey = item-#6
+           isEnabled = false
+           text = Item #6
+        -Text
+           testKey = item-#7
+           isEnabled = false
+           text = Item #7
+        -Text
+           testKey = item-#8
+           isEnabled = false
+           text = Item #8
+        -Text
+           testKey = item-#9
+           isEnabled = false
+           text = Item #9
+        -Text
+           testKey = item-#10
+           isEnabled = false
+           text = Item #10
+          """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
   }
@@ -190,34 +249,58 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val expected =
         """
         Found 2 matching node(s)
-        - Row(isEnabled=false, children=2)
-          |-Text(isEnabled=false)
-          | Attrs: [text='Hello world']
-          |-Text(isEnabled=false)
-            Attrs: [text='Info']
-            Actns: [click]
-        - Recycler(isEnabled=false, children=10)
-          |-Text(testKey=item-#1, isEnabled=false)
-          | Attrs: [text='Item #1']
-          |-Text(testKey=item-#2, isEnabled=false)
-          | Attrs: [text='Item #2']
-          |-Text(testKey=item-#3, isEnabled=false)
-          | Attrs: [text='Item #3']
-          |-Text(testKey=item-#4, isEnabled=false)
-          | Attrs: [text='Item #4']
-          |-Text(testKey=item-#5, isEnabled=false)
-          | Attrs: [text='Item #5']
-          |-Text(testKey=item-#6, isEnabled=false)
-          | Attrs: [text='Item #6']
-          |-Text(testKey=item-#7, isEnabled=false)
-          | Attrs: [text='Item #7']
-          |-Text(testKey=item-#8, isEnabled=false)
-          | Attrs: [text='Item #8']
-          |-Text(testKey=item-#9, isEnabled=false)
-          | Attrs: [text='Item #9']
-          |-Text(testKey=item-#10, isEnabled=false)
-            Attrs: [text='Item #10']
-        """
+        -Row(children=2)
+           isEnabled = false
+         |-Text
+         |  isEnabled = false
+         |  text = Hello world
+         |-Text
+            isEnabled = false
+            text = Info
+            Actns = [click]
+        -Recycler(children=10)
+           isEnabled = false
+         |-Text
+         |  testKey = item-#1
+         |  isEnabled = false
+         |  text = Item #1
+         |-Text
+         |  testKey = item-#2
+         |  isEnabled = false
+         |  text = Item #2
+         |-Text
+         |  testKey = item-#3
+         |  isEnabled = false
+         |  text = Item #3
+         |-Text
+         |  testKey = item-#4
+         |  isEnabled = false
+         |  text = Item #4
+         |-Text
+         |  testKey = item-#5
+         |  isEnabled = false
+         |  text = Item #5
+         |-Text
+         |  testKey = item-#6
+         |  isEnabled = false
+         |  text = Item #6
+         |-Text
+         |  testKey = item-#7
+         |  isEnabled = false
+         |  text = Item #7
+         |-Text
+         |  testKey = item-#8
+         |  isEnabled = false
+         |  text = Item #8
+         |-Text
+         |  testKey = item-#9
+         |  isEnabled = false
+         |  text = Item #9
+         |-Text
+            testKey = item-#10
+            isEnabled = false
+            text = Item #10
+          """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
   }

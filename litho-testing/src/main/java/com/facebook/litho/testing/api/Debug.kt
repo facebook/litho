@@ -16,10 +16,6 @@
 
 package com.facebook.litho.testing.api
 
-import com.facebook.litho.testing.api.TestNodeAttributes.ContentDescription
-import com.facebook.litho.testing.api.TestNodeAttributes.Enabled
-import com.facebook.litho.testing.api.TestNodeAttributes.TestKey
-import com.facebook.litho.widget.WidgetAttributes
 import java.lang.Appendable
 
 /**
@@ -83,55 +79,54 @@ internal fun List<TestNode>.printTo(appendable: Appendable, maxDepth: Int = 0) {
 }
 
 internal fun TestNode.printTo(appendable: Appendable, maxDepth: Int = Int.MAX_VALUE) {
-  printTo(
-      appendable,
-      indentLevel = 0,
-      indentLevelPrefix = "",
-      maxIndentLevel = maxDepth,
-      hasNextSibling = false)
+  printTo(appendable, indentLevel = 0, maxIndentLevel = maxDepth, hasNextSibling = false)
 }
 
 private fun TestNode.printTo(
     appendable: Appendable,
     indentLevel: Int,
-    indentLevelPrefix: String,
     maxIndentLevel: Int,
     hasNextSibling: Boolean
 ) {
   require(maxIndentLevel >= indentLevel) { "maxIndentLevel cannot be less than indentLevel" }
 
-  fun newPrefix(isAddendum: Boolean = false) = buildString {
-    append(indentLevelPrefix)
-    when {
-      isAddendum -> if (indentLevel == 0 || !hasNextSibling) append("  ") else append("| ")
-      indentLevel == 0 -> append("- ")
-      else -> append("|-")
+  val levelPrefix = if (indentLevel == 0) "" else " ".repeat(indentLevel)
+
+  // 1. Set node prefix
+  val nodePrefix = buildString {
+    append(levelPrefix)
+    if (indentLevel != 0) {
+      append("|")
     }
+    append("-")
   }
 
+  appendable.append(nodePrefix)
+
+  // 2. Append name
   val normalizedComponentName = componentType.simpleName
-
-  val basicProps =
-      listOfNotNull(
-          getAttribute(TestKey)?.let { Pair("testKey", it) },
-          getAttribute(ContentDescription)?.let { Pair("contentDescription", "'$it'") },
-          getAttribute(Enabled)?.let { Pair("isEnabled", it) },
-          Pair("children", children.size).takeIf { children.isNotEmpty() },
-      )
-  val newPrefix = newPrefix()
-  appendable.append(newPrefix)
   appendable.append(normalizedComponentName)
-  appendable.appendLine("(${basicProps.joinToString(", ") { (k, v) -> "$k=$v"}})")
 
-  val newPrefixForAddendum = newPrefix(isAddendum = true)
-  val attrs =
-      listOfNotNull(
-          getAttribute(WidgetAttributes.Text)?.let { Pair("text", "'$it'") },
-          // Add more attributes here
-      )
-  if (attrs.isNotEmpty()) {
-    appendable.append(newPrefixForAddendum)
-    appendable.appendLine("Attrs: [${attrs.joinToString(", ") { (k, v) -> "$k=$v"}}]")
+  // 3. Append meta properties
+  val metaProps = listOfNotNull(Pair("children", children.size).takeIf { children.isNotEmpty() })
+  if (metaProps.isNotEmpty()) {
+    appendable.appendLine("(${metaProps.joinToString(", ") { (k, v) -> "$k=$v"}})")
+  } else {
+    appendable.appendLine()
+  }
+
+  // 4. Append attributes
+  val testNodeAttributes =
+      attributes.mapNotNull { (key, value) -> value?.let { Pair(key.description, value) } }
+
+  val attributePrefix = buildString {
+    append(levelPrefix)
+    append(if (hasNextSibling) "|  " else "   ")
+  }
+
+  testNodeAttributes.forEach { (key, value) ->
+    appendable.append(attributePrefix)
+    appendable.appendLine("$key = $value")
   }
 
   val actions =
@@ -140,8 +135,8 @@ private fun TestNode.printTo(
           // Add more actions here
       )
   if (actions.isNotEmpty()) {
-    appendable.append(newPrefixForAddendum)
-    appendable.appendLine("Actns: [${actions.joinToString(", ")}]")
+    appendable.append(attributePrefix)
+    appendable.appendLine("Actns = [${actions.joinToString(", ")}]")
   }
 
   if (indentLevel == maxIndentLevel) return
@@ -150,8 +145,7 @@ private fun TestNode.printTo(
     child.printTo(
         appendable = appendable,
         indentLevel = indentLevel + 1,
-        indentLevelPrefix = newPrefixForAddendum,
         maxIndentLevel = maxIndentLevel,
-        hasNextSibling = index != children.lastIndex)
+        hasNextSibling = children.lastIndex != index)
   }
 }

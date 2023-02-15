@@ -30,17 +30,22 @@ class TestNode(private val component: Component) {
 
   val componentType: Class<*> = component::class.java
 
-  private val commonPropsAttributes =
+  private val commonPropsAttributes: Map<AttributeKey<*>, *> =
       mapOf(
           TestNodeAttributes.TestKey to component.commonProps?.testKey,
           TestNodeAttributes.Enabled to (component.commonProps?.isEnabled ?: false),
           TestNodeAttributes.ContentDescription to component.commonProps?.contentDescription)
+
+  private val componentAttributes: Map<AttributeKey<*>, *> = component.attributes
 
   val clickHandler: EventHandler<ClickEvent>?
     get() = component.commonProps?.clickHandler
 
   fun <T> getAttribute(key: AttributeKey<T>): T =
       commonPropsAttributes[key] as? T ?: component.getAttribute(key)
+
+  val attributes: Set<Pair<AttributeKey<*>, *>> =
+      (commonPropsAttributes + componentAttributes).entries.map { it.toPair() }.toSet()
 
   var parent: TestNode? = null
 
