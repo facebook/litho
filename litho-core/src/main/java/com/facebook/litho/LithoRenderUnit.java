@@ -58,7 +58,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
   private final int mUpdateState;
 
   protected final long mId;
-  protected final LayoutOutput output;
   protected final @Nullable ComponentContext mContext;
 
   protected LithoRenderUnit(
@@ -82,16 +81,7 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
             ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
             : importantForAccessibility;
     mUpdateState = updateState;
-    // temporary. will remove in following diff
-    output =
-        new LayoutOutput(
-            component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
     this.mId = id;
-  }
-
-  @Deprecated
-  public LayoutOutput getLayoutOutput() {
-    return output;
   }
 
   public @Nullable ComponentContext getComponentContext() {
