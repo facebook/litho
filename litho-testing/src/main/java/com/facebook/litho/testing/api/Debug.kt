@@ -16,6 +16,9 @@
 
 package com.facebook.litho.testing.api
 
+import com.facebook.litho.testing.api.TestNodeAttributes.ContentDescription
+import com.facebook.litho.testing.api.TestNodeAttributes.Enabled
+import com.facebook.litho.testing.api.TestNodeAttributes.TestKey
 import com.facebook.litho.widget.WidgetAttributes
 import java.lang.Appendable
 
@@ -110,9 +113,9 @@ private fun TestNode.printTo(
 
   val basicProps =
       listOfNotNull(
-          testKey?.let { Pair("testKey", it) },
-          contentDescription?.let { Pair("contentDescription", "'$it'") },
-          Pair("isEnabled", isEnabled),
+          getAttribute(TestKey)?.let { Pair("testKey", it) },
+          getAttribute(ContentDescription)?.let { Pair("contentDescription", "'$it'") },
+          getAttribute(Enabled)?.let { Pair("isEnabled", it) },
           Pair("children", children.size).takeIf { children.isNotEmpty() },
       )
   val newPrefix = newPrefix()

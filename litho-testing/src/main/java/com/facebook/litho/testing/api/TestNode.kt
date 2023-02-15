@@ -30,21 +30,29 @@ class TestNode(private val component: Component) {
 
   val componentType: Class<*> = component::class.java
 
-  val testKey: String?
-    get() = component.commonProps?.testKey
-
-  val isEnabled: Boolean
-    get() = component.commonProps?.isEnabled ?: false
-
-  val contentDescription: CharSequence?
-    get() = component.commonProps?.contentDescription
+  private val commonPropsAttributes =
+      mapOf(
+          TestNodeAttributes.TestKey to component.commonProps?.testKey,
+          TestNodeAttributes.Enabled to (component.commonProps?.isEnabled ?: false),
+          TestNodeAttributes.ContentDescription to component.commonProps?.contentDescription)
 
   val clickHandler: EventHandler<ClickEvent>?
     get() = component.commonProps?.clickHandler
 
-  fun <T> getAttribute(key: AttributeKey<T>): T = component.getAttribute(key)
+  fun <T> getAttribute(key: AttributeKey<T>): T =
+      commonPropsAttributes[key] as? T ?: component.getAttribute(key)
 
   var parent: TestNode? = null
 
   var children: List<TestNode> = mutableListOf()
+}
+
+internal object TestNodeAttributes {
+
+  val TestKey: AttributeKey<String?> = AttributeKey<String?>("testKey")
+
+  val ContentDescription: AttributeKey<CharSequence?> =
+      AttributeKey<CharSequence?>("contentDescription")
+
+  val Enabled: AttributeKey<Boolean?> = AttributeKey<Boolean?>("isEnabled")
 }

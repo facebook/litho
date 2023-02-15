@@ -17,6 +17,9 @@
 package com.facebook.litho.testing.api
 
 import com.facebook.litho.AttributeKey
+import com.facebook.litho.testing.api.TestNodeAttributes.ContentDescription
+import com.facebook.litho.testing.api.TestNodeAttributes.Enabled
+import com.facebook.litho.testing.api.TestNodeAttributes.TestKey
 import com.facebook.litho.widget.WidgetAttributes
 
 /**
@@ -32,12 +35,14 @@ fun hasType(type: Class<*>): TestNodeMatcher =
 
 inline fun <reified T> hasType(): TestNodeMatcher = hasType(T::class.java)
 
-fun isEnabled(): TestNodeMatcher = TestNodeMatcher("is enabled") { node -> node.isEnabled }
+fun isEnabled(): TestNodeMatcher =
+    TestNodeMatcher("is enabled") { node -> node.getAttribute(Enabled) == true }
 
-fun isNotEnabled(): TestNodeMatcher = TestNodeMatcher("is not enabled") { node -> !node.isEnabled }
+fun isNotEnabled(): TestNodeMatcher =
+    TestNodeMatcher("is not enabled") { node -> node.getAttribute(Enabled) != true }
 
 fun hasTestKey(key: String): TestNodeMatcher =
-    TestNodeMatcher("has test key \"$key\"") { node -> node.testKey == key }
+    TestNodeMatcher("has test key \"$key\"") { node -> node.getAttribute(TestKey) == key }
 
 /**
  * Returns a [TestNodeMatcher] that verifies if the given node text matches the exact [text]
@@ -63,7 +68,7 @@ fun hasTextContaining(text: CharSequence): TestNodeMatcher {
  */
 fun hasContentDescription(description: CharSequence): TestNodeMatcher {
   return TestNodeMatcher("has contentDescription \"$description\"") { node ->
-    node.contentDescription == description
+    node.getAttribute(ContentDescription) == description
   }
 }
 
