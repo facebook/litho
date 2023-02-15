@@ -47,33 +47,6 @@ public class LayoutOutputTest {
     mTestComponent = new TestComponent();
   }
 
-  private LayoutOutput createLayoutOutput(long id, @OutputUnitType int outputType) {
-    return createLayoutOutput(id, outputType, 0, 0);
-  }
-
-  private LayoutOutput createLayoutOutput(
-      long id, @OutputUnitType int outputType, int flags, long hostMarker) {
-    return createLayoutOutputWithBoundsAndHostTranslation(
-        id, outputType, new Rect(0, 1, 3, 4), 0, 0, flags, hostMarker);
-  }
-
-  private LayoutOutput createLayoutOutputWithBoundsAndHostTranslation(
-      long id,
-      @OutputUnitType int outputType,
-      Rect rect,
-      int hostTranslationX,
-      int hostTranslationY,
-      int flags,
-      long hostMarker) {
-    return new LayoutOutput(mTestComponent, null, null, flags, 0, LayoutOutput.STATE_UNKNOWN);
-  }
-
-  @Test
-  public void testFlagsSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 1, 0);
-    assertThat(layoutOutput.getFlags()).isEqualTo(1);
-  }
-
   @Test
   public void testGetMountBoundsNoHostTranslation() {
     Rect mountBounds = new Rect();

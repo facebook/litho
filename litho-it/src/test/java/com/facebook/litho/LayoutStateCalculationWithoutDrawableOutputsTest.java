@@ -20,7 +20,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
@@ -56,7 +56,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
   public void
       whenDrawableOutputsEnabledAndChildrenNotWrappedInView_shouldHaveExplicitDrawableOutputsForBackgroundAndForeground() {
     LayoutState state;
-    LayoutOutput output;
+    LithoRenderUnit output;
 
     attach();
 
@@ -67,28 +67,28 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     assertThat(state.getMountableOutputCount()).isEqualTo(7);
 
-    output = getLayoutOutput(state.getMountableOutputAt(0)); // root host view
+    output = getRenderUnit(state.getMountableOutputAt(0)); // root host view
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     if (output.getViewNodeInfo() != null) {
       assertThat(output.getViewNodeInfo().getBackground()).isNull();
     }
 
-    output = getLayoutOutput(state.getMountableOutputAt(1)); // background 1
+    output = getRenderUnit(state.getMountableOutputAt(1)); // background 1
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(2)); // text 1
+    output = getRenderUnit(state.getMountableOutputAt(2)); // text 1
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(3)); // foreground 1
+    output = getRenderUnit(state.getMountableOutputAt(3)); // foreground 1
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(4)); // background 2
+    output = getRenderUnit(state.getMountableOutputAt(4)); // background 2
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(5)); // text 2
+    output = getRenderUnit(state.getMountableOutputAt(5)); // text 2
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(6)); // foreground 2
+    output = getRenderUnit(state.getMountableOutputAt(6)); // foreground 2
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
   }
 
@@ -96,7 +96,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
   public void
       whenDrawableOutputsEnabledAndChildrenWrappedInView_shouldHaveExplicitDrawableOutputsForBackgroundAndForeground() {
     LayoutState state;
-    LayoutOutput output;
+    LithoRenderUnit output;
 
     attach();
 
@@ -107,40 +107,40 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     assertThat(state.getMountableOutputCount()).isEqualTo(9);
 
-    output = getLayoutOutput(state.getMountableOutputAt(0)); // root host view
+    output = getRenderUnit(state.getMountableOutputAt(0)); // root host view
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     if (output.getViewNodeInfo() != null) {
       assertThat(output.getViewNodeInfo().getBackground()).isNull();
     }
 
-    output = getLayoutOutput(state.getMountableOutputAt(1)); // host view 1
+    output = getRenderUnit(state.getMountableOutputAt(1)); // host view 1
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     if (output.getViewNodeInfo() != null) {
       assertThat(output.getViewNodeInfo().getBackground()).isNull();
     }
 
-    output = getLayoutOutput(state.getMountableOutputAt(2)); // background 1
+    output = getRenderUnit(state.getMountableOutputAt(2)); // background 1
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(3)); // text 1
+    output = getRenderUnit(state.getMountableOutputAt(3)); // text 1
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(4)); // foreground 1
+    output = getRenderUnit(state.getMountableOutputAt(4)); // foreground 1
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(5)); // host view 2
+    output = getRenderUnit(state.getMountableOutputAt(5)); // host view 2
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     if (output.getViewNodeInfo() != null) {
       assertThat(output.getViewNodeInfo().getBackground()).isNull();
     }
 
-    output = getLayoutOutput(state.getMountableOutputAt(6)); // background 2
+    output = getRenderUnit(state.getMountableOutputAt(6)); // background 2
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(7)); // text 2
+    output = getRenderUnit(state.getMountableOutputAt(7)); // text 2
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(8)); // foreground 2
+    output = getRenderUnit(state.getMountableOutputAt(8)); // foreground 2
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
   }
 
@@ -148,7 +148,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
   public void
       whenDrawableOutputsDisabledAndChildrenNotWrappedInView_shouldNotHaveDrawableOutputsForBackgroundAndForeground() {
     LayoutState state;
-    LayoutOutput output;
+    LithoRenderUnit output;
 
     attach();
 
@@ -159,18 +159,18 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     state = mLithoView.getComponentTree().getMainThreadLayoutState();
     assertThat(state.getMountableOutputCount()).isEqualTo(5); // 2 bg and fg lesser.
 
-    output = getLayoutOutput(state.getMountableOutputAt(1));
+    output = getRenderUnit(state.getMountableOutputAt(1));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
-    output = getLayoutOutput(state.getMountableOutputAt(2));
+    output = getRenderUnit(state.getMountableOutputAt(2));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(3));
+    output = getRenderUnit(state.getMountableOutputAt(3));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
-    output = getLayoutOutput(state.getMountableOutputAt(4));
+    output = getRenderUnit(state.getMountableOutputAt(4));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
   }
 
@@ -178,7 +178,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
   public void
       whenDrawableOutputsDisabledAndChildrenWrappedInView_shouldNotHaveDrawableOutputsForBackgroundAndForeground() {
     LayoutState state;
-    LayoutOutput output;
+    LithoRenderUnit output;
 
     attach();
 
@@ -189,18 +189,18 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     state = mLithoView.getComponentTree().getMainThreadLayoutState();
     assertThat(state.getMountableOutputCount()).isEqualTo(5); // 2 bg and fg lesser.
 
-    output = getLayoutOutput(state.getMountableOutputAt(1));
+    output = getRenderUnit(state.getMountableOutputAt(1));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
-    output = getLayoutOutput(state.getMountableOutputAt(2));
+    output = getRenderUnit(state.getMountableOutputAt(2));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    output = getLayoutOutput(state.getMountableOutputAt(3));
+    output = getRenderUnit(state.getMountableOutputAt(3));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
     assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
-    output = getLayoutOutput(state.getMountableOutputAt(4));
+    output = getRenderUnit(state.getMountableOutputAt(4));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
   }
 

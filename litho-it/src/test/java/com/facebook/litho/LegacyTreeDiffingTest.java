@@ -20,10 +20,10 @@ import static android.R.drawable.btn_default;
 import static android.graphics.Color.TRANSPARENT;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
-import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
-import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.LithoRenderUnit.STATE_DIRTY;
+import static com.facebook.litho.LithoRenderUnit.STATE_UNKNOWN;
+import static com.facebook.litho.LithoRenderUnit.STATE_UPDATED;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,13 +82,13 @@ public class LegacyTreeDiffingTest {
     LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
     assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(1)).getUpdateState())
+    assertThat(getRenderUnit(thirdState.getMountableOutputAt(1)).getUpdateState())
         .isEqualTo(STATE_DIRTY);
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
+    assertThat(getRenderUnit(thirdState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(3)).getUpdateState())
+    assertThat(getRenderUnit(thirdState.getMountableOutputAt(3)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(4)).getUpdateState())
+    assertThat(getRenderUnit(thirdState.getMountableOutputAt(4)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
   }
 
@@ -108,28 +108,28 @@ public class LegacyTreeDiffingTest {
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = componentTree.getMainThreadLayoutState();
 
-    assertThat(getLayoutOutput(state.getMountableOutputAt(2)).getUpdateState())
+    assertThat(getRenderUnit(state.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UNKNOWN);
 
     componentTree.setRoot(component2);
     LayoutState secondState = componentTree.getMainThreadLayoutState();
 
-    assertThat(getLayoutOutput(secondState.getMountableOutputAt(2)).getUpdateState())
+    assertThat(getRenderUnit(secondState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
 
     componentTree.setRoot(component3);
     LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
+    assertThat(getRenderUnit(thirdState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_DIRTY);
   }
 
   private static void assertOutputsState(
       LayoutState layoutState, @LithoRenderUnit.UpdateState int state) {
     assertThat(STATE_DIRTY)
-        .isEqualTo(getLayoutOutput(layoutState.getMountableOutputAt(0)).getUpdateState());
+        .isEqualTo(getRenderUnit(layoutState.getMountableOutputAt(0)).getUpdateState());
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
-      LayoutOutput output = getLayoutOutput(layoutState.getMountableOutputAt(i));
+      LithoRenderUnit output = getRenderUnit(layoutState.getMountableOutputAt(i));
       assertThat(state).isEqualTo(output.getUpdateState());
     }
   }

@@ -192,12 +192,12 @@ class ComponentHostTest {
     assertThat(host.getMountItemAt(1)).isNull()
     assertThat(host.getMountItemAt(2)).isNull()
     val mountItem1 = mount(0, ColorDrawable())
-    val mountItem2 = mount(1, TouchableDrawable(), LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE)
+    val mountItem2 = mount(1, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     val mountItem3 = mount(2, View(context.androidContext))
     val mountItem4 = mount(4, Mockito.spy(TouchableDrawable()))
-    val mountItem5 = mount(5, TouchableDrawable(), LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE)
+    val mountItem5 = mount(5, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     val mountItem6 = mount(7, View(context.androidContext))
-    val mountItem7 = mount(8, TouchableDrawable(), LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE)
+    val mountItem7 = mount(8, TouchableDrawable(), LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE)
     assertThat(host.getMountItemAt(0)).isEqualTo(mountItem1)
     assertThat(host.getMountItemAt(1)).isEqualTo(mountItem2)
     assertThat(host.getMountItemAt(2)).isEqualTo(mountItem3)
@@ -257,7 +257,7 @@ class ComponentHostTest {
     val d2 = mock<ColorDrawable>()
     whenever(d2.bounds).thenReturn(Rect())
     whenever(d2.isStateful).thenReturn(true)
-    mount(0, d2, LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
+    mount(0, d2, LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
     verify(d2, times(1)).state = eq(host.drawableState)
     host.isSelected = true
     verify(d2, times(1)).state = eq(host.drawableState)
@@ -285,10 +285,10 @@ class ComponentHostTest {
     mount(0, v1)
     verify(v1, never()).isDuplicateParentStateEnabled = ArgumentMatchers.anyBoolean()
     val v2 = mock<View>()
-    mount(1, v2, LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
+    mount(1, v2, LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
     verify(v2, times(1)).isDuplicateParentStateEnabled = eq(true)
     reset(v2)
-    unmount(1, v2, LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
+    unmount(1, v2, LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE)
     verify(v2, times(1)).isDuplicateParentStateEnabled = eq(false)
   }
 
@@ -624,11 +624,11 @@ class ComponentHostTest {
   @Test
   fun testGetLinkedDrawableForAnimation() {
     val d1 = ColorDrawable()
-    val mountItem1 = mount(0, d1, LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
+    val mountItem1 = mount(0, d1, LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
     val d2 = ColorDrawable()
     val mountItem2 = mount(1, d2)
     val d3 = ColorDrawable()
-    val mountItem3 = mount(2, d3, LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
+    val mountItem3 = mount(2, d3, LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
     var drawables = host.linkedDrawablesForAnimation
     assertThat(drawables).hasSize(2)
     assertThat(drawables).contains(d1, d3)

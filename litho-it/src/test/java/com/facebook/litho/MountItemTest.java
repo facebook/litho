@@ -21,13 +21,13 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
 import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.LithoMountData.isViewSelected;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -125,38 +125,38 @@ public class MountItemTest {
 
   @Test
   public void testGetters() {
-    assertThat(getLayoutOutput(mMountItem).getComponent()).isSameAs((Component) mComponent);
+    assertThat(getRenderUnit(mMountItem).getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
     assertThat(mMountItem.getContent()).isSameAs(mContent);
-    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getContentDescription())
+    assertThat(getRenderUnit(mMountItem).getNodeInfo().getContentDescription())
         .isSameAs(mContentDescription);
-    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
-    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getFocusChangeHandler())
+    assertThat(getRenderUnit(mMountItem).getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
+    assertThat(getRenderUnit(mMountItem).getNodeInfo().getFocusChangeHandler())
         .isSameAs(mFocusChangeHandler);
-    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
-    assertThat(getLayoutOutput(mMountItem).getFlags()).isEqualTo(mFlags);
-    assertThat(getLayoutOutput(mMountItem).getImportantForAccessibility())
+    assertThat(getRenderUnit(mMountItem).getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
+    assertThat(getRenderUnit(mMountItem).getFlags()).isEqualTo(mFlags);
+    assertThat(getRenderUnit(mMountItem).getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
 
   @Test
   public void testFlags() {
     mFlags =
-        LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE
-            | LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+        LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE
+            | LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 
     mMountItem = create(mContent);
 
-    assertThat(LayoutOutput.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags()))
+    assertThat(LithoRenderUnit.isDuplicateParentState(getRenderUnit(mMountItem).getFlags()))
         .isTrue();
-    assertThat(LayoutOutput.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isTrue();
+    assertThat(LithoRenderUnit.isTouchableDisabled(getRenderUnit(mMountItem).getFlags())).isTrue();
 
     mFlags = 0;
     mMountItem = create(mContent);
 
-    assertThat(LayoutOutput.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags()))
+    assertThat(LithoRenderUnit.isDuplicateParentState(getRenderUnit(mMountItem).getFlags()))
         .isFalse();
-    assertThat(LayoutOutput.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isFalse();
+    assertThat(LithoRenderUnit.isTouchableDisabled(getRenderUnit(mMountItem).getFlags())).isFalse();
   }
 
   @Test
@@ -199,7 +199,7 @@ public class MountItemTest {
   public void testIsAccessibleWithNullComponent() {
     final MountItem mountItem = create(mContent);
 
-    assertThat(getLayoutOutput(mountItem).isAccessible()).isFalse();
+    assertThat(getRenderUnit(mountItem).isAccessible()).isFalse();
   }
 
   @Test
@@ -222,7 +222,7 @@ public class MountItemTest {
             ORIENTATION_PORTRAIT,
             null);
 
-    assertThat(getLayoutOutput(mountItem).isAccessible()).isTrue();
+    assertThat(getRenderUnit(mountItem).isAccessible()).isTrue();
   }
 
   @Test
@@ -245,7 +245,7 @@ public class MountItemTest {
             ORIENTATION_PORTRAIT,
             null);
 
-    assertThat(getLayoutOutput(mountItem).isAccessible()).isFalse();
+    assertThat(getRenderUnit(mountItem).isAccessible()).isFalse();
   }
 
   @Test
@@ -268,19 +268,19 @@ public class MountItemTest {
             ORIENTATION_PORTRAIT,
             null);
 
-    assertThat(getLayoutOutput(mountItem).isAccessible()).isTrue();
+    assertThat(getRenderUnit(mountItem).isAccessible()).isTrue();
   }
 
   @Test
   public void testIsAccessibleWithNonAccessibleComponent() {
-    assertThat(getLayoutOutput(mMountItem).isAccessible()).isFalse();
+    assertThat(getRenderUnit(mMountItem).isAccessible()).isFalse();
   }
 
   @Test
   public void testUpdateDoesntChangeFlags() {
     LithoRenderUnit unit =
         MountSpecLithoRenderUnit.create(
-            0, mComponent, mContext, mNodeInfo, null, 0, 0, LayoutOutput.STATE_UNKNOWN);
+            0, mComponent, mContext, mNodeInfo, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
     RenderTreeNode node = RenderTreeNodeUtils.create(unit, new Rect(0, 0, 0, 0), null, null);
 
     View view = new View(getApplicationContext());

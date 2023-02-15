@@ -45,7 +45,7 @@ public class MountItemTestHelper {
             viewInfo,
             flags,
             importantForAccessibility,
-            LayoutOutput.STATE_UNKNOWN);
+            LithoRenderUnit.STATE_UNKNOWN);
     RenderTreeNode node =
         RenderTreeNodeUtils.create(unit, bounds != null ? bounds : new Rect(), null, null);
     MountItem item = new MountItem(node, host, content);

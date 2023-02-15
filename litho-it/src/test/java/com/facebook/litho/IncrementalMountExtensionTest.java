@@ -160,11 +160,9 @@ public class IncrementalMountExtensionTest {
       for (int i = 0; i < count; i++) {
         final Rect bounds = new Rect(0, (i * 10), 10, (i + 1) * 10);
 
-        final LayoutOutput layoutOutput = mock(LayoutOutput.class);
         RenderTreeNode renderTreeNode = mock(RenderTreeNode.class);
         when(renderTreeNode.getLayoutData()).thenReturn(mock(LithoAnimtableItem.class));
         when(renderTreeNode.getAbsoluteBounds(any(Rect.class))).thenReturn(bounds);
-        when(layoutOutput.getComponent()).thenReturn(mock(Component.class));
 
         RenderUnit renderUnit = new SimpleDrawableUnit(new ColorDrawable(Color.BLACK), i);
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);

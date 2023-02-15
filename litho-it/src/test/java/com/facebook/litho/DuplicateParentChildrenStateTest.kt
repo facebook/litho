@@ -88,44 +88,44 @@ class DuplicateParentChildrenStateTest {
     Assertions.assertThat(layoutState.mountableOutputCount).isEqualTo(10)
     Assert.assertFalse(
         "Root output doesn't have duplicate state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(0)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).flags))
     Assert.assertTrue(
         "Clickable generated root host output has duplicate state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(1)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).flags))
     Assert.assertFalse(
         "Drawable doesn't duplicate host state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(2)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(2)).flags))
     Assert.assertTrue(
         "Drawable does duplicate parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(3)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(3)).flags))
     Assert.assertFalse(
         "Drawable host doesn't duplicate clickable parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(4)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).flags))
     Assert.assertTrue(
         "Drawable duplicates parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(5)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(5)).flags))
     Assert.assertFalse(
         "Drawable host doesn't duplicate clickable parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(6)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(6)).flags))
     Assert.assertFalse(
         "Drawable doesn't duplicate clickable parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(7)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(7)).flags))
     Assert.assertFalse(
         "Clickable host doesn't duplicate parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(8)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(8)).flags))
     Assert.assertFalse(
         "Host with bg doesn't duplicate parent state",
-        LayoutOutput.isDuplicateParentState(
-            LayoutOutput.getLayoutOutput(layoutState.getMountableOutputAt(9)).flags))
+        LithoRenderUnit.isDuplicateParentState(
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(9)).flags))
   }
 
   @Test

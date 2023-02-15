@@ -371,9 +371,9 @@ public class DynamicPropsTest {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
 
       if (mountItem != null) {
-        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
+        final LithoRenderUnit unit = LithoRenderUnit.getRenderUnit(mountItem);
 
-        if (layoutOutput.getComponent().getSimpleName().equals("Text")) {
+        if (unit.getComponent().getSimpleName().equals("Text")) {
           final long hostMarker =
               i != 0 ? mountItem.getRenderTreeNode().getParent().getRenderUnit().getId() : -1;
 
@@ -396,14 +396,14 @@ public class DynamicPropsTest {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
 
       if (mountItem != null) {
-        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
+        final LithoRenderUnit unit = LithoRenderUnit.getRenderUnit(mountItem);
         if (text1HostId == MountItem.getId(mountItem)) {
-          text1HostComponent = (HostComponent) layoutOutput.getComponent();
+          text1HostComponent = (HostComponent) unit.getComponent();
           text1Host = (ComponentHost) mountItem.getContent();
         }
 
         if (text2HostId == MountItem.getId(mountItem)) {
-          text2HostComponent = (HostComponent) layoutOutput.getComponent();
+          text2HostComponent = (HostComponent) unit.getComponent();
           text2Host = (ComponentHost) mountItem.getContent();
         }
       }
@@ -427,14 +427,14 @@ public class DynamicPropsTest {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
 
       if (mountItem != null) {
-        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
+        final LithoRenderUnit unit = LithoRenderUnit.getRenderUnit(mountItem);
         if (text1HostId == MountItem.getId(mountItem)) {
-          stateUpdateText1HostComponent = (HostComponent) layoutOutput.getComponent();
+          stateUpdateText1HostComponent = (HostComponent) unit.getComponent();
           stateUpdateText1Host = (ComponentHost) mountItem.getContent();
         }
 
         if (text2HostId == MountItem.getId(mountItem)) {
-          stateUpdateText2HostComponent = (HostComponent) layoutOutput.getComponent();
+          stateUpdateText2HostComponent = (HostComponent) unit.getComponent();
           stateUpdateText2Host = (ComponentHost) mountItem.getContent();
         }
       }

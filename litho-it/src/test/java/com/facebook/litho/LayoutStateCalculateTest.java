@@ -25,7 +25,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.NodeInfo.SELECTED_SET_TRUE;
@@ -190,10 +190,10 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
 
     final ViewNodeInfo viewNodeInfo =
-        getLayoutOutput(layoutState.getMountableOutputAt(4)).getViewNodeInfo();
+        getRenderUnit(layoutState.getMountableOutputAt(4)).getViewNodeInfo();
     assertThat(viewNodeInfo.getTouchBoundsExpansion()).isEqualTo(new Rect(5, 5, 5, 5));
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(4)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(4)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNotNull();
     assertThat(nodeInfo.getLongClickHandler()).isNull();
@@ -226,7 +226,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNotNull();
     assertThat(nodeInfo.getLongClickHandler()).isNull();
@@ -259,7 +259,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNull();
     assertThat(nodeInfo.getLongClickHandler()).isNotNull();
@@ -292,7 +292,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNull();
     assertThat(nodeInfo.getLongClickHandler()).isNull();
@@ -325,7 +325,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNull();
     assertThat(nodeInfo.getLongClickHandler()).isNull();
@@ -358,7 +358,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getTouchHandler()).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNull();
@@ -593,7 +593,7 @@ public class LayoutStateCalculateTest {
 
     // Check background and foreground applied
     final ViewNodeInfo viewNodeInfo =
-        getLayoutOutput(layoutState.getMountableOutputAt(7)).getViewNodeInfo();
+        getRenderUnit(layoutState.getMountableOutputAt(7)).getViewNodeInfo();
     assertThat(viewNodeInfo).isNotNull();
     assertThat(viewNodeInfo.getBackground()).isNotNull();
 
@@ -666,7 +666,7 @@ public class LayoutStateCalculateTest {
     }
     assertThat(totalHosts).isEqualTo(7);
 
-    // Check all the Components match the right LayoutOutput positions.
+    // Check all the Components match the right LithoRenderUnit positions.
     // Tree One.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1003,13 +1003,13 @@ public class LayoutStateCalculateTest {
   }
 
   private static Component getComponentAt(final LayoutState layoutState, final int index) {
-    return getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent();
+    return getRenderUnit(layoutState.getMountableOutputAt(index)).getComponent();
   }
 
   private static CharSequence getTextFromTextComponent(
       final LayoutState layoutState, final int index) {
     return Whitebox.getInternalState(
-        getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent(), "text");
+        getRenderUnit(layoutState.getMountableOutputAt(index)).getComponent(), "text");
   }
 
   private static boolean isHostComponent(final Component component) {
@@ -1279,8 +1279,7 @@ public class LayoutStateCalculateTest {
 
     // Host generated with  background
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
-    assertThat(
-            getLayoutOutput(layoutState.getMountableOutputAt(1)).getViewNodeInfo().getBackground())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getViewNodeInfo().getBackground())
         .isNotNull();
   }
 
@@ -1427,7 +1426,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo().getFocusState())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo().getFocusState())
         .isEqualTo(FOCUS_SET_TRUE);
   }
 
@@ -1452,8 +1451,8 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo().getFocusState())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo().getFocusState())
         .isEqualTo(FOCUS_SET_TRUE);
   }
 
@@ -1483,8 +1482,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
 
-    assertThat(
-            getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo().getSelectedState())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo().getSelectedState())
         .isEqualTo(SELECTED_SET_TRUE);
   }
 
@@ -1510,9 +1508,8 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
-    assertThat(
-            getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo().getSelectedState())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo().getSelectedState())
         .isEqualTo(SELECTED_SET_TRUE);
   }
 
@@ -1538,15 +1535,15 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getComponent().getSimpleName())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getComponent().getSimpleName())
         .isEqualTo("HostComponent");
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent().getSimpleName())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getComponent().getSimpleName())
         .isEqualTo("TestDrawableComponent");
     assertThat(
-            LayoutOutput.isTouchableDisabled(
-                getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()))
+            LithoRenderUnit.isTouchableDisabled(
+                getRenderUnit(layoutState.getMountableOutputAt(1)).getFlags()))
         .isTrue();
   }
 
@@ -1578,15 +1575,15 @@ public class LayoutStateCalculateTest {
     // Because the TestDrawableComponent is disabled, we don't wrap it in a host.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getComponent())
         .isInstanceOf(HostComponent.class);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(
-            LayoutOutput.isTouchableDisabled(
-                getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()))
+            LithoRenderUnit.isTouchableDisabled(
+                getRenderUnit(layoutState.getMountableOutputAt(1)).getFlags()))
         .isTrue();
   }
 
@@ -1612,13 +1609,13 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getComponent())
         .isInstanceOf(HostComponent.class);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getComponent())
         .isInstanceOf(TestViewComponent.class);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo().getEnabledState())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo().getEnabledState())
         .isEqualTo(ENABLED_SET_FALSE);
   }
 
@@ -1653,40 +1650,40 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(0)).getComponent())
         .isInstanceOf(HostComponent.class);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getComponent())
         .isInstanceOf(TestViewComponent.class);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo().getEnabledState())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo().getEnabledState())
         .isEqualTo(ENABLED_SET_FALSE);
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(2)).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(2)).getNodeInfo()).isNull();
     assertThat(
-            LayoutOutput.isTouchableDisabled(
-                getLayoutOutput(layoutState.getMountableOutputAt(2)).getFlags()))
+            LithoRenderUnit.isTouchableDisabled(
+                getRenderUnit(layoutState.getMountableOutputAt(2)).getFlags()))
         .isTrue();
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(3)).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(3)).getNodeInfo()).isNull();
     assertThat(
-            LayoutOutput.isTouchableDisabled(
-                getLayoutOutput(layoutState.getMountableOutputAt(3)).getFlags()))
+            LithoRenderUnit.isTouchableDisabled(
+                getRenderUnit(layoutState.getMountableOutputAt(3)).getFlags()))
         .isTrue();
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(4)).getComponent())
         .isInstanceOf(TestViewComponent.class);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getNodeInfo()).isNull();
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getComponent())
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(4)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(5)).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getNodeInfo()).isNull();
+    assertThat(getRenderUnit(layoutState.getMountableOutputAt(5)).getNodeInfo()).isNull();
     assertThat(
-            LayoutOutput.isTouchableDisabled(
-                getLayoutOutput(layoutState.getMountableOutputAt(5)).getFlags()))
+            LithoRenderUnit.isTouchableDisabled(
+                getRenderUnit(layoutState.getMountableOutputAt(5)).getFlags()))
         .isFalse();
   }
 
@@ -1877,21 +1874,21 @@ public class LayoutStateCalculateTest {
     assertThat(getComponentAt(layoutState, 7)).isInstanceOf(TestDrawableComponent.class);
 
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-        .isEqualTo(getLayoutOutput(inlineLayoutOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(inlineLayoutOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-        .isEqualTo(getLayoutOutput(rootHostOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(rootHostOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-        .isEqualTo(getLayoutOutput(drawableZeroOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(drawableZeroOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO)
-        .isEqualTo(getLayoutOutput(drawableOneHostOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(drawableOneHostOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO)
-        .isEqualTo(getLayoutOutput(drawableOneOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(drawableOneOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
-        .isEqualTo(getLayoutOutput(rowOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(rowOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES)
-        .isEqualTo(getLayoutOutput(drawableTwoHostOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(drawableTwoHostOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES)
-        .isEqualTo(getLayoutOutput(drawableTwoOutput).getImportantForAccessibility());
+        .isEqualTo(getRenderUnit(drawableTwoOutput).getImportantForAccessibility());
   }
 
   @Test
@@ -1925,7 +1922,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
 
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getClickHandler()).isNotNull();
@@ -1964,7 +1961,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
 
-    final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(1)).getNodeInfo();
+    final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(1)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
     assertThat(nodeInfo.getLongClickHandler()).isNotNull();
     assertThat(nodeInfo.getViewTags()).isNotNull();

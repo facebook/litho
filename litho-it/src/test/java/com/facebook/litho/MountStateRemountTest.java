@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
@@ -110,7 +110,7 @@ public class MountStateRemountTest {
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
-      components.add(getLayoutOutput(mountDelegateTarget.getMountItemAt(i)).getComponent());
+      components.add(getRenderUnit(mountDelegateTarget.getMountItemAt(i)).getComponent());
     }
 
     assertThat(containsRef(components, component1)).isFalse();
