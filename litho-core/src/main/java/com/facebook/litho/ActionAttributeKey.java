@@ -16,24 +16,13 @@
 
 package com.facebook.litho;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+/**
+ * This type of key is used to represent an attribute that reflects an Action (such as click, long
+ * click, etc).
+ */
+public class ActionAttributeKey<T> extends AttributeKey<T> {
 
-/** Simple holder which allows to store and retrieve attributes. */
-public class AttributesHolder implements AttributesAcceptor {
-
-  private final Map<AttributeKey<?>, Object> mAttributes = new LinkedHashMap<>();
-
-  public <T> T get(AttributeKey<T> key) {
-    return (T) mAttributes.get(key);
-  }
-
-  @Override
-  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
-    mAttributes.put(attributeKey, value);
-  }
-
-  public Map<AttributeKey<?>, Object> getAttributes() {
-    return mAttributes;
+  public ActionAttributeKey(String description) {
+    super(description);
   }
 }

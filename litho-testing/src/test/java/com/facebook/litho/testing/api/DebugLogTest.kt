@@ -52,7 +52,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
         -Text
            isEnabled = false
            text = Hello
-           Actns = [click]
+           Actions = [OnClick]
         """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -87,7 +87,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
          |-Text
             isEnabled = false
             text = Info
-            Actns = [click]
+            Actions = [OnClick]
         """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -127,7 +127,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
            |-Text
               isEnabled = false
               text = Info
-              Actns = [click]
+              Actions = [OnClick]
           |-LazyCollection(children=1)
              isEnabled = false
            |-CollectionRecycler(children=1)
@@ -192,7 +192,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
         -Text
            isEnabled = false
            text = Info
-           Actns = [click]
+           Actions = [OnClick]
         -Text
            testKey = item-#1
            isEnabled = false
@@ -257,7 +257,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
          |-Text
             isEnabled = false
             text = Info
-            Actns = [click]
+            Actions = [OnClick]
         -Recycler(children=10)
            isEnabled = false
          |-Text

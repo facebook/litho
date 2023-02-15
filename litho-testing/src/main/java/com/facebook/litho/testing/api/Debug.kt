@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.api
 
+import com.facebook.litho.ActionAttributeKey
 import java.lang.Appendable
 
 /**
@@ -116,27 +117,32 @@ private fun TestNode.printTo(
   }
 
   // 4. Append attributes
-  val testNodeAttributes =
-      attributes.mapNotNull { (key, value) -> value?.let { Pair(key.description, value) } }
+  val nonActionAttributes =
+      attributes
+          .filter { (key, _) -> key !is ActionAttributeKey }
+          .mapNotNull { (key, value) -> value?.let { Pair(key.description, value) } }
 
   val attributePrefix = buildString {
     append(levelPrefix)
     append(if (hasNextSibling) "|  " else "   ")
   }
 
-  testNodeAttributes.forEach { (key, value) ->
+  nonActionAttributes.forEach { (key, value) ->
     appendable.append(attributePrefix)
     appendable.appendLine("$key = $value")
   }
 
-  val actions =
-      listOfNotNull(
-          clickHandler?.let { "click" },
-          // Add more actions here
-      )
-  if (actions.isNotEmpty()) {
+  // 5. Append Action attributes
+  val actionAttributes =
+      attributes.filter { (key, value) -> key is ActionAttributeKey && value != null }
+
+  if (actionAttributes.isNotEmpty()) {
     appendable.append(attributePrefix)
-    appendable.appendLine("Actns = [${actions.joinToString(", ")}]")
+    appendable.append("Actions = ")
+    appendable.appendLine(
+        actionAttributes.joinToString(separator = " , ", prefix = "[", postfix = "]") {
+          it.first.description
+        })
   }
 
   if (indentLevel == maxIndentLevel) return

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.api
 
+import com.facebook.litho.ActionAttributeKey
 import com.facebook.litho.AttributeKey
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
@@ -34,7 +35,8 @@ class TestNode(private val component: Component) {
       mapOf(
           TestNodeAttributes.TestKey to component.commonProps?.testKey,
           TestNodeAttributes.Enabled to (component.commonProps?.isEnabled ?: false),
-          TestNodeAttributes.ContentDescription to component.commonProps?.contentDescription)
+          TestNodeAttributes.ContentDescription to component.commonProps?.contentDescription,
+          TestNodeActionAttributes.OnClick to component.commonProps?.clickHandler)
 
   private val componentAttributes: Map<AttributeKey<*>, *> = component.attributes
 
@@ -60,4 +62,10 @@ internal object TestNodeAttributes {
       AttributeKey<CharSequence?>("contentDescription")
 
   val Enabled: AttributeKey<Boolean?> = AttributeKey<Boolean?>("isEnabled")
+}
+
+internal object TestNodeActionAttributes {
+
+  val OnClick: ActionAttributeKey<EventHandler<ClickEvent>> =
+      ActionAttributeKey<EventHandler<ClickEvent>>("OnClick")
 }
