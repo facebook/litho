@@ -51,7 +51,7 @@ fun hasTestKey(key: String): TestNodeMatcher =
  * widget that relies on this attribute is the [TextSpec]. This means that you can use this matcher
  * to verify the text used with any instance of Litho's Text.
  */
-fun hasText(text: String): TestNodeMatcher {
+fun hasText(text: CharSequence): TestNodeMatcher {
   return hasAttribute(WidgetAttributes.Text, text)
 }
 
