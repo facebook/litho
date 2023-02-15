@@ -118,26 +118,6 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
         }
       };
 
-  boolean isMounting() {
-    return mIsMounting;
-  }
-
-  LayoutState getMountedLayoutState() {
-    return mComponentTree.getMainThreadLayoutState();
-  }
-
-  public interface OnDirtyMountListener {
-    /**
-     * Called when finishing a mount where the mount state was dirty. This indicates that there were
-     * new props/state in the tree, or the LithoView was mounting a new ComponentTree
-     */
-    void onDirtyMount(LithoView view);
-  }
-
-  public interface OnPostDrawListener {
-    void onPostDraw();
-  }
-
   private @Nullable ComponentTree mComponentTree;
   private final ComponentContext mComponentContext;
   private boolean mIsAttached;
@@ -746,15 +726,23 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     }
   }
 
-  @Nullable
-  public ComponentTree getComponentTree() {
+  public @Nullable ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
-  @VisibleForTesting
   @Nullable
-  public Component getRootComponent() {
-    @Nullable final ComponentTree componentTree = mComponentTree;
+  LayoutState getMountedLayoutState() {
+    final @Nullable ComponentTree tree = mComponentTree;
+    return tree != null ? tree.getMainThreadLayoutState() : null;
+  }
+
+  boolean isMounting() {
+    return mIsMounting;
+  }
+
+  @VisibleForTesting
+  public @Nullable Component getRootComponent() {
+    final @Nullable ComponentTree componentTree = mComponentTree;
     return componentTree != null ? componentTree.getRoot() : null;
   }
 
@@ -2248,5 +2236,17 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
       this.currentVisibleArea = currentVisibleArea;
       this.processVisibilityOutputs = processVisibilityOutputs;
     }
+  }
+
+  public interface OnDirtyMountListener {
+    /**
+     * Called when finishing a mount where the mount state was dirty. This indicates that there were
+     * new props/state in the tree, or the LithoView was mounting a new ComponentTree
+     */
+    void onDirtyMount(LithoView view);
+  }
+
+  public interface OnPostDrawListener {
+    void onPostDraw();
   }
 }
