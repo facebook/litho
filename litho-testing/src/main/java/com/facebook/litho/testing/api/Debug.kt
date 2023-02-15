@@ -106,9 +106,10 @@ private fun TestNode.printTo(
     }
   }
 
+  val normalizedComponentName = componentType.simpleName
+
   val basicProps =
       listOfNotNull(
-          Pair("componentType", componentType.simpleName),
           testKey?.let { Pair("testKey", it) },
           contentDescription?.let { Pair("contentDescription", "'$it'") },
           Pair("isEnabled", isEnabled),
@@ -116,7 +117,8 @@ private fun TestNode.printTo(
       )
   val newPrefix = newPrefix()
   appendable.append(newPrefix)
-  appendable.appendLine("Node(${basicProps.joinToString(", ") { (k, v) -> "$k=$v"}})")
+  appendable.append(normalizedComponentName)
+  appendable.appendLine("(${basicProps.joinToString(", ") { (k, v) -> "$k=$v"}})")
 
   val newPrefixForAddendum = newPrefix(isAddendum = true)
   val attrs =

@@ -49,7 +49,7 @@ class DebugLogTest : RunWithDebugInfoTest() {
         rule.render { SimpleComponent() }.selectNode(hasType<Text>()).printToString().trim()
     val expected =
         """
-        - Node(componentType=Text, isEnabled=false)
+        - Text(isEnabled=false)
           Attrs: [text='Hello']
           Actns: [click]
         """
@@ -63,8 +63,8 @@ class DebugLogTest : RunWithDebugInfoTest() {
         rule.render { StyledComponent() }.selectNode(isRoot()).printToString(maxDepth = 1).trim()
     val expected =
         """
-        - Node(componentType=StyledComponent, isEnabled=false, children=1)
-          |-Node(componentType=Column, isEnabled=false, children=1)
+        - StyledComponent(isEnabled=false, children=1)
+          |-Column(isEnabled=false, children=1)
         """
             .trimIndent()
     Assertions.assertThat(actual).isEqualTo(expected)
@@ -76,10 +76,10 @@ class DebugLogTest : RunWithDebugInfoTest() {
         rule.render { CollectionComponent() }.selectNode(hasType<Row>()).printToString().trim()
     val expected =
         """
-        - Node(componentType=Row, isEnabled=false, children=2)
-          |-Node(componentType=Text, isEnabled=false)
+        - Row(isEnabled=false, children=2)
+          |-Text(isEnabled=false)
           | Attrs: [text='Hello world']
-          |-Node(componentType=Text, isEnabled=false)
+          |-Text(isEnabled=false)
             Attrs: [text='Info']
             Actns: [click]
         """
@@ -92,9 +92,9 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val actual = rule.render { StyledComponent() }.selectNode(isRoot()).printToString().trim()
     val expected =
         """
-        - Node(componentType=StyledComponent, isEnabled=false, children=1)
-          |-Node(componentType=Column, isEnabled=false, children=1)
-            |-Node(componentType=Text, isEnabled=false)
+        - StyledComponent(isEnabled=false, children=1)
+          |-Column(isEnabled=false, children=1)
+            |-Text(isEnabled=false)
               Attrs: [text='Hello world']
         """
             .trimIndent()
@@ -106,36 +106,36 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val actual = rule.render { CollectionComponent() }.selectNode(isRoot()).printToString().trim()
     val expected =
         """
-        - Node(componentType=CollectionComponent, isEnabled=false, children=1)
-          |-Node(componentType=Column, isEnabled=false, children=2)
-            |-Node(componentType=Row, isEnabled=false, children=2)
-            | |-Node(componentType=Text, isEnabled=false)
+        - CollectionComponent(isEnabled=false, children=1)
+          |-Column(isEnabled=false, children=2)
+            |-Row(isEnabled=false, children=2)
+            | |-Text(isEnabled=false)
             | | Attrs: [text='Hello world']
-            | |-Node(componentType=Text, isEnabled=false)
+            | |-Text(isEnabled=false)
             |   Attrs: [text='Info']
             |   Actns: [click]
-            |-Node(componentType=LazyCollection, isEnabled=false, children=1)
-              |-Node(componentType=CollectionRecycler, isEnabled=false, children=1)
-                |-Node(componentType=Recycler, isEnabled=false, children=10)
-                  |-Node(componentType=Text, testKey=item-#1, isEnabled=false)
+            |-LazyCollection(isEnabled=false, children=1)
+              |-CollectionRecycler(isEnabled=false, children=1)
+                |-Recycler(isEnabled=false, children=10)
+                  |-Text(testKey=item-#1, isEnabled=false)
                   | Attrs: [text='Item #1']
-                  |-Node(componentType=Text, testKey=item-#2, isEnabled=false)
+                  |-Text(testKey=item-#2, isEnabled=false)
                   | Attrs: [text='Item #2']
-                  |-Node(componentType=Text, testKey=item-#3, isEnabled=false)
+                  |-Text(testKey=item-#3, isEnabled=false)
                   | Attrs: [text='Item #3']
-                  |-Node(componentType=Text, testKey=item-#4, isEnabled=false)
+                  |-Text(testKey=item-#4, isEnabled=false)
                   | Attrs: [text='Item #4']
-                  |-Node(componentType=Text, testKey=item-#5, isEnabled=false)
+                  |-Text(testKey=item-#5, isEnabled=false)
                   | Attrs: [text='Item #5']
-                  |-Node(componentType=Text, testKey=item-#6, isEnabled=false)
+                  |-Text(testKey=item-#6, isEnabled=false)
                   | Attrs: [text='Item #6']
-                  |-Node(componentType=Text, testKey=item-#7, isEnabled=false)
+                  |-Text(testKey=item-#7, isEnabled=false)
                   | Attrs: [text='Item #7']
-                  |-Node(componentType=Text, testKey=item-#8, isEnabled=false)
+                  |-Text(testKey=item-#8, isEnabled=false)
                   | Attrs: [text='Item #8']
-                  |-Node(componentType=Text, testKey=item-#9, isEnabled=false)
+                  |-Text(testKey=item-#9, isEnabled=false)
                   | Attrs: [text='Item #9']
-                  |-Node(componentType=Text, testKey=item-#10, isEnabled=false)
+                  |-Text(testKey=item-#10, isEnabled=false)
                     Attrs: [text='Item #10']
         """
             .trimIndent()
@@ -149,30 +149,30 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val expected =
         """
         Found 12 matching node(s)
-        - Node(componentType=Text, isEnabled=false)
+        - Text(isEnabled=false)
           Attrs: [text='Hello world']
-        - Node(componentType=Text, isEnabled=false)
+        - Text(isEnabled=false)
           Attrs: [text='Info']
           Actns: [click]
-        - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+        - Text(testKey=item-#1, isEnabled=false)
           Attrs: [text='Item #1']
-        - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+        - Text(testKey=item-#2, isEnabled=false)
           Attrs: [text='Item #2']
-        - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+        - Text(testKey=item-#3, isEnabled=false)
           Attrs: [text='Item #3']
-        - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+        - Text(testKey=item-#4, isEnabled=false)
           Attrs: [text='Item #4']
-        - Node(componentType=Text, testKey=item-#5, isEnabled=false)
+        - Text(testKey=item-#5, isEnabled=false)
           Attrs: [text='Item #5']
-        - Node(componentType=Text, testKey=item-#6, isEnabled=false)
+        - Text(testKey=item-#6, isEnabled=false)
           Attrs: [text='Item #6']
-        - Node(componentType=Text, testKey=item-#7, isEnabled=false)
+        - Text(testKey=item-#7, isEnabled=false)
           Attrs: [text='Item #7']
-        - Node(componentType=Text, testKey=item-#8, isEnabled=false)
+        - Text(testKey=item-#8, isEnabled=false)
           Attrs: [text='Item #8']
-        - Node(componentType=Text, testKey=item-#9, isEnabled=false)
+        - Text(testKey=item-#9, isEnabled=false)
           Attrs: [text='Item #9']
-        - Node(componentType=Text, testKey=item-#10, isEnabled=false)
+        - Text(testKey=item-#10, isEnabled=false)
           Attrs: [text='Item #10']
         """
             .trimIndent()
@@ -190,32 +190,32 @@ class DebugLogTest : RunWithDebugInfoTest() {
     val expected =
         """
         Found 2 matching node(s)
-        - Node(componentType=Row, isEnabled=false, children=2)
-          |-Node(componentType=Text, isEnabled=false)
+        - Row(isEnabled=false, children=2)
+          |-Text(isEnabled=false)
           | Attrs: [text='Hello world']
-          |-Node(componentType=Text, isEnabled=false)
+          |-Text(isEnabled=false)
             Attrs: [text='Info']
             Actns: [click]
-        - Node(componentType=Recycler, isEnabled=false, children=10)
-          |-Node(componentType=Text, testKey=item-#1, isEnabled=false)
+        - Recycler(isEnabled=false, children=10)
+          |-Text(testKey=item-#1, isEnabled=false)
           | Attrs: [text='Item #1']
-          |-Node(componentType=Text, testKey=item-#2, isEnabled=false)
+          |-Text(testKey=item-#2, isEnabled=false)
           | Attrs: [text='Item #2']
-          |-Node(componentType=Text, testKey=item-#3, isEnabled=false)
+          |-Text(testKey=item-#3, isEnabled=false)
           | Attrs: [text='Item #3']
-          |-Node(componentType=Text, testKey=item-#4, isEnabled=false)
+          |-Text(testKey=item-#4, isEnabled=false)
           | Attrs: [text='Item #4']
-          |-Node(componentType=Text, testKey=item-#5, isEnabled=false)
+          |-Text(testKey=item-#5, isEnabled=false)
           | Attrs: [text='Item #5']
-          |-Node(componentType=Text, testKey=item-#6, isEnabled=false)
+          |-Text(testKey=item-#6, isEnabled=false)
           | Attrs: [text='Item #6']
-          |-Node(componentType=Text, testKey=item-#7, isEnabled=false)
+          |-Text(testKey=item-#7, isEnabled=false)
           | Attrs: [text='Item #7']
-          |-Node(componentType=Text, testKey=item-#8, isEnabled=false)
+          |-Text(testKey=item-#8, isEnabled=false)
           | Attrs: [text='Item #8']
-          |-Node(componentType=Text, testKey=item-#9, isEnabled=false)
+          |-Text(testKey=item-#9, isEnabled=false)
           | Attrs: [text='Item #9']
-          |-Node(componentType=Text, testKey=item-#10, isEnabled=false)
+          |-Text(testKey=item-#10, isEnabled=false)
             Attrs: [text='Item #10']
         """
             .trimIndent()

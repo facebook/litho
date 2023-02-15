@@ -49,17 +49,17 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed: assertExists
             Reason: Expected exactly 1 node(s), but found 6
             Node(s) found:
-            - Node(componentType=Text, isEnabled=false)
+            - Text(isEnabled=false)
               Attrs: [text='Hello world']
-            - Node(componentType=Text, testKey=item-#0, isEnabled=false)
+            - Text(testKey=item-#0, isEnabled=false)
               Attrs: [text='Item #0']
-            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+            - Text(testKey=item-#1, isEnabled=false)
               Attrs: [text='Item #1']
-            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+            - Text(testKey=item-#2, isEnabled=false)
               Attrs: [text='Item #2']
-            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+            - Text(testKey=item-#3, isEnabled=false)
               Attrs: [text='Item #3']
-            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+            - Text(testKey=item-#4, isEnabled=false)
               Attrs: [text='Item #4']
             Selector used: is a component of type com.facebook.litho.widget.Text
             
@@ -96,8 +96,8 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
         .hasMessage(
             """
             Failed assertion: has child that is a component of type com.facebook.litho.widget.Text and has test key "invalid"
-            - Node(componentType=Row, isEnabled=false, children=1)
-              |-Node(componentType=Text, isEnabled=false)
+            - Row(isEnabled=false, children=1)
+              |-Text(isEnabled=false)
                 Attrs: [text='Hello world']
             Selector used: is a component of type com.facebook.litho.Row
             
@@ -139,17 +139,17 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed selection: index is out of bounds
             Reason: Requested a node at index 10, but only 6 nodes are available
             Node(s) found:
-            - Node(componentType=Text, isEnabled=false)
+            - Text(isEnabled=false)
               Attrs: [text='Hello world']
-            - Node(componentType=Text, testKey=item-#0, isEnabled=false)
+            - Text(testKey=item-#0, isEnabled=false)
               Attrs: [text='Item #0']
-            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+            - Text(testKey=item-#1, isEnabled=false)
               Attrs: [text='Item #1']
-            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+            - Text(testKey=item-#2, isEnabled=false)
               Attrs: [text='Item #2']
-            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+            - Text(testKey=item-#3, isEnabled=false)
               Attrs: [text='Item #3']
-            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+            - Text(testKey=item-#4, isEnabled=false)
               Attrs: [text='Item #4']
             Selector used: is a component of type com.facebook.litho.widget.Text => node at index 10
             
@@ -191,7 +191,7 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed selection: index is out of bounds
             Reason: Requested a node at index 2, but only 1 node is available
             Node(s) found:
-            - Node(componentType=Column, isEnabled=false, children=2)
+            - Column(isEnabled=false, children=2)
             Selector used: is a component of type com.facebook.litho.Column => node at index 2
             
             """
@@ -234,15 +234,15 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed: assertExists
             Reason: Expected exactly 1 node(s), but found 5
             Node(s) found:
-            - Node(componentType=Text, testKey=item-#0, isEnabled=false)
+            - Text(testKey=item-#0, isEnabled=false)
               Attrs: [text='Item #0']
-            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+            - Text(testKey=item-#1, isEnabled=false)
               Attrs: [text='Item #1']
-            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+            - Text(testKey=item-#2, isEnabled=false)
               Attrs: [text='Item #2']
-            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+            - Text(testKey=item-#3, isEnabled=false)
               Attrs: [text='Item #3']
-            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+            - Text(testKey=item-#4, isEnabled=false)
               Attrs: [text='Item #4']
             Selector used: has text containing "Item" => single node
             
@@ -262,13 +262,13 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             """
             Failed: assertAll(has test key "item-#0")
             Reason: The following nodes do not match the expected condition:
-            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+            - Text(testKey=item-#1, isEnabled=false)
               Attrs: [text='Item #1']
-            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+            - Text(testKey=item-#2, isEnabled=false)
               Attrs: [text='Item #2']
-            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+            - Text(testKey=item-#3, isEnabled=false)
               Attrs: [text='Item #3']
-            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+            - Text(testKey=item-#4, isEnabled=false)
               Attrs: [text='Item #4']
             Selector used: has text containing "Item"
             
@@ -289,15 +289,15 @@ class AssertionErrorsTest : RunWithDebugInfoTest() {
             Failed: assertAny(is a component of type com.facebook.litho.widget.Image)
             Reason: None of the selected nodes match the expected condition
             Node(s) found:
-            - Node(componentType=Text, testKey=item-#0, isEnabled=false)
+            - Text(testKey=item-#0, isEnabled=false)
               Attrs: [text='Item #0']
-            - Node(componentType=Text, testKey=item-#1, isEnabled=false)
+            - Text(testKey=item-#1, isEnabled=false)
               Attrs: [text='Item #1']
-            - Node(componentType=Text, testKey=item-#2, isEnabled=false)
+            - Text(testKey=item-#2, isEnabled=false)
               Attrs: [text='Item #2']
-            - Node(componentType=Text, testKey=item-#3, isEnabled=false)
+            - Text(testKey=item-#3, isEnabled=false)
               Attrs: [text='Item #3']
-            - Node(componentType=Text, testKey=item-#4, isEnabled=false)
+            - Text(testKey=item-#4, isEnabled=false)
               Attrs: [text='Item #4']
             Selector used: has text containing "Item"
             
