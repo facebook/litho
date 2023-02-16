@@ -21,12 +21,14 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 
 /** Additional information used to set properties on Views during mounting. */
-class ViewNodeInfo {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class ViewNodeInfo {
 
   private @Nullable Drawable mBackground;
   private @Nullable Drawable mForeground;

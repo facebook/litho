@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
@@ -99,19 +98,13 @@ public class MountItemTest {
   MountItem create(Object content) {
     return MountItemTestHelper.create(
         mComponent,
-        null,
         mComponentHost,
         content,
         mNodeInfo,
         null,
         null,
-        0,
-        0,
         mFlags,
-        0,
-        IMPORTANT_FOR_ACCESSIBILITY_YES,
-        ORIENTATION_PORTRAIT,
-        null);
+        IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
 
   @Test
@@ -208,19 +201,13 @@ public class MountItemTest {
         MountItemTestHelper.create(
             TestDrawableComponent.create(mContext, true, true, true /* implementsAccessibility */)
                 .build(),
-            null,
             mComponentHost,
             mContent,
             mNodeInfo,
             null,
             null,
             mFlags,
-            0,
-            0,
-            0,
-            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            ORIENTATION_PORTRAIT,
-            null);
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
     assertThat(getRenderUnit(mountItem).isAccessible()).isTrue();
   }
@@ -231,19 +218,13 @@ public class MountItemTest {
         MountItemTestHelper.create(
             TestDrawableComponent.create(mContext, true, true, true /* implementsAccessibility */)
                 .build(),
-            null,
             mComponentHost,
             mContent,
             mNodeInfo,
             null,
             null,
             mFlags,
-            0,
-            0,
-            0,
-            IMPORTANT_FOR_ACCESSIBILITY_NO,
-            ORIENTATION_PORTRAIT,
-            null);
+            IMPORTANT_FOR_ACCESSIBILITY_NO);
 
     assertThat(getRenderUnit(mountItem).isAccessible()).isFalse();
   }
@@ -254,19 +235,13 @@ public class MountItemTest {
         MountItemTestHelper.create(
             TestDrawableComponent.create(mContext, true, true, true /* implementsAccessibility */)
                 .build(),
-            null,
             mComponentHost,
             mContent,
             mNodeInfo,
             null,
             null,
             mFlags,
-            0,
-            0,
-            0,
-            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            ORIENTATION_PORTRAIT,
-            null);
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
     assertThat(getRenderUnit(mountItem).isAccessible()).isTrue();
   }

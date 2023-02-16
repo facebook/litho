@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
@@ -700,19 +699,13 @@ class ComponentHostTest {
     val mountItem =
         MountItemTestHelper.create(
             if (content is Drawable) drawableComponent else viewComponent,
-            if (content is Drawable) drawableComponentKey else viewComponentKey,
             null,
             content,
             nodeInfo,
             null,
             null,
-            0,
-            0,
             flags,
-            0,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            Configuration.ORIENTATION_PORTRAIT,
-            null)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.mount(index, mountItem, if (content is Drawable) content.bounds else Rect())
     return mountItem
   }
@@ -722,24 +715,18 @@ class ComponentHostTest {
     val mountItem =
         MountItemTestHelper.create(
             viewComponent,
-            viewComponentKey,
             null,
             view,
             nodeInfo,
             null,
             null,
-            0,
-            0,
             flags,
-            0,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            Configuration.ORIENTATION_PORTRAIT,
-            null)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.unmount(index, mountItem)
     return mountItem
   }
 
-  private fun mountTouchExpansionItem(index: Int, content: Any?): MountItem {
+  private fun mountTouchExpansionItem(index: Int, content: Any): MountItem {
     val viewNodeInfo = ViewNodeInfo()
     viewNodeInfo.layoutDirection = YogaDirection.LTR
     val result = mock<LithoLayoutResult>()
@@ -754,19 +741,13 @@ class ComponentHostTest {
     val viewMountItem =
         MountItemTestHelper.create(
             viewComponent,
-            viewComponentKey,
             null,
             content,
             null,
             viewNodeInfo,
             null,
             0,
-            0,
-            0,
-            0,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            Configuration.ORIENTATION_PORTRAIT,
-            null)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.mount(index, viewMountItem, Rect())
     return viewMountItem
   }
