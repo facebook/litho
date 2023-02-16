@@ -157,7 +157,6 @@ object CollectionRecyclerSpec {
                 isCircular(isCircular)
                 hasDynamicItemHeight(hasDynamicItemHeight())
                 componentsConfiguration(componentsConfiguration)
-                canInterruptAndMoveLayoutsBetweenThreads(moveLayoutsBetweenThreads())
                 isReconciliationEnabled(isReconciliationEnabled)
                 isLayoutDiffingEnabled(isLayoutDiffingEnabled)
                 componentWarmer(componentWarmer)

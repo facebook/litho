@@ -306,8 +306,6 @@ object ExperimentalRecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.componentsConfiguration)
-            .canInterruptAndMoveLayoutsBetweenThreads(
-                binderConfiguration.moveLayoutsBetweenThreads())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled)
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled)
             .componentWarmer(binderConfiguration.componentWarmer)

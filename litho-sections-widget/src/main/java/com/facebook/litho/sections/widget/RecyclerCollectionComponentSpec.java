@@ -320,8 +320,6 @@ public class RecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount)
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
-            .canInterruptAndMoveLayoutsBetweenThreads(
-                binderConfiguration.moveLayoutsBetweenThreads())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())

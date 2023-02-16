@@ -42,7 +42,6 @@ public class RecyclerBinderConfiguration {
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
-  private final boolean mMoveLayoutsBetweenThreads;
   private final @Nullable ComponentWarmer mComponentWarmer;
   private final @Nullable LithoViewFactory mLithoViewFactory;
   // TODO T34627443 make all fields final after removing setters
@@ -83,7 +82,6 @@ public class RecyclerBinderConfiguration {
       boolean enableStableIds,
       boolean enableItemPrefetch,
       @Nullable RunnableHandler changeSetThreadHandler,
-      boolean moveLayoutsBetweenThreads,
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
@@ -103,7 +101,6 @@ public class RecyclerBinderConfiguration {
     mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
     mChangeSetThreadHandler = changeSetThreadHandler;
-    mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mIsReconciliationEnabled = isReconciliationEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
@@ -163,10 +160,6 @@ public class RecyclerBinderConfiguration {
     return mChangeSetThreadHandler;
   }
 
-  public boolean moveLayoutsBetweenThreads() {
-    return mMoveLayoutsBetweenThreads;
-  }
-
   public boolean isReconciliationEnabled() {
     return mIsReconciliationEnabled;
   }
@@ -218,8 +211,6 @@ public class RecyclerBinderConfiguration {
     private boolean mEnableStableIds = ComponentsConfiguration.enableRecyclerBinderStableId;
     private boolean mEnableItemPrefetch = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-    private boolean mMoveLayoutsBetweenThreads =
-        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
@@ -245,7 +236,6 @@ public class RecyclerBinderConfiguration {
       this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
-      this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
@@ -354,11 +344,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
-      this.mMoveLayoutsBetweenThreads = isEnabled;
-      return this;
-    }
-
     public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
       this.mComponentsConfiguration = componentsConfiguration;
       return this;
@@ -429,7 +414,6 @@ public class RecyclerBinderConfiguration {
           mEnableStableIds,
           mEnableItemPrefetch,
           mChangeSetThreadHandler,
-          mMoveLayoutsBetweenThreads,
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,

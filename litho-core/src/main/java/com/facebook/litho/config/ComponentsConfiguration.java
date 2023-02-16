@@ -129,8 +129,6 @@ public class ComponentsConfiguration {
    */
   public static boolean isLayoutDiffingEnabled = true;
 
-  public static boolean canInterruptAndMoveLayoutsBetweenThreads = true;
-
   public static boolean runLooperPrepareForLayoutThreadFactory = true;
 
   /**

@@ -143,7 +143,6 @@ public class RecyclerBinder
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
-  private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mIsReconciliationEnabled;
@@ -401,7 +400,6 @@ public class RecyclerBinder
         ComponentsConfiguration componentsConfiguration,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
-        boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean isReconciliationEnabled,
         boolean isLayoutDiffingEnabled,
         @Nullable RunnableHandler preallocateHandler,
@@ -421,7 +419,6 @@ public class RecyclerBinder
             ComponentsConfiguration componentsConfiguration,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
-            boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean isReconciliationEnabled,
             boolean isLayoutDiffingEnabled,
             @Nullable RunnableHandler preallocateHandler,
@@ -436,7 +433,6 @@ public class RecyclerBinder
               .componentsConfiguration(componentsConfiguration)
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
-              .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .isReconciliationEnabled(isReconciliationEnabled)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
@@ -472,8 +468,6 @@ public class RecyclerBinder
     private boolean hscrollAsyncMode = false;
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
-    private boolean canInterruptAndMoveLayoutsBetweenThreads =
-        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isSubAdapter;
     private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -756,16 +750,6 @@ public class RecyclerBinder
     }
 
     /**
-     * Experimental, do not use! If enabled, a layout computation can be interrupted on a bg thread
-     * and resumed on the UI thread if it's needed immediately.
-     */
-    @Deprecated
-    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
-      this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
-      return this;
-    }
-
-    /**
      * Note: this is an advanced usage of RecyclerBinder that requires much more manual hand-holding
      * of the RecyclerBinder than normal usage.
      *
@@ -1044,7 +1028,6 @@ public class RecyclerBinder
     mIncrementalMountEnabled = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
-    mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
@@ -4157,7 +4140,6 @@ public class RecyclerBinder
         mComponentsConfiguration,
         mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
-        mMoveLayoutsBetweenThreads,
         mIsReconciliationEnabled,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,

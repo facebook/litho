@@ -382,8 +382,6 @@ public class ComponentTree
 
   private final boolean useSeparateThreadHandlersForResolveAndLayout;
 
-  private final boolean mMoveLayoutsBetweenThreads;
-
   private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
 
   public static Builder create(ComponentContext context) {
@@ -464,7 +462,6 @@ public class ComponentTree
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     addMeasureListener(builder.mMeasureListener);
-    mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
 
     isResolveAndLayoutFuturesSplitEnabled =
         ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
@@ -2113,8 +2110,7 @@ public class ComponentTree
                 // end up being moved to UI thread with null result and causing crash later. To
                 // prevent that we mark it as Non-Interruptible.
                 !LayoutState.isFromSyncLayout(source)
-                    && (mMoveLayoutsBetweenThreads
-                        || mComponentsConfiguration.getUseCancelableLayoutFutures()),
+                    && mComponentsConfiguration.getUseCancelableLayoutFutures(),
                 widthSpec,
                 heightSpec,
                 mId,
@@ -2509,9 +2505,7 @@ public class ComponentTree
                 + ", current thread: "
                 + Thread.currentThread().getName()
                 + ". Root: "
-                + (mRoot == null ? "null" : mRoot.getSimpleName())
-                + ". Interruptible layouts: "
-                + mMoveLayoutsBetweenThreads;
+                + (mRoot == null ? "null" : mRoot.getSimpleName());
 
         if (mComponentsConfiguration.getIgnoreNullLayoutStateError()) {
           ComponentsReporter.emitMessage(
@@ -3024,9 +3018,7 @@ public class ComponentTree
         final @Nullable TreeProps treeProps,
         @CalculateLayoutSource final int source,
         final @Nullable String extraAttribution) {
-      super(
-          ComponentTree.this.mMoveLayoutsBetweenThreads
-              || ComponentTree.this.mComponentsConfiguration.getUseCancelableLayoutFutures());
+      super(ComponentTree.this.mComponentsConfiguration.getUseCancelableLayoutFutures());
 
       this.context = context;
       this.root = root;
@@ -3421,8 +3413,6 @@ public class ComponentTree
     private boolean shouldPreallocatePerMountSpec;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
-    private boolean canInterruptAndMoveLayoutsBetweenThreads =
-        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
 
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
@@ -3605,16 +3595,6 @@ public class ComponentTree
       if (errorEventHandler != null) {
         this.errorEventHandler = errorEventHandler;
       }
-      return this;
-    }
-
-    /**
-     * Experimental, do not use! If enabled, a layout computation can be interrupted on a bg thread
-     * and resumed on the UI thread if it's needed immediately.
-     */
-    @Deprecated
-    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
-      this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
       return this;
     }
 

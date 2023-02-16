@@ -85,7 +85,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               ComponentsConfiguration componentsConfiguration,
               boolean incrementalMountEnabled,
               boolean visibilityProcessing,
-              boolean canInterruptAndMoveLayoutsBetweenThreads,
               boolean isReconciliationEnabled,
               boolean isLayoutDiffingEnabled,
               RunnableHandler preallocateHandler,
