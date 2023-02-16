@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 /**
  * Implementation of the {@link LinearSnapHelper} supporting hscroll custom target child view
@@ -31,7 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class CustomSpeedLinearSnapHelper extends LinearSnapHelper {
   private static final float INVALID_DISTANCE = 1f;
-  private static int mDeltaJumpThreshold = Integer.MAX_VALUE;
+  private final int mDeltaJumpThreshold;
 
   public CustomSpeedLinearSnapHelper(int deltaJumpThreshold) {
     mDeltaJumpThreshold = deltaJumpThreshold;
