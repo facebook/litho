@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.litho.annotations.Event;
-import com.facebook.litho.annotations.OnTrigger;
+import com.facebook.litho.annotations.Event
+import com.facebook.litho.annotations.OnTrigger
 
-/** A custom event used to test {@link OnTrigger} method. */
+/** A custom event used to test [OnTrigger] method. */
 @Event
-public class TestTriggerEvent {
-  public Object triggerObject;
+class TestTriggerEvent {
+  @JvmField var triggerObject: Any? = null
 }
