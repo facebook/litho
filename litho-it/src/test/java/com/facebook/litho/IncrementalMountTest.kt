@@ -107,9 +107,9 @@ class IncrementalMountTest {
 
     // All 3 children are visible 5 times, so we should see ON_MOUNT being called 5 times
     // for each child
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(5)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(5)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(5)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(5)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(5)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(5)
   }
 
   @Test
@@ -135,9 +135,9 @@ class IncrementalMountTest {
         .layout()
 
     // SizeSpec height is 0, so nothing is visible and we should see that ON_MOUNT is not called.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(0)
   }
 
   @Test
@@ -164,9 +164,9 @@ class IncrementalMountTest {
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(3)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(3)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(3)
   }
 
   @Test
@@ -193,9 +193,9 @@ class IncrementalMountTest {
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(3)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(3)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(3)
   }
 
   @Test
@@ -224,9 +224,9 @@ class IncrementalMountTest {
 
     // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
     // for each child
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(3)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(3)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(3)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(3)
 
     // Clear the lifecycle steps
     lifecycleTracker1.reset()
@@ -238,18 +238,18 @@ class IncrementalMountTest {
     recyclerView.scrollBy(0, CHILD_HEIGHT)
 
     // Ensure unmount is called once
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_UNMOUNT)).isEqualTo(1)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_UNMOUNT)).isEqualTo(1)
 
     // Ensure mount is called once
     // When using Litho's inc-mount, the exiting item will be mounted twice due to an issue with
     // the calculation there. Inc-mount-ext does not have this issue.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(1)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(1)
 
     // child2 & 3 of all items should not change.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_UNMOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_UNMOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_UNMOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(0)
 
     // Clear the lifecycle steps
     lifecycleTracker1.reset()
@@ -261,18 +261,18 @@ class IncrementalMountTest {
     recyclerView.scrollBy(0, -CHILD_HEIGHT)
 
     // Ensure unmount is called once
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_UNMOUNT)).isEqualTo(1)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_UNMOUNT)).isEqualTo(1)
 
     // Ensure mount is called once
     // When using Litho's inc-mount, the item we previously expected to exit is still there, so
     // we don't expect a mount to occur.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(1)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.steps, ON_MOUNT)).isEqualTo(1)
 
     // child2 & 3 of all items should not change.
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_UNMOUNT)).isEqualTo(0)
-    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_UNMOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.steps, ON_MOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_UNMOUNT)).isEqualTo(0)
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.steps, ON_MOUNT)).isEqualTo(0)
   }
 
   /** Returns the amount of steps that match the given step in the given list of steps */

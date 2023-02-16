@@ -17,12 +17,11 @@ load(
 
 litho_android_test_library(
     name = "litho-testing",
-    java_version = "8",
-    language = "JAVA",
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
+    pure_kotlin = False,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
