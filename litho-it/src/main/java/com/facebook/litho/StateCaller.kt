@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import androidx.annotation.Nullable;
+package com.facebook.litho
 
 /** This class is used to trigger state updates within components. */
-public class StateCaller {
-  @Nullable private StateUpdateListener mStateUpdateListener;
-
-  public interface StateUpdateListener {
-    void update();
+class StateCaller {
+  fun interface StateUpdateListener {
+    fun update()
   }
 
-  public void setStateUpdateListener(StateUpdateListener stateUpdateListener) {
-    mStateUpdateListener = stateUpdateListener;
+  private var stateUpdateListener: StateUpdateListener? = null
+
+  fun setStateUpdateListener(stateUpdateListener: StateUpdateListener?) {
+    this.stateUpdateListener = stateUpdateListener
   }
 
-  public void update() {
-    mStateUpdateListener.update();
+  fun update() {
+    stateUpdateListener?.update()
   }
 }
