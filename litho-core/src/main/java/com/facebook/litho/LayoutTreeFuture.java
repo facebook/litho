@@ -61,7 +61,13 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
-        ComponentsSystrace.beginSection("layout:" + mResolveResult.component.getSimpleName());
+        ComponentsSystrace.beginSectionWithArgs(
+                "layout:" + mResolveResult.component.getSimpleName())
+            .arg("treeId", mComponentTreeId)
+            .arg("rootId", mResolveResult.component.getId())
+            .arg("widthSpec", SizeSpec.toString(mWidthSpec))
+            .arg("heightSpec", SizeSpec.toString(mHeightSpec))
+            .flush();
       }
 
       final LithoNode node = mResolveResult.node;
