@@ -26,8 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.GridLayoutInfo;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.SnapUtil;
@@ -38,80 +36,22 @@ import javax.annotation.Nullable;
  * androidx.recyclerview.widget.GridLayoutManager} for the {@link RecyclerView}.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
-    implements RecyclerConfiguration {
+public class GridRecyclerConfiguration implements RecyclerConfiguration {
   private final int mOrientation;
   private final int mNumColumns;
   private final @SnapMode int mSnapMode;
+  private final @Nullable SnapHelper mSnapHelper;
   private final boolean mReverseLayout;
   private final boolean mStackFromEnd;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final GridLayoutInfoFactory mGridLayoutInfoFactory;
   private final boolean mAllowMeasureOverride;
-  private int mDeltaJumpThreshold = Integer.MAX_VALUE;
-  private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
 
   public static GridRecyclerConfiguration.Builder create() {
     return new Builder();
   }
 
-  /**
-   * Use {@link #create()} instead.
-   *
-   * <p>Static factory method to create a recycler configuration with incremental mount optionally
-   * turned on.
-   */
-  @Deprecated
-  public static GridRecyclerConfiguration createWithRecyclerBinderConfiguration(
-      int numColumns, RecyclerBinderConfiguration recyclerBinderConfiguration) {
-
-    return new GridRecyclerConfiguration(
-        LinearLayoutManager.VERTICAL, numColumns, false, recyclerBinderConfiguration);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public GridRecyclerConfiguration(int numColumns) {
-    this(LinearLayoutManager.VERTICAL, numColumns, false);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public GridRecyclerConfiguration(int orientation, int numColumns, boolean reverseLayout) {
-    this(orientation, numColumns, reverseLayout, Builder.RECYCLER_BINDER_CONFIGURATION);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public GridRecyclerConfiguration(
-      int orientation,
-      int numColumns,
-      boolean reverseLayout,
-      RecyclerBinderConfiguration recyclerBinderConfiguration) {
-    this(orientation, numColumns, reverseLayout, recyclerBinderConfiguration, false);
-  }
-
-  @Deprecated
-  public GridRecyclerConfiguration(
-      int orientation,
-      int numColumns,
-      boolean reverseLayout,
-      RecyclerBinderConfiguration recyclerBinderConfiguration,
-      boolean allowMeasureOverride) {
-    this(
-        orientation,
-        numColumns,
-        reverseLayout,
-        false,
-        recyclerBinderConfiguration,
-        allowMeasureOverride,
-        Builder.GRID_LAYOUT_INFO_FACTORY,
-        SNAP_NONE);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public GridRecyclerConfiguration(
+  private GridRecyclerConfiguration(
       int orientation,
       int numColumns,
       boolean reverseLayout,
@@ -119,21 +59,20 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       RecyclerBinderConfiguration recyclerBinderConfiguration,
       boolean allowMeasureOverride,
       @Nullable GridLayoutInfoFactory gridLayoutInfoFactory,
-      @SnapMode int snapMode) {
+      @SnapMode int snapMode,
+      @Nullable SnapHelper snapHelper) {
     mOrientation = orientation;
     mNumColumns = numColumns;
     mReverseLayout = reverseLayout;
     mStackFromEnd = stackFromEnd;
-    mRecyclerBinderConfiguration =
-        recyclerBinderConfiguration == null
-            ? Builder.RECYCLER_BINDER_CONFIGURATION
-            : recyclerBinderConfiguration;
+    mRecyclerBinderConfiguration = recyclerBinderConfiguration;
     mAllowMeasureOverride = allowMeasureOverride;
     mGridLayoutInfoFactory =
         gridLayoutInfoFactory == null
             ? GridRecyclerConfiguration.Builder.GRID_LAYOUT_INFO_FACTORY
             : gridLayoutInfoFactory;
     mSnapMode = snapMode;
+    mSnapHelper = snapHelper;
   }
 
   @Override
@@ -143,7 +82,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   @Override
   public @Nullable SnapHelper getSnapHelper() {
-    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
+    return mSnapHelper;
   }
 
   @Override
@@ -207,6 +146,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
     private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
     private @SnapMode int mSnapMode = SNAP_NONE;
+    private @Nullable SnapHelper mSnapHelper;
 
     Builder() {}
 
@@ -218,9 +158,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       this.mAllowMeasureOverride = gridRecyclerConfiguration.mAllowMeasureOverride;
       this.mRecyclerBinderConfiguration = gridRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mGridLayoutInfoFactory = gridRecyclerConfiguration.mGridLayoutInfoFactory;
-      this.mDeltaJumpThreshold = gridRecyclerConfiguration.mDeltaJumpThreshold;
-      this.mStartSnapFlingOffset = gridRecyclerConfiguration.mStartSnapFlingOffset;
       this.mSnapMode = gridRecyclerConfiguration.mSnapMode;
+      this.mSnapHelper = gridRecyclerConfiguration.mSnapHelper;
     }
 
     @Override
@@ -274,6 +213,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    public Builder snapHelper(SnapHelper snapHelper) {
+      mSnapHelper = snapHelper;
+      return this;
+    }
+
     /**
      * Provide a customized {@link GridLayoutInfo} through {@link GridLayoutInfoFactory} interface.
      */
@@ -296,7 +240,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
      */
     @Override
     public GridRecyclerConfiguration build() {
-      GridRecyclerConfiguration configuration =
+      final SnapHelper snapHelper =
+          (mSnapHelper != null)
+              ? mSnapHelper
+              : SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
+      final GridRecyclerConfiguration configuration =
           new GridRecyclerConfiguration(
               mOrientation,
               mNumColumns,
@@ -305,9 +253,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
               mRecyclerBinderConfiguration,
               mAllowMeasureOverride,
               mGridLayoutInfoFactory,
-              mSnapMode);
-      configuration.mDeltaJumpThreshold = mDeltaJumpThreshold;
-      configuration.mStartSnapFlingOffset = mStartSnapFlingOffset;
+              mSnapMode,
+              snapHelper);
       validate(configuration);
       return configuration;
     }
