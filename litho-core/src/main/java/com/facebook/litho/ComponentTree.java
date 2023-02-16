@@ -281,9 +281,6 @@ public class ComponentTree
   private boolean mIsAttached;
 
   @ThreadConfined(ThreadConfined.UI)
-  private final boolean mIsAsyncUpdateStateEnabled;
-
-  @ThreadConfined(ThreadConfined.UI)
   private @Nullable LithoView mLithoView;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -466,7 +463,6 @@ public class ComponentTree
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
-    mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     addMeasureListener(builder.mMeasureListener);
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
 
@@ -1285,12 +1281,6 @@ public class ComponentTree
       String attribution,
       boolean isCreateLayoutInProgress,
       boolean isNestedTree) {
-    if (!mIsAsyncUpdateStateEnabled) {
-      throw new RuntimeException(
-          "Triggering async state updates on this component tree is "
-              + "disabled, use sync state updates.");
-    }
-
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -3425,7 +3415,6 @@ public class ComponentTree
     private @Nullable RunnableHandler preAllocateMountContentHandler;
     private @Nullable TreeState treeState;
     private RenderState previousRenderState;
-    private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = INVALID_ID;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
@@ -3572,12 +3561,6 @@ public class ComponentTree
      */
     public Builder previousRenderState(RenderState previousRenderState) {
       this.previousRenderState = previousRenderState;
-      return this;
-    }
-
-    /** Specify whether the ComponentTree allows async state updates. This is enabled by default. */
-    public Builder asyncStateUpdates(boolean enabled) {
-      this.asyncStateUpdates = enabled;
       return this;
     }
 
