@@ -789,99 +789,50 @@ public class SplitFuturesTest {
   }
 
   /**
-   * When an async setRootAndSizeSpec happens, followed by an equivalent sync call, we expect the
-   * async process to be promoted to the main thread, thus ensuring render and measure only happen
-   * once.
-   *
-   * <p>The test verifies this behaviour works correctly during render by triggering an async
-   * setRootAndSizeSpec, waiting for render to begin, and then triggering an equivalent sync
-   * process.
+   * When an async setRootAndSizeSpec happens, followed by a main thread layout, the async tasks
+   * should be promoted to the main thread, thus ensuring resolve and measure only happen once.
    */
   @Test
   public void testSyncRenderContinuesAsyncOnMainThread() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
-
-    // This isn't written to run without early interruption
-    if (!ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled) {
-      return;
-    }
-
     final ComponentContext c = mLegacyLithoViewRule.context;
-
     final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
 
-    // Latch to wait for async render to begin before sync render
-    final TimeOutSemaphore waitForAsyncRenderToStartLatch = new TimeOutSemaphore(0);
-
-    // Latch to wait for the 2nd future's pre-execution
-    final TimeOutSemaphore waitForSecondPreFutureExecutionLatch = new TimeOutSemaphore(0);
-
-    final RenderAndLayoutCountingTesterSpec.Listener listener =
-        new RenderAndLayoutCountingTesterSpec.Listener() {
-          @Override
-          public void onPrepare() {
-            // Inform async render has started
-            waitForAsyncRenderToStartLatch.release();
-
-            // Wait for the 2nd future's pre-execution
-            waitForSecondPreFutureExecutionLatch.acquire();
-          }
-
-          @Override
-          public void onMeasure() {}
-        };
+    // latch to wait for the main thread layout
+    final TimeOutSemaphore onPrepareLatch = new TimeOutSemaphore(0);
 
     final Component component =
         Column.create(c)
-            .child(
-                RenderAndLayoutCountingTester.create(c)
-                    .renderAndMeasureCounter(counter)
-                    .listener(listener))
+            .child(RenderAndLayoutCountingTester.create(c).renderAndMeasureCounter(counter))
             .build();
-
-    final int widthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
-    final int heightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
 
     final ComponentTree componentTree = mLegacyLithoViewRule.getComponentTree();
 
-    // Set root and size-spec async
-    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
+    // wait in prepare
+    onPrepareLatch.release();
 
-    // run to end of tasks on background to avoid blocking here
-    final TimeOutSemaphore bgThreadLatch =
-        runOnBackgroundThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                mLegacyLithoViewRule.runToEndOfBackgroundTasks();
-              }
-            });
-
-    // Wait for async render to start
-    waitForAsyncRenderToStartLatch.acquire();
+    // set root and size-spec async
+    componentTree.setRootAndSizeSpecAsync(component, exactly(100), exactly(100));
 
     componentTree.setFutureExecutionListener(
         type -> {
           componentTree.setFutureExecutionListener(null);
 
-          // Inform 2nd future's pre-execution occurred.
-          waitForSecondPreFutureExecutionLatch.release();
+          // unblock the async resolve
+          onPrepareLatch.acquire();
         });
 
-    // Set root and sync-spec sync
-    componentTree.setRootAndSizeSpecSync(component, widthSpec, heightSpec);
-
-    // Let the bg thread finish
-    bgThreadLatch.acquire();
+    // request a main thread layout
+    componentTree.measure(exactly(200), exactly(200), new int[] {0, 0}, false);
 
     // Ensure render and measure only happened once
     assertThat(counter.getRenderCount()).isEqualTo(1);
     assertThat(mLithoStatsRule.getResolveCount()).isEqualTo(1);
     assertThat(counter.getMeasureCount()).isEqualTo(1);
     assertThat(mLithoStatsRule.getLayoutCount()).isEqualTo(1);
+
+    // verify that the layout is measured against the new size
+    assertThat(mLegacyLithoViewRule.getCommittedLayoutState().getWidth()).isEqualTo(200);
+    assertThat(mLegacyLithoViewRule.getCommittedLayoutState().getHeight()).isEqualTo(200);
   }
 
   /**
