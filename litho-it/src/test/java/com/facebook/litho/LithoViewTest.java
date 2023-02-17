@@ -208,42 +208,6 @@ public class LithoViewTest {
   }
 
   @Test
-  public void testCorrectsDoubleMeasureBug() {
-    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(exactly(1079), exactly(100));
-
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
-  }
-
-  @Test
-  public void testCorrectsDoubleMeasureBugWithAtMost() {
-    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(atMost(1079), exactly(100));
-
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
-  }
-
-  @Test
-  public void testNoCorrectionWhenBugIsNotMatched() {
-    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2f, 1080);
-    mLithoView.measure(exactly(1079), exactly(100));
-
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1079);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
-  }
-
-  @Test
-  public void testNoCorrectionWhenBugIsNotMatched2() {
-    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(exactly(1078), exactly(100));
-
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1078);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
-  }
-
-  @Test
   public void testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
     mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(SimpleMountSpecTester.create(mLithoView.getComponentContext()).build());

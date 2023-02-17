@@ -101,15 +101,6 @@ public class ComponentsConfiguration {
   public static boolean enableErrorBoundaryComponent = false;
 
   /**
-   * This is regarding to an issue (https://issuetracker.google.com/issues/73804230) that caused a
-   * that on some devices, measure() is called twice from RootViewImpl during the same initial
-   * performTraversals() call in Activity creation, but with slightly different widthSpecs.
-   *
-   * <p>Enabling this fix, will avoid this issue.
-   */
-  public static boolean enableDoubleMeasureFix = true;
-
-  /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration = null;

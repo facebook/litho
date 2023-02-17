@@ -155,7 +155,6 @@ public class PreloadingUtils {
                       ComponentUtils.class,
                       MountItemsPool.class,
                       LogTreePopulator.class,
-                      DoubleMeasureFixUtil.class,
                       TouchExpansionDelegate.class,
                       ComponentTouchListener.class,
                       EventTrigger.class,
