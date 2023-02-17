@@ -832,6 +832,9 @@ public class RecyclerBinder
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
       }
 
+      // we cannot enable circular list and stable id at the same time
+      enableStableIds = (!isCircular && enableStableIds);
+
       return new RecyclerBinder(this);
     }
   }
@@ -4009,7 +4012,9 @@ public class RecyclerBinder
 
     @Override
     public long getItemId(int position) {
-      return mRecyclerBinderAdapterDelegate.getItemId(position);
+      return mEnableStableIds
+          ? mRecyclerBinderAdapterDelegate.getItemId(position)
+          : super.getItemId(position);
     }
 
     @Override
