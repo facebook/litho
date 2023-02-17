@@ -52,13 +52,17 @@ fun hasTestKey(key: String): TestNodeMatcher =
  * to verify the text used with any instance of Litho's Text.
  */
 fun hasText(text: CharSequence): TestNodeMatcher {
-  return hasAttribute(WidgetAttributes.Text, text)
+  return TestNodeMatcher("has text \"$text\"") { node ->
+    val textValues = node.getAttribute(WidgetAttributes.Text)
+    textValues?.any { it == text } ?: false
+  }
 }
 
 /** Returns a [TestNodeMatcher] that verifies if the given node contains the given [text] */
 fun hasTextContaining(text: CharSequence): TestNodeMatcher {
   return TestNodeMatcher("has text containing \"$text\"") { node ->
-    node.getAttribute(WidgetAttributes.Text)?.contains(text) ?: false
+    val textValues = node.getAttribute(WidgetAttributes.Text)
+    textValues?.any { it.contains(text) } ?: false
   }
 }
 

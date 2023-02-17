@@ -86,6 +86,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
+import java.util.Collections;
 
 /**
  * Component to render text. See <a href="https://fblitho.com/docs/widgets#text">text-widget</a> for
@@ -881,7 +882,8 @@ class TextSpec {
       @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
     Component componentScope = c.getComponentScope();
     if (componentScope != null) {
-      componentScope.setAttributeKey(WidgetAttributes.Text, processedText);
+      componentScope.setAttributeKey(
+          WidgetAttributes.Text, Collections.singletonList(processedText));
     }
 
     TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;

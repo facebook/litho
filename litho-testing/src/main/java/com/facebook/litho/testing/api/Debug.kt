@@ -120,7 +120,9 @@ private fun TestNode.printTo(
   val nonActionAttributes =
       attributes
           .filter { (key, _) -> key !is ActionAttributeKey }
-          .mapNotNull { (key, value) -> value?.let { Pair(key.description, value) } }
+          .mapNotNull { (key, value) ->
+            value?.let { Pair(key.description, formatPrettyValue(value)) }
+          }
 
   val attributePrefix = buildString {
     append(levelPrefix)
@@ -153,5 +155,19 @@ private fun TestNode.printTo(
         indentLevel = indentLevel + 1,
         maxIndentLevel = maxIndentLevel,
         hasNextSibling = children.lastIndex != index)
+  }
+}
+
+/**
+ * This helps to have less clutter when printing values.
+ *
+ * For example, if the given [value] is a Collection of a single value, it will only print the first
+ * value, instead of the whole array representation.
+ */
+private fun formatPrettyValue(value: Any?): String? {
+  return if (value is Collection<*>) {
+    if (value.size > 1) value.toString() else value.first()?.toString()
+  } else {
+    value?.toString()
   }
 }
