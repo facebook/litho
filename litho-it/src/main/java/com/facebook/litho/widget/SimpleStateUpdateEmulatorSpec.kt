@@ -34,8 +34,12 @@ object SimpleStateUpdateEmulatorSpec {
 
   @JvmStatic
   @OnCreateInitialState
-  fun onCreateInitialState(c: ComponentContext, count: StateValue<Int>) {
-    count.set(1)
+  fun onCreateInitialState(
+      c: ComponentContext,
+      count: StateValue<Int>,
+      @Prop(optional = true) initialCount: Int?,
+  ) {
+    count.set(initialCount ?: 1)
   }
 
   @JvmStatic
@@ -45,9 +49,13 @@ object SimpleStateUpdateEmulatorSpec {
       @Prop caller: Caller,
       @Prop(optional = true) prefix: String?,
       @State count: Int
-  ): Component {
+  ): Component? {
     caller.set(c)
-    return Column.create(c).child(Text.create(c).text((prefix ?: "Text: ") + count)).build()
+    return if (count > 0) {
+      Column.create(c).child(Text.create(c).text((prefix ?: "Text: ") + count)).build()
+    } else {
+      null
+    }
   }
 
   @JvmStatic
@@ -55,6 +63,13 @@ object SimpleStateUpdateEmulatorSpec {
   fun onIncrementCount(count: StateValue<Int>) {
     val counter = count.get() ?: throw RuntimeException("state value is null.")
     count.set(counter + 1)
+  }
+
+  @JvmStatic
+  @OnUpdateState
+  fun onDecrementCount(count: StateValue<Int>) {
+    val counter = count.get() ?: throw RuntimeException("state value is null.")
+    count.set(counter - 1)
   }
 
   class Caller {
@@ -65,6 +80,10 @@ object SimpleStateUpdateEmulatorSpec {
 
     fun increment() {
       SimpleStateUpdateEmulator.onIncrementCountSync(c)
+    }
+
+    fun decrement() {
+      SimpleStateUpdateEmulator.onDecrementCountSync(c)
     }
 
     fun incrementAsync() {

@@ -952,7 +952,10 @@ public abstract class Component
         Resolver.resolve(resolveStateContext, c, component);
     boolean willRender =
         willRender(resolveStateContext, c, component, newLayoutCreatedInWillRender);
-    if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
+
+    // will render will return false for a null node but the
+    // node still needs to be cached for reconciliation.
+    if (willRender || newLayoutCreatedInWillRender instanceof NullNode) {
       component.setLayoutCreatedInWillRender(resolveStateContext, newLayoutCreatedInWillRender);
     }
     return willRender;
@@ -1015,7 +1018,7 @@ public abstract class Component
       ComponentContext context,
       Component component,
       @Nullable LithoNode node) {
-    if (node == null) {
+    if (node == null || node instanceof NullNode) {
       return false;
     }
 

@@ -79,18 +79,17 @@ public class NestedTreeHolder extends LithoNode {
   }
 
   @Override
-  protected NestedTreeYogaLayoutProps createYogaNodeWriter(YogaNode node) {
-    return new NestedTreeYogaLayoutProps(node);
+  protected NestedTreeYogaLayoutProps createYogaNodeWriter() {
+    return new NestedTreeYogaLayoutProps(NodeConfig.createYogaNode());
   }
 
   @Override
-  NestedTreeYogaLayoutProps writeToYogaNode(YogaNode node) {
-    NestedTreeYogaLayoutProps writer = (NestedTreeYogaLayoutProps) super.writeToYogaNode(node);
-    mNestedBorderEdges = writer.getBorderWidth();
-    mNestedTreePadding = writer.getPadding();
-    mNestedIsPaddingPercentage = writer.getIsPaddingPercentage();
-
-    return writer;
+  void writeToYogaNode(YogaLayoutProps writer) {
+    NestedTreeYogaLayoutProps actual = (NestedTreeYogaLayoutProps) writer;
+    super.writeToYogaNode(writer);
+    mNestedBorderEdges = actual.getBorderWidth();
+    mNestedTreePadding = actual.getPadding();
+    mNestedIsPaddingPercentage = actual.getIsPaddingPercentage();
   }
 
   @Override

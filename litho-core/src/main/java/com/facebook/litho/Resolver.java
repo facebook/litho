@@ -225,7 +225,7 @@ public class Resolver {
             node = resolve(resolveStateContext, c, root);
           }
         } else {
-          node = null;
+          node = c.isNullNodeEnabled() ? new NullNode() : null;
         }
 
         if (renderResult != null && node != null) {

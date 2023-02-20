@@ -36,6 +36,10 @@ public class YogaLayoutProps implements LayoutProps {
     this.node = node;
   }
 
+  public YogaNode getNode() {
+    return node;
+  }
+
   @Override
   public void widthPx(int width) {
     node.setWidth(width);

@@ -388,34 +388,43 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
    */
   @SuppressLint("LongLogTag")
-  private static YogaNode buildYogaTree(
+  private static @Nullable YogaNode buildYogaTree(
       LayoutContext<LithoRenderContext> context,
       LithoNode currentNode,
       @Nullable YogaNode parentNode) {
     final LithoRenderContext renderContext = context.getRenderContext();
-    final YogaNode node;
+    final @Nullable YogaLayoutProps writer = currentNode.createYogaNodeWriter();
 
-    node = NodeConfig.createYogaNode();
+    if (writer == null) {
+      return null;
+    }
 
     // Transfer the layout props to YogaNode
-    currentNode.writeToYogaNode(node);
+    currentNode.writeToYogaNode(writer);
 
+    final YogaNode node = writer.getNode();
+
+    // Only add the YogaNode and LayoutResult if the node renders something. If it does
+    // not render anything then it should not participate in grow/shrink behaviours.
     final @Nullable LithoLayoutResult parentLayoutResult =
         parentNode != null ? LithoLayoutResult.getLayoutResultFromYogaNode(parentNode) : null;
+
     final LithoLayoutResult layoutResult = currentNode.createLayoutResult(node);
     currentNode.applyDiffNode(renderContext.mLayoutStateContext, layoutResult, parentLayoutResult);
     node.setData(new Pair(context, layoutResult));
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
-      final YogaNode childNode = buildYogaTree(context, currentNode.getChildAt(i), node);
-      node.addChildAt(childNode, i);
-      layoutResult.addChild(LithoLayoutResult.getLayoutResultFromYogaNode(childNode));
+      final @Nullable YogaNode yogaNode = buildYogaTree(context, currentNode.getChildAt(i), node);
+      if (yogaNode != null) {
+        node.addChildAt(yogaNode, node.getChildCount());
+        layoutResult.addChild(LithoLayoutResult.getLayoutResultFromYogaNode(yogaNode));
+      }
     }
 
     return node;
   }
 
-  public LithoLayoutResult calculateLayout(
+  public @Nullable LithoLayoutResult calculateLayout(
       final LayoutContext<LithoRenderContext> c, final int widthSpec, final int heightSpec) {
 
     if (c.getRenderContext().mLayoutStateContext.isReleased()) {
@@ -441,10 +450,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
     }
 
-    final YogaNode root = buildYogaTree(c, this, null);
+    final @Nullable YogaNode root = buildYogaTree(c, this, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
+    }
+
+    if (root == null) {
+      return null;
     }
 
     if (isLayoutDirectionInherit() && isLayoutDirectionRTL(c.getAndroidContext())) {
@@ -1109,12 +1122,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mNestedTreeHolder = holder;
   }
 
-  protected YogaLayoutProps createYogaNodeWriter(YogaNode node) {
-    return new YogaLayoutProps(node);
+  protected @Nullable YogaLayoutProps createYogaNodeWriter() {
+    return new YogaLayoutProps(NodeConfig.createYogaNode());
   }
 
-  YogaLayoutProps writeToYogaNode(final YogaNode node) {
-    final YogaLayoutProps writer = createYogaNodeWriter(node);
+  void writeToYogaNode(YogaLayoutProps writer) {
+    YogaNode node = writer.getNode();
 
     // Apply the extra layout props
     if (mLayoutDirection != null) {
@@ -1202,8 +1215,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
 
     mIsPaddingSet = writer.isPaddingSet;
-
-    return writer;
   }
 
   LithoLayoutResult createLayoutResult(final YogaNode node) {

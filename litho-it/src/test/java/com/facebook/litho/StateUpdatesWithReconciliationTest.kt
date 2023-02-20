@@ -17,8 +17,10 @@
 package com.facebook.litho
 
 import com.facebook.litho.LifecycleStep.StepInfo
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
@@ -118,6 +120,84 @@ class StateUpdatesWithReconciliationTest() {
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
     assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+  }
+
+  @Test
+  fun `should reuse unaffected part of layout when component renders to null`() {
+    ComponentsConfiguration.isNullNodeEnabled = true
+    val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
+    val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
+          child(
+              SimpleStateUpdateEmulator.create(context)
+                  .initialCount(0) // renders to null
+                  .caller(stateUpdater)
+                  .widthPx(100)
+                  .heightPx(100)
+                  .prefix("Count: ")
+                  .build())
+        }
+      }
+    }
+
+    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+
+    assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
+    lifecycleSteps.clear()
+
+    stateUpdater.increment()
+    lithoViewRule.measure().layout() // TODO: Why is this required?
+    assertThat(LifecycleStep.getSteps(lifecycleSteps))
+        .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 1")
+
+    ComponentsConfiguration.isNullNodeEnabled = false
+  }
+
+  @Test
+  fun `should reconcile correctly component renders to null on update`() {
+    ComponentsConfiguration.isNullNodeEnabled = true
+    val stateUpdater = SimpleStateUpdateEmulatorSpec.Caller()
+    val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(
+              LayoutSpecLifecycleTester.create(context)
+                  .steps(lifecycleSteps)
+                  .body(Text(text = "hello world"))
+                  .build())
+          child(
+              SimpleStateUpdateEmulator.create(context)
+                  .caller(stateUpdater)
+                  .widthPx(100)
+                  .heightPx(100)
+                  .prefix("Count: ")
+                  .build())
+        }
+      }
+    }
+
+    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+
+    assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
+    assertThat(lithoViewRule.lithoView).hasVisibleText("hello world")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 1")
+    lifecycleSteps.clear()
+
+    stateUpdater.decrement()
+    lithoViewRule.measure().layout() // TODO: Why is this required?
+    assertThat(LifecycleStep.getSteps(lifecycleSteps))
+        .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("hello world")
+    assertThat(lithoViewRule.lithoView).doesNotHaveVisibleTextContaining("Count")
+
+    ComponentsConfiguration.isNullNodeEnabled = false
   }
 
   @Test

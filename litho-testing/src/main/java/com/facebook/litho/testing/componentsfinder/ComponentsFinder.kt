@@ -212,7 +212,7 @@ private inline fun componentBreadthFirstSearch(
       continue
     }
 
-    for (i in 0 until internalNode.childCount) {
+    for (i in 0 until currentLayoutResult.childCount) {
       val childLayout =
           currentLayoutResult.getChildAt(i).takeUnless { it in enqueuedLayouts } ?: continue
       layoutsQueue.add(childLayout)

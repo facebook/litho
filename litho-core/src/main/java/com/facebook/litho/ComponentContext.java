@@ -122,6 +122,7 @@ public class ComponentContext implements Cloneable {
             ? ComponentsConfiguration.overrideReconciliation
             : true,
         true,
+        ComponentsConfiguration.isNullNodeEnabled,
         null,
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
         DefaultErrorEventHandler.INSTANCE,
@@ -177,6 +178,7 @@ public class ComponentContext implements Cloneable {
         lithoConfiguration.shouldReuseOutputs,
         lithoConfiguration.isReconciliationEnabled,
         lithoConfiguration.isVisibilityProcessingEnabled,
+        lithoConfiguration.isNullNodeEnabled,
         lithoConfiguration.mountContentPreallocationHandler,
         lithoConfiguration.incrementalMountEnabled,
         lithoConfiguration.errorEventHandler,
@@ -804,6 +806,10 @@ public class ComponentContext implements Cloneable {
    */
   boolean areTransitionsEnabled() {
     return mLithoConfiguration.areTransitionsEnabled;
+  }
+
+  public boolean isNullNodeEnabled() {
+    return mLithoConfiguration.isNullNodeEnabled;
   }
 
   @Nullable

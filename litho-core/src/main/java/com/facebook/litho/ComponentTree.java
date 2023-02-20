@@ -435,6 +435,7 @@ public class ComponentTree
                 ? ComponentsConfiguration.overrideReconciliation
                 : builder.isReconciliationEnabled,
             builder.visibilityProcessingEnabled,
+            ComponentsConfiguration.isNullNodeEnabled,
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
@@ -3352,6 +3353,7 @@ public class ComponentTree
     final boolean shouldReuseOutputs;
     final boolean isReconciliationEnabled;
     final boolean isVisibilityProcessingEnabled;
+    final boolean isNullNodeEnabled;
     @Nullable final RunnableHandler mountContentPreallocationHandler;
     final boolean incrementalMountEnabled;
     final ErrorEventHandler errorEventHandler;
@@ -3366,6 +3368,7 @@ public class ComponentTree
         boolean shouldReuseOutputs,
         boolean isReconciliationEnabled,
         boolean isVisibilityProcessingEnabled,
+        boolean isNullNodeEnabled,
         @Nullable RunnableHandler mountContentPreallocationHandler,
         boolean incrementalMountEnabled,
         @Nullable ErrorEventHandler errorEventHandler,
@@ -3382,6 +3385,7 @@ public class ComponentTree
       this.isVisibilityProcessingEnabled = isVisibilityProcessingEnabled;
       this.mountContentPreallocationHandler = mountContentPreallocationHandler;
       this.incrementalMountEnabled = incrementalMountEnabled;
+      this.isNullNodeEnabled = isNullNodeEnabled;
       this.errorEventHandler =
           errorEventHandler == null ? DefaultErrorEventHandler.INSTANCE : errorEventHandler;
       this.logTag = logTag;
