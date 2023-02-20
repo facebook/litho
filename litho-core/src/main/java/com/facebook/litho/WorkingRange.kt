@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-public interface WorkingRange {
-
+interface WorkingRange {
   /**
-   * Return true to trigger{@literal @}OnEnteredRange method defined in the component, do nothing
+   * Return `true` to trigger `@OnEnteredRange` method defined in the component, do nothing
    * otherwise.
    */
-  boolean shouldEnterRange(
-      int position,
-      int firstVisibleIndex,
-      int lastVisibleIndex,
-      int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex);
+  fun shouldEnterRange(
+      position: Int,
+      firstVisibleIndex: Int,
+      lastVisibleIndex: Int,
+      firstFullyVisibleIndex: Int,
+      lastFullyVisibleIndex: Int
+  ): Boolean
 
   /**
-   * Return true to trigger{@literal @}OnExitedRange method defined in the component, do nothing
-   * otherwise.
+   * Return true to trigger `@OnExitedRange` method defined in the component, do nothing otherwise.
    */
-  boolean shouldExitRange(
-      int position,
-      int firstVisibleIndex,
-      int lastVisibleIndex,
-      int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex);
+  fun shouldExitRange(
+      position: Int,
+      firstVisibleIndex: Int,
+      lastVisibleIndex: Int,
+      firstFullyVisibleIndex: Int,
+      lastFullyVisibleIndex: Int
+  ): Boolean
 }

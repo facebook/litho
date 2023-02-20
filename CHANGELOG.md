@@ -5,6 +5,7 @@
 _release-date_
 
 * [BREAKING] Removed `ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. ComponentTrees can no longer exempt themselves from interrupt and move layouts between threads operation.
+* [New] Add Kotlin to `litho-core`
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.47.0...master).
 
