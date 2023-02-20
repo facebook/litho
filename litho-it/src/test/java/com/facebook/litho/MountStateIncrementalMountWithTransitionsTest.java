@@ -20,6 +20,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Color;
+import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.TestSingleComponentListSection;
@@ -34,10 +35,11 @@ import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SectionsRecyclerView;
 import com.facebook.litho.widget.TestAnimationsComponent;
-import com.facebook.litho.widget.TestAnimationsComponentSpec;
+import com.facebook.litho.widget.TestComponentProvider;
 import com.facebook.yoga.YogaAlign;
 import java.util.ArrayList;
 import java.util.List;
+import kotlin.jvm.functions.Function2;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,6 +84,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
     animatingLithoView.onAttachedToWindowForTest();
 
     mStateCaller.update();
+    mLegacyLithoViewRule.idle();
 
     assertThat(lifecycleTracker1.getSteps()).contains(LifecycleStep.ON_MOUNT);
     assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_MOUNT);
@@ -148,8 +151,8 @@ public class MountStateIncrementalMountWithTransitionsTest {
             .recyclerConfiguration(config)
             .build();
 
-    TestAnimationsComponentSpec.TestComponent partiallyVisibleAnimatingComponent =
-        new TestAnimationsComponentSpec.TestComponent() {
+    TestComponentProvider partiallyVisibleAnimatingComponent =
+        new TestComponentProvider() {
           @Override
           public Component getComponent(ComponentContext componentContext, boolean state) {
             if (!state) {
@@ -178,15 +181,20 @@ public class MountStateIncrementalMountWithTransitionsTest {
         };
 
     final TestAnimationsComponent root =
-        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
-            .stateCaller(mStateCaller)
-            .transition(
-                Transition.sequence(
-                    Transition.create("transitionkey_root")
-                        .animator(Transition.timing(144))
-                        .animate(AnimatedProperties.X)))
-            .testComponent(partiallyVisibleAnimatingComponent)
-            .build();
+        new TestAnimationsComponent(
+            mStateCaller,
+            Transition.sequence(
+                Transition.create("transitionkey_root")
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X)),
+            new Function2<ComponentScope, Boolean, Component>() {
+              @Nullable
+              @Override
+              public Component invoke(ComponentScope componentScope, Boolean state) {
+                return partiallyVisibleAnimatingComponent.getComponent(
+                    componentScope.getContext(), state);
+              }
+            });
 
     mLegacyLithoViewRule
         .setRoot(root)
@@ -196,6 +204,7 @@ public class MountStateIncrementalMountWithTransitionsTest {
     assertThat(lifecycleTracker0.isMounted()).isTrue();
     assertThat(lifecycleTracker1.isMounted()).isFalse();
     mStateCaller.update();
+    mLegacyLithoViewRule.idle();
 
     assertThat(lifecycleTracker1.isMounted()).isTrue();
   }
@@ -212,8 +221,8 @@ public class MountStateIncrementalMountWithTransitionsTest {
               .build());
     }
 
-    TestAnimationsComponentSpec.TestComponent partiallyVisibleAnimatingComponent =
-        new TestAnimationsComponentSpec.TestComponent() {
+    TestComponentProvider partiallyVisibleAnimatingComponent =
+        new TestComponentProvider() {
           @Override
           public Component getComponent(ComponentContext componentContext, boolean state) {
             Column.Builder builder =
@@ -245,11 +254,17 @@ public class MountStateIncrementalMountWithTransitionsTest {
     }
 
     final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLegacyLithoViewRule.getContext())
-            .stateCaller(mStateCaller)
-            .transition(Transition.sequence(transitions))
-            .testComponent(partiallyVisibleAnimatingComponent)
-            .build();
+        new TestAnimationsComponent(
+            mStateCaller,
+            Transition.sequence(transitions),
+            new Function2<ComponentScope, Boolean, Component>() {
+              @Nullable
+              @Override
+              public Component invoke(ComponentScope componentScope, Boolean state) {
+                return partiallyVisibleAnimatingComponent.getComponent(
+                    componentScope.getContext(), state);
+              }
+            });
 
     final List<Component> data = new ArrayList<>();
 
