@@ -27,7 +27,6 @@ import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
-import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.condition.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
@@ -57,6 +56,7 @@ import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 import com.facebook.litho.widget.LayoutSpecWorkingRangeTester;
 import com.facebook.litho.widget.MountSpecWorkingRangeTester;
+import com.facebook.litho.widget.SnapUtil;
 import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +130,7 @@ public class RecyclerCollectionComponentSpecTest {
             .loadingComponent(mLoadingComponent)
             .errorComponent(mErrorComponent)
             .recyclerConfiguration(
-                new ListRecyclerConfiguration(LinearLayoutManager.VERTICAL, false, SNAP_NONE, null))
+                ListRecyclerConfiguration.create().snapMode(SnapUtil.SNAP_NONE).build())
             .section(
                 SingleComponentSection.create(new SectionContext(mComponentContext))
                     .component(mContentComponent)
@@ -144,7 +144,7 @@ public class RecyclerCollectionComponentSpecTest {
         RecyclerCollectionComponent.create(mComponentContext)
             .loadingComponent(mLoadingComponent)
             .errorComponent(mErrorComponent)
-            .recyclerConfiguration(new ListRecyclerConfiguration())
+            .recyclerConfiguration(ListRecyclerConfiguration.create().build())
             .section(
                 SingleComponentSection.create(new SectionContext(mComponentContext))
                     .component(Text.create(mComponentContext).text("content").build())
@@ -318,7 +318,10 @@ public class RecyclerCollectionComponentSpecTest {
         LayoutSpecWorkingRangeTester.create(componentContext).steps(info).heightPx(100).build();
     final RecyclerCollectionComponent rcc =
         RecyclerCollectionComponent.create(componentContext)
-            .recyclerConfiguration(ListRecyclerConfiguration.create().build())
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create()
+                    .orientation(LinearLayoutManager.VERTICAL)
+                    .build())
             .section(
                 SingleComponentSection.create(new SectionContext(componentContext))
                     .component(component)
@@ -341,7 +344,8 @@ public class RecyclerCollectionComponentSpecTest {
         MountSpecWorkingRangeTester.create(componentContext).steps(info).heightPx(100).build();
     final RecyclerCollectionComponent rcc =
         RecyclerCollectionComponent.create(componentContext)
-            .recyclerConfiguration(ListRecyclerConfiguration.create().build())
+            .recyclerConfiguration(
+                ListRecyclerConfiguration.create().snapMode(SnapUtil.SNAP_NONE).build())
             .section(
                 SingleComponentSection.create(new SectionContext(componentContext))
                     .component(component)

@@ -111,7 +111,8 @@ import java.util.List;
 public class RecyclerCollectionComponentSpec {
 
   @PropDefault
-  public static final RecyclerConfiguration recyclerConfiguration = new ListRecyclerConfiguration();
+  public static final RecyclerConfiguration recyclerConfiguration =
+      ListRecyclerConfiguration.create().build();
 
   @PropDefault public static final boolean nestedScrollingEnabled = true;
   @PropDefault public static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;

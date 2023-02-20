@@ -28,8 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.SnapUtil;
@@ -40,37 +38,17 @@ import javax.annotation.Nullable;
  * androidx.recyclerview.widget.LinearLayoutManager} for the {@link RecyclerView}.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
-    implements RecyclerConfiguration {
+public class ListRecyclerConfiguration implements RecyclerConfiguration {
   private final int mOrientation;
   private final boolean mReverseLayout;
   private final boolean mStackFromEnd;
   private final @SnapMode int mSnapMode;
+  private final @Nullable SnapHelper mSnapHelper;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final LinearLayoutInfoFactory mLinearLayoutInfoFactory;
-  private int mDeltaJumpThreshold = Integer.MAX_VALUE;
-  private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
 
   public static Builder create() {
     return new Builder();
-  }
-
-  /**
-   * Use {@link #create()} instead.
-   *
-   * <p>Static factory method to create a recycler configuration with incremental mount optionally
-   * turned on.
-   */
-  @Deprecated
-  public static ListRecyclerConfiguration createWithRecyclerBinderConfiguration(
-      RecyclerBinderConfiguration recyclerBinderConfiguration) {
-    return new ListRecyclerConfiguration(
-        LinearLayoutManager.VERTICAL,
-        false,
-        false,
-        SNAP_NONE,
-        recyclerBinderConfiguration,
-        Builder.LINEAR_LAYOUT_INFO_FACTORY);
   }
 
   /** Use {@link #create()} instead. */
@@ -88,7 +66,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   /** Use {@link #create()} instead. */
   @Deprecated
   public ListRecyclerConfiguration(int orientation, boolean reverseLayout, @SnapMode int snapMode) {
-    this(orientation, reverseLayout, snapMode, Builder.RECYCLER_BINDER_CONFIGURATION);
+    this(orientation, reverseLayout, snapMode, null, Builder.RECYCLER_BINDER_CONFIGURATION);
   }
 
   /** Use {@link #create()} instead. */
@@ -97,12 +75,14 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       int orientation,
       boolean reverseLayout,
       @SnapMode int snapMode,
+      @Nullable SnapHelper snapHelper,
       RecyclerBinderConfiguration recyclerBinderConfiguration) {
     this(
         orientation,
         reverseLayout,
         false,
         snapMode,
+        snapHelper,
         recyclerBinderConfiguration,
         Builder.LINEAR_LAYOUT_INFO_FACTORY);
   }
@@ -114,6 +94,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       boolean reverseLayout,
       boolean stackFromEnd,
       @SnapMode int snapMode,
+      @Nullable SnapHelper snapHelper,
       @Nullable RecyclerBinderConfiguration recyclerBinderConfiguration,
       @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory) {
     if (orientation == OrientationHelper.VERTICAL
@@ -127,6 +108,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     mReverseLayout = reverseLayout;
     mStackFromEnd = stackFromEnd;
     mSnapMode = snapMode;
+    mSnapHelper = snapHelper;
     mRecyclerBinderConfiguration =
         recyclerBinderConfiguration == null
             ? Builder.RECYCLER_BINDER_CONFIGURATION
@@ -145,7 +127,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   @Nullable
   @Override
   public SnapHelper getSnapHelper() {
-    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
+    return mSnapHelper;
   }
 
   @Override
@@ -202,6 +184,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private LinearLayoutInfoFactory mLinearLayoutInfoFactory = LINEAR_LAYOUT_INFO_FACTORY;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
     private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
+    private @Nullable SnapHelper mSnapHelper;
 
     Builder() {}
 
@@ -212,8 +195,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       this.mSnapMode = listRecyclerConfiguration.mSnapMode;
       this.mRecyclerBinderConfiguration = listRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mLinearLayoutInfoFactory = listRecyclerConfiguration.mLinearLayoutInfoFactory;
-      this.mDeltaJumpThreshold = listRecyclerConfiguration.mDeltaJumpThreshold;
-      this.mStartSnapFlingOffset = listRecyclerConfiguration.mStartSnapFlingOffset;
+      this.mSnapHelper = listRecyclerConfiguration.mSnapHelper;
     }
 
     @Override
@@ -262,6 +244,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    public Builder snapHelper(SnapHelper snapHelper) {
+      mSnapHelper = snapHelper;
+      return this;
+    }
+
     private static void validate(ListRecyclerConfiguration configuration) {
       int snapMode = configuration.getSnapMode();
       if (configuration.getOrientation() == OrientationHelper.VERTICAL
@@ -276,16 +263,19 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
      */
     @Override
     public ListRecyclerConfiguration build() {
+      SnapHelper snapHelper =
+          (mSnapHelper != null)
+              ? mSnapHelper
+              : SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
       ListRecyclerConfiguration configuration =
           new ListRecyclerConfiguration(
               mOrientation,
               mReverseLayout,
               mStackFromEnd,
               mSnapMode,
+              snapHelper,
               mRecyclerBinderConfiguration,
               mLinearLayoutInfoFactory);
-      configuration.mDeltaJumpThreshold = mDeltaJumpThreshold;
-      configuration.mStartSnapFlingOffset = mStartSnapFlingOffset;
       validate(configuration);
       return configuration;
     }

@@ -16,8 +16,6 @@
 
 package com.facebook.samples.litho.java.lithography;
 
-import static androidx.recyclerview.widget.LinearSmoothScroller.SNAP_TO_START;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -37,14 +35,17 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.sections.widget.RecyclerConfiguration;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SnapUtil;
 import java.util.Arrays;
 
 @LayoutSpec
 public class FeedImageComponentSpec {
 
   private static final RecyclerConfiguration LIST_CONFIGURATION =
-      new ListRecyclerConfiguration(
-          LinearLayoutManager.HORIZONTAL, /*reverseLayout*/ false, SNAP_TO_START);
+      ListRecyclerConfiguration.create()
+          .orientation(LinearLayoutManager.HORIZONTAL)
+          .snapMode(SnapUtil.SNAP_TO_START)
+          .build();
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @Prop final String[] images) {

@@ -67,8 +67,10 @@ class ListSectionSpec {
                     RecyclerCollectionComponent.create(c)
                         .disablePTR(true)
                         .recyclerConfiguration(
-                            new ListRecyclerConfiguration(
-                                LinearLayoutManager.HORIZONTAL, false, SNAP_TO_CENTER))
+                            ListRecyclerConfiguration.create()
+                                .orientation(LinearLayoutManager.HORIZONTAL)
+                                .snapMode(SNAP_TO_CENTER)
+                                .build())
                         .section(
                             DataDiffSection.<Integer>create(c)
                                 .data(generateData(32))
