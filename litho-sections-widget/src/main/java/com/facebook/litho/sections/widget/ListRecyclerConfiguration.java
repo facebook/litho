@@ -51,45 +51,7 @@ public class ListRecyclerConfiguration implements RecyclerConfiguration {
     return new Builder();
   }
 
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public ListRecyclerConfiguration() {
-    this(LinearLayoutManager.VERTICAL, false, SNAP_NONE);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public ListRecyclerConfiguration(int orientation, boolean reverseLayout) {
-    this(orientation, reverseLayout, SNAP_NONE);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public ListRecyclerConfiguration(int orientation, boolean reverseLayout, @SnapMode int snapMode) {
-    this(orientation, reverseLayout, snapMode, null, Builder.RECYCLER_BINDER_CONFIGURATION);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public ListRecyclerConfiguration(
-      int orientation,
-      boolean reverseLayout,
-      @SnapMode int snapMode,
-      @Nullable SnapHelper snapHelper,
-      RecyclerBinderConfiguration recyclerBinderConfiguration) {
-    this(
-        orientation,
-        reverseLayout,
-        false,
-        snapMode,
-        snapHelper,
-        recyclerBinderConfiguration,
-        Builder.LINEAR_LAYOUT_INFO_FACTORY);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public ListRecyclerConfiguration(
+  private ListRecyclerConfiguration(
       int orientation,
       boolean reverseLayout,
       boolean stackFromEnd,
