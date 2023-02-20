@@ -244,49 +244,47 @@ public class StateHandler {
   }
 
   @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesEarly(
+  synchronized void applyStateUpdatesEarly(
       final ComponentContext context,
       final Component component,
       final @Nullable LithoNode prevTreeRootNode) {
-    synchronized (this) {
-      if (mPendingStateUpdates != null) {
-        for (Map.Entry<String, List<StateUpdate>> entry : mPendingStateUpdates.entrySet()) {
-          final String key = entry.getKey();
-          try {
-            StateContainer stateContainer = mStateContainers.get(key);
-            if (stateContainer == null) {
-              stateContainer = mInitialStateContainer.getInitialStateForComponent(key);
+    if (mPendingStateUpdates != null) {
+      for (Map.Entry<String, List<StateUpdate>> entry : mPendingStateUpdates.entrySet()) {
+        final String key = entry.getKey();
+        try {
+          StateContainer stateContainer = mStateContainers.get(key);
+          if (stateContainer == null) {
+            stateContainer = mInitialStateContainer.getInitialStateForComponent(key);
+          }
+
+          if (stateContainer == null) {
+            if (mStateContainerNotFoundForKeys == null) {
+              mStateContainerNotFoundForKeys = new HashSet<>();
             }
+            mStateContainerNotFoundForKeys.add(key);
+            continue;
+          }
 
-            if (stateContainer == null) {
-              if (mStateContainerNotFoundForKeys == null) {
-                mStateContainerNotFoundForKeys = new HashSet<>();
-              }
-              mStateContainerNotFoundForKeys.add(key);
-              continue;
-            }
+          final StateContainer newStateContainer = stateContainer.clone();
+          mNeededStateContainers.add(key);
+          mStateContainers.put(key, newStateContainer);
+          applyStateUpdates(key, newStateContainer);
+        } catch (Exception ex) {
 
-            final StateContainer newStateContainer = stateContainer.clone();
-            mNeededStateContainers.add(key);
-            mStateContainers.put(key, newStateContainer);
-            applyStateUpdates(key, newStateContainer);
-          } catch (Exception ex) {
+          // Remove pending state update from ComponentTree's state handler since we don't want to
+          // process this pending state update again. If we don't remove it and someone is using
+          // setRoot in onError api then we can end up in an infinite loop
+          context.removePendingStateUpdate(key, context.isNestedTreeContext());
 
-            // Remove pending state update from ComponentTree's state handler since we don't want to
-            // process this pending state update again. If we don't remove it and someone is using
-            // setRoot in onError api then we can end up in an infinite loop
-            context.removePendingStateUpdate(key, context.isNestedTreeContext());
-
-            if (prevTreeRootNode != null) {
-              handleExceptionDuringApplyStateUpdate(key, prevTreeRootNode, ex);
-            } else {
-              ComponentUtils.handleWithHierarchy(context, component, ex);
-            }
+          if (prevTreeRootNode != null) {
+            handleExceptionDuringApplyStateUpdate(key, prevTreeRootNode, ex);
+          } else {
+            ComponentUtils.handleWithHierarchy(context, component, ex);
           }
         }
-
-        mPendingStateUpdates.clear();
       }
+
+      mPendingStateUpdates.clear();
     }
   }
 
