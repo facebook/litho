@@ -196,26 +196,22 @@ private inline fun componentBreadthFirstSearch(
 ) {
   startingLayoutResult ?: return
 
-  val enqueuedLayouts = mutableSetOf<LithoLayoutResult>(startingLayoutResult)
-  val layoutsQueue = ArrayDeque(enqueuedLayouts)
+  val visited = mutableSetOf(startingLayoutResult)
+  val queue = ArrayDeque(visited)
 
-  while (layoutsQueue.isNotEmpty()) {
-    val currentLayoutResult = layoutsQueue.removeFirst()
+  while (queue.isNotEmpty()) {
+    val current = queue.removeFirst()
+    onHandleScopedComponents(getOrderedScopedComponentInfos(current.node).map { it.component })
 
-    val internalNode = currentLayoutResult.node
-    onHandleScopedComponents(getOrderedScopedComponentInfos(internalNode).map { it.component })
-
-    if (currentLayoutResult is NestedTreeHolderResult) {
-      val nestedLayout =
-          currentLayoutResult.nestedResult?.takeUnless { it in enqueuedLayouts } ?: continue
-      layoutsQueue.add(nestedLayout)
+    if (current is NestedTreeHolderResult) {
+      val nestedResult = current.nestedResult?.takeUnless { it in visited } ?: continue
+      queue.add(nestedResult)
       continue
     }
 
-    for (i in 0 until currentLayoutResult.childCount) {
-      val childLayout =
-          currentLayoutResult.getChildAt(i).takeUnless { it in enqueuedLayouts } ?: continue
-      layoutsQueue.add(childLayout)
+    for (i in 0 until current.childCount) {
+      val child = current.getChildAt(i).takeUnless { it in visited } ?: continue
+      queue.add(child)
     }
   }
 }
