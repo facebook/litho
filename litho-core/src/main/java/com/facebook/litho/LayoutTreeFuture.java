@@ -80,6 +80,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
               c,
               mResolveResult.component,
               treeState,
+              mResolveResult.attachables,
               mCurrentLayoutState,
               node,
               mWidthSpec,

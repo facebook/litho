@@ -19,6 +19,8 @@ package com.facebook.litho
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.setRoot
@@ -594,6 +596,98 @@ class KEffectsTest {
     lithoViewRule.release()
 
     assertThat(useEffectCalls).containsExactly("detach 0")
+  }
+
+  @Test
+  fun `effects should work with components that render to null`() {
+    ComponentsConfiguration.isNullNodeEnabled = true
+
+    var renderCount = 0
+    var attachCount = 0
+    var detachCount = 0
+    val controller = TestCounterComponent.Controller()
+    val component =
+        TestCounterComponent(
+            initialCount = 2,
+            onRender = { renderCount++ },
+            onAttach = { attachCount++ },
+            onDetach = { detachCount++ },
+            controller = controller,
+        )
+
+    lithoViewRule.render { Column { child(component) } }
+
+    // first render
+    assertThat(renderCount).isEqualTo(1)
+    lithoViewRule.findViewWithText("count: 2")
+    assertThat(attachCount).isEqualTo(1)
+    assertThat(detachCount).isEqualTo(0)
+
+    // state update
+    controller.decrement!!()
+    lithoViewRule.findViewWithText("count: 1")
+    assertThat(renderCount).isEqualTo(2)
+    assertThat(attachCount).isEqualTo(1)
+    assertThat(detachCount).isEqualTo(0)
+
+    // state update (renders to null)
+    controller.decrement!!.invoke()
+    assertThat(renderCount).isEqualTo(3)
+    assertThat(attachCount).isEqualTo(1)
+    assertThat(detachCount).isEqualTo(0)
+
+    // state update
+    controller.increment!!.invoke()
+    lithoViewRule.findViewWithText("count: 1")
+    assertThat(renderCount).isEqualTo(4)
+    assertThat(attachCount).isEqualTo(1)
+    assertThat(detachCount).isEqualTo(0)
+
+    // remove component
+    lithoViewRule.render { Text(text = "hello") }
+    lithoViewRule.findViewWithText("hello")
+    assertThat(renderCount).isEqualTo(4)
+    assertThat(attachCount).isEqualTo(1)
+    assertThat(detachCount).isEqualTo(1)
+
+    ComponentsConfiguration.isNullNodeEnabled = false
+  }
+}
+
+class TestCounterComponent(
+    private val initialCount: Int = 0,
+    private val onRender: () -> Unit,
+    private val onAttach: () -> Unit,
+    private val onDetach: () -> Unit,
+    private val controller: Controller,
+) : KComponent() {
+  override fun ComponentScope.render(): Component? {
+
+    val count = useState { initialCount }
+
+    onRender()
+
+    useEffect(onAttach, onDetach, controller) {
+      onAttach()
+      controller.increment = { count.updateSync { count -> count + 1 } }
+      controller.decrement = { count.updateSync { count -> count - 1 } }
+      CleanupFunc {
+        onDetach()
+        controller.increment = null
+        controller.decrement = null
+      }
+    }
+
+    return if (count.value > 0) {
+      Text("count: ${count.value}")
+    } else {
+      null
+    }
+  }
+
+  class Controller {
+    var increment: (() -> Unit)? = null
+    var decrement: (() -> Unit)? = null
   }
 }
 

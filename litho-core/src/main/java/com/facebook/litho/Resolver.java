@@ -29,6 +29,7 @@ import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaFlexDirection;
+import java.util.ArrayList;
 import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -414,5 +415,29 @@ public class Resolver {
     }
 
     return ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent);
+  }
+
+  public static @Nullable List<Attachable> collectAttachables(@Nullable final LithoNode node) {
+    if (node == null) {
+      return null;
+    }
+
+    final List<Attachable> collected = new ArrayList<>();
+    collectAttachables(node, collected);
+    return collected.isEmpty() ? null : collected;
+  }
+
+  private static void collectAttachables(final LithoNode node, final List<Attachable> collected) {
+
+    // TODO(T143986616): optimise traversal for reused nodes
+
+    for (int i = 0; i < node.getChildCount(); i++) {
+      collectAttachables(node.getChildAt(i), collected);
+    }
+
+    final @Nullable List<Attachable> list = node.getAttachables();
+    if (list != null) {
+      collected.addAll(list);
+    }
   }
 }

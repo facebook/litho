@@ -137,9 +137,13 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         mComponentContext.setCalculationStateContext(previousStateContext);
       }
 
+      final @Nullable List<Attachable> attachables;
       if (rsc.isLayoutInterrupted()) {
         mResolveStateContextForResume = rsc;
+        attachables = null;
       } else {
+        attachables =
+            mComponentContext.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
         rsc.getCache().freezeCache();
       }
 
@@ -151,8 +155,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           mTreeState,
           rsc.isLayoutInterrupted(),
           mResolveVersion,
-          rsc.getCreatedEventHandlers());
-
+          rsc.getCreatedEventHandlers(),
+          attachables);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -200,9 +204,13 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         mComponentContext.setCalculationStateContext(previousStateContext);
       }
 
+      final @Nullable List<Attachable> attachables =
+          mComponentContext.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
+
       mResolveStateContextForResume.getCache().freezeCache();
       final List<Pair<String, EventHandler>> createdEventHandlers =
           mResolveStateContextForResume.getCreatedEventHandlers();
+
       mResolveStateContextForResume = null;
 
       return new ResolveResult(
@@ -213,7 +221,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           partialResult.treeState,
           false,
           mResolveVersion,
-          createdEventHandlers);
+          createdEventHandlers,
+          attachables);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();

@@ -255,6 +255,7 @@ public class LayoutState
       ComponentContext context,
       Component rootComponent,
       TreeState treeState,
+      @Nullable List<Attachable> attachables,
       @Nullable LayoutState current,
       @Nullable LithoNode root,
       int widthSpec,
@@ -270,6 +271,7 @@ public class LayoutState
     mVisibilityOutputs = new ArrayList<>(8);
 
     mTreeState = treeState;
+    mAttachables = attachables != null ? new ArrayList<>(attachables) : null;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mComponentTreeId = componentTreeId;
@@ -645,6 +647,17 @@ public class LayoutState
         return;
       }
 
+      if (parentContext.isNullNodeEnabled()) {
+        final @Nullable List<Attachable> attachables =
+            Resolver.collectAttachables(nestedTree.mNode);
+        if (attachables != null) {
+          if (layoutState.mAttachables == null) {
+            layoutState.mAttachables = new ArrayList<>(attachables.size());
+          }
+          layoutState.mAttachables.addAll(attachables);
+        }
+      }
+
       // Account for position of the holder node.
       layoutState.mCurrentX += result.getX();
       layoutState.mCurrentY += result.getY();
@@ -942,12 +955,14 @@ public class LayoutState
       }
     }
 
-    final List<Attachable> attachables = result.getNode().getAttachables();
-    if (attachables != null) {
-      if (layoutState.mAttachables == null) {
-        layoutState.mAttachables = new ArrayList<>();
+    if (!parentContext.isNullNodeEnabled()) {
+      final List<Attachable> attachables = result.getNode().getAttachables();
+      if (attachables != null) {
+        if (layoutState.mAttachables == null) {
+          layoutState.mAttachables = new ArrayList<>();
+        }
+        layoutState.mAttachables.addAll(attachables);
       }
-      layoutState.mAttachables.addAll(attachables);
     }
 
     final Rect rect;
@@ -1286,6 +1301,9 @@ public class LayoutState
       }
 
       // cache should be frozen for a completely resolved tree
+      if (c.isNullNodeEnabled()) {
+        layoutState.mAttachables = Resolver.collectAttachables(node);
+      }
       rsc.getCache().freezeCache();
 
     } finally {
