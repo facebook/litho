@@ -18,14 +18,20 @@ package com.facebook.litho.widget
 
 import android.content.Context
 import android.view.View
+import com.facebook.litho.FixedSizeLayoutBehavior
+import com.facebook.litho.LithoPrimitive
 import com.facebook.litho.MeasureScope
 import com.facebook.litho.MountableComponent
 import com.facebook.litho.MountableComponentScope
 import com.facebook.litho.MountableRenderResult
+import com.facebook.litho.PrimitiveComponent
+import com.facebook.litho.PrimitiveComponentScope
 import com.facebook.litho.SimpleMountable
+import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.collection.LazyList
 import com.facebook.rendercore.MeasureResult
+import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.rendercore.utils.MeasureSpecUtils.atMost
 import com.facebook.rendercore.utils.MeasureSpecUtils.exactly
 import org.assertj.core.api.Assertions.assertThat
@@ -43,7 +49,7 @@ class RecyclerBinderPreparationOrderTest {
   @JvmField @Rule val lithoViewRule = LithoViewRule()
 
   @Test
-  fun `default traversal order should match RecyclerView layout order`() {
+  fun `default traversal order should match RecyclerView layout order for mountable`() {
     val prepareTracking = mutableListOf<Int>()
     val mountTracking = mutableListOf<Int>()
 
@@ -77,7 +83,41 @@ class RecyclerBinderPreparationOrderTest {
   }
 
   @Test
-  fun `reverseLayout traversal order should match RecyclerView layout order`() {
+  fun `default traversal order should match RecyclerView layout order for primitive`() {
+    val prepareTracking = mutableListOf<Int>()
+    val mountTracking = mutableListOf<Int>()
+
+    val lithoView =
+        lithoViewRule.createTestLithoView {
+          LazyList {
+            (1..10).forEach { tag ->
+              child(
+                  id = tag,
+                  component =
+                      PrepareTrackingPrimitiveComponent(
+                          prepareTracking = prepareTracking,
+                          mountTracking = mountTracking,
+                          tag = tag))
+            }
+          }
+        }
+
+    lithoViewRule.act(lithoView) {
+      lithoView.setSizeSpecs(exactly(1000), atMost(400))
+      lithoView.measure()
+    }
+
+    assertThat(prepareTracking).hasSize(10)
+    assertThat(mountTracking).isEmpty()
+
+    lithoView.layout()
+
+    // Assert that what was mounted was also the first set of rows prepared
+    assertThat(mountTracking).isEqualTo(prepareTracking.subList(0, mountTracking.size))
+  }
+
+  @Test
+  fun `reverseLayout traversal order should match RecyclerView layout order for mountable`() {
     val prepareTracking = mutableListOf<Int>()
     val mountTracking = mutableListOf<Int>()
 
@@ -89,6 +129,40 @@ class RecyclerBinderPreparationOrderTest {
                   id = tag,
                   component =
                       PrepareTrackingMountableComponent(
+                          prepareTracking = prepareTracking,
+                          mountTracking = mountTracking,
+                          tag = tag))
+            }
+          }
+        }
+
+    lithoViewRule.act(lithoView) {
+      lithoView.setSizeSpecs(exactly(1000), atMost(400))
+      lithoView.measure()
+    }
+
+    assertThat(prepareTracking).hasSize(10)
+    assertThat(mountTracking).isEmpty()
+
+    lithoView.layout()
+
+    // Assert that what was mounted was also the first set of rows prepared
+    assertThat(mountTracking).isEqualTo(prepareTracking.subList(0, mountTracking.size))
+  }
+
+  @Test
+  fun `reverseLayout traversal order should match RecyclerView layout order for primitive`() {
+    val prepareTracking = mutableListOf<Int>()
+    val mountTracking = mutableListOf<Int>()
+
+    val lithoView =
+        lithoViewRule.createTestLithoView {
+          LazyList(reverse = true) {
+            (1..10).forEach { tag ->
+              child(
+                  id = tag,
+                  component =
+                      PrepareTrackingPrimitiveComponent(
                           prepareTracking = prepareTracking,
                           mountTracking = mountTracking,
                           tag = tag))
@@ -136,4 +210,24 @@ private class PrepareTrackingMountable(val mountTracking: MutableList<Int>, val 
 
   override fun MeasureScope.measure(widthSpec: Int, heightSpec: Int): MeasureResult =
       MeasureResult(100, 100)
+}
+
+private class PrepareTrackingPrimitiveComponent(
+    val prepareTracking: MutableList<Int>,
+    val mountTracking: MutableList<Int>,
+    val tag: Int
+) : PrimitiveComponent() {
+  override fun PrimitiveComponentScope.render(): LithoPrimitive {
+    prepareTracking.add(tag)
+    return LithoPrimitive(
+        layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+        mountBehavior =
+            MountBehavior(ViewAllocator { context -> View(context) }) {
+              bind(mountTracking, tag) {
+                mountTracking.add(tag)
+                onUnbind {}
+              }
+            },
+        style = null)
+  }
 }

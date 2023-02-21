@@ -324,6 +324,33 @@ class KStateTest {
   }
 
   @Test
+  fun useState_updateState_stateIsUpdated_forPrimitive() {
+    lateinit var stateRef: AtomicReference<String>
+
+    class TestPrimitiveComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val state = useState { "hello" }
+        stateRef = AtomicReference(state.value)
+
+        return LithoPrimitive(
+            TestPrimitive(),
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  state.update("world")
+                })
+      }
+    }
+
+    val testLithoView = lithoViewRule.render { TestPrimitiveComponent() }
+
+    assertThat(stateRef.get()).isEqualTo("hello")
+
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+
+    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
+  }
+
+  @Test
   fun useStateOnHooks_updateTwoStatesWithSamePropertyName_bothStatesAreUpdatedIndependently_forMountable() {
     lateinit var state1Ref: AtomicReference<State<String>>
     lateinit var state2Ref: AtomicReference<State<Int>>
@@ -350,6 +377,42 @@ class KStateTest {
     }
 
     val testLithoView = lithoViewRule.render { TestMountableComponent() }
+
+    assertThat(state1Ref.get().value).isEqualTo("hello")
+    assertThat(state2Ref.get().value).isEqualTo(20)
+    lithoViewRule.act(testLithoView) { clickOnTag("test_view") }
+
+    assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
+    assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
+  }
+
+  @Test
+  fun useStateOnHooks_updateTwoStatesWithSamePropertyName_bothStatesAreUpdatedIndependently_forPrimitive() {
+    lateinit var state1Ref: AtomicReference<State<String>>
+    lateinit var state2Ref: AtomicReference<State<Int>>
+
+    class TestPrimitiveComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val state1 = useCustomState("hello")
+        val state2 = useCustomState(20)
+
+        state1Ref = AtomicReference(state1)
+        state2Ref = AtomicReference(state2)
+
+        return LithoPrimitive(
+            TestPrimitive(),
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  // The correct way to do this (at least until we have automatic batching)
+                  // would be to store these states in the same obj to trigger only one state
+                  // update
+                  state1.update("world")
+                  state2.update { value -> value + 1 }
+                })
+      }
+    }
+
+    val testLithoView = lithoViewRule.render { TestPrimitiveComponent() }
 
     assertThat(state1Ref.get().value).isEqualTo("hello")
     assertThat(state2Ref.get().value).isEqualTo(20)
@@ -400,6 +463,46 @@ class KStateTest {
         .isEmpty()
   }
 
+  fun useState_calculateLayoutInTwoThreadsConcurrently_stateIsInitializedOnlyOnce_forPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val countDownLatch = CountDownLatch(2)
+    val firstCountDownLatch = CountDownLatch(1)
+    val secondCountDownLatch = CountDownLatch(1)
+
+    val view = lithoViewRule.createTestLithoView()
+
+    val thread1 = Thread {
+      view.setRootAndSizeSpecSync(
+          CountDownLatchPrimitiveComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
+          SizeSpec.makeSizeSpec(100, EXACTLY),
+          SizeSpec.makeSizeSpec(100, EXACTLY))
+      countDownLatch.countDown()
+    }
+    val thread2 = Thread {
+      firstCountDownLatch.await()
+      view.setRootAndSizeSpecSync(
+          CountDownLatchPrimitiveComponent(secondCountDownLatch, null, initCounter),
+          SizeSpec.makeSizeSpec(200, EXACTLY),
+          SizeSpec.makeSizeSpec(200, EXACTLY))
+      countDownLatch.countDown()
+    }
+
+    thread1.start()
+    thread2.start()
+
+    countDownLatch.await()
+    lithoViewRule.idle()
+
+    assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
+    val componentTree = view.componentTree
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mInitialStates)
+        .describedAs("Initial hook state container is empty")
+        .isEmpty()
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mPendingStateHandlers)
+        .describedAs("No pending StateHandlers")
+        .isEmpty()
+  }
+
   @Test
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied_forMountable() {
     class TestMountableComponent : MountableComponent() {
@@ -416,6 +519,32 @@ class KStateTest {
     val view =
         lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
           TestMountableComponent()
+        }
+
+    lithoViewRule.act(view) {
+      clickOnTag("test_view")
+      clickOnTag("test_view")
+    }
+
+    assertThat(view.findViewWithTagOrNull("Counter: 2")).isNotNull()
+  }
+
+  @Test
+  fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied_forPrimitive() {
+    class TestPrimitiveComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val counter = useState { 0 }
+
+        return LithoPrimitive(
+            TestTextPrimitive(
+                text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
+            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } })
+      }
+    }
+
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
+          TestPrimitiveComponent()
         }
 
     lithoViewRule.act(view) {
@@ -456,6 +585,35 @@ class KStateTest {
   }
 
   @Test
+  fun useState_synchronousUpdate_stateIsUpdatedSynchronously_forPrimitive() {
+    lateinit var stateRef: AtomicReference<String>
+
+    class TestPrimitiveComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val state = useState { "hello" }
+        stateRef = AtomicReference(state.value)
+
+        return LithoPrimitive(
+            TestPrimitive(),
+            style =
+                Style.height(100.dp).width(100.dp).viewTag("test_view").onClick {
+                  state.updateSync("world")
+                })
+      }
+    }
+
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) {
+          TestPrimitiveComponent()
+        }
+
+    assertThat(stateRef.get()).isEqualTo("hello")
+    lithoViewRule.act(view) { clickOnTag("test_view") }
+
+    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
+  }
+
+  @Test
   fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forMountable() {
     val siblingRenderCount = AtomicInteger()
 
@@ -464,6 +622,33 @@ class KStateTest {
         return Row(style = Style.wrapInView()) {
           child(ClickableMountableComponentWithState(tag = "test_view"))
           child(CountRendersMountableComponent(renderCount = siblingRenderCount))
+        }
+      }
+    }
+
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
+
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    lithoViewRule.act(view) { clickOnTag("test_view") }
+
+    // Using viewTag because Text is currently a drawable and harder to access directly
+    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
+
+    // Assert that the state update didn't cause the sibling to re-render
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+  }
+
+  @Test
+  fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forPrimitive() {
+    val siblingRenderCount = AtomicInteger()
+
+    class RootComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.wrapInView()) {
+          child(ClickablePrimitiveComponentWithState(tag = "test_view"))
+          child(CountRendersPrimitiveComponent(renderCount = siblingRenderCount))
         }
       }
     }
@@ -522,6 +707,41 @@ class KStateTest {
   }
 
   @Test
+  fun useState_reconciliation_renderCalledOnParentOfUpdatedComponent_forPrimitive() {
+    val siblingRenderCount = AtomicInteger()
+    val parentRenderCount = AtomicInteger()
+
+    class ParentOfComponentWithStateUpdate(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        return ClickablePrimitiveComponentWithState(tag = "test_view")
+      }
+    }
+
+    class RootComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.wrapInView()) {
+          child(ParentOfComponentWithStateUpdate(renderCount = parentRenderCount))
+          child(CountRendersPrimitiveComponent(renderCount = siblingRenderCount))
+        }
+      }
+    }
+
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
+
+    assertThat(parentRenderCount.get()).isEqualTo(1)
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    lithoViewRule.act(view) { clickOnTag("test_view") }
+
+    // Assert that the state update still causes parent to re-render but not sibling
+    assertThat(view.findViewWithText("Counter: 1")).isNotNull()
+    assertThat(parentRenderCount.get()).isEqualTo(2)
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+  }
+
+  @Test
   fun `should throw exception when state updates are triggered too many times during layout for Mountable`() {
 
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
@@ -536,6 +756,27 @@ class KStateTest {
         state.updateSync { value -> value + 1 }
 
         return MountableRenderResult(TestTextMountable(text = "hello world"), null)
+      }
+    }
+
+    lithoViewRule.render { RootComponent() }
+  }
+
+  @Test
+  fun `should throw exception when state updates are triggered too many times during layout for Primitive`() {
+
+    expectedException.expect(LithoMetadataExceptionWrapper::class.java)
+    expectedException.expectMessage("State update loop during layout detected")
+
+    class RootComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+
+        val state = useState { 0 }
+
+        // unconditional state update
+        state.updateSync { value -> value + 1 }
+
+        return LithoPrimitive(TestTextPrimitive(text = "hello world"), null)
       }
     }
 
@@ -608,6 +849,41 @@ class KStateTest {
     override fun MountableComponentScope.render(): MountableRenderResult {
       renderCount.incrementAndGet()
       return MountableRenderResult(TestMountable(), style = Style.width(100.px).height(100.px))
+    }
+  }
+
+  private class CountDownLatchPrimitiveComponent(
+      val countDownLatch: CountDownLatch,
+      val awaitable: CountDownLatch?,
+      val initCounter: AtomicInteger
+  ) : PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      countDownLatch.countDown()
+      awaitable?.await()
+
+      val state = useState { initCounter.incrementAndGet() }
+      return LithoPrimitive(TestTextPrimitive(text = "stateValue is ${state.value}"), null)
+    }
+  }
+
+  class ClickablePrimitiveComponentWithState(private val tag: String) : PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      val counter = useState { 0 }
+
+      return LithoPrimitive(
+          TestTextPrimitive(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
+          style =
+              Style.viewTag(tag).contentDescription(tag).onClick {
+                counter.updateSync { value -> value + 1 }
+              })
+    }
+  }
+
+  private class CountRendersPrimitiveComponent(private val renderCount: AtomicInteger) :
+      PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      renderCount.incrementAndGet()
+      return LithoPrimitive(TestPrimitive(), style = Style.width(100.px).height(100.px))
     }
   }
 }

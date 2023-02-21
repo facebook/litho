@@ -501,6 +501,34 @@ class KCachedTest {
   }
 
   @Test
+  fun cachedValueIsCalculatedOnlyOnceWhenOneInputStayTheSameForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestPrimitiveComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("hello") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello")
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestPrimitiveComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestPrimitiveComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+  }
+
+  @Test
   fun cachedValueIsCalculatedOnlyOnceWhenTwoInputsStayTheSameForMountable() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -514,6 +542,34 @@ class KCachedTest {
               expensiveRepeatFunc("hello", 100)
             }
         return MountableRenderResult(TestTextMountable(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+  }
+
+  @Test
+  fun cachedValueIsCalculatedOnlyOnceWhenTwoInputsStayTheSameForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("hello", 100) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello", 100)
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
       }
     }
 
@@ -557,6 +613,34 @@ class KCachedTest {
   }
 
   @Test
+  fun cachedValueIsCalculatedOnlyOnceWhenInputArrayStaysTheSameForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("hello", 100, "litho") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello", 100, "litho")
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+  }
+
+  @Test
   fun cachedValueIsRecalculatedWhenOneInputChangeForMountable() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -571,6 +655,37 @@ class KCachedTest {
               expensiveRepeatFunc("count" + repeatNum.get())
             }
         return MountableRenderResult(TestTextMountable(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Increase repeat number.
+    repeatNum.incrementAndGet()
+    // Re-set root component and cache value is re-created.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun cachedValueIsRecalculatedWhenOneInputChangeForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val repeatNum = AtomicInteger(100)
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("count" + repeatNum.get()) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("count" + repeatNum.get())
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
       }
     }
 
@@ -619,6 +734,37 @@ class KCachedTest {
   }
 
   @Test
+  fun cachedValueIsRecalculatedWhenTwoInputsChangeForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val repeatNum = AtomicInteger(100)
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("world", repeatNum.get()) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("world", repeatNum.get())
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Increase repeat number.
+    repeatNum.incrementAndGet()
+    // Re-set root component and cache value is re-created.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
   fun cachedValueIsRecalculatedWhenInputArrayChangeForMountable() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -633,6 +779,37 @@ class KCachedTest {
               expensiveRepeatFunc("world", repeatNum.get(), "litho")
             }
         return MountableRenderResult(TestTextMountable(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Increase repeat number.
+    repeatNum.incrementAndGet()
+    // Re-set root component and cache value is re-created.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun cachedValueIsRecalculatedWhenInputArrayChangeForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val repeatNum = AtomicInteger(100)
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("world", repeatNum.get(), "litho") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("world", repeatNum.get(), "litho")
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
       }
     }
 
@@ -678,6 +855,34 @@ class KCachedTest {
   }
 
   @Test
+  fun `cached value with single null value that never changes only calculates once for primitive`() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached(null) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello")
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+  }
+
+  @Test
   fun `cached value with null input is only calculated once when 2 inputs unchanged for mountable`() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -691,6 +896,34 @@ class KCachedTest {
               expensiveRepeatFunc("hello", 100)
             }
         return MountableRenderResult(TestTextMountable(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+  }
+
+  @Test
+  fun `cached value with null input is only calculated once when 2 inputs unchanged for primitive`() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("hello", null) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello", 100)
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
       }
     }
 
@@ -734,6 +967,34 @@ class KCachedTest {
   }
 
   @Test
+  fun `cached value with null inputs is only calculated once when array of inputs unchanged for Primitive`() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached(null, "hello", null) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello", 100, "hey")
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+  }
+
+  @Test
   fun `cached value is recalculated when one null input changes for mountable`() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -748,6 +1009,37 @@ class KCachedTest {
               expensiveRepeatFunc("count" + nullableRepeatNum.get())
             }
         return MountableRenderResult(TestTextMountable(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Set repeat number to non-null value.
+    nullableRepeatNum.set(Integer(100))
+    // Re-set root component and cache value is re-created.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun `cached value is recalculated when one null input changes for primitive`() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val nullableRepeatNum = AtomicReference<Integer>(null)
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached(nullableRepeatNum.get()) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("count" + nullableRepeatNum.get())
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
       }
     }
 
@@ -796,6 +1088,37 @@ class KCachedTest {
   }
 
   @Test
+  fun `cached value is recalculated when two inputs with nullable value change for primitive`() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val nullableRepeatNum = AtomicReference<Integer>(null)
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("world", nullableRepeatNum.get()) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("world", nullableRepeatNum.get()?.toInt() ?: 0)
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Set repeat number to non-null value.
+    nullableRepeatNum.set(Integer(100))
+    // Re-set root component and cache value is re-created.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
   fun `cached value is recalculated when input array with nullable input changes for mountable`() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -827,6 +1150,37 @@ class KCachedTest {
   }
 
   @Test
+  fun `cached value is recalculated when input array with nullable input changes for primitive`() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val nullableRepeatNum = AtomicReference<Integer>(null)
+    class TestComponent : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val expensiveString =
+            useCached("world", nullableRepeatNum.get(), "litho") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("world", nullableRepeatNum.get()?.toInt() ?: 0, "litho")
+            }
+        return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Set repeat number to non-null value.
+    nullableRepeatNum.set(Integer(100))
+    // Re-set root component and cache value is re-created.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
   fun cachedValueIsNotReusedBetweenComponentsOfSameTypeWhenInputsStayTheSameForMountable() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
@@ -837,6 +1191,29 @@ class KCachedTest {
         return Row() {
           child(MountableLeaf1("hello", 100, initCounter))
           child(Column() { child(MountableLeaf1("hello", 100, initCounter)) })
+        }
+      }
+    }
+
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+
+    assertThat(initCounter.get())
+        .describedAs(
+            "CacheValue should not be shared between two `Leaf1` components under the same parent.")
+        .isEqualTo(2)
+  }
+
+  @Test
+  fun cachedValueIsNotReusedBetweenComponentsOfSameTypeWhenInputsStayTheSameForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row() {
+          child(PrimitiveLeaf1("hello", 100, initCounter))
+          child(Column() { child(PrimitiveLeaf1("hello", 100, initCounter)) })
         }
       }
     }
@@ -883,12 +1260,63 @@ class KCachedTest {
   }
 
   @Test
+  fun cachedValuesWithTheSameInputsAndNameAreNotReusedBetweenComponentsOfDifferentTypesForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    class TestComponent(val showLeaf1: Boolean, val dummyCacheBustingProp: Int) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row {
+          if (showLeaf1) {
+            child(PrimitiveLeaf1("hello", 100, initCounter))
+          } else {
+            child(PrimitiveLeaf2("hello", 100, initCounter))
+          }
+        }
+      }
+    }
+
+    ComponentTestHelper.mountComponent(
+        lithoView, componentTree, TestComponent(showLeaf1 = true, dummyCacheBustingProp = 0))
+    ComponentTestHelper.mountComponent(
+        lithoView, componentTree, TestComponent(showLeaf1 = true, dummyCacheBustingProp = 1))
+
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    ComponentTestHelper.mountComponent(
+        lithoView, componentTree, TestComponent(showLeaf1 = false, dummyCacheBustingProp = 2))
+
+    assertThat(initCounter.get())
+        .describedAs("CacheValue should not be shared between two components of different types")
+        .isEqualTo(2)
+  }
+
+  @Test
   fun cachedValuesWithDifferentNamesAreCalculatedAndReusedIndependentlyEvenWhenHaveSameInputsForMountable() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
     val root = MountableComponentWithTwoCachedValuesWithSameInputs("hello", 20, initCounter)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    assertThat(initCounter.get()).isEqualTo(2)
+
+    // Clear root component from ComponentTree.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
+
+    // Re-set root component and verify expensive function isn't called.
+    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    assertThat(initCounter.get()).isEqualTo(2)
+  }
+
+  @Test
+  fun cachedValuesWithDifferentNamesAreCalculatedAndReusedIndependentlyEvenWhenHaveSameInputsForPrimitive() {
+    val initCounter = AtomicInteger(0)
+    val lithoView = LithoView(context.androidContext)
+    val componentTree = ComponentTree.create(context).build()
+
+    val root = PrimitiveComponentWithTwoCachedValuesWithSameInputs("hello", 20, initCounter)
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(2)
 
@@ -999,6 +1427,59 @@ class KCachedTest {
 
       return MountableRenderResult(
           TestTextMountable(text = expensiveString1, tag = expensiveString2), null)
+    }
+  }
+
+  private class PrimitiveLeaf1(
+      val str: String,
+      val repeatNum: Int,
+      val initCounter: AtomicInteger
+  ) : PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      val expensiveString =
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
+      return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+    }
+  }
+
+  private class PrimitiveLeaf2(
+      val str: String,
+      val repeatNum: Int,
+      val initCounter: AtomicInteger
+  ) : PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      val expensiveString =
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
+      return LithoPrimitive(TestTextPrimitive(text = expensiveString), null)
+    }
+  }
+
+  private class PrimitiveComponentWithTwoCachedValuesWithSameInputs(
+      val str: String,
+      val repeatNum: Int,
+      val initCounter: AtomicInteger
+  ) : PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      val expensiveString1 =
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
+
+      val expensiveString2 =
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
+
+      return LithoPrimitive(
+          TestTextPrimitive(text = expensiveString1, tag = expensiveString2), null)
     }
   }
 
