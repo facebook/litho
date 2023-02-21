@@ -44,6 +44,13 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class MountItemsPool {
 
+  /** A factory used to create {@link MountItemsPool.ItemPool}s. */
+  public interface Factory {
+
+    /** Creates an ItemPool for the mountable content. */
+    MountItemsPool.ItemPool createMountContentPool();
+  }
+
   private static final int DEFAULT_POOL_SIZE = 3;
 
   private MountItemsPool() {}
@@ -73,6 +80,10 @@ public class MountItemsPool {
 
   /** Should be used to disable pooling entirely for debugging, testing, and other use cases. */
   public static boolean isPoolingDisabled;
+
+  /** Can be used to return a custom Pool implementation for testing. */
+  @VisibleForTesting
+  public static ThreadLocal<MountItemsPool.Factory> sMountContentPoolFactory = new ThreadLocal<>();
 
   public static Object acquireMountContent(Context context, ContentAllocator poolableMountContent) {
 
@@ -152,7 +163,7 @@ public class MountItemsPool {
 
       ItemPool pool = poolsMap.get(lifecycle);
       if (pool == null) {
-        pool = poolableMountContent.createRecyclingPool();
+        pool = createRecyclingPool(poolableMountContent);
 
         // PoolableMountContent might produce a null pool. In this case, just create a default one.
         if (pool == null) {
@@ -221,12 +232,22 @@ public class MountItemsPool {
 
       ItemPool pool = poolsByWindowToken.get(windowToken);
       if (pool == null) {
-        pool = hostContentProvider.createRecyclingPool();
+        pool = createRecyclingPool(hostContentProvider);
         poolsByWindowToken.put(windowToken, pool);
       }
 
       return pool;
     }
+  }
+
+  @Nullable
+  private static ItemPool createRecyclingPool(ContentAllocator poolableMountContent) {
+    final MountItemsPool.Factory factory = sMountContentPoolFactory.get();
+    if (factory != null) {
+      return factory.createMountContentPool();
+    }
+
+    return poolableMountContent.createRecyclingPool();
   }
 
   /**
@@ -362,6 +383,7 @@ public class MountItemsPool {
 
   /** Content item pools that RenderCore uses to recycle content (such as Views) */
   public interface ItemPool {
+
     /**
      * Acquire a pooled content item from the pool
      *
