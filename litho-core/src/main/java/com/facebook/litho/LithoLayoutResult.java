@@ -31,6 +31,7 @@ import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -543,10 +544,18 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       }
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
+        final @Nullable Primitive<?> primitive = node.getPrimitive();
         if (mountable != null) {
           context.setPreviousLayoutDataForCurrentNode(mLayoutData);
           context.setLayoutContextExtraData(new LithoLayoutContextExtraData(mYogaNode));
           LayoutResult layoutResult = mountable.calculateLayout(context, widthSpec, heightSpec);
+          mLayoutData = layoutResult.getLayoutData();
+          return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
+        } else if (primitive != null) {
+          context.setPreviousLayoutDataForCurrentNode(mLayoutData);
+          context.setLayoutContextExtraData(new LithoLayoutContextExtraData(mYogaNode));
+          LayoutResult layoutResult =
+              primitive.calculateLayout((LayoutContext) context, widthSpec, heightSpec);
           mLayoutData = layoutResult.getLayoutData();
           return new MeasureResult(layoutResult.getWidth(), layoutResult.getHeight(), mLayoutData);
         } else {
@@ -590,6 +599,9 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   public static boolean willMountView(LithoLayoutResult result) {
     if (result.mNode.getMountable() != null) {
       return result.mNode.getMountable().getRenderType() == RenderUnit.RenderType.VIEW;
+    } else if (result.mNode.getPrimitive() != null) {
+      return result.mNode.getPrimitive().getRenderUnit().getRenderType()
+          == RenderUnit.RenderType.VIEW;
     } else {
       final Component component = result.getNode().getTailComponent();
       return (component != null && component.getMountType() == Component.MountType.VIEW);

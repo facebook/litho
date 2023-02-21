@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.List;
 
@@ -125,4 +126,9 @@ public interface DiffNode extends Cloneable {
   Mountable<?> getMountable();
 
   void setMountable(@Nullable Mountable<?> mountable);
+
+  @Nullable
+  Primitive<?> getPrimitive();
+
+  void setPrimitive(@Nullable Primitive<?> primitive);
 }

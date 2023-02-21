@@ -21,6 +21,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
+import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
@@ -79,9 +80,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(ComponentContext, LithoLayoutResult, LithoNode, LayoutState, RenderTreeNode,
- * DiffNode, DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided
- * {@link LithoNode} for later use in {@link MountState}.
+ * #collectResults(ComponentContext, LithoLayoutResult, LithoNode, LayoutState, LayoutStateContext,
+ * RenderTreeNode, DiffNode, DebugHierarchy.Node)} which prepares the before-mentioned outputs based
+ * on the provided {@link LithoNode} for later use in {@link MountState}.
  *
  * <p>This needs to be accessible to statically mock the class in tests.
  */
@@ -315,7 +316,8 @@ public class LayoutState
 
     final @Nullable MeasureResult measure;
     final boolean hasExactSize = !result.wasMeasured();
-    if (isMountable(node.getTailComponent()) && hasExactSize) {
+    if ((isMountable(node.getTailComponent()) || isPrimitive(node.getTailComponent()))
+        && hasExactSize) {
       final int width =
           result.getWidth()
               - result.getPaddingRight()
@@ -435,7 +437,7 @@ public class LayoutState
     int b = t + result.getHeight();
 
     if (useNodePadding) {
-      if (isMountable(unit.getComponent())) {
+      if (isMountable(unit.getComponent()) || isPrimitive(unit.getComponent())) {
         if (!isMountableView(unit)) {
           if (!hasExactSize) {
             l += result.getPaddingLeft() + result.getLayoutBorder(YogaEdge.LEFT);
@@ -807,6 +809,7 @@ public class LayoutState
       diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
       diffNode.setLayoutData(result.getLayoutData());
       diffNode.setMountable(result.getNode().getMountable());
+      diffNode.setPrimitive(result.getNode().getPrimitive());
     }
 
     // 4. Extract the Transitions.
@@ -1734,6 +1737,11 @@ public class LayoutState
             || (treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
                 && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
                     .getMountable()
+                    .getContentAllocator()
+                    .canPreallocate())
+            || (treeNode.getRenderUnit() instanceof PrimitiveLithoRenderUnit
+                && ((PrimitiveLithoRenderUnit) treeNode.getRenderUnit())
+                    .getPrimitiveRenderUnit()
                     .getContentAllocator()
                     .canPreallocate()))) {
           continue;

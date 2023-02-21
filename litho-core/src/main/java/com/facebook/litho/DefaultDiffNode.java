@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class DefaultDiffNode implements DiffNode {
   private @Nullable VisibilityOutput mVisibilityOutput;
   private @Nullable Component mComponent;
   private @Nullable Mountable<?> mMountable;
+  private @Nullable Primitive<?> mPrimitive;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
@@ -77,6 +79,17 @@ public class DefaultDiffNode implements DiffNode {
   @Override
   public void setMountable(@Nullable Mountable<?> mountable) {
     mMountable = mountable;
+  }
+
+  @Override
+  @Nullable
+  public Primitive<?> getPrimitive() {
+    return mPrimitive;
+  }
+
+  @Override
+  public void setPrimitive(@Nullable Primitive<?> primitive) {
+    mPrimitive = primitive;
   }
 
   @Override

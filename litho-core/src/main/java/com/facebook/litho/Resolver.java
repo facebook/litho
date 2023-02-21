@@ -20,7 +20,9 @@ import static com.facebook.litho.Component.hasCachedNode;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
+import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isNestedTree;
+import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.rendercore.utils.MeasureSpecUtils.unspecified;
 
@@ -193,7 +195,7 @@ public class Resolver {
         node = component.resolve(resolveStateContext, c);
       }
 
-      // If the component is a MountSpec (including MountableComponents).
+      // If the component is a MountSpec (including MountableComponents and PrimitiveComponents).
       else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
@@ -205,7 +207,11 @@ public class Resolver {
             component.prepare(resolveStateContext, scopedComponentInfo.getContext());
 
         if (prepareResult != null) {
-          node.setMountable(prepareResult.mountable);
+          if (isMountable(component) && prepareResult.mountable != null) {
+            node.setMountable(prepareResult.mountable);
+          } else if (isPrimitive(component) && prepareResult.primitive != null) {
+            node.setPrimitive(prepareResult.primitive);
+          }
           applyTransitionsAndUseEffectEntriesToNode(
               prepareResult.transitions, prepareResult.useEffectEntries, node);
         }

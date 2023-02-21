@@ -63,6 +63,7 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -179,6 +180,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   private @Nullable Mountable<?> mMountable;
 
+  private @Nullable Primitive<?> mPrimitive;
+
   protected LithoNode() {
     mDebugComponents = new HashSet<>();
   }
@@ -189,6 +192,17 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   public void setMountable(Mountable<?> mountable) {
     mMountable = mountable;
+  }
+
+  public @Nullable Primitive<?> getPrimitive() {
+    return mPrimitive;
+  }
+
+  public void setPrimitive(Primitive<?> primitive) {
+    if (primitive == null) {
+      throw new RuntimeException("Primitive is null in LithoNode.setPrimitive()");
+    }
+    mPrimitive = primitive;
   }
 
   public void addChildAt(LithoNode child, int index) {
@@ -319,6 +333,13 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     if (mMountable != null
         && diff.getMountable() != null
         && EquivalenceUtils.hasEquivalentFields(mMountable, diff.getMountable())) {
+
+      result.setLayoutData(diff.getLayoutData());
+      result.setCachedMeasuresValid(true);
+
+    } else if (mPrimitive != null
+        && diff.getPrimitive() != null
+        && mPrimitive.getLayoutBehavior().isEquivalentTo(diff.getPrimitive().getLayoutBehavior())) {
 
       result.setLayoutData(diff.getLayoutData());
       result.setCachedMeasuresValid(true);

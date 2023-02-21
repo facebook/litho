@@ -23,6 +23,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountable;
+import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.LithoLayoutResult.willMountView;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
@@ -42,6 +43,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.List;
@@ -188,7 +190,7 @@ public class InternalNodeUtils {
    * Common method to create the {@link LithoRenderUnit} for backgrounds, foregrounds, and border.
    * The method uses the {@param outputType} to decide between the options. This method will call
    * the shouldupdate, and {@link SpecGeneratedComponent#onBoundsDefined(ComponentContext,
-   * ComponentLayout)} for the {@link DrawableComponent}.
+   * ComponentLayout, InterStagePropsContainer)} for the {@link DrawableComponent}.
    */
   static LithoRenderUnit createDrawableRenderUnit(
       final LithoLayoutResult result,
@@ -364,6 +366,19 @@ public class InternalNodeUtils {
           importantForAccessibility,
           updateState,
           mountable);
+    }
+
+    Primitive<?> primitive = node.getPrimitive();
+    if (primitive != null && isPrimitive(component)) {
+      return PrimitiveLithoRenderUnit.create(
+          component,
+          context,
+          layoutOutputNodeInfo,
+          layoutOutputViewNodeInfo,
+          flags,
+          importantForAccessibility,
+          updateState,
+          primitive.getRenderUnit());
     }
 
     return MountSpecLithoRenderUnit.create(

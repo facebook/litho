@@ -20,6 +20,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountable;
+import static com.facebook.litho.Component.isPrimitive;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -281,8 +282,8 @@ class Layout {
     final Component component = layoutNode.getTailComponent();
     final ComponentContext scopedContext = layoutNode.getTailComponentContext();
 
-    // return true for mountables to exit early
-    if (isMountable(component)) {
+    // return true for mountables and primitives to exit early
+    if (isMountable(component) || isPrimitive(component)) {
       return true;
     }
 
