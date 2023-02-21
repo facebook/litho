@@ -17,8 +17,8 @@
 package com.facebook.litho.testing.api
 
 import android.annotation.SuppressLint
+import android.view.ViewGroup
 import com.facebook.litho.Component
-import com.facebook.litho.HasLithoViewChildren
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.NestedTreeHolderResult
@@ -112,7 +112,7 @@ class LithoViewComponentsTraverser {
         onComponentFound(child, currentParent)
       }
 
-      currentLayoutResult.getChildResults().forEach { child ->
+      currentLayoutResult.childResults.forEach { child ->
         layoutsStack.push(TraverseNode(child, lastScopedComponent))
       }
     }
@@ -129,15 +129,41 @@ class LithoViewComponentsTraverser {
     return committedLayoutState?.rootLayoutResult
   }
 
-  private fun LithoLayoutResult.getChildResults(): List<LithoLayoutResult> {
-    val mountedContent = getMountedContent()
-    if (mountedContent is HasLithoViewChildren) {
-      val children = buildList(mountedContent::obtainLithoViewChildren)
-      val results = children.mapNotNull { it.extractLayoutResult(isRoot = false) }
-      if (results.isNotEmpty()) return results.asReversed()
+  private val LithoLayoutResult.childResults: List<LithoLayoutResult>
+    get() {
+      val mountedContent = getMountedContent()
+      if (mountedContent is ViewGroup) {
+        val childrenLithoViews = mountedContent.firstLevelInnerLithoViews
+        val results = childrenLithoViews.mapNotNull { it.extractLayoutResult(isRoot = false) }
+        if (results.isNotEmpty()) return results.asReversed()
+      }
+
+      return (childCount - 1 downTo 0).map { getChildAt(it) }
     }
-    return (childCount - 1 downTo 0).map { getChildAt(it) }
-  }
+
+  /**
+   * This method will perform a search from the given [ViewGroup] in order to find all first-level
+   * occurences of a [LithoView].
+   *
+   * This means, that once a [LithoView] is found, we stop the search down that sub-tree. All of the
+   * found [LithoView] will be used to start a new traversal with [traverse] - which will enable the
+   * full traverse (even on scenarios of nested [LithoView]
+   */
+  private val ViewGroup.firstLevelInnerLithoViews: List<LithoView>
+    get() {
+      val lithoViews = mutableListOf<LithoView>()
+
+      for (i in 0..childCount) {
+        val child = getChildAt(i)
+        if (child is LithoView) {
+          lithoViews.add(child)
+        } else {
+          (child as? ViewGroup)?.let { lithoViews.addAll(child.firstLevelInnerLithoViews) }
+        }
+      }
+
+      return lithoViews
+    }
 
   internal data class TraverseNode(
       val layoutResult: LithoLayoutResult,
