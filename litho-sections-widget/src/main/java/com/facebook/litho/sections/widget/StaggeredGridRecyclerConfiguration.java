@@ -23,8 +23,6 @@ import androidx.recyclerview.widget.SnapHelper;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.StaggeredGridLayoutInfo;
 import javax.annotation.Nullable;
@@ -34,8 +32,7 @@ import javax.annotation.Nullable;
  * androidx.recyclerview.widget.StaggeredGridLayoutManager} for the {@link RecyclerView}.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
-    implements RecyclerConfiguration {
+public class StaggeredGridRecyclerConfiguration implements RecyclerConfiguration {
   private final int mNumSpans;
   private final int mOrientation;
   private final boolean mReverseLayout;
@@ -48,52 +45,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     return new Builder();
   }
 
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public static StaggeredGridRecyclerConfiguration createWithRecyclerBinderConfiguration(
-      int numSpans, RecyclerBinderConfiguration recyclerBinderConfiguration) {
-    return new StaggeredGridRecyclerConfiguration(
-        numSpans,
-        StaggeredGridLayoutManager.VERTICAL,
-        false,
-        false,
-        StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-        recyclerBinderConfiguration,
-        Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public StaggeredGridRecyclerConfiguration(int numSpans) {
-    this(numSpans, StaggeredGridLayoutManager.VERTICAL, false);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public StaggeredGridRecyclerConfiguration(int numSpans, int orientation, boolean reverseLayout) {
-    this(numSpans, orientation, reverseLayout, Builder.RECYCLER_BINDER_CONFIGURATION);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public StaggeredGridRecyclerConfiguration(
-      int numSpans,
-      int orientation,
-      boolean reverseLayout,
-      RecyclerBinderConfiguration recyclerBinderConfiguration) {
-    this(
-        numSpans,
-        orientation,
-        reverseLayout,
-        false,
-        StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-        recyclerBinderConfiguration,
-        Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public StaggeredGridRecyclerConfiguration(
+  private StaggeredGridRecyclerConfiguration(
       int numSpans,
       int orientation,
       boolean reverseLayout,
@@ -106,12 +58,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     mReverseLayout = reverseLayout;
     mStackFromEnd = stackFromEnd;
     mGapStrategy = gapStrategy;
-    mRecyclerBinderConfiguration =
-        recyclerBinderConfiguration == null
-            ? Builder.RECYCLER_BINDER_CONFIGURATION
-            : recyclerBinderConfiguration;
-    mLayoutInfoFactory =
-        layoutInfoFactory == null ? Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY : layoutInfoFactory;
+    mRecyclerBinderConfiguration = recyclerBinderConfiguration;
+    mLayoutInfoFactory = layoutInfoFactory;
   }
 
   @Override
