@@ -31,6 +31,7 @@ public class ResolveResult implements PotentiallyPartialResult {
   public final int version;
   public final @Nullable List<Pair<String, EventHandler>> createdEventHandlers;
   public final @Nullable List<Attachable> attachables;
+  public final @Nullable ResolveStateContext contextForResuming;
 
   public ResolveResult(
       final @Nullable LithoNode node,
@@ -40,8 +41,9 @@ public class ResolveResult implements PotentiallyPartialResult {
       final TreeState treeState,
       final boolean isPartial,
       final int version,
-      @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
-      final @Nullable List<Attachable> attachables) {
+      final @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
+      final @Nullable List<Attachable> attachables,
+      final @Nullable ResolveStateContext contextForResuming) {
     this.node = node;
     this.context = context;
     this.component = component;
@@ -51,6 +53,7 @@ public class ResolveResult implements PotentiallyPartialResult {
     this.version = version;
     this.createdEventHandlers = createdEventHandlers;
     this.attachables = attachables;
+    this.contextForResuming = contextForResuming;
   }
 
   @Override

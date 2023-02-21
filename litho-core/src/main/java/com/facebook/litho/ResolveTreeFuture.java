@@ -38,9 +38,6 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   @Deprecated private final int mSyncWidthSpec;
   @Deprecated private final int mSyncHeightSpec;
 
-  // Only needed for resume logic.
-  private @Nullable ResolveStateContext mResolveStateContextForResume;
-
   public ResolveTreeFuture(
       final ComponentContext c,
       final Component component,
@@ -101,70 +98,16 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
   @Override
   protected ResolveResult calculate() {
-    LithoStats.incrementResolveCount();
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    try {
-      if (isTracing) {
-        if (mExtraAttribution != null) {
-          ComponentsSystrace.beginSection("extra:" + mExtraAttribution);
-        }
-        ComponentsSystrace.beginSectionWithArgs("resolve:" + mComponent.getSimpleName())
-            .arg("treeId", mComponentTreeId)
-            .arg("rootId", mComponent.getId())
-            .arg("widthSpec", SizeSpec.toString(mSyncWidthSpec))
-            .arg("heightSpec", SizeSpec.toString(mSyncHeightSpec))
-            .flush();
-      }
-
-      final ResolveStateContext rsc =
-          new ResolveStateContext(
-              new MeasuredResultCache(),
-              mTreeState,
-              mResolveVersion,
-              this,
-              mCurrentRootNode,
-              mPerfEvent);
-
-      final @Nullable CalculationStateContext previousStateContext =
-          mComponentContext.getCalculationStateContext();
-
-      final @Nullable LithoNode node;
-      try {
-        mComponentContext.setRenderStateContext(rsc);
-        node = Resolver.resolveTree(rsc, mComponentContext, mComponent);
-      } finally {
-        mComponentContext.setCalculationStateContext(previousStateContext);
-      }
-
-      final @Nullable List<Attachable> attachables;
-      if (rsc.isLayoutInterrupted()) {
-        mResolveStateContextForResume = rsc;
-        attachables = null;
-      } else {
-        attachables =
-            mComponentContext.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
-        rsc.getCache().freezeCache();
-      }
-
-      return new ResolveResult(
-          node,
-          mComponentContext,
-          mComponent,
-          rsc.getCache(),
-          mTreeState,
-          rsc.isLayoutInterrupted(),
-          mResolveVersion,
-          rsc.getCreatedEventHandlers(),
-          attachables);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-        if (mExtraAttribution != null) {
-          ComponentsSystrace.endSection();
-        }
-      }
-    }
+    return resolve(
+        mComponentContext,
+        mComponent,
+        mTreeState,
+        mResolveVersion,
+        mComponentTreeId,
+        mCurrentRootNode,
+        mExtraAttribution,
+        this,
+        mPerfEvent);
   }
 
   @Override
@@ -180,7 +123,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       throw new IllegalStateException("Cannot resume a partial result with a null node");
     }
 
-    if (mResolveStateContextForResume == null) {
+    if (partialResult.contextForResuming == null) {
       throw new IllegalStateException("RenderStateContext cannot be null during resume");
     }
 
@@ -198,8 +141,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
       final @Nullable LithoNode node;
       try {
-        mComponentContext.setRenderStateContext(mResolveStateContextForResume);
-        node = Resolver.resumeResolvingTree(mResolveStateContextForResume, partialResult.node);
+        mComponentContext.setRenderStateContext(partialResult.contextForResuming);
+        node = Resolver.resumeResolvingTree(partialResult.contextForResuming, partialResult.node);
       } finally {
         mComponentContext.setCalculationStateContext(previousStateContext);
       }
@@ -207,11 +150,9 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final @Nullable List<Attachable> attachables =
           mComponentContext.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
 
-      mResolveStateContextForResume.getCache().freezeCache();
+      partialResult.contextForResuming.getCache().freezeCache();
       final List<Pair<String, EventHandler>> createdEventHandlers =
-          mResolveStateContextForResume.getCreatedEventHandlers();
-
-      mResolveStateContextForResume = null;
+          partialResult.contextForResuming.getCreatedEventHandlers();
 
       return new ResolveResult(
           node,
@@ -222,7 +163,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           false,
           mResolveVersion,
           createdEventHandlers,
-          attachables);
+          attachables,
+          null);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -260,5 +202,75 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     }
 
     return true;
+  }
+
+  /** Function which resolves a new RenderResult. */
+  public static ResolveResult resolve(
+      final ComponentContext context,
+      final Component component,
+      final TreeState state,
+      final int version,
+      final int componentTreeId,
+      final @Nullable LithoNode currentRootNode,
+      final @Nullable String extraAttribution,
+      final @Nullable TreeFuture<ResolveResult> future,
+      final @Nullable PerfEvent perfEventLogger) {
+    LithoStats.incrementResolveCount();
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        if (extraAttribution != null) {
+          ComponentsSystrace.beginSection("extra:" + extraAttribution);
+        }
+        ComponentsSystrace.beginSectionWithArgs("resolve:" + component.getSimpleName())
+            .arg("treeId", componentTreeId)
+            .arg("rootId", component.getId())
+            .flush();
+      }
+
+      final ResolveStateContext rsc =
+          new ResolveStateContext(
+              new MeasuredResultCache(), state, version, future, currentRootNode, perfEventLogger);
+
+      final @Nullable CalculationStateContext previousStateContext =
+          context.getCalculationStateContext();
+
+      final @Nullable LithoNode node;
+      try {
+        context.setRenderStateContext(rsc);
+        node = Resolver.resolveTree(rsc, context, component);
+      } finally {
+        context.setCalculationStateContext(previousStateContext);
+      }
+
+      final @Nullable List<Attachable> attachables;
+      if (rsc.isLayoutInterrupted()) {
+        attachables = null;
+      } else {
+        attachables = context.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
+        rsc.getCache().freezeCache();
+      }
+
+      return new ResolveResult(
+          node,
+          context,
+          component,
+          rsc.getCache(),
+          state,
+          rsc.isLayoutInterrupted(),
+          version,
+          rsc.getCreatedEventHandlers(),
+          attachables,
+          rsc.isLayoutInterrupted() ? rsc : null);
+
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+        if (extraAttribution != null) {
+          ComponentsSystrace.endSection();
+        }
+      }
+    }
   }
 }
