@@ -506,7 +506,8 @@ public abstract class Component
     NONE,
     DRAWABLE,
     VIEW,
-    MOUNTABLE /* For internal use only. Used only by Kotlin MountableComponent */
+    MOUNTABLE, /* For internal use only. Used only by Kotlin MountableComponent */
+    PRIMITIVE /* For internal use only. Used only by Kotlin PrimitiveComponent */
   }
 
   /**
@@ -981,6 +982,10 @@ public abstract class Component
 
   static boolean isMountable(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.MOUNTABLE);
+  }
+
+  static boolean isPrimitive(@Nullable Component component) {
+    return (component != null && component.getMountType() == MountType.PRIMITIVE);
   }
 
   static boolean isNestedTree(@Nullable Component component) {

@@ -19,17 +19,20 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.Mountable;
+import com.facebook.rendercore.primitives.Primitive;
 import java.util.List;
 
 /**
- * The result of a {@link MountableComponent#prepare} call. This will be the Mountable this
- * component rendered to, potentially as well as other non-Mountable metadata that resulted from
- * that call, such as transitions that should be applied.
+ * The result of a {@link MountableComponent#prepare} or a {@link PrimitiveComponent#prepare} call.
+ * This will be the Mountable/Primitive this component rendered to, potentially as well as other
+ * non-Mountable/Primitive metadata that resulted from that call, such as transitions that should be
+ * applied.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class PrepareResult {
 
-  public final Mountable<?> mountable;
+  public final @Nullable Primitive<?> primitive;
+  public final @Nullable Mountable<?> mountable;
   public final @Nullable List<Transition> transitions;
   public final @Nullable List<Attachable> useEffectEntries;
 
@@ -37,7 +40,18 @@ public class PrepareResult {
       Mountable<?> mountable,
       @Nullable List<Transition> transitions,
       @Nullable List<Attachable> useEffectEntries) {
+    this.primitive = null;
     this.mountable = mountable;
+    this.transitions = transitions;
+    this.useEffectEntries = useEffectEntries;
+  }
+
+  public PrepareResult(
+      Primitive<?> primitive,
+      @Nullable List<Transition> transitions,
+      @Nullable List<Attachable> useEffectEntries) {
+    this.primitive = primitive;
+    this.mountable = null;
     this.transitions = transitions;
     this.useEffectEntries = useEffectEntries;
   }
