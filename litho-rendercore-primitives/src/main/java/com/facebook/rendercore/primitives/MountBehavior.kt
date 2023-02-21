@@ -16,4 +16,6 @@
 
 package com.facebook.rendercore.primitives
 
-interface MountBehavior<ContentType>
+import com.facebook.rendercore.ContentAllocator
+
+class MountBehavior<ContentType : Any>(private val contentAllocator: ContentAllocator<ContentType>)

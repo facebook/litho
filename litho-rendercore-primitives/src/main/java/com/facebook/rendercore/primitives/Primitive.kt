@@ -33,5 +33,5 @@ import android.view.View
  */
 class Primitive<ContentType : Any>(
     private val layoutBehavior: LayoutBehavior,
-    private val mountBehavior: MountBehavior<ContentType>? = null
+    private val mountBehavior: MountBehavior<ContentType>
 )
