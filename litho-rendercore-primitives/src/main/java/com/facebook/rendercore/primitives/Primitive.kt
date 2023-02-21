@@ -18,6 +18,7 @@ package com.facebook.rendercore.primitives
 
 import android.graphics.drawable.Drawable
 import android.view.View
+import com.facebook.rendercore.RenderUnit
 
 /**
  * Primitive is the fundamental building block of a UI component that can be shared across
@@ -34,4 +35,7 @@ import android.view.View
 class Primitive<ContentType : Any>(
     private val layoutBehavior: LayoutBehavior,
     private val mountBehavior: MountBehavior<ContentType>
-)
+) {
+  /** Lazily creates and returns a [RenderUnit] configured with [mountBehavior]. */
+  val renderUnit: PrimitiveRenderUnit<ContentType> = mountBehavior.renderUnit
+}
