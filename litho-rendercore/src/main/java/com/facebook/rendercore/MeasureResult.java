@@ -281,6 +281,70 @@ public class MeasureResult {
     return new MeasureResult(outputWidth, outputHeight);
   }
 
+  /**
+   * Returns a {@link MeasureResult} with sizes set based on the provided {@param widthSpec} and
+   * {@param heightSpec} if the spec mode is EXACTLY or AT_MOST, otherwise uses fallback value.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   */
+  public static MeasureResult fillSpaceOrGone(
+      final int widthSpec, final int heightSpec, final @Nullable Object layoutData) {
+    return fillSpace(widthSpec, heightSpec, 0, 0, layoutData);
+  }
+
+  /**
+   * Returns a {@link MeasureResult} with sizes set based on the provided {@param widthSpec} and
+   * {@param heightSpec} if the spec mode is EXACTLY or AT_MOST, otherwise uses fallback value.
+   *
+   * @param widthSpec A SizeSpec for the width
+   * @param heightSpec A SizeSpec for the height
+   * @param widthFallback The width value for the UNSPECIFIED mode
+   * @param heightFallback The height value for the UNSPECIFIED mode
+   */
+  public static MeasureResult fillSpace(
+      final int widthSpec,
+      final int heightSpec,
+      final int widthFallback,
+      final int heightFallback,
+      final @Nullable Object layoutData) {
+    final int widthMode = View.MeasureSpec.getMode(widthSpec);
+    final int widthSize = View.MeasureSpec.getSize(widthSpec);
+    final int heightMode = View.MeasureSpec.getMode(heightSpec);
+    final int heightSize = View.MeasureSpec.getSize(heightSpec);
+
+    if (widthMode == UNSPECIFIED && heightMode == UNSPECIFIED) {
+      return new MeasureResult(widthFallback, heightFallback, layoutData);
+    }
+
+    final int width;
+    final int height;
+
+    switch (widthMode) {
+      case EXACTLY:
+      case AT_MOST:
+        width = widthSize;
+        break;
+      case UNSPECIFIED:
+      default:
+        width = widthFallback;
+        break;
+    }
+
+    switch (heightMode) {
+      case EXACTLY:
+      case AT_MOST:
+        height = heightSize;
+        break;
+      case UNSPECIFIED:
+      default:
+        height = heightFallback;
+        break;
+    }
+
+    return new MeasureResult(width, height, layoutData);
+  }
+
   public static MeasureResult error() {
     return new MeasureResult();
   }
