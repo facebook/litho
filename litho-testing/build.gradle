@@ -42,8 +42,12 @@ android {
     testOptions {
         unitTests.all {
             forkEvery = 1
-            maxParallelForks = Math.ceil(Runtime.runtime.availableProcessors() * 1.5)
+            maxParallelForks = 1
+
+            exclude '**/testing/**/*.class'
         }
+
+
         unitTests.includeAndroidResources = true
     }
 }
