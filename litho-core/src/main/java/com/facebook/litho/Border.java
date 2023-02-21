@@ -315,6 +315,9 @@ public class Border implements Equivalence<Border> {
       if (corner < 0 || corner >= RADIUS_COUNT) {
         throw new IllegalArgumentException("Given invalid corner: " + corner);
       }
+      if (radius < 0f) {
+        throw new IllegalArgumentException("Can't have a negative radius value");
+      }
       mBorder.mRadius[corner] = radius;
       return this;
     }
@@ -390,22 +393,6 @@ public class Border implements Equivalence<Border> {
       checkNotBuilt();
       checkEffectCount();
       mPathEffects[mNumPathEffects++] = new DashPathEffect(intervals, phase);
-      return this;
-    }
-
-    /**
-     * Applies a corner effect to the border
-     *
-     * @deprecated Please use {@link #radiusPx(int)} instead
-     * @param radius The amount to round sharp angles when drawing the border
-     */
-    @Deprecated
-    public Builder cornerEffect(float radius) {
-      checkNotBuilt();
-      if (radius < 0f) {
-        throw new IllegalArgumentException("Can't have a negative radius value");
-      }
-      radiusPx(Math.round(radius));
       return this;
     }
 
