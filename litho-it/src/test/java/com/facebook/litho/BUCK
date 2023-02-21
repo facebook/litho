@@ -63,10 +63,6 @@ litho_robolectric4_test(
     pure_kotlin = False,
     source = "8",
     target = "8",
-    target_sdk_levels = [
-        "16",
-        "21",
-    ],
     deps = [
         "//fbandroid/java/com/facebook/testing/automock/fbktx:fbktx",
         "//fbandroid/third-party/java/guava:guava",

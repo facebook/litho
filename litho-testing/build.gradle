@@ -41,9 +41,6 @@ android {
 
     testOptions {
         unitTests.all {
-            //t138559546 exclude the test from gradle
-            exclude '/com/facebook/litho/testing/TestCollectionDescriptionHelperTest.class'
-
             forkEvery = 1
             maxParallelForks = Math.ceil(Runtime.runtime.availableProcessors() * 1.5)
         }

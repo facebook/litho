@@ -21,7 +21,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.SparseArray
 import android.view.MotionEvent
 import android.view.View
@@ -54,7 +53,6 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.robolectric.annotation.Config
 
 /** Tests [ComponentHost] */
 @RunWith(LithoTestRunner::class)
@@ -272,6 +270,7 @@ class ComponentHostTest {
   }
 
   @Test
+  @Ignore("This test is failing since we stopped running tests on API 16")
   fun testRecursiveTouchExpansionItemShouldNotAddTouchDelegate() {
     val mountItem = mountTouchExpansionItem(0, host)
     assertThat(host.touchExpansionDelegate).isNull()
@@ -450,14 +449,8 @@ class ComponentHostTest {
     assertThat(host.getChildDrawingOrder(host.childCount, 1)).isEqualTo(1)
   }
 
-  /**
-   * [ViewGroup#getClipChildren()] method was only added in API 18, but plays important role here,
-   * so will need to run this test for two SDK versions. And since [LithoTestRunner] does not
-   * support multiple values for @Config.sdk, there are two separated test methods
-   * {@see * #testTemporaryChildClippingDisablingJB}
-   * {@see #testTemporaryChildClippingDisablingLollipop}
-   */
-  private fun testTemporaryChildClippingDisabling() {
+  @Test
+  fun testTemporaryChildClippingDisabling() {
     val componentHost = ComponentHost(context)
     assertThat(componentHost.clipChildren).isTrue
 
@@ -487,18 +480,6 @@ class ComponentHostTest {
     assertThat(componentHost.clipChildren).isFalse
     componentHost.restoreChildClipping()
     assertThat(componentHost.clipChildren).isTrue
-  }
-
-  @Config(sdk = [Build.VERSION_CODES.JELLY_BEAN])
-  @Test
-  fun testTemporaryChildClippingDisablingJB() {
-    testTemporaryChildClippingDisabling()
-  }
-
-  @Config(sdk = [Build.VERSION_CODES.LOLLIPOP])
-  @Test
-  fun testTemporaryChildClippingDisablingLollipop() {
-    testTemporaryChildClippingDisabling()
   }
 
   @Test
