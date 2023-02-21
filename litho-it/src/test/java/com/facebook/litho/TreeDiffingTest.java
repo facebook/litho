@@ -20,7 +20,6 @@ import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.TRANSPARENT;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.LithoRenderUnit.STATE_DIRTY;
 import static com.facebook.litho.LithoRenderUnit.STATE_UNKNOWN;
 import static com.facebook.litho.LithoRenderUnit.STATE_UPDATED;
@@ -673,18 +672,11 @@ public class TreeDiffingTest {
 
   private static LayoutState calculateLayoutState(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
-    return calculate(
-        context,
-        component,
-        null,
-        new TreeState(),
-        -1,
-        widthSpec,
-        heightSpec,
-        -1,
-        false,
-        null,
-        null);
+    ResolveResult result =
+        ResolveTreeFuture.resolve(
+            context, component, new TreeState(), -1, -1, null, null, null, null);
+    return LayoutTreeFuture.layout(
+        result, widthSpec, heightSpec, -1, -1, false, null, null, null, null);
   }
 
   private static LayoutState calculateLayoutStateWithDiffing(
@@ -693,17 +685,27 @@ public class TreeDiffingTest {
       int widthSpec,
       int heightSpec,
       LayoutState previousLayoutState) {
-    return calculate(
-        context,
-        component,
-        null,
-        new TreeState(),
-        -1,
+    ResolveResult result =
+        ResolveTreeFuture.resolve(
+            context,
+            component,
+            new TreeState(),
+            -1,
+            -1,
+            previousLayoutState != null ? previousLayoutState.mRoot : null,
+            null,
+            null,
+            null);
+    return LayoutTreeFuture.layout(
+        result,
         widthSpec,
         heightSpec,
         -1,
+        -1,
         true,
         previousLayoutState,
+        previousLayoutState != null ? previousLayoutState.getDiffTree() : null,
+        null,
         null);
   }
 

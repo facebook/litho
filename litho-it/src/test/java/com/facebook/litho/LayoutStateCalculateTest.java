@@ -2855,13 +2855,11 @@ public class LayoutStateCalculateTest {
       final int widthSpec,
       final int heightSpec) {
 
-    return LayoutState.calculate(
-        context,
-        component,
-        componentTreeId,
-        widthSpec,
-        heightSpec,
-        LayoutState.CalculateLayoutSource.TEST);
+    ResolveResult result =
+        ResolveTreeFuture.resolve(
+            context, component, new TreeState(), -1, -1, null, null, null, null);
+    return LayoutTreeFuture.layout(
+        result, widthSpec, heightSpec, -1, componentTreeId, false, null, null, null, null);
   }
 
   @After
