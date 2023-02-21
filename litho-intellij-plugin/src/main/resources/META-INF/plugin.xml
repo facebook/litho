@@ -73,6 +73,7 @@
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.EventTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.KotlinComponentTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.MountableComponentTemplateProvider"/>
+    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.PrimitiveComponentTemplateProvider"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">

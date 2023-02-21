@@ -18,11 +18,11 @@ package com.facebook.litho.intellij.actions.templates;
 
 import com.facebook.litho.intellij.extensions.TemplateProvider;
 
-public class MountableComponentTemplateProvider implements TemplateProvider {
+public class PrimitiveComponentTemplateProvider implements TemplateProvider {
 
   @Override
   public String getTemplateName() {
-    return "MountableComponent";
+    return "PrimitiveComponent";
   }
 
   @Override
@@ -32,6 +32,6 @@ public class MountableComponentTemplateProvider implements TemplateProvider {
 
   @Override
   public int getTemplatePriority() {
-    return Integer.MIN_VALUE + 2;
+    return Integer.MIN_VALUE + 1;
   }
 }
