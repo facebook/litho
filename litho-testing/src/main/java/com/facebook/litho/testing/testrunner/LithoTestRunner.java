@@ -39,6 +39,7 @@ import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.internal.bytecode.Sandbox;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -224,7 +225,7 @@ public class LithoTestRunner extends RobolectricTestRunner {
     // class loader than LithoRobolectricFrameworkMethod will be loaded in.
     @Nullable Object configurationInstance;
     @Nullable Object localConfigurationInstance;
-
+    RobolectricFrameworkMethod baseMethod;
     @Nullable Sandbox sandbox;
 
     protected LithoRobolectricFrameworkMethod(
@@ -234,15 +235,32 @@ public class LithoTestRunner extends RobolectricTestRunner {
       super(other);
       this.configurationClass = configurationClass;
       this.localConfigurationClass = localConfigClass;
+      this.baseMethod = other;
     }
 
     @SuppressWarnings("ReflectionMethodUse")
     @Override
     public String getName() {
+      StringBuilder name = new StringBuilder(super.getName());
+
       String variant =
           (configurationClass != null ? configurationClass.getSimpleName() + ":" : "")
               + (localConfigurationClass != null ? localConfigurationClass.getSimpleName() : "");
-      return super.getName() + "[" + variant + "]";
+      name.append("[");
+      name.append(variant);
+      name.append("]");
+
+      int apiLevel = baseMethod.getSdk().getApiLevel();
+      name.append("[api=");
+      name.append(apiLevel);
+      name.append("]");
+
+      LooperMode.Mode looperMode = baseMethod.getConfiguration().get(LooperMode.Mode.class);
+      name.append("[looperMode=");
+      name.append(looperMode);
+      name.append("]");
+
+      return name.toString();
     }
 
     @Override
