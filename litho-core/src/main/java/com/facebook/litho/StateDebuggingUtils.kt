@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration;
-import java.util.List;
+import com.facebook.litho.config.ComponentsConfiguration
 
 /** Hosts API to debug state */
-public class StateDebuggingUtils {
-
-  public static List<Object> getState(KStateContainer container) {
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      return container.getStates();
-    } else {
-      throw new RuntimeException("State should only be read by debugging utilities.");
-    }
-  }
-}
+val KStateContainer.state: List<Any?>
+  get() =
+      if (ComponentsConfiguration.isDebugModeEnabled) {
+        states
+      } else {
+        error("State should only be read by debugging utilities.")
+      }

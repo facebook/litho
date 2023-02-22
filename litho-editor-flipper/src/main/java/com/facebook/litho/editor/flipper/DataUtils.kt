@@ -27,10 +27,10 @@ import com.facebook.litho.DebugComponent
 import com.facebook.litho.KStateContainer
 import com.facebook.litho.SpecGeneratedComponent
 import com.facebook.litho.StateContainer
-import com.facebook.litho.StateDebuggingUtils
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType
 import com.facebook.litho.annotations.State
+import com.facebook.litho.state
 
 object DataUtils {
 
@@ -148,7 +148,7 @@ object DataUtils {
     val state = FlipperObject.Builder()
     var hasState = false
     if (stateContainer is KStateContainer) {
-      val states = StateDebuggingUtils.getState(stateContainer)
+      val states = stateContainer.state
       hasState = states.isNotEmpty() == true
       states?.let {
         it.forEachIndexed { index, item ->
