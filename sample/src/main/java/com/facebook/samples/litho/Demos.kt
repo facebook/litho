@@ -130,6 +130,7 @@ import com.facebook.samples.litho.kotlin.observability.UseLiveDataComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewExamplePrimitiveComponent
 import com.facebook.samples.litho.kotlin.primitives.bindto.PrimitiveBindToExampleComponent
+import com.facebook.samples.litho.kotlin.primitives.widgets.PrimitiveWidgetsExampleComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
 import com.facebook.samples.litho.kotlin.treeprops.TreePropsExampleComponent
@@ -285,6 +286,9 @@ class Demos {
                             SingleDemo(
                                 name = "BindTo - Primitive Dynamic Values API",
                                 component = PrimitiveBindToExampleComponent()),
+                            SingleDemo(
+                                name = "Sample Primitive Components Example",
+                                component = PrimitiveWidgetsExampleComponent()),
                         )),
                     DemoGrouping(
                         name = "Canvas",
