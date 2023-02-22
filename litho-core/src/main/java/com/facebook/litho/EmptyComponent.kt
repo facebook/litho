@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.litho
 
 /** A component which renders nothing. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public final class EmptyComponent extends Component {
+class EmptyComponent : Component() {
 
-  @Override
-  protected RenderResult render(
-      ResolveStateContext resolveStateContext, ComponentContext c, int widthSpec, int heightSpec) {
-    return new RenderResult(null);
-  }
+  override fun render(
+      resolveStateContext: ResolveStateContext,
+      c: ComponentContext,
+      widthSpec: Int,
+      heightSpec: Int
+  ): RenderResult = RenderResult(null)
 }
