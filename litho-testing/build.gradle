@@ -23,16 +23,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    // TODO migrate to Robolectric 4 and remove
-    useLibrary 'org.apache.http.legacy'
-
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-    }
-
-    sourceSets {
-        // Exclude old testrunner for Robolectric 3 from build. It's only needed for BUCK modules.
-        main.java.exclude '**/testrunner/v3/*.java'
     }
 
     lintOptions {
@@ -42,11 +34,8 @@ android {
     testOptions {
         unitTests.all {
             forkEvery = 1
-            maxParallelForks = 1
-
-            exclude '**/testing/**/*.class'
+            maxParallelForks = Math.ceil(Runtime.runtime.availableProcessors() * 1.5)
         }
-
 
         unitTests.includeAndroidResources = true
     }

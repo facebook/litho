@@ -44,6 +44,7 @@ class LithoRule : TestRule, TestNodeSelectionProvider {
       object : Statement() {
         override fun evaluate() {
           ensureThreadLooperType()
+
           try {
             componentContext = ComponentContext(getApplicationContext<Context>())
             threadLooperController.init()
