@@ -27,8 +27,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
 
 /** Tests for setting a manual key with the [key] function. */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class ManualKeyTest {
 
