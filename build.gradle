@@ -61,6 +61,7 @@ subprojects {
 
     tasks.withType(Test) {
         systemProperty "robolectric.sdk", "19"
+        systemProperty "robolectric.looperMode", "LEGACY"
 
         testLogging {
             exceptionFormat = 'full'
