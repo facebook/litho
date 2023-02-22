@@ -75,23 +75,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     lintOptions {
         abortOnError false
     }
 
     sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
     sourceSets.test.java.srcDir project(':litho-sections-processor').file("src/test/java")
-
-    // TODO(T118124522): Kotlin spec component not compiling in litho-it using gradle
-    def filesToExclude = [
-            '**/*KotlinSpecPropDefaultsTest.kt',
-            '**/*DynamicPropsEquivalenceGeneratorTest.kt'
-    ]
-
-    tasks.withType(org.gradle.api.tasks.SourceTask.class).configureEach {
-        it.exclude(filesToExclude)
-    }
-    sourceSets.test.kotlin.exclude(filesToExclude)
 }
 
 dependencies {
