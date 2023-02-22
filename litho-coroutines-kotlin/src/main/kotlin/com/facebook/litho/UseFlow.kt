@@ -19,7 +19,6 @@ package com.facebook.litho
 import com.facebook.litho.annotations.Hook
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 
 /**
  * Uses the current value of a given [stateFlow] in a Litho Kotlin component.
@@ -54,3 +53,19 @@ fun <T> ComponentScope.useFlow(
     vararg keys: Any?,
     flowBlock: () -> Flow<T>,
 ): T = useProducer(initialValue, *keys) { flowBlock().collect { update(it) } }
+
+/**
+ * Uses the collection of a flow that is dynamically supplied by [flowBlock].
+ *
+ * It is an error to call [ComponentScope.useFlow] without keys parameter.
+ */
+// This deprecated-error function shadows the varargs overload so that the varargs version is not
+// used without keys parameters.
+@Deprecated(USE_FLOW_NO_KEYS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+@Hook
+fun <T> ComponentScope.useFlow(initialValue: () -> T, flowBlock: () -> Flow<T>): Unit =
+    throw IllegalStateException(USE_FLOW_NO_KEYS_ERROR)
+
+private const val USE_FLOW_NO_KEYS_ERROR =
+    "useFlow must provide 'keys' parameter that determines whether the existing flow will be canceled, and the new flow will be collected"

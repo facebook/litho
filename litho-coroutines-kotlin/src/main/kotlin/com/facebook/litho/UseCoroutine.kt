@@ -33,3 +33,20 @@ fun ComponentScope.useCoroutine(vararg keys: Any?, onLaunch: suspend CoroutineSc
     onCleanup { job?.cancel() }
   }
 }
+
+/**
+ * Launches a coroutine with [onLaunch]. The coroutine will be canceled when the component is
+ * detached, or if the coroutine will be relaunched.
+ *
+ * It is an error to call [ComponentScope.useCoroutine] without keys parameter.
+ */
+// This deprecated-error function shadows the varargs overload so that the varargs version is not
+// used without keys parameters.
+@Deprecated(USE_COROUTINE_NO_KEYS_ERROR, level = DeprecationLevel.ERROR)
+@Suppress("unused", "UNUSED_PARAMETER")
+@Hook
+fun ComponentScope.useCoroutine(onLaunch: suspend CoroutineScope.() -> Unit): Unit =
+    throw IllegalStateException(USE_COROUTINE_NO_KEYS_ERROR)
+
+private const val USE_COROUTINE_NO_KEYS_ERROR =
+    "useCoroutine must provide 'keys' parameter that determines whether the existing coroutine will be canceled, and the new coroutine will be launched"

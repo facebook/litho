@@ -7,6 +7,7 @@ _release-date_
 * [BREAKING] Removed `ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. ComponentTrees can no longer exempt themselves from interrupt and move layouts between threads operation.
 * [New] Add Kotlin to `litho-core`
 * [BREAKING] Increased `minSdkVersion` to 19
+* [BREAKING] Removed `usePersistentEffect` and made deps parameter required in `useEffect`, `useCoroutine`, `useFlow`. The equivalent of `usePersistentEffect {}` is `useEffect(Unit) {}`, and the equivalent of `useEffect {}` without arguments is `useEffect(Any()) {}`.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.47.0...master).
 
@@ -14,7 +15,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 
 _2023-02-13_
 
-* [New] Adds debug overlay for to show components bounds, and interactive elements. Set the following configs to enable the feature: `debugHighlightInteractiveBounds`, `debugHighlightMountBounds`.  
+* [New] Adds debug overlay for to show components bounds, and interactive elements. Set the following configs to enable the feature: `debugHighlightInteractiveBounds`, `debugHighlightMountBounds`.
 * [Deprecated] `ComponentTree.canInterruptAndMoveLayoutsBetweenThreads`, `RecyclerBinder.canInterruptAndMoveLayoutsBetweenThreads`, `ComponentTreeHolder.canInterruptAndMoveLayoutsBetweenThreads`. All of those will be removed in one of subsequent versions.
 * [BREAKING] Introduces several new API to replace the ComponentTree in ComponentContext.
   * Use `ComponentContext#getLithoTree` to get access to API previous accessed from the `ComponentTree`.

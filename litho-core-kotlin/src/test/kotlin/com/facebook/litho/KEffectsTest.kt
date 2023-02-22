@@ -45,7 +45,7 @@ class KEffectsTest {
   fun useEffect_createdThenReleased_callbacksAreInvoked() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>) : KComponent() {
       override fun ComponentScope.render(): Component? {
-        useEffect {
+        useEffect(Unit) {
           useEffectCalls.add("attach")
           onCleanup { useEffectCalls.add("detach") }
         }
@@ -67,10 +67,10 @@ class KEffectsTest {
   }
 
   @Test
-  fun useEffect_noParams_callbacksAreInvokedOnUpdate() {
+  fun useEffect_anyParam_callbacksAreInvokedOnUpdate() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>, val seq: Int) : KComponent() {
       override fun ComponentScope.render(): Component? {
-        useEffect {
+        useEffect(Any()) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
         }
@@ -285,13 +285,13 @@ class KEffectsTest {
   }
 
   @Test
-  fun usePersistentEffect_onUpdate_callbacksOnlyInvokedOnRelease() {
+  fun useEffect_unitParam_onUpdate_callbacksOnlyInvokedOnRelease() {
     class UseEffectComponent(
         val useEffectCalls: MutableList<String>,
         val seq: Int,
     ) : KComponent() {
       override fun ComponentScope.render(): Component? {
-        usePersistentEffect {
+        useEffect(Unit) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
         }
@@ -324,7 +324,7 @@ class KEffectsTest {
   fun useEffect_createdThenReleased_callbacksAreInvoked_forMountables() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>) : MountableComponent() {
       override fun MountableComponentScope.render(): MountableRenderResult {
-        useEffect {
+        useEffect(Unit) {
           useEffectCalls.add("attach")
           onCleanup { useEffectCalls.add("detach") }
         }
@@ -349,7 +349,7 @@ class KEffectsTest {
   fun useEffect_createdThenReleased_callbacksAreInvoked_forPrimitives() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>) : PrimitiveComponent() {
       override fun PrimitiveComponentScope.render(): LithoPrimitive {
-        useEffect {
+        useEffect(Unit) {
           useEffectCalls.add("attach")
           onCleanup { useEffectCalls.add("detach") }
         }
@@ -371,11 +371,11 @@ class KEffectsTest {
   }
 
   @Test
-  fun useEffect_noParams_callbacksAreInvokedOnUpdate_forMountable() {
+  fun useEffect_anyParams_callbacksAreInvokedOnUpdate_forMountable() {
     class UseEffectComponent(val useEffectCalls: MutableList<String>, val seq: Int) :
         MountableComponent() {
       override fun MountableComponentScope.render(): MountableRenderResult {
-        useEffect {
+        useEffect(Any()) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
         }
@@ -409,7 +409,7 @@ class KEffectsTest {
     class UseEffectComponent(val useEffectCalls: MutableList<String>, val seq: Int) :
         PrimitiveComponent() {
       override fun PrimitiveComponentScope.render(): LithoPrimitive {
-        useEffect {
+        useEffect(Any()) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
         }
@@ -809,13 +809,13 @@ class KEffectsTest {
   }
 
   @Test
-  fun usePersistentEffect_onUpdate_callbacksOnlyInvokedOnRelease_forMountable() {
+  fun useEffect_unitParam_onUpdate_callbacksOnlyInvokedOnRelease_forMountable() {
     class UseEffectComponent(
         val useEffectCalls: MutableList<String>,
         val seq: Int,
     ) : MountableComponent() {
       override fun MountableComponentScope.render(): MountableRenderResult {
-        usePersistentEffect {
+        useEffect(Unit) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
         }
@@ -845,13 +845,13 @@ class KEffectsTest {
   }
 
   @Test
-  fun usePersistentEffect_onUpdate_callbacksOnlyInvokedOnRelease_forPrimitive() {
+  fun useEffect_unitParam_onUpdate_callbacksOnlyInvokedOnRelease_forPrimitive() {
     class UseEffectComponent(
         val useEffectCalls: MutableList<String>,
         val seq: Int,
     ) : PrimitiveComponent() {
       override fun PrimitiveComponentScope.render(): LithoPrimitive {
-        usePersistentEffect {
+        useEffect(Unit) {
           useEffectCalls.add("attach $seq")
           onCleanup { useEffectCalls.add("detach $seq") }
         }

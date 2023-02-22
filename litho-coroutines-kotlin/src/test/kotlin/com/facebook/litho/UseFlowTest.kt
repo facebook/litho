@@ -110,7 +110,7 @@ class UseFlowTest {
 
     class UseCollectAsStateComponent(val dep: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
-        val value = useFlow(initialValue = { 0 }) { flow { emit(dep) } }
+        val value = useFlow(initialValue = { 0 }, Any()) { flow { emit(dep) } }
         stateRef.set(value)
         return Row()
       }

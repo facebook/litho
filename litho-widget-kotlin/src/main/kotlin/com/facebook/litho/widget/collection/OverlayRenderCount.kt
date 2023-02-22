@@ -40,7 +40,7 @@ import com.facebook.yoga.YogaPositionType
 class OverlayRenderCount(val component: Component) : KComponent() {
   override fun ComponentScope.render(): Component {
     val renderCount = useRef { 1 }
-    useEffect {
+    useEffect(Any()) {
       renderCount.value++
       null
     }

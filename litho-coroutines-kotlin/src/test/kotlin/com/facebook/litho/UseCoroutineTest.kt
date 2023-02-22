@@ -50,7 +50,7 @@ class UseCoroutineTest {
 
     class UseCoroutineComponent : KComponent() {
       override fun ComponentScope.render(): Component {
-        useCoroutine {
+        useCoroutine(Unit) {
           useCoroutineCalls += "launch"
           try {
             awaitCancellation()
@@ -76,7 +76,7 @@ class UseCoroutineTest {
 
     class UseCoroutineComponent(val seq: Int) : KComponent() {
       override fun ComponentScope.render(): Component {
-        useCoroutine {
+        useCoroutine(Any()) {
           useCoroutineCalls += "attach $seq"
           try {
             awaitCancellation()

@@ -60,7 +60,7 @@ fun <R> ComponentScope.useCallback(
     callback: () -> R,
 ): () -> R {
   val callbackRef = useState { MemoizedCallback0(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -73,7 +73,7 @@ fun <A, R> ComponentScope.useCallback(
     callback: (A) -> R,
 ): (A) -> R {
   val callbackRef = useState { MemoizedCallback1(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -86,7 +86,7 @@ fun <A, B, R> ComponentScope.useCallback(
     callback: (A, B) -> R,
 ): (A, B) -> R {
   val callbackRef = useState { MemoizedCallback2(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -99,7 +99,7 @@ fun <A, B, C, R> ComponentScope.useCallback(
     callback: (A, B, C) -> R,
 ): (A, B, C) -> R {
   val callbackRef = useState { MemoizedCallback3(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -112,7 +112,7 @@ fun <A, B, C, D, R> ComponentScope.useCallback(
     callback: (A, B, C, D) -> R,
 ): (A, B, C, D) -> R {
   val callbackRef = useState { MemoizedCallback4(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -125,7 +125,7 @@ fun <A, B, C, D, E, R> ComponentScope.useCallback(
     callback: (A, B, C, D, E) -> R,
 ): (A, B, C, D, E) -> R {
   val callbackRef = useState { MemoizedCallback5(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -138,7 +138,7 @@ fun <A, B, C, D, E, F, R> ComponentScope.useCallback(
     callback: (A, B, C, D, E, F) -> R,
 ): (A, B, C, D, E, F) -> R {
   val callbackRef = useState { MemoizedCallback6(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
@@ -151,7 +151,7 @@ fun <A, B, C, D, E, F, G, R> ComponentScope.useCallback(
     callback: (A, B, C, D, E, F, G) -> R,
 ): (A, B, C, D, E, F, G) -> R {
   val callbackRef = useState { MemoizedCallback7(CallbackHolder(callback)) }
-  useEffect {
+  useEffect(callback) {
     callbackRef.value.callbackHolder.callback = callback
     null
   }
