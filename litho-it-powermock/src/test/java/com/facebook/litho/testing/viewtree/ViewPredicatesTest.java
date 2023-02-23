@@ -36,6 +36,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import com.google.common.base.Predicate;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -148,6 +149,7 @@ public class ViewPredicatesTest {
   }
 
   @Test
+  @Ignore("T146174263")
   public void testHasDrawable() {
     final Resources resources = getApplicationContext().getResources();
     final Drawable noAvatar = resources.getDrawable(R.drawable.custom_drawable);

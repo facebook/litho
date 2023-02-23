@@ -17,8 +17,8 @@
 package com.facebook.litho
 
 import android.app.Activity
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
@@ -35,7 +35,7 @@ import org.robolectric.Robolectric
 
 /** Unit tests for [ComponentTreeScope]. */
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class ComponentTreeScopeTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

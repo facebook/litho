@@ -27,6 +27,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -36,12 +37,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.LooperMode
 
 @LooperMode(LooperMode.Mode.PAUSED)
-@RunWith(RobolectricTestRunner::class)
+@RunWith(LithoTestRunner::class)
 class AnimatedTest {
 
   // TODO(t112256774): Re-enable AnimatedTest tests. See https://fburl.com/h50b38s9 for more details

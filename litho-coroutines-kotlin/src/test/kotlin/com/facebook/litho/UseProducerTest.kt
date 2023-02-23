@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 /** Unit tests for [useProducer]. */
 @OptIn(ExperimentalCoroutinesApi::class)
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class UseProducerTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

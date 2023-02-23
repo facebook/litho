@@ -43,6 +43,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,10 +88,12 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLooper;
 
+@Config(sdk = {Build.VERSION_CODES.KITKAT})
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class MountStateIncrementalMountTest {

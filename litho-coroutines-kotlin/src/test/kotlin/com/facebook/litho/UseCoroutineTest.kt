@@ -16,8 +16,8 @@
 
 package com.facebook.litho
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
@@ -31,7 +31,7 @@ import org.junit.runner.RunWith
 
 /** Unit tests for [useCoroutine]. */
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(AndroidJUnit4::class)
+@RunWith(LithoTestRunner::class)
 class UseCoroutineTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

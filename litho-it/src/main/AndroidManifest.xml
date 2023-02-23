@@ -20,7 +20,7 @@
     package="com.facebook.litho.it"
     >
 
-  <!-- This version is used to control on which API the robolectric tests are run against -->
+  <!-- This is the version the BUCK tests will run against to when LithoTestRunner is not specified -->
   <uses-sdk
-      android:targetSdkVersion="19" />
+      android:targetSdkVersion="33" />
 </manifest>

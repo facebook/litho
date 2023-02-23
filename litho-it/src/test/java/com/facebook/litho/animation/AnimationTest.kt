@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.animation
 
 import android.annotation.SuppressLint
@@ -20,6 +21,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.widget.FrameLayout
@@ -74,6 +76,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.android.controller.ActivityController
+import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
 
 /**
@@ -99,6 +102,7 @@ import org.robolectric.annotation.LooperMode
  */
 @LooperMode(LooperMode.Mode.LEGACY)
 @SuppressLint("ColorConstantUsageIssue")
+@Config(sdk = [Build.VERSION_CODES.KITKAT])
 @RunWith(LithoTestRunner::class)
 class AnimationTest {
   @JvmField @Rule val lithoViewRule = LithoViewRule()

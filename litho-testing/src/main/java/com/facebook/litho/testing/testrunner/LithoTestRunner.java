@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.testrunner;
 
+import android.os.Build;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -73,6 +74,11 @@ public class LithoTestRunner extends RobolectricTestRunner {
    */
   private List<? extends Class<? extends LithoTestRunConfiguration>> getGlobalConfigs() {
     return Arrays.asList(SplitBuildAndLayoutTestRunConfiguration.class);
+  }
+
+  @Override
+  protected Config buildGlobalConfig() {
+    return Config.Builder.defaults().setSdk(Build.VERSION_CODES.TIRAMISU).build();
   }
 
   @Override

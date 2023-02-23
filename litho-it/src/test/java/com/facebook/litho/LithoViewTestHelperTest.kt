@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import android.os.Build
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
@@ -34,7 +35,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
+@Config(sdk = [Build.VERSION_CODES.KITKAT])
 @RunWith(LithoTestRunner::class)
 class LithoViewTestHelperTest {
 

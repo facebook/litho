@@ -29,6 +29,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils.TruncateAt;
@@ -51,8 +52,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 /** Tests {@link Text} component. */
+@Config(sdk = {Build.VERSION_CODES.KITKAT})
 @RunWith(LithoTestRunner.class)
 public class TextSpecTest {
   private ComponentContext mContext;

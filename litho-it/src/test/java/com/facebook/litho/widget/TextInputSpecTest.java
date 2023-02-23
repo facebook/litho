@@ -41,6 +41,7 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.lang.reflect.Field;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -114,6 +115,7 @@ public class TextInputSpecTest {
   }
 
   @Test
+  @Ignore("T146174263")
   public void testCursorDrawableResSet() throws IllegalAccessException, NoSuchFieldException {
     int drawableRes = 10;
     Component.Builder component = TextInput.create(mContext).cursorDrawableRes(drawableRes);

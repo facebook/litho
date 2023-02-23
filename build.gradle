@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+def latestSdkVersion = 33
+
 buildscript {
 
     repositories {
@@ -60,7 +62,6 @@ subprojects {
     }
 
     tasks.withType(Test) {
-        systemProperty "robolectric.sdk", "19"
         systemProperty "robolectric.looperMode", "LEGACY"
 
         testLogging {
@@ -92,20 +93,9 @@ tasks.withType(org.jetbrains.dokka.gradle.DokkaMultiModuleTask).configureEach {
 }
 
 ext {
-    /*
-    When updating the minSdkVersion make sure you also update the targetSdkVersion in
-    litho-it AndroidManifest.xml
-
-    At this moment we are running the tests against the minimum SDK version, and robolectric will
-    look into the targetSdkVersion that is declared in the Manifest to choose which version
-    to run the tests in.
-
-    Ideally we would run against the latest version, but we need to do some preparation work ahead of
-    this.
-     */
     minSdkVersion = 19
-    targetSdkVersion = 33
-    compileSdkVersion = 33
+    targetSdkVersion = latestSdkVersion
+    compileSdkVersion = latestSdkVersion
     buildToolsVersion = '33.0.2'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_8
     targetCompatibilityVersion = JavaVersion.VERSION_1_8

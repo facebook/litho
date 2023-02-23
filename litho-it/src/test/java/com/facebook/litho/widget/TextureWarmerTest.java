@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Canvas;
 import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
@@ -37,7 +38,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 /** Tests {@link TextureWarmer}. */
 @LooperMode(LooperMode.Mode.LEGACY)
-@Config(shadows = TextureWarmerTest.ShadowPicture.class)
+@Config(
+    shadows = TextureWarmerTest.ShadowPicture.class,
+    sdk = {Build.VERSION_CODES.KITKAT})
 @RunWith(LithoTestRunner.class)
 public class TextureWarmerTest {
   private ShadowLooper mShadowLooper;
