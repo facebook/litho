@@ -117,14 +117,6 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
 
     msg.append("  thread_name: ").append(Thread.currentThread().getName()).append("\n");
 
-    if (mComponentContext != null) {
-      final DebugMetadata metadataFromTreeProps =
-          mComponentContext.getTreeProp(DebugMetadata.class);
-      if (metadataFromTreeProps != null) {
-        appendMap(msg, metadataFromTreeProps.getMetadataMap());
-      }
-    }
-
     appendMap(msg, mCustomMetadata);
 
     return msg.toString().trim();
