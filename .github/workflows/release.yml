@@ -37,7 +37,7 @@ jobs:
       release-version-info: ${{ steps.version_info.outputs.VERSION_INFO }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Extract version info
       id: version_info
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '^[rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
@@ -61,10 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
+        distribution: 'adopt'
         java-version: '11'
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -89,10 +90,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
+        distribution: 'adopt'
         java-version: '11'
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -113,10 +115,11 @@ jobs:
     needs: [test-job, sample-app-job]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
+        distribution: 'adopt'
         java-version: '11'
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -146,7 +149,7 @@ jobs:
     needs: [check-release-job, publish-job]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set Git tag
       uses: tvdias/github-tagger@v0.0.1
       with:
