@@ -15,6 +15,12 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.facebook.litho.editor.flipper">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.facebook.litho.editor.flipper"
+    >
+
+  <!-- This is the version BUCK tests will run against to -->
+  <uses-sdk
+      android:targetSdkVersion="19" />
 </manifest>

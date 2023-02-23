@@ -32,9 +32,3 @@ fb_prebuilt_jar(
     name = "shadows-framework-41-jar",
     binary_jar = "shadows-framework-4.1.jar",
 )
-
-fb_prebuilt_jar(
-    name = "android-all-5.0.0",
-    binary_jar = "android-all-5.0.0_r2-robolectric-1.jar",
-    visibility = LITHO_VISIBILITY,
-)
