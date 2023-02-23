@@ -22,13 +22,13 @@ To familiarize yourself with the concept and rules for hooks, see the [Introduct
 `useEffect` accepts an *effect lambda* to invoke when the component is attached to the tree. Besides performing a side-effect, like subscribing to a data store, the effect lambda should also return a *cleanup lambda*, which is invoked when the component no longer exists in the tree.
 
 ```kotlin
-useEffect {
+useEffect(Unit) {
   println("I've been attached!")
   onCleanup { println("I've been detached!") }
 }
 ```
 
-Without any dependency args, these lambdas are invoked **every time** a new layout is committed that includes this component, with the previous cleanup lambda invoked before the next effect lambda.
+The arguments to `useEffect` are its dependencies, which control when the effect is cleaned up and invoked again. With `Unit` passed as a dependency arg, the effect lambda is invoked **only once** when a component is mounted for the first time, and the cleanup lambda is invoked **only once** when a component is unmounted for the last time.
 
 You can have a finer-grained control of how often your effect and cleanup lambdas need to be executed using dependency args, as shown in the next section.
 
@@ -73,7 +73,7 @@ useEffect {
 
 ### Unconditionally triggering side effects
 
-`useEffect` can be called without dependencies. In such a case, on each new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current useEffect call.
+In rare cases you may need to pass `Any()` as a dependency arg. In such a case, **on each** new commit, the cleanup for the previous `useEffect` call is invoked, followed by the current useEffect call.
 
 ### Listening to Prop/State Changes
 
