@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import java.util.List;
+package com.facebook.litho
 
 /**
- * An interface that a mountable view can extend which informs that this mountable content has other
- * LithoView children. This is used to make sure to unmount this view's children when unmounting
- * this view itself.
+ * An fun interface that a mountable view can extend which informs that this mountable content has
+ * other [LithoView] children. This is used to make sure to unmount this view's children when
+ * unmounting this view itself.
  */
-public interface HasLithoViewChildren {
-  void obtainLithoViewChildren(List<LithoView> lithoViews);
+@JvmSuppressWildcards
+fun interface HasLithoViewChildren {
+
+  fun obtainLithoViewChildren(lithoViews: List<LithoView>)
 }
