@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import androidx.annotation.Nullable;
-import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNode
+import java.lang.UnsupportedOperationException
 
 /**
- * This {@link LithoNode } represents a component that renders to null. This is required to support
+ * This [LithoNode] represents a component that renders to `null`. This is required to support
  * reconciliation of state, and transitions on a component that conditionally renders to null.
  */
-public class NullNode extends LithoNode {
+class NullNode : LithoNode() {
 
-  @Override
-  protected @Nullable YogaLayoutProps createYogaNodeWriter() {
-    return null;
-  }
+  override fun createYogaNodeWriter(): YogaLayoutProps? = null
 
-  @Override
-  final LithoLayoutResult createLayoutResult(YogaNode node) {
-    throw new UnsupportedOperationException("NullNode must not be used for layout");
+  public override fun createLayoutResult(node: YogaNode): LithoLayoutResult {
+    throw UnsupportedOperationException("NullNode must not be used for layout")
   }
 }
