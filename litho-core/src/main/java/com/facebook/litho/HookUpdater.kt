@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import androidx.annotation.Nullable;
+package com.facebook.litho
 
 /**
- * EXPERIMENTAL - interface for a block of code that will update state created with useState. See
- * KState.kt for more details.
+ * EXPERIMENTAL - fun interface for a block of code that will update state created with useState.
+ * See KState.kt for more details.
  */
-public interface HookUpdater {
+interface HookUpdater {
 
-  /** Get a KStateContainer instance with updates applied. */
-  @Nullable
-  KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState);
+  /** Get a [KStateContainer] instance with updates applied. */
+  fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer?
 }
