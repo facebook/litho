@@ -61,11 +61,6 @@ android {
               android plugin's UnitTest options doesn't allow excluding specific tests.
             */
             exclude 'com/facebook/litho/sections/specmodels/generator/GroupSectionSpecGeneratorTest.class'
-            exclude 'com/facebook/litho/specmodels/generator/ComponentBodyGeneratorTest.class'
-            exclude 'com/facebook/litho/specmodels/generator/EventGeneratorTest.class'
-            exclude 'com/facebook/litho/specmodels/generator/StateContainerGeneratorTest.class'
-            exclude 'com/facebook/litho/specmodels/generator/StateGeneratorTest.class'
-            exclude 'com/facebook/litho/specmodels/generator/TriggerGeneratorTest.class'
         }
     }
 
