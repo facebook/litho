@@ -299,9 +299,10 @@ public class ComponentContext implements Cloneable {
     mCalculationStateContextThreadLocal.set(null);
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContextForTesting() {
-    setLayoutStateContext(LayoutStateContext.getTestInstance(this));
+    setLayoutStateContext(
+        new LayoutStateContext(new MeasuredResultCache(), this, new TreeState(), 0, null, null));
   }
 
   /**

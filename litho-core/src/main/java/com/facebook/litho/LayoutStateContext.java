@@ -52,11 +52,6 @@ public class LayoutStateContext implements CalculationStateContext {
   private final List<String> mThreadReleasedOn = new LinkedList<>();
   private final List<String> mThreadResumedOn = new LinkedList<>();
 
-  @Deprecated
-  public static LayoutStateContext getTestInstance(ComponentContext c) {
-    return new LayoutStateContext(new MeasuredResultCache(), c, new TreeState(), 0, null, null);
-  }
-
   LayoutStateContext(
       final MeasuredResultCache cache,
       final ComponentContext rootComponentContext,
