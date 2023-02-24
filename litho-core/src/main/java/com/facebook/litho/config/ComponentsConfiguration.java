@@ -262,8 +262,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableRecyclerInGroups = false;
 
-  public static boolean enableMountableInOrion = false;
-
   public static boolean enableMountableInFacecast = false;
 
   public static boolean enableMountableInStoriesViewerFeelingsSticker = false;
