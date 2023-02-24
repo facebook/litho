@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
- * A class implementing this interface will expose a method to record all the {@link EventTrigger}
- * into a {@link EventTriggersContainer}
+ * A class implementing this fun interface will expose a method to record all the [EventTrigger]
+ * into a [EventTriggersContainer]
  */
-public interface HasEventTrigger {
-  void recordEventTrigger(ComponentContext c, EventTriggersContainer container);
+fun interface HasEventTrigger {
+  fun recordEventTrigger(c: ComponentContext, container: EventTriggersContainer)
 }
