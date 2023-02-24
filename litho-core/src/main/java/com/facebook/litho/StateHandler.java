@@ -266,7 +266,6 @@ public class StateHandler {
           }
 
           final StateContainer newStateContainer = stateContainer.clone();
-          mNeededStateContainers.add(key);
           mStateContainers.put(key, newStateContainer);
           applyStateUpdates(key, newStateContainer);
         } catch (Exception ex) {
