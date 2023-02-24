@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /** Interface for a block of code that will initialize a hook value. */
-public interface HookInitializer<T> {
-
-  T init();
+fun interface HookInitializer<T> {
+  fun init(): T
 }
