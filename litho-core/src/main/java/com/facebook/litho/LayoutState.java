@@ -227,12 +227,6 @@ public class LayoutState
 
   private boolean mShouldProcessVisibilityOutputs;
 
-  /** @deprecated create a real instance with `calculate` instead */
-  @Deprecated
-  LayoutState(ComponentContext context) {
-    this(context, Column.create(context).build(), new TreeState(), null);
-  }
-
   LayoutState(
       ComponentContext context,
       Component rootComponent,
@@ -1190,12 +1184,7 @@ public class LayoutState
 
   @VisibleForTesting
   static LayoutState calculate(
-      ComponentContext c,
-      Component component,
-      int componentTreeId,
-      int widthSpec,
-      int heightSpec,
-      @CalculateLayoutSource int source) {
+      ComponentContext c, Component component, int componentTreeId, int widthSpec, int heightSpec) {
     return calculate(
         c,
         component,
@@ -2255,15 +2244,6 @@ public class LayoutState
 
   RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {
     return getMountableOutputAt(output.getIndex());
-  }
-
-  /**
-   * @deprecated kept around for old code, you should create a real instance instead with
-   *     `calculate`
-   */
-  @Deprecated
-  public static LayoutState createTestInstance(ComponentContext c) {
-    return new LayoutState(c);
   }
 
   @Nullable

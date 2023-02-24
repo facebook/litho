@@ -45,10 +45,7 @@ public class LayoutStateSpecTest {
     mComponent = TestLayoutComponent.create(mContext).build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
-    mLayoutState = new LayoutState(mContext);
-    Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);
-    Whitebox.setInternalState(mLayoutState, "mWidthSpec", mWidthSpec);
-    Whitebox.setInternalState(mLayoutState, "mHeightSpec", mHeightSpec);
+    mLayoutState = LayoutState.calculate(mContext, mComponent, 1, mWidthSpec, mHeightSpec);
   }
 
   @Test

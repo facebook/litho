@@ -42,10 +42,13 @@ public class LayoutStateSizeTest {
     mComponent = TestLayoutComponent.create(mContext).build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
-    mLayoutState = new LayoutState(mContext);
-    Whitebox.setInternalState(mLayoutState, "mWidth", WIDTH);
-    Whitebox.setInternalState(mLayoutState, "mHeight", HEIGHT);
-    Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);
+    mLayoutState =
+        LayoutState.calculate(
+            mContext,
+            mComponent,
+            1,
+            SizeSpec.makeSizeSpec(WIDTH, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(HEIGHT, SizeSpec.EXACTLY));
   }
 
   @Test
