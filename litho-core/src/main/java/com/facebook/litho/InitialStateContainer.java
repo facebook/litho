@@ -124,7 +124,7 @@ public class InitialStateContainer {
 
       // sequences are guaranteed to be used in order. If the states list size is greater than
       // hookIndex we should be guaranteed to find the state
-      if (hookStates != null && hookStates.mStates.size() > hookIndex) {
+      if (hookStates != null && hookStates.getStates().size() > hookIndex) {
         return hookStates;
       }
 
@@ -135,12 +135,12 @@ public class InitialStateContainer {
       // containers.
       hookStates = KStateContainer.withNewState(hookStates, initialState);
 
-      if (hookIndex >= hookStates.mStates.size()) {
+      if (hookIndex >= hookStates.getStates().size()) {
         throw new IllegalStateException(
             "Unexpected useState hook sequence encountered: "
                 + hookIndex
                 + " (states size: "
-                + hookStates.mStates.size()
+                + hookStates.getStates().size()
                 + "). This usually indicates that the useState hook is being called from within a "
                 + "conditional, loop, or after an early-exit condition. See "
                 + "https://fblitho.com/docs/mainconcepts/hooks-intro/#rules-for-hooks "

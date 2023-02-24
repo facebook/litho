@@ -193,14 +193,13 @@ public class TreeState {
         (KStateContainer) stateHandler.getStateContainer(globalKey);
 
     if (committedStateContainer != null
-        && committedStateContainer.mStates != null
-        && committedStateContainer.mStates.get(hookStateIndex) != null) {
+        && committedStateContainer.getStates().get(hookStateIndex) != null) {
       final KStateContainer committedStateContainerWithAppliedPendingHooks =
           stateHandler.getStateContainerWithHookUpdates(globalKey);
 
       if (committedStateContainerWithAppliedPendingHooks != null) {
         final T committedUpdatedValue =
-            (T) committedStateContainerWithAppliedPendingHooks.mStates.get(hookStateIndex);
+            (T) committedStateContainerWithAppliedPendingHooks.getStates().get(hookStateIndex);
 
         if (committedUpdatedValue == null && newValue == null) {
           return true;
@@ -223,14 +222,13 @@ public class TreeState {
         (KStateContainer) stateHandler.getStateContainer(globalKey);
 
     if (committedStateContainer != null
-        && committedStateContainer.mStates != null
-        && committedStateContainer.mStates.get(hookStateIndex) != null) {
+        && committedStateContainer.getStates().get(hookStateIndex) != null) {
       final KStateContainer committedStateContainerWithAppliedPendingHooks =
           stateHandler.getStateContainerWithHookUpdates(globalKey);
 
       if (committedStateContainerWithAppliedPendingHooks != null) {
         final T committedUpdatedValue =
-            (T) committedStateContainerWithAppliedPendingHooks.mStates.get(hookStateIndex);
+            (T) committedStateContainerWithAppliedPendingHooks.getStates().get(hookStateIndex);
         final T newValueAfterPendingUpdate = newValueFunction.apply(committedUpdatedValue);
 
         if (committedUpdatedValue == null && newValueAfterPendingUpdate == null) {

@@ -70,7 +70,7 @@ public class HooksStateHandlerTest {
     final KStateContainer secondKstate = (KStateContainer) second.getStateContainer(GLOBAL_KEY);
     second.keepStateContainerForGlobalKey(GLOBAL_KEY);
 
-    assertThat(secondKstate.mStates)
+    assertThat(secondKstate.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"));
 
@@ -80,7 +80,7 @@ public class HooksStateHandlerTest {
 
     final KStateContainer firstState = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
 
-    assertThat(firstState.mStates)
+    assertThat(firstState.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"));
   }
@@ -111,7 +111,7 @@ public class HooksStateHandlerTest {
           @Nullable
           @Override
           public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer currentState) {
-            return currentState.copyAndMutate(1, 1 + (int) currentState.mStates.get(1));
+            return currentState.copyAndMutate(1, 1 + (int) currentState.getStates().get(1));
           }
         });
 
@@ -127,7 +127,7 @@ public class HooksStateHandlerTest {
     final KStateContainer secondKstate = (KStateContainer) second.getStateContainer(GLOBAL_KEY);
     second.keepStateContainerForGlobalKey(GLOBAL_KEY);
 
-    assertThat(secondKstate.mStates)
+    assertThat(secondKstate.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
 
@@ -136,7 +136,7 @@ public class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isFalse();
     final KStateContainer kState = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
 
-    assertThat(kState.mStates)
+    assertThat(kState.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
   }
@@ -167,7 +167,7 @@ public class HooksStateHandlerTest {
           @Nullable
           @Override
           public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer current) {
-            return current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
+            return current.copyAndMutate(1, ((Integer) current.getStates().get(1)) + 1);
           }
         });
 
@@ -179,7 +179,7 @@ public class HooksStateHandlerTest {
           @Nullable
           @Override
           public KStateContainer getUpdatedStateContainer(@Nullable KStateContainer current) {
-            return current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
+            return current.copyAndMutate(1, ((Integer) current.getStates().get(1)) + 1);
           }
         });
 
@@ -189,7 +189,7 @@ public class HooksStateHandlerTest {
     final KStateContainer secondKstate = (KStateContainer) second.getStateContainer(GLOBAL_KEY);
     second.keepStateContainerForGlobalKey(GLOBAL_KEY);
 
-    assertThat(secondKstate.mStates)
+    assertThat(secondKstate.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
 
@@ -198,7 +198,7 @@ public class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isTrue();
 
     final KStateContainer kState = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
-    assertThat(kState.mStates)
+    assertThat(kState.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
 
@@ -207,7 +207,7 @@ public class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isFalse();
 
     final KStateContainer firstStateUpdated = (KStateContainer) first.getStateContainer(GLOBAL_KEY);
-    assertThat(firstStateUpdated.mStates)
+    assertThat(firstStateUpdated.getStates())
         .hasSize(4)
         .isEqualTo(Lists.newArrayList("test", 7, bazState, "newValue"));
   }

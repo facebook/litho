@@ -36,7 +36,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val isNestedTreeContext = context.isNestedTreeContext
   val kState = treeState.getStateContainer(globalKey, isNestedTreeContext) as KStateContainer?
 
-  if (kState == null || kState.mStates.size <= hookIndex) {
+  if (kState == null || kState.states.size <= hookIndex) {
     // The initial state was not computed yet. let's create it and put it in the state
     val state =
         treeState.createOrGetInitialHookState(
@@ -45,7 +45,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 
     context.scopedComponentInfo.stateContainer = state
 
-    return State(context, hookIndex, state.mStates[hookIndex] as T)
+    return State(context, hookIndex, state.states[hookIndex] as T)
   } else {
     context.scopedComponentInfo.stateContainer = kState
   }
@@ -55,7 +55,7 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
     treeState.keepStateContainerForGlobalKey(globalKey, isNestedTreeContext)
   }
 
-  return State(context, hookIndex, kState.mStates[hookIndex] as T)
+  return State(context, hookIndex, kState.states[hookIndex] as T)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
@@ -148,7 +148,7 @@ internal constructor(
   inner class HookUpdaterLambda(val newValueFunction: (T) -> T) : HookUpdater {
     override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? {
       return currentState?.copyAndMutate(
-          hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
+          hookStateIndex, newValueFunction(currentState.states[hookStateIndex] as T))
     }
   }
 
