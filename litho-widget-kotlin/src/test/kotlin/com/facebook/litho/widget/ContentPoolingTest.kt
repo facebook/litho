@@ -59,7 +59,7 @@ class ContentPoolingTest {
   @Before
   fun setup() {
     MountItemsPool.clear()
-    MountItemsPool.sMountContentPoolFactory.set(null)
+    MountItemsPool.setMountContentPoolFactory(null)
   }
 
   @Test
@@ -219,7 +219,7 @@ class ContentPoolingTest {
 
   @Test
   fun `should correctly preallocate primitive component`() {
-    MountItemsPool.sMountContentPoolFactory.set(
+    MountItemsPool.setMountContentPoolFactory(
         createPoolFactory(TestTextViewPrimitiveComponent.ALLOCATOR.poolSize()))
 
     // initially there is no pool
@@ -251,7 +251,7 @@ class DrawableMountable(
 ) : SimpleMountable<Drawable>(RenderType.DRAWABLE) {
 
   init {
-    MountItemsPool.sMountContentPoolFactory.set(createPoolFactory(poolSize()))
+    MountItemsPool.setMountContentPoolFactory(createPoolFactory(poolSize()))
   }
 
   override fun poolSize(): Int = 10

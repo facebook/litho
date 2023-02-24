@@ -82,8 +82,10 @@ public class MountItemsPool {
   public static boolean isPoolingDisabled;
 
   /** Can be used to return a custom Pool implementation for testing. */
-  @VisibleForTesting
-  public static ThreadLocal<MountItemsPool.Factory> sMountContentPoolFactory = new ThreadLocal<>();
+  private static final ThreadLocal<MountItemsPool.Factory> sMountContentPoolFactory =
+      new ThreadLocal<>();
+
+  private static boolean sHasMountContentPoolFactory = false;
 
   public static Object acquireMountContent(Context context, ContentAllocator poolableMountContent) {
 
@@ -186,6 +188,12 @@ public class MountItemsPool {
     }
   }
 
+  @VisibleForTesting
+  public static void setMountContentPoolFactory(@Nullable final MountItemsPool.Factory factory) {
+    sMountContentPoolFactory.set(factory);
+    sHasMountContentPoolFactory = factory != null;
+  }
+
   public static Object acquireHostMountContent(
       Context context, @Nullable IBinder windowToken, ContentAllocator hostContentProvider) {
     final ItemPool pool = getHostMountContentPool(context, windowToken, hostContentProvider);
@@ -242,9 +250,11 @@ public class MountItemsPool {
 
   @Nullable
   private static ItemPool createRecyclingPool(ContentAllocator poolableMountContent) {
-    final MountItemsPool.Factory factory = sMountContentPoolFactory.get();
-    if (factory != null) {
-      return factory.createMountContentPool();
+    if (sHasMountContentPoolFactory) {
+      final MountItemsPool.Factory factory = sMountContentPoolFactory.get();
+      if (factory != null) {
+        return factory.createMountContentPool();
+      }
     }
 
     return poolableMountContent.createRecyclingPool();
