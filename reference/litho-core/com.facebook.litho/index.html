@@ -605,7 +605,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-debug-component-description-helper/index.html">DebugComponentDescriptionHelper</a></div><div class="brief ">Describes <a href="-debug-component/index.html">DebugComponent</a>s for use in testing and debugging.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-debug-component-description-helper/index.html">DebugComponentDescriptionHelper</a></div><div class="brief "><p class="paragraph">Describes <a href="-debug-component/index.html">DebugComponent</a>s for use in testing and debugging. Note that com.facebook.litho.config.ComponentsConfiguration#isEndToEndTestRun must be enabled in order for this data to be collected.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -1250,7 +1250,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-has-litho-view-children/index.html">HasLithoViewChildren</a></div><div class="brief ">An interface that a mountable view can extend which informs that this mountable content has other LithoView children.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-suppress-wildcards/index.html"><span class="token annotation builtin">JvmSuppressWildcards</span></a></div></div><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-has-litho-view-children/index.html">HasLithoViewChildren</a></div><div class="brief "><p class="paragraph">An fun interface that a mountable view can extend which informs that this mountable content has other <a href="-litho-view/index.html">LithoView</a> children. This is used to make sure to unmount this view's children when unmounting this view itself.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -1265,7 +1265,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-hook-initializer/index.html">HookInitializer</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-hook-initializer/index.html">T</a><span class="token operator">&gt;</span></div><div class="brief ">Interface for a block of code that will initialize a hook value.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-hook-initializer/index.html">HookInitializer</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-hook-initializer/index.html">T</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Interface for a block of code that will initialize a hook value.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -1280,7 +1280,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-hook-updater/index.html">HookUpdater</a></div><div class="brief ">EXPERIMENTAL - interface for a block of code that will update state created with useState.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-hook-updater/index.html">HookUpdater</a></div><div class="brief "><p class="paragraph">EXPERIMENTAL - fun interface for a block of code that will update state created with useState. See KState.kt for more details.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -2150,7 +2150,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-null-node/index.html">NullNode</a> : <a href="-litho-node/index.html">LithoNode</a></div><div class="brief ">This <a href="-litho-node/index.html">LithoNode</a> represents a component that renders to null.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-null-node/index.html">NullNode</a> : <a href="-litho-node/index.html">LithoNode</a></div><div class="brief "><p class="paragraph">This <a href="-litho-node/index.html">LithoNode</a> represents a component that renders to <code class="lang-kotlin">null</code>. This is required to support reconciliation of state, and transitions on a component that conditionally renders to null.</p></div></div></div>
               </div>
             </div>
           </div>
