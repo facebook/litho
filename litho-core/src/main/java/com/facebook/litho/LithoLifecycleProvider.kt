@@ -14,42 +14,29 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.litho
 
 /**
  * Manages a Litho ComponentTree lifecycle and informs subscribed LithoLifecycleListeners when a
  * lifecycle state occurs.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public interface LithoLifecycleProvider {
-  enum LithoLifecycle {
+interface LithoLifecycleProvider {
+
+  enum class LithoLifecycle(private val text: String) {
     HINT_VISIBLE("HINT_VISIBLE"),
     HINT_INVISIBLE("HINT_INVISIBLE"),
     DESTROYED("DESTROYED");
 
-    private final String name;
+    fun equalsName(otherName: String): Boolean = text == otherName
 
-    LithoLifecycle(String s) {
-      name = s;
-    }
-
-    public boolean equalsName(String otherName) {
-      return name.equals(otherName);
-    }
-
-    @Override
-    public String toString() {
-      return this.name;
-    }
+    override fun toString(): String = text
   }
 
-  void moveToLifecycle(LithoLifecycle lithoLifecycle);
+  fun moveToLifecycle(lithoLifecycle: LithoLifecycle)
 
-  LithoLifecycle getLifecycleStatus();
+  val lifecycleStatus: LithoLifecycle
 
-  void addListener(LithoLifecycleListener listener);
+  fun addListener(listener: LithoLifecycleListener)
 
-  void removeListener(LithoLifecycleListener listener);
+  fun removeListener(listener: LithoLifecycleListener)
 }

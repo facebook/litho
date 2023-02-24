@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import androidx.lifecycle.LifecycleOwner;
-import javax.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner
 
 /**
- * This abstraction allows us to retrieve a {@link LifecycleOwner}. This class is meant to be used
- * to identify the closest {@link LifecycleOwner} and associate it to the {@link ComponentTree}.
+ * This abstraction allows us to retrieve a [LifecycleOwner]. This class is meant to be used to
+ * identify the closest [LifecycleOwner] and associate it to the [ComponentTree].
  *
- * <p>If there is no knowledge about the current {@link LifecycleOwner} it will return {@code null}
+ * If there is no knowledge about the current [LifecycleOwner] it will return `null`
  */
-public interface AOSPLifecycleOwnerProvider {
-
-  @Nullable
-  LifecycleOwner getLifecycleOwner();
+interface AOSPLifecycleOwnerProvider {
+  val lifecycleOwner: LifecycleOwner?
 }
