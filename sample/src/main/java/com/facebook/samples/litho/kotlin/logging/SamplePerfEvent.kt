@@ -18,11 +18,7 @@ package com.facebook.samples.litho.kotlin.logging
 
 import com.facebook.litho.PerfEvent
 
-data class SamplePerfEvent(private val markerId: Int, private val instanceKey: Int) : PerfEvent {
-
-  override fun getInstanceKey(): Int = instanceKey
-
-  override fun getMarkerId(): Int = markerId
+data class SamplePerfEvent(override val markerId: Int, override val instanceKey: Int) : PerfEvent {
 
   override fun markerAnnotate(annotationKey: String, annotationValue: String?) {
     PerfEventStore.markerAnnotate(this, annotationKey, annotationValue)
@@ -40,13 +36,13 @@ data class SamplePerfEvent(private val markerId: Int, private val instanceKey: I
     PerfEventStore.markerAnnotate(this, annotationKey, annotationValue)
   }
 
-  override fun markerAnnotate(annotationKey: String, annotationValue: Array<out String>) {
+  override fun markerAnnotate(annotationKey: String, annotationValue: Array<String>) {
     // Using Lists here only to make formatting easier. Otherwise we'd have to
     // keep separate stores for the types (which would be the right thing to do).
     PerfEventStore.markerAnnotate(this, annotationKey, annotationValue.toList())
   }
 
-  override fun markerAnnotate(annotationKey: String, annotationValue: Array<out Double>) {
+  override fun markerAnnotate(annotationKey: String, annotationValue: Array<Double>) {
     PerfEventStore.markerAnnotate(this, annotationKey, annotationValue.toList())
   }
 
