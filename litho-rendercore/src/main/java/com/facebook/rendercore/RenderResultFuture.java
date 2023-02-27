@@ -30,6 +30,20 @@ public class RenderResultFuture<State, RenderContext>
   private final @Nullable RenderResult<State, RenderContext> mPreviousResult;
 
   public RenderResultFuture(
+      final @Nullable RenderResult<State, RenderContext> previousResult,
+      final int setRootId,
+      final int widthSpec,
+      final int heightSpec,
+      final Callable<RenderResult<State, RenderContext>> callable) {
+    super(callable, "RenderResultFuture");
+
+    mPreviousResult = previousResult;
+    mSetRootId = setRootId;
+    mWidthSpec = widthSpec;
+    mHeightSpec = heightSpec;
+  }
+
+  public RenderResultFuture(
       final Context context,
       final RenderState.ResolveFunc<State, RenderContext> resolveFunc,
       final @Nullable RenderContext renderContext,
@@ -38,11 +52,13 @@ public class RenderResultFuture<State, RenderContext>
       final int setRootId,
       final int widthSpec,
       final int heightSpec) {
-    super(
-        new Callable<RenderResult<State, RenderContext>>() {
-          @Override
-          public RenderResult<State, RenderContext> call() {
-            return RenderResult.render(
+    this(
+        previousResult,
+        setRootId,
+        widthSpec,
+        heightSpec,
+        () ->
+            RenderResult.render(
                 context,
                 resolveFunc,
                 renderContext,
@@ -50,15 +66,7 @@ public class RenderResultFuture<State, RenderContext>
                 previousResult,
                 setRootId,
                 widthSpec,
-                heightSpec);
-          }
-        },
-        "RenderResultFuture");
-
-    mPreviousResult = previousResult;
-    mSetRootId = setRootId;
-    mWidthSpec = widthSpec;
-    mHeightSpec = heightSpec;
+                heightSpec));
   }
 
   @Nullable
