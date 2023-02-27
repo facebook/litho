@@ -13,31 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:JvmName("FastMath")
 
-package com.facebook.litho;
-
-import com.facebook.infer.annotation.Nullsafe;
+package com.facebook.litho
 
 /**
  * Implements some math functions in a faster way than the java Math package. This will always have
  * the downside of not supporting all the edge cases which the java Math package does support so
  * please read up on those edge cases before using these methods.
+ *
+ * This stack overflow post has more context around what cases this implementation won't handle.
+ * http://stackoverflow.com/questions/1750739/faster-implementation-of-math-round
+ *
+ * @param val The value to round
+ * @return The rounded value
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class FastMath {
-
-  /**
-   * This stack overflow post has more context around what cases this implementation won't handle.
-   * http://stackoverflow.com/questions/1750739/faster-implementation-of-math-round
-   *
-   * @param val The value to round
-   * @return The rounded value
-   */
-  public static int round(float val) {
-    if (val > 0) {
-      return (int) (val + 0.5);
-    } else {
-      return (int) (val - 0.5);
-    }
-  }
-}
+@get:JvmName("round")
+val Float.fastRound: Int
+  get() =
+      if (this > 0) {
+        (this + 0.5).toInt()
+      } else {
+        (this - 0.5).toInt()
+      }
