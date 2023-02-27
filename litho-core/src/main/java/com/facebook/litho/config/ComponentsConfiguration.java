@@ -202,6 +202,11 @@ public class ComponentsConfiguration {
 
   public static int hostComponentPoolSize = 30;
 
+  /** When {@code true} ComponentTree records state change snapshots */
+  public static boolean isTimelineEnabled = isDebugModeEnabled;
+
+  public static @Nullable String timelineDocsLink = null;
+
   /**
    * When enabled, Resolve and Layout futures will run separately. Resolve will store a committed
    * LithoResolutionResult, which will allow subsequent layouts to reuse that result to produce a

@@ -59,6 +59,7 @@ public final class DebugComponent {
   private int mXOffset;
   private int mYOffset;
   private boolean mIsRoot;
+  private @Nullable ComponentTreeTimeMachine mComponentTreeTimeMachine;
 
   private DebugComponent() {}
 
@@ -66,7 +67,8 @@ public final class DebugComponent {
       final LithoLayoutResult result,
       final int componentIndex,
       final int xOffset,
-      final int yOffset) {
+      final int yOffset,
+      @Nullable final ComponentTree componentTree) {
     final DebugComponent debugComponent = new DebugComponent();
     final LithoNode node = result.getNode();
     final ComponentContext context = result.getContext();
@@ -77,12 +79,15 @@ public final class DebugComponent {
 
     final String componentKey = node.getGlobalKeyAt(componentIndex);
 
+    debugComponent.mComponentTreeTimeMachine =
+        componentTree != null ? componentTree.getTimeMachine() : null;
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mResult = result;
     debugComponent.mNode = result.getNode();
     debugComponent.mComponentIndex = componentIndex;
     debugComponent.mXOffset = xOffset;
     debugComponent.mYOffset = yOffset;
+
     node.registerDebugComponent(debugComponent);
 
     return debugComponent;
@@ -103,7 +108,8 @@ public final class DebugComponent {
     }
     final LithoNode node = root.getNode();
     final int outerWrapperComponentIndex = Math.max(0, node.getComponentCount() - 1);
-    DebugComponent component = DebugComponent.getInstance(root, outerWrapperComponentIndex, 0, 0);
+    DebugComponent component =
+        DebugComponent.getInstance(root, outerWrapperComponentIndex, 0, 0, componentTree);
     if (component != null) {
       component.mIsRoot = true;
     }
@@ -114,7 +120,7 @@ public final class DebugComponent {
   public static DebugComponent getInstance(LithoLayoutResult result) {
     final LithoNode rootNode = result.getNode();
     final int outerWrapperComponentIndex = Math.max(0, rootNode.getComponentCount() - 1);
-    return DebugComponent.getInstance(result, outerWrapperComponentIndex, 0, 0);
+    return DebugComponent.getInstance(result, outerWrapperComponentIndex, 0, 0, null);
   }
 
   public static @Nullable RenderUnit getRenderUnit(
@@ -223,7 +229,7 @@ public final class DebugComponent {
 
         final int index = Math.max(0, nestedResult.getNode().getComponentCount() - 2);
         final DebugComponent component =
-            getInstance(nestedResult, index, getXFromRoot(), getYFromRoot());
+            getInstance(nestedResult, index, getXFromRoot(), getYFromRoot(), null);
         return Collections.singletonList(component);
 
       } else {
@@ -241,7 +247,7 @@ public final class DebugComponent {
     if (index < 0) {
       return Collections.emptyList();
     }
-    DebugComponent component = getInstance(mResult, index, mXOffset, mYOffset);
+    DebugComponent component = getInstance(mResult, index, mXOffset, mYOffset, null);
     return component != null ? Collections.singletonList(component) : Collections.emptyList();
   }
 
@@ -250,7 +256,7 @@ public final class DebugComponent {
     for (int i = 0, count = result.getChildCount(); i < count; i++) {
       final LithoLayoutResult childNode = result.getChildAt(i);
       final int index = Math.max(0, childNode.getNode().getComponentCount() - 1);
-      DebugComponent component = getInstance(childNode, index, x, y);
+      DebugComponent component = getInstance(childNode, index, x, y, null);
       if (component != null) {
         children.add(component);
       }
@@ -484,6 +490,11 @@ public final class DebugComponent {
   /** @return The Component instance this debug component wraps. */
   public Component getComponent() {
     return mNode.getComponentAt(mComponentIndex);
+  }
+
+  @Nullable
+  public ComponentTreeTimeMachine getComponentTreeTimeMachine() {
+    return mComponentTreeTimeMachine;
   }
 
   private String getComponentGlobalKey() {

@@ -62,7 +62,6 @@ import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
-import com.facebook.litho.LithoTreeLifecycleProvider.OnReleaseListener;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.perfboost.LithoPerfBooster;
@@ -130,6 +129,8 @@ public class ComponentTree
   private int mStateUpdatesFromCreateLayoutCount;
 
   private boolean mInAttach = false;
+
+  @Nullable private final ComponentTreeTimeMachine mTimeMachine;
 
   @Override
   public void onMovedToState(LithoLifecycle state) {
@@ -446,6 +447,12 @@ public class ComponentTree
 
     if (builder.mLifecycleProvider != null) {
       subscribeToLifecycleProvider(builder.mLifecycleProvider);
+    }
+
+    if (ComponentsConfiguration.isTimelineEnabled) {
+      mTimeMachine = new DebugComponentTreeTimeMachine(this);
+    } else {
+      mTimeMachine = null;
     }
 
     if (ComponentsConfiguration.enableStateUpdatesBatching) {
@@ -2374,6 +2381,7 @@ public class ComponentTree
         if (localTreeState != null) {
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
+            saveRevision(rootComponent, treeState, treeProps, source, extraAttribution);
             if (isResolveAndLayoutFuturesSplitEnabled) {
               // Render state was committed during resolve
               treeState.commitLayoutState(localTreeState);
@@ -3751,5 +3759,50 @@ public class ComponentTree
     private void scheduleChoreographerCreation() {
       mMainThreadHandler.postAtFront(mCreateMainChoreographerRunnable, "Create Main Choreographer");
     }
+  }
+
+  /** This should only be used by Flipper. */
+  @Nullable
+  ComponentTreeTimeMachine getTimeMachine() {
+    return mTimeMachine;
+  }
+
+  private void saveRevision(
+      Component root,
+      TreeState treeState,
+      @Nullable TreeProps treeProps,
+      @LayoutState.CalculateLayoutSource int source,
+      @Nullable String attribution) {
+    if (mTimeMachine != null) {
+      final TreeState frozenTreeState = new TreeState(treeState);
+      mTimeMachine.storeRevision(root, frozenTreeState, treeProps, source, attribution);
+    }
+  }
+
+  /**
+   * Similar to {@link ComponentTree#setRoot(Component)}. This method allows setting a new root with
+   * cached {@link TreeProps} and {@link StateHandler}.
+   *
+   * <p>It is used to enable time-travelling through external editors such as Flipper.
+   */
+  @UiThread
+  protected synchronized void applyRevision(ComponentTreeTimeMachine.Revision revision) {
+    ThreadUtils.assertMainThread();
+
+    mTreeState = revision.getTreeState();
+    mRootTreeProps = revision.getTreeProps();
+
+    setRootAndSizeSpecInternal(
+        revision.getRoot(),
+        SIZE_UNINITIALIZED,
+        SIZE_UNINITIALIZED,
+        false /* isAsync */,
+        null /* output */,
+        CalculateLayoutSource.RELOAD_PREVIOUS_STATE,
+        INVALID_LAYOUT_VERSION,
+        null,
+        null,
+        false,
+        true);
   }
 }
