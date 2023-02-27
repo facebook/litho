@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
- * Defines an abstraction that knows how to store attributes.
- *
- * <p>This is used so that the clients can only set attributes and not read them.
- *
- * <p>Reading attributes is not allowed for the clients, as only the testing APIs should use it.
+ * This type of key is used to represent an attribute that reflects an Action (such as click, long
+ * click, etc).
  */
-public interface AttributesAcceptor {
-
-  <T> void setAttributeKey(AttributeKey<T> attributeKey, T value);
-}
+class ActionAttributeKey<T>(description: String) : AttributeKey<T>(description)

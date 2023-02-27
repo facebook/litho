@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
- * This type of key is used to represent an attribute that reflects an Action (such as click, long
- * click, etc).
+ * Defines an abstraction that knows how to store attributes.
+ *
+ * This is used so that the clients can only set attributes and not read them.
+ *
+ * Reading attributes is not allowed for the clients, as only the testing APIs should use it.
  */
-public class ActionAttributeKey<T> extends AttributeKey<T> {
-
-  public ActionAttributeKey(String description) {
-    super(description);
-  }
+interface AttributesAcceptor {
+  fun <T> setAttributeKey(attributeKey: AttributeKey<T>, value: T)
 }

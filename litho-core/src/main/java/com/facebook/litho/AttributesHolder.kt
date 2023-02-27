@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedHashMap
 
 /** Simple holder which allows to store and retrieve attributes. */
-public class AttributesHolder implements AttributesAcceptor {
+class AttributesHolder : AttributesAcceptor {
 
-  private final Map<AttributeKey<?>, Object> mAttributes = new LinkedHashMap<>();
+  private val _attributes: MutableMap<AttributeKey<*>, Any?> = LinkedHashMap()
 
-  public <T> T get(AttributeKey<T> key) {
-    return (T) mAttributes.get(key);
+  operator fun <T> get(key: AttributeKey<T>): T? = _attributes[key] as T?
+
+  override fun <T> setAttributeKey(attributeKey: AttributeKey<T>, value: T) {
+    _attributes[attributeKey] = value
   }
 
-  @Override
-  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
-    mAttributes.put(attributeKey, value);
-  }
-
-  public Map<AttributeKey<?>, Object> getAttributes() {
-    return mAttributes;
-  }
+  val attributes: Map<AttributeKey<*>, Any?>
+    get() = _attributes
 }

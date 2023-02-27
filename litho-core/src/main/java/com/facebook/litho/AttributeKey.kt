@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
  * This abstraction is used as an identifier for a given attribute of type T. Attributes are used
  * for testing purposes, allowing the clients to filter and assert on Component according to them.
  */
-public class AttributeKey<T> {
-
-  private final String mDescription;
-
-  public AttributeKey(String description) {
-    mDescription = description;
-  }
-
-  public String getDescription() {
-    return mDescription;
-  }
-}
+open class AttributeKey<T>(val description: String)
