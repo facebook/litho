@@ -50,7 +50,7 @@ dependencies {
   kapt "com.facebook.litho:litho-processor:$litho_version"
 
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:0.10.4+'
+  implementation 'com.facebook.soloader:soloader:0.10.5+'
 
   implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01'
 }
