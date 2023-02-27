@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.infer.annotation.ReturnsOwnership;
-import com.facebook.infer.annotation.ThreadSafe;
-import javax.annotation.Nullable;
+import com.facebook.infer.annotation.ReturnsOwnership
+import com.facebook.infer.annotation.ThreadSafe
 
 /** Type for parameters that are logical outputs. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class Output<T> {
-  private @Nullable T mT;
+open class Output<T> {
+
+  private var t: T? = null
 
   /** Assumed thread-safe because the one write is before all the reads */
   @ThreadSafe(enableChecks = false)
-  public void set(@Nullable T t) {
-    mT = t;
+  fun set(t: T?) {
+    this.t = t
   }
 
-  @ReturnsOwnership
-  public @Nullable T get() {
-    return mT;
-  }
+  @ReturnsOwnership fun get(): T? = t
 }
