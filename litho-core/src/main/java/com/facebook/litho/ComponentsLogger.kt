@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
-import java.util.Map;
+import com.facebook.litho.FrameworkLogEvents.LogEventId
 
 /**
  * An interface for logging events and performance events in litho as well as in user defined
- * components. The ComponentsLogger is set on the {@link ComponentContext}. See {@link
- * FrameworkLogEvents} for a list of events and parameters logged internally by Litho.
+ * components. The ComponentsLogger is set on the [ComponentContext]. See [FrameworkLogEvents] for a
+ * list of events and parameters logged internally by Litho.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public interface ComponentsLogger {
+interface ComponentsLogger {
 
-  enum LogLevel {
+  enum class LogLevel {
     WARNING,
     ERROR,
     FATAL
@@ -36,16 +33,15 @@ public interface ComponentsLogger {
 
   /**
    * Create a new performance event with the given event id and start counting the time. If the
-   * logger doesn't care about this event id, it may return null.
+   * logger doesn't care about this event id, it may return `null`.
    */
-  @Nullable
-  PerfEvent newPerformanceEvent(ComponentContext c, @FrameworkLogEvents.LogEventId int eventId);
+  fun newPerformanceEvent(c: ComponentContext, @LogEventId eventId: Int): PerfEvent?
 
-  /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
-  void logPerfEvent(PerfEvent event);
+  /** Write a [PerfEvent] to storage. This also marks the end of the event. */
+  fun logPerfEvent(event: PerfEvent)
 
-  /** Release a previously obtained {@link PerfEvent} without logging it. */
-  void cancelPerfEvent(PerfEvent event);
+  /** Release a previously obtained [PerfEvent] without logging it. */
+  fun cancelPerfEvent(event: PerfEvent)
 
   /**
    * Provide additional log metadata based on the tree props of the component hierarchy currently
@@ -53,11 +49,10 @@ public interface ComponentsLogger {
    *
    * @param treeProps The treeprops available in the hierarchy.
    * @return Null for efficiency purposes when no data needs to be logged, associative map
-   *     otherwise.
+   *   otherwise.
    */
-  @Nullable
-  Map<String, String> getExtraAnnotations(TreeProps treeProps);
+  fun getExtraAnnotations(treeProps: TreeProps): Map<String, String>?
 
   /** @return whether this event is being traced and getting logged. */
-  boolean isTracing(PerfEvent logEvent);
+  fun isTracing(logEvent: PerfEvent): Boolean
 }
