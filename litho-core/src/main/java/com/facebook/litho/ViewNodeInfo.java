@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.drawable.DrawableUtils;
+import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 

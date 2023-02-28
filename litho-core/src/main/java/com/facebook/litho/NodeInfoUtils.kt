@@ -16,6 +16,9 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.primitives.utils.equals
+import com.facebook.rendercore.primitives.utils.isEquivalentTo
+
 object NodeInfoUtils {
   @JvmStatic
   fun isEquivalentTo(x: NodeInfo?, y: NodeInfo?): Boolean {
@@ -28,13 +31,13 @@ object NodeInfoUtils {
     if (x.flags != y.flags) {
       return false
     }
-    if (!EquivalenceUtils.equals(x.accessibilityRole, y.accessibilityRole)) {
+    if (!equals(x.accessibilityRole, y.accessibilityRole)) {
       return false
     }
     if (x.alpha != y.alpha) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(x.clickHandler, y.clickHandler)) {
+    if (!isEquivalentTo(x.clickHandler, y.clickHandler)) {
       return false
     }
     if (x.clipToOutline != y.clipToOutline) {
@@ -43,53 +46,52 @@ object NodeInfoUtils {
     if (x.clipChildren != y.clipChildren) {
       return false
     }
-    if (!EquivalenceUtils.equals(x.contentDescription, y.contentDescription)) {
+    if (!equals(x.contentDescription, y.contentDescription)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.dispatchPopulateAccessibilityEventHandler, y.dispatchPopulateAccessibilityEventHandler)) {
       return false
     }
     if (x.enabledState != y.enabledState) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(x.focusChangeHandler, y.focusChangeHandler)) {
+    if (!isEquivalentTo(x.focusChangeHandler, y.focusChangeHandler)) {
       return false
     }
     if (x.focusState != y.focusState) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(x.interceptTouchHandler, y.interceptTouchHandler)) {
+    if (!isEquivalentTo(x.interceptTouchHandler, y.interceptTouchHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(x.longClickHandler, y.longClickHandler)) {
+    if (!isEquivalentTo(x.longClickHandler, y.longClickHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.onInitializeAccessibilityEventHandler, y.onInitializeAccessibilityEventHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.onInitializeAccessibilityNodeInfoHandler, y.onInitializeAccessibilityNodeInfoHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.onPopulateAccessibilityEventHandler, y.onPopulateAccessibilityEventHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.onPopulateAccessibilityNodeHandler, y.onPopulateAccessibilityNodeHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.onRequestSendAccessibilityEventHandler, y.onRequestSendAccessibilityEventHandler)) {
       return false
     }
-    if (!EquivalenceUtils.equals(x.outlineProvider, y.outlineProvider)) {
+    if (!equals(x.outlineProvider, y.outlineProvider)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
-        x.performAccessibilityActionHandler, y.performAccessibilityActionHandler)) {
+    if (!isEquivalentTo(x.performAccessibilityActionHandler, y.performAccessibilityActionHandler)) {
       return false
     }
     if (x.rotation != y.rotation) {
@@ -101,11 +103,10 @@ object NodeInfoUtils {
     if (x.selectedState != y.selectedState) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
-        x.sendAccessibilityEventHandler, y.sendAccessibilityEventHandler)) {
+    if (!isEquivalentTo(x.sendAccessibilityEventHandler, y.sendAccessibilityEventHandler)) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(
+    if (!isEquivalentTo(
         x.sendAccessibilityEventUncheckedHandler, y.sendAccessibilityEventUncheckedHandler)) {
       return false
     }
@@ -118,12 +119,12 @@ object NodeInfoUtils {
     if (x.spotShadowColor != y.spotShadowColor) {
       return false
     }
-    if (!EquivalenceUtils.isEquivalentTo(x.touchHandler, y.touchHandler)) {
+    if (!isEquivalentTo(x.touchHandler, y.touchHandler)) {
       return false
     }
-    if (!EquivalenceUtils.equals(x.viewTag, y.viewTag)) {
+    if (!equals(x.viewTag, y.viewTag)) {
       return false
     }
-    return EquivalenceUtils.equals(x.viewTags, y.viewTags)
+    return equals(x.viewTags, y.viewTags)
   }
 }

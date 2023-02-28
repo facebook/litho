@@ -22,6 +22,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
 import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinder
+import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
 /**
  * Base class for Kotlin mountable components. This class encapsulates some of the Mount Spec APIs.
@@ -92,7 +93,7 @@ abstract class MountableComponent() : Component() {
     if (id == other.id) {
       return true
     }
-    if (!EquivalenceUtils.hasEquivalentFields(this, other, shouldCompareCommonProps)) {
+    if (!hasEquivalentFields(this, other)) {
       return false
     }
 

@@ -25,6 +25,7 @@ import com.facebook.rendercore.incrementalmount.ExcludeFromIncrementalMountBinde
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.MountBehavior
 import com.facebook.rendercore.primitives.Primitive
+import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
 /**
  * Base class for Kotlin primitive components. This class encapsulates some of the Mount Spec APIs.
@@ -81,7 +82,7 @@ abstract class PrimitiveComponent : Component() {
     if (id == other.id) {
       return true
     }
-    if (!EquivalenceUtils.hasEquivalentFields(this, other, shouldCompareCommonProps)) {
+    if (!hasEquivalentFields(this, other)) {
       return false
     }
 

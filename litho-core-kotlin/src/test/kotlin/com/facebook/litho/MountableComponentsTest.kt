@@ -56,6 +56,7 @@ import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.RenderUnit.DelegateBinder.createDelegateBinder
+import com.facebook.rendercore.primitives.utils.isEqualOrEquivalentTo
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
@@ -1059,7 +1060,7 @@ class NonLithoViewMountable(
                 nextLayoutData as TestLayoutData
 
                 return currentLayoutData != nextLayoutData ||
-                    !EquivalenceUtils.isEqualOrEquivalentTo(currentModel, newModel)
+                    !isEqualOrEquivalentTo(currentModel, newModel)
               }
 
               override fun bind(

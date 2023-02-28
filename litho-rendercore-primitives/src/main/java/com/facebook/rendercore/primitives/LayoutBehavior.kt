@@ -19,7 +19,7 @@ package com.facebook.rendercore.primitives
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Node
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.primitives.utils.ExperimentalEquivalenceUtils
+import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
 /**
  * LayoutBehavior defines how large a primitive is and, if it has children, how it lays out and
@@ -31,8 +31,7 @@ interface LayoutBehavior : Equivalence<LayoutBehavior> {
   fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult
 
   // By default, LayoutBehavior have field-wise equivalence, like Components
-  override fun isEquivalentTo(other: LayoutBehavior): Boolean =
-      ExperimentalEquivalenceUtils.hasEquivalentFields(this, other)
+  override fun isEquivalentTo(other: LayoutBehavior): Boolean = hasEquivalentFields(this, other)
 }
 
 /**

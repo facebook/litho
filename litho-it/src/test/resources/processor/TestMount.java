@@ -932,7 +932,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         return false;
       }
       CachedInputs cachedValueInputs = (CachedInputs) other;
-      if (!com.facebook.litho.EquivalenceUtils.equals(globalKey, cachedValueInputs.globalKey)) {
+      if (!com.facebook.rendercore.primitives.utils.EquivalenceUtils.equals(
+          globalKey, cachedValueInputs.globalKey)) {
         return false;
       }
       if (prop3 != null

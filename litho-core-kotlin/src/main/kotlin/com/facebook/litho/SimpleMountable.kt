@@ -22,6 +22,7 @@ import com.facebook.rendercore.LayoutContext
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.Mountable
 import com.facebook.rendercore.RenderUnit
+import com.facebook.rendercore.primitives.utils.isEqualOrEquivalentTo
 
 /**
  * This is a simplified implementation of a [Mountable] which requires only one [Binder]. Must be
@@ -75,9 +76,7 @@ abstract class SimpleMountable<ContentT : Any>(renderType: RenderType) :
       newMountable: SimpleMountable<ContentT>,
       currentLayoutData: Any?,
       nextLayoutData: Any?
-  ): Boolean =
-      currentLayoutData != nextLayoutData ||
-          !EquivalenceUtils.isEqualOrEquivalentTo(this, newMountable)
+  ): Boolean = currentLayoutData != nextLayoutData || !isEqualOrEquivalentTo(this, newMountable)
 
   override fun getContentAllocator(): ContentAllocator<ContentT> {
     return this

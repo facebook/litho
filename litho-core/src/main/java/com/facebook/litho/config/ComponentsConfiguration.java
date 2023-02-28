@@ -276,8 +276,6 @@ public class ComponentsConfiguration {
 
   public static boolean crashOnWrongUseRefUsage = false;
 
-  public static boolean enableKotlinEquivalenceUtil = false;
-
   private static boolean sReduceMemorySpikeUserSession = false;
   private static boolean sReduceMemorySpikeDataDiffSection = false;
   private static boolean sReduceMemorySpikeGetUri = false;

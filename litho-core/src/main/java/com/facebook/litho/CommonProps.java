@@ -31,6 +31,7 @@ import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.rendercore.primitives.Equivalence;
+import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;

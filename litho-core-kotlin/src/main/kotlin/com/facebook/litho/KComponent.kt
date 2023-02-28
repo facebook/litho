@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
@@ -64,7 +65,7 @@ abstract class KComponent : Component() {
     if (id == other.id) {
       return true
     }
-    if (!EquivalenceUtils.hasEquivalentFields(this, other, shouldCompareCommonProps)) {
+    if (!hasEquivalentFields(this, other)) {
       return false
     }
 
