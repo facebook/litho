@@ -17,7 +17,6 @@
 package com.facebook.litho.sections.widget;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
@@ -81,7 +80,7 @@ public class LegacyRecyclerCollectionComponentSpecTest {
             true);
 
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
-    assertThat(childView).isNotNull();
+    Assertions.assertThat(childView).isNotNull();
     Assertions.assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
   }
 
@@ -104,7 +103,7 @@ public class LegacyRecyclerCollectionComponentSpecTest {
             false);
 
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
-    assertThat(childView).isNotNull();
+    Assertions.assertThat(childView).isNotNull();
     Assertions.assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
   }
 

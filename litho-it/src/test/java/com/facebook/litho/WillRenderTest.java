@@ -23,11 +23,11 @@ import static com.facebook.litho.LifecycleStep.ON_CREATE_INITIAL_STATE;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_TREE_PROP;
 import static com.facebook.litho.LifecycleStep.getSteps;
-import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.View;
 import com.facebook.litho.testing.LegacyLithoViewRule;
+import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
@@ -98,9 +98,10 @@ public class WillRenderTest {
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
-    ComponentContext c = new ComponentContext(getApplicationContext());
+    final ComponentContext c = mLegacyLithoViewRule.getContext();
     c.setRenderStateContextForTests();
-    assertThat(c, Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
+    mLegacyLithoViewRule.setRoot(Wrapper.create(c).delegate(mNonNullSpec).build());
+    LithoAssertions.assertThat(mLegacyLithoViewRule.getLithoView()).willRenderContent();
   }
 
   @Test

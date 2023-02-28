@@ -24,11 +24,7 @@ import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADING;
 import static com.facebook.litho.testing.MeasureSpecTestingUtilsKt.exactly;
-import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
-import static com.facebook.litho.testing.assertj.LegacyLithoAssertions.assertThat;
-import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.condition.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
@@ -150,22 +146,17 @@ public class RecyclerCollectionComponentSpecTest {
                     .component(Text.create(mComponentContext).text("content").build())
                     .build())
             .build();
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            context -> RecyclerCollectionComponent.updateLoadingState(context, EMPTY));
 
-    assertThat(mComponentContext, mRecyclerCollectionComponent)
-        .withStateUpdate(
-            new StateUpdatesTestHelper.StateUpdater() {
-              @Override
-              public void performStateUpdate(ComponentContext c) {
-                RecyclerCollectionComponent.updateLoadingState(c, EMPTY);
-              }
-            })
-        .doesNotHave(
-            deepSubComponentWith(
-                anyOf(
-                    textEquals("loading"),
-                    textEquals("content"),
-                    textEquals("empty"),
-                    textEquals("error"))));
+    ViewTreeAssert.assertThat(ViewTree.of(view))
+        .doesNotHaveVisibleText("loading")
+        .doesNotHaveVisibleText("content")
+        .doesNotHaveVisibleText("empty")
+        .doesNotHaveVisibleText("error");
   }
 
   @Test
