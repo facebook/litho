@@ -41,11 +41,11 @@ class Primitive<ContentType : Any>(
   val renderUnit: PrimitiveRenderUnit<ContentType> = mountBehavior.renderUnit
 
   override fun calculateLayout(
-      context: LayoutContext<Any?>?,
+      context: LayoutContext<Any?>,
       widthSpec: Int,
       heightSpec: Int
   ): Node.LayoutResult {
-    val layoutScope = LayoutScope(mountBehavior.renderUnit)
+    val layoutScope = LayoutScope(mountBehavior.renderUnit, context)
     return with(layoutBehavior) { layoutScope.layout(widthSpec, heightSpec) }
   }
 }
