@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
- * Interface defining a result calculated from a {@link TreeFuture} that could be interrupted, and
+ * Interface defining a result calculated from a [TreeFuture] that could be interrupted, and
  * therefore be partial (and resumed on the UI thread).
  */
-public interface PotentiallyPartialResult {
-  /** Return true if this result calculated from a {@link TreeFuture} is partial. */
-  boolean isPartialResult();
+interface PotentiallyPartialResult {
+  /** Return true if this result calculated from a [TreeFuture] is partial. */
+  val isPartialResult: Boolean
 }
