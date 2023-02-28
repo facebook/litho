@@ -35,6 +35,26 @@ interface LayoutBehavior : Equivalence<LayoutBehavior> {
 }
 
 /**
+ * Returns a [LayoutBehavior] with sizes set based on the provided widthSpec and heightSpec.
+ *
+ * This method should only be used for Primitive Components which do not measure themselves - it's
+ * the parent that has determined the exact size for this child.
+ *
+ * @throws IllegalArgumentException if the widthSpec or heightSpec is not exact
+ */
+object FromSpecsLayoutBehavior : LayoutBehavior {
+  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+    val result = MeasureResult.fromSpecs(widthSpec, heightSpec)
+
+    return PrimitiveLayoutResult(
+        widthSpec = widthSpec,
+        heightSpec = heightSpec,
+        width = result.width,
+        height = result.height)
+  }
+}
+
+/**
  * Returns a [LayoutBehavior] with sizes set based on the widthSpec and heightSpec if the spec mode
  * is EXACTLY or AT_MOST, otherwise uses default values.
  *
