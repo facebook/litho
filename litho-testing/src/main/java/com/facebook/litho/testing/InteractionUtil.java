@@ -31,48 +31,6 @@ import com.facebook.litho.TestItem;
 /** Utilities for interacting with an app. */
 public class InteractionUtil {
 
-  /**
-   * @deprecated as it is based on {@link RecyclerView#computeVerticalScrollOffset()} which only
-   *     returns estimated scroll position, which may lead to the method hanging forever (or until
-   *     hitting max iterations count) Please, consider using {@link Scroller} instead
-   */
-  @Deprecated
-  public static void scrollTo(final RecyclerView recyclerView, final int targetScrollY) {
-    final int MAX_ITERATIONS = 100;
-
-    int iterations = 0;
-    while (targetScrollY != recyclerView.computeVerticalScrollOffset()) {
-      if (iterations > MAX_ITERATIONS) {
-        throw new RuntimeException(
-            "Timed out trying to get to the correct scroll position! target: "
-                + targetScrollY
-                + ", final: "
-                + recyclerView.computeVerticalScrollOffset());
-      }
-
-      InstrumentationRegistry.getInstrumentation()
-          .runOnMainSync(
-              new Runnable() {
-                @Override
-                public void run() {
-                  recyclerView.smoothScrollBy(
-                      0, targetScrollY - recyclerView.computeVerticalScrollOffset());
-                }
-              });
-      InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-
-      // Sleep because waitForIdleSync doesn't factor in animations (e.g. the scroll animation) that
-      // go through Choreographer
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-
-      iterations++;
-    }
-  }
-
   public static void click(View view) {
     final int[] locationOnScreen = new int[2];
     view.getLocationOnScreen(locationOnScreen);
