@@ -130,6 +130,7 @@ import com.facebook.samples.litho.kotlin.observability.UseLiveDataComponent
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
 import com.facebook.samples.litho.kotlin.primitives.SimpleImageViewExamplePrimitiveComponent
 import com.facebook.samples.litho.kotlin.primitives.bindto.PrimitiveBindToExampleComponent
+import com.facebook.samples.litho.kotlin.primitives.controllers.ControllersExamplePrimitiveComponent
 import com.facebook.samples.litho.kotlin.primitives.widgets.PrimitiveWidgetsExampleComponent
 import com.facebook.samples.litho.kotlin.state.IdentityRootComponent
 import com.facebook.samples.litho.kotlin.state.StateParentChildComponent
@@ -289,6 +290,9 @@ class Demos {
                             SingleDemo(
                                 name = "Sample Primitive Components Example",
                                 component = PrimitiveWidgetsExampleComponent()),
+                            SingleDemo(
+                                name = "Controllers",
+                                component = ControllersExamplePrimitiveComponent()),
                         )),
                     DemoGrouping(
                         name = "Canvas",
