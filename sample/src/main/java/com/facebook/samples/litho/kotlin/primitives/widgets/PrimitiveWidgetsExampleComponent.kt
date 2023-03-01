@@ -16,6 +16,7 @@
 
 package com.facebook.samples.litho.kotlin.primitives.widgets
 
+import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -26,12 +27,19 @@ import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
 import com.facebook.litho.kotlin.widget.Text
+import com.facebook.litho.view.backgroundColor
 import com.facebook.samples.litho.R.drawable.ic_launcher
 
 class PrimitiveWidgetsExampleComponent : KComponent() {
   override fun ComponentScope.render(): Component {
 
     return Column {
+      child(Text("CardClip"))
+      child(
+          CardClip(
+              clippingColor = Color.WHITE,
+              cornerRadius = 20f,
+              style = Style.width(60.dp).height(60.dp).backgroundColor(Color.GRAY)))
       child(Text("Image"))
       child(Image(drawable = drawableRes(ic_launcher), style = Style.width(100.dp).height(100.dp)))
     }
