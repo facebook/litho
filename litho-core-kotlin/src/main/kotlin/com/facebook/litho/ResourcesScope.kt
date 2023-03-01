@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.content.Context
+import androidx.annotation.StyleableRes
 
 /**
  * The receiver for [KComponent] methods which need to access resources and widgets like [Row],
@@ -31,4 +32,22 @@ interface ResourcesScope {
     get() = context.resourceResolver
 
   fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
+
+  /** Retrieves a styled attribute value for provided {@param id}. */
+  fun getIntAttrValue(
+      componentContext: ComponentContext,
+      @StyleableRes id: Int,
+      @StyleableRes attrs: IntArray,
+      defaultValue: Int
+  ): Int {
+    val typedArray = componentContext.obtainStyledAttributes(attrs, 0)
+    for (i in 0 until typedArray.indexCount) {
+      val attributeIndex = typedArray.getIndex(i)
+      if (attributeIndex == id) {
+        return typedArray.getInt(attributeIndex, defaultValue)
+      }
+    }
+    typedArray.recycle()
+    return defaultValue
+  }
 }
