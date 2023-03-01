@@ -25,9 +25,8 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.sections.SectionsFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
-import com.facebook.flipper.plugins.uidebugger.descriptors.DescriptorRegister;
+import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
-import com.facebook.flipper.plugins.uidebugger.observers.TreeObserverFactory;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
 import com.facebook.soloader.SoLoader;
 
@@ -42,13 +41,13 @@ public class LithoSampleApplication extends Application {
 
     if (FlipperUtils.shouldEnableFlipper(this)) {
       final FlipperClient client = AndroidFlipperClient.getInstance(this);
+
+      UIDContext uiDebuggerContext = UIDContext.Companion.create(this);
+      UIDebuggerLithoSupport.INSTANCE.enable(uiDebuggerContext);
+      client.addPlugin(new UIDebuggerFlipperPlugin(uiDebuggerContext));
+
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
       LithoFlipperDescriptors.add(descriptorMapping);
-      DescriptorRegister descriptorRegister = DescriptorRegister.Companion.withDefaults();
-      TreeObserverFactory treeObserverFactory = TreeObserverFactory.Companion.withDefaults();
-      UIDebuggerLithoSupport.INSTANCE.addDescriptors(descriptorRegister);
-      UIDebuggerLithoSupport.INSTANCE.addObserver(treeObserverFactory);
-      client.addPlugin(new UIDebuggerFlipperPlugin(this, descriptorRegister, treeObserverFactory));
       client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
       client.addPlugin(new SectionsFlipperPlugin(true));
       client.start();
