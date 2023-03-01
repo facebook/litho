@@ -59,6 +59,8 @@ class PrimitiveWidgetsExampleComponent : KComponent() {
       child(Progress(style = Style.width(100.dp).height(100.dp)))
       child(Text("Horizontal Scroll"))
       child(HorizontalScroll { Row { getComponents(this) } })
+      child(Text("Vertical Scroll"))
+      child(VerticalScroll(style = Style.height(100.dp)) { Column { getComponents(this) } })
     }
   }
 
