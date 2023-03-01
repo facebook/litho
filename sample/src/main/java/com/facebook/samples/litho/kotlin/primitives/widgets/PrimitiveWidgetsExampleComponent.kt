@@ -55,6 +55,8 @@ class PrimitiveWidgetsExampleComponent : KComponent() {
               style = Style.width(60.dp).height(60.dp)))
       child(Text("Image"))
       child(Image(drawable = drawableRes(ic_launcher), style = Style.width(100.dp).height(100.dp)))
+      child(Text("Progress"))
+      child(Progress(style = Style.width(100.dp).height(100.dp)))
       child(Text("Horizontal Scroll"))
       child(HorizontalScroll { Row { getComponents(this) } })
     }
