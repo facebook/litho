@@ -40,6 +40,13 @@ class PrimitiveWidgetsExampleComponent : KComponent() {
               clippingColor = Color.WHITE,
               cornerRadius = 20f,
               style = Style.width(60.dp).height(60.dp).backgroundColor(Color.GRAY)))
+      child(Text("CardShadow"))
+      child(
+          CardShadow(
+              shadowEndColor = Color.GRAY,
+              shadowSize = 100f,
+              cornerRadius = 20f,
+              style = Style.width(60.dp).height(60.dp)))
       child(Text("Image"))
       child(Image(drawable = drawableRes(ic_launcher), style = Style.width(100.dp).height(100.dp)))
     }
