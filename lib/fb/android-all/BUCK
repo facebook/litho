@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs/android:fb_prebuilt_jar.bzl", "fb_prebuilt_jar")
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
 fb_java_library(
     name = "shadows-prebuilt-core-v3",
