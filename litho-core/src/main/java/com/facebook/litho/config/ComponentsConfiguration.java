@@ -269,8 +269,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableMountableInFacecast = false;
 
-  public static boolean enableMountableInStoriesViewerFeelingsSticker = false;
-
   public static boolean enableMountableInIGDS = false;
   public static boolean enableMountableInIG4A = false;
 
