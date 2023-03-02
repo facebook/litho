@@ -19,6 +19,7 @@ package com.facebook.litho.kotlin.widget
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.text.InputFilter
 import android.view.Gravity
 import android.view.View
@@ -57,6 +58,7 @@ inline fun ResourcesScope.TextInput(
     noinline onTextChanged: ((TextChangedEvent) -> Unit)? = null,
     noinline onSelectionChanged: ((SelectionChangedEvent) -> Unit)? = null,
     handle: Handle? = null,
+    inputBackground: Drawable? = null,
 ): TextInput =
     TextInput.create(context)
         .initialText(initialText)
@@ -74,6 +76,7 @@ inline fun ResourcesScope.TextInput(
         .inputType(inputType)
         .imeOptions(imeOptions)
         .inputFilter(inputFilter)
+        .inputBackground(inputBackground)
         .handle(handle)
         .kotlinStyle(style)
         .apply {
