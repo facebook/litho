@@ -21,7 +21,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import android.widget.FrameLayout
@@ -76,7 +75,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.android.controller.ActivityController
-import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
 
 /**
@@ -102,7 +100,6 @@ import org.robolectric.annotation.LooperMode
  */
 @LooperMode(LooperMode.Mode.LEGACY)
 @SuppressLint("ColorConstantUsageIssue")
-@Config(sdk = [Build.VERSION_CODES.KITKAT])
 @RunWith(LithoTestRunner::class)
 class AnimationTest {
   @JvmField @Rule val lithoViewRule = LithoViewRule()
@@ -1095,7 +1092,7 @@ class AnimationTest {
         .isEqualTo(320)
     Assertions.assertThat(lithoView.height)
         .describedAs("view Height should be at start position")
-        .isEqualTo(422)
+        .isEqualTo(414)
     stateCaller.update()
     lithoViewRule.idle()
 
@@ -1103,10 +1100,10 @@ class AnimationTest {
     Assertions.assertThat(lithoView.x).describedAs("view X axis after toggle").isEqualTo(0f)
     // Y after state update should be at 0 because is going to be animated.
     Assertions.assertThat(lithoView.y).describedAs("view Y axis after toggle").isEqualTo(0f)
-    // Width after state update should be at 320 because is going to be animated.
+    // Width after state update should be same as original because is going to be animated.
     Assertions.assertThat(lithoView.width).describedAs("view Width after toggle").isEqualTo(320)
-    // Height after state update should be at 422 because is going to be animated.
-    Assertions.assertThat(lithoView.height).describedAs("view Height after toggle").isEqualTo(422)
+    // Height after state update should be same as original because is going to be animated.
+    Assertions.assertThat(lithoView.height).describedAs("view Height after toggle").isEqualTo(414)
     transitionTestRule.step(5)
 
     // Check kdoc for how we calculate this value.
