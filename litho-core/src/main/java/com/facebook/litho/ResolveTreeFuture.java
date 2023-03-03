@@ -151,7 +151,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
           mComponentContext.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
 
       partialResult.contextForResuming.getCache().freezeCache();
-      final List<Pair<String, EventHandler>> createdEventHandlers =
+      final List<Pair<String, EventHandler<?>>> createdEventHandlers =
           partialResult.contextForResuming.getCreatedEventHandlers();
 
       return new ResolveResult(

@@ -145,7 +145,7 @@ public class LayoutState
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
   private @Nullable List<ScopedComponentInfo> mScopedSpecComponentInfos;
-  private @Nullable List<Pair<String, EventHandler>> mCreatedEventHandlers;
+  private @Nullable List<Pair<String, EventHandler<?>>> mCreatedEventHandlers;
 
   private final ComponentContext mContext;
 
@@ -1036,13 +1036,13 @@ public class LayoutState
     return scopedSpecComponentInfos;
   }
 
-  void setCreatedEventHandlers(@Nullable List<Pair<String, EventHandler>> createdEventHandlers) {
+  void setCreatedEventHandlers(@Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers) {
     mCreatedEventHandlers = createdEventHandlers;
   }
 
   @Nullable
-  List<Pair<String, EventHandler>> consumeCreatedEventHandlers() {
-    final List<Pair<String, EventHandler>> createdEventHandlers = mCreatedEventHandlers;
+  List<Pair<String, EventHandler<?>>> consumeCreatedEventHandlers() {
+    final List<Pair<String, EventHandler<?>>> createdEventHandlers = mCreatedEventHandlers;
     mCreatedEventHandlers = null;
 
     return createdEventHandlers;
@@ -1347,7 +1347,7 @@ public class LayoutState
 
       setSizeAfterMeasureAndCollectResults(c, lsc, layoutState);
 
-      final List<Pair<String, EventHandler>> layoutCreatedEventHandlers =
+      final List<Pair<String, EventHandler<?>>> layoutCreatedEventHandlers =
           lsc.getCreatedEventHandlers();
       if (layoutCreatedEventHandlers != null) {
         if (layoutState.mCreatedEventHandlers == null) {

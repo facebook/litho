@@ -29,7 +29,7 @@ public class ResolveResult implements PotentiallyPartialResult {
   public final TreeState treeState;
   public final boolean isPartialResult;
   public final int version;
-  public final @Nullable List<Pair<String, EventHandler>> createdEventHandlers;
+  public final @Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers;
   public final @Nullable List<Attachable> attachables;
   public final @Nullable ResolveStateContext contextForResuming;
 
@@ -41,7 +41,7 @@ public class ResolveResult implements PotentiallyPartialResult {
       final TreeState treeState,
       final boolean isPartial,
       final int version,
-      final @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
+      final @Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers,
       final @Nullable List<Attachable> attachables,
       final @Nullable ResolveStateContext contextForResuming) {
     this.node = node;

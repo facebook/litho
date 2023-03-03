@@ -37,7 +37,7 @@ public class ResolveStateContext implements CalculationStateContext {
   private final @Nullable LithoNode mCurrentRoot;
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
   private final @Nullable PerfEvent mPerfEventLogger;
-  private @Nullable ArrayList<Pair<String, EventHandler>> mCreatedEventHandlers = null;
+  private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
 
   ResolveStateContext(
       final MeasuredResultCache cache,
@@ -109,7 +109,7 @@ public class ResolveStateContext implements CalculationStateContext {
   }
 
   @Override
-  public void recordEventHandler(String globalKey, EventHandler eventHandler) {
+  public void recordEventHandler(String globalKey, EventHandler<?> eventHandler) {
     if (mCreatedEventHandlers == null) {
       mCreatedEventHandlers = new ArrayList<>();
     }
@@ -117,7 +117,7 @@ public class ResolveStateContext implements CalculationStateContext {
   }
 
   @Override
-  public @Nullable List<Pair<String, EventHandler>> getCreatedEventHandlers() {
+  public @Nullable List<Pair<String, EventHandler<?>>> getCreatedEventHandlers() {
     return mCreatedEventHandlers;
   }
 

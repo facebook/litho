@@ -121,10 +121,10 @@ public class EventHandlersController {
    * these EventHandlers will also be updated.
    */
   public synchronized void canonicalizeEventDispatchInfos(
-      List<Pair<String, EventHandler>> eventHandlers) {
-    for (Pair<String, EventHandler> handlerEntry : eventHandlers) {
+      List<Pair<String, EventHandler<?>>> eventHandlers) {
+    for (Pair<String, EventHandler<?>> handlerEntry : eventHandlers) {
       final String globalKey = handlerEntry.first;
-      final EventHandler eventHandler = handlerEntry.second;
+      final EventHandler<?> eventHandler = handlerEntry.second;
 
       DispatchInfoWrapper existingDispatchInfo = mDispatchInfos.get(globalKey);
       if (existingDispatchInfo == null) {

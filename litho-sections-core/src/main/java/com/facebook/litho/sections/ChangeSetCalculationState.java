@@ -43,7 +43,7 @@ class ChangeSetCalculationState {
     mState.eventHandlers.add(new Pair<>(globalKey, eventHandler));
   }
 
-  List<Pair<String, EventHandler>> getEventHandlers() {
+  List<Pair<String, EventHandler<?>>> getEventHandlers() {
     if (mState == null) {
       throw new RuntimeException("Trying to use inactive ChangeSetCalculationState!");
     }
@@ -66,6 +66,6 @@ class ChangeSetCalculationState {
    * for this data which can be cleared.
    */
   private static class State {
-    private final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    private final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
   }
 }

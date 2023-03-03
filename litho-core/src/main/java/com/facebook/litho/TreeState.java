@@ -343,7 +343,7 @@ public class TreeState {
   }
 
   void bindEventAndTriggerHandlers(
-      final @Nullable List<Pair<String, EventHandler>> createdEventHandlers,
+      final @Nullable List<Pair<String, EventHandler<?>>> createdEventHandlers,
       final @Nullable List<ScopedComponentInfo> scopedSpecComponentInfos) {
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();

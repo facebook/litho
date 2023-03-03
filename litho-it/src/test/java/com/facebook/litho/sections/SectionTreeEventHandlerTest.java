@@ -72,7 +72,7 @@ public class SectionTreeEventHandlerTest {
     assertThat(eventHandlersController.getDispatchInfos().size()).isEqualTo(0);
     assertThat(eventHandler1.dispatchInfo).isNotSameAs(eventHandler2.dispatchInfo);
 
-    final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
     eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));
     eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler2));
 
@@ -115,7 +115,7 @@ public class SectionTreeEventHandlerTest {
     EventHandler eventHandler2 =
         Section.newEventHandler(mSection.getClass(), "TestSection", scopedContext2, 1, null);
 
-    final ArrayList<Pair<String, EventHandler>> eventHandlers = new ArrayList<>();
+    final ArrayList<Pair<String, EventHandler<?>>> eventHandlers = new ArrayList<>();
     eventHandlers.add(new Pair<>(SECTION1_GLOBAL_KEY, eventHandler1));
     eventHandlers.add(new Pair<>(SECTION2_GLOBAL_KEY, eventHandler2));
 

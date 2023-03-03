@@ -1193,7 +1193,7 @@ public class SectionTree {
         final boolean changeSetIsValid;
         Section oldRoot = null;
         Section newRoot = null;
-        final List<Pair<String, EventHandler>> createdEventHandlers;
+        final List<Pair<String, EventHandler<?>>> createdEventHandlers;
         synchronized (this) {
           boolean currentNotNull = currentRoot != null;
           boolean instanceCurrentNotNull = mCurrentSection != null;

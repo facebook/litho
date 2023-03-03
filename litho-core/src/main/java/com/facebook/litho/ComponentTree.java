@@ -2350,7 +2350,7 @@ public class ComponentTree
       final Component rootComponent) {
     List<ScopedComponentInfo> scopedSpecComponentInfos = null;
     List<MeasureListener> measureListeners = null;
-    List<Pair<String, EventHandler>> createdEventHandlers = null;
+    List<Pair<String, EventHandler<?>>> createdEventHandlers = null;
 
     int rootWidth = 0;
     int rootHeight = 0;

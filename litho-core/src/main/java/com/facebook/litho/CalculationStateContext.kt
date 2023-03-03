@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.util.Pair;
-import androidx.annotation.Nullable;
-import java.util.List;
+import android.util.Pair
 
-public interface CalculationStateContext {
-  MeasuredResultCache getCache();
+interface CalculationStateContext {
 
-  TreeState getTreeState();
+  val cache: MeasuredResultCache
+  val treeState: TreeState
+  val layoutVersion: Int
+  val isFutureReleased: Boolean
+  val layoutStateFuture: TreeFuture<*>?
 
-  int getLayoutVersion();
-
-  boolean isFutureReleased();
-
-  @Nullable
-  TreeFuture getLayoutStateFuture();
+  val createdEventHandlers: List<Pair<String, EventHandler<*>>>?
 
   /**
    * Records a Spec-generated EventHandler. This EventHandlers are an output of the calculation and
-   * will be used by {@link EventHandlersController} to rebind existing EventHandlers.
+   * will be used by [EventHandlersController] to rebind existing EventHandlers.
    */
-  void recordEventHandler(String globalKey, EventHandler eventHandler);
-
-  @Nullable
-  List<Pair<String, EventHandler>> getCreatedEventHandlers();
+  fun recordEventHandler(globalKey: String, eventHandler: EventHandler<*>)
 }

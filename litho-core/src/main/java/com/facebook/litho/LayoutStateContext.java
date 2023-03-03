@@ -39,7 +39,7 @@ public class LayoutStateContext implements CalculationStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable ComponentContext mRootComponentContext;
   private final int mLayoutVersion;
-  private @Nullable ArrayList<Pair<String, EventHandler>> mCreatedEventHandlers = null;
+  private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mIsReleased = false;
@@ -149,7 +149,7 @@ public class LayoutStateContext implements CalculationStateContext {
   }
 
   @Override
-  public void recordEventHandler(String globalKey, EventHandler eventHandler) {
+  public void recordEventHandler(String globalKey, EventHandler<?> eventHandler) {
     if (mCreatedEventHandlers == null) {
       mCreatedEventHandlers = new ArrayList<>();
     }
@@ -157,7 +157,7 @@ public class LayoutStateContext implements CalculationStateContext {
   }
 
   @Override
-  public @Nullable List<Pair<String, EventHandler>> getCreatedEventHandlers() {
+  public @Nullable List<Pair<String, EventHandler<?>>> getCreatedEventHandlers() {
     return mCreatedEventHandlers;
   }
 
