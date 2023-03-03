@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.graphics.PathEffect;
 import androidx.annotation.Nullable;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.yoga.YogaNode;
 
 /**
@@ -89,7 +88,7 @@ public class NestedTreeHolder extends LithoNode {
     super.writeToYogaNode(writer);
     mNestedBorderEdges = actual.getBorderWidth();
     mNestedTreePadding = actual.getPadding();
-    mNestedIsPaddingPercentage = actual.getIsPaddingPercentage();
+    mNestedIsPaddingPercentage = actual.isPaddingPercentage();
   }
 
   @Override
