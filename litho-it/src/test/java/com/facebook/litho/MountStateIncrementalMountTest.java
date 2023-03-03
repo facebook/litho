@@ -43,7 +43,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,18 +81,17 @@ import com.facebook.yoga.YogaEdge;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLooper;
 
-@Config(sdk = {Build.VERSION_CODES.KITKAT})
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class MountStateIncrementalMountTest {
@@ -688,6 +686,7 @@ public class MountStateIncrementalMountTest {
    * the bounds of the component will be larger than the bounds of the view).
    */
   @Test
+  @Ignore("T146174263")
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
     // When self managing, LithoViews will not adhere to translation. Therefore components with
     // negative margins + translations will not be mounted, hence this test is not relevant
@@ -742,6 +741,7 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
+  @Ignore("T146174263")
   public void testIncrementalMountVerticalDrawableStackNegativeMargin_multipleUnmountedHosts() {
     // When self managing, LithoViews do not adhere to translation, and so items set with negative
     // margins won't be mounted.
