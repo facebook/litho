@@ -98,9 +98,7 @@ class ComponentsConfigurationTest {
   @Test
   fun testOverrideDefaultBuilder() {
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .useCancelableLayoutFutures(true)
-            .ignoreNullLayoutStateError(true))
+        ComponentsConfiguration.create().useCancelableLayoutFutures(true))
     assertThat(
             ComponentsConfiguration.getDefaultComponentsConfiguration().useCancelableLayoutFutures)
         .isTrue
@@ -109,9 +107,6 @@ class ComponentsConfigurationTest {
     assertThat(
             ComponentsConfiguration.getDefaultComponentsConfiguration().useCancelableLayoutFutures)
         .isFalse
-    assertThat(
-            ComponentsConfiguration.getDefaultComponentsConfiguration().ignoreNullLayoutStateError)
-        .isTrue
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(defaultBuilder)
   }
 }

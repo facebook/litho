@@ -218,8 +218,6 @@ public class RecyclerBinderConfiguration {
     private @Nullable ComponentWarmer mComponentWarmer;
     private int mEstimatedViewportCount = UNSET;
     private LithoViewFactory mLithoViewFactory;
-    private boolean mIgnoreNullLayoutStateError =
-        mComponentsConfiguration.getIgnoreNullLayoutStateError();
     private ErrorEventHandler mErrorEventHandler;
 
     Builder() {}

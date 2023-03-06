@@ -332,7 +332,6 @@ public class ComponentsConfiguration {
   }
 
   private final boolean mUseCancelableLayoutFutures;
-  private final @Deprecated boolean mIgnoreNullLayoutStateError;
 
   private final boolean mShouldReuseOutputs;
 
@@ -342,18 +341,8 @@ public class ComponentsConfiguration {
     return mUseCancelableLayoutFutures;
   }
 
-  /**
-   * Only used for testing. If true, the framework will not throw an error if a null LayoutState is
-   * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
-   */
-  @Deprecated
-  public boolean getIgnoreNullLayoutStateError() {
-    return mIgnoreNullLayoutStateError;
-  }
-
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
-    mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
         builder.mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
@@ -374,13 +363,11 @@ public class ComponentsConfiguration {
   public static ComponentsConfiguration.Builder create(
       ComponentsConfiguration componentsConfiguration) {
     return new Builder()
-        .useCancelableLayoutFutures(componentsConfiguration.getUseCancelableLayoutFutures())
-        .ignoreNullLayoutStateError(componentsConfiguration.getIgnoreNullLayoutStateError());
+        .useCancelableLayoutFutures(componentsConfiguration.getUseCancelableLayoutFutures());
   }
 
   public static class Builder {
     boolean mUseCancelableLayoutFutures;
-    @Deprecated boolean mIgnoreNullLayoutStateError = false;
     boolean mShouldReuseOutputs = false;
     boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
 
@@ -389,12 +376,6 @@ public class ComponentsConfiguration {
     public ComponentsConfiguration.Builder useCancelableLayoutFutures(
         boolean useCancelableLayoutFutures) {
       this.mUseCancelableLayoutFutures = useCancelableLayoutFutures;
-      return this;
-    }
-
-    public ComponentsConfiguration.Builder ignoreNullLayoutStateError(
-        boolean ignoreNullLayoutStateError) {
-      this.mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
       return this;
     }
 

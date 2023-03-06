@@ -2521,12 +2521,7 @@ public class ComponentTree
                 + ". Root: "
                 + (mRoot == null ? "null" : mRoot.getSimpleName());
 
-        if (mComponentsConfiguration.getIgnoreNullLayoutStateError()) {
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR, "ComponentTree:LayoutStateNull", errorMessage);
-        } else {
-          throw new IllegalStateException(errorMessage);
-        }
+        throw new IllegalStateException(errorMessage);
       }
 
       return;
