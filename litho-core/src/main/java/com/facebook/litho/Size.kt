@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.infer.annotation.ThreadConfined
+import kotlin.jvm.JvmField
 
 /** Public API for MeasureOutput. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadConfined(ThreadConfined.ANY)
-public class Size {
+class Size() {
 
-  public int width;
-  public int height;
+  @JvmField var width: Int = 0
+  @JvmField var height: Int = 0
 
-  public Size() {
-    this.width = 0;
-    this.height = 0;
-  }
-
-  public Size(int width, int height) {
-    this.width = width;
-    this.height = height;
+  constructor(width: Int, height: Int) : this() {
+    this.width = width
+    this.height = height
   }
 }
