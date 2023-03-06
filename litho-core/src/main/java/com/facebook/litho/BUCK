@@ -36,10 +36,12 @@ litho_android_library(
         "*.java",
         "*.kt",
         "animation/*.java",
+        "cancellation/*.kt",
         "choreographercompat/*.java",
         "dataflow/**/*.java",
         "drawable/*.java",
         "equivalence/*.java",
+        "resolve/*.kt",
     ]),
     autoglob = False,
     exported_provided_deps = [

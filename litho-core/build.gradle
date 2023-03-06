@@ -79,6 +79,10 @@ dependencies {
     } else {
         api project(':yogajni')
     }
+
+    testImplementation deps.assertjCore
+    testImplementation deps.junit
+    testImplementation deps.robolectric
 }
 
 apply plugin: "com.vanniktech.maven.publish"

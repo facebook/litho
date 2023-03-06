@@ -1,0 +1,26 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("@fbsource//tools/build_defs/android:litho_jni.bzl", "LITHO_JNI_DEPS")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "litho_robolectric4_test",
+)
+
+litho_robolectric4_test(
+    name = "litho",
+    srcs = glob(
+        ["**/*.kt"],
+    ),
+    contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    jni_deps = LITHO_JNI_DEPS,
+    deps = [
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_ASSERTJ_TARGET,
+    ],
+)
