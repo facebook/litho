@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
+import kotlin.jvm.JvmField
 
 /**
  * Implemented by the class used to store state within both Components and Sections to store state.
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public abstract class StateContainer implements Cloneable {
-  public abstract void applyStateUpdate(StateUpdate stateUpdate);
+abstract class StateContainer : Cloneable {
 
-  @Override
-  protected StateContainer clone() {
-    try {
-      return (StateContainer) super.clone();
-    } catch (CloneNotSupportedException ex) {
-      // This should never happen
-      throw new RuntimeException(ex);
-    }
-  }
+  abstract fun applyStateUpdate(stateUpdate: StateUpdate)
 
-  public static final class StateUpdate {
-    public final int type;
-    public final Object[] params;
+  public override fun clone(): StateContainer =
+      try {
+        super.clone() as StateContainer
+      } catch (ex: CloneNotSupportedException) {
+        // This should never happen
+        throw RuntimeException(ex)
+      }
 
-    public StateUpdate(int type, Object... params) {
-      this.type = type;
-      this.params = params;
+  class StateUpdate(@JvmField val type: Int, vararg params: Any) {
+    @JvmField val params: Array<Any>
+
+    init {
+      // Use spread operator(*) to get a writable array here,
+      // [doc](https://kotlinlang.org/docs/functions.html#variable-number-of-arguments-varargs)
+      this.params = arrayOf(*params)
     }
   }
 }
