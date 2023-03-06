@@ -94,6 +94,29 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
             "TreeFuture_calculateResult");
   }
 
+  /** Returns an integer that identifies uniquely the version of this {@link TreeFuture}. */
+  public abstract int getVersion();
+
+  /**
+   * This method will forcefully cancel any possible execution or remaining execution of the task
+   * associated to this {@link TreeFuture}.
+   *
+   * <p>This attempt will fail if the task has already completed, has already been cancelled, or
+   * could not be cancelled for some other reason.
+   *
+   * <p>If successful, and this task has not started when cancel is called, this task should never
+   * run.
+   *
+   * <p>If the task has already started, then the mayInterruptIfRunning parameter determines whether
+   * the thread executing this task should be interrupted in an attempt to stop the task./ protected
+   *
+   * @return false if the task could not be cancelled, typically because it has already completed
+   *     normally; true otherwise
+   */
+  public boolean forceCancellation() {
+    return mFutureTask.cancel(true);
+  }
+
   /** Calculates a new result for this TreeFuture. */
   protected abstract T calculate();
 
@@ -106,7 +129,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
 
   /** Releases this TreeFuture */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  synchronized void release() {
+  public synchronized void release() {
     if (mReleased) {
       return;
     }
@@ -419,18 +442,19 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    *     issues running the future, or a message explaining why the result is null.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  static <T extends PotentiallyPartialResult> TreeFuture.TreeFutureResult<T> trackAndRunTreeFuture(
-      TreeFuture<T> treeFuture,
-      final List<TreeFuture<T>> futureList,
-      final @LayoutState.CalculateLayoutSource int source,
-      final Object mutex,
-      final @Nullable ComponentTree.FutureExecutionListener futureExecutionListener) {
+  public static <T extends PotentiallyPartialResult, F extends TreeFuture<T>>
+      TreeFuture.TreeFutureResult<T> trackAndRunTreeFuture(
+          F treeFuture,
+          final List<F> futureList,
+          final @LayoutState.CalculateLayoutSource int source,
+          final Object mutex,
+          final @Nullable ComponentTree.FutureExecutionListener futureExecutionListener) {
     final boolean isSync = isFromSyncLayout(source);
     boolean isReusingFuture = false;
 
     synchronized (mutex) {
       // Iterate over the running futures to see if an equivalent one is running
-      for (final TreeFuture<T> runningFuture : futureList) {
+      for (final F runningFuture : futureList) {
         if (!runningFuture.isReleased()
             && runningFuture.isEquivalentTo(treeFuture)
             && runningFuture.tryRegisterForResponse(isSync)) {
@@ -490,30 +514,26 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   public static class TreeFutureResult<T extends PotentiallyPartialResult> {
     public final @Nullable T result;
     public final @Nullable String message;
+    public final boolean wasCancelled;
 
-    /** Initialise the TreeFutureResult with a non-null result. */
-    private TreeFutureResult(T result) {
+    private TreeFutureResult(@Nullable T result, @Nullable String message, boolean isCancelled) {
       this.result = result;
-      this.message = null;
-    }
-
-    /**
-     * Initialise the TreeFutureResult with a message explaining why the result is null. Use this
-     * constructor when null results should be produced.
-     */
-    private TreeFutureResult(String message) {
-      this.result = null;
       this.message = message;
+      this.wasCancelled = isCancelled;
     }
 
     public static <T extends PotentiallyPartialResult> TreeFutureResult<T> finishWithResult(
         T result) {
-      return new TreeFutureResult<>(result);
+      return new TreeFutureResult<>(result, null, false);
     }
 
     public static <T extends PotentiallyPartialResult> TreeFutureResult<T> interruptWithMessage(
         String message) {
-      return new TreeFutureResult<>(message);
+      return new TreeFutureResult<>(null, message, false);
+    }
+
+    public static <T extends PotentiallyPartialResult> TreeFutureResult<T> cancelled() {
+      return new TreeFutureResult<>(null, null, true);
     }
   }
 }

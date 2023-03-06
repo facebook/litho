@@ -20,11 +20,15 @@ import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import com.facebook.litho.cancellation.RequestMetadataSupplier;
+import com.facebook.litho.cancellation.ResolveCancellationPolicyKt;
+import com.facebook.litho.cancellation.ResolveMetadata;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import java.util.List;
 
-public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
+public class ResolveTreeFuture extends TreeFuture<ResolveResult>
+    implements RequestMetadataSupplier<ResolveMetadata> {
   private final ComponentContext mComponentContext;
   private final Component mComponent;
   private final TreeState mTreeState;
@@ -38,6 +42,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
   @Deprecated private final int mSyncWidthSpec;
   @Deprecated private final int mSyncHeightSpec;
 
+  private final ResolveMetadata mResolveMetadata;
+
   public ResolveTreeFuture(
       final ComponentContext c,
       final Component component,
@@ -47,7 +53,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final int resolveVersion,
       final boolean useCancellableFutures,
       final int componentTreeId,
-      final @Nullable String extraAttribution) {
+      final @Nullable String extraAttribution,
+      final int source) {
     this(
         c,
         component,
@@ -59,7 +66,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         componentTreeId,
-        extraAttribution);
+        extraAttribution,
+        source);
   }
 
   /**
@@ -79,7 +87,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
       final int syncWidthSpec,
       final int syncHeightSpec,
       final int componentTreeId,
-      final @Nullable String extraAttribution) {
+      final @Nullable String extraAttribution,
+      final int source) {
     super(useCancellableFutures);
     mComponentContext = c;
     mComponent = component;
@@ -91,6 +100,12 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
     mExtraAttribution = extraAttribution;
     mSyncWidthSpec = syncWidthSpec;
     mSyncHeightSpec = syncHeightSpec;
+    mResolveMetadata =
+        new ResolveMetadata(
+            resolveVersion,
+            component.getId(),
+            mComponentContext.getTreeProps(),
+            ResolveCancellationPolicyKt.getResolveExecutionMode(source));
 
     // Allow interrupt to happen during tryRegisterForResponse when config is enabled.
     mEnableEarlyInterrupt = ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
@@ -108,6 +123,15 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
         mExtraAttribution,
         this,
         mPerfEvent);
+  }
+
+  @Override
+  public int getVersion() {
+    return mResolveMetadata.getLocalVersion();
+  }
+
+  public ResolveMetadata getMetadata() {
+    return mResolveMetadata;
   }
 
   @Override
@@ -183,11 +207,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult> {
 
     final ResolveTreeFuture thatRtf = (ResolveTreeFuture) that;
 
-    if (mComponent.getId() != thatRtf.mComponent.getId()) {
-      return false;
-    }
-
-    if (mComponentContext.getTreeProps() != thatRtf.mComponentContext.getTreeProps()) {
+    if (!mResolveMetadata.isEquivalentTo(thatRtf.mResolveMetadata)) {
       return false;
     }
 

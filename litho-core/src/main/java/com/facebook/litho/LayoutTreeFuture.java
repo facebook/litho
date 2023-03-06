@@ -54,6 +54,11 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   }
 
   @Override
+  public int getVersion() {
+    return mLayoutVersion;
+  }
+
+  @Override
   protected LayoutState calculate() {
     return layout(
         mResolveResult,

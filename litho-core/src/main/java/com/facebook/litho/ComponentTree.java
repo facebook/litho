@@ -63,6 +63,8 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.cancellation.CancellationHelper;
+import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
@@ -323,7 +325,7 @@ public class ComponentTree
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
 
   @GuardedBy("mResolveResultFutureLock")
-  private final List<TreeFuture<ResolveResult>> mResolveResultFutures = new ArrayList<>();
+  private final List<ResolveTreeFuture> mResolveResultFutures = new ArrayList<>();
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<TreeFuture<LayoutState>> mLayoutTreeFutures = new ArrayList<>();
@@ -384,6 +386,7 @@ public class ComponentTree
   private final boolean useSeparateThreadHandlersForResolveAndLayout;
 
   private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
+  private final @Nullable ResolveCancellationPolicy mResolveCancellationPolicy;
 
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
@@ -460,6 +463,8 @@ public class ComponentTree
     } else {
       mBatchedStateUpdatesStrategy = null;
     }
+
+    mResolveCancellationPolicy = null;
 
     if (ComponentsConfiguration.overrideLayoutDiffing != null) {
       mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;
@@ -2109,29 +2114,50 @@ public class ComponentTree
     }
 
     treeState.registerRenderState();
+    ResolveTreeFuture treeFuture =
+        new ResolveTreeFuture(
+            context,
+            root,
+            treeState,
+            currentNode,
+            null,
+            localResolveVersion,
+            // If sync operations are interruptible and happen on background thread, which
+            // could
+            // end up being moved to UI thread with null result and causing crash later. To
+            // prevent that we mark it as Non-Interruptible.
+            !LayoutState.isFromSyncLayout(source)
+                && mComponentsConfiguration.getUseCancelableLayoutFutures(),
+            widthSpec,
+            heightSpec,
+            mId,
+            extraAttribution,
+            source);
 
-    final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder =
-        TreeFuture.trackAndRunTreeFuture(
-            new ResolveTreeFuture(
-                context,
-                root,
-                treeState,
-                currentNode,
-                null,
-                localResolveVersion,
-                // If sync operations are interruptible and happen on background thread, which could
-                // end up being moved to UI thread with null result and causing crash later. To
-                // prevent that we mark it as Non-Interruptible.
-                !LayoutState.isFromSyncLayout(source)
-                    && mComponentsConfiguration.getUseCancelableLayoutFutures(),
-                widthSpec,
-                heightSpec,
-                mId,
-                extraAttribution),
-            mResolveResultFutures,
-            source,
-            mResolveResultFutureLock,
-            mFutureExecutionListener);
+    final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder;
+
+    if (mResolveCancellationPolicy != null) {
+      resolveResultHolder =
+          CancellationHelper.trackAndRunTreeFutureWithCancellation(
+              treeFuture,
+              mResolveResultFutures,
+              source,
+              mResolveResultFutureLock,
+              mFutureExecutionListener,
+              mResolveCancellationPolicy);
+    } else {
+      resolveResultHolder =
+          TreeFuture.trackAndRunTreeFuture(
+              treeFuture,
+              mResolveResultFutures,
+              source,
+              mResolveResultFutureLock,
+              mFutureExecutionListener);
+    }
+
+    if (resolveResultHolder == null || resolveResultHolder.wasCancelled) {
+      return;
+    }
 
     final @Nullable ResolveResult resolveResult = resolveResultHolder.result;
 
@@ -3038,6 +3064,11 @@ public class ComponentTree
       this.source = source;
       this.extraAttribution = extraAttribution;
       this.layoutVersion = layoutVersion;
+    }
+
+    @Override
+    public int getVersion() {
+      return layoutVersion;
     }
 
     @Override
