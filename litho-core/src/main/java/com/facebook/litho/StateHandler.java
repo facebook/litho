@@ -321,6 +321,12 @@ public class StateHandler {
     }
   }
 
+  /**
+   * Maps a component key to a component object that retains the current state values for that key.
+   *
+   * @param key the key of component
+   * @param state the state value that needs to be retained
+   */
   public synchronized void addStateContainer(String key, StateContainer state) {
     mNeededStateContainers.add(key);
     mStateContainers.put(key, state);
@@ -731,7 +737,7 @@ public class StateHandler {
     }
   }
 
-  private Map<String, List<HookUpdater>> getHookUpdatesCopy(
+  private static Map<String, List<HookUpdater>> getHookUpdatesCopy(
       Map<String, List<HookUpdater>> copyFrom) {
     final Map<String, List<HookUpdater>> copyInto = new HashMap<>(copyFrom.size());
 

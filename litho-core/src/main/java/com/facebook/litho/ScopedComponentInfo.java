@@ -27,7 +27,7 @@ import java.util.Map;
 public class ScopedComponentInfo implements Cloneable {
 
   private final Component mComponent;
-  private ComponentContext mContext;
+  private final ComponentContext mContext;
   private @Nullable StateContainer mStateContainer;
   private @Nullable PrepareInterStagePropsContainer mPrepareInterStagePropsContainer;
 
@@ -78,8 +78,8 @@ public class ScopedComponentInfo implements Cloneable {
     return mStateContainer;
   }
 
-  void setStateContainer(StateContainer state) {
-    mStateContainer = state;
+  void setStateContainer(StateContainer stateContainer) {
+    mStateContainer = stateContainer;
   }
 
   /**
@@ -156,16 +156,9 @@ public class ScopedComponentInfo implements Cloneable {
   }
 
   public void commitToLayoutState(final TreeState treeState) {
-    if (mComponent.usesLocalStateContainer()) {
-      if (hasState()) {
-        treeState.addStateContainer(
-            mContext.getGlobalKey(), mStateContainer, mContext.isNestedTreeContext());
-      }
-    } else {
-      // the get method adds the state container to the needed state container map
-      treeState.keepStateContainerForGlobalKey(
-          mContext.getGlobalKey(), mContext.isNestedTreeContext());
-    }
+    // the get method adds the state container to the needed state container map
+    treeState.keepStateContainerForGlobalKey(
+        mContext.getGlobalKey(), mContext.isNestedTreeContext());
   }
 
   private boolean hasState() {

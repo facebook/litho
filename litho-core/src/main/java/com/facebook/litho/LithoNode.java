@@ -1376,7 +1376,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    */
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
-      final ComponentContext c, final LithoNode current, final Set<String> keys) {
+      final ComponentContext c, final LithoNode current, final Set<String> mutatedKeys) {
     final List<ScopedComponentInfo> components = current.getScopedComponentInfos();
 
     // 1.0 check early exit conditions
@@ -1387,14 +1387,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     // 1.1 Check if any component has mutations
     for (int i = 0, size = components.size(); i < size; i++) {
       final String key = components.get(i).getContext().getGlobalKey();
-      if (keys.contains(key)) {
+      if (mutatedKeys.contains(key)) {
         return ReconciliationMode.RECREATE;
       }
     }
 
     // 2.0 Check if any descendants have mutations
     final String rootKey = current.getHeadComponentKey();
-    for (String key : keys) {
+    for (String key : mutatedKeys) {
       if (key.startsWith(rootKey)) {
         return ReconciliationMode.RECONCILE;
       }
