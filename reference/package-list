@@ -5,6 +5,7 @@ module:litho-annotations
 com.facebook.litho.annotations
 module:litho-core
 com.facebook.litho
+com.facebook.litho.cancellation
 com.facebook.litho.config
 com.facebook.litho.drawable
 com.facebook.litho.internal
