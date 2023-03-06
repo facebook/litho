@@ -210,9 +210,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         registerForLongClick((LongClickableSpan) clickedSpan, view);
       }
       setSelection(clickedSpan);
-      if (mTouchableSpanListener != null) {
-        mTouchableSpanListener.onTouchDown(clickedSpan, view);
-      }
     }
     if (mTouchableSpanListener != null) {
       mTouchableSpanListener.onTouch(clickedSpan, event, view);

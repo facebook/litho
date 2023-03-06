@@ -30,13 +30,6 @@ import javax.annotation.Nullable;
 public interface TouchableSpanListener {
 
   /**
-   * @deprecated Use {@link TouchableSpanListener#onTouch()} instead. This method will be removed in
-   *     a future release.
-   */
-  @Deprecated
-  void onTouchDown(ClickableSpan span, View view);
-
-  /**
    * @param span target span
    * @param motionEvent motion event
    * @param view source view
