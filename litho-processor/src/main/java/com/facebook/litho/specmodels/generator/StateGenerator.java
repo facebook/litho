@@ -302,7 +302,11 @@ public class StateGenerator {
             .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
             .addParameter(specModel.getContextClass(), "c")
             .addTypeVariables(MethodParamModelUtils.getTypeVariables(stateValue))
-            .addParameter(stateValue.getTypeName(), LAZY_STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
+            .addParameter(
+                ParameterSpec.builder(stateValue.getTypeName(), LAZY_STATE_UPDATE_VALUE_PARAM)
+                    .addModifiers(Modifier.FINAL)
+                    .addAnnotations(stateValue.getExternalAnnotations())
+                    .build());
 
     builder
         .addStatement(

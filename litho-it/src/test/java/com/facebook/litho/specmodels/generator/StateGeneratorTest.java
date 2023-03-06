@@ -140,6 +140,15 @@ public class StateGeneratorTest {
   }
 
   @LayoutSpec
+  private static class TestWithLazyMethodGenericNullable {
+    @OnCreateLayout
+    public void onCreateLayout(@Prop int arg0) {}
+
+    @OnCreateInitialState
+    static <T> void onCreateInitialState(@State(canUpdateLazily = true) @Nullable T arg1) {}
+  }
+
+  @LayoutSpec
   private static class TestWithSameGenericMultipleTimes<T> {
 
     @OnCreateLayout
@@ -166,6 +175,7 @@ public class StateGeneratorTest {
   private SpecModel mSpecModelWithBothStates;
   private SpecModel mSpecModelWithLazyGeneric;
   private SpecModel mSpecModelWithLazyMethodGeneric;
+  private SpecModel mSpecModelWithLazyMethodGenericNullable;
   private SpecModel mSpecWithSameGenericMultipleTimes;
   private SpecModel mSpecWithMultipleGenerics;
 
@@ -239,6 +249,18 @@ public class StateGeneratorTest {
             elements,
             types,
             typeElementWithLazyMethodGeneric,
+            mock(Messager.class),
+            RunMode.normal(),
+            null,
+            null);
+
+    final TypeElement typeElementWithLazyMethodGenericNullable =
+        elements.getTypeElement(TestWithLazyMethodGenericNullable.class.getCanonicalName());
+    mSpecModelWithLazyMethodGenericNullable =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithLazyMethodGenericNullable,
             mock(Messager.class),
             RunMode.normal(),
             null,
@@ -443,6 +465,26 @@ public class StateGeneratorTest {
         .isEqualTo(
             "protected static <T> void lazyUpdateArg1(com.facebook.litho.ComponentContext c,\n"
                 + "    final T lazyUpdateValue) {\n"
+                + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
+                + "  if (_component == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(-2147483648, lazyUpdateValue);\n"
+                + "  c.updateStateLazy(_stateUpdate);\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateLazyStateUpdateMethodsForGenericMethodNullable() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateLazyStateUpdateMethods(mSpecModelWithLazyMethodGenericNullable);
+
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "protected static <T> void lazyUpdateArg1(com.facebook.litho.ComponentContext c,\n"
+                + "    @androidx.annotation.Nullable final T lazyUpdateValue) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
