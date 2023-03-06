@@ -31,6 +31,8 @@ inline fun ResourcesScope.HorizontalScroll(
     fillViewport: Boolean = false,
     eventsController: HorizontalScrollEventsController? = null,
     noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
+    horizontalFadingEdgeEnabled: Boolean = false,
+    fadingEdgeLength: Int = 0,
     child: ResourcesScope.() -> Component
 ): HorizontalScroll =
     HorizontalScroll.create(context)
@@ -40,4 +42,6 @@ inline fun ResourcesScope.HorizontalScroll(
         .fillViewport(fillViewport)
         .eventsController(eventsController)
         .onScrollChangeListener(onScrollChange)
+        .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
+        .fadingEdgeLength(fadingEdgeLength)
         .build()

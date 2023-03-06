@@ -174,6 +174,8 @@ class HorizontalScrollSpec {
       @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
       @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop(optional = true) int overScrollMode,
+      @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
+      @Prop(optional = true) int fadingEdgeLength,
       @State final HorizontalScrollLithoView.ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @Nullable @FromBoundsDefined Integer componentWidth,
@@ -182,6 +184,8 @@ class HorizontalScrollSpec {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
     horizontalScrollLithoView.setOverScrollMode(overScrollMode);
+    horizontalScrollLithoView.setHorizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled);
+    horizontalScrollLithoView.setFadingEdgeLength(fadingEdgeLength);
     horizontalScrollLithoView.mount(
         childComponentTree,
         lastScrollPosition,
