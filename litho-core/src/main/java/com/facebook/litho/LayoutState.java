@@ -941,16 +941,13 @@ public class LayoutState
       for (WorkingRangeContainer.Registration registration : registrations) {
         if (component instanceof SpecGeneratedComponent) {
           layoutState.mWorkingRangeContainer.registerWorkingRange(
-              registration.mName,
-              registration.mWorkingRange,
-              registration.mScopedComponentInfo,
+              registration.name,
+              registration.workingRange,
+              registration.scopedComponentInfo,
               (InterStagePropsContainer) result.getLayoutData());
         } else {
           layoutState.mWorkingRangeContainer.registerWorkingRange(
-              registration.mName,
-              registration.mWorkingRange,
-              registration.mScopedComponentInfo,
-              null);
+              registration.name, registration.workingRange, registration.scopedComponentInfo, null);
         }
       }
     }

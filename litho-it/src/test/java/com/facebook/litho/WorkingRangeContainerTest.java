@@ -82,15 +82,15 @@ public class WorkingRangeContainerTest {
     assertThat(key).isEqualTo(NAME + "_" + mWorkingRange.hashCode());
 
     final RangeTuple rangeTuple = workingRanges.get(key);
-    assertThat(rangeTuple.mWorkingRange).isEqualTo(mWorkingRange);
-    assertThat(rangeTuple.mScopedComponentInfos.size()).isEqualTo(1);
-    assertThat(rangeTuple.mScopedComponentInfos.get(0)).isEqualTo(mScopedComponentInfo);
+    assertThat(rangeTuple.workingRange).isEqualTo(mWorkingRange);
+    assertThat(rangeTuple.scopedComponentInfos.size()).isEqualTo(1);
+    assertThat(rangeTuple.scopedComponentInfos.get(0)).isEqualTo(mScopedComponentInfo);
   }
 
   @Test
   public void testIsEnteredRange() {
     RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mScopedComponentInfo, null);
-    WorkingRange workingRange = rangeTuple.mWorkingRange;
+    WorkingRange workingRange = rangeTuple.workingRange;
 
     assertThat(WorkingRangeContainer.isEnteringRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(true);
     assertThat(WorkingRangeContainer.isEnteringRange(workingRange, 0, 1, 2, 1, 2)).isEqualTo(false);
@@ -99,7 +99,7 @@ public class WorkingRangeContainerTest {
   @Test
   public void testIsExitedRange() {
     RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mScopedComponentInfo, null);
-    WorkingRange workingRange = rangeTuple.mWorkingRange;
+    WorkingRange workingRange = rangeTuple.workingRange;
 
     assertThat(WorkingRangeContainer.isExitingRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(false);
     assertThat(WorkingRangeContainer.isExitingRange(workingRange, 0, 1, 2, 1, 2)).isEqualTo(true);
