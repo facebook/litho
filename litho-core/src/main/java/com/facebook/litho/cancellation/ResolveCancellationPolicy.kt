@@ -18,9 +18,7 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.LayoutState.CalculateLayoutSource
 import com.facebook.litho.cancellation.CancellationPolicy.Result
-import com.facebook.litho.cancellation.ResolveMetadata.ExecutionMode
 
 /**
  * This policy is responsible for evaluating the context around the current executions of *Resolve*s
@@ -78,17 +76,3 @@ interface ResolveCancellationPolicy : CancellationPolicy<ResolveMetadata> {
     }
   }
 }
-
-private val executionsModesBySource =
-    mapOf(
-        CalculateLayoutSource.SET_ROOT_SYNC to ExecutionMode.SYNC,
-        CalculateLayoutSource.SET_ROOT_ASYNC to ExecutionMode.ASYNC,
-        CalculateLayoutSource.UPDATE_STATE_SYNC to ExecutionMode.SYNC,
-        CalculateLayoutSource.UPDATE_STATE_ASYNC to ExecutionMode.ASYNC,
-        CalculateLayoutSource.SET_SIZE_SPEC_SYNC to ExecutionMode.SYNC,
-        CalculateLayoutSource.SET_SIZE_SPEC_ASYNC to ExecutionMode.ASYNC,
-        CalculateLayoutSource.MEASURE_SET_SIZE_SPEC to ExecutionMode.SYNC,
-        CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC to ExecutionMode.ASYNC)
-
-internal fun getResolveExecutionMode(source: Int): ExecutionMode =
-    executionsModesBySource[source] ?: error("Unexpected source for resolve: $source")

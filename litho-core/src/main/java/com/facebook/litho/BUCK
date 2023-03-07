@@ -41,7 +41,6 @@ litho_android_library(
         "dataflow/**/*.java",
         "drawable/*.java",
         "equivalence/*.java",
-        "resolve/*.kt",
     ]),
     autoglob = False,
     exported_provided_deps = [

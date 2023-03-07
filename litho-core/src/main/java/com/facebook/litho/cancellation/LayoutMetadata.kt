@@ -18,21 +18,21 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.TreeProps
+import com.facebook.litho.ResolveResult
 
-/** This metadata encompasses all characteristics associated to a specific `Resolve` request. */
-data class ResolveMetadata(
+/** This metadata encompasses all characteristics associated to a specific `Layout` request. */
+data class LayoutMetadata(
     val localVersion: Int,
-    val componentId: Int,
-    val treeProps: TreeProps?,
+    val widthSpec: Int,
+    val heightSpec: Int,
+    val resolveResult: ResolveResult,
     val executionMode: ExecutionMode
 ) {
 
-  val id: Int = localVersion
-
-  fun isEquivalentTo(resolveInput: ResolveMetadata): Boolean {
-    if (componentId != resolveInput.componentId) return false
-    if (treeProps != resolveInput.treeProps) return false
+  fun isEquivalentTo(layoutMetadata: LayoutMetadata): Boolean {
+    if (widthSpec != layoutMetadata.widthSpec) return false
+    if (heightSpec != layoutMetadata.heightSpec) return false
+    if (resolveResult != layoutMetadata.resolveResult) return false
 
     return true
   }

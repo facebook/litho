@@ -21,7 +21,6 @@ package com.facebook.litho.cancellation
 import com.facebook.litho.TreeProps
 import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.cancellation.CancellationPolicy.Result
-import com.facebook.litho.cancellation.ResolveMetadata.ExecutionMode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

@@ -20,8 +20,8 @@ import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.RequestMetadataSupplier;
-import com.facebook.litho.cancellation.ResolveCancellationPolicyKt;
 import com.facebook.litho.cancellation.ResolveMetadata;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
@@ -105,7 +105,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
             resolveVersion,
             component.getId(),
             mComponentContext.getTreeProps(),
-            ResolveCancellationPolicyKt.getResolveExecutionMode(source));
+            ExecutionModeKt.getExecutionMode(source));
 
     // Allow interrupt to happen during tryRegisterForResponse when config is enabled.
     mEnableEarlyInterrupt = ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
