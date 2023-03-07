@@ -40,6 +40,9 @@ public final class LithoStats {
   private static final AtomicLong sSectionCalculateNewChangesetCount = new AtomicLong(0);
   private static final AtomicLong sSectionCalculateNewChangesetOnUICount = new AtomicLong(0);
 
+  private static final AtomicLong sResolveCancelledCount = new AtomicLong(0);
+  private static final AtomicLong sLayoutCancelledCount = new AtomicLong(0);
+
   /**
    * @return the global count of all applied state updates (async, lazy and sync) in Litho
    *     components that have happened in the process.
@@ -98,6 +101,16 @@ public final class LithoStats {
   /** @return the global count of all do layout operations that have happened in the process. */
   public static long getLayoutCount() {
     return sLayoutCount.get();
+  }
+
+  /** @return the global count of all do resolve operations that have been avoided/cancelled. */
+  public static long getResolveCancelledCount() {
+    return sResolveCancelledCount.get();
+  }
+
+  /** @return the global count of all do layout operations that have been avoided/cancelled. */
+  public static long getLayoutCancelledCount() {
+    return sLayoutCancelledCount.get();
   }
 
   /**
@@ -208,6 +221,14 @@ public final class LithoStats {
   }
 
   /**
+   * @return increment and get the global count of all do resolve operations that have been
+   *     cancelled in the process.
+   */
+  public static long incrementCancelledResolve() {
+    return sResolveCancelledCount.addAndGet(1);
+  }
+
+  /**
    * @return increment and get the global count of all do resumes operations that have happened in
    *     the process.
    */
@@ -221,6 +242,14 @@ public final class LithoStats {
    */
   public static long incrementLayoutCount() {
     return sLayoutCount.addAndGet(1);
+  }
+
+  /**
+   * @return increment and get the global count of all do layout operations that have been cancelled
+   *     in the process.
+   */
+  public static long incrementCancelledLayout() {
+    return sLayoutCancelledCount.addAndGet(1);
   }
 
   /**
@@ -279,7 +308,9 @@ public final class LithoStats {
     sComponentCalculateLayoutOnUICount.set(0);
     sComponentMountCount.set(0);
     sLayoutCount.set(0);
+    sLayoutCancelledCount.set(0);
     sResolveCount.set(0);
+    sResolveCancelledCount.set(0);
     sResumeCount.set(0);
     sSectionAppliedStateUpdateCount.set(0);
     sSectionTriggeredSyncStateUpdateCount.set(0);

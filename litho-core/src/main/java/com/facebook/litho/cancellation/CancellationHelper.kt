@@ -24,6 +24,7 @@ import com.facebook.litho.PotentiallyPartialResult
 import com.facebook.litho.TreeFuture
 import com.facebook.litho.TreeFuture.TreeFutureResult
 import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
+import com.facebook.litho.stats.LithoStats
 import java.util.concurrent.CancellationException
 
 /**
@@ -55,6 +56,7 @@ F : RequestMetadataSupplier<M> {
     }
     is CancellationPolicy.Result.DropIncomingRequest -> {
       debugLog { "Dropping incoming request." }
+      incrementCancellationStats(treeFuture.description)
       return TreeFutureResult.cancelled()
     }
     is CancellationPolicy.Result.CancelRunningRequests -> {
@@ -62,6 +64,8 @@ F : RequestMetadataSupplier<M> {
       result.requestIds.iterator().forEach { version ->
         val futureToCancel = futures.firstOrNull { it.version == version }
         if (futureToCancel != null) {
+          incrementCancellationStats(treeFuture.description)
+
           when (cancellationPolicy.cancellationMode) {
             CancellationExecutionMode.SHORT_CIRCUIT -> futureToCancel.release()
             CancellationExecutionMode.INTERRUPT -> futureToCancel.forceCancellation()
@@ -79,6 +83,17 @@ F : RequestMetadataSupplier<M> {
       debugLog { "A cancellation exception on future ${treeFuture.version}" }
     }
     TreeFutureResult.cancelled()
+  }
+}
+
+private fun incrementCancellationStats(attribution: String) {
+  when (attribution) {
+    "layout" -> LithoStats.incrementCancelledLayout()
+    "resolve" -> LithoStats.incrementCancelledResolve()
+  }
+
+  debugLog {
+    "total cancelled resolves: ${LithoStats.getResolveCancelledCount()}; total cancelled layouts: ${LithoStats.getLayoutCancelledCount()}"
   }
 }
 
