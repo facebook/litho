@@ -36,6 +36,7 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
+import static com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
@@ -66,6 +67,7 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.cancellation.CancellationHelper;
 import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.ResolveCancellationExecutionMode;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
@@ -464,7 +466,17 @@ public class ComponentTree
       mBatchedStateUpdatesStrategy = null;
     }
 
-    mResolveCancellationPolicy = null;
+    ResolveCancellationExecutionMode resolveCancellationExecutionMode =
+        mComponentsConfiguration.getResolveCancellationExecutionMode();
+    if (resolveCancellationExecutionMode != null) {
+      mResolveCancellationPolicy =
+          new ResolveCancellationPolicy.Default(
+              resolveCancellationExecutionMode == ResolveCancellationExecutionMode.INTERRUPTION
+                  ? CancellationExecutionMode.INTERRUPT
+                  : CancellationExecutionMode.SHORT_CIRCUIT);
+    } else {
+      mResolveCancellationPolicy = null;
+    }
 
     if (ComponentsConfiguration.overrideLayoutDiffing != null) {
       mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;

@@ -304,6 +304,13 @@ public class ComponentsConfiguration {
 
   public static boolean enableStateUpdatesBatching = true;
 
+  @Nullable private ResolveCancellationExecutionMode mResolveCancellationStrategy = null;
+
+  @Nullable
+  public ResolveCancellationExecutionMode getResolveCancellationExecutionMode() {
+    return mResolveCancellationStrategy;
+  }
+
   /** Debug option to highlight interactive areas in mounted components. */
   public static boolean debugHighlightInteractiveBounds = false;
 
@@ -346,6 +353,7 @@ public class ComponentsConfiguration {
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
         builder.mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
+    mResolveCancellationStrategy = builder.mResolveCancellationExecutionMode;
   }
 
   public boolean shouldReuseOutputs() {
@@ -370,6 +378,7 @@ public class ComponentsConfiguration {
     boolean mUseCancelableLayoutFutures;
     boolean mShouldReuseOutputs = false;
     boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
+    @Nullable ResolveCancellationExecutionMode mResolveCancellationExecutionMode = null;
 
     protected Builder() {}
 
@@ -383,6 +392,12 @@ public class ComponentsConfiguration {
         boolean keepLithoNodeAndLayoutResultTreeWithReconciliation) {
       this.mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
           keepLithoNodeAndLayoutResultTreeWithReconciliation;
+      return this;
+    }
+
+    public ComponentsConfiguration.Builder resolveCancellationExecutionMode(
+        ResolveCancellationExecutionMode mode) {
+      mResolveCancellationExecutionMode = mode;
       return this;
     }
 
