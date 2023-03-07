@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.proguard.annotations.DoNotStrip;
-import java.util.Collections;
-import java.util.List;
+import com.facebook.proguard.annotations.DoNotStrip
+import kotlin.jvm.JvmField
 
 /** A UI element that contains text. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
-public interface TextContent {
-
-  /** An empty instance of {@link TextContent}. */
-  TextContent EMPTY =
-      new TextContent() {
-        @Override
-        public List<CharSequence> getTextItems() {
-          return Collections.emptyList();
-        }
-      };
+interface TextContent {
 
   /**
    * @return the list of text items that are rendered by this UI element. The list returned should
-   *     not be modified and may be unmodifiable.
+   *   not be modified and may be unmodifiable.
    */
-  @DoNotStrip
-  List<CharSequence> getTextItems();
+  @get:DoNotStrip val textItems: List<CharSequence>
+
+  companion object {
+    /** An empty instance of [TextContent]. */
+    @JvmField
+    val EMPTY: TextContent =
+        object : TextContent {
+          override val textItems: List<CharSequence>
+            get() = emptyList()
+        }
+  }
 }
