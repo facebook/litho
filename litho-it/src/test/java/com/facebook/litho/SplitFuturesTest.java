@@ -29,6 +29,8 @@ import static com.facebook.litho.LifecycleStep.ON_PREPARE;
 import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.LifecycleStep.SHOULD_UPDATE;
+import static com.facebook.litho.TreeFuture.FutureExecutionListener;
+import static com.facebook.litho.TreeFuture.FutureExecutionType;
 import static com.facebook.litho.testing.ThreadTestingUtils.runOnBackgroundThread;
 import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -308,10 +310,18 @@ public class SplitFuturesTest {
 
     final boolean[] isReusingFutureHolder = new boolean[1];
 
-    final ComponentTree.FutureExecutionListener futureExecutionListener =
-        type -> {
-          secondFuturePreExecutionLatch.release();
-          isReusingFutureHolder[0] = type == ComponentTree.FutureExecutionType.REUSE_FUTURE;
+    final FutureExecutionListener futureExecutionListener =
+        new FutureExecutionListener() {
+
+          @Override
+          public void onPreExecution(
+              int version, FutureExecutionType futureExecutionType, String attribution) {
+            secondFuturePreExecutionLatch.release();
+            isReusingFutureHolder[0] = futureExecutionType == FutureExecutionType.REUSE_FUTURE;
+          }
+
+          @Override
+          public void onPostExecution(int version, boolean released, String attribution) {}
         };
 
     runOnBackgroundThread(
@@ -514,7 +524,21 @@ public class SplitFuturesTest {
             if (isFirst) {
               mLegacyLithoViewRule
                   .getComponentTree()
-                  .setFutureExecutionListener(type -> latch.release());
+                  .setFutureExecutionListener(
+                      new TreeFuture.FutureExecutionListener() {
+
+                        @Override
+                        public void onPreExecution(
+                            int version,
+                            FutureExecutionType futureExecutionType,
+                            String attribution) {
+                          latch.release();
+                        }
+
+                        @Override
+                        public void onPostExecution(
+                            int version, boolean released, String attribution) {}
+                      });
 
               mLegacyLithoViewRule.setRootAsync(mLegacyLithoViewRule.getComponentTree().getRoot());
               runOnBackgroundThread(mLegacyLithoViewRule::idle /* run async set root */);
@@ -814,11 +838,19 @@ public class SplitFuturesTest {
     componentTree.setRootAndSizeSpecAsync(component, exactly(100), exactly(100));
 
     componentTree.setFutureExecutionListener(
-        type -> {
-          componentTree.setFutureExecutionListener(null);
+        new TreeFuture.FutureExecutionListener() {
 
-          // unblock the async resolve
-          onPrepareLatch.acquire();
+          @Override
+          public void onPreExecution(
+              int version, FutureExecutionType futureExecutionType, String attribution) {
+            componentTree.setFutureExecutionListener(null);
+
+            // unblock the async resolve
+            onPrepareLatch.acquire();
+          }
+
+          @Override
+          public void onPostExecution(int version, boolean released, String attribution) {}
         });
 
     // request a main thread layout
@@ -908,13 +940,20 @@ public class SplitFuturesTest {
     final boolean[] isFutureReusedHolder = new boolean[1];
 
     componentTree.setFutureExecutionListener(
-        type -> {
-          componentTree.setFutureExecutionListener(null);
+        new TreeFuture.FutureExecutionListener() {
+          @Override
+          public void onPreExecution(
+              int version, FutureExecutionType futureExecutionType, String attribution) {
+            componentTree.setFutureExecutionListener(null);
 
-          // Inform second future pre-execution has occurred.
-          waitForSecondFuturePreExecutionLatch.release();
+            // Inform second future pre-execution has occurred.
+            waitForSecondFuturePreExecutionLatch.release();
 
-          isFutureReusedHolder[0] = type == ComponentTree.FutureExecutionType.REUSE_FUTURE;
+            isFutureReusedHolder[0] = futureExecutionType == FutureExecutionType.REUSE_FUTURE;
+          }
+
+          @Override
+          public void onPostExecution(int version, boolean released, String attribution) {}
         });
 
     // Set root and sync-spec sync

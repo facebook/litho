@@ -19,7 +19,6 @@
 package com.facebook.litho.cancellation
 
 import android.util.Log
-import com.facebook.litho.ComponentTree.FutureExecutionListener
 import com.facebook.litho.LayoutState.CalculateLayoutSource
 import com.facebook.litho.PotentiallyPartialResult
 import com.facebook.litho.TreeFuture
@@ -38,8 +37,8 @@ internal fun <F, M, T> trackAndRunTreeFutureWithCancellation(
     futures: List<F>,
     @CalculateLayoutSource source: Int,
     mutex: Any,
-    futureExecutionListener: FutureExecutionListener?,
-    cancellationPolicy: CancellationPolicy<M>
+    futureExecutionListener: TreeFuture.FutureExecutionListener?,
+    cancellationPolicy: CancellationPolicy<M>,
 ): TreeFutureResult<T>? where
 T : PotentiallyPartialResult,
 F : TreeFuture<T>,

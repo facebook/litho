@@ -130,6 +130,11 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
     return mResolveMetadata.getLocalVersion();
   }
 
+  @Override
+  public String getDescription() {
+    return "resolve";
+  }
+
   public ResolveMetadata getMetadata() {
     return mResolveMetadata;
   }
@@ -292,5 +297,12 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
         }
       }
     }
+  }
+
+  interface ExecutionListener {
+
+    void onPreExecution(int version);
+
+    void onPostExecution(int version, boolean released);
   }
 }

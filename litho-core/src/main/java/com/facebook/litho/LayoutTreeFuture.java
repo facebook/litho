@@ -54,6 +54,11 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   }
 
   @Override
+  public String getDescription() {
+    return "layout";
+  }
+
+  @Override
   public int getVersion() {
     return mLayoutVersion;
   }

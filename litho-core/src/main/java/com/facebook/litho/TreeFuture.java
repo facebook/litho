@@ -94,6 +94,9 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
             "TreeFuture_calculateResult");
   }
 
+  /** Returns a String that gives a textual representation of the type of future it is. */
+  public abstract String getDescription();
+
   /** Returns an integer that identifies uniquely the version of this {@link TreeFuture}. */
   public abstract int getVersion();
 
@@ -448,7 +451,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
           final List<F> futureList,
           final @LayoutState.CalculateLayoutSource int source,
           final Object mutex,
-          final @Nullable ComponentTree.FutureExecutionListener futureExecutionListener) {
+          final @Nullable FutureExecutionListener futureExecutionListener) {
     final boolean isSync = isFromSyncLayout(source);
     boolean isReusingFuture = false;
 
@@ -480,20 +483,26 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     }
 
     if (futureExecutionListener != null) {
-      final ComponentTree.FutureExecutionType executionType;
+      final FutureExecutionType executionType;
       if (isReusingFuture) {
-        executionType = ComponentTree.FutureExecutionType.REUSE_FUTURE;
+        executionType = FutureExecutionType.REUSE_FUTURE;
       } else {
-        executionType = ComponentTree.FutureExecutionType.NEW_FUTURE;
+        executionType = FutureExecutionType.NEW_FUTURE;
       }
 
-      futureExecutionListener.onPreExecution(executionType);
+      futureExecutionListener.onPreExecution(
+          treeFuture.getVersion(), executionType, treeFuture.getDescription());
     }
 
     // Run and get the result
     final TreeFuture.TreeFutureResult<T> result = treeFuture.runAndGet(source);
 
     synchronized (mutex) {
+      if (futureExecutionListener != null) {
+        futureExecutionListener.onPostExecution(
+            treeFuture.getVersion(), treeFuture.isReleased(), treeFuture.getDescription());
+      }
+
       // Unregister for response, decreasing the wait count
       treeFuture.unregisterForResponse();
 
@@ -535,5 +544,27 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     public static <T extends PotentiallyPartialResult> TreeFutureResult<T> cancelled() {
       return new TreeFutureResult<>(null, null, true);
     }
+  }
+
+  public interface FutureExecutionListener {
+
+    /**
+     * Called just before or after a future is triggered.
+     *
+     * @param futureExecutionType How the future is going to be executed - run a new future, reuse a
+     *     running one, or cancelled entirely.
+     */
+    void onPreExecution(
+        int version, final FutureExecutionType futureExecutionType, String attribution);
+
+    void onPostExecution(int version, boolean released, String attribution);
+  }
+
+  public enum FutureExecutionType {
+    /** A new future is about to be triggered */
+    NEW_FUTURE,
+
+    /** An already running future is about to be reused */
+    REUSE_FUTURE
   }
 }

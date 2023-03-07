@@ -214,25 +214,6 @@ public class ComponentTree
     void onSetRootAndSizeSpec(int layoutVersion, int width, int height, boolean stateUpdate);
   }
 
-  public enum FutureExecutionType {
-    /** A new future is about to be triggered */
-    NEW_FUTURE,
-
-    /** An already running future is about to be reused */
-    REUSE_FUTURE
-  }
-
-  public interface FutureExecutionListener {
-
-    /**
-     * Called just before a future for resolve or layout is triggered.
-     *
-     * @param futureExecutionType How the future is going to be executed - run a new future, reuse a
-     *     running one, or cancelled entirely.
-     */
-    void onPreExecution(final FutureExecutionType futureExecutionType);
-  }
-
   @GuardedBy("this")
   private @Nullable List<MeasureListener> mMeasureListeners;
 
@@ -332,7 +313,7 @@ public class ComponentTree
   @GuardedBy("mLayoutStateFutureLock")
   private final List<TreeFuture<LayoutState>> mLayoutTreeFutures = new ArrayList<>();
 
-  private @Nullable FutureExecutionListener mFutureExecutionListener;
+  private @Nullable TreeFuture.FutureExecutionListener mFutureExecutionListener;
 
   @GuardedBy("this")
   private @Nullable Component mRoot;
@@ -2374,7 +2355,8 @@ public class ComponentTree
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  void setFutureExecutionListener(final @Nullable FutureExecutionListener futureExecutionListener) {
+  void setFutureExecutionListener(
+      final @Nullable TreeFuture.FutureExecutionListener futureExecutionListener) {
     mFutureExecutionListener = futureExecutionListener;
   }
 
@@ -3081,6 +3063,11 @@ public class ComponentTree
     @Override
     public int getVersion() {
       return layoutVersion;
+    }
+
+    @Override
+    public String getDescription() {
+      return "resolve+layout";
     }
 
     @Override
