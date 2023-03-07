@@ -17,9 +17,13 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.cancellation.ExecutionModeKt;
+import com.facebook.litho.cancellation.LayoutMetadata;
+import com.facebook.litho.cancellation.RequestMetadataSupplier;
 import com.facebook.litho.stats.LithoStats;
 
-public class LayoutTreeFuture extends TreeFuture<LayoutState> {
+public class LayoutTreeFuture extends TreeFuture<LayoutState>
+    implements RequestMetadataSupplier<LayoutMetadata> {
   private final ResolveResult mResolveResult;
   private final @Nullable LayoutState mCurrentLayoutState;
   private final @Nullable DiffNode mDiffTreeRoot;
@@ -29,6 +33,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
   private final int mComponentTreeId;
   private final int mLayoutVersion;
   private final boolean mIsLayoutDiffingEnabled;
+  private LayoutMetadata mLayoutMetadata;
 
   public LayoutTreeFuture(
       final ResolveResult resolveResult,
@@ -39,7 +44,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       final int heightSpec,
       final int componentTreeId,
       final int layoutVersion,
-      final boolean isLayoutDiffingEnabled) {
+      final boolean isLayoutDiffingEnabled,
+      @LayoutState.CalculateLayoutSource final int source) {
     super(false);
 
     mResolveResult = resolveResult;
@@ -51,6 +57,13 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
     mComponentTreeId = componentTreeId;
     mLayoutVersion = layoutVersion;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
+    mLayoutMetadata =
+        new LayoutMetadata(
+            layoutVersion,
+            widthSpec,
+            heightSpec,
+            resolveResult,
+            ExecutionModeKt.getExecutionMode(source));
   }
 
   @Override
@@ -60,7 +73,12 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
 
   @Override
   public int getVersion() {
-    return mLayoutVersion;
+    return mLayoutMetadata.getLocalVersion();
+  }
+
+  @Override
+  public LayoutMetadata getMetadata() {
+    return mLayoutMetadata;
   }
 
   @Override
@@ -89,11 +107,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState> {
       return false;
     }
 
-    final LayoutTreeFuture thatLtf = (LayoutTreeFuture) that;
-
-    return mWidthSpec == thatLtf.mWidthSpec
-        && mHeightSpec == thatLtf.mHeightSpec
-        && mResolveResult == thatLtf.mResolveResult;
+    return mLayoutMetadata.isEquivalentTo(((LayoutTreeFuture) that).mLayoutMetadata);
   }
 
   /** Function to calculate a new layout. */

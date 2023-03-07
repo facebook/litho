@@ -170,7 +170,17 @@ public class ResolveTreeFutureTest {
     assertThat(renderResult).isNotNull();
 
     final LayoutTreeFuture layoutTreeFuture =
-        new LayoutTreeFuture(renderResult, null, null, null, widthSpec, heightSpec, -1, 0, true);
+        new LayoutTreeFuture(
+            renderResult,
+            null,
+            null,
+            null,
+            widthSpec,
+            heightSpec,
+            -1,
+            0,
+            true,
+            LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
 
     final LayoutState layoutState =
         layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;

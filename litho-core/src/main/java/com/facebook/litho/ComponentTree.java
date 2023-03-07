@@ -65,6 +65,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.cancellation.CancellationHelper;
+import com.facebook.litho.cancellation.LayoutCancellationPolicy;
 import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.ResolveCancellationExecutionMode;
@@ -311,7 +312,7 @@ public class ComponentTree
   private final List<ResolveTreeFuture> mResolveResultFutures = new ArrayList<>();
 
   @GuardedBy("mLayoutStateFutureLock")
-  private final List<TreeFuture<LayoutState>> mLayoutTreeFutures = new ArrayList<>();
+  private final List<LayoutTreeFuture> mLayoutTreeFutures = new ArrayList<>();
 
   private @Nullable TreeFuture.FutureExecutionListener mFutureExecutionListener;
 
@@ -370,6 +371,7 @@ public class ComponentTree
 
   private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
   private final @Nullable ResolveCancellationPolicy mResolveCancellationPolicy;
+  private final @Nullable LayoutCancellationPolicy mLayoutCancellationPolicy;
 
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
@@ -457,6 +459,12 @@ public class ComponentTree
                   : CancellationExecutionMode.SHORT_CIRCUIT);
     } else {
       mResolveCancellationPolicy = null;
+    }
+
+    if (mComponentsConfiguration.isLayoutCancellationEnabled()) {
+      mLayoutCancellationPolicy = new LayoutCancellationPolicy.Default();
+    } else {
+      mLayoutCancellationPolicy = null;
     }
 
     if (ComponentsConfiguration.overrideLayoutDiffing != null) {
@@ -2297,22 +2305,43 @@ public class ComponentTree
 
     resolveResult.treeState.registerLayoutState();
 
-    final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder =
-        TreeFuture.trackAndRunTreeFuture(
-            new LayoutTreeFuture(
-                resolveResult,
-                currentLayoutState,
-                currentDiffNode,
-                null,
-                widthSpec,
-                heightSpec,
-                mId,
-                layoutVersion,
-                mIsLayoutDiffingEnabled),
-            mLayoutTreeFutures,
-            source,
-            mLayoutStateFutureLock,
-            mFutureExecutionListener);
+    final TreeFuture.TreeFutureResult<LayoutState> layoutStateHolder;
+
+    final LayoutTreeFuture layoutTreeFuture =
+        new LayoutTreeFuture(
+            resolveResult,
+            currentLayoutState,
+            currentDiffNode,
+            null,
+            widthSpec,
+            heightSpec,
+            mId,
+            layoutVersion,
+            mIsLayoutDiffingEnabled,
+            source);
+
+    if (mLayoutCancellationPolicy != null) {
+      layoutStateHolder =
+          CancellationHelper.trackAndRunTreeFutureWithCancellation(
+              layoutTreeFuture,
+              mLayoutTreeFutures,
+              source,
+              mLayoutStateFutureLock,
+              mFutureExecutionListener,
+              mLayoutCancellationPolicy);
+    } else {
+      layoutStateHolder =
+          TreeFuture.trackAndRunTreeFuture(
+              layoutTreeFuture,
+              mLayoutTreeFutures,
+              source,
+              mLayoutStateFutureLock,
+              mFutureExecutionListener);
+    }
+
+    if (layoutStateHolder == null || layoutStateHolder.wasCancelled) {
+      return;
+    }
 
     final @Nullable LayoutState layoutState = layoutStateHolder.result;
 
