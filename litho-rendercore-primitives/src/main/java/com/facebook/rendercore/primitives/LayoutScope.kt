@@ -18,13 +18,12 @@ package com.facebook.rendercore.primitives
 
 import android.content.Context
 import com.facebook.rendercore.LayoutContext
-import com.facebook.rendercore.RenderUnit
 
 /**
- * The scope for the [Primitive] layout method. Provides access to [RenderUnit], [LayoutContext] and
- * utility methods that may help to compute the [PrimitiveLayoutResult].
+ * The scope for the [Primitive] layout method. Provides access to [LayoutContext] and utility
+ * methods that may help to compute the [PrimitiveLayoutResult].
  */
-class LayoutScope(val renderUnit: RenderUnit<*>, val layoutContext: LayoutContext<Any?>) {
+class LayoutScope(val layoutContext: LayoutContext<Any?>) {
   val androidContext: Context
     get() = layoutContext.androidContext
 }

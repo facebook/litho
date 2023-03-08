@@ -51,7 +51,7 @@ class TimePickerPrimitiveComponent(
 internal object TimePickerLayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
     val result = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
-    return PrimitiveLayoutResult(widthSpec, heightSpec, result.width, result.height)
+    return PrimitiveLayoutResult(result.width, result.height)
   }
 }
 

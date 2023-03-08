@@ -933,8 +933,6 @@ private fun PrimitiveComponentScope.ViewPrimitive(
       steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MEASURE))
       val result = MeasureResult.fillSpace(widthSpec, heightSpec, 100, 100, null)
       return PrimitiveLayoutResult(
-          widthSpec,
-          heightSpec,
           result.width,
           result.height,
           layoutData = TestPrimitiveLayoutData(result.width, result.height))
@@ -989,11 +987,7 @@ class TestDrawablePrimitiveComponent(val drawable: Drawable, val style: Style? =
 
                 val result = MeasureResult(width, height, TestPrimitiveLayoutData(width, height))
                 return PrimitiveLayoutResult(
-                    widthSpec,
-                    heightSpec,
-                    result.width,
-                    result.height,
-                    layoutData = result.layoutData)
+                    result.width, result.height, layoutData = result.layoutData)
               }
             },
         mountBehavior =

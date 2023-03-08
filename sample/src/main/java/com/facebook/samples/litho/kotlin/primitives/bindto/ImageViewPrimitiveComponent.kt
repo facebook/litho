@@ -78,7 +78,7 @@ internal object ImageLayoutBehavior : LayoutBehavior {
           MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
         }
 
-    return PrimitiveLayoutResult(widthSpec, heightSpec, measureResult.width, measureResult.height)
+    return PrimitiveLayoutResult(measureResult.width, measureResult.height)
   }
 }
 

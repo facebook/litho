@@ -191,8 +191,6 @@ internal class HorizontalScrollLayoutBehavior(
         layoutContext.layoutContextExtraData?.extraLayoutData as? LithoLayoutExtraData?
     val direction = extraLayoutData?.layoutDirection ?: DEFAULT_LAYOUT_DIRECTION
     return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
         width = size.width,
         height = size.height,
         layoutData = HorizontalScrollLayoutData(size.width, size.height, direction))

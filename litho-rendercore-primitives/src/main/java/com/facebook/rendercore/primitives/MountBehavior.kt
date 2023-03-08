@@ -34,7 +34,7 @@ class MountBehavior<ContentType : Any>(
     private val contentAllocator: ContentAllocator<ContentType>,
     private val mountConfigurationCall: MountConfigurationScope<ContentType>.() -> Unit
 ) {
-  val renderUnit: PrimitiveRenderUnit<ContentType> by
+  internal val renderUnit: PrimitiveRenderUnit<ContentType> by
       lazy(LazyThreadSafetyMode.NONE) {
         val mountConfigurationScope = MountConfigurationScope<ContentType>()
         mountConfigurationScope.mountConfigurationCall()

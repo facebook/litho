@@ -230,8 +230,6 @@ internal class VerticalScrollLayoutBehavior(
     size.width = max(0, size.width)
 
     return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
         width = size.width,
         height = size.height,
         layoutData = VerticalScrollLayoutData(size.width, size.height))

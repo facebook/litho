@@ -46,11 +46,7 @@ object FromSpecsLayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
     val result = MeasureResult.fromSpecs(widthSpec, heightSpec)
 
-    return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
-        width = result.width,
-        height = result.height)
+    return PrimitiveLayoutResult(width = result.width, height = result.height)
   }
 }
 
@@ -73,11 +69,7 @@ class FillLayoutBehavior(
     val result = MeasureResult.fillSpace(widthSpec, heightSpec, defaultWidth, defaultHeight, null)
 
     return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
-        width = result.width,
-        height = result.height,
-        layoutData = layoutData)
+        width = result.width, height = result.height, layoutData = layoutData)
   }
 }
 
@@ -93,11 +85,7 @@ class FillOrGoneLayoutBehavior(private val layoutData: Any? = null) : LayoutBeha
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
     val result = MeasureResult.fillSpaceOrGone(widthSpec, heightSpec, null)
     return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
-        width = result.width,
-        height = result.height,
-        layoutData = layoutData)
+        width = result.width, height = result.height, layoutData = layoutData)
   }
 }
 
@@ -114,12 +102,7 @@ class FixedSizeLayoutBehavior(
     private val layoutData: Any? = null,
 ) : LayoutBehavior {
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
-    return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
-        width = width,
-        height = height,
-        layoutData = layoutData)
+    return PrimitiveLayoutResult(width = width, height = height, layoutData = layoutData)
   }
 }
 
@@ -143,47 +126,48 @@ class AspectRatioLayoutBehavior(
         MeasureResult.forAspectRatio(
             widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio)
     return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
-        width = result.width,
-        height = result.height,
-        layoutData = layoutData)
+        width = result.width, height = result.height, layoutData = layoutData)
   }
 }
 
 class PrimitiveLayoutResult(
-    private val widthSpec: Int,
-    private val heightSpec: Int,
     private val width: Int,
     private val height: Int,
     private val paddingTop: Int = 0,
     private val paddingRight: Int = 0,
     private val paddingBottom: Int = 0,
     private val paddingLeft: Int = 0,
-    private val renderUnit: RenderUnit<*>? = null,
     private val layoutData: Any? = null,
-) : Node.LayoutResult {
-  override fun getRenderUnit(): RenderUnit<*>? = renderUnit
-  override fun getLayoutData(): Any? = layoutData
-  override fun getChildrenCount(): Int = 0
-  override fun getChildAt(index: Int): Node.LayoutResult {
-    throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
-  }
+) {
+  internal fun toNodeLayoutResult(
+      widthSpec: Int,
+      heightSpec: Int,
+      renderUnit: RenderUnit<*>?
+  ): Node.LayoutResult {
+    return object : Node.LayoutResult {
+      override fun getRenderUnit(): RenderUnit<*>? = renderUnit
+      override fun getLayoutData(): Any? = this@PrimitiveLayoutResult.layoutData
+      override fun getChildrenCount(): Int = 0
+      override fun getChildAt(index: Int): Node.LayoutResult {
+        throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
+      }
 
-  override fun getXForChildAtIndex(index: Int): Int {
-    throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
-  }
+      override fun getXForChildAtIndex(index: Int): Int {
+        throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
+      }
 
-  override fun getYForChildAtIndex(index: Int): Int {
-    throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
-  }
+      override fun getYForChildAtIndex(index: Int): Int {
+        throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
+      }
 
-  override fun getWidth(): Int = width
-  override fun getHeight(): Int = height
-  override fun getPaddingTop(): Int = paddingTop
-  override fun getPaddingRight(): Int = paddingRight
-  override fun getPaddingBottom(): Int = paddingBottom
-  override fun getPaddingLeft(): Int = paddingLeft
-  override fun getWidthSpec(): Int = widthSpec
-  override fun getHeightSpec(): Int = heightSpec
+      override fun getWidth(): Int = this@PrimitiveLayoutResult.width
+      override fun getHeight(): Int = this@PrimitiveLayoutResult.height
+      override fun getPaddingTop(): Int = this@PrimitiveLayoutResult.paddingTop
+      override fun getPaddingRight(): Int = this@PrimitiveLayoutResult.paddingRight
+      override fun getPaddingBottom(): Int = this@PrimitiveLayoutResult.paddingBottom
+      override fun getPaddingLeft(): Int = this@PrimitiveLayoutResult.paddingLeft
+      override fun getWidthSpec(): Int = widthSpec
+      override fun getHeightSpec(): Int = heightSpec
+    }
+  }
 }

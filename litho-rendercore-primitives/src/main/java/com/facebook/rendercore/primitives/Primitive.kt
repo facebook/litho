@@ -38,14 +38,21 @@ class Primitive<ContentType : Any>(
     private val mountBehavior: MountBehavior<ContentType>
 ) : Node<Any?> {
   /** Lazily creates and returns a [RenderUnit] configured with [mountBehavior]. */
-  val renderUnit: PrimitiveRenderUnit<ContentType> = mountBehavior.renderUnit
+  val renderUnit: PrimitiveRenderUnit<ContentType>
+    get() {
+      return mountBehavior.renderUnit
+    }
 
   override fun calculateLayout(
       context: LayoutContext<Any?>,
       widthSpec: Int,
       heightSpec: Int
   ): Node.LayoutResult {
-    val layoutScope = LayoutScope(mountBehavior.renderUnit, context)
-    return with(layoutBehavior) { layoutScope.layout(widthSpec, heightSpec) }
+    val layoutScope = LayoutScope(context)
+    return with(layoutBehavior) {
+      layoutScope
+          .layout(widthSpec, heightSpec)
+          .toNodeLayoutResult(widthSpec, heightSpec, renderUnit)
+    }
   }
 }

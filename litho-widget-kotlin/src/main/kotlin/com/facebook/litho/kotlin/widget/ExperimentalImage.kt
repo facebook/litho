@@ -91,8 +91,6 @@ internal class ImageLayoutBehavior(
     val useLayoutSize = ScaleType.FIT_XY == scaleType || intrinsicWidth <= 0 || intrinsicHeight <= 0
 
     return PrimitiveLayoutResult(
-        widthSpec = widthSpec,
-        heightSpec = heightSpec,
         width = result.width,
         height = result.height,
         layoutData =

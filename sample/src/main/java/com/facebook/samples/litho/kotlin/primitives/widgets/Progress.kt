@@ -83,6 +83,6 @@ internal object ProgressLayoutBehavior : LayoutBehavior {
           MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
         }
 
-    return PrimitiveLayoutResult(widthSpec, heightSpec, result.width, result.height)
+    return PrimitiveLayoutResult(result.width, result.height)
   }
 }
