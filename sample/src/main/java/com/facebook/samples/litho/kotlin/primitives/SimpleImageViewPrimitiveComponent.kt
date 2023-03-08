@@ -26,27 +26,32 @@ import com.facebook.litho.drawableRes
 import com.facebook.rendercore.MeasureResult
 import com.facebook.rendercore.primitives.LayoutBehavior
 import com.facebook.rendercore.primitives.LayoutScope
-import com.facebook.rendercore.primitives.MountBehavior
+import com.facebook.rendercore.primitives.Primitive
 import com.facebook.rendercore.primitives.PrimitiveLayoutResult
 import com.facebook.rendercore.primitives.ViewAllocator
 import com.facebook.samples.litho.R
 
+// start_image_primitive_component_example
 class SimpleImageViewPrimitiveComponent(private val style: Style? = null) : PrimitiveComponent() {
 
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
-        layoutBehavior = ImageLayoutBehavior,
-        mountBehavior =
-            MountBehavior(ViewAllocator { context -> ImageView(context) }) {
-              bind(R.drawable.ic_launcher) { imageView ->
-                imageView.setImageDrawable(drawableRes(R.drawable.ic_launcher))
-                onUnbind { imageView.setImageResource(0) }
-              }
-            },
-        style)
+        primitive =
+            Primitive(
+                layoutBehavior = ImageLayoutBehavior,
+                mountBehavior =
+                    MountBehavior(ViewAllocator { context -> ImageView(context) }) {
+                      bind(R.drawable.ic_launcher) { imageView ->
+                        imageView.setImageDrawable(drawableRes(R.drawable.ic_launcher))
+                        onUnbind { imageView.setImageResource(0) }
+                      }
+                    }),
+        style = style)
   }
 }
+// end_image_primitive_component_example
 
+// start_image_primitive_layout_behavior_example
 internal object ImageLayoutBehavior : LayoutBehavior {
   private const val defaultSize: Int = 150
 
@@ -62,3 +67,4 @@ internal object ImageLayoutBehavior : LayoutBehavior {
     return PrimitiveLayoutResult(measureResult.width, measureResult.height)
   }
 }
+// end_image_primitive_layout_behavior_example
