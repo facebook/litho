@@ -194,6 +194,7 @@ module.exports = {
           'Primitive Components': [
             'fb/primitivecomponents/overview',
             'fb/primitivecomponents/primitive-component',
+            'fb/primitivecomponents/primitive',
           ],
         },
         'fb/dependency-injection',

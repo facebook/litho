@@ -49,6 +49,7 @@ class Image(
     return LithoPrimitive(
         layoutBehavior = ImageLayoutBehavior(drawable, scaleType),
         mountBehavior =
+            // start_image_primitive_mount_behavior_example
             MountBehavior(DrawableAllocator(poolSize = 30) { MatrixDrawable<Drawable>() }) {
               bindWithLayoutData<PrimitiveImageLayoutData>(drawable, scaleType) {
                   content,
@@ -57,7 +58,9 @@ class Image(
                 content.bind(layoutData.width, layoutData.height)
                 onUnbind { content.unmount() }
               }
-            },
+            }
+        // end_image_primitive_mount_behavior_example
+        ,
         style = style)
   }
 }
