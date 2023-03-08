@@ -68,7 +68,7 @@ import com.facebook.litho.cancellation.CancellationHelper;
 import com.facebook.litho.cancellation.LayoutCancellationPolicy;
 import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.ResolveCancellationExecutionMode;
+import com.facebook.litho.config.ResolveCancellationStrategy;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
@@ -449,16 +449,23 @@ public class ComponentTree
       mBatchedStateUpdatesStrategy = null;
     }
 
-    ResolveCancellationExecutionMode resolveCancellationExecutionMode =
-        mComponentsConfiguration.getResolveCancellationExecutionMode();
-    if (resolveCancellationExecutionMode != null) {
-      mResolveCancellationPolicy =
-          new ResolveCancellationPolicy.Default(
-              resolveCancellationExecutionMode == ResolveCancellationExecutionMode.INTERRUPTION
-                  ? CancellationExecutionMode.INTERRUPT
-                  : CancellationExecutionMode.SHORT_CIRCUIT);
-    } else {
+    ResolveCancellationStrategy resolveCancellationStrategy =
+        mComponentsConfiguration.getResolveCancellationStrategy();
+    if (resolveCancellationStrategy == null) {
       mResolveCancellationPolicy = null;
+    } else {
+      switch (resolveCancellationStrategy) {
+        case DEFAULT_INTERRUPT:
+          mResolveCancellationPolicy =
+              new ResolveCancellationPolicy.Default(CancellationExecutionMode.INTERRUPT);
+          break;
+        case DEFAULT_SHORT_CIRCUIT:
+          mResolveCancellationPolicy =
+              new ResolveCancellationPolicy.Default(CancellationExecutionMode.SHORT_CIRCUIT);
+          break;
+        default:
+          mResolveCancellationPolicy = null;
+      }
     }
 
     if (mComponentsConfiguration.isLayoutCancellationEnabled()) {

@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.config.ResolveCancellationExecutionMode
+import com.facebook.litho.config.ResolveCancellationStrategy
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
@@ -51,7 +51,7 @@ class ResolveCancellationTest {
   fun `should not process an incoming redundant resolve request`() {
     // as we are not cancelling any running resolve on this test, the cancellation mode doesn't
     // matter
-    val lithoView = createEmptyLithoView(ResolveCancellationExecutionMode.SHORT_CIRCUIT)
+    val lithoView = createEmptyLithoView(ResolveCancellationStrategy.DEFAULT_SHORT_CIRCUIT)
 
     val controller = ResolveTestController(lithoView.componentTree)
     val testComponent = controller.newTestComponent()
@@ -94,7 +94,7 @@ class ResolveCancellationTest {
    */
   @Test
   fun `should cancel a running resolve when an incoming resolve makes it redundant - with short circuit`() {
-    testCancellingRunningResolve(ResolveCancellationExecutionMode.SHORT_CIRCUIT)
+    testCancellingRunningResolve(ResolveCancellationStrategy.DEFAULT_SHORT_CIRCUIT)
   }
 
   /**
@@ -110,12 +110,10 @@ class ResolveCancellationTest {
    */
   @Test
   fun `should cancel a running resolve when an incoming resolve makes it redundant - with interruption`() {
-    testCancellingRunningResolve(ResolveCancellationExecutionMode.INTERRUPTION)
+    testCancellingRunningResolve(ResolveCancellationStrategy.DEFAULT_INTERRUPT)
   }
 
-  private fun testCancellingRunningResolve(
-      cancellationExecutionMode: ResolveCancellationExecutionMode
-  ) {
+  private fun testCancellingRunningResolve(cancellationExecutionMode: ResolveCancellationStrategy) {
     val lithoView = createEmptyLithoView(cancellationExecutionMode)
 
     val controller = ResolveTestController(lithoView.componentTree)
@@ -158,14 +156,13 @@ class ResolveCancellationTest {
   }
 
   private fun createEmptyLithoView(
-      cancellationExecutionMode: ResolveCancellationExecutionMode
+      cancellationStrategy: ResolveCancellationStrategy
   ): TestLithoView {
     val context = getApplicationContext<Context>()
     val componentContext = ComponentContext(context)
 
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create()
-            .resolveCancellationExecutionMode(cancellationExecutionMode))
+        ComponentsConfiguration.create().resolveCancellationStrategy(cancellationStrategy))
 
     val componentTree =
         ComponentTree.create(componentContext)

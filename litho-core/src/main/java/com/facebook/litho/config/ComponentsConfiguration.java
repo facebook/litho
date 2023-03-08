@@ -304,17 +304,17 @@ public class ComponentsConfiguration {
 
   public static boolean enableStateUpdatesBatching = true;
 
+  @Nullable private ResolveCancellationStrategy mResolveCancellationStrategy = null;
+
+  @Nullable
+  public ResolveCancellationStrategy getResolveCancellationStrategy() {
+    return mResolveCancellationStrategy;
+  }
+
   private boolean mIsLayoutCancellationEnabled = false;
 
   public boolean isLayoutCancellationEnabled() {
     return mIsLayoutCancellationEnabled;
-  }
-
-  @Nullable private ResolveCancellationExecutionMode mResolveCancellationStrategy = null;
-
-  @Nullable
-  public ResolveCancellationExecutionMode getResolveCancellationExecutionMode() {
-    return mResolveCancellationStrategy;
   }
 
   /** Debug option to highlight interactive areas in mounted components. */
@@ -359,8 +359,8 @@ public class ComponentsConfiguration {
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
         builder.mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
-    mResolveCancellationStrategy = builder.mResolveCancellationExecutionMode;
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
+    mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
   }
 
   public boolean shouldReuseOutputs() {
@@ -385,8 +385,8 @@ public class ComponentsConfiguration {
     boolean mUseCancelableLayoutFutures;
     boolean mShouldReuseOutputs = false;
     boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
-    @Nullable ResolveCancellationExecutionMode mResolveCancellationExecutionMode = null;
     boolean mIsLayoutCancellationEnabled = false;
+    @Nullable ResolveCancellationStrategy mResolveCancellationStrategy;
 
     protected Builder() {}
 
@@ -403,9 +403,9 @@ public class ComponentsConfiguration {
       return this;
     }
 
-    public ComponentsConfiguration.Builder resolveCancellationExecutionMode(
-        ResolveCancellationExecutionMode mode) {
-      mResolveCancellationExecutionMode = mode;
+    public ComponentsConfiguration.Builder resolveCancellationStrategy(
+        @Nullable ResolveCancellationStrategy strategy) {
+      mResolveCancellationStrategy = strategy;
       return this;
     }
 

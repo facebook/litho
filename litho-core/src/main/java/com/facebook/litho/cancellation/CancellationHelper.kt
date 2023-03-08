@@ -78,7 +78,7 @@ F : RequestMetadataSupplier<M> {
 
   return try {
     TreeFuture.trackAndRunTreeFuture(treeFuture, futures, source, mutex, futureExecutionListener)
-  } catch (exception: CancellationException) {
+  } catch (exception: RuntimeException) {
     if (exception.cause is CancellationException) {
       debugLog { "A cancellation exception on future ${treeFuture.version}" }
     }
