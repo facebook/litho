@@ -197,6 +197,7 @@ module.exports = {
             'fb/primitivecomponents/primitive',
             'fb/primitivecomponents/primitive-measuring',
             'fb/primitivecomponents/primitive-controllers',
+            'fb/primitivecomponents/primitive-preallocation',
           ],
         },
         'fb/dependency-injection',

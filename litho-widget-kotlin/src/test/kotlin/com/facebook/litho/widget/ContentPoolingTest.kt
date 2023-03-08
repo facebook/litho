@@ -311,6 +311,7 @@ class TestDrawablePrimitiveComponent(
   }
 }
 
+// start_prefill_mount_content_pool_primitive_component_example
 class TestTextViewPrimitiveComponent(val style: Style? = null) : PrimitiveComponent() {
   override fun PrimitiveComponentScope.render(): LithoPrimitive {
     return LithoPrimitive(
@@ -323,6 +324,7 @@ class TestTextViewPrimitiveComponent(val style: Style? = null) : PrimitiveCompon
     val ALLOCATOR = ViewAllocator(poolSize = 10) { context -> TextView(context) }
   }
 }
+// end_prefill_mount_content_pool_primitive_component_example
 
 private fun createPoolFactory(poolSize: Int): MountItemsPool.Factory {
   return object : MountItemsPool.Factory {
