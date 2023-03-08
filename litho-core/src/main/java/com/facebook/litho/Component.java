@@ -1211,7 +1211,7 @@ public abstract class Component
      *
      * @param value controller for the background color value
      */
-    public T backgroundColor(DynamicValue<Integer> value) {
+    public T backgroundColor(@Nullable DynamicValue<Integer> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_BACKGROUND_COLOR, value);
       return getThis();
     }
@@ -1968,7 +1968,7 @@ public abstract class Component
      *
      * @param rotation controller for the rotation value
      */
-    public T rotation(DynamicValue<Float> rotation) {
+    public T rotation(@Nullable DynamicValue<Float> rotation) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_ROTATION, rotation);
       return getThis();
     }
