@@ -35,7 +35,7 @@ import java.util.concurrent.CancellationException
  */
 internal fun <F, M, T> trackAndRunTreeFutureWithCancellation(
     treeFuture: F,
-    futures: List<F>,
+    futures: MutableList<F>,
     @CalculateLayoutSource source: Int,
     mutex: Any,
     futureExecutionListener: TreeFuture.FutureExecutionListener?,
@@ -55,12 +55,14 @@ F : RequestMetadataSupplier<M> {
       debugLog { "Processing incoming request." }
     }
     is CancellationPolicy.Result.DropIncomingRequest -> {
-      debugLog { "Dropping incoming request." }
+      debugLog { "Dropping incoming request. (${treeFuture.description})" }
       incrementCancellationStats(treeFuture.description)
       return TreeFutureResult.cancelled()
     }
     is CancellationPolicy.Result.CancelRunningRequests -> {
-      debugLog { "Will attempt to cancel running requests: ${result.requestIds}" }
+      debugLog {
+        "Will attempt to cancel running requests: ${result.requestIds} (${treeFuture.description})"
+      }
       result.requestIds.iterator().forEach { version ->
         val futureToCancel = futures.firstOrNull { it.version == version }
         if (futureToCancel != null) {
@@ -70,6 +72,9 @@ F : RequestMetadataSupplier<M> {
             CancellationExecutionMode.SHORT_CIRCUIT -> futureToCancel.release()
             CancellationExecutionMode.INTERRUPT -> futureToCancel.forceCancellation()
           }
+
+          synchronized(mutex) { futures.remove(futureToCancel) }
+
           debugLog { "Cancelled future (${futureToCancel.version}) with success." }
         }
       }

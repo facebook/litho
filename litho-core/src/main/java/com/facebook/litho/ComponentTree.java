@@ -463,6 +463,14 @@ public class ComponentTree
           mResolveCancellationPolicy =
               new ResolveCancellationPolicy.Default(CancellationExecutionMode.SHORT_CIRCUIT);
           break;
+        case GREEDY_INTERRUPT:
+          mResolveCancellationPolicy =
+              new ResolveCancellationPolicy.Greedy(CancellationExecutionMode.INTERRUPT);
+          break;
+        case GREEDY_SHORT_CIRCUIT:
+          mResolveCancellationPolicy =
+              new ResolveCancellationPolicy.Greedy(CancellationExecutionMode.SHORT_CIRCUIT);
+          break;
         default:
           mResolveCancellationPolicy = null;
       }

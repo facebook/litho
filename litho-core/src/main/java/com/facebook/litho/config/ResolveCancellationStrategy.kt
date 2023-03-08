@@ -4,5 +4,7 @@ package com.facebook.litho.config
 
 enum class ResolveCancellationStrategy {
   DEFAULT_INTERRUPT,
-  DEFAULT_SHORT_CIRCUIT
+  DEFAULT_SHORT_CIRCUIT,
+  GREEDY_INTERRUPT,
+  GREEDY_SHORT_CIRCUIT
 }

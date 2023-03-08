@@ -75,4 +75,48 @@ interface ResolveCancellationPolicy : CancellationPolicy<ResolveMetadata> {
       }
     }
   }
+
+  class Greedy(override val cancellationMode: CancellationPolicy.CancellationExecutionMode) :
+      ResolveCancellationPolicy {
+
+    /**
+     * This method identifies which action to take whenever a new Resolve request happens.
+     *
+     * For each of the on-going Resolve's metadata, we will verify if the incoming Resolve is an
+     * equivalent one to decide on the course of action. If both requests are equivalent, but the
+     * incoming one is asynchronous, we can drop it. The reasoning is that a synchronous or
+     * asynchronous one is already running, so there is no need to duplicate that work. If the
+     * incoming one is synchronous, we will attempt to cancel the async one and avoid transfer of
+     * work.
+     *
+     * When requests are not equivalent, then if the running request runs asynchronously, we can
+     * cancel it because they are redundant, and the new one will effectively replace it.
+     */
+    override fun evaluate(
+        ongoingRequests: List<ResolveMetadata>,
+        incomingRequest: ResolveMetadata
+    ): Result {
+      val cancellableResolves = mutableListOf<ResolveMetadata>()
+
+      for (runningResolve in ongoingRequests) {
+        if (runningResolve.isEquivalentTo(incomingRequest)) {
+          if (incomingRequest.executionMode == ExecutionMode.ASYNC) {
+            return Result.DropIncomingRequest
+          } else if (runningResolve.executionMode == ExecutionMode.ASYNC) {
+            cancellableResolves.add(runningResolve)
+          }
+        } else {
+          if (runningResolve.executionMode == ExecutionMode.ASYNC) {
+            cancellableResolves.add(runningResolve)
+          }
+        }
+      }
+
+      return if (cancellableResolves.isNotEmpty()) {
+        Result.CancelRunningRequests(ongoingRequests.map { it.id })
+      } else {
+        Result.ProcessIncomingRequest
+      }
+    }
+  }
 }
