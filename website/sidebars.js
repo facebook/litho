@@ -190,6 +190,11 @@ module.exports = {
             'fb/architecture-litho-tricks',
           ],
         },
+        {
+          'Primitive Components': [
+            'fb/primitivecomponents/overview',
+          ],
+        },
         'fb/dependency-injection',
         {
           'Analysing Performance': [
