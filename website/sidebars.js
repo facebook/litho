@@ -195,6 +195,7 @@ module.exports = {
             'fb/primitivecomponents/overview',
             'fb/primitivecomponents/primitive-component',
             'fb/primitivecomponents/primitive',
+            'fb/primitivecomponents/primitive-measuring',
           ],
         },
         'fb/dependency-injection',

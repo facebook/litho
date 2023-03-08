@@ -69,6 +69,7 @@ class ImageViewPrimitiveComponent(
 internal object ImageLayoutBehavior : LayoutBehavior {
   private const val defaultSize: Int = 150
 
+  // start_primitive_measure_example
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
     val measureResult =
         if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
@@ -80,6 +81,7 @@ internal object ImageLayoutBehavior : LayoutBehavior {
 
     return PrimitiveLayoutResult(measureResult.width, measureResult.height)
   }
+  // end_primitive_measure_example
 }
 
 fun evaluate(fraction: Float, start: Float, end: Float): Float = start + fraction * (end - start)
