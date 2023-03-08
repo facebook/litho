@@ -55,7 +55,9 @@ class AttachDetachHandlerTest {
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
     val attachDetachHandler = legacyLithoViewRule.componentTree.attachDetachHandler
-    assertThat(attachDetachHandler!!.attached!!.size).isEqualTo(1)
+    val currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+
+    assertThat(currentAttached.size).isEqualTo(1)
   }
 
   @Test
@@ -88,7 +90,7 @@ class AttachDetachHandlerTest {
     assertThat(steps)
         .describedAs("Should call @OnDetached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_DETACHED}")
-    assertThat(attachDetachHandler!!.attached).isNullOrEmpty()
+    assertThat(attachDetachHandler?.attached).isNullOrEmpty()
   }
 
   @Test
@@ -111,7 +113,8 @@ class AttachDetachHandlerTest {
             "c2:${AttachDetachTesterSpec.ON_ATTACHED}",
             "r1:${AttachDetachTesterSpec.ON_ATTACHED}")
     val attachDetachHandler = legacyLithoViewRule.componentTree.attachDetachHandler
-    assertThat(attachDetachHandler!!.attached!!.size).isEqualTo(5)
+    var currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+    assertThat(currentAttached.size).isEqualTo(5)
     steps.clear()
 
     /*
@@ -132,7 +135,9 @@ class AttachDetachHandlerTest {
             "c3:${AttachDetachTesterSpec.ON_DETACHED}",
             "c4:${AttachDetachTesterSpec.ON_DETACHED}",
             "c7:${AttachDetachTesterSpec.ON_ATTACHED}")
-    assertThat(attachDetachHandler.attached!!.size).isEqualTo(4)
+
+    currentAttached = attachDetachHandler.attached ?: error("Should not be null")
+    assertThat(currentAttached.size).isEqualTo(4)
     steps.clear()
 
     /*
@@ -149,7 +154,9 @@ class AttachDetachHandlerTest {
         .describedAs("Should call @OnDetached methods in expect order")
         .containsExactly(
             "c7:${AttachDetachTesterSpec.ON_DETACHED}", "c6:${AttachDetachTesterSpec.ON_DETACHED}")
-    assertThat(attachDetachHandler.attached!!.size).isEqualTo(2)
+
+    currentAttached = attachDetachHandler.attached ?: error("Should not be null")
+    assertThat(currentAttached.size).isEqualTo(2)
   }
 
   @Test
@@ -172,7 +179,9 @@ class AttachDetachHandlerTest {
             "c2:${AttachDetachTesterSpec.ON_ATTACHED}",
             "r1:${AttachDetachTesterSpec.ON_ATTACHED}")
     val attachDetachHandler = legacyLithoViewRule.componentTree.attachDetachHandler
-    assertThat(attachDetachHandler!!.attached!!.size).isEqualTo(5)
+    var currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+
+    assertThat(currentAttached.size).isEqualTo(5)
     steps.clear()
 
     /*
@@ -205,7 +214,9 @@ class AttachDetachHandlerTest {
             "c7:${AttachDetachTesterSpec.ON_ATTACHED}",
             "c6:${AttachDetachTesterSpec.ON_ATTACHED}",
             "r2:${AttachDetachTesterSpec.ON_ATTACHED}")
-    assertThat(attachDetachHandler.attached!!.size).isEqualTo(4)
+
+    currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+    assertThat(currentAttached.size).isEqualTo(4)
   }
 
   @Test
@@ -294,7 +305,8 @@ class AttachDetachHandlerTest {
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
     val attachDetachHandler = legacyLithoViewRule.componentTree.attachDetachHandler
-    assertThat(attachDetachHandler!!.attached!!.size).isEqualTo(1)
+    val currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+    assertThat(currentAttached.size).isEqualTo(1)
     val isMainThreadLayout =
         extraThreadInfo[AttachDetachTesterSpec.IS_MAIN_THREAD_LAYOUT] as Boolean?
     assertThat(isMainThreadLayout).isTrue
@@ -321,7 +333,8 @@ class AttachDetachHandlerTest {
         .describedAs("Should call @OnAttached method")
         .containsExactly("root:${AttachDetachTesterSpec.ON_ATTACHED}")
     val attachDetachHandler = legacyLithoViewRule.componentTree.attachDetachHandler
-    assertThat(attachDetachHandler!!.attached!!.size).isEqualTo(1)
+    val currentAttached = attachDetachHandler?.attached ?: error("Should not be null")
+    assertThat(currentAttached.size).isEqualTo(1)
     val isMainThreadLayout =
         extraThreadInfo[AttachDetachTesterSpec.IS_MAIN_THREAD_LAYOUT] as Boolean?
     assertThat(isMainThreadLayout).isFalse

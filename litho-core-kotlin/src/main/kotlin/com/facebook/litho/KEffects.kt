@@ -80,11 +80,11 @@ private class UseEffectAttachable(
 ) : Attachable {
 
   @ThreadConfined(ThreadConfined.UI) var detachHandler: CleanupFunc? = null
-  @ThreadConfined(ThreadConfined.UI) var isAttached = false
+  @ThreadConfined(ThreadConfined.UI) var isAttached: Boolean = false
 
-  override fun getUniqueId() = id
+  override val uniqueId: String = id
 
-  override fun useLegacyUpdateBehavior() = false
+  override fun useLegacyUpdateBehavior(): Boolean = false
 
   @UiThread
   override fun attach() {
