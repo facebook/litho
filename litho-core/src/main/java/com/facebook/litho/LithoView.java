@@ -892,33 +892,6 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   }
 
   /**
-   * Change the root component synchronously. Creates a new component tree with reconciliation
-   * disabled if required. <b>DO NOT USE</b> this method; it was added only to avoid enabling
-   * reconciliation implicitly at all existing call sites of {@link #setComponent(Component)}.
-   *
-   * <p>Use {@link #setComponent(Component)} if the component hierarchy does not rely on side
-   * effects. For more details about reconciliation see the documentation @
-   * https://fblitho.com/docs/codegen/state-for-specs/#updating-state-values
-   *
-   * <p>To disable reconciliation create a new {@link ComponentTree}, and disable reconciliation
-   * explicitly using {@link ComponentTree.Builder#isReconciliationEnabled(boolean)}. Set this
-   * {@link ComponentTree} on the {@link LithoView} using {@link #setComponentTree(ComponentTree)}.
-   *
-   * @deprecated Use {@link #setComponent(Component)} if reconciliation can be enabled.
-   */
-  @Deprecated
-  public void setComponentWithoutReconciliation(Component component) {
-    if (mComponentTree == null) {
-      setComponentTree(
-          ComponentTree.create(getComponentContext(), component)
-              .isReconciliationEnabled(false)
-              .build());
-    } else {
-      mComponentTree.setRoot(component);
-    }
-  }
-
-  /**
    * Change the root component measuring it on a background thread before updating the UI. If this
    * {@link LithoView} doesn't have a ComponentTree initialized, the root will be computed
    * synchronously.
@@ -926,33 +899,6 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   public void setComponentAsync(Component component) {
     if (mComponentTree == null) {
       setComponentTree(ComponentTree.create(getComponentContext(), component).build());
-    } else {
-      mComponentTree.setRootAsync(component);
-    }
-  }
-
-  /**
-   * Change the root component asynchronously. Creates a new component tree with reconciliation
-   * disabled if required. <b>DO NOT USE</b> this method; it was added only to avoid enabling
-   * reconciliation implicitly at all existing call sites of {@link #setComponentAsync(Component)}.
-   *
-   * <p>Use {@link #setComponentAsync(Component)} if the component hierarchy does not rely on side
-   * effects. For more details about reconciliation see the documentation @
-   * https://fblitho.com/docs/codegen/state-for-specs/#updating-state-values
-   *
-   * <p>To disable reconciliation create a new {@link ComponentTree}, and disable reconciliation
-   * explicitly using {@link ComponentTree.Builder#isReconciliationEnabled(boolean)}. Set this
-   * {@link ComponentTree} on the {@link LithoView} using {@link #setComponentTree(ComponentTree)}.
-   *
-   * @deprecated Use {@link #setComponentAsync(Component)} if reconciliation can be enabled.
-   */
-  @Deprecated
-  public void setComponentAsyncWithoutReconciliation(Component component) {
-    if (mComponentTree == null) {
-      setComponentTree(
-          ComponentTree.create(getComponentContext(), component)
-              .isReconciliationEnabled(false)
-              .build());
     } else {
       mComponentTree.setRootAsync(component);
     }
