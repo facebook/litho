@@ -147,6 +147,9 @@ public abstract class Component
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable Context mBuilderContext;
 
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable String mBuilderContextName;
+
   protected Component() {
     mTypeId = getOrCreateId(getClass());
   }
@@ -1056,13 +1059,24 @@ public abstract class Component
     return super.clone();
   }
 
-  @Nullable
-  final Context getBuilderContext() {
-    return mBuilderContext;
+  final void setBuilderContext(@Nullable Context context) {
+    mBuilderContext = context;
   }
 
-  final void setBuilderContext(Context context) {
-    mBuilderContext = context;
+  public final @Nullable String getBuilderContextName() {
+    return mBuilderContextName;
+  }
+
+  public final void setBuilderContextName(@Nullable String name) {
+    mBuilderContextName = name;
+  }
+
+  public static String getBuilderContextName(@Nullable Context context) {
+    if (context == null) {
+      return "null";
+    } else {
+      return "<cls>" + context.getClass().getName() + "</cls>@" + context.hashCode();
+    }
   }
 
   /**
@@ -1099,7 +1113,11 @@ public abstract class Component
           ComponentUtils.handleWithHierarchy(c, component, e);
         }
       }
-      mComponent.setBuilderContext(c.getAndroidContext());
+      final Context context = c.getAndroidContext();
+      mComponent.setBuilderContextName(getBuilderContextName(context));
+      if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+        mComponent.setBuilderContext(context);
+      }
     }
 
     @ReturnsOwnership

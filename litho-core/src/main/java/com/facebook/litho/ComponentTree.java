@@ -2111,14 +2111,15 @@ public class ComponentTree
       context = new ComponentContext(mContext, treeProps);
     }
 
-    if (root.getBuilderContext() != null
-        && root.getBuilderContext() != mContext.getAndroidContext()) {
+    if (root.getBuilderContextName() != null
+        && !Component.getBuilderContextName(mContext.getAndroidContext())
+            .equals(root.getBuilderContextName())) {
       final String message =
           "ComponentTree context is different from root builder context"
               + ", ComponentTree context="
-              + mContext.getAndroidContext()
+              + Component.getBuilderContextName(mContext.getAndroidContext())
               + ", root builder context="
-              + root.getBuilderContext()
+              + root.getBuilderContextName()
               + ", root="
               + root.getSimpleName()
               + ", ContextTree="
@@ -2974,14 +2975,15 @@ public class ComponentTree
       }
     }
 
-    if (root.getBuilderContext() != null
-        && root.getBuilderContext() != context.getAndroidContext()) {
+    if (root.getBuilderContextName() != null
+        && !Component.getBuilderContextName(mContext.getAndroidContext())
+            .equals(root.getBuilderContextName())) {
       final String message =
           "ComponentTree context is different from root builder context"
               + ", ComponentTree context="
-              + context.getAndroidContext()
+              + Component.getBuilderContextName(mContext.getAndroidContext())
               + ", root builder context="
-              + root.getBuilderContext()
+              + root.getBuilderContextName()
               + ", root="
               + root.getSimpleName()
               + ", ContextTree="
