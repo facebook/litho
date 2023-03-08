@@ -38,12 +38,15 @@ class TimePickerPrimitiveComponent(
     return LithoPrimitive(
         layoutBehavior = TimePickerLayoutBehavior,
         mountBehavior =
+            // start_primitive_controller_mount_behavior_example
             MountBehavior(ViewAllocator { context -> TimePicker(context) }) {
               bind(controller) { content ->
                 controller?.bind(content)
                 onUnbind { controller?.unbind() }
               }
-            },
+            }
+        // end_primitive_controller_mount_behavior_example
+        ,
         style = style)
   }
 }
@@ -55,6 +58,7 @@ internal object TimePickerLayoutBehavior : LayoutBehavior {
   }
 }
 
+// start_primitive_controller_code_example
 class TimePickerController(private var currentHour: Int, private var currentMinute: Int) {
   var minute: Int
     get() {
@@ -101,7 +105,9 @@ class TimePickerController(private var currentHour: Int, private var currentMinu
       }
 
   private var content: TimePicker? = null
+  // end_primitive_controller_code_example
 
+  // start_primitive_controller_bind_code_example
   fun bind(content: TimePicker) {
     this.content = content
     hour = currentHour
@@ -113,4 +119,5 @@ class TimePickerController(private var currentHour: Int, private var currentMinu
     this.content?.setOnTimeChangedListener(null)
     this.content = null
   }
+  // end_primitive_controller_bind_code_example
 }
