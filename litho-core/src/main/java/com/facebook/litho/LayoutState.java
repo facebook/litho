@@ -1242,8 +1242,18 @@ public class LayoutState
                     c, component, Preconditions.checkNotNull(treeState), currentRoot);
             // Release the current InternalNode tree if it is not reconcilable.
             if (!isReconcilable) {
-              currentLayoutState.mRoot = null;
-              currentLayoutState.mLayoutResult = null;
+              final LithoNode forSaving = currentLayoutState.mRoot;
+              if (!c.isReconciliationEnabled()
+                  && !ComponentsConfiguration.isDebugModeEnabled
+                  && !ComponentsConfiguration.isEndToEndTestRun
+                  && !ComponentsConfiguration.keepLithoNodes) {
+                currentLayoutState.mRoot = null;
+                currentLayoutState.mLayoutResult = null;
+              }
+
+              if (ComponentsConfiguration.keepLithoNodes) {
+                currentLayoutState.mRoot = forSaving;
+              }
             }
           }
         }
@@ -1623,12 +1633,17 @@ public class LayoutState
       ComponentsSystrace.endSection();
     }
 
+    final LithoNode forSaving = layoutState.mRoot;
     if (!c.isReconciliationEnabled()
         && !ComponentsConfiguration.isDebugModeEnabled
         && !ComponentsConfiguration.isEndToEndTestRun
         && !ComponentsConfiguration.keepLithoNodes) {
       layoutState.mRoot = null;
       layoutState.mLayoutResult = null;
+    }
+
+    if (ComponentsConfiguration.keepLithoNodes) {
+      layoutState.mRoot = forSaving;
     }
   }
 
