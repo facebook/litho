@@ -26,26 +26,26 @@ class FastMathTest {
 
   @Test
   fun testRoundPositiveUp() {
-    assertThat(2).isEqualTo(FastMath.round(1.6f))
+    assertThat(2).isEqualTo(1.6f.fastRound)
   }
 
   @Test
   fun testRoundPositiveDown() {
-    assertThat(1).isEqualTo(FastMath.round(1.3f))
+    assertThat(1).isEqualTo(1.3f.fastRound)
   }
 
   @Test
   fun testRoundZero() {
-    assertThat(0).isEqualTo(FastMath.round(0f))
+    assertThat(0).isEqualTo(0f.fastRound)
   }
 
   @Test
   fun testRoundNegativeUp() {
-    assertThat(-1).isEqualTo(FastMath.round(-1.3f))
+    assertThat(-1).isEqualTo((-1.3f).fastRound)
   }
 
   @Test
   fun testRoundNegativeDown() {
-    assertThat(-2).isEqualTo(FastMath.round(-1.6f))
+    assertThat(-2).isEqualTo((-1.6f).fastRound)
   }
 }
