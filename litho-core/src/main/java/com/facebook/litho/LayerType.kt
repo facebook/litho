@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.graphics.Paint;
-import android.view.View;
-import androidx.annotation.IntDef;
+import android.view.View
+import androidx.annotation.IntDef
 
-/** Enumerates all the valid valid for {@link Component.Builder#layerType(int, Paint)} */
-@IntDef({
-  LayerType.LAYER_TYPE_NOT_SET,
-  LayerType.LAYER_TYPE_NONE,
-  LayerType.LAYER_TYPE_SOFTWARE,
-  LayerType.LAYER_TYPE_HARDWARE
-})
-public @interface LayerType {
-  int LAYER_TYPE_NOT_SET = -1;
-  int LAYER_TYPE_NONE = View.LAYER_TYPE_NONE;
-  int LAYER_TYPE_SOFTWARE = View.LAYER_TYPE_SOFTWARE;
-  int LAYER_TYPE_HARDWARE = View.LAYER_TYPE_HARDWARE;
+/** Enumerates all the valid valid for [Component.Builder#layerType(int, Paint)] */
+@IntDef(
+    LayerType.LAYER_TYPE_NOT_SET,
+    LayerType.LAYER_TYPE_NONE,
+    LayerType.LAYER_TYPE_SOFTWARE,
+    LayerType.LAYER_TYPE_HARDWARE)
+annotation class LayerType {
+  companion object {
+    const val LAYER_TYPE_NOT_SET = -1
+    const val LAYER_TYPE_NONE = View.LAYER_TYPE_NONE
+    const val LAYER_TYPE_SOFTWARE = View.LAYER_TYPE_SOFTWARE
+    const val LAYER_TYPE_HARDWARE = View.LAYER_TYPE_HARDWARE
+  }
 }
