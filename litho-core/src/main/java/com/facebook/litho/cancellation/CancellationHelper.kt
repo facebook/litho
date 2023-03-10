@@ -45,10 +45,11 @@ T : PotentiallyPartialResult,
 F : TreeFuture<T>,
 F : RequestMetadataSupplier<M> {
 
+  val pendingRequestsMetadata = synchronized(mutex) { futures.map { it.getMetadata() } }
+
   val result: CancellationPolicy.Result =
       cancellationPolicy.evaluate(
-          ongoingRequests = futures.map { it.getMetadata() },
-          incomingRequest = treeFuture.getMetadata())
+          ongoingRequests = pendingRequestsMetadata, incomingRequest = treeFuture.getMetadata())
 
   when (result) {
     is CancellationPolicy.Result.ProcessIncomingRequest -> {
