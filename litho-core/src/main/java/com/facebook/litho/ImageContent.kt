@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.graphics.drawable.Drawable;
-import com.facebook.infer.annotation.Nullsafe;
-import java.util.Collections;
-import java.util.List;
+import android.graphics.drawable.Drawable
+import kotlin.jvm.JvmField
 
 /** A UI element that contains simple resource drawables. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public interface ImageContent {
-
-  /** An empty instance of {@link ImageContent}. */
-  ImageContent EMPTY =
-      new ImageContent() {
-        @Override
-        public List<Drawable> getImageItems() {
-          return Collections.emptyList();
-        }
-      };
+interface ImageContent {
 
   /**
    * @return the list of image drawables that are rendered by this UI element. The list returned
-   *     should not be modified and may be unmodifiable.
+   *   should not be modified and may be unmodifiable.
    */
-  List<Drawable> getImageItems();
+  val imageItems: List<Drawable>
+
+  companion object {
+    /** An empty instance of [ImageContent]. */
+    @JvmField
+    val EMPTY: ImageContent =
+        object : ImageContent {
+          override val imageItems: List<Drawable>
+            get() = emptyList()
+        }
+  }
 }
