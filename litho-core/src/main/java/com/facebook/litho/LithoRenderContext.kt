@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-public class LithoRenderContext {
-  final LayoutStateContext mLayoutStateContext;
+import kotlin.jvm.JvmField
 
-  public LithoRenderContext(final LayoutStateContext context) {
-    mLayoutStateContext = context;
-  }
-}
+class LithoRenderContext(@JvmField val layoutStateContext: LayoutStateContext)

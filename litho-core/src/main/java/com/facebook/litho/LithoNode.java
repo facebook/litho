@@ -432,7 +432,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
         parentNode != null ? LithoLayoutResult.getLayoutResultFromYogaNode(parentNode) : null;
 
     final LithoLayoutResult layoutResult = currentNode.createLayoutResult(node);
-    currentNode.applyDiffNode(renderContext.mLayoutStateContext, layoutResult, parentLayoutResult);
+    currentNode.applyDiffNode(renderContext.layoutStateContext, layoutResult, parentLayoutResult);
     node.setData(new Pair(context, layoutResult));
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
@@ -449,14 +449,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   public @Nullable LithoLayoutResult calculateLayout(
       final LayoutContext<LithoRenderContext> c, final int widthSpec, final int heightSpec) {
 
-    if (c.getRenderContext().mLayoutStateContext.isReleased()) {
+    if (c.getRenderContext().layoutStateContext.isReleased()) {
       throw new IllegalStateException(
           "Cannot calculate a layout with a released LayoutStateContext.");
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    applyOverridesRecursive(c.getRenderContext().mLayoutStateContext, this);
+    applyOverridesRecursive(c.getRenderContext().layoutStateContext, this);
 
     if (isTracing) {
       ComponentsSystrace.beginSection("freeze:" + getHeadComponent().getSimpleName());
