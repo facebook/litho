@@ -78,6 +78,7 @@ fun preloadLithoClasses(additionalClasses: Set<Class<*>>? = null) {
                 Row::class.java,
                 InterStagePropsContainer::class.java,
                 Border::class.java,
+                FastMath::class.java,
                 LithoView::class.java,
                 ComponentHost::class.java,
                 MountState::class.java,

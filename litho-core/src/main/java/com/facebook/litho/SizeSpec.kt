@@ -136,9 +136,9 @@ object SizeSpec {
   @JvmStatic
   fun makeSizeSpecFromCssSpec(cssSize: Float, cssMode: YogaMeasureMode): Int =
       when (cssMode) {
-        YogaMeasureMode.EXACTLY -> makeSizeSpec(cssSize.fastRound, EXACTLY)
+        YogaMeasureMode.EXACTLY -> makeSizeSpec(FastMath.round(cssSize), EXACTLY)
         YogaMeasureMode.UNDEFINED -> makeSizeSpec(0, UNSPECIFIED)
-        YogaMeasureMode.AT_MOST -> makeSizeSpec(cssSize.fastRound, AT_MOST)
+        YogaMeasureMode.AT_MOST -> makeSizeSpec(FastMath.round(cssSize), AT_MOST)
         else -> throw IllegalArgumentException("Unexpected YogaMeasureMode: $cssMode")
       }
 
