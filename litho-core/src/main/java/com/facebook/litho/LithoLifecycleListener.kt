@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
+import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle
 
 /** Can observe lifecycle changes that a LithoLifecycleProvider goes through. */
-public interface LithoLifecycleListener {
-
-  void onMovedToState(LithoLifecycle state);
+fun interface LithoLifecycleListener {
+  fun onMovedToState(state: LithoLifecycle)
 }
