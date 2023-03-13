@@ -139,7 +139,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
               bindCall(content, dynamicValue.get())
             }
       }
-      dynamicValue.attachListener(listener)
+      dynamicValue.attachListener(listener!!)
       bindCall(content, dynamicValue.get())
       onUnbind {
         unbindCall(content)

@@ -99,7 +99,7 @@ abstract class PrimitiveComponent : Component() {
   internal final override fun getCommonDynamicProps(): SparseArray<DynamicValue<*>>? =
       super.getCommonDynamicProps()
 
-  final override fun getDynamicProps(): Array<DynamicValue<Any>> = super.getDynamicProps()
+  final override fun getDynamicProps(): Array<DynamicValue<*>> = super.getDynamicProps()
 
   final override fun getSimpleName(): String = super.getSimpleName()
 
