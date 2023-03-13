@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import androidx.annotation.Nullable;
-import androidx.arch.core.util.Function;
+import androidx.arch.core.util.Function
 
 /**
  * StateUpdater lets a Component rendered with a scoped ComponentContext interact with Litho's state
@@ -27,89 +26,96 @@ import androidx.arch.core.util.Function;
  * different rendering frameworks where it's not desirable for Litho to control the
  * resolve/layout/commit process.
  */
-public interface StateUpdater {
+interface StateUpdater {
 
   /**
    * Enqueues a state update that will schedule a new render on the calling thread at the end of its
    * current run-loop. It is expected that the calling thread has an active Looper.
    */
-  void updateStateSync(
-      String globalKey,
-      StateContainer.StateUpdate stateUpdate,
-      String attribution,
-      boolean createLayoutInProgress,
-      boolean nestedTreeContext);
+  fun updateStateSync(
+      globalKey: String,
+      stateUpdate: StateContainer.StateUpdate,
+      attribution: String?,
+      createLayoutInProgress: Boolean,
+      nestedTreeContext: Boolean
+  )
 
   /**
    * Enqueues a state update that will schedule a new render on a Thread controlled by the Litho
    * infrastructure.
    */
-  void updateStateAsync(
-      String globalKey,
-      StateContainer.StateUpdate stateUpdate,
-      String attribution,
-      boolean createLayoutInProgress,
-      boolean nestedTreeContext);
+  fun updateStateAsync(
+      globalKey: String,
+      stateUpdate: StateContainer.StateUpdate,
+      attribution: String?,
+      createLayoutInProgress: Boolean,
+      nestedTreeContext: Boolean
+  )
 
   /**
    * Enqueues a state update that will not schedule a new render. The new state will immediately be
    * visible in Event Handlers and it will be visible in the next render phase.
    */
-  void updateStateLazy(
-      String globalKey, StateContainer.StateUpdate stateUpdate, boolean nestedTreeContext);
+  fun updateStateLazy(
+      globalKey: String,
+      stateUpdate: StateContainer.StateUpdate,
+      nestedTreeContext: Boolean
+  )
 
   /** Same as updateStateAsync but for Hook State. */
-  void updateHookStateAsync(
-      String globalKey,
-      HookUpdater updateBlock,
-      String s,
-      boolean createLayoutInProgress,
-      boolean nestedTreeContext);
+  fun updateHookStateAsync(
+      globalKey: String,
+      updateBlock: HookUpdater,
+      s: String?,
+      createLayoutInProgress: Boolean,
+      nestedTreeContext: Boolean
+  )
 
   /** Same as updateStateSync but for Hook State. */
-  void updateHookStateSync(
-      String globalKey,
-      HookUpdater updateBlock,
-      String s,
-      boolean createLayoutInProgress,
-      boolean nestedTreeContext);
+  fun updateHookStateSync(
+      globalKey: String,
+      updateBlock: HookUpdater,
+      s: String?,
+      createLayoutInProgress: Boolean,
+      nestedTreeContext: Boolean
+  )
 
-  StateContainer applyLazyStateUpdatesForContainer(
-      String globalKey, StateContainer container, boolean nestedTreeContext);
+  fun applyLazyStateUpdatesForContainer(
+      globalKey: String,
+      container: StateContainer,
+      nestedTreeContext: Boolean
+  ): StateContainer?
 
   /** Returns a Cached value that is accessible across all re-render operations. */
-  Object getCachedValue(Object cachedValueInputs, boolean nestedTreeContext);
+  fun getCachedValue(cachedValueInputs: Any, nestedTreeContext: Boolean): Any?
 
   /** Stores a Cached value that will be accessible across all re-render operations. */
-  void putCachedValue(Object cachedValueInputs, Object cachedValue, boolean nestedTreeContext);
+  fun putCachedValue(cachedValueInputs: Any, cachedValue: Any?, nestedTreeContext: Boolean)
 
   /**
    * Removes a state update that was previously enqueued if the state update has not been processed
    * yet.
    */
-  void removePendingStateUpdate(String key, boolean nestedTreeContext);
+  fun removePendingStateUpdate(key: String, nestedTreeContext: Boolean)
 
   /** @return whether this tree has ever been mounted before */
-  boolean isFirstMount();
+  var isFirstMount: Boolean
 
-  /** sets whether this tree has ever been mounted before */
-  void setIsFirstMount(boolean needsToRerunTransitions);
+  fun <T> canSkipStateUpdate(
+      globalKey: String,
+      hookStateIndex: Int,
+      newValue: T?,
+      isNestedTree: Boolean
+  ): Boolean
 
-  <T> boolean canSkipStateUpdate(
-      final String globalKey,
-      final int hookStateIndex,
-      final @Nullable T newValue,
-      final boolean isNestedTree);
+  fun <T> canSkipStateUpdate(
+      newValueFunction: Function<T, T>?,
+      globalKey: String,
+      hookStateIndex: Int,
+      isNestedTree: Boolean
+  ): Boolean
 
-  <T> boolean canSkipStateUpdate(
-      final Function<T, T> newValueFunction,
-      final String globalKey,
-      final int hookStateIndex,
-      final boolean isNestedTree);
+  fun getEventTrigger(s: String): EventTrigger<*>?
 
-  @Nullable
-  EventTrigger getEventTrigger(String s);
-
-  @Nullable
-  EventTrigger getEventTrigger(Handle handle, int id);
+  fun getEventTrigger(handle: Handle?, id: Int): EventTrigger<*>?
 }

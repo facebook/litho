@@ -642,7 +642,7 @@ public class ComponentTree
   }
 
   @Override
-  public void setIsFirstMount(boolean isFirstMount) {
+  public void setFirstMount(boolean isFirstMount) {
     final TreeState treeState = getTreeState();
     if (treeState == null) {
       return;
