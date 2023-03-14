@@ -144,6 +144,17 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the target with
+   * the given custom attribute {@link com.facebook.litho.widget.RecyclerBinder#ID_CUSTOM_ATTR_KEY
+   * "id"}.
+   */
+  public void requestSmoothScroll(Object id, int offset, SmoothScrollAlignmentType type) {
+    if (mSectionTree != null) {
+      mSectionTree.requestSmoothFocusOnRoot(id, offset, type);
+    }
+  }
+
+  /**
    * @param animated whether the scroll will happen with animation.
    * @param defaultTarget target to use as fallback.
    * @param snapTarget target that takes into account snapping behavior.
