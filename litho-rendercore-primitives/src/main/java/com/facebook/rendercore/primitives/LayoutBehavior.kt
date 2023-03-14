@@ -45,7 +45,6 @@ interface LayoutBehavior : Equivalence<LayoutBehavior> {
 object FromSpecsLayoutBehavior : LayoutBehavior {
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
     val result = MeasureResult.fromSpecs(widthSpec, heightSpec)
-
     return PrimitiveLayoutResult(width = result.width, height = result.height)
   }
 }
@@ -67,7 +66,6 @@ class FillLayoutBehavior(
 ) : LayoutBehavior {
   override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
     val result = MeasureResult.fillSpace(widthSpec, heightSpec, defaultWidth, defaultHeight, null)
-
     return PrimitiveLayoutResult(
         width = result.width, height = result.height, layoutData = layoutData)
   }
@@ -125,6 +123,21 @@ class AspectRatioLayoutBehavior(
     val result =
         MeasureResult.forAspectRatio(
             widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio)
+    return PrimitiveLayoutResult(
+        width = result.width, height = result.height, layoutData = layoutData)
+  }
+}
+
+/**
+ * Returns a [LayoutBehavior] that respects both size specs and try to keep both width and height
+ * equal. This will only not guarantee equal width and height if these specs use modes and sizes
+ * which prevent it.
+ *
+ * @param layoutData The data to be returned from the layout pass.
+ */
+class EqualDimensionsLayoutBehavior(private val layoutData: Any? = null) : LayoutBehavior {
+  override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {
+    val result = MeasureResult.withEqualDimensions(widthSpec, heightSpec, null)
     return PrimitiveLayoutResult(
         width = result.width, height = result.height, layoutData = layoutData)
   }
