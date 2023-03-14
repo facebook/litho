@@ -282,6 +282,9 @@ public class ComponentTree
   @GuardedBy("mCurrentDoResolveRunnableLock")
   private @Nullable DoResolveRunnable mCurrentDoResolveRunnable;
 
+  @GuardedBy("mLayoutStateFutureLock")
+  private @Deprecated @Nullable LegacyRenderRunnable mLegacyRenderRunnable;
+
   private final Object mLayoutStateFutureLock = new Object();
 
   private final Object mResolveResultFutureLock = new Object();
@@ -291,6 +294,9 @@ public class ComponentTree
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<LayoutTreeFuture> mLayoutTreeFutures = new ArrayList<>();
+
+  @GuardedBy("mLayoutStateFutureLock")
+  private final @Deprecated List<LegacyRenderFuture> mLegacyRenderFutures = new ArrayList<>();
 
   private @Nullable TreeFuture.FutureExecutionListener mFutureExecutionListener;
 
@@ -640,6 +646,14 @@ public class ComponentTree
       }
     }
 
+    if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+      synchronized (mLayoutStateFutureLock) {
+        if (mLegacyRenderRunnable != null) {
+          mLayoutThreadHandler.remove(mLegacyRenderRunnable);
+        }
+      }
+    }
+
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(layoutThreadHandler);
   }
 
@@ -658,6 +672,12 @@ public class ComponentTree
     synchronized (mUpdateStateSyncRunnableLock) {
       if (mUpdateStateSyncRunnable != null) {
         mResolveThreadHandler.remove(mUpdateStateSyncRunnable);
+      }
+    }
+
+    synchronized (mLayoutStateFutureLock) {
+      if (mLegacyRenderRunnable != null) {
+        mLayoutThreadHandler.remove(mLegacyRenderRunnable);
       }
     }
 
@@ -1937,16 +1957,40 @@ public class ComponentTree
           "The layout can't be calculated asynchronously if we need the Size back");
     }
 
-    requestRenderWithSplitFutures(
-        isAsync,
-        output,
-        source,
-        extraAttribution,
-        isCreateLayoutInProgress,
-        requestedWidthSpec,
-        requestedHeightSpec,
-        requestedRoot,
-        requestedTreeProps);
+    if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+      if (isAsync) {
+        synchronized (mLayoutStateFutureLock) {
+          if (mLegacyRenderRunnable != null) {
+            mLayoutThreadHandler.remove(mLegacyRenderRunnable);
+          }
+          mLegacyRenderRunnable =
+              new LegacyRenderRunnable(
+                  source, treeProps, extraAttribution, isCreateLayoutInProgress);
+
+          String tag = EMPTY_STRING;
+          if (mLayoutThreadHandler.isTracing()) {
+            tag = "doRender ";
+            if (root != null) {
+              tag = tag + root.getSimpleName();
+            }
+          }
+          mLayoutThreadHandler.post(mLegacyRenderRunnable, tag);
+        }
+      } else {
+        doLegacyRender(output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
+      }
+    } else {
+      requestRenderWithSplitFutures(
+          isAsync,
+          output,
+          source,
+          extraAttribution,
+          isCreateLayoutInProgress,
+          requestedWidthSpec,
+          requestedHeightSpec,
+          requestedRoot,
+          requestedTreeProps);
+    }
   }
 
   private void requestRenderWithSplitFutures(
@@ -2349,6 +2393,120 @@ public class ComponentTree
         resolveResult.component);
   }
 
+  /** Calculates the layout state. */
+  private void doLegacyRender(
+      @Nullable Size output,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution,
+      @Nullable TreeProps treeProps,
+      boolean isCreateLayoutInProgress) {
+
+    final ComponentContext context;
+    final Component root;
+    final TreeState treeState;
+    final int widthSpec;
+    final int heightSpec;
+    final int localLayoutVersion;
+    final @Nullable LayoutState committedLayoutState;
+
+    // Cancel any scheduled layout requests we might have in the background queue
+    // since we are starting a new layout computation.
+    synchronized (mLayoutStateFutureLock) {
+      if (mLegacyRenderRunnable != null) {
+        mLayoutThreadHandler.remove(mLegacyRenderRunnable);
+        mLegacyRenderRunnable = null;
+      }
+    }
+
+    synchronized (this) {
+      // Can't compute a layout if specs or root are missing
+      if (mWidthSpec == SIZE_UNINITIALIZED || mHeightSpec == SIZE_UNINITIALIZED || mRoot == null) {
+        return;
+      }
+
+      // Check if we already have a compatible layout.
+      if (isCompatibleComponentAndSpec(
+          mCommittedLayoutState, mRoot.getId(), mWidthSpec, mHeightSpec)) {
+        if (output != null) {
+          output.width = mCommittedLayoutState.getWidth();
+          output.height = mCommittedLayoutState.getHeight();
+        }
+        return;
+      }
+
+      context = new ComponentContext(mContext, treeProps);
+      root = mRoot;
+      treeState = acquireTreeState();
+      widthSpec = mWidthSpec;
+      heightSpec = mHeightSpec;
+      localLayoutVersion = mNextLayoutVersion++;
+      committedLayoutState = mCommittedLayoutState;
+    }
+
+    treeState.registerRenderState();
+    treeState.registerLayoutState();
+
+    final LegacyRenderFuture future =
+        new LegacyRenderFuture(
+            context,
+            root,
+            treeState,
+            widthSpec,
+            heightSpec,
+            localLayoutVersion,
+            mId,
+            committedLayoutState != null ? committedLayoutState.mRoot : null,
+            mIsLayoutDiffingEnabled,
+            committedLayoutState,
+            committedLayoutState != null ? committedLayoutState.getDiffTree() : null,
+            extraAttribution,
+            null,
+            mComponentsConfiguration.getUseCancelableLayoutFutures());
+
+    final TreeFuture.TreeFutureResult<LegacyPotentiallyPartialResult> resultHolder =
+        TreeFuture.trackAndRunTreeFuture(
+            future, mLegacyRenderFutures, source, mLayoutStateFutureLock, null);
+
+    final LayoutState localLayoutState;
+    if (resultHolder.result != null) {
+      localLayoutState = resultHolder.result.getActual();
+    } else {
+      localLayoutState = null;
+    }
+
+    if (localLayoutState == null) {
+      if (!isReleased()
+          && isFromSyncLayout(source)
+          && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
+        final String errorMessage =
+            "LayoutState is null, but only async operations can return a null LayoutState. Source: "
+                + layoutSourceToString(source)
+                + ", current thread: "
+                + Thread.currentThread().getName()
+                + ". Root: "
+                + (mRoot == null ? "null" : mRoot.getSimpleName());
+
+        throw new IllegalStateException(errorMessage);
+      }
+
+      return;
+    }
+
+    if (output != null) {
+      output.width = localLayoutState.getWidth();
+      output.height = localLayoutState.getHeight();
+    }
+
+    commitLayoutState(
+        localLayoutState,
+        localLayoutVersion,
+        source,
+        extraAttribution,
+        isCreateLayoutInProgress,
+        treeProps,
+        root);
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   void setFutureExecutionListener(
       final @Nullable TreeFuture.FutureExecutionListener futureExecutionListener) {
@@ -2397,6 +2555,9 @@ public class ComponentTree
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
             saveRevision(rootComponent, treeState, treeProps, source, extraAttribution);
+            if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+              treeState.commitRenderState(localTreeState);
+            }
             treeState.commitLayoutState(localTreeState);
             treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
           }
@@ -2413,6 +2574,9 @@ public class ComponentTree
       }
 
       if (mTreeState != null && localTreeState != null) {
+        if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+          mTreeState.unregisterRenderState(localTreeState);
+        }
         mTreeState.unregisterLayoutState(localTreeState);
       }
 
@@ -2513,17 +2677,27 @@ public class ComponentTree
 
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
-      synchronized (getResolveThreadHandlerLock()) {
-        if (mCurrentDoResolveRunnable != null) {
-          getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
-          mCurrentDoResolveRunnable = null;
+      if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+        synchronized (mLayoutStateFutureLock) {
+          if (mLegacyRenderRunnable != null) {
+            mLayoutThreadHandler.remove(mLegacyRenderRunnable);
+            mLegacyRenderRunnable = null;
+          }
         }
-      }
 
-      synchronized (mCurrentDoLayoutRunnableLock) {
-        if (mCurrentDoLayoutRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
-          mCurrentDoLayoutRunnable = null;
+      } else {
+        synchronized (getResolveThreadHandlerLock()) {
+          if (mCurrentDoResolveRunnable != null) {
+            getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
+            mCurrentDoResolveRunnable = null;
+          }
+        }
+
+        synchronized (mCurrentDoLayoutRunnableLock) {
+          if (mCurrentDoLayoutRunnable != null) {
+            mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+            mCurrentDoLayoutRunnable = null;
+          }
         }
       }
 
@@ -2534,20 +2708,30 @@ public class ComponentTree
         }
       }
 
-      synchronized (mResolveResultFutureLock) {
-        for (TreeFuture rtf : mResolveResultFutures) {
-          rtf.release();
+      if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+        synchronized (mLayoutStateFutureLock) {
+          for (int i = 0; i < mLegacyRenderFutures.size(); i++) {
+            mLegacyRenderFutures.get(i).release();
+          }
+
+          mLegacyRenderFutures.clear();
+        }
+      } else {
+        synchronized (mResolveResultFutureLock) {
+          for (TreeFuture rtf : mResolveResultFutures) {
+            rtf.release();
+          }
+
+          mResolveResultFutures.clear();
         }
 
-        mResolveResultFutures.clear();
-      }
+        synchronized (mLayoutStateFutureLock) {
+          for (TreeFuture ltf : mLayoutTreeFutures) {
+            ltf.release();
+          }
 
-      synchronized (mLayoutStateFutureLock) {
-        for (TreeFuture ltf : mLayoutTreeFutures) {
-          ltf.release();
+          mLayoutTreeFutures.clear();
         }
-
-        mLayoutTreeFutures.clear();
       }
 
       if (mPreAllocateMountContentHandler != null) {
@@ -2868,6 +3052,30 @@ public class ComponentTree
           mTreeProps,
           mWidthSpec,
           mHeightSpec);
+    }
+  }
+
+  private class LegacyRenderRunnable extends ThreadTracingRunnable {
+
+    private final @CalculateLayoutSource int mSource;
+    private final @Nullable TreeProps mTreeProps;
+    private final @Nullable String mAttribution;
+    private final boolean mIsCreateLayoutInProgress;
+
+    public LegacyRenderRunnable(
+        @CalculateLayoutSource int source,
+        @Nullable TreeProps treeProps,
+        @Nullable String attribution,
+        boolean isCreateLayoutInProgress) {
+      mSource = source;
+      mTreeProps = treeProps;
+      mAttribution = attribution;
+      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
+    }
+
+    @Override
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+      doLegacyRender(null, mSource, mAttribution, mTreeProps, mIsCreateLayoutInProgress);
     }
   }
 

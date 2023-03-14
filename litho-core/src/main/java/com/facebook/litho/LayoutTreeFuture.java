@@ -120,7 +120,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
       final boolean isLayoutDiffingEnabled,
       final @Nullable LayoutState currentLayoutState,
       final @Nullable DiffNode diffTreeRoot,
-      final @Nullable TreeFuture<LayoutState> future,
+      final @Nullable TreeFuture future,
       final @Nullable PerfEvent perfEventLogger) {
 
     LithoStats.incrementLayoutCount();

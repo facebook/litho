@@ -124,7 +124,6 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   protected abstract T calculate();
 
   /** Resumes an interrupted calculation based on a partial result */
-  @Nullable
   protected abstract T resumeCalculation(T partialResult);
 
   /** Returns true if the provided TreeFuture is equivalent to this one. */

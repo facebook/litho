@@ -338,6 +338,8 @@ public class ComponentsConfiguration {
 
   private final boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
 
+  private final boolean mIsLegacyRenderEnabled;
+
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -349,6 +351,7 @@ public class ComponentsConfiguration {
         builder.mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
+    mIsLegacyRenderEnabled = builder.mIsLegacyRenderEnabled;
   }
 
   public boolean shouldReuseOutputs() {
@@ -357,6 +360,10 @@ public class ComponentsConfiguration {
 
   public boolean keepLithoNodeAndLayoutResultTreeWithReconciliation() {
     return mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
+  }
+
+  public boolean isLegacyRenderEnabled() {
+    return mIsLegacyRenderEnabled;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -374,6 +381,7 @@ public class ComponentsConfiguration {
     boolean mShouldReuseOutputs = false;
     boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
     boolean mIsLayoutCancellationEnabled = false;
+    boolean mIsLegacyRenderEnabled = false;
     @Nullable ResolveCancellationStrategy mResolveCancellationStrategy;
 
     protected Builder() {}
@@ -399,6 +407,11 @@ public class ComponentsConfiguration {
 
     public ComponentsConfiguration.Builder isLayoutCancellationEnabled(boolean enabled) {
       mIsLayoutCancellationEnabled = enabled;
+      return this;
+    }
+
+    public ComponentsConfiguration.Builder isLegacyRenderEnabled(boolean enabled) {
+      mIsLegacyRenderEnabled = enabled;
       return this;
     }
 
