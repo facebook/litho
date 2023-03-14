@@ -35,13 +35,30 @@ public class LayoutStateTest {
   public void toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
     ComponentContext context = mLegacyLithoViewRule.getContext();
 
-    final LayoutState layoutState =
-        LayoutState.calculate(
+    final ResolveResult result =
+        ResolveTreeFuture.resolve(
             context,
             TestLayoutComponent.create(context).build(),
-            1,
+            new TreeState(),
+            -1,
+            -1,
+            null,
+            null,
+            null,
+            null);
+    final LayoutState layoutState =
+        LayoutTreeFuture.layout(
+            result,
             SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
+            SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY),
+            -1,
+            -1,
+            false,
+            null,
+            null,
+            null,
+            null);
+
     layoutState.toRenderTree();
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(1);

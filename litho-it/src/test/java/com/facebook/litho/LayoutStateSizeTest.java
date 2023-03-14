@@ -42,13 +42,21 @@ public class LayoutStateSizeTest {
     mComponent = TestLayoutComponent.create(mContext).build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
+    final ResolveResult result =
+        ResolveTreeFuture.resolve(
+            mContext, mComponent, new TreeState(), 1, 1, null, null, null, null);
     mLayoutState =
-        LayoutState.calculate(
-            mContext,
-            mComponent,
-            1,
+        LayoutTreeFuture.layout(
+            result,
             SizeSpec.makeSizeSpec(WIDTH, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(HEIGHT, SizeSpec.EXACTLY));
+            SizeSpec.makeSizeSpec(HEIGHT, SizeSpec.EXACTLY),
+            1,
+            1,
+            false,
+            null,
+            null,
+            null,
+            null);
   }
 
   @Test

@@ -45,7 +45,12 @@ public class LayoutStateSpecTest {
     mComponent = TestLayoutComponent.create(mContext).build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
-    mLayoutState = LayoutState.calculate(mContext, mComponent, 1, mWidthSpec, mHeightSpec);
+    final ResolveResult result =
+        ResolveTreeFuture.resolve(
+            mContext, mComponent, new TreeState(), 1, 1, null, null, null, null);
+    mLayoutState =
+        LayoutTreeFuture.layout(
+            result, mWidthSpec, mHeightSpec, 1, 1, false, null, null, null, null);
   }
 
   @Test
