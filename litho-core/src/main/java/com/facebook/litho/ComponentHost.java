@@ -268,12 +268,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
-    final ViewNodeInfo viewNodeInfo = getRenderUnit(item).getViewNodeInfo();
-    if (viewNodeInfo == null) {
-      return;
-    }
-
-    final Rect expandedTouchBounds = viewNodeInfo.getTouchBoundsExpansion();
+    final Rect expandedTouchBounds = getRenderUnit(item).getTouchBoundsExpansion();
     if (expandedTouchBounds == null || mTouchExpansionDelegate == null) {
       return;
     }
@@ -283,12 +278,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   private void maybeRegisterTouchExpansion(int index, MountItem item) {
     final LithoRenderUnit renderUnit = getRenderUnit(item);
-    final ViewNodeInfo viewNodeInfo = renderUnit.getViewNodeInfo();
-    if (viewNodeInfo == null) {
-      return;
-    }
-
-    final Rect expandedTouchBounds = viewNodeInfo.getTouchBoundsExpansion();
+    final Rect expandedTouchBounds = renderUnit.getTouchBoundsExpansion();
     if (expandedTouchBounds == null) {
       return;
     }

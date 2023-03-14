@@ -147,12 +147,7 @@ class TouchExpansionDelegate extends TouchDelegate {
 
     @Nullable
     Rect getDelegateBounds() {
-      final ViewNodeInfo info = getRenderUnit(mItem).getViewNodeInfo();
-      if (info == null) {
-        return null;
-      }
-
-      final Rect expansion = info.getTouchBoundsExpansion();
+      final Rect expansion = getRenderUnit(mItem).getTouchBoundsExpansion();
       if (expansion == null) {
         return null;
       }

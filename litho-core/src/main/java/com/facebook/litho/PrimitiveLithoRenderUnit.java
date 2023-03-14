@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -37,6 +38,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       final Component component,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
+      final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
       final @UpdateState int updateState,
@@ -47,6 +49,7 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
         component,
         nodeInfo,
         viewNodeInfo,
+        touchBoundsExpansion,
         flags,
         importantForAccessibility,
         updateState,
@@ -61,14 +64,16 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       final @Nullable ComponentContext context,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
+      final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
-      final @LithoRenderUnit.UpdateState int updateState,
+      final @UpdateState int updateState,
       final PrimitiveRenderUnit primitiveRenderUnit) {
     return new PrimitiveLithoRenderUnit(
         component,
         nodeInfo,
         viewNodeInfo,
+        touchBoundsExpansion,
         flags,
         importantForAccessibility,
         updateState,

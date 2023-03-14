@@ -20,6 +20,7 @@ import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
 
+import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
@@ -49,6 +50,7 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
 
   private final @Nullable NodeInfo mNodeInfo;
   private final @Nullable ViewNodeInfo mViewNodeInfo;
+  private final @Nullable Rect mTouchBoundsExpansion;
   private @Nullable DebugHierarchy.Node mHierarchy; // TODO: remove
   private final Component mComponent;
   private final int mFlags;
@@ -65,6 +67,7 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
       final Component component,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
+      final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
       final @UpdateState int updateState,
@@ -74,6 +77,7 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
     this.mContext = context;
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
+    mTouchBoundsExpansion = touchBoundsExpansion;
     mComponent = component;
     mFlags = flags;
     mImportantForAccessibility =
@@ -142,6 +146,11 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
   @Nullable
   ViewNodeInfo getViewNodeInfo() {
     return mViewNodeInfo;
+  }
+
+  @Nullable
+  public Rect getTouchBoundsExpansion() {
+    return mTouchBoundsExpansion;
   }
 
   static @Nullable ComponentContext getComponentContext(MountItem item) {

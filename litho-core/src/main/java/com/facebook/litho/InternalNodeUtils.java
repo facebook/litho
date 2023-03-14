@@ -36,6 +36,7 @@ import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -356,12 +357,14 @@ public class InternalNodeUtils {
     }
 
     Mountable<?> mountable = node.getMountable();
+    Rect touchBoundsExpansion = getExpandedTouchBounds(result);
     if (mountable != null && isMountable(component)) {
       return MountableLithoRenderUnit.create(
           component,
           context,
           layoutOutputNodeInfo,
           layoutOutputViewNodeInfo,
+          touchBoundsExpansion,
           flags,
           importantForAccessibility,
           updateState,
@@ -375,6 +378,7 @@ public class InternalNodeUtils {
           context,
           layoutOutputNodeInfo,
           layoutOutputViewNodeInfo,
+          touchBoundsExpansion,
           flags,
           importantForAccessibility,
           updateState,
@@ -387,9 +391,27 @@ public class InternalNodeUtils {
         context,
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
+        touchBoundsExpansion,
         flags,
         importantForAccessibility,
         updateState);
+  }
+
+  @Nullable
+  private static Rect getExpandedTouchBounds(final LithoLayoutResult result) {
+    if (!result.getNode().hasTouchExpansion()) {
+      return null;
+    }
+
+    final int left = result.getTouchExpansionLeft();
+    final int top = result.getTouchExpansionTop();
+    final int right = result.getTouchExpansionRight();
+    final int bottom = result.getTouchExpansionBottom();
+    if (left == 0 && top == 0 && right == 0 && bottom == 0) {
+      return null;
+    }
+
+    return new Rect(left, top, right, bottom);
   }
 
   private static SparseArray<DynamicValue<?>> mergeCommonDynamicProps(

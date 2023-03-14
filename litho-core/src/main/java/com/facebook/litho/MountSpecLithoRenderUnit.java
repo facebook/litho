@@ -21,6 +21,7 @@ import static com.facebook.litho.LithoLayoutData.getInterStageProps;
 import static com.facebook.litho.LithoLayoutData.verifyAndGetLithoLayoutData;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       final Component component,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
+      final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
       final @UpdateState int updateState,
@@ -50,6 +52,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         component,
         nodeInfo,
         viewNodeInfo,
+        touchBoundsExpansion,
         flags,
         importantForAccessibility,
         updateState,
@@ -69,15 +72,17 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
       final @Nullable ComponentContext context,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
+      final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
-      final @LithoRenderUnit.UpdateState int updateState) {
+      final @UpdateState int updateState) {
 
     return new MountSpecLithoRenderUnit(
         id,
         component,
         nodeInfo,
         viewNodeInfo,
+        touchBoundsExpansion,
         flags,
         importantForAccessibility,
         updateState,
