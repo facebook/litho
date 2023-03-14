@@ -33,7 +33,6 @@ import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
 import static com.facebook.litho.StateContainer.StateUpdate;
-import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode;
@@ -683,11 +682,6 @@ public class ComponentTree
     }
 
     mResolveThreadHandler = instrumentHandler(resolveThreadHandler);
-  }
-
-  @VisibleForTesting
-  public RunnableHandler getLayoutThreadHandler() {
-    return mLayoutThreadHandler;
   }
 
   @VisibleForTesting
@@ -2606,21 +2600,6 @@ public class ComponentTree
     }
   }
 
-  @GuardedBy("this")
-  private boolean isCompatibleComponentAndSpec(@Nullable LayoutState layoutState) {
-    assertHoldsLock(this);
-
-    return mRoot != null
-        && isCompatibleComponentAndSpec(layoutState, mRoot.getId(), mWidthSpec, mHeightSpec);
-  }
-
-  @GuardedBy("this")
-  private boolean hasSizeSpec() {
-    assertHoldsLock(this);
-
-    return mWidthSpec != SIZE_UNINITIALIZED && mHeightSpec != SIZE_UNINITIALIZED;
-  }
-
   public synchronized @Nullable String getSimpleName() {
     return mRoot == null ? null : mRoot.getSimpleName();
   }
@@ -2757,87 +2736,6 @@ public class ComponentTree
     } else {
       mMainThreadHandler.post(this::release, "Release");
     }
-  }
-
-  private @Nullable LayoutState calculateLayoutState(
-      ComponentContext context,
-      Component root,
-      int widthSpec,
-      int heightSpec,
-      int layoutVersion,
-      boolean diffingEnabled,
-      @Nullable TreeProps treeProps,
-      @CalculateLayoutSource int source,
-      @Nullable String extraAttribution) {
-
-    LayoutStateFuture localLayoutStateFuture =
-        new LayoutStateFuture(
-            context,
-            root,
-            widthSpec,
-            heightSpec,
-            layoutVersion,
-            diffingEnabled,
-            treeProps,
-            source,
-            extraAttribution);
-    final boolean waitingFromSyncLayout = isFromSyncLayout(source);
-
-    // TODO (T136079256): Combine into common mechanism
-    synchronized (mLayoutStateFutureLock) {
-      boolean canReuse = false;
-      for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-        final LayoutStateFuture runningLsf = mLayoutStateFutures.get(i);
-        if (!runningLsf.isReleased()
-            && runningLsf.isEquivalentTo(localLayoutStateFuture)
-            && runningLsf.tryRegisterForResponse(waitingFromSyncLayout)) {
-          // Use the latest LayoutState calculation if it's the same.
-          localLayoutStateFuture = runningLsf;
-          canReuse = true;
-          break;
-        }
-      }
-      if (!canReuse) {
-        if (!localLayoutStateFuture.tryRegisterForResponse(waitingFromSyncLayout)) {
-          throw new RuntimeException("Failed to register to localLayoutState");
-        }
-        mLayoutStateFutures.add(localLayoutStateFuture);
-      }
-    }
-
-    final LayoutState layoutState = localLayoutStateFuture.runAndGet(source).result;
-
-    synchronized (mLayoutStateFutureLock) {
-      localLayoutStateFuture.unregisterForResponse();
-
-      // This future has finished executing, if no other threads were waiting for the response we
-      // can remove it.
-      if (localLayoutStateFuture.getWaitingCount() == 0) {
-        localLayoutStateFuture.release();
-        mLayoutStateFutures.remove(localLayoutStateFuture);
-      }
-    }
-
-    if (root.getBuilderContextName() != null
-        && !Component.getBuilderContextName(mContext.getAndroidContext())
-            .equals(root.getBuilderContextName())) {
-      final String message =
-          "ComponentTree context is different from root builder context"
-              + ", ComponentTree context="
-              + Component.getBuilderContextName(mContext.getAndroidContext())
-              + ", root builder context="
-              + root.getBuilderContextName()
-              + ", root="
-              + root.getSimpleName()
-              + ", ContextTree="
-              + ComponentTreeDumpingHelper.dumpContextTree(this);
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,
-          message);
-    }
-
-    return layoutState;
   }
 
   @VisibleForTesting

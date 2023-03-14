@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.ComponentTree.LayoutStateFuture
+import com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED
 import com.facebook.litho.ComponentTreeTest.DoubleMeasureViewGroup
 import com.facebook.litho.SizeSpec.AT_MOST
 import com.facebook.litho.SizeSpec.EXACTLY
@@ -1361,14 +1362,12 @@ class ComponentTreeTest {
   }
 
   companion object {
-    private fun componentTreeHasSizeSpec(componentTree: ComponentTree): Boolean =
-        try {
-          // Need to hold the lock on componentTree here otherwise the invocation of hasCssSpec
-          // will fail.
-          synchronized(componentTree) { Whitebox.invokeMethod(componentTree, "hasSizeSpec") }
-        } catch (e: Exception) {
-          throw IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: $e")
-        }
+    private fun componentTreeHasSizeSpec(componentTree: ComponentTree): Boolean {
+      synchronized(componentTree) {
+        return componentTree.widthSpec != SIZE_UNINITIALIZED &&
+            componentTree.heightSpec != SIZE_UNINITIALIZED
+      }
+    }
 
     private fun runOnBackgroundThread(runnable: Runnable): TimeOutSemaphore {
       val latch = TimeOutSemaphore(0)
