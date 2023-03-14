@@ -17,25 +17,11 @@
 package com.facebook.litho
 
 import com.facebook.proguard.annotations.DoNotStrip
-import kotlin.jvm.JvmField
 
 /** A UI element that contains text. */
 @DoNotStrip
 interface TextContent {
 
-  /**
-   * @return the list of text items that are rendered by this UI element. The list returned should
-   *   not be modified and may be unmodifiable.
-   */
+  /** @return the list of text items that are rendered by this UI element. */
   @get:DoNotStrip val textItems: List<CharSequence>
-
-  companion object {
-    /** An empty instance of [TextContent]. */
-    @JvmField
-    val EMPTY: TextContent =
-        object : TextContent {
-          override val textItems: List<CharSequence>
-            get() = emptyList()
-        }
-  }
 }
