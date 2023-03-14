@@ -208,11 +208,8 @@ public class ComponentsConfiguration {
   public static @Nullable String timelineDocsLink = null;
 
   /**
-   * When enabled, and coupled with isResolveAndLayoutFuturesSplitEnabled being enabled, split
-   * resolve and layout futures will each use dedicated thread handlers so that they don't queue
-   * against each other.
-   *
-   * <p>When isResolveAndLayoutFuturesSplitEnabled is false, this has no effect.
+   * When enabled split resolve and layout futures will each use dedicated thread handlers so that
+   * they don't queue against each other.
    */
   public static boolean useSeparateThreadHandlersForResolveAndLayout = false;
 

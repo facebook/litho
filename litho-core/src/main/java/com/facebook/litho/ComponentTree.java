@@ -286,14 +286,9 @@ public class ComponentTree
       };
   private volatile @Nullable NewLayoutStateReadyListener mNewLayoutStateReadyListener;
 
-  private final Object mCurrentCalculateLayoutRunnableLock = new Object();
-
   private final Object mCurrentDoLayoutRunnableLock = new Object();
 
   private final Object mCurrentDoResolveRunnableLock = new Object();
-
-  @GuardedBy("mCurrentCalculateLayoutRunnableLock")
-  private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
   @GuardedBy("mCurrentDoLayoutRunnableLock")
   private @Nullable DoLayoutRunnable mCurrentDoLayoutRunnable;
@@ -364,8 +359,6 @@ public class ComponentTree
   @GuardedBy("this")
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
-
-  private final boolean isResolveAndLayoutFuturesSplitEnabled;
 
   private final boolean useSeparateThreadHandlersForResolveAndLayout;
 
@@ -491,10 +484,8 @@ public class ComponentTree
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     addMeasureListener(builder.mMeasureListener);
 
-    isResolveAndLayoutFuturesSplitEnabled = true;
     useSeparateThreadHandlersForResolveAndLayout =
-        isResolveAndLayoutFuturesSplitEnabled
-            && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
+        ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;
 
     mTreeState = builder.treeState == null ? new TreeState() : builder.treeState;
 
@@ -666,11 +657,6 @@ public class ComponentTree
       }
     }
 
-    synchronized (mCurrentCalculateLayoutRunnableLock) {
-      if (mCurrentCalculateLayoutRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
-      }
-    }
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(layoutThreadHandler);
   }
 
@@ -1154,6 +1140,14 @@ public class ComponentTree
 
   public synchronized @Nullable Component getRoot() {
     return mRoot;
+  }
+
+  synchronized int getWidthSpec() {
+    return mWidthSpec;
+  }
+
+  synchronized int getHeightSpec() {
+    return mHeightSpec;
   }
 
   /**
@@ -1960,41 +1954,16 @@ public class ComponentTree
           "The layout can't be calculated asynchronously if we need the Size back");
     }
 
-    if (isResolveAndLayoutFuturesSplitEnabled) {
-      requestRenderWithSplitFutures(
-          isAsync,
-          output,
-          source,
-          extraAttribution,
-          isCreateLayoutInProgress,
-          requestedWidthSpec,
-          requestedHeightSpec,
-          requestedRoot,
-          requestedTreeProps);
-      return;
-    }
-
-    if (isAsync) {
-      synchronized (mCurrentCalculateLayoutRunnableLock) {
-        if (mCurrentCalculateLayoutRunnable != null) {
-          mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
-        }
-        mCurrentCalculateLayoutRunnable =
-            new CalculateLayoutRunnable(
-                source, treeProps, extraAttribution, isCreateLayoutInProgress);
-
-        String tag = EMPTY_STRING;
-        if (mLayoutThreadHandler.isTracing()) {
-          tag = "calculateLayout ";
-          if (root != null) {
-            tag = tag + root.getSimpleName();
-          }
-        }
-        mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable, tag);
-      }
-    } else {
-      calculateLayout(output, source, extraAttribution, treeProps, isCreateLayoutInProgress);
-    }
+    requestRenderWithSplitFutures(
+        isAsync,
+        output,
+        source,
+        extraAttribution,
+        isCreateLayoutInProgress,
+        requestedWidthSpec,
+        requestedHeightSpec,
+        requestedRoot,
+        requestedTreeProps);
   }
 
   private void requestRenderWithSplitFutures(
@@ -2445,13 +2414,7 @@ public class ComponentTree
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
             saveRevision(rootComponent, treeState, treeProps, source, extraAttribution);
-            if (isResolveAndLayoutFuturesSplitEnabled) {
-              // Render state was committed during resolve
-              treeState.commitLayoutState(localTreeState);
-            } else {
-              treeState.commitRenderState(localTreeState);
-              treeState.commitLayoutState(localTreeState);
-            }
+            treeState.commitLayoutState(localTreeState);
             treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
           }
         }
@@ -2467,13 +2430,7 @@ public class ComponentTree
       }
 
       if (mTreeState != null && localTreeState != null) {
-        if (isResolveAndLayoutFuturesSplitEnabled) {
-          // Render state was unregistered after resolve
-          mTreeState.unregisterLayoutState(localTreeState);
-        } else {
-          mTreeState.unregisterRenderState(localTreeState);
-          mTreeState.unregisterLayoutState(localTreeState);
-        }
+        mTreeState.unregisterLayoutState(localTreeState);
       }
 
       // Resetting the count after layout calculation is complete and it was triggered from within
@@ -2510,99 +2467,6 @@ public class ComponentTree
         mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
       }
     }
-  }
-
-  /**
-   * Calculates the layout.
-   *
-   * @param output a destination where the size information should be saved
-   * @param treeProps Saved TreeProps to be used as parent input
-   * @param isCreateLayoutInProgress This indicates state update has been invoked from within layout
-   *     create.
-   */
-  private void calculateLayout(
-      @Nullable Size output,
-      @CalculateLayoutSource int source,
-      @Nullable String extraAttribution,
-      @Nullable TreeProps treeProps,
-      boolean isCreateLayoutInProgress) {
-    final int widthSpec;
-    final int heightSpec;
-    final Component root;
-    final int localLayoutVersion;
-    // Cancel any scheduled layout requests we might have in the background queue
-    // since we are starting a new layout computation.
-    synchronized (mCurrentCalculateLayoutRunnableLock) {
-      if (mCurrentCalculateLayoutRunnable != null) {
-        mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
-        mCurrentCalculateLayoutRunnable = null;
-      }
-    }
-
-    synchronized (this) {
-      // Can't compute a layout if specs or root are missing
-      if (!hasSizeSpec() || mRoot == null) {
-        return;
-      }
-
-      // Check if we already have a compatible layout.
-      if (isCompatibleComponentAndSpec(mCommittedLayoutState)) {
-        if (output != null) {
-          output.width = mCommittedLayoutState.getWidth();
-          output.height = mCommittedLayoutState.getHeight();
-        }
-        return;
-      }
-
-      widthSpec = mWidthSpec;
-      heightSpec = mHeightSpec;
-      root = mRoot;
-      localLayoutVersion = mNextLayoutVersion++;
-    }
-
-    final LayoutState localLayoutState =
-        calculateLayoutState(
-            mContext,
-            root,
-            widthSpec,
-            heightSpec,
-            localLayoutVersion,
-            mIsLayoutDiffingEnabled,
-            treeProps,
-            source,
-            extraAttribution);
-
-    if (localLayoutState == null) {
-      if (!isReleased()
-          && isFromSyncLayout(source)
-          && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
-        final String errorMessage =
-            "LayoutState is null, but only async operations can return a null LayoutState. Source: "
-                + layoutSourceToString(source)
-                + ", current thread: "
-                + Thread.currentThread().getName()
-                + ". Root: "
-                + (mRoot == null ? "null" : mRoot.getSimpleName());
-
-        throw new IllegalStateException(errorMessage);
-      }
-
-      return;
-    }
-
-    if (output != null) {
-      output.width = localLayoutState.getWidth();
-      output.height = localLayoutState.getHeight();
-    }
-
-    commitLayoutState(
-        localLayoutState,
-        localLayoutVersion,
-        source,
-        extraAttribution,
-        isCreateLayoutInProgress,
-        treeProps,
-        root);
   }
 
   /**
@@ -2666,26 +2530,17 @@ public class ComponentTree
 
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
-      if (isResolveAndLayoutFuturesSplitEnabled) {
-        synchronized (getResolveThreadHandlerLock()) {
-          if (mCurrentDoResolveRunnable != null) {
-            getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
-            mCurrentDoResolveRunnable = null;
-          }
+      synchronized (getResolveThreadHandlerLock()) {
+        if (mCurrentDoResolveRunnable != null) {
+          getResolveThreadHandler().remove(mCurrentDoResolveRunnable);
+          mCurrentDoResolveRunnable = null;
         }
+      }
 
-        synchronized (mCurrentDoLayoutRunnableLock) {
-          if (mCurrentDoLayoutRunnable != null) {
-            mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
-            mCurrentDoLayoutRunnable = null;
-          }
-        }
-      } else {
-        synchronized (mCurrentCalculateLayoutRunnableLock) {
-          if (mCurrentCalculateLayoutRunnable != null) {
-            mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
-            mCurrentCalculateLayoutRunnable = null;
-          }
+      synchronized (mCurrentDoLayoutRunnableLock) {
+        if (mCurrentDoLayoutRunnable != null) {
+          mLayoutThreadHandler.remove(mCurrentDoLayoutRunnable);
+          mCurrentDoLayoutRunnable = null;
         }
       }
 
@@ -2696,30 +2551,20 @@ public class ComponentTree
         }
       }
 
-      if (isResolveAndLayoutFuturesSplitEnabled) {
-        synchronized (mResolveResultFutureLock) {
-          for (TreeFuture rtf : mResolveResultFutures) {
-            rtf.release();
-          }
-
-          mResolveResultFutures.clear();
+      synchronized (mResolveResultFutureLock) {
+        for (TreeFuture rtf : mResolveResultFutures) {
+          rtf.release();
         }
 
-        synchronized (mLayoutStateFutureLock) {
-          for (TreeFuture ltf : mLayoutTreeFutures) {
-            ltf.release();
-          }
+        mResolveResultFutures.clear();
+      }
 
-          mLayoutTreeFutures.clear();
+      synchronized (mLayoutStateFutureLock) {
+        for (TreeFuture ltf : mLayoutTreeFutures) {
+          ltf.release();
         }
-      } else {
-        synchronized (mLayoutStateFutureLock) {
-          for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-            mLayoutStateFutures.get(i).release();
-          }
 
-          mLayoutStateFutures.clear();
-        }
+        mLayoutTreeFutures.clear();
       }
 
       if (mPreAllocateMountContentHandler != null) {
@@ -3385,30 +3230,6 @@ public class ComponentTree
           mTreeProps,
           mWidthSpec,
           mHeightSpec);
-    }
-  }
-
-  private class CalculateLayoutRunnable extends ThreadTracingRunnable {
-
-    private final @CalculateLayoutSource int mSource;
-    private final @Nullable TreeProps mTreeProps;
-    private final @Nullable String mAttribution;
-    private final boolean mIsCreateLayoutInProgress;
-
-    public CalculateLayoutRunnable(
-        @CalculateLayoutSource int source,
-        @Nullable TreeProps treeProps,
-        @Nullable String attribution,
-        boolean isCreateLayoutInProgress) {
-      mSource = source;
-      mTreeProps = treeProps;
-      mAttribution = attribution;
-      mIsCreateLayoutInProgress = isCreateLayoutInProgress;
-    }
-
-    @Override
-    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
-      calculateLayout(null, mSource, mAttribution, mTreeProps, mIsCreateLayoutInProgress);
     }
   }
 
