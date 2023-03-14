@@ -112,18 +112,18 @@ public class StateUpdatesTest {
   private <T> T getInitialStateContainer(
       final ComponentTree componentTree, final String globalKey) {
     final StateHandler stateHandler = getRenderStateHandler(componentTree);
-    return (T) stateHandler.getInitialStateContainer().mInitialStates.get(globalKey);
+    return (T) stateHandler.getInitialStateContainer().initialStates.get(globalKey);
   }
 
   private <T> T getLayoutInitialStateContainer(
       final ComponentTree componentTree, final String globalKey) {
     final StateHandler stateHandler = getLayoutStateHandler(componentTree);
-    return (T) stateHandler.getInitialStateContainer().mInitialStates.get(globalKey);
+    return (T) stateHandler.getInitialStateContainer().initialStates.get(globalKey);
   }
 
   private Map<String, StateContainer> getInitialStates(final ComponentTree componentTree) {
     final StateHandler stateHandler = getRenderStateHandler(componentTree);
-    return stateHandler.getInitialStateContainer().mInitialStates;
+    return stateHandler.getInitialStateContainer().initialStates;
   }
 
   @Test

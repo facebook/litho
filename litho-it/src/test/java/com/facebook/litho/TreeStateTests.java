@@ -95,11 +95,11 @@ public class TreeStateTests {
         Whitebox.getInternalState(treeState, "mLayoutStateHandler");
 
     if (isNestedTree) {
-      assertThat(renderStateHandler.getInitialStateContainer().mInitialStates).isEmpty();
-      assertThat(layoutStateHandler.getInitialStateContainer().mInitialStates).isNotEmpty();
+      assertThat(renderStateHandler.getInitialStateContainer().initialStates).isEmpty();
+      assertThat(layoutStateHandler.getInitialStateContainer().initialStates).isNotEmpty();
     } else {
-      assertThat(renderStateHandler.getInitialStateContainer().mInitialStates).isNotEmpty();
-      assertThat(layoutStateHandler.getInitialStateContainer().mInitialStates).isEmpty();
+      assertThat(renderStateHandler.getInitialStateContainer().initialStates).isNotEmpty();
+      assertThat(layoutStateHandler.getInitialStateContainer().initialStates).isEmpty();
     }
 
     // Unregister local tree state from ISC
@@ -108,10 +108,10 @@ public class TreeStateTests {
 
     // State containers in ISC should be cleared
     assertThat(renderStateHandler.getInitialStateContainer()).isNotNull();
-    assertThat(renderStateHandler.getInitialStateContainer().mInitialStates).isEmpty();
+    assertThat(renderStateHandler.getInitialStateContainer().initialStates).isEmpty();
 
     assertThat(layoutStateHandler.getInitialStateContainer()).isNotNull();
-    assertThat(layoutStateHandler.getInitialStateContainer().mInitialStates).isEmpty();
+    assertThat(layoutStateHandler.getInitialStateContainer().initialStates).isEmpty();
   }
 
   @Test

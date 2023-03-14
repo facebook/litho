@@ -144,10 +144,10 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mInitialStates)
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.initialStates)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mPendingStateHandlers)
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.pendingStateHandlers)
         .describedAs("No pending StateHandlers")
         .isEmpty()
   }
@@ -455,10 +455,10 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mInitialStates)
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.initialStates)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mPendingStateHandlers)
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.pendingStateHandlers)
         .describedAs("No pending StateHandlers")
         .isEmpty()
   }
@@ -495,10 +495,10 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = view.componentTree
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mInitialStates)
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.initialStates)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
-    assertThat(getStateHandler(componentTree)?.initialStateContainer?.mPendingStateHandlers)
+    assertThat(getStateHandler(componentTree)?.initialStateContainer?.pendingStateHandlers)
         .describedAs("No pending StateHandlers")
         .isEmpty()
   }

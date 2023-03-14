@@ -148,8 +148,7 @@ public class StateUpdatesTest {
     assertThat(previousStateContainer).isNotNull();
     assertThat(previousStateContainer.mCount)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
-    assertThat(getRenderStateHandler().getInitialStateContainer().mInitialStates.isEmpty())
-        .isTrue();
+    assertThat(getRenderStateHandler().getInitialStateContainer().initialStates.isEmpty()).isTrue();
   }
 
   @Test
@@ -383,9 +382,8 @@ public class StateUpdatesTest {
 
     ThreadTestingUtils.failSilentlyIfInterrupted(() -> check.await(5000, TimeUnit.MILLISECONDS));
 
-    assertThat(getRenderStateHandler().getInitialStateContainer().mInitialStates.isEmpty())
-        .isTrue();
-    assertThat(getRenderStateHandler().getInitialStateContainer().mPendingStateHandlers.isEmpty())
+    assertThat(getRenderStateHandler().getInitialStateContainer().initialStates.isEmpty()).isTrue();
+    assertThat(getRenderStateHandler().getInitialStateContainer().pendingStateHandlers.isEmpty())
         .isTrue();
     assertThat(stateUpdateCalled.intValue()).isEqualTo(1);
     assertThat(stateValue.intValue()).isEqualTo(secondStateValue.intValue());
