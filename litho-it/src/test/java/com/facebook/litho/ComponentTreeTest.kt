@@ -1385,33 +1385,6 @@ class ComponentTreeTest {
       return latch
     }
 
-    private fun waitForLayoutToAttachToFuture(
-        componentTree: ComponentTree,
-        expectedCount: Int = 2
-    ): LayoutStateFuture {
-      val future = componentTree.layoutStateFutures[0]
-      var timeSpentWaiting = 0
-      while (future.waitingCount != expectedCount && timeSpentWaiting < 5_000) {
-        ThreadTestingUtils.failIfInterrupted { Thread.sleep(10) }
-        timeSpentWaiting += 10
-      }
-      assertThat(future.waitingCount)
-          .describedAs("Make sure all threads are waiting on the first Future")
-          .isEqualTo(expectedCount)
-      return future
-    }
-
-    private fun waitForFutureToBecomeInterrupted(future: LayoutStateFuture) {
-      var timeSpentWaiting = 0
-      while (!future.isInterruptRequested && timeSpentWaiting < 5_000) {
-        ThreadTestingUtils.failIfInterrupted { Thread.sleep(10) }
-        timeSpentWaiting += 10
-      }
-      assertThat(future.isInterruptRequested)
-          .describedAs("Wait for future to be interrupted")
-          .isEqualTo(true)
-    }
-
     private fun createAndStartNewHandlerThread(): HandlerThread {
       val newHandlerThread =
           HandlerThread(

@@ -2738,11 +2738,6 @@ public class ComponentTree
     }
   }
 
-  @VisibleForTesting
-  List<LayoutStateFuture> getLayoutStateFutures() {
-    return mLayoutStateFutures;
-  }
-
   @UiThread
   private AttachDetachHandler getOrCreateAttachDetachHandler() {
     AttachDetachHandler handler = mAttachDetachHandler;

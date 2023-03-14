@@ -92,7 +92,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Test
   public void testStopResolvingRowChildrenIfLsfReleased() {
-    final TreeFuture layoutStateFuture = mock(ComponentTree.LayoutStateFuture.class);
+    final TreeFuture layoutStateFuture = mock(TreeFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);
@@ -123,7 +123,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Test
   public void testStopResolvingColumnChildrenIfLsfReleased() {
-    final TreeFuture layoutStateFuture = mock(ComponentTree.LayoutStateFuture.class);
+    final TreeFuture layoutStateFuture = mock(TreeFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext);

@@ -44,7 +44,6 @@ import androidx.collection.LongSparseArray;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -1203,7 +1202,7 @@ public class LayoutState
   static LayoutState calculate(
       ComponentContext c,
       Component component,
-      @Nullable LayoutStateFuture layoutStateFuture,
+      @Nullable TreeFuture layoutStateFuture,
       TreeState treeState,
       int componentTreeId,
       int widthSpec,
