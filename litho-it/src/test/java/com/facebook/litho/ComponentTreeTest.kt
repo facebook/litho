@@ -22,7 +22,6 @@ import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.ComponentTree.LayoutStateFuture
 import com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED
 import com.facebook.litho.ComponentTreeTest.DoubleMeasureViewGroup
 import com.facebook.litho.SizeSpec.AT_MOST

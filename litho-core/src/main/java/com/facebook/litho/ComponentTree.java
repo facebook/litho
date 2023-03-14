@@ -16,17 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_VERSION;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
@@ -46,7 +36,6 @@ import android.graphics.drawable.PaintDrawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.os.Process;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Choreographer;
@@ -57,7 +46,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.arch.core.util.Function;
-import androidx.core.util.Preconditions;
 import androidx.lifecycle.LifecycleOwner;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -72,7 +60,6 @@ import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
-import com.facebook.rendercore.Systracer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -298,9 +285,6 @@ public class ComponentTree
   private final Object mLayoutStateFutureLock = new Object();
 
   private final Object mResolveResultFutureLock = new Object();
-
-  @GuardedBy("mLayoutStateFutureLock")
-  private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
 
   @GuardedBy("mResolveResultFutureLock")
   private final List<ResolveTreeFuture> mResolveResultFutures = new ArrayList<>();
@@ -1038,6 +1022,11 @@ public class ComponentTree
       }
 
       if (needsSyncLayout || forceLayout) {
+
+        if (enableDebugFlash() && ThreadUtils.isMainThread() && mLithoView != null) {
+          flash(mLithoView);
+        }
+
         final Size output = new Size();
 
         if (enableDebugFlash() && ThreadUtils.isMainThread() && mLithoView != null) {
@@ -2672,14 +2661,6 @@ public class ComponentTree
         && layoutState.isCompatibleAccessibility();
   }
 
-  private static boolean isCompatibleComponentAndSize(
-      LayoutState layoutState, int componentId, int width, int height) {
-    return layoutState != null
-        && layoutState.isForComponentId(componentId)
-        && layoutState.isCompatibleSize(width, height)
-        && layoutState.isCompatibleAccessibility();
-  }
-
   @Override
   public synchronized boolean isReleased() {
     return mReleased;
@@ -2804,242 +2785,6 @@ public class ComponentTree
               },
               500);
         });
-  }
-
-  class LayoutStateFuture extends TreeFuture<LayoutState> {
-    private final Object loggerMutex = new Object();
-    private final ComponentContext context;
-    private final Component root;
-    private final int widthSpec;
-    private final int heightSpec;
-    private final boolean diffingEnabled;
-    private final @Nullable TreeProps treeProps;
-    private final int layoutVersion;
-    @CalculateLayoutSource private final int source;
-    private final String extraAttribution;
-    @Nullable PerfEvent logFutureTaskGetWaiting = null;
-
-    private LayoutStateFuture(
-        final ComponentContext context,
-        final Component root,
-        final int widthSpec,
-        final int heightSpec,
-        int layoutVersion,
-        final boolean diffingEnabled,
-        final @Nullable TreeProps treeProps,
-        @CalculateLayoutSource final int source,
-        final @Nullable String extraAttribution) {
-      super(ComponentTree.this.mComponentsConfiguration.getUseCancelableLayoutFutures());
-
-      this.context = context;
-      this.root = root;
-      this.widthSpec = widthSpec;
-      this.heightSpec = heightSpec;
-      this.diffingEnabled = diffingEnabled;
-      this.treeProps = treeProps;
-      this.source = source;
-      this.extraAttribution = extraAttribution;
-      this.layoutVersion = layoutVersion;
-    }
-
-    @Override
-    public int getVersion() {
-      return layoutVersion;
-    }
-
-    @Override
-    public String getDescription() {
-      return "resolve+layout";
-    }
-
-    @Override
-    protected LayoutState calculate() {
-
-      final boolean isTracing = ComponentsSystrace.isTracing();
-      if (isTracing) {
-        if (extraAttribution != null) {
-          ComponentsSystrace.beginSection("extra:" + extraAttribution);
-        }
-        ComponentsSystrace.beginSectionWithArgs("render:" + root.getSimpleName())
-            .arg("treeId", ComponentTree.this.mId)
-            .arg("rootId", root.getId())
-            .arg("widthSpec", SizeSpec.toString(widthSpec))
-            .arg("heightSpec", SizeSpec.toString(heightSpec))
-            .flush();
-      }
-      try {
-
-        @Nullable
-        LayoutStateFuture layoutStateFuture =
-            mIsInterruptionEnabled ? LayoutStateFuture.this : null;
-
-        final ComponentContext contextWithStateHandler;
-        final LayoutState previousLayoutState;
-
-        final TreeState treeState;
-        synchronized (ComponentTree.this) {
-          treeState =
-              ComponentTree.this.mTreeState == null
-                  ? new TreeState()
-                  : new TreeState(ComponentTree.this.mTreeState);
-
-          previousLayoutState = mCommittedLayoutState;
-          contextWithStateHandler = new ComponentContext(context, treeProps);
-
-          treeState.registerRenderState();
-          treeState.registerLayoutState();
-        }
-
-        final ComponentsLogger logger = contextWithStateHandler.getLogger();
-        final PerfEvent logLayoutState =
-            logger != null
-                ? LogTreePopulator.populatePerfEventFromLogger(
-                    contextWithStateHandler,
-                    logger,
-                    logger.newPerformanceEvent(
-                        contextWithStateHandler, EVENT_CALCULATE_LAYOUT_STATE))
-                : null;
-        if (logLayoutState != null) {
-          logLayoutState.markerAnnotate(PARAM_COMPONENT, root.getSimpleName());
-          logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
-          logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
-          logLayoutState.markerAnnotate(
-              PARAM_TREE_DIFF_ENABLED,
-              previousLayoutState != null && previousLayoutState.getDiffTree() != null);
-          logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
-          logLayoutState.markerAnnotate(PARAM_LAYOUT_VERSION, layoutVersion);
-        }
-
-        final LayoutState layoutState =
-            LayoutState.calculate(
-                contextWithStateHandler,
-                root,
-                layoutStateFuture,
-                treeState,
-                ComponentTree.this.mId,
-                widthSpec,
-                heightSpec,
-                layoutVersion,
-                diffingEnabled,
-                previousLayoutState,
-                logLayoutState);
-
-        if (enableDebugFlash() && ThreadUtils.isMainThread() && mLithoView != null) {
-          flash(mLithoView);
-        }
-
-        if (logLayoutState != null) {
-          Preconditions.checkNotNull(logger).logPerfEvent(logLayoutState);
-        }
-
-        return layoutState;
-      } finally {
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-          if (extraAttribution != null) {
-            ComponentsSystrace.endSection();
-          }
-        }
-      }
-    }
-
-    @Override
-    protected Systracer.ArgsBuilder addSystraceArgs(Systracer.ArgsBuilder argsBuilder) {
-      return argsBuilder.arg("treeId", ComponentTree.this.mId).arg("root", root.getSimpleName());
-    }
-
-    @Override
-    protected void onWaitStart(boolean isTracing) {
-      super.onWaitStart(isTracing);
-
-      final ComponentsLogger logger = getContextLogger();
-
-      synchronized (loggerMutex) {
-        logFutureTaskGetWaiting =
-            logger != null
-                ? LogTreePopulator.populatePerfEventFromLogger(
-                    mContext,
-                    logger,
-                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
-                : null;
-      }
-    }
-
-    @Override
-    protected void onWaitEnd(boolean isTracing, boolean errorOccurred) {
-      super.onWaitEnd(isTracing, errorOccurred);
-
-      synchronized (loggerMutex) {
-        if (!errorOccurred && logFutureTaskGetWaiting != null) {
-          logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
-        }
-      }
-    }
-
-    @Override
-    protected void onGetEnd(boolean isTracing) {
-      super.onGetEnd(isTracing);
-
-      synchronized (loggerMutex) {
-        if (logFutureTaskGetWaiting != null) {
-          final boolean notRunningOnMyThread = mRunningThreadId.get() != Process.myTid();
-          final boolean shouldWaitForResult = !mFutureTask.isDone() && notRunningOnMyThread;
-
-          logFutureTaskGetWaiting.markerAnnotate(
-              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
-          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
-          final ComponentsLogger logger = getContextLogger();
-
-          if (logger != null) {
-            logger.logPerfEvent(logFutureTaskGetWaiting);
-          }
-        }
-      }
-    }
-
-    @Nullable
-    @Override
-    protected LayoutState resumeCalculation(LayoutState partialResult) {
-      if (mReleased) {
-        return null;
-      }
-      final LayoutState result =
-          LayoutState.resumeCalculate(source, extraAttribution, partialResult);
-
-      synchronized (LayoutStateFuture.this) {
-        return mReleased ? null : result;
-      }
-    }
-
-    @Override
-    public boolean isEquivalentTo(TreeFuture that) {
-      if (!(that instanceof LayoutStateFuture)) {
-        return false;
-      }
-
-      if (this == that) {
-        return true;
-      }
-
-      final LayoutStateFuture thatLsf = (LayoutStateFuture) that;
-
-      if (widthSpec != thatLsf.widthSpec) {
-        return false;
-      }
-      if (heightSpec != thatLsf.heightSpec) {
-        return false;
-      }
-      if (!context.equals(thatLsf.context)) {
-        return false;
-      }
-      if (root.getId() != thatLsf.root.getId()) {
-        // We only care that the root id is the same since the root is shallow copied before
-        // it's passed to us and will never be the same object.
-        return false;
-      }
-
-      return true;
-    }
   }
 
   private boolean enableDebugFlash() {
