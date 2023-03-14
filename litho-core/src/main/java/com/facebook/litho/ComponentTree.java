@@ -2020,19 +2020,23 @@ public class ComponentTree
     // The current root and tree-props are the same as the committed resolved result. Therefore,
     // there is no need to calculate the resolved result again and we can proceed straight to
     // layout.
-    if (currentResolveResult != null
-        && currentResolveResult.component == root
-        && currentResolveResult.context.getTreeProps() == treeProps) {
-      requestLayoutWithSplitFutures(
-          currentResolveResult,
-          output,
-          source,
-          extraAttribution,
-          isCreateLayoutInProgress,
-          false,
-          widthSpec,
-          heightSpec);
-      return;
+    if (currentResolveResult != null) {
+      boolean canLayoutWithoutResolve =
+          ComponentsConfiguration.isSkipRootCheckingEnabled
+              || (currentResolveResult.component == root
+                  && currentResolveResult.context.getTreeProps() == treeProps);
+      if (canLayoutWithoutResolve) {
+        requestLayoutWithSplitFutures(
+            currentResolveResult,
+            output,
+            source,
+            extraAttribution,
+            isCreateLayoutInProgress,
+            false,
+            widthSpec,
+            heightSpec);
+        return;
+      }
     }
 
     if (isAsync) {

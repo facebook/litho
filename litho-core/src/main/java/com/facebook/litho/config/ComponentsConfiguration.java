@@ -224,6 +224,9 @@ public class ComponentsConfiguration {
     return useSeparateThreadHandlersForResolveAndLayout;
   }
 
+  /** Skip checking for root component and tree-props while layout */
+  public static boolean isSkipRootCheckingEnabled = false;
+
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;
