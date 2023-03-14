@@ -2137,11 +2137,11 @@ public class ComponentTree
             currentNode,
             null,
             localResolveVersion,
-            // If sync operations are interruptible and happen on background thread, which
-            // could
-            // end up being moved to UI thread with null result and causing crash later. To
-            // prevent that we mark it as Non-Interruptible.
-            !LayoutState.isFromSyncLayout(source)
+            // If sync operations are interruptible and happen on background thread, which could end
+            // up being moved to UI thread with null result and causing crash later. To prevent that
+            // we mark it as Non-Interruptible.
+            (!ComponentsConfiguration.isSyncTaskNonInterruptibleEnabled
+                    || !LayoutState.isFromSyncLayout(source))
                 && mComponentsConfiguration.getUseCancelableLayoutFutures(),
             widthSpec,
             heightSpec,
