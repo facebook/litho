@@ -26,6 +26,7 @@ import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForCont
 import android.os.Process;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.instrumentation.FutureInstrumenter;
 import java.util.List;
@@ -61,7 +62,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   protected final RunnableFuture<TreeFutureResult<T>> mFutureTask;
   protected final boolean mIsInterruptionEnabled;
 
-  protected boolean mEnableEarlyInterrupt = false;
+  protected boolean mEnableEarlyInterrupt =
+      ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;
 
   public TreeFuture(boolean isInterruptionEnabled) {
     mIsInterruptionEnabled = isInterruptionEnabled;
