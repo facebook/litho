@@ -234,8 +234,6 @@ public class ComponentsConfiguration {
     return isResolveAndLayoutFuturesSplitEnabled && useSeparateThreadHandlersForResolveAndLayout;
   }
 
-  public static boolean reuseLastMeasuredNodeInComponentMeasure = true;
-
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;
 
   public static boolean shouldCompareRootCommonPropsInSingleComponentSection = false;

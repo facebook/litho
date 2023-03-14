@@ -660,9 +660,7 @@ public abstract class Component
       try {
         final LithoNode node;
 
-        if (c.isReuseLastMeasuredNodeInComponentMeasureEnabled()
-            && lastMeasuredLayout != null
-            && lastMeasuredLayout.mNode != null) {
+        if (lastMeasuredLayout != null && lastMeasuredLayout.mNode != null) {
           node = lastMeasuredLayout.mNode;
         } else {
           final ResolveStateContext nestedRsc =

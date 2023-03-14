@@ -116,7 +116,6 @@ public class ComponentContext implements Cloneable {
     return new LithoConfiguration(
         AnimationsDebug.areTransitionsEnabled(context),
         false,
-        ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure,
         false,
         ComponentsConfiguration.overrideReconciliation != null
             ? ComponentsConfiguration.overrideReconciliation
@@ -174,7 +173,6 @@ public class ComponentContext implements Cloneable {
     return new LithoConfiguration(
         lithoConfiguration.areTransitionsEnabled,
         lithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation,
-        lithoConfiguration.isReuseLastMeasuredNodeInComponentMeasureEnabled,
         lithoConfiguration.shouldReuseOutputs,
         lithoConfiguration.isReconciliationEnabled,
         lithoConfiguration.isVisibilityProcessingEnabled,
@@ -785,10 +783,6 @@ public class ComponentContext implements Cloneable {
 
   boolean shouldReuseOutputs() {
     return mLithoConfiguration.shouldReuseOutputs;
-  }
-
-  boolean isReuseLastMeasuredNodeInComponentMeasureEnabled() {
-    return mLithoConfiguration.isReuseLastMeasuredNodeInComponentMeasureEnabled;
   }
 
   boolean isNestedTreeContext() {

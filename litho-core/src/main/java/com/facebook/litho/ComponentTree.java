@@ -418,7 +418,6 @@ public class ComponentTree
         new LithoConfiguration(
             AnimationsDebug.areTransitionsEnabled(builder.context.getAndroidContext()),
             mComponentsConfiguration.keepLithoNodeAndLayoutResultTreeWithReconciliation(),
-            ComponentsConfiguration.reuseLastMeasuredNodeInComponentMeasure,
             mComponentsConfiguration.shouldReuseOutputs(),
             ComponentsConfiguration.overrideReconciliation != null
                 ? ComponentsConfiguration.overrideReconciliation
@@ -3433,7 +3432,6 @@ public class ComponentTree
   public static final class LithoConfiguration {
     final boolean areTransitionsEnabled;
     final boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
-    final boolean isReuseLastMeasuredNodeInComponentMeasureEnabled;
     final boolean shouldReuseOutputs;
     final boolean isReconciliationEnabled;
     final boolean isVisibilityProcessingEnabled;
@@ -3448,7 +3446,6 @@ public class ComponentTree
     public LithoConfiguration(
         boolean areTransitionsEnabled,
         boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation,
-        boolean isReuseLastMeasuredNodeInComponentMeasureEnabled,
         boolean shouldReuseOutputs,
         boolean isReconciliationEnabled,
         boolean isVisibilityProcessingEnabled,
@@ -3462,8 +3459,6 @@ public class ComponentTree
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation =
           shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
-      this.isReuseLastMeasuredNodeInComponentMeasureEnabled =
-          isReuseLastMeasuredNodeInComponentMeasureEnabled;
       this.shouldReuseOutputs = shouldReuseOutputs;
       this.isReconciliationEnabled = isReconciliationEnabled;
       this.isVisibilityProcessingEnabled = isVisibilityProcessingEnabled;
