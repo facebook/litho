@@ -36,7 +36,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -68,13 +67,9 @@ public class RecyclerBinderWrapContentTest {
   public void setup() {
     mComponentContext = new ComponentContext(getApplicationContext());
     mRecyclerView = new TestRecyclerView(mComponentContext.getAndroidContext());
-
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      mResolveThreadShadowLooper =
-          Shadows.shadowOf(
-              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
-    }
-
+    mResolveThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));

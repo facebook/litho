@@ -21,7 +21,6 @@ import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.SizeSpec.makeSizeSpec
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.Whitebox
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
@@ -57,12 +56,10 @@ class ComponentTreeNewLayoutStateReadyListenerTest {
     context = ComponentContext(ApplicationProvider.getApplicationContext<Context>())
     component = SimpleMountSpecTester.create(context).build()
     componentTree = ComponentTree.create(context, component).build()
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      resolveThreadShadowLooper =
-          Shadows.shadowOf(
-              Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                  as Looper)
-    }
+    resolveThreadShadowLooper =
+        Shadows.shadowOf(
+            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
+                as Looper)
     layoutThreadShadowLooper =
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
@@ -75,9 +72,7 @@ class ComponentTreeNewLayoutStateReadyListenerTest {
   }
 
   private fun runToEndOfTasks() {
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      resolveThreadShadowLooper.runToEndOfTasks()
-    }
+    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 

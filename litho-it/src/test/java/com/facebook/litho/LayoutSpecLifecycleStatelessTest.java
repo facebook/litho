@@ -48,17 +48,13 @@ public class LayoutSpecLifecycleStatelessTest {
         LayoutSpecLifecycleTester.create(mLegacyLithoViewRule.getContext()).steps(info).build();
     mLegacyLithoViewRule.setRoot(component).idle();
 
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      assertThat(getSteps(info))
-          .describedAs("Only render lifecycle methods should be called")
-          .containsExactly(
-              LifecycleStep.ON_CREATE_INITIAL_STATE,
-              LifecycleStep.ON_CREATE_TREE_PROP,
-              LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-              LifecycleStep.ON_CREATE_LAYOUT);
-    } else {
-      assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
-    }
+    assertThat(getSteps(info))
+        .describedAs("Only render lifecycle methods should be called")
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_CREATE_LAYOUT);
   }
 
   @Test

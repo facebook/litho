@@ -31,7 +31,6 @@ import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.TreeState;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -76,16 +75,12 @@ public class ComponentTreeHolderTest {
             .viewBinder(mock(ViewBinder.class))
             .viewCreator(mock(ViewCreator.class))
             .build();
-
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      mResolveThreadShadowLooper =
-          Shadows.shadowOf(
-              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
-    }
+    mResolveThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
   }
 
   private void runToEndOfTasks() {

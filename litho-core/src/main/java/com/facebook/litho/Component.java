@@ -1113,9 +1113,6 @@ public abstract class Component
       }
       final Context context = c.getAndroidContext();
       mComponent.setBuilderContextName(getBuilderContextName(context));
-      if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-        mComponent.setBuilderContext(context);
-      }
     }
 
     @ReturnsOwnership

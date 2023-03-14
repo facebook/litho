@@ -25,7 +25,6 @@ import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.Looper;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -66,19 +65,13 @@ public class MountSpecLifecycleTest {
             .build();
     mLegacyLithoViewRule.setRoot(component).idle();
 
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Only render lifecycle methods should be called")
-          .containsExactly(
-              LifecycleStep.ON_CREATE_INITIAL_STATE,
-              LifecycleStep.ON_CREATE_TREE_PROP,
-              LifecycleStep.ON_CALCULATE_CACHED_VALUE,
-              LifecycleStep.ON_PREPARE);
-    } else {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("No lifecycle methods should be called")
-          .isEmpty();
-    }
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("Only render lifecycle methods should be called")
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE);
   }
 
   @Test
@@ -215,19 +208,9 @@ public class MountSpecLifecycleTest {
         .setSizeSpecs(makeSizeSpec(800, EXACTLY), makeSizeSpec(600, UNSPECIFIED))
         .measure();
 
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED);
-    } else {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              LifecycleStep.ON_CREATE_TREE_PROP,
-              LifecycleStep.ON_PREPARE,
-              LifecycleStep.ON_MEASURE,
-              LifecycleStep.ON_BOUNDS_DEFINED);
-    }
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED);
   }
 
   @Test
@@ -268,27 +251,14 @@ public class MountSpecLifecycleTest {
 
     mLegacyLithoViewRule.setSizePx(800, 600).measure().layout();
 
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              LifecycleStep.ON_BOUNDS_DEFINED,
-              LifecycleStep.ON_UNBIND,
-              LifecycleStep.ON_UNMOUNT,
-              LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND);
-    } else {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              LifecycleStep.ON_CREATE_TREE_PROP,
-              LifecycleStep.ON_PREPARE,
-              LifecycleStep.ON_BOUNDS_DEFINED,
-              LifecycleStep.ON_UNBIND,
-              LifecycleStep.ON_UNMOUNT,
-              LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND);
-    }
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND);
   }
 
   @Test
@@ -308,29 +278,15 @@ public class MountSpecLifecycleTest {
 
     mLegacyLithoViewRule.setSizePx(800, 600).measure().layout();
 
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              LifecycleStep.ON_MEASURE,
-              LifecycleStep.ON_BOUNDS_DEFINED,
-              LifecycleStep.ON_UNBIND,
-              LifecycleStep.ON_UNMOUNT,
-              LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND);
-    } else {
-      assertThat(lifecycleTracker.getSteps())
-          .describedAs("Should call the lifecycle methods in expected order")
-          .containsExactly(
-              LifecycleStep.ON_CREATE_TREE_PROP,
-              LifecycleStep.ON_PREPARE,
-              LifecycleStep.ON_MEASURE,
-              LifecycleStep.ON_BOUNDS_DEFINED,
-              LifecycleStep.ON_UNBIND,
-              LifecycleStep.ON_UNMOUNT,
-              LifecycleStep.ON_MOUNT,
-              LifecycleStep.ON_BIND);
-    }
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND);
   }
 
   @Test

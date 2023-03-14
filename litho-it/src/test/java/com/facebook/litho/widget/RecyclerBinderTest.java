@@ -253,16 +253,13 @@ public class RecyclerBinderTest {
             .componentTreeHolderFactory(mComponentTreeHolderFactory)
             .isCircular(true)
             .build(mComponentContext);
-
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
 
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      mResolveThreadShadowLooper =
-          Shadows.shadowOf(
-              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
-    }
+    mResolveThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
   }
 
   private void runToEndOfTasks() {

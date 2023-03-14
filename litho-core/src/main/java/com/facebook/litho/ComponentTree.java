@@ -491,8 +491,7 @@ public class ComponentTree
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     addMeasureListener(builder.mMeasureListener);
 
-    isResolveAndLayoutFuturesSplitEnabled =
-        ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled;
+    isResolveAndLayoutFuturesSplitEnabled = true;
     useSeparateThreadHandlersForResolveAndLayout =
         isResolveAndLayoutFuturesSplitEnabled
             && ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout;

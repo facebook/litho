@@ -75,10 +75,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testSyncRendersAndMeasures() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
     final LifecycleTracker tracker = new LifecycleTracker();
@@ -156,10 +152,6 @@ public class SplitFuturesTest {
   /** Test multiple set-root async. */
   @Test
   public void testAsyncSetRootWitNoMeasures() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
     final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
@@ -238,10 +230,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testBackgroundSyncMeasures_layoutTreeFutureIsReused() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
     final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
@@ -366,10 +354,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testOlderRootIsNotCommitted() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
     final RenderAndMeasureCounter counter1 = new RenderAndMeasureCounter();
@@ -497,10 +481,6 @@ public class SplitFuturesTest {
 
   @Test
   public void ifSyncResolveIsInProgress_thenAsyncResolveShouldWaitForInProgressResolve() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final boolean[] isFirstHolder = new boolean[] {false};
 
@@ -583,10 +563,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testOlderLayoutIsNotCommitted() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
 
@@ -734,10 +710,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testAsyncLayoutIsSkippedWhenEquivalentSyncLayoutInProgress() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
 
@@ -818,6 +790,12 @@ public class SplitFuturesTest {
    */
   @Test
   public void testSyncRenderContinuesAsyncOnMainThread() {
+
+    // This isn't written to run without early interruption
+    if (!ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled) {
+      return;
+    }
+
     final ComponentContext c = mLegacyLithoViewRule.context;
     final RenderAndMeasureCounter counter = new RenderAndMeasureCounter();
 
@@ -878,10 +856,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testSyncLayoutContinuesAsyncOnMainThread() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
 
@@ -985,10 +959,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testSetRootWithNoSizeSpecsHappensAsync() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
 
@@ -1030,10 +1000,6 @@ public class SplitFuturesTest {
    */
   @Test
   public void testNoChangeToTreeProps_renderStillHappensOnce() {
-    // Only relevant when futures are split
-    if (!ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return;
-    }
 
     final ComponentContext c = mLegacyLithoViewRule.context;
 

@@ -43,7 +43,6 @@ import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
@@ -656,12 +655,8 @@ public final class ComponentTestHelper {
   }
 
   public static ShadowLooper[] getDefaultThreadShadowLoopers() {
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return new ShadowLooper[] {
-        getDefaultResolveThreadShadowLooper(), getDefaultLayoutThreadShadowLooper()
-      };
-    } else {
-      return new ShadowLooper[] {getDefaultLayoutThreadShadowLooper()};
-    }
+    return new ShadowLooper[] {
+      getDefaultResolveThreadShadowLooper(), getDefaultLayoutThreadShadowLooper()
+    };
   }
 }

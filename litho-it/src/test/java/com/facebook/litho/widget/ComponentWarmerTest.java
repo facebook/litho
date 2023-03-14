@@ -76,13 +76,9 @@ public class ComponentWarmerTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      mResolveThreadShadowLooper =
-          Shadows.shadowOf(
-              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
-    }
-
+    mResolveThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
     mWidthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
     mHeightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
   }

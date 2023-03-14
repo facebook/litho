@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
 import android.os.HandlerThread
 import android.os.Looper
 import android.view.View
@@ -47,18 +46,12 @@ import com.facebook.litho.widget.ComponentTreeTester
 import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
-import com.facebook.litho.widget.TextDrawable
 import com.facebook.rendercore.RunnableHandler
-import com.facebook.rendercore.testing.ViewAssertions
-import com.facebook.rendercore.testing.match.MatchNode
-import com.facebook.rendercore.testing.match.ViewMatchNode
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicReference
 import junit.framework.AssertionFailedError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -68,7 +61,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -101,12 +93,10 @@ class ComponentTreeTest {
         Shadows.shadowOf(
             Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultLayoutThreadLooper")
                 as Looper)
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      resolveThreadShadowLooper =
-          Shadows.shadowOf(
-              Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
-                  as Looper)
-    }
+    resolveThreadShadowLooper =
+        Shadows.shadowOf(
+            Whitebox.invokeMethod<Any>(ComponentTree::class.java, "getDefaultResolveThreadLooper")
+                as Looper)
     widthSpec = makeSizeSpec(39, EXACTLY)
     widthSpec2 = makeSizeSpec(40, EXACTLY)
     heightSpec = makeSizeSpec(41, EXACTLY)
@@ -114,16 +104,12 @@ class ComponentTreeTest {
   }
 
   private fun runToEndOfTasks() {
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      resolveThreadShadowLooper.runToEndOfTasks()
-    }
+    resolveThreadShadowLooper.runToEndOfTasks()
     layoutThreadShadowLooper.runToEndOfTasks()
   }
 
   private fun runOneTask() {
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      resolveThreadShadowLooper.runOneTask()
-    }
+    resolveThreadShadowLooper.runOneTask()
     layoutThreadShadowLooper.runOneTask()
   }
 
@@ -206,8 +192,7 @@ class ComponentTreeTest {
 
     // Now the background thread run the queued task.
     runOneTask()
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
-        !ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
+    if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
       runOneTask()
     }
     postSizeSpecChecks(componentTree)
@@ -221,8 +206,7 @@ class ComponentTreeTest {
     val componentTree = ComponentTree.create(scopedContext, root).build()
     componentTree.setSizeSpecAsync(widthSpec, heightSpec)
     runOneTask()
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled &&
-        !ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
+    if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
       runOneTask()
     }
     val layoutState = componentTree.mainThreadLayoutState
@@ -658,7 +642,7 @@ class ComponentTreeTest {
   @Test
   fun testSetRootAsyncFollowedByMeasurementInParentWithDoubleMeasure() {
     // TODO (T134949954) reexamine need for this
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+    if (true) {
       return
     }
     val componentTree =
@@ -968,7 +952,7 @@ class ComponentTreeTest {
   @Test
   fun testSetRootAsyncWithIncompatibleMeasureDuringLayout() {
     // TODO (T134949954) reexamine need for this
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+    if (true) {
       return
     }
     val componentTree = ComponentTree.create(context, component).build()
@@ -1032,7 +1016,7 @@ class ComponentTreeTest {
   @Test
   fun testSetRootAsyncWithCompatibleMeasureDuringLayout() {
     // TODO (T134949954) reexamine need for this
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+    if (true) {
       return
     }
     val oldComponent =
@@ -1110,7 +1094,7 @@ class ComponentTreeTest {
   @Test
   fun testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutDuringLayout() {
     // TODO (T134949954) reexamine need for this
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+    if (true) {
       return
     }
     val oldComponent =
@@ -1176,132 +1160,9 @@ class ComponentTreeTest {
   }
 
   @Test
-  fun testMeasureWithUpdateStateThatCompletesFirst() {
-    // Skip this test when resolve and layout futures are split, as it assumes measure will
-    // trigger onPrepare, which is no longer the case.
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val caller = SimpleStateUpdateEmulatorSpec.Caller()
-    val blockingComponent = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val rootComponent =
-        Column.create(context)
-            .child(SimpleStateUpdateEmulator.create(context).caller(caller).prefix("Counter: "))
-            .child(blockingComponent)
-            .minHeightPx(100)
-            .build()
-    val lithoView = LithoView(context)
-    val componentTree =
-        ComponentTree.create(context, rootComponent).isReconciliationEnabled(true).build()
-    lithoView.componentTree = componentTree
-    val widthSpec1 = makeSizeSpec(1_000, AT_MOST)
-    val heightSpec1 = makeSizeSpec(500, EXACTLY)
-    val widthSpec2 = makeSizeSpec(1_000, AT_MOST)
-    val heightSpec2 = makeSizeSpec(1_000, EXACTLY)
-    componentTree.attach()
-    lithoView.measure(widthSpec1, heightSpec1)
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockingComponent.setTestComponentListener(blockInPrepare)
-
-    // This is necessary because we end up posting the synchronous state update to the layout looper
-    componentTree.layoutThreadHandler.post({ blockInPrepare.setDoNotBlockOnThisThread() }, "test")
-    val asyncStateUpdate = runOnBackgroundThread {
-      blockInPrepare.awaitPrepareStart()
-      blockInPrepare.setDoNotBlockOnThisThread()
-      caller.increment()
-      backgroundLayoutLooperRule.runToEndOfTasksSync()
-      blockInPrepare.allowPrepareToComplete()
-    }
-    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
-        .describedAs("Asserting test setup, second set of specs should not be compatible.")
-        .isFalse
-    lithoView.measure(widthSpec2, heightSpec2)
-    asyncStateUpdate.acquire()
-    ShadowLooper.runUiThreadTasks()
-    lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
-
-    // We now want to assert that we are the right size and also the state update was applied.
-    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(1_000)
-    assertThat(lithoView.height).isEqualTo(1_000)
-    ViewAssertions.assertThat(lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Counter: 2"),
-                        MatchNode.forType(ColorDrawable::class.java))))
-    assertThat(lithoStatsRule.componentCalculateLayoutCount)
-        .describedAs(
-            "We expect one layout during setup, one from measure that will be thrown away and one from the state update.")
-        .isEqualTo(3)
-  }
-
-  @Test
-  fun testUpdateStateWithMeasureThatStartsBeforeUpdateStateCompletes() {
-    // Skip this test when resolve and layout futures are split, as it assumes measure will
-    // trigger onPrepare, which is no longer the case.
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val caller = SimpleStateUpdateEmulatorSpec.Caller()
-    val blockingComponent = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val rootComponent =
-        Column.create(context)
-            .child(SimpleStateUpdateEmulator.create(context).caller(caller).prefix("Counter: "))
-            .child(blockingComponent)
-            .minHeightPx(100)
-            .build()
-    val lithoView = LithoView(context)
-
-    // We need to turn reconciliation off so that the BlockInPrepare always executes
-    val componentTree =
-        ComponentTree.create(context, rootComponent).isReconciliationEnabled(false).build()
-    lithoView.componentTree = componentTree
-    val widthSpec1 = makeSizeSpec(1_000, AT_MOST)
-    val heightSpec1 = makeSizeSpec(500, EXACTLY)
-    val widthSpec2 = makeSizeSpec(1_000, AT_MOST)
-    val heightSpec2 = makeSizeSpec(1_000, EXACTLY)
-    componentTree.attach()
-    lithoView.measure(widthSpec1, heightSpec1)
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockInPrepare.setDoNotBlockOnThisThread()
-    blockingComponent.setTestComponentListener(blockInPrepare)
-    caller.incrementAsync()
-    val asyncStateUpdate = backgroundLayoutLooperRule.runToEndOfTasksAsync()
-    blockInPrepare.awaitPrepareStart()
-    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
-        .describedAs("Asserting test setup, second set of specs should not be compatible.")
-        .isFalse
-    lithoView.measure(widthSpec2, heightSpec2)
-    blockInPrepare.allowPrepareToComplete()
-    asyncStateUpdate.acquire()
-    ShadowLooper.runUiThreadTasks()
-    lithoView.layout(0, 0, lithoView.measuredWidth, lithoView.measuredHeight)
-
-    // We now want to assert that we are the right size and also the state update was applied.
-    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(1_000)
-    assertThat(lithoView.height).isEqualTo(1_000)
-    ViewAssertions.assertThat(lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Counter: 2"),
-                        MatchNode.forType(ColorDrawable::class.java))))
-    assertThat(lithoStatsRule.componentCalculateLayoutCount)
-        .describedAs(
-            "We expect one layout during setup, one from measure and one from the state update that will be thrown away.")
-        .isEqualTo(3)
-  }
-
-  @Test
   fun testSetRootAndSetSizeSpecInParallelProduceCorrectResult() {
     // TODO (T134949954) reexamine need for this
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
+    if (true) {
       return
     }
     val oldComponent =
@@ -1341,46 +1202,6 @@ class ComponentTreeTest {
         .describedAs(
             "We expect one initial layout, the async layout (thrown away), and a layout from setSizeSpec.")
         .isEqualTo(3)
-  }
-
-  @Test
-  fun testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeCompletionReturnsCorrectSize() {
-    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val component = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val componentTree = ComponentTree.create(context, component).build()
-    componentTree.setLithoView(LithoView(context))
-    val widthSpec1 = makeSizeSpec(1_000, EXACTLY)
-    val heightSpec1 = makeSizeSpec(1_000, AT_MOST)
-    val widthSpec2 = makeSizeSpec(500, EXACTLY)
-    val heightSpec2 = makeSizeSpec(500, AT_MOST)
-    componentTree.attach()
-    componentTree.measure(widthSpec1, heightSpec1, IntArray(2), false)
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockInPrepare.setDoNotBlockOnThisThread()
-    component.setTestComponentListener(blockInPrepare)
-    componentTree.setSizeSpecAsync(widthSpec2, heightSpec2)
-    val setSizeSpecAsync = backgroundLayoutLooperRule.runToEndOfTasksAsync()
-    blockInPrepare.awaitPrepareStart()
-    val size = Size()
-    val setSizeSpecSync = runOnBackgroundThread {
-      componentTree.setSizeSpec(widthSpec2, heightSpec2, size)
-    }
-    waitForLayoutToAttachToFuture(componentTree)
-    blockInPrepare.allowPrepareToComplete()
-    setSizeSpecAsync.acquire()
-    setSizeSpecSync.acquire()
-    ShadowLooper.runUiThreadTasks()
-    assertThat(size).isEqualToComparingFieldByField(Size(500, 500))
-    assertThat(componentTree.root).isEqualTo(component)
-    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue
-    assertThat(componentTree.mainThreadLayoutState?.height).isEqualTo(500)
-    assertThat(componentTree.mainThreadLayoutState?.width).isEqualTo(500)
-    assertThat(lithoStatsRule.componentCalculateLayoutCount)
-        .describedAs("We expect one initial layout and the async layout.")
-        .isEqualTo(2)
   }
 
   @Test
@@ -1444,169 +1265,6 @@ class ComponentTreeTest {
   }
 
   @Test
-  fun testLayoutStateNotCommittedTwiceWithLayoutStateFutures() {
-    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val component = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val widthSpec = makeSizeSpec(1_000, EXACTLY)
-    val heightSpec = makeSizeSpec(0, UNSPECIFIED)
-    val componentTree = ComponentTree.create(context, component).build()
-    componentTree.setLithoView(LithoView(context))
-
-    // It's called a measure listener, but it is invoked every time a new layout is committed.
-    val commitCount = AtomicInteger(0)
-    componentTree.addMeasureListener { _, _, _, _ -> commitCount.incrementAndGet() }
-    componentTree.attach()
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockInPrepare.setDoNotBlockOnThisThread()
-    component.setTestComponentListener(blockInPrepare)
-    val asyncLayout1Finish = runOnBackgroundThread {
-      componentTree.setSizeSpec(widthSpec, heightSpec, Size())
-    }
-    blockInPrepare.awaitPrepareStart()
-    val asyncLayout2Finish = runOnBackgroundThread {
-      componentTree.setSizeSpec(widthSpec, heightSpec, Size())
-    }
-    waitForLayoutToAttachToFuture(componentTree)
-    blockInPrepare.allowPrepareToComplete()
-    asyncLayout1Finish.acquire()
-    blockInPrepare.allowPrepareToComplete()
-    // Timing out here probably means we didn't use LayoutStateFutures and we are blocking on the
-    // "block in prepare" semaphore.
-    asyncLayout2Finish.acquire()
-    assertThat(componentTree.root).isEqualTo(component)
-    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue
-    assertThat(commitCount.get()).isEqualTo(1)
-  }
-
-  @Test
-  fun testMainThreadLayoutWillInterruptCompatibleBGLayout() {
-    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val component = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val widthSpec = makeSizeSpec(1_000, EXACTLY)
-    val heightSpec = makeSizeSpec(0, UNSPECIFIED)
-    val componentTree = ComponentTree.create(context, component).build()
-    componentTree.setLithoView(LithoView(context))
-
-    // It's called a measure listener, but it is invoked every time a new layout is committed.
-    val commitCount = AtomicInteger(0)
-    componentTree.addMeasureListener { _, _, _, _ -> commitCount.incrementAndGet() }
-    componentTree.attach()
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockInPrepare.setDoNotBlockOnThisThread()
-    component.setTestComponentListener(blockInPrepare)
-    componentTree.setSizeSpecAsync(widthSpec, heightSpec)
-    backgroundLayoutLooperRule.runToEndOfTasksAsync()
-    blockInPrepare.awaitPrepareStart()
-    val futureRef = AtomicReference<LayoutStateFuture?>(null)
-    val unblockMainThread = runOnBackgroundThread {
-      futureRef.set(waitForLayoutToAttachToFuture(componentTree))
-      blockInPrepare.allowPrepareToComplete()
-    }
-    componentTree.setSizeSpec(widthSpec, heightSpec, Size())
-    unblockMainThread.acquire()
-    assertThat(componentTree.root).isEqualTo(component)
-    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue
-    assertThat(commitCount.get()).isEqualTo(1)
-    assertThat(futureRef.get()?.isInterruptRequested).isTrue
-    assertThat(blockInPrepare.prepareCount).isEqualTo(1)
-  }
-
-  @Test
-  fun testMainThreadLayoutWillNotInterruptCompatibleBGLayoutIfSyncBGLayoutIsAlsoPending() {
-    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val component = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val widthSpec = makeSizeSpec(1_000, EXACTLY)
-    val heightSpec = makeSizeSpec(0, UNSPECIFIED)
-    val componentTree = ComponentTree.create(context, component).build()
-    componentTree.setLithoView(LithoView(context))
-
-    // It's called a measure listener, but it is invoked every time a new layout is committed.
-    val commitCount = AtomicInteger(0)
-    componentTree.addMeasureListener { _, _, _, _ -> commitCount.incrementAndGet() }
-    componentTree.attach()
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockInPrepare.setDoNotBlockOnThisThread()
-    component.setTestComponentListener(blockInPrepare)
-    componentTree.setSizeSpecAsync(widthSpec, heightSpec)
-    val layoutThreadLayout = backgroundLayoutLooperRule.runToEndOfTasksAsync()
-    blockInPrepare.awaitPrepareStart()
-    val bgSyncSize = Size()
-    val bgSyncLayout = runOnBackgroundThread {
-      componentTree.setSizeSpec(widthSpec, heightSpec, bgSyncSize)
-    }
-    waitForLayoutToAttachToFuture(componentTree, 2)
-    val futureRef = AtomicReference<LayoutStateFuture?>(null)
-    val unblockMainThread =
-        runOnBackgroundThread { // Wait for 3 layouts to attach: 2 bg and 1 main thread
-          futureRef.set(waitForLayoutToAttachToFuture(componentTree, 3))
-          blockInPrepare.allowPrepareToComplete()
-        }
-    val mainThreadSize = Size()
-    componentTree.setSizeSpec(widthSpec, heightSpec, mainThreadSize)
-    unblockMainThread.acquire()
-    bgSyncLayout.acquire()
-    layoutThreadLayout.acquire()
-    assertThat(componentTree.root).isEqualTo(component)
-    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue
-    assertThat(commitCount.get()).isEqualTo(1)
-    assertThat(bgSyncSize.width).isEqualTo(1_000)
-    assertThat(mainThreadSize.width).isEqualTo(1_000)
-    assertThat(futureRef.get()?.isInterruptRequested).isFalse
-    assertThat(blockInPrepare.prepareCount).isEqualTo(1)
-  }
-
-  @Test
-  fun testSyncBGLayoutWillNotAttachToInterruptedLayout() {
-    // Not relevant when split is enabled (directly accesses LayoutStateFutures)
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val component = TestDrawableComponent.create(context).flexGrow(1f).color(1_234).build()
-    val widthSpec = makeSizeSpec(1_000, EXACTLY)
-    val heightSpec = makeSizeSpec(0, UNSPECIFIED)
-    val componentTree = ComponentTree.create(context, component).build()
-    componentTree.setLithoView(LithoView(context))
-
-    // It's called a measure listener, but it is invoked every time a new layout is committed.
-    val commitCount = AtomicInteger(0)
-    componentTree.addMeasureListener { _, _, _, _ -> commitCount.incrementAndGet() }
-    componentTree.attach()
-    val blockInPrepare = BlockInPrepareComponentListener()
-    blockInPrepare.setDoNotBlockOnThisThread()
-    component.setTestComponentListener(blockInPrepare)
-    componentTree.setSizeSpecAsync(widthSpec, heightSpec)
-    backgroundLayoutLooperRule.runToEndOfTasksAsync()
-    blockInPrepare.awaitPrepareStart()
-    val bgSyncSize = Size()
-    val unblockMainThread = runOnBackgroundThread { // Wait for main thread layout to attach
-      val future = waitForLayoutToAttachToFuture(componentTree, 2)
-      waitForFutureToBecomeInterrupted(future)
-      val bgSyncLayout = runOnBackgroundThread {
-        blockInPrepare.setDoNotBlockOnThisThread()
-        componentTree.setSizeSpec(widthSpec, heightSpec, bgSyncSize)
-      }
-      blockInPrepare.allowPrepareToComplete()
-      bgSyncLayout.acquire()
-    }
-    val mainThreadSize = Size()
-    componentTree.setSizeSpec(widthSpec, heightSpec, mainThreadSize)
-    unblockMainThread.acquire()
-    assertThat(componentTree.root).isEqualTo(component)
-    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue
-    assertThat(bgSyncSize.width).isEqualTo(1_000)
-    assertThat(mainThreadSize.width).isEqualTo(1_000)
-  }
-
-  @Test
   fun testSetRootAfterRelease() {
     val componentTree = ComponentTree.create(context, component).build()
     componentTree.release()
@@ -1622,129 +1280,6 @@ class ComponentTreeTest {
     componentTree.putCachedValue("key1", "value1", false)
     assertThat(componentTree.getCachedValue("key1", false)).isEqualTo("value1")
     assertThat(componentTree.getCachedValue("key2", false)).isNull()
-  }
-
-  // TODO(T37885964): Fix me
-  @Test
-  @Ignore
-  fun testCreateOneLayoutStateFuture() {
-    // Not relevant for when split is enabled
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val root1 = ComponentTreeTester.create(context).build()
-    val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1, 5))
-    val componentTree = ComponentTree.create(context, root1).layoutThreadHandler(handler).build()
-    componentTree.setLithoView(LithoView(context))
-    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
-    componentTree.attach()
-    val unlockWaitingOnCreateLayout = CountDownLatch(1)
-    val root2 =
-        ComponentTreeTester.create(context)
-            .unlockWaitingOnCreateLayout(unlockWaitingOnCreateLayout)
-            .build()
-    componentTree.setRootAsync(root2)
-    ThreadTestingUtils.failSilentlyIfInterrupted {
-      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS)
-    }
-    junit.framework.Assert.assertEquals(1, componentTree.layoutStateFutures.size)
-    val layoutStateFuture = componentTree.layoutStateFutures[0]
-    handler.post(
-        {
-          junit.framework.Assert.assertEquals(1, layoutStateFuture.waitingCount)
-          layoutStateFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC)
-          junit.framework.Assert.assertEquals(0, layoutStateFuture.waitingCount)
-          junit.framework.Assert.assertEquals(0, componentTree.layoutStateFutures.size)
-        },
-        "tag")
-  }
-
-  @Test
-  fun testLayoutStateFutureMainWaitingOnBg() {
-    // Not relevant for when split is enabled
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val root1 = ComponentTreeTester.create(context).build()
-    val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1, 5))
-    val componentTree = ComponentTree.create(context, root1).layoutThreadHandler(handler).build()
-    componentTree.setLithoView(LithoView(context))
-    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
-    componentTree.attach()
-    val unlockWaitingOnCreateLayout = CountDownLatch(1)
-    val lockOnCreateLayoutFinish = CountDownLatch(1)
-    val root2 =
-        ComponentTreeTester.create(context)
-            .unlockWaitingOnCreateLayout(unlockWaitingOnCreateLayout)
-            .lockOnCreateLayoutFinish(lockOnCreateLayoutFinish)
-            .build()
-    val root3 = ComponentTreeTester.create(context).build()
-    componentTree.setRootAsync(root2)
-
-    // Wait for first thread to get into onCreateLayout
-    ThreadTestingUtils.failSilentlyIfInterrupted {
-      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS)
-    }
-    junit.framework.Assert.assertEquals(1, componentTree.layoutStateFutures.size)
-    val bgSetRoot = runOnBackgroundThread {
-      componentTree.root = root3
-
-      // At this point, the current thread is unblocked after waiting for the first to
-      // finish layout.
-      // TODO T62608123 This actually never runs
-      //                assertFalse(root3.hasRunLayout);
-      //                assertTrue(root2.hasRunLayout);
-    }
-
-    // Unblock the first thread to continue through onCreateLayout. The second thread will only
-    // unblock once the first thread's onCreateLayout finishes
-    lockOnCreateLayoutFinish.countDown()
-    bgSetRoot.acquire()
-  }
-
-  @Test
-  fun testRecalculateDifferentRoots() {
-    // Not relevant for when split is enabled
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      return
-    }
-    val root1 = ComponentTreeTester.create(context).build()
-    val handler = ThreadPoolLayoutHandler.getNewInstance(LayoutThreadPoolConfigurationImpl(1, 1, 5))
-    val componentTree = ComponentTree.create(context, root1).layoutThreadHandler(handler).build()
-    componentTree.setLithoView(LithoView(context))
-    componentTree.measure(widthSpec, heightSpec, IntArray(2), false)
-    componentTree.attach()
-    val unlockWaitingOnCreateLayout = CountDownLatch(1)
-    val lockOnCreateLayoutFinish = CountDownLatch(1)
-    val root2 =
-        ComponentTreeTester.create(context)
-            .unlockWaitingOnCreateLayout(unlockWaitingOnCreateLayout)
-            .lockOnCreateLayoutFinish(lockOnCreateLayoutFinish)
-            .build()
-    val root3 = ComponentTreeTester.create(context).build()
-    componentTree.setRootAsync(root2)
-
-    // Wait for first thread to get into onCreateLayout
-    ThreadTestingUtils.failSilentlyIfInterrupted {
-      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS)
-    }
-    junit.framework.Assert.assertEquals(1, componentTree.layoutStateFutures.size)
-    val thread = Thread {
-      componentTree.root = root3
-
-      // At this point, the current thread is unblocked after waiting for the first to
-      // finish layout.
-      // TODO T62608123 This actually never runs
-      //                assertTrue(root3.hasRunLayout);
-      //                assertTrue(root2.hasRunLayout);
-    }
-
-    // Schedule second thread to start
-    thread.start()
-
-    // Unblock the first thread to continue through onCreateLayout. The second thread will only
-    // unblock once the first thread's onCreateLayout finishes
-    lockOnCreateLayoutFinish.countDown()
   }
 
   @Test

@@ -208,13 +208,6 @@ public class ComponentsConfiguration {
   public static @Nullable String timelineDocsLink = null;
 
   /**
-   * When enabled, Resolve and Layout futures will run separately. Resolve will store a committed
-   * LithoResolutionResult, which will allow subsequent layouts to reuse that result to produce a
-   * LayoutState.
-   */
-  public static boolean isResolveAndLayoutFuturesSplitEnabled = true;
-
-  /**
    * When enabled, and coupled with isResolveAndLayoutFuturesSplitEnabled being enabled, split
    * resolve and layout futures will each use dedicated thread handlers so that they don't queue
    * against each other.
@@ -231,7 +224,7 @@ public class ComponentsConfiguration {
 
   /** Return true when resolve and layout futures are split, and each uses its own thread handler */
   public static boolean isSplitResolveAndLayoutWithSplitHandlers() {
-    return isResolveAndLayoutFuturesSplitEnabled && useSeparateThreadHandlersForResolveAndLayout;
+    return useSeparateThreadHandlersForResolveAndLayout;
   }
 
   public static boolean shouldCompareCommonPropsInIsEquivalentTo = false;

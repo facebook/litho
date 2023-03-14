@@ -32,7 +32,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -62,16 +61,12 @@ public class RecyclerBinderManualRangeTest {
   public void setup() {
     mComponentContext = new ComponentContext(getApplicationContext());
     mComponentContext.getAndroidContext().setTheme(0);
-
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      mResolveThreadShadowLooper =
-          Shadows.shadowOf(
-              (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
-    }
+    mResolveThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultResolveThreadLooper"));
   }
 
   private void runToEndOfTasks() {

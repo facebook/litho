@@ -57,11 +57,7 @@ public class LithoStatsTest {
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), LOG_TAG, mComponentsLogger);
-
-    if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled) {
-      mResolveThreadShadowLooper = ComponentTestHelper.getDefaultResolveThreadShadowLooper();
-    }
-
+    mResolveThreadShadowLooper = ComponentTestHelper.getDefaultResolveThreadShadowLooper();
     mLayoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper();
     mTestComponent = new StateUpdateTestComponent();
     mTestComponentKey = mTestComponent.getKey();
@@ -159,8 +155,7 @@ public class LithoStatsTest {
                 // mChangeSetThreadShadowLooper will happen on Main Thread
                 runOneTask();
 
-                if (ComponentsConfiguration.isResolveAndLayoutFuturesSplitEnabled
-                    && !ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
+                if (!ComponentsConfiguration.useSeparateThreadHandlersForResolveAndLayout) {
                   runOneTask();
                 }
 
