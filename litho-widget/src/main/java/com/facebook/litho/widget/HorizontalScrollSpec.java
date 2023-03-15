@@ -56,7 +56,7 @@ import com.facebook.yoga.YogaDirection;
  *
  * @uidocs
  */
-@MountSpec
+@MountSpec(hasChildLithoViews = true)
 class HorizontalScrollSpec {
 
   private static final int LAST_SCROLL_POSITION_UNSET = -1;
