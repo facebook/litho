@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
-
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public interface PrepareInterStagePropsContainer {}
+interface PrepareInterStagePropsContainer
