@@ -75,6 +75,9 @@ class ComponentHostTest {
     viewGroupHost = HostComponent.create()
   }
 
+  private val dummyMotionEvent =
+      MotionEvent.obtain(100L, 100L, MotionEvent.ACTION_DOWN, 50f, 50f, 0)
+
   @Test
   fun testInvalidations() {
     assertThat(host.invalidationCount).isEqualTo(0)
@@ -166,8 +169,8 @@ class ComponentHostTest {
     // The n.4 is the first parsed, and returning false means the n.2 will be parsed too.
     val touchableDrawableOnItem2 = Mockito.spy(TouchableDrawable())
     val touchableDrawableOnItem4 = Mockito.spy(TouchableDrawable())
-    whenever(touchableDrawableOnItem2.shouldHandleTouchEvent(any<MotionEvent>())).thenReturn(true)
-    whenever(touchableDrawableOnItem4.shouldHandleTouchEvent(any<MotionEvent>())).thenReturn(false)
+    whenever(touchableDrawableOnItem2.shouldHandleTouchEvent(dummyMotionEvent)).thenReturn(true)
+    whenever(touchableDrawableOnItem4.shouldHandleTouchEvent(dummyMotionEvent)).thenReturn(false)
     val mountItem1 = mount(0, ColorDrawable())
     val mountItem2 = mount(1, touchableDrawableOnItem2)
     val mountItem3 = mount(2, View(context.androidContext))
@@ -176,11 +179,11 @@ class ComponentHostTest {
     assertThat(host.getMountItemAt(1)).isEqualTo(mountItem2)
     assertThat(host.getMountItemAt(2)).isEqualTo(mountItem3)
     assertThat(host.getMountItemAt(3)).isEqualTo(mountItem4)
-    host.onTouchEvent(mock<MotionEvent>())
-    verify(touchableDrawableOnItem4, times(1)).shouldHandleTouchEvent(any<MotionEvent>())
-    verify(touchableDrawableOnItem4, never()).onTouchEvent(any<MotionEvent>(), any<View>())
-    verify(touchableDrawableOnItem2, times(1)).shouldHandleTouchEvent(any<MotionEvent>())
-    verify(touchableDrawableOnItem2, times(1)).onTouchEvent(any<MotionEvent>(), any<View>())
+    host.onTouchEvent(dummyMotionEvent)
+    verify(touchableDrawableOnItem4, times(1)).shouldHandleTouchEvent(any())
+    verify(touchableDrawableOnItem4, never()).onTouchEvent(any(), any())
+    verify(touchableDrawableOnItem2, times(1)).shouldHandleTouchEvent(any())
+    verify(touchableDrawableOnItem2, times(1)).onTouchEvent(any(), any())
   }
 
   @Test
@@ -202,10 +205,10 @@ class ComponentHostTest {
     assertThat(host.getMountItemAt(4)).isEqualTo(mountItem5)
     assertThat(host.getMountItemAt(5)).isEqualTo(mountItem6)
     assertThat(host.getMountItemAt(6)).isEqualTo(mountItem7)
-    host.onTouchEvent(mock<MotionEvent>())
+    host.onTouchEvent(dummyMotionEvent)
     val touchableDrawable = mountItem4.content as TouchableDrawable
-    verify(touchableDrawable, times(1)).shouldHandleTouchEvent(any<MotionEvent>())
-    verify(touchableDrawable, times(1)).onTouchEvent(any<MotionEvent>(), any<View>())
+    verify(touchableDrawable, times(1)).shouldHandleTouchEvent(any())
+    verify(touchableDrawable, times(1)).onTouchEvent(any(), any())
   }
 
   @Test
@@ -788,7 +791,7 @@ class ComponentHostTest {
   private open class TouchableDrawable : ColorDrawable(), Touchable {
     override fun onTouchEvent(event: MotionEvent, host: View): Boolean = true
 
-    override fun shouldHandleTouchEvent(event: MotionEvent?): Boolean = true
+    override fun shouldHandleTouchEvent(event: MotionEvent): Boolean = true
   }
 
   companion object {

@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.MotionEvent
+import android.view.View
 
-/**
- * Any interface for mounted items that need to capture motion events from its {@link
- * ComponentHost}.
- */
-public interface Touchable {
-  boolean onTouchEvent(MotionEvent event, View host);
+/** Any interface for mounted items that need to capture motion events from its [ComponentHost]. */
+interface Touchable {
 
-  boolean shouldHandleTouchEvent(MotionEvent event);
+  fun onTouchEvent(event: MotionEvent, host: View): Boolean
+
+  fun shouldHandleTouchEvent(event: MotionEvent): Boolean
 }
