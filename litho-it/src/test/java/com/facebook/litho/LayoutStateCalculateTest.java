@@ -191,9 +191,8 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
 
-    final ViewNodeInfo viewNodeInfo =
-        getRenderUnit(layoutState.getMountableOutputAt(4)).getViewNodeInfo();
-    assertThat(viewNodeInfo.getTouchBoundsExpansion()).isEqualTo(new Rect(5, 5, 5, 5));
+    final LithoRenderUnit renderUnit = getRenderUnit(layoutState.getMountableOutputAt(4));
+    assertThat(renderUnit.getTouchBoundsExpansion()).isEqualTo(new Rect(5, 5, 5, 5));
 
     final NodeInfo nodeInfo = getRenderUnit(layoutState.getMountableOutputAt(4)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();
@@ -592,18 +591,6 @@ public class LayoutStateCalculateTest {
     assertThat(getTextFromTextComponent(layoutState, 3)).isEqualTo("textLeft1");
     assertThat(getTextFromTextComponent(layoutState, 4)).isEqualTo("textRight1");
     assertThat(getTextFromTextComponent(layoutState, 6)).isEqualTo("textLeft2");
-
-    // Check background and foreground applied
-    final ViewNodeInfo viewNodeInfo =
-        getRenderUnit(layoutState.getMountableOutputAt(7)).getViewNodeInfo();
-    assertThat(viewNodeInfo).isNotNull();
-    assertThat(viewNodeInfo.getBackground()).isNotNull();
-
-    // Check padding all applied correctly
-    assertThat(viewNodeInfo.getPaddingLeft() == paddingSize).isTrue();
-    assertThat(viewNodeInfo.getPaddingTop() == paddingSize).isTrue();
-    assertThat(viewNodeInfo.getPaddingRight() == paddingSize).isTrue();
-    assertThat(viewNodeInfo.getPaddingBottom() == paddingSize).isTrue();
   }
 
   @Test
@@ -1279,10 +1266,8 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    // Host generated with  background
+    // Host generated
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
-    assertThat(getRenderUnit(layoutState.getMountableOutputAt(1)).getViewNodeInfo().getBackground())
-        .isNotNull();
   }
 
   @Test

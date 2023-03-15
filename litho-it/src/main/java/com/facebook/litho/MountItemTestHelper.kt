@@ -26,7 +26,6 @@ object MountItemTestHelper {
       host: ComponentHost?,
       content: Any,
       info: NodeInfo?,
-      viewInfo: ViewNodeInfo?,
       bounds: Rect?,
       flags: Int,
       importantForAccessibility: Int
@@ -37,7 +36,6 @@ object MountItemTestHelper {
             component,
             null,
             info,
-            viewInfo,
             bounds,
             flags,
             importantForAccessibility,

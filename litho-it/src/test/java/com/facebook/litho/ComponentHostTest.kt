@@ -35,7 +35,6 @@ import com.facebook.litho.widget.SimpleMountSpecTester
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.TextInput
 import com.facebook.rendercore.MountItem
-import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -686,8 +685,7 @@ class ComponentHostTest {
             null,
             content,
             nodeInfo,
-            null,
-            null,
+            if (content is Drawable) content.bounds else null,
             flags,
             View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.mount(index, mountItem, if (content is Drawable) content.bounds else Rect())
@@ -698,38 +696,23 @@ class ComponentHostTest {
     val nodeInfo = NodeInfo()
     val mountItem =
         MountItemTestHelper.create(
-            viewComponent,
-            null,
-            view,
-            nodeInfo,
-            null,
-            null,
-            flags,
-            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            viewComponent, null, view, nodeInfo, null, flags, View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.unmount(index, mountItem)
     return mountItem
   }
 
   private fun mountTouchExpansionItem(index: Int, content: Any): MountItem {
-    val viewNodeInfo = ViewNodeInfo()
-    viewNodeInfo.layoutDirection = YogaDirection.LTR
     val result = mock<LithoLayoutResult>()
     val node = mock<LithoNode>()
     whenever(result.node).thenReturn(node)
     whenever(node.hasTouchExpansion()).thenReturn(true)
-    whenever(result.touchExpansionLeft).thenReturn(1)
-    whenever(result.touchExpansionTop).thenReturn(1)
-    whenever(result.touchExpansionRight).thenReturn(1)
-    whenever(result.touchExpansionBottom).thenReturn(1)
-    viewNodeInfo.setExpandedTouchBounds(result)
     val viewMountItem =
         MountItemTestHelper.create(
             viewComponent,
             null,
             content,
             null,
-            viewNodeInfo,
-            null,
+            Rect(1, 1, 1, 1),
             0,
             View.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
     host.mount(index, viewMountItem, Rect())

@@ -21,7 +21,6 @@ import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
-import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.LithoLayoutResult.willMountView;
@@ -295,7 +294,6 @@ public class InternalNodeUtils {
     int flags = 0;
 
     final NodeInfo layoutOutputNodeInfo;
-    final ViewNodeInfo layoutOutputViewNodeInfo;
 
     final NodeInfo nodeInfo = node.getNodeInfo();
 
@@ -306,38 +304,11 @@ public class InternalNodeUtils {
     // Otherwise, apply the padding to the bounds of the layout output.
     if (isMountViewSpec) {
       layoutOutputNodeInfo = nodeInfo;
-      // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
-      final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
-
-      // The following only applies if bg/fg outputs are NOT disabled:
-      // backgrounds and foregrounds should not be set for HostComponents
-      // because those will either be set on the content output or explicit outputs
-      // will be created for backgrounds and foreground.
-      if (layoutState.mShouldDisableDrawableOutputs || !isHostSpec(component)) {
-        viewNodeInfo.setBackground(result.getBackground());
-        if (SDK_INT >= M) {
-          viewNodeInfo.setForeground(node.getForeground());
-        }
-      }
-      if (result.isPaddingSet()) {
-        viewNodeInfo.setPadding(
-            result.getPaddingLeft(),
-            result.getPaddingTop(),
-            result.getPaddingRight(),
-            result.getPaddingBottom());
-      }
-      viewNodeInfo.setLayoutDirection(result.getResolvedLayoutDirection());
-      if (node.hasTouchExpansion()) {
-        viewNodeInfo.setExpandedTouchBounds(result);
-      }
-      viewNodeInfo.setLayerType(node.getLayerType(), node.getLayerPaint());
-      layoutOutputViewNodeInfo = viewNodeInfo;
     } else {
       if (nodeInfo != null && nodeInfo.getEnabledState() == ENABLED_SET_FALSE) {
         flags |= LAYOUT_FLAG_DISABLE_TOUCHABLE;
       }
       layoutOutputNodeInfo = null;
-      layoutOutputViewNodeInfo = null;
     }
 
     if (duplicateParentState) {
@@ -363,7 +334,6 @@ public class InternalNodeUtils {
           component,
           context,
           layoutOutputNodeInfo,
-          layoutOutputViewNodeInfo,
           touchBoundsExpansion,
           flags,
           importantForAccessibility,
@@ -377,7 +347,6 @@ public class InternalNodeUtils {
           component,
           context,
           layoutOutputNodeInfo,
-          layoutOutputViewNodeInfo,
           touchBoundsExpansion,
           flags,
           importantForAccessibility,
@@ -390,7 +359,6 @@ public class InternalNodeUtils {
         component,
         context,
         layoutOutputNodeInfo,
-        layoutOutputViewNodeInfo,
         touchBoundsExpansion,
         flags,
         importantForAccessibility,

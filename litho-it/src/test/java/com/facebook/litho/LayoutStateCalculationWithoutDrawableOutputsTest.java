@@ -69,9 +69,6 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     output = getRenderUnit(state.getMountableOutputAt(0)); // root host view
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    if (output.getViewNodeInfo() != null) {
-      assertThat(output.getViewNodeInfo().getBackground()).isNull();
-    }
 
     output = getRenderUnit(state.getMountableOutputAt(1)); // background 1
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
@@ -109,15 +106,9 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     output = getRenderUnit(state.getMountableOutputAt(0)); // root host view
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    if (output.getViewNodeInfo() != null) {
-      assertThat(output.getViewNodeInfo().getBackground()).isNull();
-    }
 
     output = getRenderUnit(state.getMountableOutputAt(1)); // host view 1
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    if (output.getViewNodeInfo() != null) {
-      assertThat(output.getViewNodeInfo().getBackground()).isNull();
-    }
 
     output = getRenderUnit(state.getMountableOutputAt(2)); // background 1
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
@@ -130,9 +121,6 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     output = getRenderUnit(state.getMountableOutputAt(5)); // host view 2
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    if (output.getViewNodeInfo() != null) {
-      assertThat(output.getViewNodeInfo().getBackground()).isNull();
-    }
 
     output = getRenderUnit(state.getMountableOutputAt(6)); // background 2
     assertThat(output.getComponent()).isOfAnyClassIn(DrawableComponent.class);
@@ -161,14 +149,12 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     output = getRenderUnit(state.getMountableOutputAt(1));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
     output = getRenderUnit(state.getMountableOutputAt(2));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
     output = getRenderUnit(state.getMountableOutputAt(3));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
     output = getRenderUnit(state.getMountableOutputAt(4));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
@@ -191,14 +177,12 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     output = getRenderUnit(state.getMountableOutputAt(1));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
     output = getRenderUnit(state.getMountableOutputAt(2));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
     output = getRenderUnit(state.getMountableOutputAt(3));
     assertThat(output.getComponent()).isOfAnyClassIn(HostComponent.class);
-    assertThat(output.getViewNodeInfo().getBackground()).isNotNull();
 
     output = getRenderUnit(state.getMountableOutputAt(4));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);

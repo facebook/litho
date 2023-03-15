@@ -49,7 +49,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
   public @interface UpdateState {}
 
   private final @Nullable NodeInfo mNodeInfo;
-  private final @Nullable ViewNodeInfo mViewNodeInfo;
   private final @Nullable Rect mTouchBoundsExpansion;
   private @Nullable DebugHierarchy.Node mHierarchy; // TODO: remove
   private final Component mComponent;
@@ -66,7 +65,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
       long id,
       final Component component,
       final @Nullable NodeInfo nodeInfo,
-      final @Nullable ViewNodeInfo viewNodeInfo,
       final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
@@ -76,7 +74,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
     super(renderType);
     this.mContext = context;
     mNodeInfo = nodeInfo;
-    mViewNodeInfo = viewNodeInfo;
     mTouchBoundsExpansion = touchBoundsExpansion;
     mComponent = component;
     mFlags = flags;
@@ -141,11 +138,6 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
     return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
         || (mComponent instanceof SpecGeneratedComponent
             && ((SpecGeneratedComponent) mComponent).implementsAccessibility());
-  }
-
-  @Nullable
-  ViewNodeInfo getViewNodeInfo() {
-    return mViewNodeInfo;
   }
 
   @Nullable

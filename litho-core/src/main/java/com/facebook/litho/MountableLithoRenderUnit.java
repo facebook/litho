@@ -37,7 +37,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   private MountableLithoRenderUnit(
       final Component component,
       final @Nullable NodeInfo nodeInfo,
-      final @Nullable ViewNodeInfo viewNodeInfo,
       final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
@@ -48,7 +47,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         mountable.getId(),
         component,
         nodeInfo,
-        viewNodeInfo,
         touchBoundsExpansion,
         flags,
         importantForAccessibility,
@@ -63,7 +61,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final Component component,
       final @Nullable ComponentContext context,
       final @Nullable NodeInfo nodeInfo,
-      final @Nullable ViewNodeInfo viewNodeInfo,
       final @Nullable Rect touchBoundsExpansion,
       final int flags,
       final int importantForAccessibility,
@@ -72,7 +69,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
     return new MountableLithoRenderUnit(
         component,
         nodeInfo,
-        viewNodeInfo,
         touchBoundsExpansion,
         flags,
         importantForAccessibility,

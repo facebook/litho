@@ -102,7 +102,6 @@ public class MountItemTest {
         content,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
@@ -205,7 +204,6 @@ public class MountItemTest {
             mContent,
             mNodeInfo,
             null,
-            null,
             mFlags,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
@@ -221,7 +219,6 @@ public class MountItemTest {
             mComponentHost,
             mContent,
             mNodeInfo,
-            null,
             null,
             mFlags,
             IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -239,7 +236,6 @@ public class MountItemTest {
             mContent,
             mNodeInfo,
             null,
-            null,
             mFlags,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
@@ -255,7 +251,7 @@ public class MountItemTest {
   public void testUpdateDoesntChangeFlags() {
     LithoRenderUnit unit =
         MountSpecLithoRenderUnit.create(
-            0, mComponent, mContext, mNodeInfo, null, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
+            0, mComponent, mContext, mNodeInfo, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
     RenderTreeNode node = RenderTreeNodeUtils.create(unit, new Rect(0, 0, 0, 0), null, null);
 
     View view = new View(getApplicationContext());

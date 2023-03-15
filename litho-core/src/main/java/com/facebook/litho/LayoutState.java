@@ -357,7 +357,6 @@ public class LayoutState
             null,
             null,
             null,
-            null,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LithoRenderUnit.STATE_DIRTY);
@@ -390,15 +389,6 @@ public class LayoutState
 
     if (hierarchy != null) {
       unit.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
-    }
-
-    ViewNodeInfo viewNodeInfo = unit.getViewNodeInfo();
-    if (viewNodeInfo != null) {
-      if (node.hasStateListAnimatorResSet()) {
-        viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
-      } else {
-        viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
-      }
     }
 
     return renderTreeNode;
