@@ -512,7 +512,10 @@ class KStateTest {
         return MountableRenderResult(
             TestTextMountable(
                 text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
-            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } })
+            style =
+                Style.viewTag("Counter: ${counter.value}").onClick {
+                  counter.update { value -> value + 1 }
+                })
       }
     }
 
@@ -522,8 +525,8 @@ class KStateTest {
         }
 
     lithoViewRule.act(view) {
-      clickOnTag("test_view")
-      clickOnTag("test_view")
+      clickOnTag("Counter: 0")
+      clickOnTag("Counter: 0")
     }
 
     assertThat(view.findViewWithTagOrNull("Counter: 2")).isNotNull()
@@ -538,7 +541,10 @@ class KStateTest {
         return LithoPrimitive(
             TestTextPrimitive(
                 text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
-            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } })
+            style =
+                Style.viewTag("Counter: ${counter.value}").onClick {
+                  counter.update { value -> value + 1 }
+                })
       }
     }
 
@@ -548,8 +554,8 @@ class KStateTest {
         }
 
     lithoViewRule.act(view) {
-      clickOnTag("test_view")
-      clickOnTag("test_view")
+      clickOnTag("Counter: 0")
+      clickOnTag("Counter: 0")
     }
 
     assertThat(view.findViewWithTagOrNull("Counter: 2")).isNotNull()
@@ -620,7 +626,7 @@ class KStateTest {
     class RootComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Row(style = Style.wrapInView()) {
-          child(ClickableMountableComponentWithState(tag = "test_view"))
+          child(ClickableMountableComponentWithState())
           child(CountRendersMountableComponent(renderCount = siblingRenderCount))
         }
       }
@@ -631,7 +637,7 @@ class KStateTest {
 
     assertThat(siblingRenderCount.get()).isEqualTo(1)
 
-    lithoViewRule.act(view) { clickOnTag("test_view") }
+    lithoViewRule.act(view) { clickOnTag("Counter: 0") }
 
     // Using viewTag because Text is currently a drawable and harder to access directly
     assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
@@ -647,7 +653,7 @@ class KStateTest {
     class RootComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Row(style = Style.wrapInView()) {
-          child(ClickablePrimitiveComponentWithState(tag = "test_view"))
+          child(ClickablePrimitiveComponentWithState())
           child(CountRendersPrimitiveComponent(renderCount = siblingRenderCount))
         }
       }
@@ -658,7 +664,7 @@ class KStateTest {
 
     assertThat(siblingRenderCount.get()).isEqualTo(1)
 
-    lithoViewRule.act(view) { clickOnTag("test_view") }
+    lithoViewRule.act(view) { clickOnTag("Counter: 0") }
 
     // Using viewTag because Text is currently a drawable and harder to access directly
     assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
@@ -831,14 +837,15 @@ class KStateTest {
     }
   }
 
-  class ClickableMountableComponentWithState(private val tag: String) : MountableComponent() {
+  class ClickableMountableComponentWithState(private val tag: String? = null) :
+      MountableComponent() {
     override fun MountableComponentScope.render(): MountableRenderResult {
       val counter = useState { 0 }
 
       return MountableRenderResult(
           TestTextMountable(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
           style =
-              Style.viewTag(tag).contentDescription(tag).onClick {
+              Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
                 counter.updateSync { value -> value + 1 }
               })
     }
@@ -866,14 +873,15 @@ class KStateTest {
     }
   }
 
-  class ClickablePrimitiveComponentWithState(private val tag: String) : PrimitiveComponent() {
+  class ClickablePrimitiveComponentWithState(private val tag: String? = null) :
+      PrimitiveComponent() {
     override fun PrimitiveComponentScope.render(): LithoPrimitive {
       val counter = useState { 0 }
 
       return LithoPrimitive(
           TestTextPrimitive(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
           style =
-              Style.viewTag(tag).contentDescription(tag).onClick {
+              Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
                 counter.updateSync { value -> value + 1 }
               })
     }

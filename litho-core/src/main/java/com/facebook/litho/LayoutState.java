@@ -31,6 +31,7 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
@@ -152,7 +153,7 @@ public class LayoutState
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
-  private final Map<Long, LithoRenderUnit> mRenderUnitsWithViewAttributes = new HashMap<>(8);
+  private final Map<Long, ViewAttributes> mRenderUnitsWithViewAttributes = new HashMap<>(8);
   private final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs = new LinkedHashMap<>(8);
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
@@ -373,7 +374,7 @@ public class LayoutState
       unit.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
     }
 
-    addRenderTreeNode(layoutState, node, unit, OutputUnitType.HOST, null, null);
+    addRenderTreeNode(layoutState, node, result, unit, OutputUnitType.HOST, null, null);
   }
 
   private static RenderTreeNode createHostRenderTreeNode(
@@ -778,6 +779,7 @@ public class LayoutState
       addRenderTreeNode(
           layoutState,
           contentRenderTreeNode,
+          result,
           contentRenderUnit,
           OutputUnitType.CONTENT,
           !needsHostView ? layoutState.mCurrentTransitionId : null,
@@ -1066,6 +1068,7 @@ public class LayoutState
     addRenderTreeNode(
         layoutState,
         renderTreeNode,
+        result,
         drawableRenderUnit,
         type,
         !matchHostBoundsTransitions ? layoutState.mCurrentTransitionId : null,
@@ -1168,6 +1171,7 @@ public class LayoutState
     addRenderTreeNode(
         layoutState,
         hostRenderTreeNode,
+        result,
         hostRenderUnit,
         OutputUnitType.HOST,
         layoutState.mCurrentTransitionId,
@@ -1506,7 +1510,7 @@ public class LayoutState
   }
 
   @Override
-  public Map<Long, LithoRenderUnit> getRenderUnitsWithViewAttributes() {
+  public Map<Long, ViewAttributes> getViewAttributes() {
     return mRenderUnitsWithViewAttributes;
   }
 
@@ -1688,6 +1692,7 @@ public class LayoutState
   private static void addRenderTreeNode(
       final LayoutState layoutState,
       final RenderTreeNode node,
+      final @Nullable LithoLayoutResult result,
       final LithoRenderUnit unit,
       final @OutputUnitType int type,
       final @Nullable TransitionId transitionId,
@@ -1737,9 +1742,57 @@ public class LayoutState
 
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
     }
+    boolean willMountView;
+    if (type == OutputUnitType.HOST) {
+      willMountView = true;
+    } else if (type == OutputUnitType.CONTENT) {
+      willMountView = result != null && LithoLayoutResult.willMountView(result);
+    } else {
+      willMountView = false;
+    }
 
-    if (unit.getViewNodeInfo() != null || unit.getNodeInfo() != null) {
-      layoutState.mRenderUnitsWithViewAttributes.put(id, unit);
+    if (unit.getNodeInfo() != null || willMountView) {
+      final ViewAttributes attrs = new ViewAttributes();
+      attrs.setHostSpec(Component.isHostSpec(component));
+      attrs.setComponentName(component.getSimpleName());
+      attrs.setImportantForAccessibility(unit.getImportantForAccessibility());
+      attrs.setDisableDrawableOutputs(layoutState.mShouldDisableDrawableOutputs);
+
+      if (unit.getNodeInfo() != null) {
+        unit.getNodeInfo().copyInto(attrs);
+      }
+      if (result != null) {
+        LithoNode lithoNode = result.getNode();
+        // The following only applies if bg/fg outputs are NOT disabled:
+        // backgrounds and foregrounds should not be set for HostComponents
+        // because those will either be set on the content output or explicit outputs
+        // will be created for backgrounds and foreground.
+        if (layoutState.mShouldDisableDrawableOutputs || !attrs.isHostSpec()) {
+          attrs.setBackground(result.getBackground());
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            attrs.setForeground(lithoNode.getForeground());
+          }
+        }
+        if (result.isPaddingSet()) {
+          attrs.setPadding(
+              new Rect(
+                  result.getPaddingLeft(),
+                  result.getPaddingTop(),
+                  result.getPaddingRight(),
+                  result.getPaddingBottom()));
+        }
+        attrs.setLayoutDirection(result.getResolvedLayoutDirection());
+        attrs.setLayerType(lithoNode.getLayerType());
+        attrs.setLayoutPaint(lithoNode.getLayerPaint());
+        if (attrs.isHostSpec()) {
+          if (lithoNode.hasStateListAnimatorResSet()) {
+            attrs.setStateListAnimatorRes(lithoNode.getStateListAnimatorRes());
+          } else {
+            attrs.setStateListAnimator(lithoNode.getStateListAnimator());
+          }
+        }
+      }
+      layoutState.mRenderUnitsWithViewAttributes.put(id, attrs);
     }
 
     final AnimatableItem animatableItem =

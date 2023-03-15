@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.ComponentHost.COMPONENT_NODE_INFO_ID;
 import static com.facebook.litho.LithoMountData.isViewClickable;
 import static com.facebook.litho.LithoMountData.isViewEnabled;
@@ -48,6 +47,7 @@ import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,8 +70,8 @@ public class LithoViewAttributesExtension
 
   static class LithoViewAttributesState {
     private Map<Long, Integer> mDefaultViewAttributes = new HashMap<>();
-    private @Nullable Map<Long, LithoRenderUnit> mCurentUnits;
-    private @Nullable Map<Long, LithoRenderUnit> mNewUnits;
+    private @Nullable Map<Long, ViewAttributes> mCurentUnits;
+    private @Nullable Map<Long, ViewAttributes> mNewUnits;
 
     void setDefaultViewAttributes(long renderUnitId, int flags) {
       mDefaultViewAttributes.put(renderUnitId, flags);
@@ -92,12 +92,12 @@ public class LithoViewAttributesExtension
     }
 
     @Nullable
-    LithoRenderUnit getCurrentRenderUnit(long id) {
+    ViewAttributes getCurrentViewAttributes(long id) {
       return mCurentUnits != null ? mCurentUnits.get(id) : null;
     }
 
     @Nullable
-    LithoRenderUnit getNewRenderUnit(long id) {
+    ViewAttributes getNewViewAttributes(long id) {
       return mNewUnits != null ? mNewUnits.get(id) : null;
     }
   }
@@ -108,7 +108,7 @@ public class LithoViewAttributesExtension
       final @Nullable ViewAttributesInput viewAttributesInput,
       final Rect localVisibleRect) {
     if (viewAttributesInput != null) {
-      extensionState.getState().mNewUnits = viewAttributesInput.getRenderUnitsWithViewAttributes();
+      extensionState.getState().mNewUnits = viewAttributesInput.getViewAttributes();
     }
   }
 
@@ -125,9 +125,9 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     final LithoViewAttributesState state = extensionState.getState();
     final long id = renderUnit.getId();
-    final @Nullable LithoRenderUnit outputUnit = state.getNewRenderUnit(id);
+    final @Nullable ViewAttributes viewAttributes = state.getNewViewAttributes(id);
 
-    if (outputUnit != null) {
+    if (viewAttributes != null) {
       // Get the initial view attribute flags for the root LithoView.
       if (!state.hasDefaultViewAttributes(id)) {
         final int flags;
@@ -138,7 +138,7 @@ public class LithoViewAttributesExtension
         }
         state.setDefaultViewAttributes(id, flags);
       }
-      setViewAttributes(content, outputUnit);
+      setViewAttributes(content, viewAttributes, renderUnit);
     }
   }
 
@@ -150,11 +150,11 @@ public class LithoViewAttributesExtension
       final @Nullable Object layoutData) {
     final LithoViewAttributesState state = extensionState.getState();
     final long id = renderUnit.getId();
-    final @Nullable LithoRenderUnit outputUnit = state.getCurrentRenderUnit(id);
+    final @Nullable ViewAttributes viewAttributes = state.getCurrentViewAttributes(id);
 
-    if (outputUnit != null) {
+    if (viewAttributes != null) {
       final int flags = state.getDefaultViewAttributes(id);
-      unsetViewAttributes(content, outputUnit, flags);
+      unsetViewAttributes(content, viewAttributes, flags);
     }
   }
 
@@ -171,31 +171,20 @@ public class LithoViewAttributesExtension
 
     final long id = previousRenderUnit.getId();
     final LithoViewAttributesState state = extensionState.getState();
-    // Do we still need these since we already have previousRenderUnit & nextRenderUnit?
-    final @Nullable LithoRenderUnit currentUnit = state.getCurrentRenderUnit(id);
-    final @Nullable LithoRenderUnit nextUnit = state.getNewRenderUnit(id);
-
+    final @Nullable ViewAttributes currentAttributes = state.getCurrentViewAttributes(id);
+    final @Nullable ViewAttributes nextAttributes = state.getNewViewAttributes(id);
     if (previousRenderUnit instanceof LithoRenderUnit
         && nextRenderUnit instanceof LithoRenderUnit) {
-
-      final LithoRenderUnit prevLithoRenderUnit = (LithoRenderUnit) previousRenderUnit;
-      final LithoRenderUnit nextLithoRenderUnit = (LithoRenderUnit) nextRenderUnit;
-
       return (previousRenderUnit instanceof MountSpecLithoRenderUnit
-              && nextLithoRenderUnit instanceof MountSpecLithoRenderUnit
+              && nextRenderUnit instanceof MountSpecLithoRenderUnit
               && MountSpecLithoRenderUnit.shouldUpdateMountItem(
-                  (MountSpecLithoRenderUnit) prevLithoRenderUnit,
-                  (MountSpecLithoRenderUnit) nextLithoRenderUnit,
+                  (MountSpecLithoRenderUnit) previousRenderUnit,
+                  (MountSpecLithoRenderUnit) nextRenderUnit,
                   previousLayoutData,
                   nextLayoutData))
-          || shouldUpdateViewInfo(nextLithoRenderUnit, prevLithoRenderUnit);
+          || shouldUpdateViewInfo(nextAttributes, currentAttributes);
     } else {
-
-      if (currentUnit == null || nextUnit == null) {
-        return currentUnit != null || nextUnit != null;
-      }
-
-      return shouldUpdateViewInfo(nextUnit, currentUnit);
+      return shouldUpdateViewInfo(nextAttributes, currentAttributes);
     }
   }
 
@@ -205,134 +194,126 @@ public class LithoViewAttributesExtension
     extensionState.getState().mNewUnits = null;
   }
 
-  static void setViewAttributes(Object content, LithoRenderUnit unit) {
-    final Component component = unit.getComponent();
+  static void setViewAttributes(Object content, ViewAttributes attributes, RenderUnit<?> unit) {
     if (!(content instanceof View)) {
       return;
     }
 
     final View view = (View) content;
-    final NodeInfo nodeInfo = unit.getNodeInfo();
 
-    if (nodeInfo != null) {
-      setClickHandler(nodeInfo.getClickHandler(), view);
-      setLongClickHandler(nodeInfo.getLongClickHandler(), view);
-      setFocusChangeHandler(nodeInfo.getFocusChangeHandler(), view);
-      setTouchHandler(nodeInfo.getTouchHandler(), view);
-      setInterceptTouchHandler(nodeInfo.getInterceptTouchHandler(), view);
+    setClickHandler(attributes.getClickHandler(), view);
+    setLongClickHandler(attributes.getLongClickHandler(), view);
+    setFocusChangeHandler(attributes.getFocusChangeHandler(), view);
+    setTouchHandler(attributes.getTouchHandler(), view);
+    setInterceptTouchHandler(attributes.getInterceptTouchHandler(), view);
 
-      setAccessibilityDelegate(view, nodeInfo);
-
-      setViewTag(view, nodeInfo.getViewTag());
-      setViewTags(view, nodeInfo.getViewTags());
-
-      setShadowElevation(view, nodeInfo.getShadowElevation());
-      setAmbientShadowColor(view, nodeInfo.getAmbientShadowColor());
-      setSpotShadowColor(view, nodeInfo.getSpotShadowColor());
-      setOutlineProvider(view, nodeInfo.getOutlineProvider());
-      setClipToOutline(view, nodeInfo.getClipToOutline());
-      setClipChildren(view, nodeInfo);
-
-      setContentDescription(view, nodeInfo.getContentDescription());
-
-      setFocusable(view, nodeInfo.getFocusState());
-      setClickable(view, nodeInfo.getClickableState());
-      setEnabled(view, nodeInfo.getEnabledState());
-      setSelected(view, nodeInfo.getSelectedState());
-      setScale(view, nodeInfo);
-      setAlpha(view, nodeInfo);
-      setRotation(view, nodeInfo);
-      setRotationX(view, nodeInfo);
-      setRotationY(view, nodeInfo);
-      setTransitionName(view, nodeInfo.getTransitionName());
+    if (unit instanceof LithoRenderUnit) {
+      final NodeInfo nodeInfo = ((LithoRenderUnit) unit).getNodeInfo();
+      if (nodeInfo != null) setAccessibilityDelegate(view, nodeInfo);
     }
 
-    setImportantForAccessibility(view, unit.getImportantForAccessibility());
+    setViewTag(view, attributes.getViewTag());
+    setViewTags(view, attributes.getViewTags());
 
-    final ViewNodeInfo viewNodeInfo = unit.getViewNodeInfo();
-    if (viewNodeInfo != null) {
-      final boolean isHostSpec = isHostSpec(component);
-      setViewLayerType(view, viewNodeInfo);
-      setViewStateListAnimator(view, viewNodeInfo);
-      if (LithoRenderUnit.areDrawableOutputsDisabled(unit.getFlags())) {
-        setViewBackground(view, viewNodeInfo);
-        ViewUtils.setViewForeground(view, viewNodeInfo.getForeground());
+    setShadowElevation(view, attributes.getShadowElevation());
+    setAmbientShadowColor(view, attributes.getAmbientShadowColor());
+    setSpotShadowColor(view, attributes.getSpotShadowColor());
+    setOutlineProvider(view, attributes.getOutlineProvider());
+    setClipToOutline(view, attributes.getClipToOutline());
+    setClipChildren(view, attributes);
 
-        // when background outputs are disabled, they are wrapped by a ComponentHost.
-        // A background can set the padding of a view, but ComponentHost should not have
-        // any padding because the layout calculation has already accounted for padding by
-        // translating the bounds of its children.
-        if (isHostSpec) {
-          view.setPadding(0, 0, 0, 0);
-        }
+    setContentDescription(view, attributes.getContentDescription());
+
+    setFocusable(view, attributes);
+    setClickable(view, attributes);
+    setEnabled(view, attributes);
+    setSelected(view, attributes);
+    setScale(view, attributes);
+    setAlpha(view, attributes);
+    setRotation(view, attributes);
+    setRotationX(view, attributes);
+    setRotationY(view, attributes);
+    setTransitionName(view, attributes.getTransitionName());
+
+    setImportantForAccessibility(view, attributes.getImportantForAccessibility());
+
+    final boolean isHostSpec = attributes.isHostSpec();
+    setViewLayerType(view, attributes);
+    setViewStateListAnimator(view, attributes);
+    if (attributes.getDisableDrawableOutputs()) {
+      setViewBackground(view, attributes);
+      ViewUtils.setViewForeground(view, attributes.getForeground());
+
+      // when background outputs are disabled, they are wrapped by a ComponentHost.
+      // A background can set the padding of a view, but ComponentHost should not have
+      // any padding because the layout calculation has already accounted for padding by
+      // translating the bounds of its children.
+      if (isHostSpec) {
+        view.setPadding(0, 0, 0, 0);
       }
-      if (!isHostSpec) {
-        // Set view background, if applicable.  Do this before padding
-        // as it otherwise overrides the padding.
-        setViewBackground(view, viewNodeInfo);
+    }
+    if (!isHostSpec) {
+      // Set view background, if applicable.  Do this before padding
+      // as it otherwise overrides the padding.
+      setViewBackground(view, attributes);
 
-        setViewPadding(view, viewNodeInfo);
+      setViewPadding(view, attributes);
 
-        ViewUtils.setViewForeground(view, viewNodeInfo.getForeground());
+      ViewUtils.setViewForeground(view, attributes.getForeground());
 
-        setViewLayoutDirection(view, viewNodeInfo);
-      }
+      setViewLayoutDirection(view, attributes);
     }
   }
 
   static void unsetViewAttributes(
-      final Object content, final LithoRenderUnit unit, final int mountFlags) {
-    final Component component = unit.getComponent();
-    final boolean isHostView = isHostSpec(component);
+      final Object content, final ViewAttributes attributes, final int mountFlags) {
+    final boolean isHostView = attributes.isHostSpec();
 
     if (!(content instanceof View)) {
       return;
     }
 
     final View view = (View) content;
-    final NodeInfo nodeInfo = unit.getNodeInfo();
 
-    if (nodeInfo != null) {
-      if (nodeInfo.getClickHandler() != null) {
-        unsetClickHandler(view);
-      }
-
-      if (nodeInfo.getLongClickHandler() != null) {
-        unsetLongClickHandler(view);
-      }
-
-      if (nodeInfo.getFocusChangeHandler() != null) {
-        unsetFocusChangeHandler(view);
-      }
-
-      if (nodeInfo.getTouchHandler() != null) {
-        unsetTouchHandler(view);
-      }
-
-      if (nodeInfo.getInterceptTouchHandler() != null) {
-        unsetInterceptTouchEventHandler(view);
-      }
-
-      unsetViewTag(view);
-      unsetViewTags(view, nodeInfo.getViewTags());
-
-      unsetShadowElevation(view, nodeInfo.getShadowElevation());
-      unsetAmbientShadowColor(view, nodeInfo.getAmbientShadowColor());
-      unsetSpotShadowColor(view, nodeInfo.getSpotShadowColor());
-      unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
-      unsetClipToOutline(view, nodeInfo.getClipToOutline());
-      unsetClipChildren(view, nodeInfo.getClipChildren());
-
-      if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
-        unsetContentDescription(view);
-      }
-
-      unsetScale(view, nodeInfo);
-      unsetAlpha(view, nodeInfo);
-      unsetRotation(view, nodeInfo);
-      unsetRotationX(view, nodeInfo);
-      unsetRotationY(view, nodeInfo);
+    if (attributes.getClickHandler() != null) {
+      unsetClickHandler(view);
     }
+
+    if (attributes.getLongClickHandler() != null) {
+      unsetLongClickHandler(view);
+    }
+
+    if (attributes.getFocusChangeHandler() != null) {
+      unsetFocusChangeHandler(view);
+    }
+
+    if (attributes.getTouchHandler() != null) {
+      unsetTouchHandler(view);
+    }
+
+    if (attributes.getInterceptTouchHandler() != null) {
+      unsetInterceptTouchEventHandler(view);
+    }
+
+    unsetViewTag(view);
+    unsetViewTags(view, attributes.getViewTags());
+
+    unsetShadowElevation(view, attributes.getShadowElevation());
+    unsetAmbientShadowColor(view, attributes.getAmbientShadowColor());
+    unsetSpotShadowColor(view, attributes.getSpotShadowColor());
+    unsetOutlineProvider(view, attributes.getOutlineProvider());
+    unsetClipToOutline(view, attributes.getClipToOutline());
+    unsetClipChildren(view, attributes.getClipChildren());
+
+    if (!TextUtils.isEmpty(attributes.getContentDescription())) {
+      unsetContentDescription(view);
+    }
+
+    unsetScale(view, attributes);
+    unsetAlpha(view, attributes);
+    unsetRotation(view, attributes);
+    unsetRotationX(view, attributes);
+    unsetRotationY(view, attributes);
 
     view.setClickable(isViewClickable(mountFlags));
     view.setLongClickable(isViewLongClickable(mountFlags));
@@ -341,27 +322,24 @@ public class LithoViewAttributesExtension
     unsetEnabled(view, mountFlags);
     unsetSelected(view, mountFlags);
 
-    if (unit.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+    if (attributes.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
     }
 
     unsetAccessibilityDelegate(view);
 
-    final ViewNodeInfo viewNodeInfo = unit.getViewNodeInfo();
-    if (viewNodeInfo != null) {
-      unsetViewStateListAnimator(view, viewNodeInfo);
-      // Host view doesn't set its own padding, but gets absolute positions for inner content from
-      // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
-      if (LithoRenderUnit.areDrawableOutputsDisabled(unit.getFlags())) {
-        unsetViewBackground(view, viewNodeInfo);
-        unsetViewForeground(view, viewNodeInfo);
-      }
-      if (!isHostView) {
-        unsetViewPadding(view, unit, viewNodeInfo);
-        unsetViewBackground(view, viewNodeInfo);
-        unsetViewForeground(view, viewNodeInfo);
-        unsetViewLayoutDirection(view);
-      }
+    unsetViewStateListAnimator(view, attributes);
+    // Host view doesn't set its own padding, but gets absolute positions for inner content from
+    // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
+    if (attributes.getDisableDrawableOutputs()) {
+      unsetViewBackground(view, attributes);
+      unsetViewForeground(view, attributes);
+    }
+    if (!isHostView) {
+      unsetViewPadding(view, attributes);
+      unsetViewBackground(view, attributes);
+      unsetViewForeground(view, attributes);
+      unsetViewLayoutDirection(view);
     }
 
     unsetViewLayerType(view, mountFlags);
@@ -564,7 +542,9 @@ public class LithoViewAttributesExtension
   }
 
   private static void setViewTag(View view, @Nullable Object viewTag) {
-    view.setTag(viewTag);
+    if (viewTag != null) {
+      view.setTag(viewTag);
+    }
   }
 
   private static void setViewTags(View view, @Nullable SparseArray<Object> viewTags) {
@@ -664,9 +644,9 @@ public class LithoViewAttributesExtension
     }
   }
 
-  private static void setClipChildren(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isClipChildrenSet() && view instanceof ViewGroup) {
-      ((ViewGroup) view).setClipChildren(nodeInfo.getClipChildren());
+  private static void setClipChildren(View view, ViewAttributes attributes) {
+    if (attributes.isClipChildrenSet() && view instanceof ViewGroup) {
+      ((ViewGroup) view).setClipChildren(attributes.getClipChildren());
     }
   }
 
@@ -703,11 +683,9 @@ public class LithoViewAttributesExtension
     ViewCompat.setImportantForAccessibility(view, IMPORTANT_FOR_ACCESSIBILITY_AUTO);
   }
 
-  private static void setFocusable(View view, @NodeInfo.FocusState int focusState) {
-    if (focusState == NodeInfo.FOCUS_SET_TRUE) {
-      view.setFocusable(true);
-    } else if (focusState == NodeInfo.FOCUS_SET_FALSE) {
-      view.setFocusable(false);
+  private static void setFocusable(View view, ViewAttributes attributes) {
+    if (attributes.isFocusableSet()) {
+      view.setFocusable(attributes.isFocusable());
     }
   }
 
@@ -721,19 +699,15 @@ public class LithoViewAttributesExtension
     }
   }
 
-  private static void setClickable(View view, @NodeInfo.ClickableState int clickableState) {
-    if (clickableState == NodeInfo.CLICKABLE_SET_TRUE) {
-      view.setClickable(true);
-    } else if (clickableState == NodeInfo.CLICKABLE_SET_FALSE) {
-      view.setClickable(false);
+  private static void setClickable(View view, ViewAttributes attributes) {
+    if (attributes.isClickableSet()) {
+      view.setClickable(attributes.isClickable());
     }
   }
 
-  private static void setEnabled(View view, @NodeInfo.EnabledState int enabledState) {
-    if (enabledState == NodeInfo.ENABLED_SET_TRUE) {
-      view.setEnabled(true);
-    } else if (enabledState == NodeInfo.ENABLED_SET_FALSE) {
-      view.setEnabled(false);
+  private static void setEnabled(View view, ViewAttributes attributes) {
+    if (attributes.isEnabledSet()) {
+      view.setEnabled(attributes.isEnabled());
     }
   }
 
@@ -741,11 +715,9 @@ public class LithoViewAttributesExtension
     view.setEnabled(isViewEnabled(flags));
   }
 
-  private static void setSelected(View view, @NodeInfo.SelectedState int selectedState) {
-    if (selectedState == NodeInfo.SELECTED_SET_TRUE) {
-      view.setSelected(true);
-    } else if (selectedState == NodeInfo.SELECTED_SET_FALSE) {
-      view.setSelected(false);
+  private static void setSelected(View view, ViewAttributes attributes) {
+    if (attributes.isSelectedSet()) {
+      view.setSelected(attributes.isSelected());
     }
   }
 
@@ -753,16 +725,16 @@ public class LithoViewAttributesExtension
     view.setSelected(isViewSelected(flags));
   }
 
-  private static void setScale(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isScaleSet()) {
-      final float scale = nodeInfo.getScale();
+  private static void setScale(View view, ViewAttributes attributes) {
+    if (attributes.isScaleSet()) {
+      final float scale = attributes.getScale();
       view.setScaleX(scale);
       view.setScaleY(scale);
     }
   }
 
-  private static void unsetScale(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isScaleSet()) {
+  private static void unsetScale(View view, ViewAttributes attributes) {
+    if (attributes.isScaleSet()) {
       if (view.getScaleX() != 1) {
         view.setScaleX(1);
       }
@@ -772,68 +744,68 @@ public class LithoViewAttributesExtension
     }
   }
 
-  private static void setAlpha(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isAlphaSet()) {
-      view.setAlpha(nodeInfo.getAlpha());
+  private static void setAlpha(View view, ViewAttributes attributes) {
+    if (attributes.isAlphaSet()) {
+      view.setAlpha(attributes.getAlpha());
     }
   }
 
-  private static void unsetAlpha(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isAlphaSet() && view.getAlpha() != 1) {
+  private static void unsetAlpha(View view, ViewAttributes attributes) {
+    if (attributes.isAlphaSet() && view.getAlpha() != 1) {
       view.setAlpha(1);
     }
   }
 
-  private static void setRotation(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isRotationSet()) {
-      view.setRotation(nodeInfo.getRotation());
+  private static void setRotation(View view, ViewAttributes attributes) {
+    if (attributes.isRotationSet()) {
+      view.setRotation(attributes.getRotation());
     }
   }
 
-  private static void unsetRotation(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isRotationSet() && view.getRotation() != 0) {
+  private static void unsetRotation(View view, ViewAttributes attributes) {
+    if (attributes.isRotationSet() && view.getRotation() != 0) {
       view.setRotation(0);
     }
   }
 
-  private static void setRotationX(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isRotationXSet()) {
-      view.setRotationX(nodeInfo.getRotationX());
+  private static void setRotationX(View view, ViewAttributes attributes) {
+    if (attributes.isRotationXSet()) {
+      view.setRotationX(attributes.getRotationX());
     }
   }
 
-  private static void unsetRotationX(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isRotationXSet() && view.getRotationX() != 0) {
+  private static void unsetRotationX(View view, ViewAttributes attributes) {
+    if (attributes.isRotationXSet() && view.getRotationX() != 0) {
       view.setRotationX(0);
     }
   }
 
-  private static void setRotationY(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isRotationYSet()) {
-      view.setRotationY(nodeInfo.getRotationY());
+  private static void setRotationY(View view, ViewAttributes attributes) {
+    if (attributes.isRotationYSet()) {
+      view.setRotationY(attributes.getRotationY());
     }
   }
 
-  private static void unsetRotationY(View view, NodeInfo nodeInfo) {
-    if (nodeInfo.isRotationYSet() && view.getRotationY() != 0) {
+  private static void unsetRotationY(View view, ViewAttributes attributes) {
+    if (attributes.isRotationYSet() && view.getRotationY() != 0) {
       view.setRotationY(0);
     }
   }
 
-  private static void setViewPadding(View view, ViewNodeInfo viewNodeInfo) {
-    if (!viewNodeInfo.hasPadding()) {
+  private static void setViewPadding(View view, ViewAttributes attributes) {
+    if (!attributes.hasPadding()) {
       return;
     }
 
     view.setPadding(
-        viewNodeInfo.getPaddingLeft(),
-        viewNodeInfo.getPaddingTop(),
-        viewNodeInfo.getPaddingRight(),
-        viewNodeInfo.getPaddingBottom());
+        attributes.getPaddingLeft(),
+        attributes.getPaddingTop(),
+        attributes.getPaddingRight(),
+        attributes.getPaddingBottom());
   }
 
-  private static void unsetViewPadding(View view, LithoRenderUnit unit, ViewNodeInfo viewNodeInfo) {
-    if (!viewNodeInfo.hasPadding()) {
+  private static void unsetViewPadding(View view, ViewAttributes attributes) {
+    if (!attributes.hasPadding()) {
       return;
     }
 
@@ -845,22 +817,22 @@ public class LithoViewAttributesExtension
           .report(
               LogLevel.ERROR,
               "LITHO:NPE:UNSET_PADDING",
-              "From component: " + unit.getComponent().getSimpleName(),
+              "From component: " + attributes.getComponentName(),
               e,
               0,
               null);
     }
   }
 
-  private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Drawable background = viewNodeInfo.getBackground();
+  private static void setViewBackground(View view, ViewAttributes attributes) {
+    final Drawable background = attributes.getBackground();
     if (background != null) {
       setBackgroundCompat(view, background);
     }
   }
 
-  private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Drawable background = viewNodeInfo.getBackground();
+  private static void unsetViewBackground(View view, ViewAttributes attributes) {
+    final Drawable background = attributes.getBackground();
     if (background != null) {
       setBackgroundCompat(view, null);
     }
@@ -875,12 +847,12 @@ public class LithoViewAttributesExtension
     }
   }
 
-  private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final Drawable foreground = viewNodeInfo.getForeground();
+  private static void unsetViewForeground(View view, ViewAttributes attributes) {
+    final Drawable foreground = attributes.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException(
-            "MountState has a ViewNodeInfo with foreground however "
+            "MountState has a ViewAttributes with foreground however "
                 + "the current Android version doesn't support foreground on Views");
       }
 
@@ -888,13 +860,13 @@ public class LithoViewAttributesExtension
     }
   }
 
-  private static void setViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
+  private static void setViewLayoutDirection(View view, ViewAttributes attributes) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
       return;
     }
 
     final int viewLayoutDirection;
-    switch (viewNodeInfo.getLayoutDirection()) {
+    switch (attributes.getLayoutDirection()) {
       case LTR:
         viewLayoutDirection = View.LAYOUT_DIRECTION_LTR;
         break;
@@ -916,15 +888,15 @@ public class LithoViewAttributesExtension
     view.setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
   }
 
-  private static void setViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {
-    StateListAnimator stateListAnimator = viewNodeInfo.getStateListAnimator();
-    final int stateListAnimatorRes = viewNodeInfo.getStateListAnimatorRes();
+  private static void setViewStateListAnimator(View view, ViewAttributes attributes) {
+    StateListAnimator stateListAnimator = attributes.getStateListAnimator();
+    final int stateListAnimatorRes = attributes.getStateListAnimatorRes();
     if (stateListAnimator == null && stateListAnimatorRes == 0) {
       return;
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       throw new IllegalStateException(
-          "MountState has a ViewNodeInfo with stateListAnimator, "
+          "MountState has a ViewAttributes with stateListAnimator, "
               + "however the current Android version doesn't support stateListAnimator on Views");
     }
     if (stateListAnimator == null) {
@@ -934,23 +906,22 @@ public class LithoViewAttributesExtension
     view.setStateListAnimator(stateListAnimator);
   }
 
-  private static void unsetViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {
-    if (viewNodeInfo.getStateListAnimator() == null
-        && viewNodeInfo.getStateListAnimatorRes() == 0) {
+  private static void unsetViewStateListAnimator(View view, ViewAttributes attributes) {
+    if (attributes.getStateListAnimator() == null && attributes.getStateListAnimatorRes() == 0) {
       return;
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       throw new IllegalStateException(
-          "MountState has a ViewNodeInfo with stateListAnimator, "
+          "MountState has a ViewAttributes with stateListAnimator, "
               + "however the current Android version doesn't support stateListAnimator on Views");
     }
     view.setStateListAnimator(null);
   }
 
-  private static void setViewLayerType(final View view, final ViewNodeInfo info) {
-    final int type = info.getLayerType();
+  private static void setViewLayerType(final View view, final ViewAttributes attributes) {
+    final int type = attributes.getLayerType();
     if (type != LayerType.LAYER_TYPE_NOT_SET) {
-      view.setLayerType(info.getLayerType(), info.getLayoutPaint());
+      view.setLayerType(attributes.getLayerType(), attributes.getLayoutPaint());
     }
   }
 
@@ -962,23 +933,12 @@ public class LithoViewAttributesExtension
   }
 
   static boolean shouldUpdateViewInfo(
-      final LithoRenderUnit nextUnit, final LithoRenderUnit currentUnit) {
-
-    final ViewNodeInfo nextViewNodeInfo = nextUnit.getViewNodeInfo();
-    final ViewNodeInfo currentViewNodeInfo = currentUnit.getViewNodeInfo();
-    if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
-        || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
-
-      return true;
-    }
-
-    final NodeInfo nextNodeInfo = nextUnit.getNodeInfo();
-    final NodeInfo currentNodeInfo = currentUnit.getNodeInfo();
-    return (currentNodeInfo == null && nextNodeInfo != null)
-        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
+      @Nullable final ViewAttributes nextAttributes,
+      @Nullable final ViewAttributes currentAttributes) {
+    return !EquivalenceUtils.equals(currentAttributes, nextAttributes);
   }
 
   public interface ViewAttributesInput {
-    Map<Long, LithoRenderUnit> getRenderUnitsWithViewAttributes();
+    Map<Long, ViewAttributes> getViewAttributes();
   }
 }
