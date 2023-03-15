@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
+import java.lang.Exception
+import java.lang.RuntimeException
+import kotlin.jvm.JvmField
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class ReThrownException extends RuntimeException {
-
-  final Exception original;
-  final EventHandler<ErrorEvent> lastHandler;
-
-  ReThrownException(final Exception original, final EventHandler<ErrorEvent> lastHandler) {
-    this.original = original;
-    this.lastHandler = lastHandler;
-  }
-}
+class ReThrownException
+internal constructor(
+    @JvmField val original: Exception,
+    @JvmField val lastHandler: EventHandler<ErrorEvent>
+) : RuntimeException()
