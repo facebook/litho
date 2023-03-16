@@ -890,8 +890,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       final LithoRenderUnit renderUnit = getRenderUnit(mountItem);
-      maybeSetDrawableState(
-          this, (Drawable) mountItem.getContent(), renderUnit.getFlags(), renderUnit.getNodeInfo());
+      maybeSetDrawableState(this, (Drawable) mountItem.getContent(), renderUnit.getFlags());
     }
   }
 
@@ -1285,7 +1284,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
     // If mount data is LithoMountData then Litho need to manually set drawable state.
     if (mountItem.getMountData() instanceof LithoMountData) {
-      maybeSetDrawableState(this, drawable, renderUnit.getFlags(), renderUnit.getNodeInfo());
+      maybeSetDrawableState(this, drawable, renderUnit.getFlags());
     }
     invalidate(bounds);
   }

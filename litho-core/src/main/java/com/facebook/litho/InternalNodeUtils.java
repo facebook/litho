@@ -28,6 +28,7 @@ import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
@@ -325,6 +326,9 @@ public class InternalNodeUtils {
 
     if (layoutState.mShouldDisableDrawableOutputs) {
       flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
+    }
+    if (nodeInfo != null && nodeInfo.hasTouchEventHandlers()) {
+      flags |= LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS;
     }
 
     Mountable<?> mountable = node.getMountable();

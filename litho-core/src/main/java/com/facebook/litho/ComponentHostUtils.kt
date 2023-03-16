@@ -73,10 +73,10 @@ internal object ComponentHostUtils {
 
   /** Sets the state on a drawable if it is clickable or should duplicate its parent's state. */
   @JvmStatic
-  fun maybeSetDrawableState(view: View, drawable: Drawable, flags: Int, nodeInfo: NodeInfo?) {
+  fun maybeSetDrawableState(view: View, drawable: Drawable, flags: Int) {
     val shouldSetState =
-        ((nodeInfo != null && nodeInfo.hasTouchEventHandlers()) ||
-            LithoRenderUnit.isDuplicateParentState(flags))
+        LithoRenderUnit.hasTouchEventHandlers(flags) ||
+            LithoRenderUnit.isDuplicateParentState(flags)
     if (shouldSetState && drawable.isStateful) {
       drawable.state = view.drawableState
     }

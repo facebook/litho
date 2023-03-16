@@ -248,7 +248,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         final Drawable drawable = (Drawable) content;
         if (drawable.getCallback() instanceof View) {
           final View view = (View) drawable.getCallback();
-          maybeSetDrawableState(view, drawable, unit.getFlags(), unit.getNodeInfo());
+          maybeSetDrawableState(view, drawable, unit.getFlags());
         }
       }
 

@@ -43,6 +43,7 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
   static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
   static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
+  static final int LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS = 1 << 5;
 
   @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
   @Retention(RetentionPolicy.SOURCE)
@@ -167,6 +168,10 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
 
   static boolean isDuplicateParentState(int flags) {
     return (flags & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) == LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+  }
+
+  static boolean hasTouchEventHandlers(int flags) {
+    return (flags & LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS) == LAYOUT_FLAG_HAS_TOUCH_EVENT_HANDLERS;
   }
 
   static boolean isDuplicateChildrenStates(int flags) {
