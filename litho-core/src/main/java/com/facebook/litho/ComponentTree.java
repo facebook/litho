@@ -104,8 +104,6 @@ public class ComponentTree
       "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold:";
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
-  private final ComponentsConfiguration mComponentsConfiguration;
-  private final LithoConfiguration mLithoConfiguration;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -378,8 +376,6 @@ public class ComponentTree
   }
 
   protected ComponentTree(Builder builder) {
-    mComponentsConfiguration = builder.componentsConfiguration;
-
     mRoot = builder.root;
     if (builder.overrideComponentTreeId != INVALID_ID) {
       mId = builder.overrideComponentTreeId;
@@ -396,11 +392,27 @@ public class ComponentTree
     } else {
       renderUnitIdGenerator = new RenderUnitIdGenerator(mId);
     }
-    mLithoConfiguration =
+
+    final String logTag;
+    if (builder.logTag != null) {
+      logTag = builder.logTag;
+    } else if (builder.context.getLogTag() != null) {
+      logTag = builder.context.getLogTag();
+    } else {
+      logTag = mRoot.getSimpleName();
+    }
+
+    final ComponentsLogger logger;
+    if (builder.logger != null) {
+      logger = builder.logger;
+    } else {
+      logger = builder.context.getLogger();
+    }
+
+    final LithoConfiguration config =
         new LithoConfiguration(
+            builder.config,
             AnimationsDebug.areTransitionsEnabled(builder.context.getAndroidContext()),
-            mComponentsConfiguration.keepLithoNodeAndLayoutResultTreeWithReconciliation(),
-            mComponentsConfiguration.shouldReuseOutputs(),
             ComponentsConfiguration.overrideReconciliation != null
                 ? ComponentsConfiguration.overrideReconciliation
                 : builder.isReconciliationEnabled,
@@ -409,10 +421,10 @@ public class ComponentTree
             mPreAllocateMountContentHandler,
             builder.incrementalMountEnabled && !incrementalMountGloballyDisabled(),
             builder.errorEventHandler,
-            builder.logTag != null ? builder.logTag : mRoot.getSimpleName(),
-            builder.logger,
+            logTag,
+            logger,
             renderUnitIdGenerator);
-    mContext = ComponentContext.withComponentTree(builder.context, this);
+    mContext = ComponentContext.withComponentTree(builder.context, config, this);
 
     if (builder.mLifecycleProvider != null) {
       subscribeToLifecycleProvider(builder.mLifecycleProvider);
@@ -431,7 +443,7 @@ public class ComponentTree
     }
 
     ResolveCancellationStrategy resolveCancellationStrategy =
-        mComponentsConfiguration.getResolveCancellationStrategy();
+        config.mComponentsConfiguration.getResolveCancellationStrategy();
     if (resolveCancellationStrategy == null) {
       mResolveCancellationPolicy = null;
     } else {
@@ -457,7 +469,7 @@ public class ComponentTree
       }
     }
 
-    if (mComponentsConfiguration.isLayoutCancellationEnabled()) {
+    if (config.mComponentsConfiguration.isLayoutCancellationEnabled()) {
       mLayoutCancellationPolicy = new LayoutCancellationPolicy.Default();
     } else {
       mLayoutCancellationPolicy = null;
@@ -646,7 +658,7 @@ public class ComponentTree
       }
     }
 
-    if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+    if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
       synchronized (mLayoutStateFutureLock) {
         if (mLegacyRenderRunnable != null) {
           mLayoutThreadHandler.remove(mLegacyRenderRunnable);
@@ -1121,24 +1133,24 @@ public class ComponentTree
   }
 
   LithoConfiguration getLithoConfiguration() {
-    return mLithoConfiguration;
+    return mContext.mLithoConfiguration;
   }
 
   /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
-    return mLithoConfiguration.incrementalMountEnabled;
+    return mContext.mLithoConfiguration.incrementalMountEnabled;
   }
 
   boolean isVisibilityProcessingEnabled() {
-    return mLithoConfiguration.isVisibilityProcessingEnabled;
+    return mContext.mLithoConfiguration.isVisibilityProcessingEnabled;
   }
 
   public boolean shouldReuseOutputs() {
-    return mComponentsConfiguration.shouldReuseOutputs();
+    return mContext.mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
   }
 
   public boolean isReconciliationEnabled() {
-    return mLithoConfiguration.isReconciliationEnabled;
+    return mContext.mLithoConfiguration.isReconciliationEnabled;
   }
 
   public synchronized @Nullable Component getRoot() {
@@ -1957,7 +1969,7 @@ public class ComponentTree
           "The layout can't be calculated asynchronously if we need the Size back");
     }
 
-    if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+    if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
       if (isAsync) {
         synchronized (mLayoutStateFutureLock) {
           if (mLegacyRenderRunnable != null) {
@@ -2142,7 +2154,8 @@ public class ComponentTree
             // we mark it as Non-Interruptible.
             (!ComponentsConfiguration.isSyncTaskNonInterruptibleEnabled
                     || !LayoutState.isFromSyncLayout(source))
-                && mComponentsConfiguration.getUseCancelableLayoutFutures(),
+                && mContext.mLithoConfiguration.mComponentsConfiguration
+                    .getUseCancelableLayoutFutures(),
             widthSpec,
             heightSpec,
             mId,
@@ -2179,7 +2192,8 @@ public class ComponentTree
     if (resolveResult == null) {
       if (!isReleased()
           && isFromSyncLayout(source)
-          && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
+          && !mContext.mLithoConfiguration.mComponentsConfiguration
+              .getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "ResolveResult is null, but only async operations can return a null ResolveResult. Source: "
                 + layoutSourceToString(source)
@@ -2360,7 +2374,10 @@ public class ComponentTree
     final @Nullable LayoutState layoutState = layoutStateHolder.result;
 
     if (layoutState == null) {
-      if (!isReleased() && isSync && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
+      if (!isReleased()
+          && isSync
+          && !mContext.mLithoConfiguration.mComponentsConfiguration
+              .getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
@@ -2465,7 +2482,7 @@ public class ComponentTree
             committedLayoutState != null ? committedLayoutState.getDiffTree() : null,
             extraAttribution,
             null,
-            mComponentsConfiguration.getUseCancelableLayoutFutures());
+            mContext.mLithoConfiguration.mComponentsConfiguration.getUseCancelableLayoutFutures());
 
     final TreeFuture.TreeFutureResult<LegacyPotentiallyPartialResult> resultHolder =
         TreeFuture.trackAndRunTreeFuture(
@@ -2481,7 +2498,8 @@ public class ComponentTree
     if (localLayoutState == null) {
       if (!isReleased()
           && isFromSyncLayout(source)
-          && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
+          && !mContext.mLithoConfiguration.mComponentsConfiguration
+              .getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
@@ -2559,7 +2577,7 @@ public class ComponentTree
           final TreeState treeState = mTreeState;
           if (treeState != null) { // we could have been released
             saveRevision(rootComponent, treeState, treeProps, source, extraAttribution);
-            if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+            if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
               treeState.commitRenderState(localTreeState);
             }
             treeState.commitLayoutState(localTreeState);
@@ -2578,7 +2596,7 @@ public class ComponentTree
       }
 
       if (mTreeState != null && localTreeState != null) {
-        if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+        if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
           mTreeState.unregisterRenderState(localTreeState);
         }
         mTreeState.unregisterLayoutState(localTreeState);
@@ -2681,7 +2699,7 @@ public class ComponentTree
 
       mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
-      if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+      if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
         synchronized (mLayoutStateFutureLock) {
           if (mLegacyRenderRunnable != null) {
             mLayoutThreadHandler.remove(mLegacyRenderRunnable);
@@ -2712,7 +2730,7 @@ public class ComponentTree
         }
       }
 
-      if (mComponentsConfiguration.isLegacyRenderEnabled()) {
+      if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
         synchronized (mLayoutStateFutureLock) {
           for (int i = 0; i < mLegacyRenderFutures.size(); i++) {
             mLegacyRenderFutures.get(i).release();
@@ -2873,17 +2891,16 @@ public class ComponentTree
     setRoot(component);
   }
 
-  // TODO: T48569046 remove this method and use mLogger
   private @Nullable ComponentsLogger getContextLogger() {
-    return mLithoConfiguration.logger == null ? mContext.getLogger() : mLithoConfiguration.logger;
+    return mContext.mLithoConfiguration.logger;
   }
 
   public @Nullable ComponentsLogger getLogger() {
-    return mLithoConfiguration.logger;
+    return mContext.mLithoConfiguration.logger;
   }
 
   public @Nullable String getLogTag() {
-    return mLithoConfiguration.logTag;
+    return mContext.mLithoConfiguration.logTag;
   }
 
   /*
@@ -2892,7 +2909,7 @@ public class ComponentTree
    * after that because it's in an incomplete state, so it needs to be released.
    */
   public void cancelLayoutAndReleaseTree() {
-    if (!mComponentsConfiguration.getUseCancelableLayoutFutures()) {
+    if (!mContext.mLithoConfiguration.mComponentsConfiguration.getUseCancelableLayoutFutures()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           TAG,
@@ -3100,9 +3117,8 @@ public class ComponentTree
   }
 
   public static final class LithoConfiguration {
+    public ComponentsConfiguration mComponentsConfiguration;
     final boolean areTransitionsEnabled;
-    final boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
-    final boolean shouldReuseOutputs;
     final boolean isReconciliationEnabled;
     final boolean isVisibilityProcessingEnabled;
     final boolean isNullNodeEnabled;
@@ -3114,9 +3130,8 @@ public class ComponentTree
     final RenderUnitIdGenerator renderUnitIdGenerator;
 
     public LithoConfiguration(
+        final ComponentsConfiguration config,
         boolean areTransitionsEnabled,
-        boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation,
-        boolean shouldReuseOutputs,
         boolean isReconciliationEnabled,
         boolean isVisibilityProcessingEnabled,
         boolean isNullNodeEnabled,
@@ -3126,10 +3141,8 @@ public class ComponentTree
         String logTag,
         @Nullable ComponentsLogger logger,
         RenderUnitIdGenerator renderUnitIdGenerator) {
+      this.mComponentsConfiguration = config;
       this.areTransitionsEnabled = areTransitionsEnabled;
-      this.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation =
-          shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
-      this.shouldReuseOutputs = shouldReuseOutputs;
       this.isReconciliationEnabled = isReconciliationEnabled;
       this.isVisibilityProcessingEnabled = isVisibilityProcessingEnabled;
       this.mountContentPreallocationHandler = mountContentPreallocationHandler;
@@ -3152,8 +3165,7 @@ public class ComponentTree
     private Component root;
 
     // optional
-    private ComponentsConfiguration componentsConfiguration =
-        ComponentsConfiguration.getDefaultComponentsConfiguration();
+    private @Nullable ComponentsConfiguration config;
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
     private @Nullable RunnableHandler resolveThreadHandler;
@@ -3177,10 +3189,8 @@ public class ComponentTree
       this.context = context;
     }
 
-    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
-      if (componentsConfiguration != null) {
-        this.componentsConfiguration = componentsConfiguration;
-      }
+    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
+      this.config = config;
       return this;
     }
 
@@ -3368,6 +3378,10 @@ public class ComponentTree
       // TODO: T48569046 verify logTag when it will be set on CT directly
       if (logger != null && logTag == null) {
         logTag = root.getSimpleName();
+      }
+
+      if (config == null) {
+        config = context.mLithoConfiguration.mComponentsConfiguration;
       }
 
       return new ComponentTree(this);

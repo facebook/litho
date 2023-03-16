@@ -43,7 +43,8 @@ public class ComponentContext implements Cloneable {
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
-  private LithoConfiguration mLithoConfiguration;
+
+  public LithoConfiguration mLithoConfiguration;
 
   private @Nullable String mNoStateUpdatesMethod;
 
@@ -114,9 +115,8 @@ public class ComponentContext implements Cloneable {
   private static LithoConfiguration buildDefaultLithoConfiguration(
       Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
     return new LithoConfiguration(
+        ComponentsConfiguration.getDefaultComponentsConfiguration(),
         AnimationsDebug.areTransitionsEnabled(context),
-        false,
-        false,
         ComponentsConfiguration.overrideReconciliation != null
             ? ComponentsConfiguration.overrideReconciliation
             : true,
@@ -171,9 +171,8 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger) {
     return new LithoConfiguration(
+        lithoConfiguration.mComponentsConfiguration,
         lithoConfiguration.areTransitionsEnabled,
-        lithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation,
-        lithoConfiguration.shouldReuseOutputs,
         lithoConfiguration.isReconciliationEnabled,
         lithoConfiguration.isVisibilityProcessingEnabled,
         lithoConfiguration.isNullNodeEnabled,
@@ -197,6 +196,7 @@ public class ComponentContext implements Cloneable {
    * @return a new ComponentContext instance
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  @Deprecated
   public static ComponentContext withComponentTree(
       ComponentContext context, ComponentTree componentTree) {
     final String contextLogTag = context.mLithoConfiguration.logTag;
@@ -219,6 +219,21 @@ public class ComponentContext implements Cloneable {
     componentContext.mComponentScope = null;
 
     return componentContext;
+  }
+
+  static ComponentContext withComponentTree(
+      final ComponentContext c,
+      final LithoConfiguration config,
+      final ComponentTree componentTree) {
+    final LithoTree tree =
+        new LithoTree(componentTree, componentTree, componentTree, componentTree);
+    ComponentContext out = new ComponentContext(c.getAndroidContext(), c.mTreeProps, config, tree);
+    out.mParentTreeProps = c.mParentTreeProps;
+    out.mGlobalKey = c.mGlobalKey;
+    out.mLifecycleProvider = componentTree.getLifecycleProvider();
+    out.mComponentScope = null;
+
+    return out;
   }
 
   /**
@@ -782,15 +797,11 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean shouldReuseOutputs() {
-    return mLithoConfiguration.shouldReuseOutputs;
+    return mLithoConfiguration.mComponentsConfiguration.shouldReuseOutputs();
   }
 
   boolean isNestedTreeContext() {
     return isNestedTreeContext;
-  }
-
-  boolean shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation() {
-    return mLithoConfiguration.shouldKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
   /**
