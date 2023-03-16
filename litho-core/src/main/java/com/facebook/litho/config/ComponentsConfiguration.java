@@ -122,6 +122,8 @@ public class ComponentsConfiguration {
 
   public static boolean runLooperPrepareForLayoutThreadFactory = true;
 
+  public static boolean enablePrimitiveComponentsInOrion = false;
+
   /**
    * field.getAnnotation() has bugs which is causing java crashes in the App, in addition to this we
    * suspect this might be a reason for few other native crashes as well. Adding this flag to verify
