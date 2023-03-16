@@ -151,7 +151,7 @@ public class RecyclerBinder
   private final int mItemViewCacheSize;
   private final @RecyclingStrategy int mRecyclingStrategy;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
-  private final ComponentsConfiguration mComponentsConfiguration;
+  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
 
   private final AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -397,7 +397,7 @@ public class RecyclerBinder
         @Nullable RunnableHandler resolveHandler,
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
-        ComponentsConfiguration componentsConfiguration,
+        @Nullable ComponentsConfiguration componentsConfiguration,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
         boolean isReconciliationEnabled,
@@ -416,7 +416,7 @@ public class RecyclerBinder
             @Nullable RunnableHandler resolveHandler,
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
-            ComponentsConfiguration componentsConfiguration,
+            @Nullable ComponentsConfiguration componentsConfiguration,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             boolean isReconciliationEnabled,
@@ -448,8 +448,7 @@ public class RecyclerBinder
 
     private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
-    private ComponentsConfiguration componentsConfiguration =
-        ComponentsConfiguration.getDefaultComponentsConfiguration();
+    private @Nullable ComponentsConfiguration componentsConfiguration;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
@@ -520,8 +519,8 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
-      this.componentsConfiguration = componentsConfiguration;
+    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
+      this.componentsConfiguration = config;
       return this;
     }
 

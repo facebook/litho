@@ -36,7 +36,7 @@ public class RecyclerBinderConfiguration {
    * Used to pass through configuration flags to the componentTree that can be read directly from
    * this componentsConfiguration instance.
    */
-  private final ComponentsConfiguration mComponentsConfiguration;
+  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
 
   private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
@@ -71,7 +71,7 @@ public class RecyclerBinderConfiguration {
   private RecyclerBinderConfiguration(
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
-      ComponentsConfiguration componentsConfiguration,
+      @Nullable ComponentsConfiguration componentsConfiguration,
       boolean circular,
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
@@ -188,7 +188,7 @@ public class RecyclerBinderConfiguration {
     return mErrorEventHandler;
   }
 
-  public ComponentsConfiguration getComponentsConfiguration() {
+  public @Nullable ComponentsConfiguration getComponentsConfiguration() {
     return mComponentsConfiguration;
   }
 
@@ -201,8 +201,7 @@ public class RecyclerBinderConfiguration {
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
     private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
-    private ComponentsConfiguration mComponentsConfiguration =
-        ComponentsConfiguration.getDefaultComponentsConfiguration();
+    private @Nullable ComponentsConfiguration mComponentsConfiguration;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCircular = false;
     private boolean mWrapContent = false;

@@ -59,7 +59,7 @@ public class ComponentTreeHolder {
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
-  private final ComponentsConfiguration mComponentsConfiguration;
+  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -121,8 +121,7 @@ public class ComponentTreeHolder {
   public static class Builder {
 
     private RenderInfo renderInfo;
-    private ComponentsConfiguration componentsConfiguration =
-        ComponentsConfiguration.getDefaultComponentsConfiguration();
+    private @Nullable ComponentsConfiguration componentsConfiguration;
     private @Nullable RunnableHandler resolveHandler;
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
@@ -143,8 +142,8 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
-      this.componentsConfiguration = componentsConfiguration;
+    public Builder componentsConfiguration(@Nullable ComponentsConfiguration config) {
+      this.componentsConfiguration = config;
       return this;
     }
 
