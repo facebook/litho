@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
@@ -212,6 +213,7 @@ public class LithoViewAttributesExtension
       if (nodeInfo != null) setAccessibilityDelegate(view, nodeInfo);
     }
 
+    setViewId(view, attributes.getViewId());
     setViewTag(view, attributes.getViewTag());
     setViewTags(view, attributes.getViewTags());
 
@@ -538,6 +540,12 @@ public class LithoViewAttributesExtension
     } else {
       v.setOnTouchListener(listener);
       v.setTag(R.id.component_touch_listener, listener);
+    }
+  }
+
+  private static void setViewId(View view, @IdRes int id) {
+    if (id != View.NO_ID) {
+      view.setId(id);
     }
   }
 

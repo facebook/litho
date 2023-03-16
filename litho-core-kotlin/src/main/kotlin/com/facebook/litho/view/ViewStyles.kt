@@ -23,6 +23,7 @@ import android.os.Build
 import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -60,6 +61,7 @@ internal enum class ObjectField : StyleItemField {
   TEST_KEY,
   TRANSITION_NAME,
   WRAP_IN_VIEW,
+  VIEW_ID,
   VIEW_TAG,
   VIEW_TAGS,
   ENABLED,
@@ -131,6 +133,7 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
       ObjectField.TEST_KEY -> commonProps.testKey(value as String?)
       ObjectField.TRANSITION_NAME -> commonProps.transitionName(value as String?)
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
+      ObjectField.VIEW_ID -> commonProps.viewId(value as Int)
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
       ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
       ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
@@ -436,6 +439,15 @@ inline fun Style.transitionName(transitionName: String?): Style =
  * - The Component has the wrapInView style
  */
 inline fun Style.wrapInView(): Style = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
+
+/**
+ * Adds a View tag to the [View] this [Component] mounts to. Setting this property will cause the
+ * [Component] to be represented as a [View] at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setId]
+ */
+inline fun Style.viewId(@IdRes viewId: Int): Style =
+    this + ObjectStyleItem(ObjectField.VIEW_ID, viewId)
 
 /**
  * Adds a View tag to the View this Component mounts to. Setting this property will cause the

@@ -18,8 +18,10 @@ package com.facebook.litho;
 
 import android.graphics.Color;
 import android.util.SparseArray;
+import android.view.View;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -131,8 +133,11 @@ public class NodeInfo implements Equivalence<NodeInfo> {
   private static final int PFLAG_SPOT_SHADOW_COLOR_IS_SET = 1 << 28;
   // When this flag is set, onPopulateAccessibilityNodeHandler was explicitly set on this node
   private static final int PFLAG_ON_POPULATE_ACCESSIBILITY_NODE_HANDLER_IS_SET = 1 << 29;
+  // When this flag is set, view id was explicitly set on this node
+  private static final int PFLAG_VIEW_ID_IS_SET = 1 << 30;
 
   private @Nullable CharSequence mContentDescription;
+  private int mViewId = View.NO_ID;
   private @Nullable Object mViewTag;
   private @Nullable String mTransitionName;
   private @Nullable SparseArray<Object> mViewTags;
@@ -187,6 +192,19 @@ public class NodeInfo implements Equivalence<NodeInfo> {
 
   public @Nullable CharSequence getContentDescription() {
     return mContentDescription;
+  }
+
+  public void setViewId(@IdRes int id) {
+    mPrivateFlags |= PFLAG_VIEW_ID_IS_SET;
+    mViewId = id;
+  }
+
+  public boolean hasViewId() {
+    return (mPrivateFlags & PFLAG_VIEW_ID_IS_SET) != 0;
+  }
+
+  public int getViewId() {
+    return mViewId;
   }
 
   public void setViewTag(@Nullable Object viewTag) {
@@ -688,6 +706,9 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     }
     if ((mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0) {
       target.setClipChildren(mClipChildren);
+    }
+    if (hasViewId()) {
+      target.setViewId(mViewId);
     }
     if (mViewTag != null) {
       target.setViewTag(mViewTag);

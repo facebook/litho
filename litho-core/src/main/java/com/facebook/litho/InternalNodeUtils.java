@@ -527,6 +527,7 @@ public class InternalNodeUtils {
     final boolean hasFocusChangeHandler = nodeInfo.hasFocusChangeHandler();
     final boolean hasEnabledTouchEventHandlers =
         nodeInfo.hasTouchEventHandlers() && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
+    final boolean hasViewId = nodeInfo.hasViewId();
     final boolean hasViewTag = nodeInfo.getViewTag() != null;
     final boolean hasViewTags = nodeInfo.getViewTags() != null;
     final boolean hasShadowElevation = nodeInfo.getShadowElevation() != 0;
@@ -541,6 +542,7 @@ public class InternalNodeUtils {
 
     return hasFocusChangeHandler
         || hasEnabledTouchEventHandlers
+        || hasViewId
         || hasViewTag
         || hasViewTags
         || hasShadowElevation

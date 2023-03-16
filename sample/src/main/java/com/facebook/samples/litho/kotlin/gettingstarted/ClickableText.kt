@@ -16,8 +16,12 @@
 
 package com.facebook.samples.litho.kotlin.gettingstarted
 
+import android.app.Activity
+import android.util.Log
+import android.view.View
 import com.facebook.litho.Column
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
@@ -28,6 +32,8 @@ import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
+import com.facebook.litho.view.viewId
+import com.facebook.samples.litho.R
 
 /**
  * Text component which will display a greeting with the given name.
@@ -49,7 +55,10 @@ class ClickableText(private val name: String) : KComponent() {
           ))
       child(
           Text(
-              style = Style.onClick { clickCounter.update { it + 1 } }.padding(all = 16.dp),
+              style =
+                  Style.onClick { clickCounter.update { it + 1 } }
+                      .viewId(R.id.sample)
+                      .padding(all = 16.dp),
               text = "I have been clicked ${clickCounter.value} times.",
               textSize = 20.sp,
           ))

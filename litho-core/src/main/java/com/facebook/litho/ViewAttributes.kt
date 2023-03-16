@@ -24,6 +24,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.SparseArray
+import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -40,6 +41,7 @@ class ViewAttributes {
   var disableDrawableOutputs: Boolean = false
 
   var contentDescription: CharSequence? = null
+  var viewId: Int = View.NO_ID
   var viewTag: Any? = null
   var transitionName: String? = null
   var viewTags: SparseArray<Any>? = null

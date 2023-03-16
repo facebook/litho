@@ -25,6 +25,7 @@ import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
@@ -458,6 +459,10 @@ public final class CommonProps implements LayoutProps, Equivalence<CommonProps> 
 
   public void viewTag(@Nullable Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
+  }
+
+  public void viewId(@IdRes int id) {
+    getOrCreateNodeInfo().setViewId(id);
   }
 
   public void viewTags(@Nullable SparseArray<Object> viewTags) {

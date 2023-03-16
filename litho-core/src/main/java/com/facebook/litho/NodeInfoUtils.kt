@@ -125,6 +125,11 @@ object NodeInfoUtils {
     if (!equals(x.viewTag, y.viewTag)) {
       return false
     }
+
+    if (!equals(x.viewId, y.viewId)) {
+      return false
+    }
+
     return equals(x.viewTags, y.viewTags)
   }
 }
