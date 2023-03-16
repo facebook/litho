@@ -349,6 +349,26 @@ public class ComponentTree
 
   private final boolean useSeparateThreadHandlersForResolveAndLayout;
 
+  /**
+   * This is a breadcrumb that can be associated with the logs produced by {@link
+   * ComponentTree#debugLog(String, String)}
+   *
+   * <p>Use {@link ComponentTree#setDebugLogsBreadcrumb(String)} to set the breadcrumb.
+   */
+  @Nullable private String mDebugLogBreadcrumb;
+
+  /**
+   * This method associates this {@link ComponentTree} debug logs with the given <code>String</code>
+   * This allows you to create an association of the {@link ComponentTree} with any identifier or
+   * sorts that enables you to trace the logs of this {@link ComponentTree} with the identifier.
+   *
+   * <p>This is particularly useful if you have multiple {@link ComponentTree} and you want to
+   * filter the logs according to the given breadcrumb.
+   */
+  public void setDebugLogsBreadcrumb(@Nullable String breadcrumb) {
+    mDebugLogBreadcrumb = breadcrumb;
+  }
+
   private final @Nullable BatchedStateUpdatesStrategy mBatchedStateUpdatesStrategy;
   private final @Nullable ResolveCancellationPolicy mResolveCancellationPolicy;
   private final @Nullable LayoutCancellationPolicy mLayoutCancellationPolicy;
@@ -2956,6 +2976,7 @@ public class ComponentTree
           "ComponentTreeDebug",
           "("
               + hashCode()
+              + (mDebugLogBreadcrumb != null ? ("/" + mDebugLogBreadcrumb) : "")
               + ") ["
               + eventName
               + " - Root: "
