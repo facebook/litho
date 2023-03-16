@@ -122,6 +122,14 @@ public abstract class LithoRenderUnit extends RenderUnit<Object> implements Tran
     return mNodeInfo;
   }
 
+  @Nullable
+  CharSequence getContentDescription() {
+    if (mNodeInfo == null) {
+      return null;
+    }
+    return mNodeInfo.getContentDescription();
+  }
+
   @UpdateState
   public int getUpdateState() {
     return mUpdateState;
