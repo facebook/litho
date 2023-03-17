@@ -16,22 +16,13 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Component.hasCachedNode;
-import static com.facebook.litho.Component.isLayoutSpec;
-import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
-import static com.facebook.litho.Component.isMountSpec;
-import static com.facebook.litho.Component.isMountable;
-import static com.facebook.litho.Component.isNestedTree;
-import static com.facebook.litho.Component.isPrimitive;
-import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.rendercore.utils.MeasureSpecUtils.unspecified;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaFlexDirection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +36,7 @@ public class Resolver {
   private static final String EVENT_END_CREATE_LAYOUT = "end_create_layout";
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
-  private static final int MEASURE_SPEC_UNSPECIFIED = unspecified();
+  private static final int MEASURE_SPEC_UNSPECIFIED = MeasureSpecUtils.unspecified();
 
   static @Nullable LithoNode resolveTree(
       final ResolveStateContext resolveStateContext,
@@ -160,8 +151,8 @@ public class Resolver {
     final LithoNode node;
     final ComponentContext c;
     final String globalKey;
-    final boolean isNestedTree = isNestedTree(component);
-    final boolean hasCachedNode = hasCachedNode(resolveStateContext, component);
+    final boolean isNestedTree = Component.isNestedTree(component);
+    final boolean hasCachedNode = Component.hasCachedNode(resolveStateContext, component);
     final ScopedComponentInfo scopedComponentInfo;
 
     try {
@@ -201,7 +192,7 @@ public class Resolver {
       }
 
       // If the component is a MountSpec (including MountableComponents and PrimitiveComponents).
-      else if (isMountSpec(component)) {
+      else if (Component.isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs and set the default flex direction.
         node = new LithoNode();
@@ -212,9 +203,9 @@ public class Resolver {
             component.prepare(resolveStateContext, scopedComponentInfo.getContext());
 
         if (prepareResult != null) {
-          if (isMountable(component) && prepareResult.mountable != null) {
+          if (Component.isMountable(component) && prepareResult.mountable != null) {
             node.setMountable(prepareResult.mountable);
-          } else if (isPrimitive(component) && prepareResult.primitive != null) {
+          } else if (Component.isPrimitive(component) && prepareResult.primitive != null) {
             node.setPrimitive(prepareResult.primitive);
           }
           applyTransitionsAndUseEffectEntriesToNode(
@@ -223,7 +214,7 @@ public class Resolver {
       }
 
       // If the component is a LayoutSpec.
-      else if (isLayoutSpec(component)) {
+      else if (Component.isLayoutSpec(component)) {
 
         final RenderResult renderResult =
             component.render(resolveStateContext, c, parentWidthSpec, parentHeightSpec);
@@ -275,9 +266,10 @@ public class Resolver {
     // delegates its layout creation to another component, i.e. the root node belongs to
     // another component.
     if (node.getComponentCount() == 0) {
-      final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
+      final boolean isMountSpecWithMeasure =
+          component.canMeasure() && Component.isMountSpec(component);
       if (isMountSpecWithMeasure || ((isNestedTree || hasCachedNode) && !resolveNestedTree)) {
-        node.setMeasureFunction(sMeasureFunction);
+        node.setMeasureFunction(Component.sMeasureFunction);
       }
     }
 
@@ -285,7 +277,8 @@ public class Resolver {
     // Skip if resolving a layout with size spec because common props were copied in the previous
     // layout pass.
     final CommonProps commonProps = component.getCommonProps();
-    if (commonProps != null && !(isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
+    if (commonProps != null
+        && !(Component.isLayoutSpecWithSizeSpec(component) && resolveNestedTree)) {
       commonProps.copyInto(c, node);
     }
 
