@@ -32,7 +32,7 @@ class MeasureScope(val layoutContext: LayoutContext<*>, val previousLayoutData: 
 
   val resourceResolver: ResourceResolver by lazy {
     ResourceResolver(
-        androidContext, ResourceCache.getLatest(androidContext.getResources().getConfiguration()))
+        androidContext, ResourceCache.getLatest(androidContext.resources.configuration))
   }
 
   /**

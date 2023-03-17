@@ -77,7 +77,7 @@ public class ResourceResolver {
       }
 
       String result = mResources.getString(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -98,7 +98,7 @@ public class ResourceResolver {
       }
 
       String[] result = mResources.getStringArray(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -114,7 +114,7 @@ public class ResourceResolver {
       }
 
       int result = mResources.getInteger(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -131,7 +131,7 @@ public class ResourceResolver {
       }
 
       int[] result = mResources.getIntArray(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -158,7 +158,7 @@ public class ResourceResolver {
       }
 
       boolean result = mResources.getBoolean(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -174,7 +174,7 @@ public class ResourceResolver {
       }
 
       int result = mResources.getColor(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -190,7 +190,7 @@ public class ResourceResolver {
       }
 
       int result = mResources.getDimensionPixelSize(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -206,7 +206,7 @@ public class ResourceResolver {
       }
 
       int result = mResources.getDimensionPixelOffset(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
@@ -222,7 +222,7 @@ public class ResourceResolver {
       }
 
       float result = mResources.getDimension(resId);
-      mResourceCache.put(resId, result);
+      mResourceCache.set(resId, result);
 
       return result;
     }
