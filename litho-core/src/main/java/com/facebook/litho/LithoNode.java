@@ -48,11 +48,9 @@ import android.util.Pair;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
@@ -76,7 +74,6 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1123,23 +1120,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
-  public @Nullable LithoNode reconcile(
-      final ResolveStateContext resolveStateContext,
-      final ComponentContext c,
-      final Component next,
-      final ScopedComponentInfo nextScopedComponentInfo,
-      final @Nullable String nextKey) {
-    final TreeState treeState = resolveStateContext.getTreeState();
-    final Set<String> keys;
-    if (treeState == null) {
-      keys = Collections.emptySet();
-    } else {
-      keys = treeState.getKeysForPendingStateUpdates();
-    }
-
-    return reconcile(resolveStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
-  }
-
   public void setNestedTreeHolder(@Nullable NestedTreeHolder holder) {
     mNestedTreeHolder = holder;
   }
@@ -1254,153 +1234,12 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return mIsPaddingSet;
   }
 
-  /**
-   * Internal method to <b>try</b> and reconcile the {@param current} LithoNode with a new {@link
-   * ComponentContext} and an updated head {@link Component}.
-   *
-   * @param resolveStateContext The RenderStateContext.
-   * @param parentContext The ComponentContext.
-   * @param current The current LithoNode which should be updated.
-   * @param next The updated component to be used to reconcile this LithoNode.
-   * @param keys The keys of mutated components.
-   * @return A new updated LithoNode.
-   */
-  private static @Nullable LithoNode reconcile(
-      final ResolveStateContext resolveStateContext,
-      final ComponentContext parentContext,
-      final LithoNode current,
-      final Component next,
-      final ScopedComponentInfo nextScopedComponentInfo,
-      final @Nullable String nextKey,
-      final Set<String> keys) {
-    final int mode = getReconciliationMode(nextScopedComponentInfo.getContext(), current, keys);
-    final LithoNode layout;
-
-    switch (mode) {
-      case ReconciliationMode.REUSE:
-        commitToLayoutStateRecursively(resolveStateContext, current);
-        layout = current;
-        break;
-      case ReconciliationMode.RECONCILE:
-        layout = reconcile(resolveStateContext, current, next, keys);
-        break;
-      case ReconciliationMode.RECREATE:
-        layout =
-            Resolver.resolveWithGlobalKey(
-                resolveStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
-        break;
-      default:
-        throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
-    }
-
-    return layout;
+  void setChildren(List<LithoNode> children) {
+    mChildren = children;
   }
 
-  /**
-   * Internal method to reconcile the {@param current} LithoNode with a new {@link ComponentContext}
-   * and an updated head {@link Component} and a {@link ReconciliationMode}.
-   *
-   * @param current The current LithoNode which should be updated.
-   * @param next The updated component to be used to reconcile this LithoNode.
-   * @param keys The keys of mutated components.
-   * @return A new updated LithoNode.
-   */
-  private static LithoNode reconcile(
-      final ResolveStateContext resolveStateContext,
-      final LithoNode current,
-      final Component next,
-      final Set<String> keys) {
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("reconcile:" + next.getSimpleName());
-    }
-
-    // 2. Shallow copy this layout.
-    final LithoNode layout;
-
-    layout = current.clone();
-    layout.mChildren = new ArrayList<>(current.getChildCount());
-    layout.mDebugComponents = null;
-    commitToLayoutState(resolveStateContext, current);
-
-    ComponentContext parentContext = layout.getTailComponentContext();
-
-    // 3. Iterate over children.
-    int count = current.getChildCount();
-    for (int i = 0; i < count; i++) {
-      final LithoNode child = current.getChildAt(i);
-
-      // 3.1 Get the head component of the child layout.
-      int index = Math.max(0, child.getComponentCount() - 1);
-      final Component component = child.getComponentAt(index);
-      final String key = child.getGlobalKeyAt(index);
-      final ScopedComponentInfo scopedComponentInfo = child.mScopedComponentInfos.get(index);
-
-      // 3.2 Reconcile child layout.
-      final LithoNode copy =
-          reconcile(
-              resolveStateContext, parentContext, child, component, scopedComponentInfo, key, keys);
-
-      // 3.3 Add the child to the cloned yoga node
-      layout.child(copy);
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    return layout;
-  }
-
-  static void commitToLayoutStateRecursively(ResolveStateContext c, LithoNode node) {
-    final int count = node.getChildCount();
-    commitToLayoutState(c, node);
-    for (int i = 0; i < count; i++) {
-      commitToLayoutStateRecursively(c, node.getChildAt(i));
-    }
-  }
-
-  static void commitToLayoutState(ResolveStateContext c, LithoNode node) {
-    final List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
-
-    for (ScopedComponentInfo info : scopedComponentInfos) {
-      info.commitToLayoutState(c.getTreeState());
-    }
-  }
-
-  /**
-   * Returns the a {@link ReconciliationMode} mode which directs the reconciling process to branch
-   * to either recreate the entire subtree, copy the entire subtree or continue to recursively
-   * reconcile the subtree.
-   */
-  @VisibleForTesting
-  static @ReconciliationMode int getReconciliationMode(
-      final ComponentContext c, final LithoNode current, final Set<String> mutatedKeys) {
-    final List<ScopedComponentInfo> components = current.getScopedComponentInfos();
-
-    // 1.0 check early exit conditions
-    if (c == null || current instanceof NestedTreeHolder) {
-      return ReconciliationMode.RECREATE;
-    }
-
-    // 1.1 Check if any component has mutations
-    for (int i = 0, size = components.size(); i < size; i++) {
-      final String key = components.get(i).getContext().getGlobalKey();
-      if (mutatedKeys.contains(key)) {
-        return ReconciliationMode.RECREATE;
-      }
-    }
-
-    // 2.0 Check if any descendants have mutations
-    final String rootKey = current.getHeadComponentKey();
-    for (String key : mutatedKeys) {
-      if (key.startsWith(rootKey)) {
-        return ReconciliationMode.RECONCILE;
-      }
-    }
-
-    return ReconciliationMode.REUSE;
+  void resetDebugInfo() {
+    mDebugComponents = null;
   }
 
   private static void applyOverridesRecursive(LayoutStateContext c, LithoNode node) {
@@ -1410,12 +1249,5 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
         applyOverridesRecursive(c, node.getChildAt(i));
       }
     }
-  }
-
-  @IntDef({ReconciliationMode.REUSE, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
-  @interface ReconciliationMode {
-    int RECONCILE = 1;
-    int RECREATE = 2;
-    int REUSE = 3;
   }
 }
