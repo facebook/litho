@@ -48,7 +48,6 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.rendercore.RunnableHandler
 import java.lang.Exception
-import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit

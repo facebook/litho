@@ -16,12 +16,8 @@
 
 package com.facebook.samples.litho.kotlin.gettingstarted
 
-import android.app.Activity
-import android.util.Log
-import android.view.View
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
