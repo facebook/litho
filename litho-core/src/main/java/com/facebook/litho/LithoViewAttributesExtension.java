@@ -214,7 +214,9 @@ public class LithoViewAttributesExtension
     }
 
     setViewId(view, attributes.getViewId());
-    setViewTag(view, attributes.getViewTag());
+    if (attributes.isTagSet()) {
+      setViewTag(view, attributes.getViewTag());
+    }
     setViewTags(view, attributes.getViewTags());
 
     setShadowElevation(view, attributes.getShadowElevation());
@@ -297,7 +299,9 @@ public class LithoViewAttributesExtension
       unsetInterceptTouchEventHandler(view);
     }
 
-    unsetViewTag(view);
+    if (attributes.isTagSet()) {
+      unsetViewTag(view);
+    }
     unsetViewTags(view, attributes.getViewTags());
 
     unsetShadowElevation(view, attributes.getShadowElevation());
@@ -550,9 +554,7 @@ public class LithoViewAttributesExtension
   }
 
   private static void setViewTag(View view, @Nullable Object viewTag) {
-    if (viewTag != null) {
-      view.setTag(viewTag);
-    }
+    view.setTag(viewTag);
   }
 
   private static void setViewTags(View view, @Nullable SparseArray<Object> viewTags) {

@@ -43,6 +43,11 @@ class ViewAttributes {
   var contentDescription: CharSequence? = null
   var viewId: Int = View.NO_ID
   var viewTag: Any? = null
+    set(value) {
+      field = value
+      flags = flags or FLAG_VIEW_TAG
+    }
+
   var transitionName: String? = null
   var viewTags: SparseArray<Any>? = null
   var outlineProvider: ViewOutlineProvider? = null
@@ -174,6 +179,8 @@ class ViewAttributes {
     get() = flags and FLAG_ROTATION_X != 0
   val isRotationYSet: Boolean
     get() = flags and FLAG_ROTATION_Y != 0
+  val isTagSet: Boolean
+    get() = flags and FLAG_VIEW_TAG != 0
 
   fun hasPadding(): Boolean = padding != null
 
@@ -335,5 +342,7 @@ class ViewAttributes {
     private const val FLAG_SHADOW_ELEVATION = 1 shl 12
     private const val FLAG_AMBIENT_SHADOW_COLOR = 1 shl 13
     private const val FLAG_SPOT_SHADOW_COLOR = 1 shl 14
+
+    private const val FLAG_VIEW_TAG = 1 shl 15
   }
 }
