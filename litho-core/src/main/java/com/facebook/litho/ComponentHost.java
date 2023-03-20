@@ -375,8 +375,28 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   /** @return the text content that is mounted on this host. */
   @DoNotStrip
-  public TextContent getTextContent() {
+  public List<TextContent> getTextContent() {
     return ComponentHostUtils.extractTextContent(ComponentHostUtils.extractContent(mMountItems));
+  }
+
+  /**
+   * This is a helper method to get all the text (as {@link CharSequence}) that is contained inside
+   * this {@link ComponentHost}.
+   *
+   * <p>We should be able to remove this method once the Kotlin migration is finished and doing this
+   * kind of filtering option is easier.
+   *
+   * <p>The correct behavior of this method relies on the correct implementation of {@link
+   * TextContent} in Mountables.
+   */
+  public List<CharSequence> getTextContentText() {
+    List<TextContent> textContentList = getTextContent();
+    List<CharSequence> textList = new ArrayList<>();
+    for (TextContent textContent : textContentList) {
+      textList.addAll(textContent.getTextList());
+    }
+
+    return textList;
   }
 
   /** @return the image content that is mounted on this host. */
@@ -1400,8 +1420,11 @@ public class ComponentHost extends Host implements DisappearingHost {
         contentDesc = getContentDescription();
       } else if (!getContentDescriptions().isEmpty()) {
         contentDesc = TextUtils.join(", ", getContentDescriptions());
-      } else if (!getTextContent().getTextItems().isEmpty()) {
-        contentDesc = TextUtils.join(", ", getTextContent().getTextItems());
+      } else {
+        List<CharSequence> textContentText = getTextContentText();
+        if (!textContentText.isEmpty()) {
+          contentDesc = TextUtils.join(", ", textContentText);
+        }
       }
 
       if (contentDesc == null) {

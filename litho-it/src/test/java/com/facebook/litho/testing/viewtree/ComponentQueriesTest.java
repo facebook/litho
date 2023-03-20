@@ -65,7 +65,6 @@ public class ComponentQueriesTest {
     final LithoView view =
         ComponentTestHelper.mountComponent(mContext, Text.create(mContext).text("hello").build());
 
-    assertThat(view.getTextContent().getTextItems())
-        .isEqualTo(ImmutableList.<CharSequence>of("hello"));
+    assertThat(view.getTextContentText()).isEqualTo(ImmutableList.<CharSequence>of("hello"));
   }
 }

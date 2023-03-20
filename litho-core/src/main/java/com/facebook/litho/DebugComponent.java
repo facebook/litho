@@ -412,7 +412,7 @@ public final class DebugComponent {
         final Object content = mountItem.getContent();
 
         if (content instanceof TextContent) {
-          for (CharSequence charSequence : ((TextContent) content).getTextItems()) {
+          for (CharSequence charSequence : ((TextContent) content).getTextList()) {
             sb.append(charSequence);
           }
         } else if (content instanceof TextView) {
@@ -445,7 +445,7 @@ public final class DebugComponent {
         final Object content = mountItem.getContent();
         final StringBuilder sb = new StringBuilder();
         if (content instanceof TextContent) {
-          for (CharSequence charSequence : ((TextContent) content).getTextItems()) {
+          for (CharSequence charSequence : ((TextContent) content).getTextList()) {
             sb.append(charSequence);
           }
         } else if (content instanceof TextView) {

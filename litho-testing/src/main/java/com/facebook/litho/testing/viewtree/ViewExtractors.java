@@ -41,7 +41,7 @@ public final class ViewExtractors {
         public String apply(@Nullable View input) {
           CharSequence text = null;
           if (input instanceof ComponentHost) {
-            List<CharSequence> strings = ((ComponentHost) input).getTextContent().getTextItems();
+            List<CharSequence> strings = ((ComponentHost) input).getTextContentText();
             if (!strings.isEmpty()) {
               text = Joiner.on("\", and \"").join(strings);
             }

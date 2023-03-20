@@ -105,12 +105,13 @@ internal object ComponentHostUtils {
     return content
   }
 
+  /**
+   * This is a helper method that makes Java code to get this data in an easier way. Once we
+   * finished the Kotlin migration we should remove this method and replace it the code that it
+   * calls.
+   */
   @JvmStatic
-  fun extractTextContent(items: List<*>): TextContent =
-      object : TextContent {
-        override val textItems: List<CharSequence> =
-            items.filterIsInstance<TextContent>().flatMap { it.textItems }
-      }
+  fun extractTextContent(items: List<*>): List<TextContent> = items.filterIsInstance<TextContent>()
 
   @JvmStatic
   fun extractImageContent(items: List<*>): ImageContent =

@@ -29,6 +29,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Layout;
@@ -40,6 +41,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
@@ -81,6 +83,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private @Nullable ClickableSpanListener mSpanListener;
   private @Nullable TouchableSpanListener mTouchableSpanListener;
   private @Nullable String mContextLogTag;
+
+  /**
+   * This should be lazy loaded so that it is only created whenever it is needed. In most cases we
+   * won't need this data, so we can avoid this extra instance creation.
+   */
+  private @Nullable TextContent.Item mTextContentItem;
 
   @Override
   public void draw(Canvas canvas) {
@@ -440,6 +448,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   }
 
   public void unmount() {
+    mTextContentItem = null;
     mLayout = null;
     mLayoutTranslationY = 0;
     mText = null;
@@ -489,11 +498,6 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   public Layout getLayout() {
     return mLayout;
-  }
-
-  @Override
-  public List<CharSequence> getTextItems() {
-    return mText != null ? Collections.singletonList(mText) : Collections.<CharSequence>emptyList();
   }
 
   /**
@@ -695,6 +699,86 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   @Override
   public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
     unscheduleSelf(runnable);
+  }
+
+  @NonNull
+  @Override
+  public List<Item> getItems() {
+    TextContent.Item item = getOrCreateTextItem();
+    if (item == null) {
+      return Collections.emptyList();
+    } else {
+      return Collections.singletonList(item);
+    }
+  }
+
+  @NonNull
+  @Override
+  public List<CharSequence> getTextList() {
+    TextContent.Item item = getOrCreateTextItem();
+    if (item == null) {
+      return Collections.emptyList();
+    } else {
+      return Collections.singletonList(item.getText());
+    }
+  }
+
+  @Nullable
+  private TextContent.Item getOrCreateTextItem() {
+    Layout layout = mLayout;
+    if (layout == null) {
+      return null;
+    }
+
+    if (mTextContentItem == null) {
+      /* we get a reference to the values of these properties when we need it. this potentially avoids
+       * situations where the `mLayout` could be set to null after we got access to the `TextContent.Item` */
+      CharSequence text = getText();
+      float textSize = getTextSize();
+      Typeface typeface = layout.getPaint().getTypeface();
+      int color = getColor();
+      float fontLineHeight =
+          (layout.getPaint().getFontMetricsInt(null) * layout.getSpacingMultiplier())
+              + layout.getSpacingAdd();
+      int linesCount = layout.getLineCount();
+
+      mTextContentItem =
+          new TextContent.Item() {
+            @NonNull
+            @Override
+            public CharSequence getText() {
+              return text;
+            }
+
+            @Override
+            public float getTextSize() {
+              return textSize;
+            }
+
+            @NonNull
+            @Override
+            public Typeface getTypeface() {
+              return typeface;
+            }
+
+            @Override
+            public int getColor() {
+              return color;
+            }
+
+            @Override
+            public float getFontLineHeight() {
+              return fontLineHeight;
+            }
+
+            @Override
+            public int getLinesCount() {
+              return linesCount;
+            }
+          };
+    }
+
+    return mTextContentItem;
   }
 
   interface TextOffsetOnTouchListener {

@@ -21,6 +21,7 @@ import android.widget.Checkable;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.proguard.annotations.DoNotStrip;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,8 +78,15 @@ public class TestItem {
   }
 
   public List<CharSequence> getTextItems() {
-    return ComponentHostUtils.extractTextContent(Collections.singletonList(mContent))
-        .getTextItems();
+    List<CharSequence> textList = new ArrayList<>();
+    List<TextContent> textContentList =
+        ComponentHostUtils.extractTextContent(Collections.singletonList(mContent));
+
+    for (TextContent textContent : textContentList) {
+      textList.addAll(textContent.getTextList());
+    }
+
+    return textList;
   }
 
   public boolean isChecked() {

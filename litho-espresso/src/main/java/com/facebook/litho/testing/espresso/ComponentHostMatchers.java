@@ -129,7 +129,7 @@ public class ComponentHostMatchers {
         }
 
         ComponentHost host = (ComponentHost) item;
-        for (CharSequence foundText : host.getTextContent().getTextItems()) {
+        for (CharSequence foundText : host.getTextContentText()) {
           if (foundText != null && textMatcher.matches(foundText.toString())) {
             return true;
           }

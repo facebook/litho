@@ -40,7 +40,7 @@ class ComponentQueries {
    */
   static boolean hasTextMatchingPredicate(
       final ComponentHost host, final Predicate<String> predicate) {
-    for (final CharSequence foundText : host.getTextContent().getTextItems()) {
+    for (final CharSequence foundText : host.getTextContentText()) {
       if (predicate.apply(foundText.toString())) {
         return true;
       }
@@ -58,7 +58,7 @@ class ComponentQueries {
    * @return true if the host has text matching the pattern.
    */
   static boolean matchesPattern(final ComponentHost host, final Pattern pattern) {
-    for (final CharSequence foundText : host.getTextContent().getTextItems()) {
+    for (final CharSequence foundText : host.getTextContentText()) {
       if (pattern.matcher(foundText).find()) {
         return true;
       }
