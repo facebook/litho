@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,33 +117,6 @@ public class LogTreePopulatorTest {
 
     verify(event).markerAnnotate("log_tag", "test");
     verifyNoMoreInteractions(event);
-  }
-
-  @Test
-  public void testGetAnnotationBundleFromLogger() {
-    final ComponentsLogger logger =
-        new TestComponentsLogger() {
-          @Nullable
-          @Override
-          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
-            final Object o = treeProps.get(MyKey.class);
-
-            final Map<String, String> map = new LinkedHashMap<>(2);
-            map.put("my_key", String.valueOf((int) o));
-            map.put("other_key", "value");
-
-            return map;
-          }
-        };
-
-    final TreeProps treeProps = new TreeProps();
-    final ComponentContext scopedContext = mContext;
-
-    treeProps.put(MyKey.class, 1337);
-    mContext.setTreeProps(treeProps);
-
-    final String res = LogTreePopulator.getAnnotationBundleFromLogger(scopedContext, logger);
-    assertThat(res).isEqualTo("my_key:1337;other_key:value;");
   }
 
   @Test
