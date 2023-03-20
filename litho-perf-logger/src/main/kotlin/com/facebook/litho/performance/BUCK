@@ -1,0 +1,18 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_JAVA_TARGET",
+    "litho_android_library",
+)
+
+litho_android_library(
+    name = "litho-perf-logger",
+    srcs = glob(["**/*.kt"]),
+    autoglob = False,
+    labels = [],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_JAVA_TARGET,
+    ],
+)
