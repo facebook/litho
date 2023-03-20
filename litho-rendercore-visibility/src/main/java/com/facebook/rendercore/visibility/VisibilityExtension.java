@@ -85,6 +85,12 @@ public class VisibilityExtension
     void addRenderUnitIdWhichHostsRenderTree(long id) {
       renderUnitIdsWhichHostRenderTrees.add(id);
     }
+
+    @Override
+    @Nullable
+    public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
+      return null;
+    }
   }
 
   public static class Visitor implements LayoutResultVisitor<Results> {

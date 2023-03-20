@@ -76,6 +76,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
     state.mPreviousLocalVisibleRect.setEmpty();
     state.mCurrentLocalVisibleRect = localVisibleRect;
+    state.mVisibilityBoundsTransformer = input.getVisibilityBoundsTransformer();
     state.mInput = input;
 
     if (isTracing) {
@@ -184,6 +185,14 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       }
       if (isTracing) {
         RenderCoreSystrace.beginSection("VisibilityExtension.processVisibilityOutputs");
+      }
+
+      @Nullable
+      VisibilityBoundsTransformer visibilityBoundsTransformer =
+          extensionState.getState().mVisibilityBoundsTransformer;
+      if (visibilityBoundsTransformer != null) {
+        localVisibleRect =
+            visibilityBoundsTransformer.getTransformedLocalVisibleRect(localVisibleRect);
       }
 
       processVisibilityOutputsNonInc(extensionState, localVisibleRect, isDirty);
@@ -542,6 +551,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
     private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
     private @Nullable Rect mCurrentLocalVisibleRect;
+    private @Nullable VisibilityBoundsTransformer mVisibilityBoundsTransformer;
     private @Nullable VisibilityExtensionInput mInput;
 
     /** @deprecated Only used for Litho's integration. Marked for removal. */

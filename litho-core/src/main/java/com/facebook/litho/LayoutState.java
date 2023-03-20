@@ -58,6 +58,7 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
+import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaEdge;
@@ -1978,5 +1979,11 @@ public class LayoutState
   @Nullable
   public Transition.RootBoundsTransition getRootWidthAnimation() {
     return mRootWidthAnimation;
+  }
+
+  @Override
+  @Nullable
+  public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
+    return getComponentContext().getVisibilityBoundsTransformer();
   }
 }

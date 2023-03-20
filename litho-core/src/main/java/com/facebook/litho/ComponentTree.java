@@ -60,6 +60,7 @@ import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
+import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -443,7 +444,8 @@ public class ComponentTree
             builder.errorEventHandler,
             logTag,
             logger,
-            renderUnitIdGenerator);
+            renderUnitIdGenerator,
+            builder.visibilityBoundsTransformer);
     mContext = ComponentContext.withComponentTree(builder.context, config, this);
 
     if (builder.mLifecycleProvider != null) {
@@ -3149,6 +3151,7 @@ public class ComponentTree
     final String logTag;
     @Nullable final ComponentsLogger logger;
     final RenderUnitIdGenerator renderUnitIdGenerator;
+    @Nullable final VisibilityBoundsTransformer visibilityBoundsTransformer;
 
     public LithoConfiguration(
         final ComponentsConfiguration config,
@@ -3161,7 +3164,8 @@ public class ComponentTree
         @Nullable ErrorEventHandler errorEventHandler,
         String logTag,
         @Nullable ComponentsLogger logger,
-        RenderUnitIdGenerator renderUnitIdGenerator) {
+        RenderUnitIdGenerator renderUnitIdGenerator,
+        @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer) {
       this.mComponentsConfiguration = config;
       this.areTransitionsEnabled = areTransitionsEnabled;
       this.isReconciliationEnabled = isReconciliationEnabled;
@@ -3174,6 +3178,7 @@ public class ComponentTree
       this.logTag = logTag;
       this.logger = logger;
       this.renderUnitIdGenerator = renderUnitIdGenerator;
+      this.visibilityBoundsTransformer = visibilityBoundsTransformer;
     }
   }
 
@@ -3205,6 +3210,7 @@ public class ComponentTree
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
     private @Nullable RenderUnitIdGenerator mRenderUnitIdGenerator;
+    private @Nullable VisibilityBoundsTransformer visibilityBoundsTransformer;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3386,6 +3392,12 @@ public class ComponentTree
     public Builder logger(@Nullable ComponentsLogger logger, @Nullable String logTag) {
       this.logger = logger;
       this.logTag = logTag;
+      return this;
+    }
+
+    public Builder visibilityBoundsTransformer(
+        @Nullable VisibilityBoundsTransformer visibilityBoundsTransformers) {
+      this.visibilityBoundsTransformer = visibilityBoundsTransformer;
       return this;
     }
 

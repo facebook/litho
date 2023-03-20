@@ -34,6 +34,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
+import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -127,7 +128,8 @@ public class ComponentContext implements Cloneable {
         DefaultErrorEventHandler.INSTANCE,
         logTag,
         logger,
-        null); // TODO check if we can make this not nullable and always instantiate one
+        null, // TODO check if we can make this not nullable and always instantiate one
+        null);
   }
 
   public ComponentContext(
@@ -181,7 +183,8 @@ public class ComponentContext implements Cloneable {
         lithoConfiguration.errorEventHandler,
         logTag != null ? logTag : lithoConfiguration.logTag,
         logger != null ? logger : lithoConfiguration.logger,
-        lithoConfiguration.renderUnitIdGenerator);
+        lithoConfiguration.renderUnitIdGenerator,
+        lithoConfiguration.visibilityBoundsTransformer);
   }
 
   ComponentContext makeNewCopy() {
@@ -841,5 +844,10 @@ public class ComponentContext implements Cloneable {
     if (mLithoTree != null) {
       mLithoTree.getStateUpdater().removePendingStateUpdate(key, nestedTreeContext);
     }
+  }
+
+  @Nullable
+  public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
+    return mLithoConfiguration.visibilityBoundsTransformer;
   }
 }
