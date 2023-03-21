@@ -44,10 +44,12 @@ public class LogTreePopulatorTest {
   public void testCustomTreePropLogger() {
     final ComponentsLogger logger =
         new TestComponentsLogger() {
+
           @Nullable
           @Override
-          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
-            final Object o = treeProps.get(MyKey.class);
+          public Map<String, String> getExtraAnnotations(
+              TreePropertyProvider treePropertyProvider) {
+            final Object o = treePropertyProvider.getProperty(MyKey.class);
 
             final Map<String, String> map = new HashMap<>(1);
             map.put("my_key", String.valueOf((int) o));
@@ -70,10 +72,12 @@ public class LogTreePopulatorTest {
   public void testSkipOnEmptyTag() {
     final TestComponentsLogger logger =
         new TestComponentsLogger() {
+
           @Nullable
           @Override
-          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
-            final Object o = treeProps.get(MyKey.class);
+          public Map<String, String> getExtraAnnotations(
+              TreePropertyProvider treePropertyProvider) {
+            final Object o = treePropertyProvider.getProperty(MyKey.class);
 
             final Map<String, String> map = new HashMap<>(1);
             map.put("my_key", String.valueOf((int) o));
@@ -101,9 +105,11 @@ public class LogTreePopulatorTest {
   public void testNullTreePropLogger() {
     final ComponentsLogger logger =
         new TestComponentsLogger() {
+
           @Nullable
           @Override
-          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+          public Map<String, String> getExtraAnnotations(
+              TreePropertyProvider treePropertyProvider) {
             return null;
           }
         };
@@ -121,14 +127,7 @@ public class LogTreePopulatorTest {
 
   @Test
   public void testSkipNullPerfEvent() {
-    final ComponentsLogger logger =
-        new TestComponentsLogger() {
-          @Nullable
-          @Override
-          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
-            return null;
-          }
-        };
+    final ComponentsLogger logger = new TestComponentsLogger();
 
     assertThat(LogTreePopulator.populatePerfEventFromLogger(mContext, logger, null)).isNull();
   }

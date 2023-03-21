@@ -86,7 +86,7 @@ object LogTreePopulator {
       return perfEvent
     }
 
-    val extraAnnotations = logger.getExtraAnnotations(treeProps) ?: return perfEvent
+    val extraAnnotations = logger.getExtraAnnotations { key -> treeProps[key] } ?: return perfEvent
     for ((key, value) in extraAnnotations) {
       perfEvent.markerAnnotate(key, value)
     }

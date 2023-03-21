@@ -2648,7 +2648,7 @@ public class LayoutStateCalculateTest {
     final ComponentsLogger logger =
         new TestComponentsLogger() {
           @Override
-          public @Nullable PerfEvent newPerformanceEvent(ComponentContext c, int eventId) {
+          public @Nullable PerfEvent newPerformanceEvent(int eventId) {
             return null;
           }
         };

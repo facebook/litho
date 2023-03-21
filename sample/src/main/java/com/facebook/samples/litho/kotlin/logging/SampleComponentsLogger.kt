@@ -17,18 +17,17 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import android.util.Log
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.FrameworkLogEvents
 import com.facebook.litho.PerfEvent
-import com.facebook.litho.TreeProps
+import com.facebook.litho.TreePropertyProvider
 import java.util.concurrent.atomic.AtomicInteger
 
 class SampleComponentsLogger : ComponentsLogger {
   private val tag = "LITHOSAMPLE"
   private val instanceCounter: AtomicInteger = AtomicInteger(0)
 
-  override fun newPerformanceEvent(c: ComponentContext, eventId: Int): PerfEvent {
+  override fun newPerformanceEvent(eventId: Int): PerfEvent {
     return PerfEventStore.obtain(eventId, instanceCounter.incrementAndGet())
   }
 
@@ -40,9 +39,12 @@ class SampleComponentsLogger : ComponentsLogger {
     PerfEventStore.release(event)
   }
 
-  override fun getExtraAnnotations(treeProps: TreeProps): MutableMap<String, String> =
-      treeProps?.get(LogContext::class.java)?.let { mutableMapOf("log_context" to "$it") }
-          ?: mutableMapOf()
+  override fun getExtraAnnotations(
+      treePropertyProvider: TreePropertyProvider
+  ): Map<String, String> {
+    val logContext = treePropertyProvider.getProperty(LogContext::class.java)
+    return buildMap { logContext?.let { put("log_context", "$it") } }
+  }
 
   override fun isTracing(logEvent: PerfEvent): Boolean = true
 

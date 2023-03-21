@@ -57,6 +57,14 @@ class TreeProps {
 
   override fun hashCode(): Int = Objects.hash(map)
 
+  /**
+   * This returns a copy of the content stored by the [TreeProps] in the raw format to which it is
+   * stored.
+   *
+   * This is only meant to be used by the internal APIs.
+   */
+  @JvmName("asRawMap") internal fun asRawMap(): Map<Class<*>, Any?> = map.toMap()
+
   companion object {
     /** @return a copy of the provided TreeProps instance; returns null if source is null */
     @JvmStatic

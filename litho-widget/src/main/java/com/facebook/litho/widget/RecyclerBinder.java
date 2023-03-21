@@ -2795,10 +2795,7 @@ public class RecyclerBinder
         logger == null
             ? null
             : LogTreePopulator.populatePerfEventFromLogger(
-                mComponentContext,
-                logger,
-                logTag,
-                logger.newPerformanceEvent(mComponentContext, EVENT_INIT_RANGE));
+                mComponentContext, logger, logTag, logger.newPerformanceEvent(EVENT_INIT_RANGE));
 
     try {
       final Size size = new Size();

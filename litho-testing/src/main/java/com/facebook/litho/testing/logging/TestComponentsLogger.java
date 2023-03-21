@@ -17,12 +17,11 @@
 package com.facebook.litho.testing.logging;
 
 import androidx.annotation.Nullable;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.FrameworkLogEvents;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.TestPerfEvent;
-import com.facebook.litho.TreeProps;
+import com.facebook.litho.TreePropertyProvider;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +41,7 @@ public class TestComponentsLogger implements ComponentsLogger {
   }
 
   @Override
-  public PerfEvent newPerformanceEvent(
-      ComponentContext c, @FrameworkLogEvents.LogEventId int eventId) {
+  public PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {
     return new TestPerfEvent(eventId);
   }
 
@@ -71,7 +69,7 @@ public class TestComponentsLogger implements ComponentsLogger {
 
   @Nullable
   @Override
-  public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+  public Map<String, String> getExtraAnnotations(TreePropertyProvider treePropertyProvider) {
     return null;
   }
 }

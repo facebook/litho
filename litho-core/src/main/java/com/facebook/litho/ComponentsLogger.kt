@@ -35,7 +35,7 @@ interface ComponentsLogger {
    * Create a new performance event with the given event id and start counting the time. If the
    * logger doesn't care about this event id, it may return `null`.
    */
-  fun newPerformanceEvent(c: ComponentContext, @LogEventId eventId: Int): PerfEvent?
+  fun newPerformanceEvent(@LogEventId eventId: Int): PerfEvent?
 
   /** Write a [PerfEvent] to storage. This also marks the end of the event. */
   fun logPerfEvent(event: PerfEvent)
@@ -47,12 +47,23 @@ interface ComponentsLogger {
    * Provide additional log metadata based on the tree props of the component hierarchy currently
    * being logged. This can be useful if information about the component hierarchy is needed.
    *
-   * @param treeProps The treeprops available in the hierarchy.
-   * @return Null for efficiency purposes when no data needs to be logged, associative map
-   *   otherwise.
+   * @param treeProps is a map that contains the data that is held in the [TreeProps] of the
+   *   [ComponentTree]
+   * @return `null` efficiency purposes when no data needs to be logged, associative map otherwise.
    */
-  fun getExtraAnnotations(treeProps: TreeProps): Map<String, String>?
+  @JvmSuppressWildcards
+  fun getExtraAnnotations(treePropertyProvider: TreePropertyProvider): Map<String, String>? = null
 
   /** @return whether this event is being traced and getting logged. */
   fun isTracing(logEvent: PerfEvent): Boolean
+}
+
+/**
+ * This is an abstraction that helps to decouple from the content in core litho APIs.
+ *
+ * From this, you should be able to get the value for a given tree property of a [ComponentTree].
+ */
+fun interface TreePropertyProvider {
+
+  fun getProperty(key: Class<*>): Any?
 }
