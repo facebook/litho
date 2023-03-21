@@ -151,6 +151,7 @@ public class Reducer {
       final LayoutResult layoutResult,
       final int widthSpec,
       final int heightSpec,
+      final int renderStateId,
       final @Nullable RenderCoreExtension<?, ?>[] extensions) {
 
     RenderCoreSystrace.beginSection("Reducer.reduceTree");
@@ -171,7 +172,7 @@ public class Reducer {
 
     RenderCoreSystrace.endSection();
 
-    return new RenderTree(root, nodesArray, widthSpec, heightSpec, results);
+    return new RenderTree(root, nodesArray, widthSpec, heightSpec, renderStateId, results);
   }
 
   private static @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> populate(

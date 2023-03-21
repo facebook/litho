@@ -125,7 +125,12 @@ public class RenderResult<State, RenderContext> {
       final @Nullable State state) {
     return new RenderResult<>(
         Reducer.getReducedTree(
-            c.getAndroidContext(), layoutResult, widthSpec, heightSpec, c.getExtensions()),
+            c.getAndroidContext(),
+            layoutResult,
+            widthSpec,
+            heightSpec,
+            -1, // TODO: Get render state id from layout context
+            c.getExtensions()),
         node,
         c.getLayoutCache().getWriteCacheData(),
         state);

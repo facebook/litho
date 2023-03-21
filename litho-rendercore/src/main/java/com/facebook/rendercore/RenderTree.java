@@ -57,21 +57,6 @@ public class RenderTree {
   }
 
   /**
-   * TODO: Pass render state id to all RenderTree
-   *
-   * @deprecated use {@link #RenderTree(RenderTreeNode, RenderTreeNode[], int, int, int, List)}
-   */
-  @Deprecated
-  public RenderTree(
-      final RenderTreeNode root,
-      final RenderTreeNode[] flatList,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
-    this(root, flatList, widthSpec, heightSpec, -1, results);
-  }
-
-  /**
    * Throws an exception if this RenderTree already has a RenderUnit with the same ID as the one at
    * the given index.
    */
