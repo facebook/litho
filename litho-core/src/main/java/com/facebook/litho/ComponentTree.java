@@ -3047,7 +3047,7 @@ public class ComponentTree
     }
 
     @Override
-    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+    public void tracedRun() {
       doLayout(
           mResolveResult,
           null,
@@ -3086,7 +3086,7 @@ public class ComponentTree
     }
 
     @Override
-    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+    public void tracedRun() {
       doResolve(
           null,
           mSource,
@@ -3118,7 +3118,7 @@ public class ComponentTree
     }
 
     @Override
-    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+    public void tracedRun() {
       doLegacyRender(null, mSource, mAttribution, mTreeProps, mIsCreateLayoutInProgress);
     }
   }
@@ -3134,7 +3134,7 @@ public class ComponentTree
     }
 
     @Override
-    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+    public void tracedRun() {
       updateStateInternal(false, mAttribution, mIsCreateLayoutInProgress);
     }
   }

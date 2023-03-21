@@ -242,7 +242,7 @@ public class SectionTree {
     }
 
     @Override
-    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+    public void tracedRun() {
       @ApplyNewChangeSet int source;
       final String attribution;
       final ChangesetDebugInfo changesetDebugInfo = mChangesetDebugInfo;
@@ -258,7 +258,7 @@ public class SectionTree {
       }
 
       try {
-        applyNewChangeSet(source, attribution, prevTracingRunnable, changesetDebugInfo);
+        applyNewChangeSet(source, attribution, changesetDebugInfo);
       } catch (IndexOutOfBoundsException e) {
         throw maybeWrapWithDuplicatesMetadata(SectionTree.this, mCurrentSection, e);
       }
@@ -423,7 +423,7 @@ public class SectionTree {
                   ApplyNewChangeSet.SET_ROOT,
                   section.getSimpleName(),
                   Thread.currentThread().getStackTrace());
-      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, null, changesetDebugInfo);
+      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, changesetDebugInfo);
     }
   }
 
@@ -1099,7 +1099,6 @@ public class SectionTree {
   private void applyNewChangeSet(
       @ApplyNewChangeSet int source,
       @Nullable String attribution,
-      @Nullable ThreadTracingRunnable prevTracingRunnable,
       @Nullable ChangesetDebugInfo changesetDebugInfo) {
     if (attribution == null) {
       attribution = mTag;
@@ -1243,7 +1242,7 @@ public class SectionTree {
             releaseRange(mLastRanges.remove(removedComponent.getGlobalKey()));
           }
 
-          postNewChangeSets(prevTracingRunnable, changesetDebugInfo);
+          postNewChangeSets(changesetDebugInfo);
         }
 
         synchronized (this) {
@@ -1341,7 +1340,7 @@ public class SectionTree {
       mMainThreadHandler.post(
           new ThreadTracingRunnable() {
             @Override
-            public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+            public void tracedRun() {
               setLoadingStateToFocusDispatch(loadingState);
             }
           },
@@ -1387,11 +1386,9 @@ public class SectionTree {
     }
   }
 
-  private void postNewChangeSets(
-      @Nullable ThreadTracingRunnable prevTracingRunnable,
-      @Nullable final ChangesetDebugInfo changesetDebugInfo) {
+  private void postNewChangeSets(@Nullable final ChangesetDebugInfo changesetDebugInfo) {
     if (mUseBackgroundChangeSets) {
-      applyChangeSetsToTargetBackgroundAllowed(prevTracingRunnable, changesetDebugInfo);
+      applyChangeSetsToTargetBackgroundAllowed(changesetDebugInfo);
       return;
     }
 
@@ -1407,9 +1404,9 @@ public class SectionTree {
         tag = "SectionTree.postNewChangeSets - " + mTag;
       }
       final Runnable applyChangeSetsRunnable =
-          new ThreadTracingRunnable(prevTracingRunnable) {
+          new ThreadTracingRunnable() {
             @Override
-            public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+            public void tracedRun() {
               final SectionTree tree = SectionTree.this;
               try {
                 tree.applyChangeSetsToTargetUIThreadOnly(changesetDebugInfo);
@@ -1470,8 +1467,7 @@ public class SectionTree {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  private void applyChangeSetsToTargetBackgroundAllowed(
-      ThreadTracingRunnable prevTracingRunnable, ChangesetDebugInfo changesetDebugInfo) {
+  private void applyChangeSetsToTargetBackgroundAllowed(ChangesetDebugInfo changesetDebugInfo) {
     if (!mUseBackgroundChangeSets) {
       throw new IllegalStateException(
           "Must use UIThread-only variant when background change sets are not enabled.");
@@ -1503,9 +1499,9 @@ public class SectionTree {
           tag = "SectionTree.applyChangeSetsToTargetBackgroundAllowed - " + mTag;
         }
         mMainThreadHandler.post(
-            new ThreadTracingRunnable(prevTracingRunnable) {
+            new ThreadTracingRunnable() {
               @Override
-              public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
+              public void tracedRun() {
                 maybeDispatchFocusRequests();
               }
             },
