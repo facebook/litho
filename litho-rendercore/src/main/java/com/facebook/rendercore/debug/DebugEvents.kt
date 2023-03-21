@@ -193,7 +193,7 @@ object DebugEventDispatcher {
   }
 
   @Synchronized
-  internal fun subscribe(subscriber: DebugEventSubscriber) {
+  fun subscribe(subscriber: DebugEventSubscriber) {
     _mutableSubscribers.add(subscriber)
   }
 
@@ -224,8 +224,10 @@ object DebugEventBus {
     }
 
   @JvmStatic
-  fun subscribe(subscriber: DebugEventSubscriber) {
-    DebugEventDispatcher.subscribe(subscriber)
+  inline fun subscribe(block: () -> DebugEventSubscriber) {
+    if (enabled) {
+      DebugEventDispatcher.subscribe(block())
+    }
   }
 
   @JvmStatic
