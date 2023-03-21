@@ -217,6 +217,12 @@ object DebugEventDispatcher {
 /** Object to subscribe to debug events */
 object DebugEventBus {
 
+  var enabled: Boolean
+    get() = DebugEventDispatcher.enabled
+    set(value) {
+      DebugEventDispatcher.enabled = value
+    }
+
   @JvmStatic
   fun subscribe(subscriber: DebugEventSubscriber) {
     DebugEventDispatcher.subscribe(subscriber)
