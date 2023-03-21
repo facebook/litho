@@ -50,10 +50,10 @@
   <div class="breadcrumbs"><a href="../../index.html">litho-core</a><span class="delimiter">/</span><a href="../index.html">com.facebook.litho</a><span class="delimiter">/</span><span class="current">ThreadTracingRunnable</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Thread</span><wbr><span>Tracing</span><wbr><span><span>Runnable</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">ThreadTracingRunnable</a> : <a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html">Runnable</a></div><p class="paragraph">ThreadTracingRunnable tries to help debugging crashes happening across threads showing the stacktrace of the crash origin which scheduled this runnable. </p><p class="paragraph">A stacktrace, together with the origin thread name, is going to be "saved" at the time this class is instantiated and appended as "cause" to whatever is thrown from the <a href="run.html">run</a> method. </p><p class="paragraph">To use this class, just extends it instead of implementing <a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html">Runnable</a>. Then just implement <a href="traced-run.html">tracedRun</a>. </p><p class="paragraph">If the runnable is created ahead of time and used somewhere else later, a new, more relevant, stacktrace can be created calling <a href="reset-trace.html">resetTrace</a>. </p><p class="paragraph">If you need to chain another Runnable from your run method, you can pass the Throwable parameter from <a href="traced-run.html">tracedRun</a> to the constructor <a href="traced-run.html">tracedRun</a>. Therefore, the crash can now be tracked across boundaries of multiple threads.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">ThreadTracingRunnable</a> : <a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html">Runnable</a></div><p class="paragraph">ThreadTracingRunnable tries to help debugging crashes happening across threads showing the stacktrace of the crash origin which scheduled this runnable.</p><p class="paragraph">A stacktrace, together with the origin thread name, is going to be "saved" at the time this class is instantiated and appended as "cause" to whatever is thrown from the run() method.</p><p class="paragraph">To use this class, just extends it instead of implementing <a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html">Runnable</a>. Then just implement tracedRun().</p><p class="paragraph">If the runnable is created ahead of time and used somewhere else later, a new, more relevant, stacktrace can be created calling resetTrace().</p></div></div>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
     <div class="tabs-section-body">
       <h2 class="tabbedcontent">Constructors</h2>
       <div class="table" data-togglable="Constructors"><a data-name="-685212786%2FConstructors%2F947585829" anchor-label="ThreadTracingRunnable" id="-685212786%2FConstructors%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
@@ -66,22 +66,24 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="-thread-tracing-runnable.html"><span class="token function">ThreadTracingRunnable</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-thread-tracing-runnable.html"><span class="token function">ThreadTracingRunnable</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="-1385149500%2FConstructors%2F947585829" anchor-label="ThreadTracingRunnable" id="-1385149500%2FConstructors%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+      </div>
+      <h2 class="">Types</h2>
+      <div class="table" data-togglable="Types"><a data-name="1731682986%2FClasslikes%2F947585829" anchor-label="Companion" id="1731682986%2FClasslikes%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue TabbedContent">
+          <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="-thread-tracing-runnable.html"><span>Thread</span><wbr><span>Tracing</span><wbr><span><span>Runnable</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1385149500%2FConstructors%2F947585829"></span>
+                <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1731682986%2FClasslikes%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="-thread-tracing-runnable.html"><span class="token function">ThreadTracingRunnable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>prevTracingRunnable<span class="token operator">: </span><a href="index.html">ThreadTracingRunnable</a></span></span><span class="token punctuation">)</span></div><div class="brief ">If you are chaining multiple Runnable together that are going to schedule each other within their run() method, use this constructor to track their stacktraces across threads.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
               </div>
             </div>
           </div>
@@ -98,7 +100,7 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="reset-trace.html"><span class="token function">resetTrace</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Reset the stacktrace of this Runnable to this point.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="reset-trace.html"><span class="token function">resetTrace</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Reset the stacktrace of this Runnable to this point. To be called right before the runnable is scheduled to another thread, in case it was instantiated ahead of time with a different code flow.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -113,22 +115,22 @@
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="run.html"><span class="token function">run</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="run.html"><span class="token function">run</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="368497613%2FFunctions%2F947585829" anchor-label="tracedRun" id="368497613%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
+<a data-name="-751402857%2FFunctions%2F947585829" anchor-label="tracedRun" id="-751402857%2FFunctions%2F947585829" data-filterable-set=":litho-core:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":litho-core:dokkaHtmlPartial/release" data-filterable-set=":litho-core:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
                 <div><a href="traced-run.html"><span>traced</span><wbr><span><span>Run</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="368497613%2FFunctions%2F947585829"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-751402857%2FFunctions%2F947585829"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="traced-run.html"><span class="token function">tracedRun</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">prevTracingRunnable<span class="token operator">: </span><a href="index.html">ThreadTracingRunnable</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Implement here your <a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html#run">run</a> code.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":litho-core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="traced-run.html"><span class="token function">tracedRun</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Implement here your Runnable#run() code.</p></div></div></div>
               </div>
             </div>
           </div>
