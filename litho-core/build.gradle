@@ -53,11 +53,12 @@ android {
 dependencies {
     // Project dependencies
     api project(':litho-annotations')
+    api project(':litho-perf-logger')
     api project(':litho-rendercore')
     api project(':litho-rendercore-incremental-mount')
-    api project(':litho-rendercore-visibility')
-    api project(':litho-rendercore-transitions')
     api project(':litho-rendercore-primitives')
+    api project(':litho-rendercore-transitions')
+    api project(':litho-rendercore-visibility')
 
     // Annotations
     compileOnly deps.jsr305

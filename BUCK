@@ -13,6 +13,7 @@ load(
     "LITHO_COROUTINES_KOTLIN_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_TARGET",
+    "LITHO_PERF_LOGGER",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "LITHO_SECTIONS_COMMON_TARGET",
     "LITHO_SECTIONS_TARGET",
@@ -75,6 +76,16 @@ litho_android_library(
     ],
     exported_deps = [
         LITHO_COROUTINES_KOTLIN_TARGET,
+    ],
+)
+
+litho_android_library(
+    name = "litho_perf_logger",
+    feature = FBApp_UIFrameworks_Litho_Litho,
+    required_for_source_only_abi = True,
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        LITHO_PERF_LOGGER,
     ],
 )
 
