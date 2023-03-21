@@ -27,6 +27,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RootHostView;
@@ -491,7 +492,7 @@ public class IncrementalMountExtensionTest {
             flatList,
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            -1,
+            RenderState.NO_ID,
             null);
 
     final TestIncrementalMountExtensionInput input1 =
@@ -554,7 +555,7 @@ public class IncrementalMountExtensionTest {
             flatList,
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            -1,
+            RenderState.NO_ID,
             null);
 
     final TestIncrementalMountExtensionInput input =
@@ -596,7 +597,7 @@ public class IncrementalMountExtensionTest {
             flatList_reparented,
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            -1,
+            RenderState.NO_ID,
             null);
     final TestIncrementalMountExtensionInput input_reparented =
         new TestIncrementalMountExtensionInput(

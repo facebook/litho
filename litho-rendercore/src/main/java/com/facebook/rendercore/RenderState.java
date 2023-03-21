@@ -38,6 +38,8 @@ public class RenderState<State, RenderContext> {
   private static final int PROMOTION_MESSAGE = 99;
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
 
+  public static int NO_ID = -1;
+
   /**
    * Represents a function capable of creating a tree. The tree is lazy so that the creation can be
    * done inline with the layout pass.

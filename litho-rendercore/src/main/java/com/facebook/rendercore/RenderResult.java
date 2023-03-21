@@ -129,7 +129,7 @@ public class RenderResult<State, RenderContext> {
             layoutResult,
             widthSpec,
             heightSpec,
-            -1, // TODO: Get render state id from layout context
+            RenderState.NO_ID, // TODO: Get render state id from layout context
             c.getExtensions()),
         node,
         c.getLayoutCache().getWriteCacheData(),
