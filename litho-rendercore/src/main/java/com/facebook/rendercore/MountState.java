@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore;
 
+import static com.facebook.rendercore.debug.DebugEventDispatcher.trace;
 import static com.facebook.rendercore.extensions.RenderCoreExtension.shouldUpdate;
 
 import android.content.Context;
@@ -23,12 +24,14 @@ import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import com.facebook.rendercore.debug.DebugEvent;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -107,173 +110,183 @@ public class MountState implements MountDelegateTarget {
    */
   @Override
   public void mount(RenderTree renderTree) {
+
     if (renderTree == null) {
       throw new IllegalStateException("Trying to mount a null RenderTreeNode");
     }
 
-    try {
+    trace(
+        DebugEvent.RenderTreeMounted,
+        String.valueOf(renderTree.getRenderStateId()),
+        Collections::emptyMap,
+        traceScope -> {
+          try {
 
-      if (mIsMounting) {
-        throw new IllegalStateException("Trying to mount while already mounting!");
-      }
+            if (mIsMounting) {
+              throw new IllegalStateException("Trying to mount while already mounting!");
+            }
 
-      mIsMounting = true;
+            mIsMounting = true;
 
-      final RenderTree previousRenderTree = mRenderTree;
+            final RenderTree previousRenderTree = mRenderTree;
 
-      if (!updateRenderTree(renderTree)) {
-        return;
-      }
+            if (!updateRenderTree(renderTree)) {
+              return null;
+            }
 
-      final boolean isTracing = mTracer.isTracing();
-      if (isTracing) {
-        mTracer.beginSection("MountState.mount");
-        mTracer.beginSection("RenderCoreExtension.beforeMount");
-      }
+            final boolean isTracing = mTracer.isTracing();
+            if (isTracing) {
+              mTracer.beginSection("MountState.mount");
+              mTracer.beginSection("RenderCoreExtension.beforeMount");
+            }
 
-      RenderCoreExtension.beforeMount(mRootHost, mMountDelegate, mRenderTree.getExtensionResults());
+            RenderCoreExtension.beforeMount(
+                mRootHost, mMountDelegate, mRenderTree.getExtensionResults());
 
-      if (isTracing) {
-        mTracer.endSection();
-        mTracer.beginSection("MountState.prepareMount");
-      }
+            if (isTracing) {
+              mTracer.endSection();
+              mTracer.beginSection("MountState.prepareMount");
+            }
 
-      prepareMount(previousRenderTree);
+            prepareMount(previousRenderTree);
 
-      if (isTracing) {
-        mTracer.endSection();
-      }
+            if (isTracing) {
+              mTracer.endSection();
+            }
 
-      // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is found.
-      // We only want to collect logs when we're not ensuring the parent is mounted. When false,
-      // we will throw an exception that contains these logs. The StringBuilder is not needed when
-      // mEnsureParentMount is true.
-      @Nullable final StringBuilder mountLoopLogBuilder;
-      if (!mEnsureParentMounted) {
-        mountLoopLogBuilder = new StringBuilder();
-        mountLoopLogBuilder.append("Start of mount loop log:\n");
-      } else {
-        mountLoopLogBuilder = null;
-      }
+            // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is
+            //  found. We only want to collect logs when we're not ensuring the parent is mounted.
+            //  When false, we will throw an exception that contains these logs. The StringBuilder
+            //  is not needed when mEnsureParentMount is true.
+            @Nullable final StringBuilder mountLoopLogBuilder;
+            if (!mEnsureParentMounted) {
+              mountLoopLogBuilder = new StringBuilder();
+              mountLoopLogBuilder.append("Start of mount loop log:\n");
+            } else {
+              mountLoopLogBuilder = null;
+            }
 
-      // Starting from 1 as the RenderTreeNode in position 0 always represents the root which is
-      // handled in prepareMount()
-      for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
-        final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
+            // Starting from 1 as the RenderTreeNode in position 0 always represents the root which
+            // is handled in prepareMount()
+            for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
+              final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
 
-        final boolean isMountable = isMountable(renderTreeNode, i);
-        final MountItem currentMountItem =
-            mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
-        boolean isMounted = currentMountItem != null;
+              final boolean isMountable = isMountable(renderTreeNode, i);
+              final MountItem currentMountItem =
+                  mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
+              boolean isMounted = currentMountItem != null;
 
-        // There is a bug (T99579422) happening where we try to incorrectly update an already
-        // mounted render unit.
+              // There is a bug (T99579422) happening where we try to incorrectly update an already
+              // mounted render unit.
 
-        // TODO: T101249557
-        if (isMounted) {
-          final RenderUnit currentRenderUnit = currentMountItem.getRenderUnit();
-          boolean needsRecovery = false;
-          // The old render unit we try to update is the root host which should not be updated
-          // (that's
-          // why we start from index 1).
-          if (currentRenderUnit.getId() != renderTreeNode.getRenderUnit().getId()) {
-            needsRecovery = true;
-            ErrorReporter.getInstance()
-                .report(
-                    LogLevel.ERROR,
-                    TAG,
-                    "The current render unit id does not match the new one. "
-                        + " index: "
-                        + i
-                        + " mountableOutputCounts: "
-                        + renderTree.getMountableOutputCount()
-                        + " currentRenderUnitId: "
-                        + currentRenderUnit.getId()
-                        + " newRenderUnitId: "
-                        + renderTreeNode.getRenderUnit().getId(),
-                    null,
-                    0,
-                    null);
+              // TODO: T101249557
+              if (isMounted) {
+                final RenderUnit currentRenderUnit = currentMountItem.getRenderUnit();
+                boolean needsRecovery = false;
+                // The old render unit we try to update is the root host which should not be updated
+                // That's why we start from index 1.
+                if (currentRenderUnit.getId() != renderTreeNode.getRenderUnit().getId()) {
+                  needsRecovery = true;
+                  ErrorReporter.getInstance()
+                      .report(
+                          LogLevel.ERROR,
+                          TAG,
+                          "The current render unit id does not match the new one. "
+                              + " index: "
+                              + i
+                              + " mountableOutputCounts: "
+                              + renderTree.getMountableOutputCount()
+                              + " currentRenderUnitId: "
+                              + currentRenderUnit.getId()
+                              + " newRenderUnitId: "
+                              + renderTreeNode.getRenderUnit().getId(),
+                          null,
+                          0,
+                          null);
+                }
+
+                // The new render unit is not the same type as the old one.
+                if (!currentRenderUnit
+                    .getRenderContentType()
+                    .equals(renderTreeNode.getRenderUnit().getRenderContentType())) {
+                  needsRecovery = true;
+                  ErrorReporter.getInstance()
+                      .report(
+                          LogLevel.ERROR,
+                          TAG,
+                          "Trying to update a MountItem with different ContentType. "
+                              + "index: "
+                              + i
+                              + " currentRenderUnitId: "
+                              + currentRenderUnit.getId()
+                              + " newRenderUnitId: "
+                              + renderTreeNode.getRenderUnit().getId()
+                              + " currentRenderUnitContentType: "
+                              + currentRenderUnit.getRenderContentType()
+                              + " newRenderUnitContentType: "
+                              + renderTreeNode.getRenderUnit().getRenderContentType(),
+                          null,
+                          0,
+                          null);
+                }
+                if (needsRecovery) {
+                  recreateMountedItemMap(previousRenderTree);
+                  // reset the loop to start over.
+                  i = 1;
+                  continue;
+                }
+              }
+
+              if (!mEnsureParentMounted) {
+                mountLoopLogBuilder.append(
+                    String.format(
+                        Locale.US,
+                        "Processing index %d: isMountable = %b, isMounted = %b\n",
+                        i,
+                        isMountable,
+                        isMounted));
+              }
+
+              if (!isMountable) {
+                if (isMounted) {
+                  unmountItemRecursively(
+                      currentMountItem.getRenderTreeNode().getRenderUnit().getId());
+                }
+              } else if (!isMounted) {
+                mountRenderUnit(renderTreeNode, mountLoopLogBuilder);
+              } else {
+                updateMountItemIfNeeded(renderTreeNode, currentMountItem);
+              }
+            }
+
+            mNeedsRemount = false;
+
+            if (isTracing) {
+              mTracer.endSection();
+              mTracer.beginSection("RenderCoreExtension.afterMount");
+            }
+
+            RenderCoreExtension.afterMount(mMountDelegate);
+
+            if (isTracing) {
+              mTracer.endSection();
+            }
+
+          } catch (Exception e) {
+            ErrorReporter.report(
+                LogLevel.ERROR,
+                "MountState:Exception",
+                "Exception while mounting: " + e.getMessage(),
+                e,
+                0,
+                null);
+            CommonUtils.rethrow(e);
+          } finally {
+            mIsMounting = false;
           }
 
-          // The new render unit is not the same type as the old one.
-          if (!currentRenderUnit
-              .getRenderContentType()
-              .equals(renderTreeNode.getRenderUnit().getRenderContentType())) {
-            needsRecovery = true;
-            ErrorReporter.getInstance()
-                .report(
-                    LogLevel.ERROR,
-                    TAG,
-                    "Trying to update a MountItem with different ContentType. "
-                        + "index: "
-                        + i
-                        + " currentRenderUnitId: "
-                        + currentRenderUnit.getId()
-                        + " newRenderUnitId: "
-                        + renderTreeNode.getRenderUnit().getId()
-                        + " currentRenderUnitContentType: "
-                        + currentRenderUnit.getRenderContentType()
-                        + " newRenderUnitContentType: "
-                        + renderTreeNode.getRenderUnit().getRenderContentType(),
-                    null,
-                    0,
-                    null);
-          }
-          if (needsRecovery) {
-            recreateMountedItemMap(previousRenderTree);
-            // reset the loop to start over.
-            i = 1;
-            continue;
-          }
-        }
-
-        if (!mEnsureParentMounted) {
-          mountLoopLogBuilder.append(
-              String.format(
-                  Locale.US,
-                  "Processing index %d: isMountable = %b, isMounted = %b\n",
-                  i,
-                  isMountable,
-                  isMounted));
-        }
-
-        if (!isMountable) {
-          if (isMounted) {
-            unmountItemRecursively(currentMountItem.getRenderTreeNode().getRenderUnit().getId());
-          }
-        } else if (!isMounted) {
-          mountRenderUnit(renderTreeNode, mountLoopLogBuilder);
-        } else {
-          updateMountItemIfNeeded(renderTreeNode, currentMountItem);
-        }
-      }
-
-      mNeedsRemount = false;
-
-      if (isTracing) {
-        mTracer.endSection();
-        mTracer.beginSection("RenderCoreExtension.afterMount");
-      }
-
-      RenderCoreExtension.afterMount(mMountDelegate);
-
-      if (isTracing) {
-        mTracer.endSection();
-      }
-
-    } catch (Exception e) {
-      ErrorReporter.report(
-          LogLevel.ERROR,
-          "MountState:Exception",
-          "Exception while mounting: " + e.getMessage(),
-          e,
-          0,
-          null);
-      CommonUtils.rethrow(e);
-    } finally {
-      mIsMounting = false;
-    }
+          return null;
+        });
   }
 
   /**

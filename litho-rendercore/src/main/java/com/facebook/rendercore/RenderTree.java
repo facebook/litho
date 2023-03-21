@@ -27,6 +27,7 @@ import java.util.Locale;
 /** TODO add javadoc */
 public class RenderTree {
 
+  private final int mRenderStateId;
   private final RenderTreeNode mRoot;
   private final RenderTreeNode[] mFlatList;
   private final int mWidthSpec;
@@ -40,17 +41,34 @@ public class RenderTree {
       final RenderTreeNode[] flatList,
       final int widthSpec,
       final int heightSpec,
+      final int renderStateId,
       final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
     mRoot = root;
     mFlatList = flatList;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mResults = results;
+    mRenderStateId = renderStateId;
 
     for (int i = 0; i < mFlatList.length; i++) {
       assertNoDuplicateRenderUnits(i);
       mIdToIndexMap.put(mFlatList[i].getRenderUnit().getId(), i);
     }
+  }
+
+  /**
+   * TODO: Pass render state id to all RenderTree
+   *
+   * @deprecated use {@link #RenderTree(RenderTreeNode, RenderTreeNode[], int, int, int, List)}
+   */
+  @Deprecated
+  public RenderTree(
+      final RenderTreeNode root,
+      final RenderTreeNode[] flatList,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable List<Pair<RenderCoreExtension<?, ?>, Object>> results) {
+    this(root, flatList, widthSpec, heightSpec, -1, results);
   }
 
   /**
@@ -94,6 +112,10 @@ public class RenderTree {
 
   public int getHeightSpec() {
     return mHeightSpec;
+  }
+
+  public int getRenderStateId() {
+    return mRenderStateId;
   }
 
   public int getRenderTreeNodeIndex(long renderUnitId) {
