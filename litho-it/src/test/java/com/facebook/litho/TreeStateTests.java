@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.Set;
 import org.junit.Before;
@@ -81,34 +80,31 @@ public class TreeStateTests {
     final TreeState localTreeState = new TreeState(treeState);
 
     // Register local tree state to ISC
-    localTreeState.registerRenderState();
+    localTreeState.registerResolveState();
     localTreeState.registerLayoutState();
 
     // Add state containers in ISC
     localTreeState.createOrGetStateContainerForComponent(
         mComponentContext, mTestComponent, mTestComponentKey);
 
-    final StateHandler renderStateHandler =
-        Whitebox.getInternalState(treeState, "mRenderStateHandler");
-
-    final StateHandler layoutStateHandler =
-        Whitebox.getInternalState(treeState, "mLayoutStateHandler");
+    final StateHandler resolveState = treeState.getResolveState();
+    final StateHandler layoutStateHandler = treeState.getLayoutState();
 
     if (isNestedTree) {
-      assertThat(renderStateHandler.getInitialStateContainer().initialStates).isEmpty();
+      assertThat(resolveState.getInitialStateContainer().initialStates).isEmpty();
       assertThat(layoutStateHandler.getInitialStateContainer().initialStates).isNotEmpty();
     } else {
-      assertThat(renderStateHandler.getInitialStateContainer().initialStates).isNotEmpty();
+      assertThat(resolveState.getInitialStateContainer().initialStates).isNotEmpty();
       assertThat(layoutStateHandler.getInitialStateContainer().initialStates).isEmpty();
     }
 
     // Unregister local tree state from ISC
-    treeState.unregisterRenderState(localTreeState);
+    treeState.unregisterResolveState(localTreeState);
     treeState.unregisterLayoutState(localTreeState);
 
     // State containers in ISC should be cleared
-    assertThat(renderStateHandler.getInitialStateContainer()).isNotNull();
-    assertThat(renderStateHandler.getInitialStateContainer().initialStates).isEmpty();
+    assertThat(resolveState.getInitialStateContainer()).isNotNull();
+    assertThat(resolveState.getInitialStateContainer().initialStates).isEmpty();
 
     assertThat(layoutStateHandler.getInitialStateContainer()).isNotNull();
     assertThat(layoutStateHandler.getInitialStateContainer().initialStates).isEmpty();
@@ -131,7 +127,7 @@ public class TreeStateTests {
         mTestComponentKey, new StateUpdateTestComponent.TestStateContainer(), false);
 
     final TreeState treeState = new TreeState();
-    treeState.commitRenderState(previousTreeState);
+    treeState.commitResolveState(previousTreeState);
 
     StateUpdateTestComponent.TestStateContainer previousStateContainer =
         (StateUpdateTestComponent.TestStateContainer)
@@ -190,7 +186,8 @@ public class TreeStateTests {
         false,
         true);
 
-    final Set<String> renderKeysForPendingUpdates = treeState.getKeysForPendingRenderStateUpdates();
+    final Set<String> renderKeysForPendingUpdates =
+        treeState.getKeysForPendingResolveStateUpdates();
     assertThat(renderKeysForPendingUpdates).contains(mTestComponentKey);
 
     final Set<String> layoutKeysForPendingUpdates = treeState.getKeysForPendingLayoutStateUpdates();

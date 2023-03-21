@@ -83,14 +83,14 @@ public class StateUpdatesTest {
         .layout();
   }
 
-  private StateHandler getRenderStateHandler(final ComponentTree componentTree) {
+  private StateHandler getResolveState(final ComponentTree componentTree) {
     final TreeState treeState = Whitebox.getInternalState(componentTree, "mTreeState");
-    return Whitebox.getInternalState(treeState, "mRenderStateHandler");
+    return Whitebox.getInternalState(treeState, "mResolveState");
   }
 
-  private StateHandler getLayoutStateHandler(final ComponentTree componentTree) {
+  private StateHandler getLayoutState(final ComponentTree componentTree) {
     final TreeState treeState = Whitebox.getInternalState(componentTree, "mTreeState");
-    return Whitebox.getInternalState(treeState, "mLayoutStateHandler");
+    return Whitebox.getInternalState(treeState, "mLayoutState");
   }
 
   private TreeState getTreeState(final ComponentTree componentTree) {
@@ -111,18 +111,18 @@ public class StateUpdatesTest {
 
   private <T> T getInitialStateContainer(
       final ComponentTree componentTree, final String globalKey) {
-    final StateHandler stateHandler = getRenderStateHandler(componentTree);
+    final StateHandler stateHandler = getResolveState(componentTree);
     return (T) stateHandler.getInitialStateContainer().initialStates.get(globalKey);
   }
 
   private <T> T getLayoutInitialStateContainer(
       final ComponentTree componentTree, final String globalKey) {
-    final StateHandler stateHandler = getLayoutStateHandler(componentTree);
+    final StateHandler stateHandler = getLayoutState(componentTree);
     return (T) stateHandler.getInitialStateContainer().initialStates.get(globalKey);
   }
 
   private Map<String, StateContainer> getInitialStates(final ComponentTree componentTree) {
-    final StateHandler stateHandler = getRenderStateHandler(componentTree);
+    final StateHandler stateHandler = getResolveState(componentTree);
     return stateHandler.getInitialStateContainer().initialStates;
   }
 

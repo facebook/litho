@@ -30,8 +30,8 @@ import java.util.Set;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TreeState {
 
-  private final StateHandler mRenderStateHandler;
-  private final StateHandler mLayoutStateHandler;
+  private final StateHandler mResolveState;
+  private final StateHandler mLayoutState;
   @UIState private final TreeMountInfo mTreeMountInfo;
   @UIState private final RenderState mRenderState;
   private final EventTriggersContainer mEventTriggersContainer;
@@ -46,8 +46,8 @@ public class TreeState {
   }
 
   public TreeState() {
-    mRenderStateHandler = new StateHandler(null);
-    mLayoutStateHandler = new StateHandler(null);
+    mResolveState = new StateHandler(null);
+    mLayoutState = new StateHandler(null);
     mTreeMountInfo = new TreeMountInfo();
     mRenderState = new RenderState();
     mEventTriggersContainer = new EventTriggersContainer();
@@ -55,49 +55,48 @@ public class TreeState {
   }
 
   public TreeState(TreeState treeState) {
-    mRenderStateHandler = new StateHandler(treeState.mRenderStateHandler);
-    mLayoutStateHandler = new StateHandler(treeState.mLayoutStateHandler);
+    mResolveState = new StateHandler(treeState.mResolveState);
+    mLayoutState = new StateHandler(treeState.mLayoutState);
     mTreeMountInfo = treeState.mTreeMountInfo;
     mRenderState = treeState.mRenderState;
     mEventTriggersContainer = treeState.mEventTriggersContainer;
     mEventHandlersController = treeState.mEventHandlersController;
   }
 
-  // TODO: Remove this method
-  StateHandler getRenderStateHandler() {
-    return mRenderStateHandler;
+  StateHandler getResolveState() {
+    return mResolveState;
+  }
+
+  StateHandler getLayoutState() {
+    return mLayoutState;
   }
 
   private StateHandler getStateHandler(boolean isNestedTree) {
-    return isNestedTree ? mLayoutStateHandler : mRenderStateHandler;
+    return isNestedTree ? mLayoutState : mResolveState;
   }
 
-  void registerRenderState() {
-    mRenderStateHandler.getInitialStateContainer().registerStateHandler(mRenderStateHandler);
+  void registerResolveState() {
+    mResolveState.getInitialStateContainer().registerStateHandler(mResolveState);
   }
 
   void registerLayoutState() {
-    mLayoutStateHandler.getInitialStateContainer().registerStateHandler(mLayoutStateHandler);
+    mLayoutState.getInitialStateContainer().registerStateHandler(mLayoutState);
   }
 
-  void unregisterRenderState(TreeState treeState) {
-    mRenderStateHandler
-        .getInitialStateContainer()
-        .unregisterStateHandler(treeState.mRenderStateHandler);
+  void unregisterResolveState(TreeState treeState) {
+    mResolveState.getInitialStateContainer().unregisterStateHandler(treeState.mResolveState);
   }
 
   void unregisterLayoutState(TreeState treeState) {
-    mLayoutStateHandler
-        .getInitialStateContainer()
-        .unregisterStateHandler(treeState.mLayoutStateHandler);
+    mLayoutState.getInitialStateContainer().unregisterStateHandler(treeState.mLayoutState);
   }
 
-  void commitRenderState(TreeState localTreeState) {
-    mRenderStateHandler.commit(localTreeState.mRenderStateHandler);
+  void commitResolveState(TreeState localTreeState) {
+    mResolveState.commit(localTreeState.mResolveState);
   }
 
   void commitLayoutState(TreeState localTreeState) {
-    mLayoutStateHandler.commit(localTreeState.mLayoutStateHandler);
+    mLayoutState.commit(localTreeState.mLayoutState);
   }
 
   void queueStateUpdate(
@@ -121,12 +120,11 @@ public class TreeState {
   }
 
   boolean hasUncommittedUpdates() {
-    return mRenderStateHandler.hasUncommittedUpdates()
-        || mLayoutStateHandler.hasUncommittedUpdates();
+    return mResolveState.hasUncommittedUpdates() || mLayoutState.hasUncommittedUpdates();
   }
 
   public boolean isEmpty() {
-    return mRenderStateHandler.isEmpty() && mLayoutStateHandler.isEmpty();
+    return mResolveState.isEmpty() && mLayoutState.isEmpty();
   }
 
   void applyStateUpdatesEarly(
@@ -142,17 +140,17 @@ public class TreeState {
     return stateHandler.getKeysForPendingUpdates();
   }
 
-  Set<String> getKeysForPendingRenderStateUpdates() {
-    return getKeysForPendingStateUpdates(mRenderStateHandler);
+  Set<String> getKeysForPendingResolveStateUpdates() {
+    return getKeysForPendingStateUpdates(mResolveState);
   }
 
   Set<String> getKeysForPendingLayoutStateUpdates() {
-    return getKeysForPendingStateUpdates(mLayoutStateHandler);
+    return getKeysForPendingStateUpdates(mLayoutState);
   }
 
   Set<String> getKeysForPendingStateUpdates() {
-    Set<String> keys = getKeysForPendingStateUpdates(mRenderStateHandler);
-    keys.addAll(getKeysForPendingStateUpdates(mLayoutStateHandler));
+    Set<String> keys = getKeysForPendingStateUpdates(mResolveState);
+    keys.addAll(getKeysForPendingStateUpdates(mLayoutState));
     return keys;
   }
 
@@ -247,18 +245,18 @@ public class TreeState {
   List<Transition> getPendingStateUpdateTransitions() {
     List<Transition> updateStateTransitions = null;
 
-    if (mRenderStateHandler.getPendingStateUpdateTransitions() != null) {
+    if (mResolveState.getPendingStateUpdateTransitions() != null) {
       final Map<String, List<Transition>> pendingStateUpdateTransitions =
-          mRenderStateHandler.getPendingStateUpdateTransitions();
+          mResolveState.getPendingStateUpdateTransitions();
       updateStateTransitions = new ArrayList<>();
       for (List<Transition> pendingTransitions : pendingStateUpdateTransitions.values()) {
         updateStateTransitions.addAll(pendingTransitions);
       }
     }
 
-    if (mLayoutStateHandler.getPendingStateUpdateTransitions() != null) {
+    if (mLayoutState.getPendingStateUpdateTransitions() != null) {
       final Map<String, List<Transition>> pendingStateUpdateTransitions =
-          mLayoutStateHandler.getPendingStateUpdateTransitions();
+          mLayoutState.getPendingStateUpdateTransitions();
 
       if (updateStateTransitions == null) {
         updateStateTransitions = new ArrayList<>();

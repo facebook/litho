@@ -32,7 +32,6 @@ import com.facebook.litho.components.StateUpdateTestLayout;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.ThreadTestingUtils;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -148,7 +147,7 @@ public class StateUpdatesTest {
     assertThat(previousStateContainer).isNotNull();
     assertThat(previousStateContainer.mCount)
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
-    assertThat(getRenderStateHandler().getInitialStateContainer().initialStates.isEmpty()).isTrue();
+    assertThat(getResolveState().getInitialStateContainer().initialStates.isEmpty()).isTrue();
   }
 
   @Test
@@ -382,25 +381,24 @@ public class StateUpdatesTest {
 
     ThreadTestingUtils.failSilentlyIfInterrupted(() -> check.await(5000, TimeUnit.MILLISECONDS));
 
-    assertThat(getRenderStateHandler().getInitialStateContainer().initialStates.isEmpty()).isTrue();
-    assertThat(getRenderStateHandler().getInitialStateContainer().pendingStateHandlers.isEmpty())
+    assertThat(getResolveState().getInitialStateContainer().initialStates.isEmpty()).isTrue();
+    assertThat(getResolveState().getInitialStateContainer().pendingStateHandlers.isEmpty())
         .isTrue();
     assertThat(stateUpdateCalled.intValue()).isEqualTo(1);
     assertThat(stateValue.intValue()).isEqualTo(secondStateValue.intValue());
     assertThat(stateValue.intValue()).isEqualTo(10);
   }
 
-  private StateHandler getRenderStateHandler() {
-    final TreeState treeState = Whitebox.getInternalState(mComponentTree, "mTreeState");
-    return Whitebox.getInternalState(treeState, "mRenderStateHandler");
+  private StateHandler getResolveState() {
+    return mComponentTree.getTreeState().getResolveState();
   }
 
   private Map<String, StateContainer> getStateContainersMap() {
-    return getRenderStateHandler().getStateContainers();
+    return getResolveState().getStateContainers();
   }
 
   private Map<String, List<StateUpdate>> getPendingStateUpdates() {
-    return getRenderStateHandler().getPendingStateUpdates();
+    return getResolveState().getPendingStateUpdates();
   }
 
   private List<StateUpdate> getPendingStateUpdatesForComponent(String globalKey) {

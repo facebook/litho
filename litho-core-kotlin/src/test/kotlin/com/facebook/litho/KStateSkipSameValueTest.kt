@@ -532,7 +532,7 @@ class KStateSkipSameValueTest {
        * runnables enqueued on the UI or BG thread will be executed.
        */
       Assertions.assertThat(
-              lithoView.componentTree.treeState?.getRenderStateHandler()?.pendingHookUpdatesCount)
+              lithoView.componentTree.treeState?.resolveState?.pendingHookUpdatesCount)
           .isEqualTo(2)
     }
 

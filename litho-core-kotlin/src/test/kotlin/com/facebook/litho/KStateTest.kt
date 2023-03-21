@@ -153,7 +153,7 @@ class KStateTest {
   }
 
   fun getStateHandler(componentTree: ComponentTree): StateHandler? {
-    return componentTree.treeState?.getRenderStateHandler()
+    return componentTree.treeState?.resolveState
   }
 
   @Test

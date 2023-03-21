@@ -2165,7 +2165,7 @@ public class ComponentTree
           message);
     }
 
-    treeState.registerRenderState();
+    treeState.registerResolveState();
     ResolveTreeFuture treeFuture =
         new ResolveTreeFuture(
             context,
@@ -2255,7 +2255,7 @@ public class ComponentTree
       mCommittedResolveResult = resolveResult;
 
       if (mTreeState != null) {
-        mTreeState.commitRenderState(resolveResult.treeState);
+        mTreeState.commitResolveState(resolveResult.treeState);
       }
 
       // Resetting the count after resolve calculation is complete and it was triggered during a
@@ -2266,7 +2266,7 @@ public class ComponentTree
     }
 
     if (mTreeState != null) {
-      mTreeState.unregisterRenderState(resolveResult.treeState);
+      mTreeState.unregisterResolveState(resolveResult.treeState);
     }
   }
 
@@ -2489,7 +2489,7 @@ public class ComponentTree
       committedLayoutState = mCommittedLayoutState;
     }
 
-    treeState.registerRenderState();
+    treeState.registerResolveState();
     treeState.registerLayoutState();
 
     final LegacyRenderFuture future =
@@ -2614,7 +2614,7 @@ public class ComponentTree
           if (treeState != null) { // we could have been released
             saveRevision(rootComponent, treeState, treeProps, source, extraAttribution);
             if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
-              treeState.commitRenderState(localTreeState);
+              treeState.commitResolveState(localTreeState);
             }
             treeState.commitLayoutState(localTreeState);
             treeState.bindEventAndTriggerHandlers(createdEventHandlers, scopedSpecComponentInfos);
@@ -2633,7 +2633,7 @@ public class ComponentTree
 
       if (mTreeState != null && localTreeState != null) {
         if (mContext.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
-          mTreeState.unregisterRenderState(localTreeState);
+          mTreeState.unregisterResolveState(localTreeState);
         }
         mTreeState.unregisterLayoutState(localTreeState);
       }
