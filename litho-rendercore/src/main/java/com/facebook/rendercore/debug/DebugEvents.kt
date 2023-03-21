@@ -135,6 +135,20 @@ object DebugEventDispatcher {
   }
 
   @JvmStatic
+  inline fun dispatch(
+      type: String,
+      renderStateId: String,
+      attributes: () -> Map<String, Any?> = { emptyMap() },
+  ) {
+    dispatch(
+        type = type,
+        renderStateId = renderStateId,
+        timestamp = SystemClock.uptimeMillis(),
+        attributes = attributes,
+    )
+  }
+
+  @JvmStatic
   inline fun trace(
       type: String,
       renderStateId: String,

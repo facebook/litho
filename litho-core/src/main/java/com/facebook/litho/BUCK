@@ -35,6 +35,8 @@ litho_android_library(
     srcs = glob([
         "*.java",
         "*.kt",
+        "debug/**/*.kt",
+        "debug/**/*.java",
         "animation/*.java",
         "cancellation/*.kt",
         "choreographercompat/*.java",

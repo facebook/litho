@@ -56,14 +56,19 @@ import com.facebook.litho.cancellation.LayoutCancellationPolicy;
 import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.ResolveCancellationStrategy;
+import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
@@ -2583,6 +2588,17 @@ public class ComponentTree
         mCommittedLayoutState = layoutState;
         layoutState.markCommitted();
         committedNewLayout = true;
+        DebugEventDispatcher.dispatch(
+            LithoDebugEvent.LayoutCommitted,
+            String.valueOf(mId),
+            () -> {
+              Map<String, Object> attributes = new HashMap<>();
+              attributes.put(DebugEventAttribute.version, layoutVersion);
+              attributes.put(DebugEventAttribute.source, layoutSourceToString(source));
+              attributes.put(DebugEventAttribute.width, layoutState.getWidth());
+              attributes.put(DebugEventAttribute.height, layoutState.getHeight());
+              return attributes;
+            });
       }
 
       if (DEBUG_LOGS) {
