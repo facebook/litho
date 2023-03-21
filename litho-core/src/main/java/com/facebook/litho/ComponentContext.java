@@ -115,6 +115,14 @@ public class ComponentContext implements Cloneable {
 
   private static LithoConfiguration buildDefaultLithoConfiguration(
       Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
+    ComponentsLogger loggerToUse =
+        logger != null ? logger : ComponentsConfiguration.sComponentsLogger;
+
+    String logTagToUse = logTag;
+    if (logTag == null && logger == null && loggerToUse != null) {
+      logTagToUse = "global-components-logger";
+    }
+
     return new LithoConfiguration(
         ComponentsConfiguration.getDefaultComponentsConfiguration(),
         AnimationsDebug.areTransitionsEnabled(context),
@@ -126,8 +134,8 @@ public class ComponentContext implements Cloneable {
         null,
         !ComponentsConfiguration.isIncrementalMountGloballyDisabled,
         DefaultErrorEventHandler.INSTANCE,
-        logTag,
-        logger,
+        logTagToUse,
+        loggerToUse,
         null, // TODO check if we can make this not nullable and always instantiate one
         null);
   }

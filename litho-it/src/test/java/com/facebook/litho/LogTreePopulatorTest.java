@@ -91,7 +91,8 @@ public class LogTreePopulatorTest {
     treeProps.put(MyKey.class, 1337);
     mContext.setTreeProps(treeProps);
 
-    final ComponentContext noLogTagContext = new ComponentContext(getApplicationContext());
+    final ComponentContext noLogTagContext =
+        new ComponentContext(getApplicationContext(), null, null);
     final PerfEvent perfEvent =
         LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event);
 

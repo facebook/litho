@@ -23,6 +23,7 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BuildConfig;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
 import java.util.Set;
 
@@ -306,6 +307,8 @@ public class ComponentsConfiguration {
   public ResolveCancellationStrategy getResolveCancellationStrategy() {
     return mResolveCancellationStrategy;
   }
+
+  @Nullable public static ComponentsLogger sComponentsLogger;
 
   private boolean mIsLayoutCancellationEnabled = false;
 
