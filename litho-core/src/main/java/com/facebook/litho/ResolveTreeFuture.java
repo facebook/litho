@@ -248,7 +248,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
     final Component component = partialResult.component;
     final int resolveVersion = partialResult.version;
 
-    if (!partialResult.isPartialResult) {
+    if (!partialResult.isPartialResult()) {
       throw new IllegalStateException("Cannot resume a non-partial result");
     }
 

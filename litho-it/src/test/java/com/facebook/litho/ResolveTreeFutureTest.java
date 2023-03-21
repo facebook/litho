@@ -129,7 +129,7 @@ public class ResolveTreeFutureTest {
     assertThat(renderResult).isNotNull();
 
     // Ensure the render result from the main-thread calculation is not partial.
-    assertThat(renderResult.isPartialResult).isFalse();
+    assertThat(renderResult.isPartialResult()).isFalse();
 
     // Ensure that BlockedRenderComponent's render was only called once.
     assertThat(renderCountHolder[0]).isEqualTo(1);
