@@ -32,8 +32,8 @@ public class TreeState {
 
   private final StateHandler mResolveState;
   private final StateHandler mLayoutState;
-  @UIState private final TreeMountInfo mTreeMountInfo;
-  @UIState private final RenderState mRenderState;
+  private final @UIState TreeMountInfo mTreeMountInfo;
+  private final @UIState RenderState mRenderState;
   private final EventTriggersContainer mEventTriggersContainer;
   private final EventHandlersController mEventHandlersController;
   /**
