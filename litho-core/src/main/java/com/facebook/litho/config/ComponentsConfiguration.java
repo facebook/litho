@@ -352,6 +352,12 @@ public class ComponentsConfiguration {
     return mUseCancelableLayoutFutures;
   }
 
+  private final boolean mUsePaintAdvanceForEllipsisCalculation;
+
+  public boolean usePaintAdvanceForEllipsisCalculation() {
+    return mUsePaintAdvanceForEllipsisCalculation;
+  }
+
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
@@ -360,6 +366,7 @@ public class ComponentsConfiguration {
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
     mIsLegacyRenderEnabled = builder.mIsLegacyRenderEnabled;
+    mUsePaintAdvanceForEllipsisCalculation = builder.mUsePaintAdvanceForEllipsisCalculation;
   }
 
   public boolean shouldReuseOutputs() {
@@ -385,6 +392,7 @@ public class ComponentsConfiguration {
   }
 
   public static class Builder {
+    boolean mUsePaintAdvanceForEllipsisCalculation = false;
     boolean mUseCancelableLayoutFutures;
     boolean mShouldReuseOutputs = false;
     boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
@@ -420,6 +428,19 @@ public class ComponentsConfiguration {
 
     public ComponentsConfiguration.Builder isLegacyRenderEnabled(boolean enabled) {
       mIsLegacyRenderEnabled = enabled;
+      return this;
+    }
+
+    /**
+     * If enabled it will use the {@link TextSpec.getEllipsisOffsetFromPaintAdvance} as the method
+     * to calculate the ellipsis target point.
+     *
+     * <p>This is used for an experiment that is targetting reducing ANRs by avoiding a code path
+     * that is associated to a lot of ANRs.
+     */
+    public ComponentsConfiguration.Builder withTextPaintAdvanceEllipsisCalculation(
+        boolean enabled) {
+      mUsePaintAdvanceForEllipsisCalculation = enabled;
       return this;
     }
 

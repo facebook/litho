@@ -33,6 +33,7 @@ import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -50,6 +51,7 @@ import android.text.style.ImageSpan;
 import android.view.View;
 import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicCompat;
 import androidx.core.text.TextDirectionHeuristicsCompat;
@@ -83,6 +85,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
@@ -812,7 +815,18 @@ class TextSpec {
       ellipsisTarget = customEllipsisTextWidth;
     }
     // Get character offset number corresponding to that X position:
-    int ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
+
+    int ellipsisOffset;
+    if (ComponentsConfiguration.getDefaultComponentsConfiguration()
+            .usePaintAdvanceForEllipsisCalculation()
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      ellipsisOffset =
+          getEllipsisOffsetFromPaintAdvance(
+              newLayout, text, isRtl, ellipsizedLineNumber, ellipsisTarget);
+    } else {
+      ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
+    }
+
     if (ellipsisOffset > 0) {
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no
       // truncation, so subtract 1 from the result:
@@ -842,6 +856,15 @@ class TextSpec {
     }
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
+  private static int getEllipsisOffsetFromPaintAdvance(
+      Layout layout, CharSequence text, boolean isRtl, int line, float advance) {
+    Paint paint = layout.getPaint();
+    int lineStart = layout.getLineStart(line);
+    int lineEnd = layout.getLineEnd(line);
+
+    return paint.getOffsetForAdvance(text, lineStart, lineEnd, lineStart, lineEnd, isRtl, advance);
+  }
   /**
    * @param layout A prepared text layout object
    * @return The (zero-indexed) line number at which the text in this layout will be ellipsized, or
