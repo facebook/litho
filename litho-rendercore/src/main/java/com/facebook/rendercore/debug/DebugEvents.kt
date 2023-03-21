@@ -17,6 +17,7 @@
 package com.facebook.rendercore.debug
 
 import android.os.SystemClock
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Base class of all debug events */
 sealed class DebugEvent(
@@ -104,7 +105,12 @@ abstract class DebugEventSubscriber(vararg val events: String) {
 /** Object to dispatch debug events */
 object DebugEventDispatcher {
 
-  @JvmStatic var enabled: Boolean = false
+  val _enabled: AtomicBoolean = AtomicBoolean(false)
+  var enabled: Boolean
+    get() = _enabled.get()
+    set(value) {
+      _enabled.set(value)
+    }
 
   private val _mutableSubscribers: MutableSet<DebugEventSubscriber> = mutableSetOf()
 
@@ -217,6 +223,7 @@ object DebugEventDispatcher {
 /** Object to subscribe to debug events */
 object DebugEventBus {
 
+  @JvmStatic
   var enabled: Boolean
     get() = DebugEventDispatcher.enabled
     set(value) {
