@@ -20,8 +20,8 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CON
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_RESOLVE_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_RESOLVE_VERSION;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_SOURCE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_VERSION;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
@@ -2151,19 +2151,13 @@ public class ComponentTree
       context = new ComponentContext(mContext, treeProps);
     }
 
-    ComponentsLogger componentsLogger = context.getLogger();
-    PerfEvent resolvePerfEvent = null;
-    if (componentsLogger != null) {
-      resolvePerfEvent =
-          componentsLogger.newPerformanceEvent(FrameworkLogEvents.EVENT_CALCULATE_RESOLVE);
-      if (resolvePerfEvent != null) {
-        resolvePerfEvent.markerAnnotate(PARAM_COMPONENT, root.getSimpleName());
-        resolvePerfEvent.markerAnnotate(PARAM_RESOLVE_SOURCE, layoutSourceToString(source));
-        resolvePerfEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
-        resolvePerfEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
-        resolvePerfEvent.markerAnnotate(PARAM_RESOLVE_VERSION, localResolveVersion);
-      }
-    }
+    PerfEvent resolvePerfEvent =
+        createEventForPipeline(
+            FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
+            source,
+            extraAttribution,
+            root,
+            localResolveVersion);
 
     if (root.getBuilderContextName() != null
         && !Component.getBuilderContextName(mContext.getAndroidContext())
@@ -2254,8 +2248,9 @@ public class ComponentTree
     }
 
     commitResolveResult(resolveResult, isCreateLayoutInProgress);
-    if (componentsLogger != null && resolvePerfEvent != null) {
-      componentsLogger.logPerfEvent(resolvePerfEvent);
+    ComponentsLogger logger = getLogger();
+    if (logger != null && resolvePerfEvent != null) {
+      logger.logPerfEvent(resolvePerfEvent);
     }
 
     requestLayoutWithSplitFutures(
@@ -2268,6 +2263,28 @@ public class ComponentTree
         !useSeparateThreadHandlersForResolveAndLayout,
         widthSpec,
         heightSpec);
+  }
+
+  @Nullable
+  private PerfEvent createEventForPipeline(
+      @FrameworkLogEvents.LogEventId int eventId,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution,
+      Component root,
+      int pipelineVersion) {
+    ComponentsLogger logger = getContextLogger();
+    PerfEvent resolvePerfEvent = null;
+    if (logger != null) {
+      resolvePerfEvent = logger.newPerformanceEvent(eventId);
+      if (resolvePerfEvent != null) {
+        resolvePerfEvent.markerAnnotate(PARAM_COMPONENT, root.getSimpleName());
+        resolvePerfEvent.markerAnnotate(PARAM_SOURCE, layoutSourceToString(source));
+        resolvePerfEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
+        resolvePerfEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
+        resolvePerfEvent.markerAnnotate(PARAM_VERSION, pipelineVersion);
+      }
+    }
+    return resolvePerfEvent;
   }
 
   private synchronized void commitResolveResult(
@@ -2511,6 +2528,14 @@ public class ComponentTree
       committedLayoutState = mCommittedLayoutState;
     }
 
+    PerfEvent legacyRenderPerfEvent =
+        createEventForPipeline(
+            FrameworkLogEvents.EVENT_LEGACY_RENDER,
+            source,
+            extraAttribution,
+            root,
+            localLayoutVersion);
+
     treeState.registerResolveState();
     treeState.registerLayoutState();
 
@@ -2564,6 +2589,11 @@ public class ComponentTree
     if (output != null) {
       output.width = localLayoutState.getWidth();
       output.height = localLayoutState.getHeight();
+    }
+
+    ComponentsLogger logger = getLogger();
+    if (logger != null && legacyRenderPerfEvent != null) {
+      logger.logPerfEvent(legacyRenderPerfEvent);
     }
 
     commitLayoutState(

@@ -41,7 +41,7 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_GENERATE_CHANGESET = 13;
   int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
   int EVENT_SECTIONS_SET_ROOT = 15;
-  int EVENT_CALCULATE_LAYOUT_STATE = 16;
+  int EVENT_LEGACY_RENDER = 16;
   // Previously int EVENT_DRAW = 17; Now unused.
   int EVENT_BENCHMARK_RUN = 18;
   int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
@@ -57,7 +57,7 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET,
     FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN,
     FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT,
-    FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
+    FrameworkLogEvents.EVENT_LEGACY_RENDER,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
     FrameworkLogEvents.EVENT_INIT_RANGE,
@@ -99,13 +99,11 @@ public interface FrameworkLogEvents {
   String PARAM_SECTION_NEXT = "section_next";
   String PARAM_SECTION_SET_ROOT_SOURCE = "section_set_root_source";
   String PARAM_SET_ROOT_ON_BG_THREAD = "sections_set_root_bg_thread";
-  String PARAM_LAYOUT_STATE_SOURCE = "calculate_layout_state_source";
   String PARAM_ROOT_COMPONENT = "root_component";
   String PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT = "wait_for_result";
   String PARAM_IS_MAIN_THREAD = "is_main_thread";
-  String PARAM_LAYOUT_VERSION = "layout_version";
-  String PARAM_RESOLVE_VERSION = "resolve_version";
-  String PARAM_RESOLVE_SOURCE = "resolve_source";
+  String PARAM_VERSION = "version";
+  String PARAM_SOURCE = "source";
 
   String PARAM_CHANGESET_EFFECTIVE_COUNT = "changeset_effective_count";
   String PARAM_CHANGESET_INSERT_SINGLE_COUNT = "changeset_insert_single_count";
