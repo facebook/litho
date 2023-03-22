@@ -149,6 +149,7 @@ public class RecyclerBinder
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mRecyclerViewItemPrefetch;
   private final int mItemViewCacheSize;
+  private final boolean mRequestMountForPrefetchedItems;
   private final @RecyclingStrategy int mRecyclingStrategy;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
   private final @Nullable ComponentsConfiguration mComponentsConfiguration;
@@ -479,6 +480,7 @@ public class RecyclerBinder
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
+    private boolean requestMountForPrefetchedItems = false;
     private int itemViewCacheSize = 0;
     private @RecyclingStrategy int recyclingStrategy =
         ComponentsConfiguration.recyclerBinderStrategy;
@@ -613,6 +615,15 @@ public class RecyclerBinder
       // [SectionsRecyclerView], but we need this feature to pre-bind offscreen items for
       // full-screen size surfaces.
       this.itemViewCacheSize = size;
+      return this;
+    }
+
+    /**
+     * Enable pre-mounting for pre-fetched items, which requires to turn on RecyclerView's item
+     * prefetching first. See {@link Builder#recyclerViewItemPrefetch(boolean) }.
+     */
+    public Builder requestMountForPrefetchedItems(boolean isEnabled) {
+      this.requestMountForPrefetchedItems = isEnabled;
       return this;
     }
 
@@ -954,6 +965,7 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
+    mRequestMountForPrefetchedItems = builder.requestMountForPrefetchedItems;
     mItemViewCacheSize = builder.itemViewCacheSize;
     mComponentsConfiguration = builder.componentsConfiguration;
 
@@ -3936,7 +3948,7 @@ public class RecyclerBinder
         mRecyclerBinderAdapterDelegate.onBindViewHolder(
             holder, normalizedPosition, componentTreeHolder.getComponentTree(), renderInfo);
 
-        if (mComponentsConfiguration.requestMountForPrefetchedItems) {
+        if (mRequestMountForPrefetchedItems) {
           // Try to pre-mount components marked as excludeFromIncrementalMount.
           MountHelper.requestMount(componentTreeHolder.getComponentTree(), sEmptyRect, false);
         }

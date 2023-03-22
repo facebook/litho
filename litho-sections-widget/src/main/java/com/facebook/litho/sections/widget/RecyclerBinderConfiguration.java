@@ -51,6 +51,7 @@ public class RecyclerBinderConfiguration {
   private boolean mEnableStableIds;
   private final boolean mEnableItemPrefetch;
   private final int mItemViewCacheSize;
+  private final boolean mRequestMountForPrefetchedItems;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
@@ -83,6 +84,7 @@ public class RecyclerBinderConfiguration {
       boolean enableStableIds,
       boolean enableItemPrefetch,
       int itemViewCacheSize,
+      boolean requestMountForPrefetchedItems,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
@@ -112,6 +114,7 @@ public class RecyclerBinderConfiguration {
     mErrorEventHandler = errorEventHandler;
     mEnableItemPrefetch = enableItemPrefetch;
     mItemViewCacheSize = itemViewCacheSize;
+    mRequestMountForPrefetchedItems = requestMountForPrefetchedItems;
   }
 
   public float getRangeRatio() {
@@ -157,6 +160,10 @@ public class RecyclerBinderConfiguration {
 
   public int getItemViewCacheSize() {
     return mItemViewCacheSize;
+  }
+
+  public boolean getRequestMountForPrefetchedItems() {
+    return mRequestMountForPrefetchedItems;
   }
 
   public @Nullable List<ComponentLogParams> getInvalidStateLogParamsList() {
@@ -217,6 +224,7 @@ public class RecyclerBinderConfiguration {
     private boolean mEnableStableIds = ComponentsConfiguration.enableRecyclerBinderStableId;
     private boolean mEnableItemPrefetch = false;
     private int mItemViewCacheSize = 0;
+    private boolean mRequestMountForPrefetchedItems = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -252,6 +260,7 @@ public class RecyclerBinderConfiguration {
       this.mErrorEventHandler = configuration.mErrorEventHandler;
       this.mEnableItemPrefetch = configuration.mEnableItemPrefetch;
       this.mItemViewCacheSize = configuration.mItemViewCacheSize;
+      this.mRequestMountForPrefetchedItems = configuration.mRequestMountForPrefetchedItems;
     }
 
     /**
@@ -360,6 +369,15 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    /**
+     * Experimental. See {@link RecyclerBinder.Builder#requestMountForPrefetchedItems(boolean)} for
+     * more info.
+     */
+    public Builder setRequestMountForPrefetchedItems(boolean isEnabled) {
+      mRequestMountForPrefetchedItems = isEnabled;
+      return this;
+    }
+
     public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
       this.mComponentsConfiguration = componentsConfiguration;
       return this;
@@ -430,6 +448,7 @@ public class RecyclerBinderConfiguration {
           mEnableStableIds,
           mEnableItemPrefetch,
           mItemViewCacheSize,
+          mRequestMountForPrefetchedItems,
           mChangeSetThreadHandler,
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,

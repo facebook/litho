@@ -328,6 +328,7 @@ public class RecyclerCollectionComponentSpec {
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
             .recyclerViewItemPrefetch(binderConfiguration.getEnableItemPrefetch())
             .setItemViewCacheSize(binderConfiguration.getItemViewCacheSize())
+            .requestMountForPrefetchedItems(binderConfiguration.getRequestMountForPrefetchedItems())
             .startupLogger(startupLogger);
 
     if (binderConfiguration.getEstimatedViewportCount()
