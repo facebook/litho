@@ -199,10 +199,6 @@ public class LayoutState
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private @Nullable List<Transition> mTransitions;
-  // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
-  // creating and measuring the InternalNode of the LayoutState.
-  private volatile boolean mIsPartialLayoutState;
-
   private @Nullable RenderTree mCachedRenderTree = null;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
@@ -286,7 +282,7 @@ public class LayoutState
 
   @Override
   public boolean isPartialResult() {
-    return mIsPartialLayoutState;
+    return false;
   }
 
   /**
@@ -1212,9 +1208,7 @@ public class LayoutState
       throw new IllegalStateException(
           "Attempting to collect results on an already populated LayoutState."
               + "\n Root: "
-              + layoutState.mRootComponentName
-              + "\n Is partial: "
-              + layoutState.mIsPartialLayoutState);
+              + layoutState.mRootComponentName);
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
