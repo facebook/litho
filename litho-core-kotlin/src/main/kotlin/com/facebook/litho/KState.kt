@@ -140,27 +140,27 @@ internal constructor(
   }
 
   inner class HookUpdaterValue(val newValue: T) : HookUpdater {
-    override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? {
-      return currentState?.copyAndMutate(hookStateIndex, newValue)
+    override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
+      return currentState.copyAndMutate(hookStateIndex, newValue)
     }
   }
 
   inner class HookUpdaterLambda(val newValueFunction: (T) -> T) : HookUpdater {
-    override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? {
-      return currentState?.copyAndMutate(
+    override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer {
+      return currentState.copyAndMutate(
           hookStateIndex, newValueFunction(currentState.states[hookStateIndex] as T))
     }
   }
 
   private fun canSkip(newValue: T): Boolean {
     return context.stateUpdater?.canSkipStateUpdate(
-        context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext())
+        context.globalKey, hookStateIndex, newValue, context.isNestedTreeContext)
         ?: false
   }
 
   private fun canSkip(newValueFunction: (T) -> T): Boolean {
     return context.stateUpdater?.canSkipStateUpdate(
-        newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext())
+        newValueFunction, context.globalKey, hookStateIndex, context.isNestedTreeContext)
         ?: false
   }
 

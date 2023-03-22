@@ -23,5 +23,5 @@ package com.facebook.litho
 interface HookUpdater {
 
   /** Get a [KStateContainer] instance with updates applied. */
-  fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer?
+  fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer
 }

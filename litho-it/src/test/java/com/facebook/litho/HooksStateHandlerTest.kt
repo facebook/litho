@@ -45,7 +45,7 @@ class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
-          override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? =
+          override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               KStateContainer.withNewState(currentState, "newValue")
         })
     assertThat(first.hasUncommittedUpdates()).isTrue
@@ -76,14 +76,14 @@ class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
-          override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? =
+          override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5)
         })
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
-          override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? =
-              currentState?.copyAndMutate(1, 1 + currentState.states[1] as Int)
+          override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
+              currentState.copyAndMutate(1, 1 + currentState.states[1] as Int)
         })
     assertThat(first.hasUncommittedUpdates()).isTrue
     val second = StateHandler(first)
@@ -114,21 +114,21 @@ class HooksStateHandlerTest {
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
-          override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? =
+          override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
               KStateContainer.withNewState(currentState, "newValue").copyAndMutate(1, 5)
         })
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
-          override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? =
-              currentState?.copyAndMutate(1, currentState.states[1] as Int + 1)
+          override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
+              currentState.copyAndMutate(1, currentState.states[1] as Int + 1)
         })
     val second = StateHandler(first)
     first.queueHookStateUpdate(
         GLOBAL_KEY,
         object : HookUpdater {
-          override fun getUpdatedStateContainer(currentState: KStateContainer?): KStateContainer? =
-              currentState?.copyAndMutate(1, currentState.states[1] as Int + 1)
+          override fun getUpdatedStateContainer(currentState: KStateContainer): KStateContainer =
+              currentState.copyAndMutate(1, currentState.states[1] as Int + 1)
         })
     val third = StateHandler(first)
     third.keepStateContainerForGlobalKey(GLOBAL_KEY)
