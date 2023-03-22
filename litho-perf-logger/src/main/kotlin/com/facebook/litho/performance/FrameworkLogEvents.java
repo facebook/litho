@@ -47,6 +47,7 @@ public interface FrameworkLogEvents {
   int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
   int EVENT_INIT_RANGE = 20;
   int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21;
+  int EVENT_CALCULATE_RESOLVE = 22;
 
   @IntDef({
     FrameworkLogEvents.EVENT_MOUNT,
@@ -61,6 +62,7 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
     FrameworkLogEvents.EVENT_INIT_RANGE,
     FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT,
+    FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface LogEventId {}
@@ -102,6 +104,8 @@ public interface FrameworkLogEvents {
   String PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT = "wait_for_result";
   String PARAM_IS_MAIN_THREAD = "is_main_thread";
   String PARAM_LAYOUT_VERSION = "layout_version";
+  String PARAM_RESOLVE_VERSION = "resolve_version";
+  String PARAM_RESOLVE_SOURCE = "resolve_source";
 
   String PARAM_CHANGESET_EFFECTIVE_COUNT = "changeset_effective_count";
   String PARAM_CHANGESET_INSERT_SINGLE_COUNT = "changeset_insert_single_count";

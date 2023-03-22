@@ -17,6 +17,11 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_RESOLVE_SOURCE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_RESOLVE_VERSION;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
@@ -2146,6 +2151,20 @@ public class ComponentTree
       context = new ComponentContext(mContext, treeProps);
     }
 
+    ComponentsLogger componentsLogger = context.getLogger();
+    PerfEvent resolvePerfEvent = null;
+    if (componentsLogger != null) {
+      resolvePerfEvent =
+          componentsLogger.newPerformanceEvent(FrameworkLogEvents.EVENT_CALCULATE_RESOLVE);
+      if (resolvePerfEvent != null) {
+        resolvePerfEvent.markerAnnotate(PARAM_COMPONENT, root.getSimpleName());
+        resolvePerfEvent.markerAnnotate(PARAM_RESOLVE_SOURCE, layoutSourceToString(source));
+        resolvePerfEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
+        resolvePerfEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
+        resolvePerfEvent.markerAnnotate(PARAM_RESOLVE_VERSION, localResolveVersion);
+      }
+    }
+
     if (root.getBuilderContextName() != null
         && !Component.getBuilderContextName(mContext.getAndroidContext())
             .equals(root.getBuilderContextName())) {
@@ -2235,6 +2254,9 @@ public class ComponentTree
     }
 
     commitResolveResult(resolveResult, isCreateLayoutInProgress);
+    if (componentsLogger != null && resolvePerfEvent != null) {
+      componentsLogger.logPerfEvent(resolvePerfEvent);
+    }
 
     requestLayoutWithSplitFutures(
         resolveResult,
