@@ -224,6 +224,7 @@ class ViewAttributes {
     if (ambientShadowColor != other.ambientShadowColor) return false
     if (spotShadowColor != other.spotShadowColor) return false
     if (!isEquivalentTo(touchHandler, other.touchHandler)) return false
+    if (viewId != other.viewId) return false
     if (!equals(viewTag, other.viewTag)) return false
     if (!equals(viewTags, other.viewTags)) return false
 
@@ -248,6 +249,7 @@ class ViewAttributes {
     result = 31 * result + importantForAccessibility
     result = 31 * result + disableDrawableOutputs.hashCode()
     result = 31 * result + (contentDescription?.hashCode() ?: 0)
+    result = 31 * result + (viewId.hashCode())
     result = 31 * result + (viewTag?.hashCode() ?: 0)
     result = 31 * result + (transitionName?.hashCode() ?: 0)
     result = 31 * result + (viewTags?.hashCode() ?: 0)
@@ -290,6 +292,7 @@ class ViewAttributes {
     target.disableDrawableOutputs = disableDrawableOutputs
 
     contentDescription?.let { target.contentDescription = it }
+    target.viewId = viewId
     viewTag?.let { target.viewTag = it }
     transitionName?.let { target.transitionName = it }
     viewTags?.let { target.viewTags = it }

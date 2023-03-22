@@ -707,9 +707,11 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     if ((mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0) {
       target.setClipChildren(mClipChildren);
     }
+
     if (hasViewId()) {
       target.setViewId(mViewId);
     }
+
     if (mViewTag != null) {
       target.setViewTag(mViewTag);
     }
@@ -789,6 +791,11 @@ public class NodeInfo implements Equivalence<NodeInfo> {
     if ((mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0) {
       target.setClipChildren(mClipChildren);
     }
+
+    if (hasViewId()) {
+      target.setViewId(mViewId);
+    }
+
     if (mViewTag != null) {
       target.setViewTag(mViewTag);
     }
