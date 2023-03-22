@@ -339,8 +339,6 @@ public class ComponentsConfiguration {
 
   private final boolean mShouldReuseOutputs;
 
-  private final boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
-
   private final boolean mIsLegacyRenderEnabled;
 
   private final boolean mUsePaintAdvanceForEllipsisCalculation;
@@ -362,8 +360,6 @@ public class ComponentsConfiguration {
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
-    mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
-        builder.mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
     mIsLegacyRenderEnabled = builder.mIsLegacyRenderEnabled;
@@ -372,10 +368,6 @@ public class ComponentsConfiguration {
 
   public boolean shouldReuseOutputs() {
     return mShouldReuseOutputs;
-  }
-
-  public boolean keepLithoNodeAndLayoutResultTreeWithReconciliation() {
-    return mKeepLithoNodeAndLayoutResultTreeWithReconciliation;
   }
 
   public boolean isLegacyRenderEnabled() {
@@ -396,7 +388,6 @@ public class ComponentsConfiguration {
     boolean mUsePaintAdvanceForEllipsisCalculation = false;
     boolean mUseCancelableLayoutFutures;
     boolean mShouldReuseOutputs = false;
-    boolean mKeepLithoNodeAndLayoutResultTreeWithReconciliation = false;
     boolean mIsLayoutCancellationEnabled = false;
     boolean mIsLegacyRenderEnabled = false;
     @Nullable ResolveCancellationStrategy mResolveCancellationStrategy;
@@ -405,11 +396,6 @@ public class ComponentsConfiguration {
 
     public Builder useCancelableLayoutFutures(boolean enable) {
       this.mUseCancelableLayoutFutures = enable;
-      return this;
-    }
-
-    public Builder keepLithoNodeAndLayoutResultTreeWithReconciliation(boolean enable) {
-      this.mKeepLithoNodeAndLayoutResultTreeWithReconciliation = enable;
       return this;
     }
 
