@@ -227,6 +227,8 @@ public class ComponentsConfiguration {
     return useSeparateThreadHandlersForResolveAndLayout;
   }
 
+  public static boolean enableIsBoringLayoutCheckTimeout = false;
+
   /** Skip checking for root component and tree-props while layout */
   public static boolean isSkipRootCheckingEnabled = false;
 

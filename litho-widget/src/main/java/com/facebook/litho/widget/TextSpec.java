@@ -546,6 +546,11 @@ class TextSpec {
     layoutBuilder.setAlignment(
         getLayoutAlignment(textAlignment, textDirection, text, layoutDirection));
 
+    // T146855657 this is a temporary step to enable timeout for checking whether layout
+    // isBoringLayout
+    layoutBuilder.enableIsBoringLayoutCheckTimeout(
+        ComponentsConfiguration.enableIsBoringLayoutCheckTimeout);
+
     try {
       newLayout = layoutBuilder.build();
     } catch (ArrayIndexOutOfBoundsException e) { // To capture more info for T102756635
