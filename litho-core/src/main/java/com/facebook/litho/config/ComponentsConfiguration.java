@@ -301,13 +301,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableStateUpdatesBatching = true;
 
-  @Nullable private ResolveCancellationStrategy mResolveCancellationStrategy = null;
-
-  @Nullable
-  public ResolveCancellationStrategy getResolveCancellationStrategy() {
-    return mResolveCancellationStrategy;
-  }
-
   @Nullable public static ComponentsLogger sComponentsLogger;
 
   private boolean mIsLayoutCancellationEnabled = false;
@@ -329,9 +322,8 @@ public class ComponentsConfiguration {
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
 
-  public static void setDefaultComponentsConfigurationBuilder(
-      ComponentsConfiguration.Builder componentsConfigurationBuilder) {
-    defaultBuilder = componentsConfigurationBuilder;
+  public static void setDefaultComponentsConfigurationBuilder(Builder builder) {
+    defaultBuilder = builder;
     defaultComponentsConfiguration = defaultBuilder.build();
   }
 
@@ -351,14 +343,20 @@ public class ComponentsConfiguration {
 
   private final boolean mIsLegacyRenderEnabled;
 
-  public boolean getUseCancelableLayoutFutures() {
-    return mUseCancelableLayoutFutures;
-  }
-
   private final boolean mUsePaintAdvanceForEllipsisCalculation;
+
+  private @Nullable ResolveCancellationStrategy mResolveCancellationStrategy = null;
 
   public boolean usePaintAdvanceForEllipsisCalculation() {
     return mUsePaintAdvanceForEllipsisCalculation;
+  }
+
+  public @Nullable ResolveCancellationStrategy getResolveCancellationStrategy() {
+    return mResolveCancellationStrategy;
+  }
+
+  public boolean getUseCancelableLayoutFutures() {
+    return mUseCancelableLayoutFutures;
   }
 
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
@@ -405,31 +403,27 @@ public class ComponentsConfiguration {
 
     protected Builder() {}
 
-    public ComponentsConfiguration.Builder useCancelableLayoutFutures(
-        boolean useCancelableLayoutFutures) {
-      this.mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+    public Builder useCancelableLayoutFutures(boolean enable) {
+      this.mUseCancelableLayoutFutures = enable;
       return this;
     }
 
-    public ComponentsConfiguration.Builder keepLithoNodeAndLayoutResultTreeWithReconciliation(
-        boolean keepLithoNodeAndLayoutResultTreeWithReconciliation) {
-      this.mKeepLithoNodeAndLayoutResultTreeWithReconciliation =
-          keepLithoNodeAndLayoutResultTreeWithReconciliation;
+    public Builder keepLithoNodeAndLayoutResultTreeWithReconciliation(boolean enable) {
+      this.mKeepLithoNodeAndLayoutResultTreeWithReconciliation = enable;
       return this;
     }
 
-    public ComponentsConfiguration.Builder resolveCancellationStrategy(
-        @Nullable ResolveCancellationStrategy strategy) {
+    public Builder resolveCancellationStrategy(@Nullable ResolveCancellationStrategy strategy) {
       mResolveCancellationStrategy = strategy;
       return this;
     }
 
-    public ComponentsConfiguration.Builder isLayoutCancellationEnabled(boolean enabled) {
+    public Builder isLayoutCancellationEnabled(boolean enabled) {
       mIsLayoutCancellationEnabled = enabled;
       return this;
     }
 
-    public ComponentsConfiguration.Builder isLegacyRenderEnabled(boolean enabled) {
+    public Builder isLegacyRenderEnabled(boolean enabled) {
       mIsLegacyRenderEnabled = enabled;
       return this;
     }
@@ -441,8 +435,7 @@ public class ComponentsConfiguration {
      * <p>This is used for an experiment that is targetting reducing ANRs by avoiding a code path
      * that is associated to a lot of ANRs.
      */
-    public ComponentsConfiguration.Builder withTextPaintAdvanceEllipsisCalculation(
-        boolean enabled) {
+    public Builder withTextPaintAdvanceEllipsisCalculation(boolean enabled) {
       mUsePaintAdvanceForEllipsisCalculation = enabled;
       return this;
     }
