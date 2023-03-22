@@ -378,10 +378,12 @@ public class ComponentsConfiguration {
     return create(defaultComponentsConfiguration);
   }
 
-  public static ComponentsConfiguration.Builder create(
-      ComponentsConfiguration componentsConfiguration) {
+  public static ComponentsConfiguration.Builder create(ComponentsConfiguration config) {
     return new Builder()
-        .useCancelableLayoutFutures(componentsConfiguration.getUseCancelableLayoutFutures());
+        .useCancelableLayoutFutures(config.getUseCancelableLayoutFutures())
+        .resolveCancellationStrategy(config.getResolveCancellationStrategy())
+        .isLayoutCancellationEnabled(config.isLayoutCancellationEnabled())
+        .isLegacyRenderEnabled(config.isLegacyRenderEnabled());
   }
 
   public static class Builder {
