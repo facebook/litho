@@ -327,6 +327,7 @@ public class RecyclerCollectionComponentSpec {
             .lithoViewFactory(binderConfiguration.getLithoViewFactory())
             .errorEventHandler(binderConfiguration.getErrorEventHandler())
             .recyclerViewItemPrefetch(binderConfiguration.getEnableItemPrefetch())
+            .setItemViewCacheSize(binderConfiguration.getItemViewCacheSize())
             .startupLogger(startupLogger);
 
     if (binderConfiguration.getEstimatedViewportCount()

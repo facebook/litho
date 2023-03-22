@@ -49,7 +49,8 @@ public class RecyclerBinderConfiguration {
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mHScrollAsyncMode;
   private boolean mEnableStableIds;
-  private boolean mEnableItemPrefetch;
+  private final boolean mEnableItemPrefetch;
+  private final int mItemViewCacheSize;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
@@ -81,6 +82,7 @@ public class RecyclerBinderConfiguration {
       boolean hScrollAsyncMode,
       boolean enableStableIds,
       boolean enableItemPrefetch,
+      int itemViewCacheSize,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
@@ -109,6 +111,7 @@ public class RecyclerBinderConfiguration {
     mLithoViewFactory = lithoViewFactory;
     mErrorEventHandler = errorEventHandler;
     mEnableItemPrefetch = enableItemPrefetch;
+    mItemViewCacheSize = itemViewCacheSize;
   }
 
   public float getRangeRatio() {
@@ -150,6 +153,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean getEnableItemPrefetch() {
     return mEnableItemPrefetch;
+  }
+
+  public int getItemViewCacheSize() {
+    return mItemViewCacheSize;
   }
 
   public @Nullable List<ComponentLogParams> getInvalidStateLogParamsList() {
@@ -209,6 +216,7 @@ public class RecyclerBinderConfiguration {
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = ComponentsConfiguration.enableRecyclerBinderStableId;
     private boolean mEnableItemPrefetch = false;
+    private int mItemViewCacheSize = 0;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -243,6 +251,7 @@ public class RecyclerBinderConfiguration {
       this.mLithoViewFactory = configuration.mLithoViewFactory;
       this.mErrorEventHandler = configuration.mErrorEventHandler;
       this.mEnableItemPrefetch = configuration.mEnableItemPrefetch;
+      this.mItemViewCacheSize = configuration.mItemViewCacheSize;
     }
 
     /**
@@ -336,8 +345,18 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    /**
+     * Experimental. See {@link RecyclerBinder.Builder#recyclerViewItemPrefetch(boolean)} for more
+     * info.
+     */
     public Builder enableItemPrefetch(boolean enableItemPrefetch) {
       mEnableItemPrefetch = enableItemPrefetch;
+      return this;
+    }
+
+    /** Experimental. See {@link RecyclerBinder.Builder#setItemViewCacheSize(int)} for more info. */
+    public Builder setItemViewCacheSize(int cacheSize) {
+      mItemViewCacheSize = cacheSize;
       return this;
     }
 
@@ -410,6 +429,7 @@ public class RecyclerBinderConfiguration {
           mHScrollAsyncMode,
           mEnableStableIds,
           mEnableItemPrefetch,
+          mItemViewCacheSize,
           mChangeSetThreadHandler,
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,
