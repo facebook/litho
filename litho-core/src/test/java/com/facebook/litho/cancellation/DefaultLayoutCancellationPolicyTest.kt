@@ -16,7 +16,6 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.EmptyComponent
 import com.facebook.litho.MeasuredResultCache
 import com.facebook.litho.ResolveResult
