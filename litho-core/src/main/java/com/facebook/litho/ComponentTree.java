@@ -2265,6 +2265,10 @@ public class ComponentTree
         heightSpec);
   }
 
+  /**
+   * Creates a {@link PerfEvent} for the given {@param eventId}. If the used {@link
+   * ComponentsLogger} is not interested in that event, it will return <code>null</code>.
+   */
   @Nullable
   private PerfEvent createEventForPipeline(
       @FrameworkLogEvents.LogEventId int eventId,

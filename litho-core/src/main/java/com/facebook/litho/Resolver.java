@@ -149,18 +149,9 @@ public class Resolver {
     }
 
     ComponentsLogger componentsLogger = resolveStateContext.getComponentsLogger();
-    PerfEvent resolveLayoutCreationEvent = null;
-    if (componentsLogger != null) {
-      resolveLayoutCreationEvent =
-          componentsLogger.newPerformanceEvent(FrameworkLogEvents.EVENT_COMPONENT_RESOLVE);
-
-      if (resolveLayoutCreationEvent != null) {
-        resolveLayoutCreationEvent.markerAnnotate(
-            FrameworkLogEvents.PARAM_COMPONENT, component.getSimpleName());
-        resolveLayoutCreationEvent.markerAnnotate(
-            FrameworkLogEvents.PARAM_IS_MAIN_THREAD, ThreadUtils.isMainThread());
-      }
-    }
+    PerfEvent resolveLayoutCreationEvent =
+        createPerformanceEvent(
+            component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_RESOLVE);
 
     final LithoNode node;
     final ComponentContext c;
@@ -213,8 +204,16 @@ public class Resolver {
         node.flexDirection(YogaFlexDirection.COLUMN);
 
         // Call onPrepare for MountSpecs or prepare for MountableComponents.
+        PerfEvent prepareEvent =
+            createPerformanceEvent(
+                component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
+
         PrepareResult prepareResult =
             component.prepare(resolveStateContext, scopedComponentInfo.getContext());
+
+        if (prepareEvent != null && componentsLogger != null) {
+          componentsLogger.logPerfEvent(prepareEvent);
+        }
 
         if (prepareResult != null) {
           if (Component.isMountable(component) && prepareResult.mountable != null) {
@@ -338,6 +337,26 @@ public class Resolver {
     }
 
     return node;
+  }
+
+  /**
+   * Creates a {@link PerfEvent} for the given {@param eventId}. If the used {@link
+   * ComponentsLogger} is not interested in that event, it will return <code>null</code>.
+   */
+  @Nullable
+  private static PerfEvent createPerformanceEvent(
+      Component component,
+      @Nullable ComponentsLogger componentsLogger,
+      @FrameworkLogEvents.LogEventId int eventId) {
+    PerfEvent event = null;
+    if (componentsLogger != null) {
+      event = componentsLogger.newPerformanceEvent(eventId);
+      if (event != null) {
+        event.markerAnnotate(FrameworkLogEvents.PARAM_COMPONENT, component.getSimpleName());
+        event.markerAnnotate(FrameworkLogEvents.PARAM_IS_MAIN_THREAD, ThreadUtils.isMainThread());
+      }
+    }
+    return event;
   }
 
   static LithoNode resumeResolvingTree(

@@ -55,6 +55,9 @@ public interface FrameworkLogEvents {
    */
   int EVENT_COMPONENT_RESOLVE = 23;
 
+  /** This corresponds to the process of calling `onPrepare` for Mountables/Primitivies. */
+  int EVENT_COMPONENT_PREPARE = 24;
+
   @IntDef({
     FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
@@ -69,6 +72,7 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_INIT_RANGE,
     FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT,
     FrameworkLogEvents.EVENT_CALCULATE_RESOLVE,
+    FrameworkLogEvents.EVENT_COMPONENT_PREPARE,
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface LogEventId {}
