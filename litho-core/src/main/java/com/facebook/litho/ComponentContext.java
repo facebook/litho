@@ -337,7 +337,8 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting
   public ResolveStateContext setRenderStateContextForTests() {
     final ResolveStateContext resolveStateContext =
-        new ResolveStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
+        new ResolveStateContext(
+            new MeasuredResultCache(), new TreeState(), 0, null, null, null, getLogger());
     setRenderStateContext(resolveStateContext);
 
     return resolveStateContext;

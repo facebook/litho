@@ -49,6 +49,12 @@ public interface FrameworkLogEvents {
   int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21;
   int EVENT_CALCULATE_RESOLVE = 22;
 
+  /**
+   * This corresponds to the process of resolving a Component
+   * (LayoutSpecs/KComponents/Mountables/Primitives)
+   */
+  int EVENT_COMPONENT_RESOLVE = 23;
+
   @IntDef({
     FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,

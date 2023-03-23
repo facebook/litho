@@ -148,6 +148,20 @@ public class Resolver {
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
+    ComponentsLogger componentsLogger = resolveStateContext.getComponentsLogger();
+    PerfEvent resolveLayoutCreationEvent = null;
+    if (componentsLogger != null) {
+      resolveLayoutCreationEvent =
+          componentsLogger.newPerformanceEvent(FrameworkLogEvents.EVENT_COMPONENT_RESOLVE);
+
+      if (resolveLayoutCreationEvent != null) {
+        resolveLayoutCreationEvent.markerAnnotate(
+            FrameworkLogEvents.PARAM_COMPONENT, component.getSimpleName());
+        resolveLayoutCreationEvent.markerAnnotate(
+            FrameworkLogEvents.PARAM_IS_MAIN_THREAD, ThreadUtils.isMainThread());
+      }
+    }
+
     final LithoNode node;
     final ComponentContext c;
     final String globalKey;
@@ -254,6 +268,10 @@ public class Resolver {
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
+    }
+
+    if (resolveLayoutCreationEvent != null && componentsLogger != null) {
+      componentsLogger.logPerfEvent(resolveLayoutCreationEvent);
     }
 
     if (isTracing) {

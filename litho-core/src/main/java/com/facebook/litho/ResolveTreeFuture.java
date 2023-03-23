@@ -196,7 +196,13 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
 
       final ResolveStateContext rsc =
           new ResolveStateContext(
-              new MeasuredResultCache(), state, version, future, currentRootNode, perfEventLogger);
+              new MeasuredResultCache(),
+              state,
+              version,
+              future,
+              currentRootNode,
+              perfEventLogger,
+              context.getLogger());
 
       final @Nullable CalculationStateContext previousStateContext =
           context.getCalculationStateContext();

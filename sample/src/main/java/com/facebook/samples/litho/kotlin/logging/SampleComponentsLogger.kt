@@ -98,6 +98,7 @@ class SampleComponentsLogger : ComponentsLogger {
         FrameworkLogEvents.EVENT_INIT_RANGE -> "EVENT_INIT_RANGE"
         FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT ->
             "EVENT_LAYOUT_STATE_FUTURE_GET_WAIT"
+        FrameworkLogEvents.EVENT_COMPONENT_RESOLVE -> "EVENT_COMPONENT_RESOLVE"
         else -> "UNKNOWN"
       }
 

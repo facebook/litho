@@ -664,7 +664,8 @@ public abstract class Component
           node = lastMeasuredLayout.mNode;
         } else {
           final ResolveStateContext nestedRsc =
-              new ResolveStateContext(resultCache, treeState, layoutVersion, null, null, null);
+              new ResolveStateContext(
+                  resultCache, treeState, layoutVersion, null, null, null, null);
           c.setRenderStateContext(nestedRsc);
 
           node = Resolver.resolveTree(nestedRsc, c, this);
@@ -741,7 +742,8 @@ public abstract class Component
 
     try {
       final ResolveStateContext tempRsc =
-          new ResolveStateContext(new MeasuredResultCache(), new TreeState(), 0, null, null, null);
+          new ResolveStateContext(
+              new MeasuredResultCache(), new TreeState(), 0, null, null, null, null);
 
       if (c.getLithoTree() == null) {
         // This is a temporary tree that will be only used as a way of measuring a component.

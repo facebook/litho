@@ -37,6 +37,7 @@ public class ResolveStateContext implements CalculationStateContext {
   private final @Nullable LithoNode mCurrentRoot;
   private @Nullable Map<Integer, LithoNode> mComponentIdToWillRenderLayout;
   private final @Nullable PerfEvent mPerfEventLogger;
+  private final @Nullable ComponentsLogger mComponentsLogger;
   private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
 
   ResolveStateContext(
@@ -45,13 +46,15 @@ public class ResolveStateContext implements CalculationStateContext {
       final int layoutVersion,
       final @Nullable TreeFuture layoutStateFuture,
       final @Nullable LithoNode currentRoot,
-      final @Nullable PerfEvent perfEventLogger) {
+      final @Nullable PerfEvent perfEventLogger,
+      final @Nullable ComponentsLogger componentsLogger) {
     mCache = cache;
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
     mLayoutStateFuture = layoutStateFuture;
     mCurrentRoot = currentRoot;
     mPerfEventLogger = perfEventLogger;
+    mComponentsLogger = componentsLogger;
   }
 
   @Override
@@ -152,6 +155,10 @@ public class ResolveStateContext implements CalculationStateContext {
   @VisibleForTesting
   public void setLayoutStateFuture(@Nullable TreeFuture layoutStateFuture) {
     mLayoutStateFuture = layoutStateFuture;
+  }
+
+  public @Nullable ComponentsLogger getComponentsLogger() {
+    return mComponentsLogger;
   }
 
   public @Nullable PerfEvent getPerfEventLogger() {
