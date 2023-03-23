@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
  * Allows a new DynamicValue to be derived from an existing DynamicValue, with modifications
  * applied.
  *
- * <p>Nullsafe annotation have been removed from this file as infer asks for a (S!!) -> T!! type in
- * Kotlin 1.5 progressive and (S & Any) -> T & Any type in 1.6 progressive
- *
  * @param <I> The type provided
- * @param <O> The type held by the DynamicValue from which this is derived
+ * @param <O> The type held by the DynamicValue from which this is derived </O></I>
  */
-public class DerivedDynamicValue<I, O> extends DynamicValue<O> {
+class DerivedDynamicValue<I, O>(dynamicValue: DynamicValue<I>, modifier: Modifier<I, O>) :
+    DynamicValue<O>(modifier.modify(dynamicValue.get())) {
 
-  public interface Modifier<I, O> {
-    O modify(I in);
+  fun interface Modifier<in I, out O> {
+    fun modify(input: I): O
   }
 
-  public DerivedDynamicValue(final DynamicValue<I> dynamicValue, final Modifier<I, O> modifier) {
-    super(modifier.modify(dynamicValue.get()));
-    dynamicValue.attachListener(
-        new OnValueChangeListener<I>() {
-          @Override
-          public void onValueChange(DynamicValue<I> value) {
-            set(modifier.modify(dynamicValue.get()));
-          }
-        });
+  init {
+    dynamicValue.attachListener { set(modifier.modify(dynamicValue.get())) }
   }
 }

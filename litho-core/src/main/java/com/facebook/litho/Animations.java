@@ -115,8 +115,8 @@ public class Animations {
       DerivedDynamicValue.Modifier<Float, Float> modifier =
           new DerivedDynamicValue.Modifier<Float, Float>() {
             @Override
-            public Float modify(Float in) {
-              return DynamicValueBindingBuilder.this.modify(in);
+            public Float modify(Float input) {
+              return DynamicValueBindingBuilder.this.modify(input);
             }
           };
       return new DerivedDynamicValue<>(mSource, modifier);
@@ -126,8 +126,8 @@ public class Animations {
       DerivedDynamicValue.Modifier<Float, Integer> modifier =
           new DerivedDynamicValue.Modifier<Float, Integer>() {
             @Override
-            public Integer modify(Float in) {
-              return (int) DynamicValueBindingBuilder.this.modify(in);
+            public Integer modify(Float input) {
+              return (int) DynamicValueBindingBuilder.this.modify(input);
             }
           };
 
