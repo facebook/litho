@@ -18,7 +18,7 @@ package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 
-public class MountableLayoutResult implements Node.LayoutResult {
+public class MountableLayoutResult implements LayoutResult {
 
   private final @Nullable RenderUnit<?> mRenderUnit;
   private final int mMeasuredWidth;
@@ -69,7 +69,7 @@ public class MountableLayoutResult implements Node.LayoutResult {
   }
 
   @Override
-  public final Node.LayoutResult getChildAt(int index) {
+  public final LayoutResult getChildAt(int index) {
     throw new IllegalArgumentException("A MountableLayoutResult has no children");
   }
 

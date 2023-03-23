@@ -19,7 +19,7 @@ package com.facebook.rendercore.visibility;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
-import com.facebook.rendercore.Node;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
@@ -104,7 +104,7 @@ public class VisibilityExtension
     @Override
     public void visit(
         final @Nullable RenderTreeNode parent,
-        final Node.LayoutResult layoutResult,
+        final LayoutResult layoutResult,
         final Rect bounds,
         final int x,
         final int y,

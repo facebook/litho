@@ -20,6 +20,7 @@ import android.content.Context;
 import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
@@ -59,7 +60,7 @@ public class RendercoreTestDriver {
     /** Supply the root Node of the tree. */
     LayoutBuilderPart withNode(Node rootNode);
 
-    LayoutBuilderPart withLayoutResult(Node.LayoutResult result);
+    LayoutBuilderPart withLayoutResult(LayoutResult result);
   }
 
   public interface LayoutBuilderPart {
@@ -104,7 +105,7 @@ public class RendercoreTestDriver {
     }
 
     @Override
-    public LayoutBuilderPart withLayoutResult(Node.LayoutResult result) {
+    public LayoutBuilderPart withLayoutResult(LayoutResult result) {
       mRootNode = new SimpleWrapperNode(result);
       return this;
     }

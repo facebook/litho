@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore;
 
-import static com.facebook.rendercore.Node.LayoutResult;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -355,7 +354,7 @@ public class YogaLayoutFunction {
     }
 
     @Override
-    public Node.LayoutResult getChildAt(int index) {
+    public LayoutResult getChildAt(int index) {
       if (mDelegate != null) {
         return mDelegate.getChildAt(index);
       }

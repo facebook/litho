@@ -18,7 +18,7 @@ package com.facebook.rendercore.testing;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.List;

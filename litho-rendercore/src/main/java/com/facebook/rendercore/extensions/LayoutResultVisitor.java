@@ -18,7 +18,7 @@ package com.facebook.rendercore.extensions;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderTreeNode;
 
 /**

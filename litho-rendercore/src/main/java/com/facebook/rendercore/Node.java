@@ -17,8 +17,6 @@
 package com.facebook.rendercore;
 
 import android.view.View;
-import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 
 /**
  * Represents a single node in a RenderCore Tree. A Node has children, base layout information, and
@@ -47,66 +45,4 @@ public interface Node<RenderContext> {
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}
    */
   LayoutResult calculateLayout(LayoutContext<RenderContext> context, int widthSpec, int heightSpec);
-
-  /**
-   * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
-   * and all the layout information needed to position the content of such Node.
-   */
-  interface LayoutResult {
-
-    /** @return the RenderUnit that should be rendered by this layout result. */
-    @Nullable
-    RenderUnit<?> getRenderUnit();
-
-    /**
-     * @return layout specific data that was generated during the layout pass that created this
-     *     LayoutResult.
-     */
-    @Nullable
-    Object getLayoutData();
-
-    /** @return the number of children of this LayoutResult. */
-    int getChildrenCount();
-
-    /** @return the LayoutResult for the given child index */
-    LayoutResult getChildAt(int index);
-
-    /** @return the resolved X position for the Node */
-    @Px
-    int getXForChildAtIndex(int index);
-
-    /** @return the resolved Y position for the Node */
-    @Px
-    int getYForChildAtIndex(int index);
-
-    /** @return the resolved width for the Node */
-    @Px
-    int getWidth();
-
-    /** @return the resolved height for the Node */
-    @Px
-    int getHeight();
-
-    /** @return the resolved top padding for the Node */
-    @Px
-    int getPaddingTop();
-
-    /** @return the resolved right padding for the Node */
-    @Px
-    int getPaddingRight();
-
-    /** @return the resolved bottom padding for the Node */
-    @Px
-    int getPaddingBottom();
-
-    /** @return the resolved left padding for the Node */
-    @Px
-    int getPaddingLeft();
-
-    /** @return the width measurement that generated this LayoutResult */
-    int getWidthSpec();
-
-    /** @return the height measurement that generated this LayoutResult */
-    int getHeightSpec();
-  }
 }

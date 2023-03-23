@@ -18,7 +18,7 @@ package com.facebook.rendercore.incrementalmount;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
@@ -187,7 +187,7 @@ public class IncrementalMountRenderCoreExtension
     @Override
     public void visit(
         final @Nullable RenderTreeNode parent,
-        final Node.LayoutResult result,
+        final LayoutResult result,
         final Rect bounds,
         final int x,
         final int y,

@@ -19,7 +19,7 @@ package com.facebook.rendercore.visibility;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
-import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.LayoutResult;
 
 /**
  * Stores information about a node which has registered visibility handlers for. The information is

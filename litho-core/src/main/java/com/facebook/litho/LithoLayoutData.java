@@ -20,15 +20,14 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoRenderUnit.UpdateState;
 import com.facebook.rendercore.LayoutContext;
-import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderTreeNode;
 
 /**
  * This object will host the data associated with the component which is generated during the
  * measure pass, for example: the {@link InterStagePropsContainer}, and the {@link UpdateState}. It
- * will be created in {@link Node.LayoutResult#calculateLayout(LayoutContext, int, int)}. This
- * object will be returned by {@link Node.LayoutResult#getLayoutData()}, then written to the layout
- * data in {@link RenderTreeNode} during reduce.
+ * will be created in {@link LayoutResult#calculateLayout(LayoutContext, int, int)}. This object
+ * will be returned by {@link LayoutResult#getLayoutData()}, then written to the layout data in
+ * {@link RenderTreeNode} during reduce.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoLayoutData {

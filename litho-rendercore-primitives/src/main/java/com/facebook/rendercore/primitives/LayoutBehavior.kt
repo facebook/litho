@@ -16,8 +16,8 @@
 
 package com.facebook.rendercore.primitives
 
+import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.MeasureResult
-import com.facebook.rendercore.Node
 import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.primitives.utils.hasEquivalentFields
 
@@ -156,12 +156,12 @@ class PrimitiveLayoutResult(
       widthSpec: Int,
       heightSpec: Int,
       renderUnit: RenderUnit<*>?
-  ): Node.LayoutResult {
-    return object : Node.LayoutResult {
+  ): LayoutResult {
+    return object : LayoutResult {
       override fun getRenderUnit(): RenderUnit<*>? = renderUnit
       override fun getLayoutData(): Any? = this@PrimitiveLayoutResult.layoutData
       override fun getChildrenCount(): Int = 0
-      override fun getChildAt(index: Int): Node.LayoutResult {
+      override fun getChildAt(index: Int): LayoutResult {
         throw UnsupportedOperationException("A PrimitiveLayoutResult has no children")
       }
 

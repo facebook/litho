@@ -103,8 +103,7 @@ public class RenderResult<State, RenderContext> {
 
     RenderCoreSystrace.beginSection("RC Layout");
 
-    final Node.LayoutResult layoutResult =
-        node.calculateLayout(layoutContext, widthSpec, heightSpec);
+    final LayoutResult layoutResult = node.calculateLayout(layoutContext, widthSpec, heightSpec);
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("RC Reduce");
@@ -119,7 +118,7 @@ public class RenderResult<State, RenderContext> {
   public static <State, RenderContext> RenderResult<State, RenderContext> create(
       final LayoutContext<RenderContext> c,
       final Node<RenderContext> node,
-      final Node.LayoutResult layoutResult,
+      final LayoutResult layoutResult,
       final int widthSpec,
       final int heightSpec,
       final @Nullable State state) {

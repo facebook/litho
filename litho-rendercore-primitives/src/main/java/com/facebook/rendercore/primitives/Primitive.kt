@@ -19,6 +19,7 @@ package com.facebook.rendercore.primitives
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.facebook.rendercore.LayoutContext
+import com.facebook.rendercore.LayoutResult
 import com.facebook.rendercore.Node
 
 /**
@@ -47,7 +48,7 @@ class Primitive<ContentType : Any>(
       context: LayoutContext<Any?>,
       widthSpec: Int,
       heightSpec: Int
-  ): Node.LayoutResult {
+  ): LayoutResult {
     val layoutScope = LayoutScope(context)
     return with(layoutBehavior) {
       layoutScope

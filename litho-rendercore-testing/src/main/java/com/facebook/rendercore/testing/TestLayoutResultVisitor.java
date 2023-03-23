@@ -18,7 +18,7 @@ package com.facebook.rendercore.testing;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.testing.TestLayoutResultVisitor.Result;
