@@ -157,8 +157,8 @@ implements <a href="../../../../com/facebook/rendercore/extensions/LayoutResultV
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/facebook/rendercore/visibility/VisibilityExtension.Visitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-com.facebook.rendercore.visibility.VisibilityExtension.Results-">visit</a></span>(<a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore">RenderTreeNode</a>&nbsp;parent,
-     <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore">Node.LayoutResult</a>&nbsp;layoutResult,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/facebook/rendercore/visibility/VisibilityExtension.Visitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-com.facebook.rendercore.visibility.VisibilityExtension.Results-">visit</a></span>(<a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore">RenderTreeNode</a>&nbsp;parent,
+     <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore">LayoutResult</a>&nbsp;layoutResult,
      Rect&nbsp;bounds,
      int&nbsp;x,
      int&nbsp;y,
@@ -206,28 +206,28 @@ implements <a href="../../../../com/facebook/rendercore/extensions/LayoutResultV
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-com.facebook.rendercore.visibility.VisibilityExtension.Results-">
+<a name="visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-com.facebook.rendercore.visibility.VisibilityExtension.Results-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>visit</h4>
 <pre>public&nbsp;void&nbsp;visit(<a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore">RenderTreeNode</a>&nbsp;parent,
-                  <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore">Node.LayoutResult</a>&nbsp;layoutResult,
+                  <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore">LayoutResult</a>&nbsp;layoutResult,
                   Rect&nbsp;bounds,
                   int&nbsp;x,
                   int&nbsp;y,
                   int&nbsp;position,
                   <a href="../../../../com/facebook/rendercore/visibility/VisibilityExtension.Results.html" title="class in com.facebook.rendercore.visibility">VisibilityExtension.Results</a>&nbsp;results)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-State-">LayoutResultVisitor</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-State-">LayoutResultVisitor</a></code></span></div>
 <div class="block">This API is called for every LayoutResult during a layout pass.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-State-">visit</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html" title="interface in com.facebook.rendercore.extensions">LayoutResultVisitor</a>&lt;<a href="../../../../com/facebook/rendercore/visibility/VisibilityExtension.Results.html" title="class in com.facebook.rendercore.visibility">VisibilityExtension.Results</a>&gt;</code></dd>
+<dd><code><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-State-">visit</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html" title="interface in com.facebook.rendercore.extensions">LayoutResultVisitor</a>&lt;<a href="../../../../com/facebook/rendercore/visibility/VisibilityExtension.Results.html" title="class in com.facebook.rendercore.visibility">VisibilityExtension.Results</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>parent</code> - The parent <a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore"><code>RenderTreeNode</code></a>.</dd>
-<dd><code>layoutResult</code> - The <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> being visited.</dd>
-<dd><code>bounds</code> - The bounds of this <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> relative to its parent.</dd>
+<dd><code>layoutResult</code> - The <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> being visited.</dd>
+<dd><code>bounds</code> - The bounds of this <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> relative to its parent.</dd>
 <dd><code>x</code> - The absolute x position.</dd>
 <dd><code>y</code> - The absolute y position.</dd>
 <dd><code>position</code> - The position of the layout result.</dd>

@@ -93,7 +93,7 @@ var activeTableTab = "activeTableTab";
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
 <div class="subTitle">com.facebook.rendercore.visibility</div>
-<h2 title="Interface VisibilityOutput.Factory" class="title">Interface VisibilityOutput.Factory&lt;R extends <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore">Node.LayoutResult</a>&gt;</h2>
+<h2 title="Interface VisibilityOutput.Factory" class="title">Interface VisibilityOutput.Factory&lt;R extends <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore">LayoutResult</a>&gt;</h2>
 </div>
 <div class="contentContainer">
 <div class="description">
@@ -105,9 +105,9 @@ var activeTableTab = "activeTableTab";
 </dl>
 <hr>
 <br>
-<pre>public static interface <span class="typeNameLabel">VisibilityOutput.Factory&lt;R extends <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore">Node.LayoutResult</a>&gt;</span></pre>
+<pre>public static interface <span class="typeNameLabel">VisibilityOutput.Factory&lt;R extends <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore">LayoutResult</a>&gt;</span></pre>
 <div class="block">The factory that client frameworks must implement to enable <a href="../../../../com/facebook/rendercore/visibility/VisibilityExtension.html" title="class in com.facebook.rendercore.visibility"><code>VisibilityExtension</code></a> to
- create a <a href="../../../../com/facebook/rendercore/visibility/VisibilityOutput.html" title="class in com.facebook.rendercore.visibility"><code>VisibilityOutput</code></a> for every visited <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> during the layout
+ create a <a href="../../../../com/facebook/rendercore/visibility/VisibilityOutput.html" title="class in com.facebook.rendercore.visibility"><code>VisibilityOutput</code></a> for every visited <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> during the layout
  pass.</div>
 </li>
 </ul>
@@ -147,7 +147,7 @@ var activeTableTab = "activeTableTab";
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="createVisibilityOutput-com.facebook.rendercore.Node.LayoutResult-Rect-">
+<a name="createVisibilityOutput-com.facebook.rendercore.LayoutResult-Rect-">
 <!--   -->
 </a><a name="createVisibilityOutput-R-Rect-">
 <!--   -->
@@ -159,7 +159,7 @@ var activeTableTab = "activeTableTab";
                                         Rect&nbsp;absoluteBounds)</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>result</code> - The <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> for which a <a href="../../../../com/facebook/rendercore/visibility/VisibilityOutput.html" title="class in com.facebook.rendercore.visibility"><code>VisibilityOutput</code></a> is required</dd>
+<dd><code>result</code> - The <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> for which a <a href="../../../../com/facebook/rendercore/visibility/VisibilityOutput.html" title="class in com.facebook.rendercore.visibility"><code>VisibilityOutput</code></a> is required</dd>
 <dd><code>absoluteBounds</code> - The absolute bounds of .</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>an output if the client framework needs visibility events for .</dd>

@@ -111,8 +111,8 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public interface <span class="typeNameLabel">LayoutResultVisitor&lt;State&gt;</span></pre>
 <div class="block">The <a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html" title="interface in com.facebook.rendercore.extensions"><code>LayoutResultVisitor</code></a> API is used by RenderCore to allow a <a href="../../../../com/facebook/rendercore/extensions/RenderCoreExtension.html" title="class in com.facebook.rendercore.extensions"><code>RenderCoreExtension</code></a>
- to visit every <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> during every layout pass. The visitor can collect any data
- that it is interested in from every <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a>. A <a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html" title="interface in com.facebook.rendercore.extensions"><code>LayoutResultVisitor</code></a> must not
+ to visit every <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> during every layout pass. The visitor can collect any data
+ that it is interested in from every <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a>. A <a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html" title="interface in com.facebook.rendercore.extensions"><code>LayoutResultVisitor</code></a> must not
  mutate its <a href="../../../../com/facebook/rendercore/extensions/RenderCoreExtension.html" title="class in com.facebook.rendercore.extensions"><code>RenderCoreExtension</code></a>; it should be functional. Consequently, a <a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html" title="interface in com.facebook.rendercore.extensions"><code>LayoutResultVisitor</code></a> should only be used for one layout pass.</div>
 </li>
 </ul>
@@ -134,8 +134,8 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-State-">visit</a></span>(<a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore">RenderTreeNode</a>&nbsp;parent,
-     <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore">Node.LayoutResult</a>&nbsp;result,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/facebook/rendercore/extensions/LayoutResultVisitor.html#visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-State-">visit</a></span>(<a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore">RenderTreeNode</a>&nbsp;parent,
+     <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore">LayoutResult</a>&nbsp;result,
      Rect&nbsp;bounds,
      int&nbsp;x,
      int&nbsp;y,
@@ -159,16 +159,16 @@ var activeTableTab = "activeTableTab";
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-java.lang.Object-">
+<a name="visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-java.lang.Object-">
 <!--   -->
-</a><a name="visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.Node.LayoutResult-Rect-int-int-int-State-">
+</a><a name="visit-com.facebook.rendercore.RenderTreeNode-com.facebook.rendercore.LayoutResult-Rect-int-int-int-State-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>visit</h4>
 <pre>void&nbsp;visit(<a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore">RenderTreeNode</a>&nbsp;parent,
-           <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore">Node.LayoutResult</a>&nbsp;result,
+           <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore">LayoutResult</a>&nbsp;result,
            Rect&nbsp;bounds,
            int&nbsp;x,
            int&nbsp;y,
@@ -178,8 +178,8 @@ var activeTableTab = "activeTableTab";
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>parent</code> - The parent <a href="../../../../com/facebook/rendercore/RenderTreeNode.html" title="class in com.facebook.rendercore"><code>RenderTreeNode</code></a>.</dd>
-<dd><code>result</code> - The <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> being visited.</dd>
-<dd><code>bounds</code> - The bounds of this <a href="../../../../com/facebook/rendercore/Node.LayoutResult.html" title="interface in com.facebook.rendercore"><code>Node.LayoutResult</code></a> relative to its parent.</dd>
+<dd><code>result</code> - The <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> being visited.</dd>
+<dd><code>bounds</code> - The bounds of this <a href="../../../../com/facebook/rendercore/LayoutResult.html" title="interface in com.facebook.rendercore"><code>LayoutResult</code></a> relative to its parent.</dd>
 <dd><code>x</code> - The absolute x position.</dd>
 <dd><code>y</code> - The absolute y position.</dd>
 <dd><code>position</code> - The position of the layout result.</dd>
