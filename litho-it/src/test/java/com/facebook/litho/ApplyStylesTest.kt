@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.graphics.drawable.ColorDrawable
 import android.view.View
-import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.it.R
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.exactly
@@ -28,8 +28,6 @@ import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.MatchNode
 import com.facebook.rendercore.testing.match.ViewMatchNode
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -38,12 +36,11 @@ import org.junit.runner.RunWith
 @RunWith(LithoTestRunner::class)
 class ApplyStylesTest {
 
-  @JvmField @Rule var legacyLithoViewRule: LegacyLithoViewRule = LegacyLithoViewRule()
-
-  @Before
-  fun setup() {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
-  }
+  @JvmField
+  @Rule
+  var legacyLithoViewRule: LegacyLithoViewRule =
+      LegacyLithoViewRule(
+          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
 
   @Test
   fun styles_withWidthHeightStyle_appliesWidthHeight() {
@@ -282,10 +279,5 @@ class ApplyStylesTest {
                 .child(
                     ViewMatchNode.forType(ComponentHost::class.java)
                         .prop<Boolean>("isDuplicateParentStateEnabled", true)))
-  }
-
-  @After
-  fun restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
   }
 }

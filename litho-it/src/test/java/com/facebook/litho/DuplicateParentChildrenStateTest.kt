@@ -17,16 +17,13 @@
 package com.facebook.litho
 
 import android.graphics.Color
-import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.SimpleMountSpecTester
-import java.lang.Exception
 import junit.framework.Assert
 import org.assertj.core.api.Assertions
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,13 +32,12 @@ import org.robolectric.annotation.LooperMode
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner::class)
 class DuplicateParentChildrenStateTest {
-  @JvmField @Rule val lithoViewRule: LithoViewRule = LithoViewRule()
-
-  @Before
-  @Throws(Exception::class)
-  fun setUp() {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
-  }
+  @JvmField
+  @Rule
+  val lithoViewRule: LithoViewRule =
+      LithoViewRule(
+          componentsConfiguration =
+              ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
 
   @Test
   fun duplicateParentState_avoidedIfRedundant() {
@@ -149,10 +145,5 @@ class DuplicateParentChildrenStateTest {
         testLithoView.lithoView.mountDelegateTarget!!.getMountItemAt(1)!!.content
     Assert.assertTrue(secondMountedItem is ComponentHost)
     Assert.assertTrue((secondMountedItem as ComponentHost).addStatesFromChildren())
-  }
-
-  @After
-  fun restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
   }
 }

@@ -324,7 +324,8 @@ public class InternalNodeUtils {
       flags |= LAYOUT_FLAG_MATCH_HOST_BOUNDS;
     }
 
-    if (layoutState.mShouldDisableDrawableOutputs) {
+    if (ComponentContext.getComponentsConfig(node.getHeadComponentContext())
+        .isShouldDisableBgFgOutputs()) {
       flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
     }
     if (nodeInfo != null && nodeInfo.hasTouchEventHandlers()) {
@@ -503,7 +504,8 @@ public class InternalNodeUtils {
     // tree is mounted. Click handling is also considered accessibility content but
     // this is already covered separately i.e. click handler is not null.
     final boolean hasBackgroundOrForeground =
-        layoutState.mShouldDisableDrawableOutputs
+        ComponentContext.getComponentsConfig(node.getHeadComponentContext())
+                .isShouldDisableBgFgOutputs()
             && (node.getBackground() != null || node.getForeground() != null);
     final boolean hasAccessibilityContent =
         layoutState.isAccessibilityEnabled()
@@ -576,7 +578,8 @@ public class InternalNodeUtils {
   private static boolean hasSelectedStateWhenDisablingDrawableOutputs(
       final LayoutState layoutState, final LithoLayoutResult result) {
     final LithoNode node = result.getNode();
-    return layoutState.mShouldAddHostViewForRootComponent
+    return ComponentContext.getComponentsConfig(result.getNode().getHeadComponentContext())
+            .isShouldAddHostViewForRootComponent()
         && !willMountView(result)
         && node.getNodeInfo() != null
         && node.getNodeInfo().getSelectedState() != NodeInfo.SELECTED_UNSET;

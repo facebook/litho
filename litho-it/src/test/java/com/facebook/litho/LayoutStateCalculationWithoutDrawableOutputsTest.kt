@@ -19,12 +19,11 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.layoutstate.withoutdrawableoutput.RootComponent
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,17 +43,17 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
     lithoView.componentTree = componentTree
   }
 
-  @After
-  fun after() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
-  }
-
   @Test
   fun whenDrawableOutputsEnabledAndChildrenNotWrappedInView_shouldHaveExplicitDrawableOutputsForBackgroundAndForeground() {
     var output: LithoRenderUnit? = null
+    componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(false).build())
+            .build()
+    lithoView!!.componentTree = componentTree
     attach()
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false)
-    lithoView.setComponent(RootComponent.create(context).shouldWrapInView(false).build())
+    componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(false).build())
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
     assertThat(state?.mountableOutputCount).isEqualTo(7)
@@ -77,9 +76,14 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
   @Test
   fun whenDrawableOutputsEnabledAndChildrenWrappedInView_shouldHaveExplicitDrawableOutputsForBackgroundAndForeground() {
     var output: LithoRenderUnit? = null
+    componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(false).build())
+            .build()
+    lithoView!!.componentTree = componentTree
+    componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(true).build())
     attach()
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false)
-    lithoView.setComponent(RootComponent.create(context).shouldWrapInView(true).build())
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
     assertThat(state.mountableOutputCount).isEqualTo(9)
@@ -106,10 +110,15 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
   @Test
   fun whenDrawableOutputsDisabledAndChildrenNotWrappedInView_shouldNotHaveDrawableOutputsForBackgroundAndForeground() {
     var output: LithoRenderUnit? = null
-    attach()
     // disable layout outputs for drawables
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
-    lithoView.setComponent(RootComponent.create(context).shouldWrapInView(false).build())
+    componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+            .build()
+    lithoView!!.componentTree = componentTree
+    componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(false).build())
+    attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
     assertThat(state.mountableOutputCount).isEqualTo(5) // 2 bg and fg lesser.
@@ -126,10 +135,15 @@ class LayoutStateCalculationWithoutDrawableOutputsTest {
   @Test
   fun whenDrawableOutputsDisabledAndChildrenWrappedInView_shouldNotHaveDrawableOutputsForBackgroundAndForeground() {
     var output: LithoRenderUnit? = null
-    attach()
     // disable layout outputs for drawables
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
-    lithoView.setComponent(RootComponent.create(context).shouldWrapInView(true).build())
+    componentTree =
+        ComponentTree.create(context)
+            .componentsConfiguration(
+                ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build())
+            .build()
+    lithoView!!.componentTree = componentTree
+    componentTree.setRootSync(RootComponent.create(context).shouldWrapInView(true).build())
+    attach()
     val state: LayoutState =
         requireNotNull(lithoView.componentTree?.mainThreadLayoutState) { "empty layout state" }
     assertThat(state.mountableOutputCount).isEqualTo(5) // 2 bg and fg lesser.

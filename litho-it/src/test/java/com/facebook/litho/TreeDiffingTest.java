@@ -38,7 +38,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import androidx.collection.SparseArrayCompat;
-import com.facebook.litho.config.TempComponentsConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
@@ -49,7 +49,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,13 +63,15 @@ public class TreeDiffingTest {
   private static Drawable sBlackDrawable;
   private static Drawable sTransparentDrawable;
 
-  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  @Rule
+  public final LegacyLithoViewRule mLegacyLithoViewRule =
+      new LegacyLithoViewRule(
+          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build());
 
   private int mUnspecifiedSpec;
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     sRedDrawable = ComparableColorDrawable.create(Color.RED);
     sBlackDrawable = ComparableColorDrawable.create(Color.BLACK);
@@ -663,11 +664,6 @@ public class TreeDiffingTest {
     TestComponent nestedLeaf2 =
         (TestComponent) getRenderUnit(layoutState.getMountableOutputAt(4)).getComponent();
     assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
-  }
-
-  @After
-  public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 
   private static LayoutState calculateLayoutState(

@@ -52,7 +52,6 @@ import android.widget.ScrollView;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DynamicComponentGroupSection;
 import com.facebook.litho.sections.common.SingleComponentSection;
@@ -100,11 +99,12 @@ public class MountStateIncrementalMountTest {
   private @Nullable ShadowLooper mResolveThreadShadowLooper;
   private ShadowLooper mLayoutThreadShadowLooper;
 
-  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule =
+      new LegacyLithoViewRule(
+          ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build());
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = mLegacyLithoViewRule.getContext();
     mLegacyLithoViewRule.useLithoView(new LithoView(mContext));
     mLayoutThreadShadowLooper =
@@ -1708,7 +1708,6 @@ public class MountStateIncrementalMountTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
     validateMockitoUsage();
   }

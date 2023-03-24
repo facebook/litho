@@ -152,10 +152,6 @@ public class ComponentsConfiguration {
    */
   public static boolean computeRangeOnSyncLayout = false;
 
-  public static boolean shouldDisableBgFgOutputs = false;
-
-  public static boolean shouldAddHostViewForRootComponent = false;
-
   /**
    * When true, IM will not stop when the LithoView's visible rect is empty, and will proceed to
    * unmount everything.
@@ -345,6 +341,10 @@ public class ComponentsConfiguration {
 
   private final boolean mUsePaintAdvanceForEllipsisCalculation;
 
+  private final boolean mShouldAddHostViewForRootComponent;
+
+  private final boolean mShouldDisableBgFgOutputs;
+
   private @Nullable ResolveCancellationStrategy mResolveCancellationStrategy = null;
 
   public boolean usePaintAdvanceForEllipsisCalculation() {
@@ -359,6 +359,14 @@ public class ComponentsConfiguration {
     return mUseCancelableLayoutFutures;
   }
 
+  public boolean isShouldAddHostViewForRootComponent() {
+    return mShouldAddHostViewForRootComponent;
+  }
+
+  public boolean isShouldDisableBgFgOutputs() {
+    return mShouldAddHostViewForRootComponent || mShouldDisableBgFgOutputs;
+  }
+
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
@@ -366,6 +374,8 @@ public class ComponentsConfiguration {
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
     mIsLegacyRenderEnabled = builder.mIsLegacyRenderEnabled;
     mUsePaintAdvanceForEllipsisCalculation = builder.mUsePaintAdvanceForEllipsisCalculation;
+    mShouldAddHostViewForRootComponent = builder.mShouldAddHostViewForRootComponent;
+    mShouldDisableBgFgOutputs = builder.mShouldDisableBgFgOutputs;
   }
 
   public boolean shouldReuseOutputs() {
@@ -385,6 +395,8 @@ public class ComponentsConfiguration {
         .useCancelableLayoutFutures(config.getUseCancelableLayoutFutures())
         .resolveCancellationStrategy(config.getResolveCancellationStrategy())
         .isLayoutCancellationEnabled(config.isLayoutCancellationEnabled())
+        .shouldAddHostViewForRootComponent(config.isShouldAddHostViewForRootComponent())
+        .shouldDisableBgFgOutputs(config.isShouldDisableBgFgOutputs())
         .isLegacyRenderEnabled(config.isLegacyRenderEnabled());
   }
 
@@ -394,6 +406,8 @@ public class ComponentsConfiguration {
     boolean mShouldReuseOutputs = false;
     boolean mIsLayoutCancellationEnabled = false;
     boolean mIsLegacyRenderEnabled = false;
+    boolean mShouldAddHostViewForRootComponent = false;
+    boolean mShouldDisableBgFgOutputs = false;
     @Nullable ResolveCancellationStrategy mResolveCancellationStrategy;
 
     protected Builder() {}
@@ -415,6 +429,16 @@ public class ComponentsConfiguration {
 
     public Builder isLegacyRenderEnabled(boolean enabled) {
       mIsLegacyRenderEnabled = enabled;
+      return this;
+    }
+
+    public Builder shouldAddHostViewForRootComponent(boolean enabled) {
+      mShouldAddHostViewForRootComponent = enabled;
+      return this;
+    }
+
+    public Builder shouldDisableBgFgOutputs(boolean enabled) {
+      mShouldDisableBgFgOutputs = enabled;
       return this;
     }
 

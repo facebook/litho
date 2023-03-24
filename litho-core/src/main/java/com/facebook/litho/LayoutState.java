@@ -209,12 +209,6 @@ public class LayoutState
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public boolean mHasComponentsExcludedFromIncrementalMount;
 
-  final boolean mShouldAddHostViewForRootComponent =
-      ComponentsConfiguration.shouldAddHostViewForRootComponent;
-
-  final boolean mShouldDisableDrawableOutputs =
-      mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableBgFgOutputs;
-
   // TODO(t66287929): Remove mIsCommitted from LayoutState by matching RenderState logic around
   // Futures.
   private boolean mIsCommitted;
@@ -714,7 +708,7 @@ public class LayoutState
             || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
     // 2. Add background if defined.
-    if (!layoutState.mShouldDisableDrawableOutputs) {
+    if (!context.mLithoConfiguration.mComponentsConfiguration.isShouldDisableBgFgOutputs()) {
       final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit(layoutState);
       if (backgroundRenderUnit != null) {
         final RenderTreeNode backgroundRenderTreeNode =
@@ -862,7 +856,7 @@ public class LayoutState
     }
 
     // 6. Add foreground if defined.
-    if (!layoutState.mShouldDisableDrawableOutputs) {
+    if (!context.mLithoConfiguration.mComponentsConfiguration.isShouldDisableBgFgOutputs()) {
       final @Nullable LithoRenderUnit foregroundRenderUnit =
           result.getForegroundRenderUnit(layoutState);
       if (foregroundRenderUnit != null) {
@@ -1252,7 +1246,7 @@ public class LayoutState
 
     RenderTreeNode parent = null;
     DebugHierarchy.Node hierarchy = null;
-    if (layoutState.mShouldAddHostViewForRootComponent) {
+    if (c.mLithoConfiguration.mComponentsConfiguration.isShouldAddHostViewForRootComponent()) {
       hierarchy = node != null ? getDebugHierarchy(null, node) : null;
       addRootHostRenderTreeNode(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
@@ -1739,10 +1733,13 @@ public class LayoutState
 
     if (unit.getNodeInfo() != null || willMountView) {
       final ViewAttributes attrs = new ViewAttributes();
+      final boolean disableBgFgOutputs =
+          layoutState.mContext.mLithoConfiguration.mComponentsConfiguration
+              .isShouldDisableBgFgOutputs();
       attrs.setHostSpec(Component.isHostSpec(component));
       attrs.setComponentName(component.getSimpleName());
       attrs.setImportantForAccessibility(unit.getImportantForAccessibility());
-      attrs.setDisableDrawableOutputs(layoutState.mShouldDisableDrawableOutputs);
+      attrs.setDisableDrawableOutputs(disableBgFgOutputs);
 
       if (unit.getNodeInfo() != null) {
         unit.getNodeInfo().copyInto(attrs);
@@ -1753,7 +1750,7 @@ public class LayoutState
         // backgrounds and foregrounds should not be set for HostComponents
         // because those will either be set on the content output or explicit outputs
         // will be created for backgrounds and foreground.
-        if (layoutState.mShouldDisableDrawableOutputs || !attrs.isHostSpec()) {
+        if (disableBgFgOutputs || !attrs.isHostSpec()) {
           attrs.setBackground(result.getBackground());
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             attrs.setForeground(lithoNode.getForeground());

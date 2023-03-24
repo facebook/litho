@@ -32,7 +32,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestViewComponent;
@@ -209,8 +209,7 @@ public class MountStateViewTest {
 
   @Test
   public void onMountContentWithPadded9PatchDrawable_shouldNotSetPaddingOnHost() {
-    final boolean cachedValue = ComponentsConfiguration.shouldDisableBgFgOutputs;
-    ComponentsConfiguration.shouldDisableBgFgOutputs = true;
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
 
     final Component component =
         Column.create(mContext)
@@ -225,6 +224,6 @@ public class MountStateViewTest {
     assertThat(mLegacyLithoViewRule.getLithoView().getPaddingBottom()).isEqualTo(0);
     assertThat(mLegacyLithoViewRule.getLithoView().getPaddingLeft()).isEqualTo(0);
 
-    ComponentsConfiguration.shouldDisableBgFgOutputs = cachedValue;
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

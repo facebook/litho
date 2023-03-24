@@ -41,7 +41,6 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.testing.LegacyLithoViewRule;
@@ -56,7 +55,6 @@ import com.facebook.litho.widget.SnapUtil;
 import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,7 +66,10 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class RecyclerCollectionComponentSpecTest {
 
-  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  private final ComponentsConfiguration config =
+      ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build();
+
+  @Rule public final LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule(config);
 
   private ComponentContext mComponentContext;
   private Component mLoadingComponent;
@@ -87,7 +88,6 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mComponentContext = new ComponentContext(getApplicationContext());
 
     mLoadingComponent =
@@ -256,7 +256,10 @@ public class RecyclerCollectionComponentSpecTest {
   @Test
   public void testNestedIncrementalMountDisabled() {
     mLegacyLithoViewRule.useComponentTree(
-        ComponentTree.create(mComponentContext).incrementalMount(false).build());
+        ComponentTree.create(mComponentContext)
+            .incrementalMount(false)
+            .componentsConfiguration(config)
+            .build());
     mLegacyLithoViewRule
         .setRoot(
             RecyclerCollectionComponent.create(mComponentContext)
@@ -372,10 +375,5 @@ public class RecyclerCollectionComponentSpecTest {
     }
 
     return null;
-  }
-
-  @After
-  public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

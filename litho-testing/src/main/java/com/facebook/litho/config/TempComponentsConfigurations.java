@@ -20,24 +20,22 @@ import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TempComponentsConfigurations {
-  private static final boolean originalShouldDisableBgFgOutputs =
-      ComponentsConfiguration.shouldDisableBgFgOutputs;
 
-  private static final boolean originalShouldAddHostViewForRootComponent =
-      ComponentsConfiguration.shouldAddHostViewForRootComponent;
+  private static final ComponentsConfiguration.Builder original =
+      ComponentsConfiguration.getDefaultComponentsConfigurationBuilder();
 
   private static final boolean shouldCompareCommonPropsInIsEquivalentTo =
       ComponentsConfiguration.shouldCompareCommonPropsInIsEquivalentTo;
 
   public static void setShouldAddHostViewForRootComponent(boolean value) {
-    ComponentsConfiguration.shouldDisableBgFgOutputs = value;
-    ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create()
+            .shouldAddHostViewForRootComponent(value)
+            .shouldAddHostViewForRootComponent(value));
   }
 
   public static void restoreShouldAddHostViewForRootComponent() {
-    ComponentsConfiguration.shouldDisableBgFgOutputs = originalShouldDisableBgFgOutputs;
-    ComponentsConfiguration.shouldAddHostViewForRootComponent =
-        originalShouldAddHostViewForRootComponent;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(original);
   }
 
   public static void setShouldCompareCommonPropsInIsEquivalentTo(

@@ -205,8 +205,6 @@ public class MountStateTest {
 
   @Test
   public void mountingChildForUnmountedParentInRenderCore_shouldMountWithoutCrashing() {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
-
     final Component root =
         Row.create(mContext)
             .backgroundColor(Color.BLUE)
@@ -227,6 +225,13 @@ public class MountStateTest {
             .build();
 
     mLegacyLithoViewRule
+        .useComponentTree(
+            ComponentTree.create(mContext)
+                .componentsConfiguration(
+                    ComponentsConfiguration.create()
+                        .shouldAddHostViewForRootComponent(true)
+                        .build())
+                .build())
         .attachToWindow()
         .setRoot(root)
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))

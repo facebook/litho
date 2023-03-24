@@ -28,7 +28,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.config.TempComponentsConfigurations;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.LegacyLithoViewRule;
 import com.facebook.litho.testing.TestComponent;
@@ -40,7 +40,6 @@ import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.MountDelegateTarget;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,12 +49,13 @@ import org.robolectric.annotation.LooperMode;
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class MountStateRemountTest {
+  private ComponentsConfiguration config =
+      ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build();
   private ComponentContext mContext;
-  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule();
+  public final @Rule LegacyLithoViewRule mLegacyLithoViewRule = new LegacyLithoViewRule(config);
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -243,6 +243,7 @@ public class MountStateRemountTest {
     final LithoView lithoView = new LithoView(mContext);
     final ComponentTree componentTree =
         ComponentTree.create(mContext, oldComponent)
+            .componentsConfiguration(config)
             .incrementalMount(false)
             .layoutDiffing(true)
             .build();
@@ -304,6 +305,7 @@ public class MountStateRemountTest {
     final LithoView lithoView = new LithoView(mContext);
     final ComponentTree componentTree =
         ComponentTree.create(mContext, oldComponent)
+            .componentsConfiguration(config)
             .incrementalMount(false)
             .layoutDiffing(true)
             .build();
@@ -360,6 +362,7 @@ public class MountStateRemountTest {
     final LithoView lithoView = new LithoView(mContext);
     final ComponentTree componentTree =
         ComponentTree.create(mContext, oldComponent)
+            .componentsConfiguration(config)
             .incrementalMount(false)
             .layoutDiffing(true)
             .build();
@@ -403,10 +406,5 @@ public class MountStateRemountTest {
       }
     }
     return false;
-  }
-
-  @After
-  public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

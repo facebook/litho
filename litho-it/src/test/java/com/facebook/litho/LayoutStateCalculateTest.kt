@@ -29,7 +29,7 @@ import androidx.core.view.ViewCompat
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.SizeSpec.makeSizeSpec
-import com.facebook.litho.config.TempComponentsConfigurations
+import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.LegacyLithoViewRule
 import com.facebook.litho.testing.TestDrawableComponent
 import com.facebook.litho.testing.TestLayoutComponent
@@ -73,12 +73,13 @@ import org.robolectric.shadows.ShadowAccessibilityManager
 @RunWith(LithoTestRunner::class)
 class LayoutStateCalculateTest {
 
-  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule()
+  val config = ComponentsConfiguration.create().shouldAddHostViewForRootComponent(true).build()
+
+  @JvmField @Rule val legacyLithoViewRule = LegacyLithoViewRule(config)
   private lateinit var context: ComponentContext
 
   @Before
   fun setup() {
-    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true)
     // invdalidate the cached accessibility value before each test runs so that we don't
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
@@ -2309,7 +2310,10 @@ class LayoutStateCalculateTest {
           override fun newPerformanceEvent(eventId: Int): PerfEvent? = null
         }
     val componentTree =
-        ComponentTree.create(legacyLithoViewRule.context).logger(logger, "test").build()
+        ComponentTree.create(legacyLithoViewRule.context)
+            .componentsConfiguration(config)
+            .logger(logger, "test")
+            .build()
     val layoutState =
         calculateLayoutState(
             componentTree.context,
@@ -2463,11 +2467,6 @@ class LayoutStateCalculateTest {
         ResolveTreeFuture.resolve(context, component, TreeState(), -1, -1, null, null, null, null)
     return LayoutTreeFuture.layout(
         result, widthSpec, heightSpec, -1, componentTreeId, false, null, null, null, null)
-  }
-
-  @After
-  fun restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent()
   }
 
   companion object {

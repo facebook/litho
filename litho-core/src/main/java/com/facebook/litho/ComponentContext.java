@@ -859,4 +859,8 @@ public class ComponentContext implements Cloneable {
   public VisibilityBoundsTransformer getVisibilityBoundsTransformer() {
     return mLithoConfiguration.visibilityBoundsTransformer;
   }
+
+  static ComponentsConfiguration getComponentsConfig(ComponentContext c) {
+    return c.mLithoConfiguration.mComponentsConfiguration;
+  }
 }
