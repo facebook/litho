@@ -25,8 +25,8 @@ interface CalculationStateContext {
   val layoutVersion: Int
   val isFutureReleased: Boolean
   val layoutStateFuture: TreeFuture<*>?
-
   val createdEventHandlers: List<Pair<String, EventHandler<*>>>?
+  val isAccessibilityEnabled: Boolean
 
   /**
    * Records a Spec-generated EventHandler. This EventHandlers are an output of the calculation and

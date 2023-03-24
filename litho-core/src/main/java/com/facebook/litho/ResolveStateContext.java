@@ -39,11 +39,13 @@ public class ResolveStateContext implements CalculationStateContext {
   private final @Nullable PerfEvent mPerfEventLogger;
   private final @Nullable ComponentsLogger mComponentsLogger;
   private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
+  private final boolean mIsAccessibilityEnabled;
 
   ResolveStateContext(
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,
+      final boolean isAccessibilityEnabled,
       final @Nullable TreeFuture layoutStateFuture,
       final @Nullable LithoNode currentRoot,
       final @Nullable PerfEvent perfEventLogger,
@@ -55,6 +57,7 @@ public class ResolveStateContext implements CalculationStateContext {
     mCurrentRoot = currentRoot;
     mPerfEventLogger = perfEventLogger;
     mComponentsLogger = componentsLogger;
+    mIsAccessibilityEnabled = isAccessibilityEnabled;
   }
 
   @Override
@@ -144,6 +147,11 @@ public class ResolveStateContext implements CalculationStateContext {
   @Override
   public MeasuredResultCache getCache() {
     return mCache;
+  }
+
+  @Override
+  public boolean isAccessibilityEnabled() {
+    return mIsAccessibilityEnabled;
   }
 
   public void release() {

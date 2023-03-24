@@ -39,6 +39,7 @@ public class LayoutStateContext implements CalculationStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable ComponentContext mRootComponentContext;
   private final int mLayoutVersion;
+  private final boolean mIsAccessibilityEnabled;
   private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
@@ -57,6 +58,7 @@ public class LayoutStateContext implements CalculationStateContext {
       final ComponentContext rootComponentContext,
       final TreeState treeState,
       final int layoutVersion,
+      final boolean isAccessibilityEnabled,
       final @Nullable DiffNode currentDiffTree,
       final @Nullable TreeFuture layoutStateFuture) {
     mCache = cache;
@@ -65,7 +67,7 @@ public class LayoutStateContext implements CalculationStateContext {
     mLayoutVersion = layoutVersion;
     mCurrentDiffTree = currentDiffTree;
     mLayoutStateFuture = layoutStateFuture;
-
+    mIsAccessibilityEnabled = isAccessibilityEnabled;
     mThreadCreatedOn = Thread.currentThread().getName();
   }
 
@@ -159,6 +161,11 @@ public class LayoutStateContext implements CalculationStateContext {
   @Override
   public @Nullable List<Pair<String, EventHandler<?>>> getCreatedEventHandlers() {
     return mCreatedEventHandlers;
+  }
+
+  @Override
+  public boolean isAccessibilityEnabled() {
+    return mIsAccessibilityEnabled;
   }
 
   public String getLifecycleDebugString() {

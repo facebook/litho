@@ -326,7 +326,8 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContextForTesting() {
     setLayoutStateContext(
-        new LayoutStateContext(new MeasuredResultCache(), this, new TreeState(), 0, null, null));
+        new LayoutStateContext(
+            new MeasuredResultCache(), this, new TreeState(), 0, true, null, null));
   }
 
   /**
@@ -338,7 +339,7 @@ public class ComponentContext implements Cloneable {
   public ResolveStateContext setRenderStateContextForTests() {
     final ResolveStateContext resolveStateContext =
         new ResolveStateContext(
-            new MeasuredResultCache(), new TreeState(), 0, null, null, null, getLogger());
+            new MeasuredResultCache(), new TreeState(), 0, true, null, null, null, getLogger());
     setRenderStateContext(resolveStateContext);
 
     return resolveStateContext;

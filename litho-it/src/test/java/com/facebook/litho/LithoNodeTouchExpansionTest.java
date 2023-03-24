@@ -57,6 +57,7 @@ public class LithoNodeTouchExpansionTest {
             mContext,
             resolveStateContext.getTreeState(),
             resolveStateContext.getLayoutVersion(),
+            resolveStateContext.isAccessibilityEnabled(),
             null,
             null);
   }

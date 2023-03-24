@@ -16,9 +16,11 @@
 
 package com.facebook.litho;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.ComponentTree.SIZE_UNINITIALIZED;
 
 import android.util.Pair;
+import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.RequestMetadataSupplier;
@@ -199,6 +201,9 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
               new MeasuredResultCache(),
               state,
               version,
+              AccessibilityUtils.isAccessibilityEnabled(
+                  (AccessibilityManager)
+                      context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
               future,
               currentRootNode,
               perfEventLogger,

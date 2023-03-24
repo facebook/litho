@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+
+import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.LayoutMetadata;
@@ -160,6 +163,9 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
               c,
               treeState,
               version,
+              AccessibilityUtils.isAccessibilityEnabled(
+                  (AccessibilityManager)
+                      c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
               diffTreeRoot,
               future);
 

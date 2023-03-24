@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentContext.NO_SCOPE_EVENT_HANDLER;
 import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
@@ -38,6 +39,7 @@ import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
@@ -665,7 +667,14 @@ public abstract class Component
         } else {
           final ResolveStateContext nestedRsc =
               new ResolveStateContext(
-                  resultCache, treeState, layoutVersion, null, null, null, null);
+                  resultCache,
+                  treeState,
+                  layoutVersion,
+                  calculationStateContext.isAccessibilityEnabled(),
+                  null,
+                  null,
+                  null,
+                  null);
           c.setRenderStateContext(nestedRsc);
 
           node = Resolver.resolveTree(nestedRsc, c, this);
@@ -678,7 +687,14 @@ public abstract class Component
         }
 
         final LayoutStateContext nestedLsc =
-            new LayoutStateContext(resultCache, c, treeState, layoutVersion, null, null);
+            new LayoutStateContext(
+                resultCache,
+                c,
+                treeState,
+                layoutVersion,
+                calculationStateContext.isAccessibilityEnabled(),
+                null,
+                null);
 
         lastMeasuredLayout =
             Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);
@@ -743,7 +759,18 @@ public abstract class Component
     try {
       final ResolveStateContext tempRsc =
           new ResolveStateContext(
-              new MeasuredResultCache(), new TreeState(), 0, null, null, null, null);
+              new MeasuredResultCache(),
+              new TreeState(),
+              0,
+              prevContext != null
+                  ? prevContext.isAccessibilityEnabled()
+                  : AccessibilityUtils.isAccessibilityEnabled(
+                      (AccessibilityManager)
+                          c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
+              null,
+              null,
+              null,
+              null);
 
       if (c.getLithoTree() == null) {
         // This is a temporary tree that will be only used as a way of measuring a component.

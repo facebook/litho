@@ -134,6 +134,7 @@ class Layout {
               layoutStateContext.getCache(),
               layoutStateContext.getTreeState(),
               layoutStateContext.getLayoutVersion(),
+              layoutStateContext.isAccessibilityEnabled(),
               null,
               null,
               null,
@@ -169,6 +170,7 @@ class Layout {
               parentContext,
               nestedRsc.getTreeState(),
               nestedRsc.getLayoutVersion(),
+              layoutStateContext.isAccessibilityEnabled(),
               layoutStateContext.getCurrentDiffTree(),
               null);
 
