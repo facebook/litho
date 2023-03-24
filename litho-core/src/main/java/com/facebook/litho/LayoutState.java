@@ -180,7 +180,7 @@ public class LayoutState
 
   private boolean mShouldDuplicateParentState = true;
 
-  private boolean mShouldGenerateDiffTree = false;
+  private final boolean mShouldGenerateDiffTree;
   private int mComponentTreeId = -1;
   private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
