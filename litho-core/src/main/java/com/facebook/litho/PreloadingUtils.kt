@@ -191,8 +191,3 @@ fun preloadLithoClasses(additionalClasses: Set<Class<*>>? = null) {
   }
   preloadClassHandler.post(r)
 }
-
-fun preloadYogaConfig() {
-  val r = Runnable { NodeConfig.createYogaNode() }
-  preloadClassHandler.post(r)
-}
