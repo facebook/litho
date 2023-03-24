@@ -345,11 +345,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       final LayoutState layoutState, final boolean isRoot) {
     if (mContext.shouldReuseOutputs()) {
       if (mHostRenderUnit == null) {
-        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this, layoutState, isRoot);
+        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this, isRoot);
       }
       return mHostRenderUnit;
     } else {
-      return InternalNodeUtils.createHostRenderUnit(this, layoutState, isRoot);
+      return InternalNodeUtils.createHostRenderUnit(this, isRoot);
     }
   }
 

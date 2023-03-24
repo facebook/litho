@@ -90,16 +90,16 @@ public class InternalNodeUtils {
                 : LithoRenderUnit.STATE_DIRTY,
         layoutState.getCurrentShouldDuplicateParentState(),
         false,
-        needsHostView(result, layoutState),
+        needsHostView(result),
         willMountView(result));
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
   static @Nullable LithoRenderUnit createHostRenderUnit(
-      LithoLayoutResult result, final LayoutState layoutState, final boolean isRoot) {
+      LithoLayoutResult result, final boolean isRoot) {
     final LithoNode node = result.getNode();
 
-    if (!isRoot && !needsHostView(result, layoutState)) {
+    if (!isRoot && !needsHostView(result)) {
       return null;
     }
 
@@ -270,7 +270,7 @@ public class InternalNodeUtils {
             : isCachedOutputUpdated ? LithoRenderUnit.STATE_UPDATED : LithoRenderUnit.STATE_DIRTY,
         layoutState.getCurrentShouldDuplicateParentState(),
         false,
-        needsHostView(result, layoutState),
+        needsHostView(result),
         false);
   }
 
@@ -435,7 +435,7 @@ public class InternalNodeUtils {
    * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
    * been forced to be wrapped in a view.
    */
-  static boolean needsHostView(final LithoLayoutResult result, final LayoutState layoutState) {
+  static boolean needsHostView(final LithoLayoutResult result) {
     final LithoNode node = result.getNode();
 
     if (willMountView(result)) {
@@ -448,7 +448,7 @@ public class InternalNodeUtils {
       return true;
     }
 
-    if (hasViewContent(node, layoutState)) {
+    if (hasViewContent(node)) {
       // Has View content (e.g. Accessibility content, Focus change listener, shadow, view tag etc)
       // thus needs a host View.
       return true;
@@ -473,9 +473,9 @@ public class InternalNodeUtils {
    * Determine if a given {@link LithoNode} within the context of a given {@link LayoutState}
    * requires to be wrapped inside a view.
    *
-   * @see #needsHostView(LithoLayoutResult, LayoutState)
+   * @see #needsHostView(LithoLayoutResult)
    */
-  private static boolean hasViewContent(final LithoNode node, final LayoutState layoutState) {
+  private static boolean hasViewContent(final LithoNode node) {
     final Component component = node.getTailComponent();
     final NodeInfo nodeInfo = node.getNodeInfo();
 
@@ -557,12 +557,11 @@ public class InternalNodeUtils {
   }
 
   /**
-   * Similar to {@link InternalNodeUtils#needsHostView(LithoLayoutResult, LayoutState)} but without
-   * dependency to {@link LayoutState} instance. This will be used for debugging tools to indicate
-   * whether the mountable output is a wrapped View or View MountSpec. Unlike {@link
-   * InternalNodeUtils#needsHostView(LithoLayoutResult, LayoutState)} this does not consider
-   * accessibility also does not consider root component, but this approximation is good enough for
-   * debugging purposes.
+   * Similar to {@link InternalNodeUtils#needsHostView(LithoLayoutResult)} but without dependency to
+   * {@link LayoutState} instance. This will be used for debugging tools to indicate whether the
+   * mountable output is a wrapped View or View MountSpec. Unlike {@link
+   * InternalNodeUtils#needsHostView(LithoLayoutResult)} this does not consider accessibility also
+   * does not consider root component, but this approximation is good enough for debugging purposes.
    */
   static boolean hasViewOutput(LithoLayoutResult result) {
     final LithoNode node = result.getNode();
