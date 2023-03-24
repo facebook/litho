@@ -23,16 +23,18 @@ import android.os.Message;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.rendercore.StateUpdateReceiver.StateUpdate;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
 
 /** todo: javadocs * */
-public class RenderState<State, RenderContext> {
+public class RenderState<State, RenderContext> implements StateUpdateReceiver<State> {
 
   private static final int UNSET = -1;
   private static final int PROMOTION_MESSAGE = 99;
@@ -91,12 +93,20 @@ public class RenderState<State, RenderContext> {
   private @Nullable HostListener mHostListener;
 
   private @Nullable RenderTree mUIRenderTree;
-  private @Nullable RenderResult<State, RenderContext> mCommittedRenderResult;
   private @Nullable ResolveFunc<State, RenderContext> mLatestResolveFunc;
-  private int mExternalRootVersion = -1;
-  private @Nullable RenderResultFuture<State, RenderContext> mRenderResultFuture;
-  private int mNextSetRootId = 0;
-  private int mCommittedSetRootId = UNSET;
+  private @Nullable ResolveFuture<State, RenderContext> mResolveFuture;
+  private @Nullable LayoutFuture<State, RenderContext> mLayoutFuture;
+
+  private @Nullable Node<RenderContext> mCommittedResolvedTree;
+  private @Nullable State mCommittedState;
+
+  private @Nullable RenderResult<State, RenderContext> mCommittedRenderResult;
+
+  private int mResolveVersionCounter = 0;
+  private int mLayoutVersionCounter = 0;
+  private int mCommittedResolveVersion = UNSET;
+  private int mCommittedLayoutVersion = UNSET;
+
   private int mWidthSpec = UNSET;
   private int mHeightSpec = UNSET;
 
@@ -112,95 +122,186 @@ public class RenderState<State, RenderContext> {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setVersionedTree(
-      ResolveFunc<State, RenderContext> resolveFunc,
-      int version,
-      int widthSpec,
-      int heightSpec,
-      @Nullable int[] measureOutput) {
-    setTreeInternal(resolveFunc, version, widthSpec, heightSpec, measureOutput);
+  public void setTree(ResolveFunc<State, RenderContext> resolveFunc, @Nullable Executor executor) {
+    final ResolveFuture<State, RenderContext> future;
+
+    synchronized (this) {
+      mLatestResolveFunc = resolveFunc;
+
+      future =
+          new ResolveFuture<>(
+              resolveFunc,
+              new ResolveContext(mRenderContext, this),
+              mCommittedResolvedTree,
+              mCommittedState,
+              Collections.emptyList(),
+              mResolveVersionCounter++);
+      mResolveFuture = future;
+    }
+    if (executor != null) {
+      executor.execute(
+          new Runnable() {
+            @Override
+            public void run() {
+              resolveTreeAndMaybeCommit(future);
+            }
+          });
+    } else {
+      resolveTreeAndMaybeCommit(future);
+    }
+  }
+
+  private void resolveTreeAndMaybeCommit(ResolveFuture<State, RenderContext> future) {
+    final Pair<Node<RenderContext>, State> result = future.runAndGet();
+    if (maybeCommitResolveResult(result, future)) {
+      layoutAndMaybeCommitInternal(null);
+    }
   }
 
   @ThreadConfined(ThreadConfined.ANY)
   public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
-    setTreeInternal(resolveFunc, -1, UNSET, UNSET, null);
+    setTree(resolveFunc, null);
   }
 
-  private void setTreeInternal(
-      ResolveFunc<State, RenderContext> resolveFunc,
-      int version,
-      int widthSpec,
-      int heightSpec,
-      @Nullable int[] measureOutput) {
-    final int setRootId;
-    final RenderResultFuture<State, RenderContext> future;
+  private synchronized boolean maybeCommitResolveResult(
+      Pair<Node<RenderContext>, State> result, ResolveFuture<State, RenderContext> future) {
+    // We don't want to compute, layout, or reduce trees while holding a lock. However this means
+    // that another thread could compute a layout and commit it before we get to this point. To
+    // handle this, we make sure that the committed resolve version is only ever increased, meaning
+    // we only go "forward in time" and will eventually get to the latest layout.
+    boolean didCommit = false;
+    if (future.getVersion() > mCommittedResolveVersion) {
+      mCommittedResolveVersion = future.getVersion();
+      mCommittedResolvedTree = result.first;
+      mCommittedState = result.second;
+      didCommit = true;
+    }
+
+    if (mResolveFuture == future) {
+      mResolveFuture = null;
+    }
+
+    return didCommit;
+  }
+
+  private void layoutAndMaybeCommitInternal(@Nullable int[] measureOutput) {
+    final LayoutFuture<State, RenderContext> layoutFuture;
     final RenderResult<State, RenderContext> previousRenderResult;
-
     synchronized (this) {
-      if (version > -1) {
-        if (mExternalRootVersion > version) {
-          // Since this layout is not really valid we can just return early.
-          return;
-        }
-      } else {
-        if (mExternalRootVersion > -1) {
-          throw new IllegalStateException(
-              "Setting an unversioned tree after calling setVersionedTree is not "
-                  + "supported. If this RenderState takes its version from a parent tree make "
-                  + "sure to always call setVersionedTree");
-        }
-      }
-
-      previousRenderResult = mCommittedRenderResult;
-      mExternalRootVersion = version;
-      mLatestResolveFunc = resolveFunc;
-
-      if (widthSpec != UNSET) {
-        mWidthSpec = widthSpec;
-      }
-
-      if (heightSpec != UNSET) {
-        mHeightSpec = heightSpec;
-      }
-
       if (mWidthSpec == UNSET || mHeightSpec == UNSET) {
         return;
       }
 
-      setRootId = mNextSetRootId++;
-      future =
-          new RenderResultFuture<>(
-              mContext,
-              resolveFunc,
-              mRenderContext,
-              mExtensions,
-              mCommittedRenderResult,
-              setRootId,
-              mWidthSpec,
-              mHeightSpec);
-      mRenderResultFuture = future;
+      Objects.requireNonNull(
+          mCommittedResolvedTree, "Tried executing the layout step before resolving a tree");
+
+      if (mLayoutFuture == null
+          || mLayoutFuture.getTree() != mCommittedResolvedTree
+          || !hasSameSpecs(mLayoutFuture, mWidthSpec, mHeightSpec)) {
+        mLayoutFuture =
+            new LayoutFuture<>(
+                mContext,
+                mRenderContext,
+                mCommittedResolvedTree,
+                mCommittedState,
+                mLayoutVersionCounter++,
+                mCommittedRenderResult,
+                mExtensions,
+                mWidthSpec,
+                mHeightSpec);
+      }
+      layoutFuture = mLayoutFuture;
+      previousRenderResult = mCommittedRenderResult;
+    }
+    final RenderResult<State, RenderContext> renderResult = layoutFuture.runAndGet();
+
+    boolean committedNewLayout = false;
+    synchronized (this) {
+      if (hasSameSpecs(layoutFuture, mWidthSpec, mHeightSpec)
+          && layoutFuture.getVersion() > mCommittedLayoutVersion
+          && mCommittedRenderResult != renderResult) {
+        mCommittedLayoutVersion = layoutFuture.getVersion();
+        committedNewLayout = true;
+        mCommittedRenderResult = renderResult;
+      }
+
+      if (mLayoutFuture == layoutFuture) {
+        mLayoutFuture = null;
+      }
     }
 
-    final RenderResult<State, RenderContext> result = future.runAndGet();
-    commitRenderResult(result, setRootId, future, previousRenderResult, measureOutput);
+    if (measureOutput != null) {
+      measureOutput[0] = renderResult.getRenderTree().getWidth();
+      measureOutput[1] = renderResult.getRenderTree().getHeight();
+    }
+
+    if (committedNewLayout) {
+      mDelegate.commit(
+          layoutFuture.getVersion(),
+          previousRenderResult != null ? previousRenderResult.getRenderTree() : null,
+          renderResult.getRenderTree(),
+          previousRenderResult != null ? previousRenderResult.getState() : null,
+          renderResult.getState());
+      schedulePromoteCommittedTreeToUI();
+    }
   }
 
   @ThreadConfined(ThreadConfined.UI)
   public void measure(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
-    if (mUIRenderTree != null && hasCompatibleSize(mUIRenderTree, widthSpec, heightSpec)) {
-      if (measureOutput != null) {
-        measureOutput[0] = mUIRenderTree.getWidth();
-        measureOutput[1] = mUIRenderTree.getHeight();
+    final ResolveFuture<State, RenderContext> futureToResolveBeforeMeasuring;
+
+    synchronized (this) {
+      if (mWidthSpec != widthSpec || mHeightSpec != heightSpec) {
+        mWidthSpec = widthSpec;
+        mHeightSpec = heightSpec;
       }
-      return;
+
+      // The current UI tree is compatible. We might just return those values
+      if (mUIRenderTree != null && hasCompatibleSize(mUIRenderTree, widthSpec, heightSpec)) {
+        if (measureOutput != null) {
+          measureOutput[0] = mUIRenderTree.getWidth();
+          measureOutput[1] = mUIRenderTree.getHeight();
+        }
+        return;
+      }
+
+      if (mCommittedRenderResult != null
+          && hasCompatibleSize(mCommittedRenderResult.getRenderTree(), widthSpec, heightSpec)) {
+        maybePromoteCommittedTreeToUI();
+
+        if (measureOutput != null) {
+          // We have a tree that we previously resolved with these contraints. For measuring we can
+          // just return it
+          measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
+          measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
+        }
+        return;
+      }
+
+      // We don't have a valid resolve function yet. Let's just bail until then.
+      if (mLatestResolveFunc == null) {
+        if (measureOutput != null) {
+          measureOutput[0] = 0;
+          measureOutput[1] = 0;
+        }
+        return;
+      }
+
+      // If we do have a resolve function we expect to have either a committed resolved tree or a
+      // future. If we have neither something has gone wrong with the setTree call.
+      if (mCommittedResolvedTree != null) {
+        futureToResolveBeforeMeasuring = null;
+      } else {
+        futureToResolveBeforeMeasuring = Objects.requireNonNull(mResolveFuture);
+      }
     }
 
-    measureImpl(widthSpec, heightSpec, measureOutput);
-  }
+    if (futureToResolveBeforeMeasuring != null) {
+      final Pair<Node<RenderContext>, State> result = futureToResolveBeforeMeasuring.runAndGet();
+      maybeCommitResolveResult(result, futureToResolveBeforeMeasuring);
+    }
 
-  @ThreadConfined(ThreadConfined.ANY)
-  public void preMeasure(int widthSpec, int heightSpec, int[] measureOutput) {
-    measureImpl(widthSpec, heightSpec, measureOutput);
+    layoutAndMaybeCommitInternal(measureOutput);
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -209,6 +310,11 @@ public class RenderState<State, RenderContext> {
       throw new RuntimeException("Must detach from previous host listener first");
     }
     mHostListener = hostListener;
+  }
+
+  @Override
+  public void enqueueStateUpdate(StateUpdate stateUpdate) {
+    // TODO implement state updates
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -221,96 +327,9 @@ public class RenderState<State, RenderContext> {
     return mUIRenderTree;
   }
 
-  private void measureImpl(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
-    final int setRootId;
-    final RenderResultFuture<State, RenderContext> future;
-    final RenderResult<State, RenderContext> previousResult;
-    synchronized (this) {
-      mWidthSpec = widthSpec;
-      mHeightSpec = heightSpec;
-      previousResult = mCommittedRenderResult;
-
-      if (mCommittedRenderResult != null
-          && hasCompatibleSize(mCommittedRenderResult.getRenderTree(), widthSpec, heightSpec)
-          && measureOutput != null) {
-        measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
-        measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
-        return;
-      }
-
-      if (mLatestResolveFunc == null) {
-        if (measureOutput != null) {
-          measureOutput[0] = 0;
-          measureOutput[1] = 0;
-        }
-        return;
-      }
-
-      if (mRenderResultFuture != null && hasSameSpecs(mRenderResultFuture, widthSpec, heightSpec)) {
-        future = mRenderResultFuture;
-        setRootId = future.getSetRootId();
-      } else {
-        setRootId = mNextSetRootId++;
-        future =
-            new RenderResultFuture<>(
-                mContext,
-                mLatestResolveFunc,
-                mRenderContext,
-                mExtensions,
-                mCommittedRenderResult,
-                setRootId,
-                mWidthSpec,
-                mHeightSpec);
-        mRenderResultFuture = future;
-      }
-    }
-
-    final RenderResult<State, RenderContext> result = future.runAndGet();
-    commitRenderResult(result, setRootId, future, previousResult, measureOutput);
-  }
-
-  private void commitRenderResult(
-      RenderResult<State, RenderContext> result,
-      int setRootId,
-      RenderResultFuture<State, RenderContext> future,
-      @Nullable RenderResult<State, RenderContext> previousResult,
-      @Nullable int[] measureOutput) {
-    boolean committedNewLayout = false;
-    synchronized (this) {
-      // We don't want to compute, layout, or reduce trees while holding a lock. However this means
-      // that another thread could compute a layout and commit it before we get to this point. To
-      // handle this, we make sure that the committed setRootId is only ever increased, meaning
-      // we only go "forward in time" and will eventually get to the latest layout.
-      if (setRootId > mCommittedSetRootId) {
-        mCommittedSetRootId = setRootId;
-        mCommittedRenderResult = result;
-        committedNewLayout = true;
-      }
-
-      if (mRenderResultFuture == future) {
-        mRenderResultFuture = null;
-      }
-
-      if (measureOutput != null && mCommittedRenderResult != null) {
-        measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
-        measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
-      }
-    }
-
-    if (committedNewLayout) {
-      mDelegate.commit(
-          setRootId,
-          previousResult != null ? previousResult.getRenderTree() : null,
-          result.getRenderTree(),
-          previousResult != null ? previousResult.getState() : null,
-          result.getState());
-      schedulePromoteCommittedTreeToUI();
-    }
-  }
-
   private void schedulePromoteCommittedTreeToUI() {
     if (ThreadUtils.isMainThread()) {
-      promoteCommittedTreeToUI();
+      maybePromoteCommittedTreeToUI();
     } else {
       if (!mUIHandler.hasMessages(PROMOTION_MESSAGE)) {
         mUIHandler.sendEmptyMessage(PROMOTION_MESSAGE);
@@ -319,10 +338,14 @@ public class RenderState<State, RenderContext> {
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  private void promoteCommittedTreeToUI() {
+  private void maybePromoteCommittedTreeToUI() {
     synchronized (this) {
       mDelegate.commitToUI(
           mCommittedRenderResult.getRenderTree(), mCommittedRenderResult.getState());
+
+      if (mUIRenderTree == mCommittedRenderResult.getRenderTree()) {
+        return;
+      }
 
       mUIRenderTree = mCommittedRenderResult.getRenderTree();
     }
@@ -339,7 +362,7 @@ public class RenderState<State, RenderContext> {
   }
 
   private boolean hasSameSpecs(
-      RenderResultFuture<State, RenderContext> future, int widthSpec, int heightSpec) {
+      LayoutFuture<State, RenderContext> future, int widthSpec, int heightSpec) {
     return MeasureSpecUtils.areMeasureSpecsEquivalent(future.getWidthSpec(), widthSpec)
         && MeasureSpecUtils.areMeasureSpecsEquivalent(future.getHeightSpec(), heightSpec);
   }
@@ -363,7 +386,7 @@ public class RenderState<State, RenderContext> {
     public void handleMessage(Message msg) {
       switch (msg.what) {
         case PROMOTION_MESSAGE:
-          promoteCommittedTreeToUI();
+          maybePromoteCommittedTreeToUI();
           break;
         default:
           throw new RuntimeException("Unknown message: " + msg.what);
