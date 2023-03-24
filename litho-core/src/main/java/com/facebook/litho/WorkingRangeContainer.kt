@@ -27,7 +27,8 @@ import kotlin.jvm.JvmField
  * register method to store a working range with a component, and a dispatch method that dispatches
  * event to components to trigger their delegated methods.
  */
-internal class WorkingRangeContainer {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+class WorkingRangeContainer {
 
   /**
    * Use [java.util.HashMap] to store the working range of each component. The key is composed with
@@ -152,8 +153,8 @@ internal class WorkingRangeContainer {
    * A tuple that stores working range information for a list of components that share same name and
    * working range object.
    */
-  @VisibleForTesting
-  internal class RangeTuple(
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  class RangeTuple(
       @JvmField val name: String,
       @JvmField val workingRange: WorkingRange,
       scopedComponentInfo: ScopedComponentInfo,
