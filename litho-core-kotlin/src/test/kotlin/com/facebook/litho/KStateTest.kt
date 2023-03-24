@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.view.View
 import com.facebook.litho.SizeSpec.EXACTLY
 import com.facebook.litho.accessibility.contentDescription
 import com.facebook.litho.core.height
@@ -25,6 +26,7 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.view.onClick
+import com.facebook.litho.view.viewId
 import com.facebook.litho.view.viewTag
 import com.facebook.litho.view.wrapInView
 import java.util.concurrent.CountDownLatch
@@ -647,6 +649,40 @@ class KStateTest {
   }
 
   @Test
+  fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forMountableWithConditionalStyle() {
+    val siblingRenderCount = AtomicInteger()
+
+    class RootComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.wrapInView()) {
+          child(ClickableMountableComponentWithStateAndConditionalStyle())
+          child(CountRendersMountableComponent(renderCount = siblingRenderCount))
+        }
+      }
+    }
+
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
+
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    assertThat(view.findViewWithTagOrNull("Counter: 0")?.id).isEqualTo(42)
+
+    lithoViewRule.act(view) { clickOnTag("Counter: 0") }
+
+    // Using viewTag because Text is currently a drawable and harder to access directly
+    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
+
+    // Assert that the state update didn't cause the sibling to re-render
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    // TODO(zielinskim): this assertion is inverted, the id should be equal to View.NO_ID
+    // but it's not because there is a bug where Component's props are not immutable across
+    // re-renders. Invert this assertion once that bug is fixed.
+    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isNotEqualTo(View.NO_ID)
+  }
+
+  @Test
   fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forPrimitive() {
     val siblingRenderCount = AtomicInteger()
 
@@ -671,6 +707,40 @@ class KStateTest {
 
     // Assert that the state update didn't cause the sibling to re-render
     assertThat(siblingRenderCount.get()).isEqualTo(1)
+  }
+
+  @Test
+  fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling_forPrimitiveWithConditionalStyle() {
+    val siblingRenderCount = AtomicInteger()
+
+    class RootComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.wrapInView()) {
+          child(ClickablePrimitiveComponentWithStateAndConditionalStyle())
+          child(CountRendersPrimitiveComponent(renderCount = siblingRenderCount))
+        }
+      }
+    }
+
+    val view =
+        lithoViewRule.render(widthPx = exactly(100), heightPx = exactly(100)) { RootComponent() }
+
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    assertThat(view.findViewWithTagOrNull("Counter: 0")?.id).isEqualTo(42)
+
+    lithoViewRule.act(view) { clickOnTag("Counter: 0") }
+
+    // Using viewTag because Text is currently a drawable and harder to access directly
+    assertThat(view.findViewWithTagOrNull("Counter: 1")).isNotNull()
+
+    // Assert that the state update didn't cause the sibling to re-render
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    // TODO(zielinskim): this assertion is inverted, the id should be equal to View.NO_ID
+    // but it's not because there is a bug where Component's props are not immutable across
+    // re-renders. Invert this assertion once that bug is fixed.
+    assertThat(view.findViewWithTagOrNull("Counter: 1")?.id).isNotEqualTo(View.NO_ID)
   }
 
   /**
@@ -851,6 +921,26 @@ class KStateTest {
     }
   }
 
+  class ClickableMountableComponentWithStateAndConditionalStyle(private val tag: String? = null) :
+      MountableComponent() {
+    override fun MountableComponentScope.render(): MountableRenderResult {
+      val counter = useState { 0 }
+
+      var style =
+          Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
+            counter.updateSync { value -> value + 1 }
+          }
+
+      if (counter.value % 2 == 0) {
+        style = style.plus(Style.viewId(42))
+      }
+
+      return MountableRenderResult(
+          TestTextMountable(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
+          style = style)
+    }
+  }
+
   private class CountRendersMountableComponent(private val renderCount: AtomicInteger) :
       MountableComponent() {
     override fun MountableComponentScope.render(): MountableRenderResult {
@@ -884,6 +974,26 @@ class KStateTest {
               Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
                 counter.updateSync { value -> value + 1 }
               })
+    }
+  }
+
+  class ClickablePrimitiveComponentWithStateAndConditionalStyle(private val tag: String? = null) :
+      PrimitiveComponent() {
+    override fun PrimitiveComponentScope.render(): LithoPrimitive {
+      val counter = useState { 0 }
+
+      var style =
+          Style.viewTag(tag ?: "Counter: ${counter.value}").contentDescription(tag).onClick {
+            counter.updateSync { value -> value + 1 }
+          }
+
+      if (counter.value % 2 == 0) {
+        style = style.plus(Style.viewId(42))
+      }
+
+      return LithoPrimitive(
+          TestTextPrimitive(text = "Counter: ${counter.value}", tag = "Counter: ${counter.value}"),
+          style = style)
     }
   }
 
