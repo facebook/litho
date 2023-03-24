@@ -548,8 +548,8 @@ class TextSpec {
 
     // T146855657 this is a temporary step to enable timeout for checking whether layout
     // isBoringLayout
-//    layoutBuilder.enableIsBoringLayoutCheckTimeout(
-//        ComponentsConfiguration.enableIsBoringLayoutCheckTimeout);
+    //    layoutBuilder.enableIsBoringLayoutCheckTimeout(
+    //        ComponentsConfiguration.enableIsBoringLayoutCheckTimeout);
 
     try {
       newLayout = layoutBuilder.build();
