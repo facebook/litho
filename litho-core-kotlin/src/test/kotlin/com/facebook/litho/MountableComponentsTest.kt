@@ -324,6 +324,40 @@ class MountableComponentsTest {
   }
 
   @Test
+  fun `should remeasure mountable on state update`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+
+    class TestComponent(val view: View) : MountableComponent() {
+      override fun MountableComponentScope.render(): MountableRenderResult {
+        val testState: State<String> = useState { "initial" }
+        return MountableRenderResult(
+            ViewMountable(view = view, steps = steps, str = testState.value),
+            style = Style.viewTag("click_me").onClick { testState.update("updated") })
+      }
+    }
+
+    val testView = lithoViewRule.render { TestComponent(view) }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.ON_MEASURE, LifecycleStep.ON_CREATE_MOUNT_CONTENT, LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+    testView.findViewWithTag("click_me").performClick()
+
+    lithoViewRule.render(lithoView = testView.lithoView) { TestComponent(view) }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.SHOULD_UPDATE,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT)
+  }
+
+  @Test
   fun `should remeasure mountable if properties have changed`() {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
@@ -926,6 +960,7 @@ open class ViewMountable(
     open val view: View,
     open val steps: MutableList<LifecycleStep.StepInfo>? = null,
     open val updateState: ((String) -> Unit)? = null,
+    open val str: String? = null,
 ) : SimpleMountable<View>(RenderType.VIEW) {
 
   override fun createContent(context: Context): View {

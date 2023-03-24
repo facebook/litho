@@ -318,6 +318,35 @@ class PrimitiveComponentsTest {
   }
 
   @Test
+  fun `should not remeasure primitive on state update if LayoutBehavior hasn't changed`() {
+    val c = lithoViewRule.context
+    val steps = mutableListOf<LifecycleStep.StepInfo>()
+    val view = TextView(c.androidContext)
+
+    class TestComponent(val view: View) : PrimitiveComponent() {
+      override fun PrimitiveComponentScope.render(): LithoPrimitive {
+        val testState: State<String> = useState { "initial" }
+        return LithoPrimitive(
+            ViewPrimitive(view = view, steps = steps, str = testState.value),
+            style = Style.viewTag("click_me").onClick { testState.update("updated") })
+      }
+    }
+
+    val testView = lithoViewRule.render { TestComponent(view) }
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(
+            LifecycleStep.ON_MEASURE, LifecycleStep.ON_CREATE_MOUNT_CONTENT, LifecycleStep.ON_MOUNT)
+
+    steps.clear()
+    testView.findViewWithTag("click_me").performClick()
+
+    lithoViewRule.render(lithoView = testView.lithoView) { TestComponent(view) }
+    assertThat(LifecycleStep.getSteps(steps))
+        .containsExactly(LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_MOUNT)
+  }
+
+  @Test
   fun `should remeasure primitive if properties have changed`() {
     val c = lithoViewRule.context
     val steps = mutableListOf<LifecycleStep.StepInfo>()
@@ -915,6 +944,7 @@ private fun PrimitiveComponentScope.ViewPrimitive(
     steps: MutableList<LifecycleStep.StepInfo>? = null,
     dynamicTag: DynamicValue<Any?>? = null,
     updateState: ((String) -> Unit)? = null,
+    str: String? = null,
 ): Primitive<View> {
 
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
@@ -940,7 +970,7 @@ private fun PrimitiveComponentScope.ViewPrimitive(
                 // using tag for convenience of tests
                 dynamicTag?.let { bindDynamic(dynamicTag, View::setTag, "default_value") }
 
-                bindWithLayoutData<TestPrimitiveLayoutData>(id, steps, updateState) { _, _ ->
+                bindWithLayoutData<TestPrimitiveLayoutData>(id, steps, updateState, str) { _, _ ->
                   updateState?.invoke("mount")
                   steps?.add(LifecycleStep.StepInfo(LifecycleStep.ON_MOUNT))
 
