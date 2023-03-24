@@ -80,7 +80,6 @@ public class InternalNodeUtils {
         id,
         component,
         context,
-        layoutState,
         result,
         node,
         node.getImportantForAccessibility(),
@@ -132,7 +131,6 @@ public class InternalNodeUtils {
         id,
         hostComponent,
         null,
-        layoutState,
         result,
         node,
         node.getImportantForAccessibility(),
@@ -264,7 +262,6 @@ public class InternalNodeUtils {
         id,
         component,
         null,
-        layoutState,
         result,
         node,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
@@ -282,7 +279,6 @@ public class InternalNodeUtils {
       long id,
       Component component,
       @Nullable ComponentContext context,
-      LayoutState layoutState,
       LithoLayoutResult result,
       LithoNode node,
       int importantForAccessibility,
@@ -466,7 +462,7 @@ public class InternalNodeUtils {
       return true;
     }
 
-    if (hasSelectedStateWhenDisablingDrawableOutputs(layoutState, result)) {
+    if (hasSelectedStateWhenDisablingDrawableOutputs(result)) {
       return true;
     }
 
@@ -578,7 +574,7 @@ public class InternalNodeUtils {
   }
 
   private static boolean hasSelectedStateWhenDisablingDrawableOutputs(
-      final LayoutState layoutState, final LithoLayoutResult result) {
+      final LithoLayoutResult result) {
     final LithoNode node = result.getNode();
     return ComponentContext.getComponentsConfig(result.getNode().getHeadComponentContext())
             .isShouldAddHostViewForRootComponent()
