@@ -490,6 +490,9 @@ public class InternalNodeUtils {
 
     final int importantForAccessibility = node.getImportantForAccessibility();
 
+    final ComponentContext c = node.getHeadComponentContext();
+    final @Nullable CalculationStateContext context = c.getCalculationStateContext();
+
     // A component has accessibility content if:
     //   1. Accessibility is currently enabled.
     //   2. Accessibility hasn't been explicitly disabled on it
@@ -504,11 +507,10 @@ public class InternalNodeUtils {
     // tree is mounted. Click handling is also considered accessibility content but
     // this is already covered separately i.e. click handler is not null.
     final boolean hasBackgroundOrForeground =
-        ComponentContext.getComponentsConfig(node.getHeadComponentContext())
-                .isShouldDisableBgFgOutputs()
+        ComponentContext.getComponentsConfig(c).isShouldDisableBgFgOutputs()
             && (node.getBackground() != null || node.getForeground() != null);
     final boolean hasAccessibilityContent =
-        layoutState.isAccessibilityEnabled()
+        (context != null && context.isAccessibilityEnabled())
             && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
             && (implementsAccessibility
                 || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
