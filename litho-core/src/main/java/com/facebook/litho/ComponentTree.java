@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
@@ -45,6 +46,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Choreographer;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -127,6 +129,8 @@ public class ComponentTree
 
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
+
+  private @Nullable final AccessibilityManager mAccessibilityManager;
 
   private boolean mInAttach = false;
 
@@ -540,6 +544,9 @@ public class ComponentTree
               ? instrumentHandler(builder.resolveThreadHandler)
               : instrumentHandler(new DefaultHandler(getDefaultResolveThreadLooper()));
     }
+
+    mAccessibilityManager =
+        (AccessibilityManager) mContext.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
   }
 
   private Object getResolveThreadHandlerLock() {
@@ -2945,18 +2952,20 @@ public class ComponentTree
     return sDefaultResolveThreadLooper;
   }
 
-  private static boolean isCompatibleSpec(
-      @Nullable LayoutState layoutState, int widthSpec, int heightSpec) {
+  private boolean isCompatibleSpec(
+      final @Nullable LayoutState layoutState, final int widthSpec, final int heightSpec) {
     return layoutState != null
         && layoutState.isCompatibleSpec(widthSpec, heightSpec)
-        && layoutState.isCompatibleAccessibility();
+        && AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager)
+            == layoutState.isAccessibilityEnabled();
   }
 
-  private static boolean isCompatibleComponentAndSpec(
+  private boolean isCompatibleComponentAndSpec(
       @Nullable LayoutState layoutState, int componentId, int widthSpec, int heightSpec) {
     return layoutState != null
         && layoutState.isCompatibleComponentAndSpec(componentId, widthSpec, heightSpec)
-        && layoutState.isCompatibleAccessibility();
+        && AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager)
+            == layoutState.isAccessibilityEnabled();
   }
 
   @Override

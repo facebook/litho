@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isMountSpec;
@@ -34,7 +33,6 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -188,8 +186,7 @@ public class LayoutState
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private final int mPreviousLayoutStateId;
 
-  private @Nullable AccessibilityManager mAccessibilityManager;
-  private boolean mAccessibilityEnabled = false;
+  private final boolean mIsAccessibilityEnabled;
 
   private final TreeState mTreeState;
   private @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
@@ -225,7 +222,8 @@ public class LayoutState
       int widthSpec,
       int heightSpec,
       int componentTreeId,
-      boolean isLayoutDiffingEnabled) {
+      boolean isLayoutDiffingEnabled,
+      boolean isAccessibilityEnabled) {
     mContext = context;
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
@@ -241,13 +239,9 @@ public class LayoutState
     mComponentTreeId = componentTreeId;
     mRootComponentName = rootComponent.getSimpleName();
     mShouldGenerateDiffTree = isLayoutDiffingEnabled;
-
-    mAccessibilityManager =
-        (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-    mAccessibilityEnabled = AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager);
-
     mRoot = root;
     mRootTransitionId = getTransitionIdForNode(root);
+    mIsAccessibilityEnabled = isAccessibilityEnabled;
   }
 
   @VisibleForTesting
@@ -1438,11 +1432,6 @@ public class LayoutState
     return widthIsCompatible && heightIsCompatible;
   }
 
-  boolean isCompatibleAccessibility() {
-    return AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager)
-        == mAccessibilityEnabled;
-  }
-
   boolean isCompatibleComponentAndSpec(int componentId, int widthSpec, int heightSpec) {
     return mComponent.getId() == componentId && isCompatibleSpec(widthSpec, heightSpec);
   }
@@ -1578,7 +1567,7 @@ public class LayoutState
   }
 
   boolean isAccessibilityEnabled() {
-    return mAccessibilityEnabled;
+    return mIsAccessibilityEnabled;
   }
 
   /**

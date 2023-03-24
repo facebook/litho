@@ -144,19 +144,6 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
       final MeasuredResultCache renderPhaseCache = resolveResult.consumeCache();
       final ComponentContext c = resolveResult.context;
 
-      final LayoutState layoutState =
-          new LayoutState(
-              c,
-              resolveResult.component,
-              treeState,
-              resolveResult.attachables,
-              currentLayoutState,
-              node,
-              widthSpec,
-              heightSpec,
-              treeId,
-              isLayoutDiffingEnabled);
-
       final LayoutStateContext lsc =
           new LayoutStateContext(
               new MeasuredResultCache(renderPhaseCache),
@@ -168,6 +155,20 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
                       c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
               diffTreeRoot,
               future);
+
+      final LayoutState layoutState =
+          new LayoutState(
+              c,
+              resolveResult.component,
+              treeState,
+              resolveResult.attachables,
+              currentLayoutState,
+              node,
+              widthSpec,
+              heightSpec,
+              treeId,
+              isLayoutDiffingEnabled,
+              lsc.isAccessibilityEnabled());
 
       if (perfEventLogger != null) {
         lsc.setPerfEvent(perfEventLogger);
