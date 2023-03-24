@@ -218,25 +218,6 @@ public class LayoutState
   LayoutState(
       ComponentContext context,
       Component rootComponent,
-      final TreeState treeState,
-      final @Nullable LayoutState current) {
-    mContext = context;
-    mComponent = rootComponent;
-    mId = sIdGenerator.getAndIncrement();
-    mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
-    mTreeState = treeState;
-    mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
-    mScopedSpecComponentInfos = new ArrayList<>();
-    mVisibilityOutputs = new ArrayList<>(8);
-
-    mAccessibilityManager =
-        (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-    mAccessibilityEnabled = AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager);
-  }
-
-  LayoutState(
-      ComponentContext context,
-      Component rootComponent,
       TreeState treeState,
       @Nullable List<Attachable> attachables,
       @Nullable LayoutState current,
