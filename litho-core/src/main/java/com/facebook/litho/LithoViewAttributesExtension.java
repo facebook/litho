@@ -299,8 +299,6 @@ public class LithoViewAttributesExtension
       unsetInterceptTouchEventHandler(view);
     }
 
-    unsetViewId(view);
-
     if (attributes.isTagSet()) {
       unsetViewTag(view);
     }
@@ -552,12 +550,6 @@ public class LithoViewAttributesExtension
   private static void setViewId(View view, @IdRes int id) {
     if (id != View.NO_ID) {
       view.setId(id);
-    }
-  }
-
-  private static void unsetViewId(View view) {
-    if (view.getId() != View.NO_ID) {
-      view.setId(View.NO_ID);
     }
   }
 
