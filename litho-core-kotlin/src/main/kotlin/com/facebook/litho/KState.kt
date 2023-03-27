@@ -40,7 +40,11 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
     // The initial state was not computed yet. let's create it and put it in the state
     val state =
         treeState.createOrGetInitialHookState(
-            globalKey, hookIndex, initializer, isNestedTreeContext)
+            globalKey,
+            hookIndex,
+            initializer,
+            isNestedTreeContext,
+            context.scopedComponentInfo.component.simpleName)
     treeState.addStateContainer(globalKey, state, isNestedTreeContext)
 
     context.scopedComponentInfo.stateContainer = state

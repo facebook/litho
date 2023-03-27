@@ -17,6 +17,9 @@
 package com.facebook.litho
 
 import androidx.annotation.VisibleForTesting
+import com.facebook.litho.ComponentsSystrace.beginSection
+import com.facebook.litho.ComponentsSystrace.endSection
+import com.facebook.litho.ComponentsSystrace.isTracing
 import java.util.Collections
 import java.util.HashMap
 import java.util.HashSet
@@ -64,16 +67,31 @@ class InitialStateContainer {
    */
   fun createOrGetInitialStateForComponent(
       component: Component,
-      scopedContext: ComponentContext?,
+      scopedContext: ComponentContext,
       key: String
   ): StateContainer {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
     return synchronized(stateLock) {
       initialStates.getOrPut(key) {
-        (component as SpecGeneratedComponent).createInitialStateContainer(scopedContext!!)
+        createInitialStateContainer(context = scopedContext, component = component)
       }
     }
+  }
+
+  private fun createInitialStateContainer(
+      context: ComponentContext,
+      component: Component
+  ): StateContainer {
+    val isTracing = isTracing
+    if (isTracing) {
+      beginSection("create-initial-state:${component.simpleName}")
+    }
+    val state = (component as SpecGeneratedComponent).createInitialStateContainer(context)
+    if (isTracing) {
+      endSection()
+    }
+    return state
   }
 
   fun getInitialStateForComponent(key: String): StateContainer? {
@@ -91,7 +109,8 @@ class InitialStateContainer {
   fun <T> createOrGetInitialHookState(
       key: String,
       hookIndex: Int,
-      initializer: HookInitializer<T>
+      initializer: HookInitializer<T>,
+      componentName: String,
   ): KStateContainer {
     val stateLock: Any = synchronized(this) { createInitialStateLocks.getOrPut(key) { Any() } }
 
@@ -104,7 +123,14 @@ class InitialStateContainer {
         return initialHookStates
       }
 
+      val isTracing = isTracing
+      if (isTracing) {
+        beginSection("create-initial-state:${componentName}[$hookIndex]")
+      }
       val initialState = initializer.init()
+      if (isTracing) {
+        endSection()
+      }
 
       // If the state needed to be initialised it should be guaranteed that it needs to be added at
       // the end of the list. We create a new KStateContainer to guarantee immutability of state

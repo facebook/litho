@@ -146,7 +146,7 @@ public class Resolver {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("resolve:" + component.getSimpleName());
-      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("create-node:" + component.getSimpleName());
     }
 
     ComponentsLogger componentsLogger = resolveStateContext.getComponentsLogger();
@@ -284,7 +284,7 @@ public class Resolver {
     }
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("after-create-node:" + component.getSimpleName());
     }
 
     // 8. Set the measure function

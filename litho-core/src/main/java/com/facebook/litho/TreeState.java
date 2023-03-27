@@ -282,11 +282,15 @@ public class TreeState {
   }
 
   <T> KStateContainer createOrGetInitialHookState(
-      String key, int hookStateIndex, HookInitializer<T> initializer, boolean isNestedTree) {
+      String key,
+      int hookStateIndex,
+      HookInitializer<T> initializer,
+      boolean isNestedTree,
+      String componentName) {
     final StateHandler stateHandler = getStateHandler(isNestedTree);
     return stateHandler
         .getInitialStateContainer()
-        .createOrGetInitialHookState(key, hookStateIndex, initializer);
+        .createOrGetInitialHookState(key, hookStateIndex, initializer, componentName);
   }
 
   public TreeMountInfo getMountInfo() {
