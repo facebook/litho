@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+@file:JvmName("RenderTreeNodeUtils")
 
-import android.graphics.Rect;
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.rendercore.RenderTreeNode;
+package com.facebook.litho
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class RenderTreeNodeUtils {
+import android.graphics.Rect
+import com.facebook.rendercore.RenderTreeNode
 
-  static RenderTreeNode create(
-      final LithoRenderUnit unit,
-      final Rect bounds,
-      final @Nullable LithoLayoutData layoutData,
-      final @Nullable RenderTreeNode parent) {
-
-    return new RenderTreeNode(
-        parent, unit, layoutData, bounds, null, parent != null ? parent.getChildrenCount() : 0);
-  }
-}
+fun create(
+    unit: LithoRenderUnit,
+    bounds: Rect,
+    layoutData: LithoLayoutData?,
+    parent: RenderTreeNode?
+): RenderTreeNode =
+    RenderTreeNode(parent, unit, layoutData, bounds, null, parent?.childrenCount ?: 0)

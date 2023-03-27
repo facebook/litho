@@ -40,7 +40,7 @@ object MountItemTestHelper {
             flags,
             importantForAccessibility,
             LithoRenderUnit.STATE_UNKNOWN)
-    val node = RenderTreeNodeUtils.create(unit, bounds ?: Rect(), null, null)
+    val node = create(unit, bounds ?: Rect(), null, null)
     return MountItem(node, host, content).apply { mountData = LithoMountData(content) }
   }
 }
