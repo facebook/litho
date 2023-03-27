@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /**
  * Takes a component and returns a new component that it is wrapped in. Used to create a common root
- * wrapper in {@link ComponentTree}.
+ * wrapper in [ComponentTree].
  */
-public interface RootWrapperComponentFactory {
+fun interface RootWrapperComponentFactory {
 
   /** Wrap the given component and return a new root. */
-  Component createWrapper(ComponentContext c, Component root);
+  fun createWrapper(c: ComponentContext, root: Component): Component
 }
