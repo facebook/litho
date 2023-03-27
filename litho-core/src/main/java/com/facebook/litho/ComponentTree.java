@@ -1100,10 +1100,6 @@ public class ComponentTree
 
         final Size output = new Size();
 
-        if (enableDebugFlash() && ThreadUtils.isMainThread() && mLithoView != null) {
-          flash(mLithoView);
-        }
-
         setSizeSpecForMeasure(widthSpec, heightSpec, output, forceLayout);
 
         // It's possible we don't commit a layout or block on a future on another thread (which will
