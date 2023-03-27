@@ -145,6 +145,7 @@ public class Resolver {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
+      ComponentsSystrace.beginSection("resolve:" + component.getSimpleName());
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
@@ -208,6 +209,10 @@ public class Resolver {
             createPerformanceEvent(
                 component, componentsLogger, FrameworkLogEvents.EVENT_COMPONENT_PREPARE);
 
+        if (isTracing) {
+          ComponentsSystrace.beginSection("prepare:" + component.getSimpleName());
+        }
+
         PrepareResult prepareResult =
             component.prepare(resolveStateContext, scopedComponentInfo.getContext());
 
@@ -223,6 +228,10 @@ public class Resolver {
           }
           applyTransitionsAndUseEffectEntriesToNode(
               prepareResult.transitions, prepareResult.useEffectEntries, node);
+        }
+        if (isTracing) {
+          // end of prepare
+          ComponentsSystrace.endSection();
         }
       }
 
@@ -265,6 +274,7 @@ public class Resolver {
       return null;
     } finally {
       if (isTracing) {
+        // end of createLayout
         ComponentsSystrace.endSection();
       }
     }
@@ -333,6 +343,9 @@ public class Resolver {
     scopedComponentInfo.addWorkingRangeToNode(node);
 
     if (isTracing) {
+      // end of afterCreateLayout
+      ComponentsSystrace.endSection();
+      // end of resolve
       ComponentsSystrace.endSection();
     }
 

@@ -190,7 +190,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
         if (extraAttribution != null) {
           ComponentsSystrace.beginSection("extra:" + extraAttribution);
         }
-        ComponentsSystrace.beginSectionWithArgs("resolve:" + component.getSimpleName())
+        ComponentsSystrace.beginSectionWithArgs("resolveTree:" + component.getSimpleName())
             .arg("treeId", componentTreeId)
             .arg("rootId", component.getId())
             .flush();

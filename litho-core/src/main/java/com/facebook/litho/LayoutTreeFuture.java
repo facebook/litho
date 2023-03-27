@@ -131,7 +131,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
     final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("layout:" + resolveResult.component.getSimpleName())
+        ComponentsSystrace.beginSectionWithArgs(
+                "layoutTree:" + resolveResult.component.getSimpleName())
             .arg("treeId", treeId)
             .arg("rootId", resolveResult.component.getId())
             .arg("widthSpec", SizeSpec.toString(widthSpec))
