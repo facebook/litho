@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.Nullsafe;
-
-/** Specify a position to anchor a {@link DeprecatedLithoTooltip} on a component. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public enum TooltipPosition {
+/** Specify a position to anchor a [DeprecatedLithoTooltip] on a component. */
+enum class TooltipPosition {
   CENTER,
   BOTTOM_LEFT,
   CENTER_LEFT,
