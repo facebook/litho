@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.content.res.TypedArray;
-import android.util.TypedValue;
-import com.facebook.infer.annotation.Nullsafe;
+import android.content.res.TypedArray
+import android.util.TypedValue
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-class TypedArrayUtils {
-  private static final TypedValue sTmpTypedValue = new TypedValue();
+internal object TypedArrayUtils {
+  private val tmpTypedValue = TypedValue()
 
-  static boolean isColorAttribute(TypedArray a, int idx) {
-    synchronized (sTmpTypedValue) {
-      a.getValue(idx, sTmpTypedValue);
-      return sTmpTypedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT
-          && sTmpTypedValue.type <= TypedValue.TYPE_LAST_COLOR_INT;
+  @JvmStatic
+  fun isColorAttribute(a: TypedArray, idx: Int): Boolean {
+    synchronized(tmpTypedValue) {
+      a.getValue(idx, tmpTypedValue)
+      return tmpTypedValue.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
+          tmpTypedValue.type <= TypedValue.TYPE_LAST_COLOR_INT
     }
   }
 }
