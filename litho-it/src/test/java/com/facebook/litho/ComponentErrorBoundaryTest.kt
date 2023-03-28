@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import com.facebook.litho.LithoRenderUnit.getRenderUnit
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.kotlin.widget.Text
 import com.facebook.litho.sections.SectionContext
@@ -672,7 +671,8 @@ class ComponentErrorBoundaryTest {
       for (i in 0 until count) {
         val item = lithoViewRule.lithoView.mountDelegateTarget.getMountItemAt(i)
         item?.renderTreeNode?.let {
-          assertThat(getRenderUnit(it).component).isNotInstanceOf(CrashingMountable::class.java)
+          assertThat(LithoRenderUnit.getRenderUnit(it).component)
+              .isNotInstanceOf(CrashingMountable::class.java)
         }
       }
     }

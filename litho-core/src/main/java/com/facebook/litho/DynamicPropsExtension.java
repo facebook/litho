@@ -51,7 +51,7 @@ public class DynamicPropsExtension
       final DynamicPropsExtensionState state = extensionState.getState();
 
       state.mDynamicPropsManager.onBindComponentToContent(
-          lithoRenderUnit.getComponent(), lithoRenderUnit.getComponentContext(), content);
+          lithoRenderUnit.getComponent(), lithoRenderUnit.componentContext, content);
     }
   }
 

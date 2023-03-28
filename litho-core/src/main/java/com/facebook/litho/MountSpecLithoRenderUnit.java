@@ -105,8 +105,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
           ? ((SpecGeneratedComponent) component).createRecyclingPool()
           : null;
     } catch (Exception e) {
-      if (mContext != null) {
-        ComponentUtils.handle(mContext, e);
+      if (componentContext != null) {
+        ComponentUtils.handle(componentContext, e);
       }
       return null;
     }

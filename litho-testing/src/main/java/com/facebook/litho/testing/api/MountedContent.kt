@@ -16,8 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.LithoRenderUnit.getRenderUnit
-
 internal fun LithoLayoutResult.getMountedContent(): Any? {
   val view = context.mountedView as? LithoView
   val mountDelegateTarget = view?.mountDelegateTarget
@@ -25,7 +23,7 @@ internal fun LithoLayoutResult.getMountedContent(): Any? {
     val count = mountDelegateTarget.mountItemCount
     for (i in 0 until count) {
       val mountItem = mountDelegateTarget.getMountItemAt(i)
-      val component = mountItem?.let { getRenderUnit(it).component } ?: continue
+      val component = mountItem?.let { LithoRenderUnit.getRenderUnit(it).component } ?: continue
       if (component === node.tailComponent) return mountItem.content
     }
   }

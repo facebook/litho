@@ -134,8 +134,8 @@ public final class DebugComponent {
     for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
       final LithoRenderUnit lithoRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
-      if (lithoRenderUnit.getComponentContext() != null
-          && lithoRenderUnit.getComponentContext().getComponentScope() == component) {
+      if (lithoRenderUnit.componentContext != null
+          && lithoRenderUnit.componentContext.getComponentScope() == component) {
         return lithoRenderUnit;
       }
     }
