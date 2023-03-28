@@ -135,5 +135,5 @@ object ComponentsSystrace {
 
   @JvmStatic
   val isTracing: Boolean
-    get() = systrace.isTracing
+    @JvmStatic get() = systrace.isTracing
 }
