@@ -22,4 +22,15 @@ object LithoDebugEvent {
   val RenderCore: DebugEvent.Companion = DebugEvent
   const val LayoutCommitted = "Litho.LayoutCommitted"
   const val LayoutCalculated = "Litho.LayoutCalculated"
+  const val MeasureSizeSpecsMismatch = "SizeSpecsMismatch"
+}
+
+object LithoDebugEventAttributes {
+
+  const val Root = "root"
+  const val MainThreadLayoutStateWidthSpec = "main_thread_layout_state_width_spec"
+  const val MainThreadLayoutStateHeightSpec = "main_thread_layout_state_height_spec"
+  const val MeasureWidthSpec = "measure_width_spec"
+  const val MeasureHeightSpec = "measure_height_spec"
+  const val Breadcrumb = "breadcrumb"
 }

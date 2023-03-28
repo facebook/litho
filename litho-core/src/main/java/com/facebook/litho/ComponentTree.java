@@ -33,6 +33,12 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.Breadcrumb;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateHeightSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateWidthSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureHeightSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureWidthSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.content.Context;
@@ -1058,9 +1064,27 @@ public class ComponentTree
         } else {
           needsSyncLayout = true;
 
+          LayoutState state = mMainThreadLayoutState;
+
+          if (state != null) {
+            DebugEventDispatcher.dispatch(
+                LithoDebugEvent.MeasureSizeSpecsMismatch,
+                String.valueOf(mId),
+                () -> {
+                  HashMap<String, Object> hashMap = new HashMap<>();
+                  hashMap.put(MainThreadLayoutStateWidthSpec, state.getWidthSpec());
+                  hashMap.put(MainThreadLayoutStateHeightSpec, state.getHeightSpec());
+                  hashMap.put(MeasureWidthSpec, widthSpec);
+                  hashMap.put(MeasureHeightSpec, heightSpec);
+                  hashMap.put(Root, mRoot != null ? mRoot.getSimpleName() : "");
+                  hashMap.put(Breadcrumb, mDebugLogBreadcrumb);
+                  return hashMap;
+                });
+          }
+
           if (DEBUG_LOGS) {
             if (mMainThreadLayoutState != null) {
-              LayoutState state = mMainThreadLayoutState;
+
               int id = mRoot != null ? mRoot.getId() : INVALID_ID;
               boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
               final boolean doesIdMatch = state.getRootComponent().getId() == id;
