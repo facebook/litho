@@ -28,7 +28,7 @@ import java.util.HashSet
  */
 class RenderState {
 
-  private val renderData: MutableMap<String, RenderData> = HashMap()
+  private val renderData: MutableMap<String, RenderData?> = HashMap()
   private val seenGlobalKeys: MutableSet<String> = HashSet()
 
   fun recordRenderData(scopedComponentInfos: List<ScopedComponentInfo>?) {
@@ -66,11 +66,10 @@ class RenderState {
           "Cannot record previous render data for ${component.simpleName}, found another Component with the same key: $globalKey")
     }
     seenGlobalKeys.add(globalKey)
-    renderData[globalKey]?.let { info ->
-      val newInfo: RenderData? =
-          (component as SpecGeneratedComponent).recordRenderData(scopedComponentInfo.context, info)
-      newInfo?.let { renderData[globalKey] = it }
-    }
+    val currentInfo = renderData[globalKey]
+    renderData[globalKey] =
+        (component as SpecGeneratedComponent).recordRenderData(
+            scopedComponentInfo.context, currentInfo)
   }
 
   private fun applyPreviousRenderData(scopedComponentInfo: ScopedComponentInfo) {
@@ -80,9 +79,8 @@ class RenderState {
       throw RuntimeException(
           "Trying to apply previous render data to component that doesn't support it")
     }
-    renderData[globalKey]?.let { previousRenderData ->
-      (component as SpecGeneratedComponent).applyPreviousRenderData(previousRenderData)
-    }
+
+    (component as SpecGeneratedComponent).applyPreviousRenderData(renderData[globalKey])
   }
 
   private fun isPreviousRenderDataSupported(component: Component): Boolean =

@@ -20,6 +20,7 @@ import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.Diff
 import com.facebook.litho.Row
 import com.facebook.litho.StateValue
 import com.facebook.litho.Transition
@@ -33,8 +34,10 @@ import com.facebook.litho.annotations.OnCreateTransition
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.OnUpdateState
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.PropDefault
 import com.facebook.litho.annotations.State
 import com.facebook.yoga.YogaAlign
+import java.lang.IllegalStateException
 
 @LayoutSpec
 object TransitionEndCallbackTestComponentSpec {
@@ -44,9 +47,16 @@ object TransitionEndCallbackTestComponentSpec {
   const val ANIM_ALPHA = "ANIM_ALPHA"
   const val ANIM_DISAPPEAR = "ANIM_DISAPPEAR"
 
+  @PropDefault const val testPropForRenderData: String = "default"
+
   @JvmStatic
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop caller: Caller, @State state: Boolean): Component? {
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop caller: Caller,
+      @Prop(optional = true) testPropForRenderData: String,
+      @State state: Boolean
+  ): Component? {
     caller.set(c)
     return when (caller.testType) {
       TestType.SAME_KEY -> getSameKeyTestComponent(c, state)
@@ -112,7 +122,15 @@ object TransitionEndCallbackTestComponentSpec {
 
   @JvmStatic
   @OnCreateTransition
-  fun onCreateTransition(c: ComponentContext, @Prop caller: Caller): Transition? {
+  fun onCreateTransition(
+      c: ComponentContext,
+      @Prop caller: Caller,
+      @Prop(optional = true) testPropForRenderData: Diff<String>,
+      @State state: Boolean,
+  ): Transition? {
+    if (state && testPropForRenderData.previous == null) {
+      throw IllegalStateException("previous render must be set for subsequent layouts but was null")
+    }
     val transition =
         when (caller.testType) {
           TestType.SAME_KEY ->

@@ -244,7 +244,7 @@ public abstract class SpecGeneratedComponent extends Component
     return null;
   }
 
-  protected void applyPreviousRenderData(RenderData previousRenderData) {}
+  protected void applyPreviousRenderData(@Nullable RenderData previousRenderData) {}
 
   protected void bindDynamicProp(int dynamicPropIndex, @Nullable Object value, Object content) {
     throw new RuntimeException("Components that have dynamic Props must override this method");
@@ -510,7 +510,8 @@ public abstract class SpecGeneratedComponent extends Component
    */
   protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 
-  protected @Nullable RenderData recordRenderData(ComponentContext c, RenderData toRecycle) {
+  protected @Nullable RenderData recordRenderData(
+      ComponentContext c, @Nullable RenderData toRecycle) {
     return null;
   }
 
