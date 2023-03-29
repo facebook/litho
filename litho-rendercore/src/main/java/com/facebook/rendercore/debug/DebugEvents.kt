@@ -238,6 +238,13 @@ object DebugEventBus {
   }
 
   @JvmStatic
+  inline fun subscribe(subscriber: DebugEventSubscriber) {
+    if (enabled) {
+      DebugEventDispatcher.subscribe(subscriber)
+    }
+  }
+
+  @JvmStatic
   fun unsubscribe(subscriber: DebugEventSubscriber) {
     DebugEventDispatcher.unsubscribe(subscriber)
   }
