@@ -522,7 +522,7 @@ internal class TestTextMountable(private val text: String, private val tag: Stri
 internal fun PrimitiveComponentScope.TestTextPrimitive(
     text: String,
     tag: String? = null
-): Primitive<TextView> {
+): Primitive {
   return Primitive(
       layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
       mountBehavior =

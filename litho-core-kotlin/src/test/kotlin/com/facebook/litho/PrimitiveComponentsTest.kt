@@ -945,7 +945,7 @@ private fun PrimitiveComponentScope.ViewPrimitive(
     dynamicTag: DynamicValue<Any?>? = null,
     updateState: ((String) -> Unit)? = null,
     str: String? = null,
-): Primitive<View> {
+): Primitive {
 
   class ViewPrimitiveLayoutBehavior(private val id: Int = 0) : LayoutBehavior {
     override fun LayoutScope.layout(widthSpec: Int, heightSpec: Int): PrimitiveLayoutResult {

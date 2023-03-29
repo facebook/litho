@@ -342,7 +342,7 @@ public class InternalNodeUtils {
           mountable);
     }
 
-    Primitive<?> primitive = node.getPrimitive();
+    Primitive primitive = node.getPrimitive();
     if (primitive != null && isPrimitive(component)) {
       return PrimitiveLithoRenderUnit.create(
           component,

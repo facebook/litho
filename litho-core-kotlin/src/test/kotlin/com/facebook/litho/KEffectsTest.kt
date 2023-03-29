@@ -986,7 +986,7 @@ internal class TestMountable : SimpleMountable<ColorDrawable>(RenderType.DRAWABL
 }
 
 @Suppress("TestFunctionName")
-internal fun PrimitiveComponentScope.TestPrimitive(): Primitive<ColorDrawable> {
+internal fun PrimitiveComponentScope.TestPrimitive(): Primitive {
   return Primitive(
       layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
       mountBehavior = MountBehavior(DrawableAllocator { ColorDrawable(Color.RED) }) {})

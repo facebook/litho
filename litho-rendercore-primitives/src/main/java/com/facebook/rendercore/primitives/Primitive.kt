@@ -34,12 +34,10 @@ import com.facebook.rendercore.Node
  * @property mountBehavior - defines how a Primitive mounts and configures a [View] or a [Drawable]
  *   associated with that Primitive
  */
-class Primitive<ContentType : Any>(
-    val layoutBehavior: LayoutBehavior,
-    private val mountBehavior: MountBehavior<ContentType>
-) : Node<Any?> {
+class Primitive(val layoutBehavior: LayoutBehavior, private val mountBehavior: MountBehavior<*>) :
+    Node<Any?> {
   /** Lazily creates and returns a [RenderUnit] configured with [mountBehavior]. */
-  val renderUnit: PrimitiveRenderUnit<ContentType>
+  val renderUnit: PrimitiveRenderUnit<*>
     get() {
       return mountBehavior.renderUnit
     }

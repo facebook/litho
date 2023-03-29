@@ -33,7 +33,7 @@ public class DefaultDiffNode implements DiffNode {
   private @Nullable VisibilityOutput mVisibilityOutput;
   private @Nullable Component mComponent;
   private @Nullable Mountable<?> mMountable;
-  private @Nullable Primitive<?> mPrimitive;
+  private @Nullable Primitive mPrimitive;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
@@ -83,12 +83,12 @@ public class DefaultDiffNode implements DiffNode {
 
   @Override
   @Nullable
-  public Primitive<?> getPrimitive() {
+  public Primitive getPrimitive() {
     return mPrimitive;
   }
 
   @Override
-  public void setPrimitive(@Nullable Primitive<?> primitive) {
+  public void setPrimitive(@Nullable Primitive primitive) {
     mPrimitive = primitive;
   }
 

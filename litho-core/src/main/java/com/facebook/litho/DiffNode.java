@@ -128,7 +128,7 @@ public interface DiffNode extends Cloneable {
   void setMountable(@Nullable Mountable<?> mountable);
 
   @Nullable
-  Primitive<?> getPrimitive();
+  Primitive getPrimitive();
 
-  void setPrimitive(@Nullable Primitive<?> primitive);
+  void setPrimitive(@Nullable Primitive primitive);
 }

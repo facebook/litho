@@ -177,7 +177,7 @@ abstract class PrimitiveComponent : Component() {
  * A class that represents a [Primitive] with [Style] that should be applied to the
  * [PrimitiveComponent].
  */
-data class LithoPrimitive(val primitive: Primitive<*>, val style: Style?) {
+data class LithoPrimitive(val primitive: Primitive, val style: Style?) {
   constructor(
       layoutBehavior: LayoutBehavior,
       mountBehavior: MountBehavior<*>,

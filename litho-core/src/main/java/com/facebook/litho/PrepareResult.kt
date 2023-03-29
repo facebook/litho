@@ -28,7 +28,7 @@ import kotlin.jvm.JvmField
  */
 class PrepareResult {
 
-  @JvmField val primitive: Primitive<*>?
+  @JvmField val primitive: Primitive?
 
   @JvmField val mountable: Mountable<*>?
 
@@ -48,7 +48,7 @@ class PrepareResult {
   }
 
   constructor(
-      primitive: Primitive<*>?,
+      primitive: Primitive?,
       transitions: List<Transition>?,
       useEffectEntries: List<Attachable>?
   ) {

@@ -544,7 +544,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       }
       try {
         final @Nullable Mountable<?> mountable = node.getMountable();
-        final @Nullable Primitive<?> primitive = node.getPrimitive();
+        final @Nullable Primitive primitive = node.getPrimitive();
         if (mountable != null) {
           context.setPreviousLayoutDataForCurrentNode(mLayoutData);
           context.setLayoutContextExtraData(new LithoLayoutContextExtraData(mYogaNode));

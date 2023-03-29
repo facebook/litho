@@ -178,7 +178,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   private @Nullable Mountable<?> mMountable;
 
-  private @Nullable Primitive<?> mPrimitive;
+  private @Nullable Primitive mPrimitive;
 
   protected LithoNode() {
     mDebugComponents = new HashSet<>();
@@ -192,11 +192,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mMountable = mountable;
   }
 
-  public @Nullable Primitive<?> getPrimitive() {
+  public @Nullable Primitive getPrimitive() {
     return mPrimitive;
   }
 
-  public void setPrimitive(Primitive<?> primitive) {
+  public void setPrimitive(Primitive primitive) {
     if (primitive == null) {
       throw new RuntimeException("Primitive is null in LithoNode.setPrimitive()");
     }
