@@ -66,6 +66,10 @@ public class Resolver {
     if (!isReconcilable) {
       node = resolve(resolveStateContext, c, component);
 
+      if (node != null && !resolveStateContext.isLayoutInterrupted()) {
+        node.freeze(resolveStateContext);
+      }
+
       // This needs to finish layout on the UI thread.
       if (node != null && resolveStateContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
@@ -387,6 +391,9 @@ public class Resolver {
     for (int i = 0, size = root.getChildCount(); i < size; i++) {
       resumeResolvingTree(resolveStateContext, root.getChildAt(i));
     }
+
+    root.freeze(resolveStateContext);
+
     return root;
   }
 

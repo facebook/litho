@@ -24,6 +24,7 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Layout.isLayoutDirectionRTL;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -365,43 +366,44 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
-  protected void freeze(@Nullable LithoNode parent) {
-    if (parent == null) {
-      mFrozen = true;
+  final void freeze(final CalculationStateContext context) {
+    freeze(context, IMPORTANT_FOR_ACCESSIBILITY_AUTO, ENABLED_UNSET);
+  }
+
+  private void freeze(
+      final CalculationStateContext context,
+      final int parentImportantForAccessibility,
+      final int parentEnabledState) {
+    if (mFrozen) {
       return;
     }
-    // If parents important for A11Y is YES_HIDE_DESCENDANTS then
-    // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
-    if (parent.getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
-      importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
+    final boolean isRoot = context.getRootComponentId() == getHeadComponent().getId();
+
+    if (!isRoot) { // if not root component
+
+      // If parents important for A11Y is YES_HIDE_DESCENDANTS then
+      // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
+      if (parentImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+        importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      }
+
+      // If the parent of this node is disabled, this node has to be disabled too.
+      if (parentEnabledState == ENABLED_SET_FALSE) {
+        mutableNodeInfo().setEnabled(false);
+      }
     }
 
-    // If the parent of this node is disabled, this node has to be disabled too.
-    final @NodeInfo.EnabledState int parentEnabledState;
-    if (parent.getNodeInfo() != null) {
-      parentEnabledState = parent.getNodeInfo().getEnabledState();
-    } else {
-      parentEnabledState = ENABLED_UNSET;
-    }
-
-    // If the parent of this node is disabled, this node has to be disabled too.
-    if (parentEnabledState == ENABLED_SET_FALSE) {
-      mutableNodeInfo().setEnabled(false);
+    for (int i = 0; i < getChildCount(); i++) {
+      getChildAt(i)
+          .freeze(
+              context,
+              getImportantForAccessibility(),
+              getNodeInfo() != null ? getNodeInfo().getEnabledState() : ENABLED_UNSET);
     }
 
     // Sets mFrozen as true to avoid anymore mutation.
     mFrozen = true;
-  }
-
-  private static void freezeRecursive(LithoNode node, @Nullable LithoNode parent) {
-    if (node.mFrozen) {
-      return;
-    }
-
-    node.freeze(parent);
-    for (int i = 0; i < node.getChildCount(); i++) {
-      freezeRecursive(node.getChildAt(i), node);
-    }
   }
 
   /**
@@ -460,8 +462,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     if (isTracing) {
       ComponentsSystrace.beginSection("freeze:" + getHeadComponent().getSimpleName());
     }
-
-    freezeRecursive(this, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
