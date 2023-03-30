@@ -51,7 +51,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Preconditions;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -103,8 +102,6 @@ public abstract class Component
 
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
-
-  private @Nullable ArrayMap<Object, Object> mMetadata = null;
 
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
@@ -2235,20 +2232,6 @@ public abstract class Component
      */
     public T translationY(DynamicValue<Float> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Y, value);
-      return getThis();
-    }
-
-    /**
-     * Links a {@link DynamicValue} object to a Key for this Component
-     *
-     * @param key to access metadata for the object
-     * @param value value stored at {@link key}
-     */
-    public synchronized <K, V> T metadata(K key, V value) {
-      if (mComponent.mMetadata == null) {
-        mComponent.mMetadata = new ArrayMap<>();
-      }
-      mComponent.mMetadata.put(key, value);
       return getThis();
     }
 
