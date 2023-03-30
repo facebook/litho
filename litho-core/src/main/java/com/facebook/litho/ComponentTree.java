@@ -846,7 +846,7 @@ public class ComponentTree
     }
     mInAttach = true;
     try {
-      if (mIncrementalMountHelper != null && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
+      if (mIncrementalMountHelper != null) {
         mIncrementalMountHelper.onAttach(mLithoView);
       }
 
@@ -906,7 +906,7 @@ public class ComponentTree
   void detach() {
     assertMainThread();
 
-    if (mIncrementalMountHelper != null && !mLithoView.skipNotifyVisibleBoundsChangedCalls()) {
+    if (mIncrementalMountHelper != null) {
       mIncrementalMountHelper.onDetach(mLithoView);
     }
 

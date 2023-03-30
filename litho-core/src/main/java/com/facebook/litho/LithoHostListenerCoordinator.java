@@ -59,14 +59,6 @@ public class LithoHostListenerCoordinator {
     }
   }
 
-  public void setSkipNotifyVisibleBoundsChanged(boolean value) {
-    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
-
-    if (mountDelegate != null) {
-      mountDelegate.setSkipNotifyVisibleBoundsChanged(value);
-    }
-  }
-
   private void startNotifyVisibleBoundsChangedSection() {
     final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
 

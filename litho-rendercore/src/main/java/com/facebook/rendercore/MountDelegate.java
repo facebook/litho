@@ -42,7 +42,6 @@ public class MountDelegate {
   private @Nullable ExtensionState mUnmountDelegateExtensionState;
   private boolean mReferenceCountingEnabled = false;
   private boolean mCollectVisibleBoundsChangedCalls = false;
-  private boolean mSkipNotifyVisibleBoundsChanged = false;
   private int mNotifyVisibleBoundsChangedNestCount = 0;
   private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
   private final Systracer mTracer;
@@ -54,10 +53,6 @@ public class MountDelegate {
 
   public void setCollectVisibleBoundsChangedCalls(boolean value) {
     mCollectVisibleBoundsChangedCalls = value;
-  }
-
-  public void setSkipNotifyVisibleBoundsChanged(boolean value) {
-    mSkipNotifyVisibleBoundsChanged = value;
   }
 
   public void registerExtensions(
@@ -186,10 +181,6 @@ public class MountDelegate {
   }
 
   public void notifyVisibleBoundsChangedForItem(Object item) {
-    if (mSkipNotifyVisibleBoundsChanged) {
-      return;
-    }
-
     if (!mCollectVisibleBoundsChangedCalls) {
       RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item, mTracer);
       return;
@@ -199,7 +190,7 @@ public class MountDelegate {
   }
 
   public void startNotifyVisibleBoundsChangedSection() {
-    if (!mCollectVisibleBoundsChangedCalls || mSkipNotifyVisibleBoundsChanged) {
+    if (!mCollectVisibleBoundsChangedCalls) {
       return;
     }
 
@@ -207,7 +198,7 @@ public class MountDelegate {
   }
 
   public void endNotifyVisibleBoundsChangedSection() {
-    if (!mCollectVisibleBoundsChangedCalls || mSkipNotifyVisibleBoundsChanged) {
+    if (!mCollectVisibleBoundsChangedCalls) {
       return;
     }
 

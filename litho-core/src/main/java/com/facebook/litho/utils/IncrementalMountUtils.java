@@ -37,30 +37,19 @@ public class IncrementalMountUtils {
     View getWrappedView();
   }
 
-  /** Performs incremental mount on all {@link LithoView}s within the given View. */
-  public static void incrementallyMountLithoViews(View view) {
-    incrementallyMountLithoViews(view, false);
-  }
-
   /**
    * Performs incremental mount on all {@link LithoView}s within the given View.
    *
    * @param view the view to process
-   * @param isManualPositionChange true if the position change is due to a manual change, such as
-   *     setting Left / Top, or calling offsetTopAndBottom
    */
-  public static void incrementallyMountLithoViews(View view, boolean isManualPositionChange) {
+  public static void incrementallyMountLithoViews(View view) {
     if (view instanceof LithoView) {
       final LithoView lithoView = (LithoView) view;
-      if (isManualPositionChange) {
-        lithoView.notifyLithoViewGlobalPositionChanged();
-      } else {
-        lithoView.notifyVisibleBoundsChanged();
-      }
+      lithoView.notifyVisibleBoundsChanged();
     } else if (view instanceof ViewGroup) {
       for (int i = 0, size = ((ViewGroup) view).getChildCount(); i < size; i++) {
         final View child = ((ViewGroup) view).getChildAt(i);
-        incrementallyMountLithoViews(child, isManualPositionChange);
+        incrementallyMountLithoViews(child);
       }
     }
   }

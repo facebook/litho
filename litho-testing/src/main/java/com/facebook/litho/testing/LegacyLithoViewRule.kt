@@ -254,18 +254,7 @@ constructor(
   }
 
   fun dispatchGlobalLayout(): LegacyLithoViewRule {
-    val lithoView: LithoView = lithoView
-
-    if (lithoView.skipNotifyVisibleBoundsChangedCalls()) {
-      lithoView.viewTreeObserver.dispatchOnGlobalLayout()
-      val childLithoViews = lithoView.childLithoViewsFromCurrentlyMountedItems
-
-      for (lv in childLithoViews) {
-        lv.viewTreeObserver.dispatchOnGlobalLayout()
-      }
-    } else {
-      lithoView.notifyVisibleBoundsChanged()
-    }
+    lithoView.notifyVisibleBoundsChanged()
 
     return this
   }
