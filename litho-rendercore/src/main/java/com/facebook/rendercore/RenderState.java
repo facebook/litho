@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore;
 
+import static java.util.Objects.requireNonNull;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,7 +30,6 @@ import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.ThreadSafe;
@@ -131,7 +132,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
       future =
           new ResolveFuture<>(
               resolveFunc,
-              new ResolveContext(mRenderContext, this),
+              new ResolveContext<>(mRenderContext, this),
               mCommittedResolvedTree,
               mCommittedState,
               Collections.emptyList(),
@@ -192,7 +193,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
         return;
       }
 
-      Objects.requireNonNull(
+      requireNonNull(
           mCommittedResolvedTree, "Tried executing the layout step before resolving a tree");
 
       if (mLayoutFuture == null
@@ -292,7 +293,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
       if (mCommittedResolvedTree != null) {
         futureToResolveBeforeMeasuring = null;
       } else {
-        futureToResolveBeforeMeasuring = Objects.requireNonNull(mResolveFuture);
+        futureToResolveBeforeMeasuring = requireNonNull(mResolveFuture);
       }
     }
 
@@ -355,13 +356,13 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
     }
   }
 
-  private boolean hasCompatibleSize(RenderTree tree, int widthSpec, int heightSpec) {
+  private static boolean hasCompatibleSize(RenderTree tree, int widthSpec, int heightSpec) {
     return MeasureSpecUtils.isMeasureSpecCompatible(tree.getWidthSpec(), widthSpec, tree.getWidth())
         && MeasureSpecUtils.isMeasureSpecCompatible(
             tree.getHeightSpec(), heightSpec, tree.getHeight());
   }
 
-  private boolean hasSameSpecs(
+  private static <State, RenderContext> boolean hasSameSpecs(
       LayoutFuture<State, RenderContext> future, int widthSpec, int heightSpec) {
     return MeasureSpecUtils.areMeasureSpecsEquivalent(future.getWidthSpec(), widthSpec)
         && MeasureSpecUtils.areMeasureSpecsEquivalent(future.getHeightSpec(), heightSpec);

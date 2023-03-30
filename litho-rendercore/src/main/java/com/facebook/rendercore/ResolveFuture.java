@@ -30,21 +30,21 @@ public class ResolveFuture<State, RenderContext>
 
   public ResolveFuture(
       final RenderState.ResolveFunc<State, RenderContext> resolveFunc,
-      ResolveContext resolveContext,
-      @Nullable Node<RenderContext> committedTre,
+      ResolveContext<RenderContext> resolveContext,
+      @Nullable Node<RenderContext> committedTree,
       @Nullable State committedState,
       List<StateUpdateReceiver.StateUpdate<State>> stateUpdatesToApply,
-      int version) {
+      int resolveVersion) {
     super(
         new Callable<Pair<Node<RenderContext>, State>>() {
           @Override
-          public Pair<Node<RenderContext>, State> call() throws Exception {
+          public Pair<Node<RenderContext>, State> call() {
             return resolveFunc.resolve(
-                resolveContext, committedTre, committedState, stateUpdatesToApply);
+                resolveContext, committedTree, committedState, stateUpdatesToApply);
           }
         },
         "ResolveFuture");
-    mVersion = version;
+    mVersion = resolveVersion;
   }
 
   public int getVersion() {

@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
 public class LayoutFuture<State, RenderContext>
     extends ThreadInheritingPriorityFuture<RenderResult<State, RenderContext>> {
 
-  private final int mVersionId;
+  private final int mVersion;
   private final int mWidthSpec;
   private final int mHeightSpec;
   private final Node<RenderContext> mTree;
@@ -63,14 +63,14 @@ public class LayoutFuture<State, RenderContext>
           }
         },
         "LayoutFuture");
-    mVersionId = layoutVersion;
+    mVersion = layoutVersion;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mTree = node;
   }
 
   public int getVersion() {
-    return mVersionId;
+    return mVersion;
   }
 
   public int getWidthSpec() {
