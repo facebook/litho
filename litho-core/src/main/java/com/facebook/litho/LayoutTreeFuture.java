@@ -151,6 +151,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
               c,
               treeState,
               version,
+              resolveResult.component.getId(),
               AccessibilityUtils.isAccessibilityEnabled(
                   (AccessibilityManager)
                       c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),

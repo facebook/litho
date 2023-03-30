@@ -327,7 +327,7 @@ public class ComponentContext implements Cloneable {
   public void setLayoutStateContextForTesting() {
     setLayoutStateContext(
         new LayoutStateContext(
-            new MeasuredResultCache(), this, new TreeState(), 0, true, null, null));
+            new MeasuredResultCache(), this, new TreeState(), 0, -1, true, null, null));
   }
 
   /**
@@ -339,7 +339,7 @@ public class ComponentContext implements Cloneable {
   public ResolveStateContext setRenderStateContextForTests() {
     final ResolveStateContext resolveStateContext =
         new ResolveStateContext(
-            new MeasuredResultCache(), new TreeState(), 0, true, null, null, null, getLogger());
+            new MeasuredResultCache(), new TreeState(), 0, -1, true, null, null, null, getLogger());
     setRenderStateContext(resolveStateContext);
 
     return resolveStateContext;

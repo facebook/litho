@@ -23,6 +23,7 @@ interface CalculationStateContext {
   val cache: MeasuredResultCache
   val treeState: TreeState
   val layoutVersion: Int
+  val rootComponentId: Int
   val isFutureReleased: Boolean
   val layoutStateFuture: TreeFuture<*>?
   val createdEventHandlers: List<Pair<String, EventHandler<*>>>?

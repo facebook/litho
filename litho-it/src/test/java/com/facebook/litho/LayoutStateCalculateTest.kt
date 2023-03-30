@@ -1978,6 +1978,7 @@ class LayoutStateCalculateTest {
             c,
             resolveStateContext.treeState,
             resolveStateContext.layoutVersion,
+            resolveStateContext.rootComponentId,
             resolveStateContext.isAccessibilityEnabled,
             null,
             null)

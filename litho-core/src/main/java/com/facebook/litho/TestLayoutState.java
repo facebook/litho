@@ -72,6 +72,7 @@ public class TestLayoutState {
             c,
             resolveStateContext.getTreeState(),
             resolveStateContext.getLayoutVersion(),
+            resolveStateContext.getRootComponentId(),
             resolveStateContext.isAccessibilityEnabled(),
             null,
             null);

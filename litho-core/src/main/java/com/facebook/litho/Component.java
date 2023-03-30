@@ -637,6 +637,7 @@ public abstract class Component
     }
 
     final int layoutVersion = calculationStateContext.getLayoutVersion();
+    final int rootComponentId = calculationStateContext.getRootComponentId();
     final MeasuredResultCache resultCache =
         shouldCacheResult ? calculationStateContext.getCache() : new MeasuredResultCache();
     final TreeState treeState = calculationStateContext.getTreeState();
@@ -667,6 +668,7 @@ public abstract class Component
                   resultCache,
                   treeState,
                   layoutVersion,
+                  rootComponentId,
                   calculationStateContext.isAccessibilityEnabled(),
                   null,
                   null,
@@ -689,6 +691,7 @@ public abstract class Component
                 c,
                 treeState,
                 layoutVersion,
+                rootComponentId,
                 calculationStateContext.isAccessibilityEnabled(),
                 null,
                 null);
@@ -759,6 +762,7 @@ public abstract class Component
               new MeasuredResultCache(),
               new TreeState(),
               0,
+              -1,
               prevContext != null
                   ? prevContext.isAccessibilityEnabled()
                   : AccessibilityUtils.isAccessibilityEnabled(

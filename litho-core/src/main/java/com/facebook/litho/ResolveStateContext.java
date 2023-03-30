@@ -29,6 +29,7 @@ import java.util.Map;
 public class ResolveStateContext implements CalculationStateContext {
 
   private final int mLayoutVersion;
+  private final int mRootComponentId;
   private final MeasuredResultCache mCache;
 
   private boolean mIsInterruptible = true;
@@ -45,6 +46,7 @@ public class ResolveStateContext implements CalculationStateContext {
       final MeasuredResultCache cache,
       final TreeState treeState,
       final int layoutVersion,
+      final int rootComponentId,
       final boolean isAccessibilityEnabled,
       final @Nullable TreeFuture layoutStateFuture,
       final @Nullable LithoNode currentRoot,
@@ -53,6 +55,7 @@ public class ResolveStateContext implements CalculationStateContext {
     mCache = cache;
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
+    mRootComponentId = rootComponentId;
     mLayoutStateFuture = layoutStateFuture;
     mCurrentRoot = currentRoot;
     mPerfEventLogger = perfEventLogger;
@@ -63,6 +66,11 @@ public class ResolveStateContext implements CalculationStateContext {
   @Override
   public int getLayoutVersion() {
     return mLayoutVersion;
+  }
+
+  @Override
+  public int getRootComponentId() {
+    return mRootComponentId;
   }
 
   @Nullable

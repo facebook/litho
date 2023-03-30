@@ -39,6 +39,7 @@ public class LayoutStateContext implements CalculationStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable ComponentContext mRootComponentContext;
   private final int mLayoutVersion;
+  private final int mRootComponentId;
   private final boolean mIsAccessibilityEnabled;
   private @Nullable ArrayList<Pair<String, EventHandler<?>>> mCreatedEventHandlers = null;
 
@@ -58,6 +59,7 @@ public class LayoutStateContext implements CalculationStateContext {
       final ComponentContext rootComponentContext,
       final TreeState treeState,
       final int layoutVersion,
+      final int rootComponentId,
       final boolean isAccessibilityEnabled,
       final @Nullable DiffNode currentDiffTree,
       final @Nullable TreeFuture layoutStateFuture) {
@@ -65,6 +67,7 @@ public class LayoutStateContext implements CalculationStateContext {
     mRootComponentContext = rootComponentContext;
     mTreeState = treeState;
     mLayoutVersion = layoutVersion;
+    mRootComponentId = rootComponentId;
     mCurrentDiffTree = currentDiffTree;
     mLayoutStateFuture = layoutStateFuture;
     mIsAccessibilityEnabled = isAccessibilityEnabled;
@@ -97,6 +100,11 @@ public class LayoutStateContext implements CalculationStateContext {
   @Override
   public int getLayoutVersion() {
     return mLayoutVersion;
+  }
+
+  @Override
+  public int getRootComponentId() {
+    return mRootComponentId;
   }
 
   @Override

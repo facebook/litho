@@ -201,6 +201,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
               new MeasuredResultCache(),
               state,
               version,
+              component.getId(),
               AccessibilityUtils.isAccessibilityEnabled(
                   (AccessibilityManager)
                       context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE)),
