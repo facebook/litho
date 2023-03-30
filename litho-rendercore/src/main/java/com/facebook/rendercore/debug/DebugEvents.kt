@@ -225,7 +225,8 @@ object DebugEventBus {
 
   @JvmStatic
   var enabled: Boolean
-    get() = DebugEventDispatcher.enabled
+    @JvmStatic get() = DebugEventDispatcher.enabled
+    @JvmStatic
     set(value) {
       DebugEventDispatcher.enabled = value
     }
