@@ -45,6 +45,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -61,6 +62,7 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.primitives.utils.EquivalenceUtils;
 import com.facebook.yoga.YogaAlign;
@@ -1248,6 +1250,25 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
         applyOverridesRecursive(c, node.getChildAt(i));
       }
+    }
+  }
+
+  /**
+   * This utility method checks if the {@param result} will mount a {@link View}. It returns true if
+   * and only if the {@param result} will mount a {@link View}. If it returns {@code false} then the
+   * result will either mount a {@link Drawable} or it is {@link NestedTreeHolderResult}, which will
+   * not mount anything.
+   *
+   * @return {@code true} iff the result will mount a view.
+   */
+  public static boolean willMountView(LithoNode node) {
+    if (node.getMountable() != null) {
+      return node.getMountable().getRenderType() == RenderUnit.RenderType.VIEW;
+    } else if (node.getPrimitive() != null) {
+      return node.getPrimitive().getRenderUnit().getRenderType() == RenderUnit.RenderType.VIEW;
+    } else {
+      final Component component = node.getTailComponent();
+      return (component != null && component.getMountType() == Component.MountType.VIEW);
     }
   }
 }

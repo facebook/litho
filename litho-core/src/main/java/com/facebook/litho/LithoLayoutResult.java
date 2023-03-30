@@ -23,14 +23,12 @@ import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
-import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.Mountable;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.primitives.Primitive;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaConstants;
@@ -585,26 +583,6 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
       return ((SpecGeneratedComponent) component).shouldAlwaysRemeasure();
     } else {
       return false;
-    }
-  }
-
-  /**
-   * This utility method checks if the {@param result} will mount a {@link View}. It returns true if
-   * and only if the {@param result} will mount a {@link View}. If it returns {@code false} then the
-   * result will either mount a {@link Drawable} or it is {@link NestedTreeHolderResult}, which will
-   * not mount anything.
-   *
-   * @return {@code true} iff the result will mount a view.
-   */
-  public static boolean willMountView(LithoLayoutResult result) {
-    if (result.mNode.getMountable() != null) {
-      return result.mNode.getMountable().getRenderType() == RenderUnit.RenderType.VIEW;
-    } else if (result.mNode.getPrimitive() != null) {
-      return result.mNode.getPrimitive().getRenderUnit().getRenderType()
-          == RenderUnit.RenderType.VIEW;
-    } else {
-      final Component component = result.getNode().getTailComponent();
-      return (component != null && component.getMountType() == Component.MountType.VIEW);
     }
   }
 }
