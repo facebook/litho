@@ -107,7 +107,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
             resolveVersion,
             component.getId(),
             mComponentContext.getTreeProps(),
-            ExecutionModeKt.getExecutionMode(source));
+            ExecutionModeKt.getExecutionMode(source),
+            source);
 
     // Allow interrupt to happen during tryRegisterForResponse when config is enabled.
     mEnableEarlyInterrupt = ComponentsConfiguration.isInterruptEarlyWithSplitFuturesEnabled;

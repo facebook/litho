@@ -26,6 +26,7 @@ import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForCont
 import android.os.Process;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.cancellation.FutureCancelledByPolicyException;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.instrumentation.FutureInstrumenter;
@@ -103,6 +104,13 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   public abstract int getVersion();
 
   /**
+   * This indicates if this {@link TreeFuture} was canceleled by the framework. If so, we can
+   * consider that any {@link InterruptedException} or {@link CancellationException} was actively
+   * triggered by us.
+   */
+  private boolean mCancelled = false;
+
+  /**
    * This method will forcefully cancel any possible execution or remaining execution of the task
    * associated to this {@link TreeFuture}.
    *
@@ -118,8 +126,15 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    * @return false if the task could not be cancelled, typically because it has already completed
    *     normally; true otherwise
    */
-  public boolean forceCancellation() {
-    return mFutureTask.cancel(true);
+  public boolean cancel(boolean useInterruption) {
+    mCancelled = true;
+
+    if (useInterruption) {
+      return mFutureTask.cancel(true);
+    } else {
+      release();
+      return true;
+    }
   }
 
   /** Calculates a new result for this TreeFuture. */
@@ -341,7 +356,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       didRaiseThreadPriority = false;
     }
 
-    TreeFutureResult<T> treeFutureResult;
+    TreeFutureResult<T> treeFutureResult = null;
 
     final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
     try {
@@ -404,22 +419,35 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     } catch (ExecutionException | InterruptedException | CancellationException e) {
       onWaitEnd(shouldTrace, true);
 
-      final Throwable cause = e.getCause();
-      if (cause instanceof RuntimeException) {
-        throw (RuntimeException) cause;
+      if (isExpectedInterruptionOrCancellation(e)) {
+        throw new FutureCancelledByPolicyException();
       } else {
-        throw new RuntimeException(e.getMessage(), e);
+        final Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else {
+          throw new RuntimeException(e.getMessage(), e);
+        }
       }
     } finally {
       onGetEnd(shouldTrace);
     }
 
     synchronized (TreeFuture.this) {
+      if (mCancelled) {
+        return TreeFutureResult.cancelled();
+      }
+
       if (mReleased) {
         return TreeFutureResult.interruptWithMessage(FUTURE_RESULT_NULL_REASON_RELEASED);
       }
+
       return treeFutureResult;
     }
+  }
+
+  private boolean isExpectedInterruptionOrCancellation(Exception e) {
+    return (e instanceof CancellationException || e instanceof InterruptedException) && mCancelled;
   }
 
   /**

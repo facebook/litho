@@ -26,7 +26,6 @@ import com.facebook.litho.TreeFuture.TreeFutureResult
 import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.stats.LithoStats
 import java.util.LinkedList
-import java.util.concurrent.CancellationException
 
 /**
  * This is used to run either *Resolve* or *Layout* with a cancellation strategy.
@@ -79,10 +78,8 @@ F : RequestMetadataSupplier<M> {
 
   return try {
     TreeFuture.trackAndRunTreeFuture(treeFuture, futures, source, mutex, futureExecutionListener)
-  } catch (exception: RuntimeException) {
-    if (exception.cause is CancellationException) {
-      debugLog { "A cancellation exception on future ${treeFuture.version}" }
-    }
+  } catch (e: FutureCancelledByPolicyException) {
+    debugLog { "Future was cancelled by CancellationPolicy" }
     TreeFutureResult.cancelled()
   }
 }
@@ -109,11 +106,7 @@ T : PotentiallyPartialResult {
     if (futureToCancel != null) {
       incrementCancellationStats(attribution)
 
-      when (cancellationMode) {
-        CancellationExecutionMode.SHORT_CIRCUIT -> futureToCancel.release()
-        CancellationExecutionMode.INTERRUPT -> futureToCancel.forceCancellation()
-      }
-
+      futureToCancel.cancel(cancellationMode == CancellationExecutionMode.INTERRUPT)
       cancelledFutures.add(futureToCancel)
 
       debugLog { "Cancelled future (${futureToCancel.version}) with success." }

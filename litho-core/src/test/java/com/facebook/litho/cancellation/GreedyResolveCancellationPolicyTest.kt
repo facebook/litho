@@ -16,6 +16,7 @@
 
 package com.facebook.litho.cancellation
 
+import com.facebook.litho.LayoutState
 import com.facebook.litho.TreeProps
 import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.cancellation.CancellationPolicy.Result
@@ -110,12 +111,19 @@ class GreedyResolveCancellationPolicyTest {
   }
 
   @Test
-  fun `on async resolve request with equivalent async request running - drop incoming request`() {
+  fun `on async non-state-update resolve request with equivalent async request running - drop incoming request`() {
     val runningResolves =
-        listOf(resolveMetadata.copy(localVersion = 0, executionMode = ExecutionMode.ASYNC))
+        listOf(
+            resolveMetadata.copy(
+                localVersion = 0,
+                executionMode = ExecutionMode.ASYNC,
+                source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC))
 
     val incomingResolve =
-        resolveMetadata.copy(executionMode = ExecutionMode.ASYNC, localVersion = 1)
+        resolveMetadata.copy(
+            executionMode = ExecutionMode.ASYNC,
+            source = LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC,
+            localVersion = 1)
 
     val result = cancellationEvaluator.evaluate(runningResolves, incomingResolve)
 
@@ -123,7 +131,28 @@ class GreedyResolveCancellationPolicyTest {
   }
 
   @Test
-  fun `on sync resolve request with equivalent sync request running - drop incoming request`() {
+  fun `on async state update resolve request with equivalent async state update request running - cancel running request`() {
+    val runningResolves =
+        listOf(
+            resolveMetadata.copy(
+                localVersion = 0,
+                executionMode = ExecutionMode.ASYNC,
+                source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC))
+
+    val incomingResolve =
+        resolveMetadata.copy(
+            executionMode = ExecutionMode.ASYNC,
+            source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC,
+            localVersion = 1)
+
+    val result = cancellationEvaluator.evaluate(runningResolves, incomingResolve)
+
+    assertThat(result)
+        .isEqualTo(Result.CancelRunningRequests(runningResolves.map(ResolveMetadata::localVersion)))
+  }
+
+  @Test
+  fun `on sync resolve request with equivalent sync request running - process incoming request`() {
     val runningResolves =
         listOf(resolveMetadata.copy(localVersion = 0, executionMode = ExecutionMode.SYNC))
 
@@ -152,5 +181,6 @@ class GreedyResolveCancellationPolicyTest {
           componentId = 1,
           localVersion = 0,
           treeProps = TreeProps().apply { put(String::class.java, "a property") },
-          executionMode = ExecutionMode.SYNC)
+          executionMode = ExecutionMode.SYNC,
+          source = LayoutState.CalculateLayoutSource.SET_ROOT_SYNC)
 }

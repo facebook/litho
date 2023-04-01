@@ -72,7 +72,7 @@ interface LayoutCancellationPolicy : CancellationPolicy<LayoutMetadata> {
       }
 
       return if (cancellableRequests.isNotEmpty()) {
-        Result.CancelRunningRequests(ongoingRequests.map(LayoutMetadata::localVersion))
+        Result.CancelRunningRequests(cancellableRequests.map(LayoutMetadata::localVersion))
       } else {
         Result.ProcessIncomingRequest
       }

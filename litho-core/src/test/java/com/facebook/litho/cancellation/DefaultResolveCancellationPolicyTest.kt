@@ -18,6 +18,7 @@
 
 package com.facebook.litho.cancellation
 
+import com.facebook.litho.LayoutState
 import com.facebook.litho.TreeProps
 import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.cancellation.CancellationPolicy.Result
@@ -112,16 +113,43 @@ class DefaultResolveCancellationPolicyTest {
   }
 
   @Test
-  fun `on async resolve request with equivalent async request running - drop incoming request`() {
+  fun `on async non-state update resolve request with equivalent async request running - drop incoming request`() {
     val runningResolves =
-        listOf(resolveMetadata.copy(localVersion = 0, executionMode = ExecutionMode.ASYNC))
+        listOf(
+            resolveMetadata.copy(
+                localVersion = 0,
+                executionMode = ExecutionMode.ASYNC,
+                source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC))
 
     val incomingResolve =
-        resolveMetadata.copy(executionMode = ExecutionMode.ASYNC, localVersion = 1)
+        resolveMetadata.copy(
+            executionMode = ExecutionMode.ASYNC,
+            localVersion = 1,
+            source = LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC)
 
     val result = cancellationEvaluator.evaluate(runningResolves, incomingResolve)
 
     assertThat(result).isEqualTo(Result.DropIncomingRequest)
+  }
+
+  @Test
+  fun `on async state update resolve request with equivalent async state update request running - process incoming request`() {
+    val runningResolves =
+        listOf(
+            resolveMetadata.copy(
+                localVersion = 0,
+                executionMode = ExecutionMode.ASYNC,
+                source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC))
+
+    val incomingResolve =
+        resolveMetadata.copy(
+            executionMode = ExecutionMode.ASYNC,
+            localVersion = 1,
+            source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC)
+
+    val result = cancellationEvaluator.evaluate(runningResolves, incomingResolve)
+
+    assertThat(result).isEqualTo(Result.ProcessIncomingRequest)
   }
 
   @Test
@@ -153,5 +181,6 @@ class DefaultResolveCancellationPolicyTest {
           componentId = 1,
           localVersion = 0,
           treeProps = TreeProps().apply { put(String::class.java, "a property") },
-          executionMode = ExecutionMode.SYNC)
+          executionMode = ExecutionMode.SYNC,
+          source = LayoutState.CalculateLayoutSource.SET_ROOT_SYNC)
 }

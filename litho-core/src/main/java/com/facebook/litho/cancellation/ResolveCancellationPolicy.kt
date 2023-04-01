@@ -18,6 +18,7 @@
 
 package com.facebook.litho.cancellation
 
+import com.facebook.litho.LayoutState
 import com.facebook.litho.cancellation.CancellationPolicy.Result
 
 /**
@@ -58,18 +59,25 @@ interface ResolveCancellationPolicy : CancellationPolicy<ResolveMetadata> {
 
       for (runningResolve in ongoingRequests) {
         if (runningResolve.isEquivalentTo(incomingRequest)) {
-          if (incomingRequest.executionMode == ExecutionMode.ASYNC) {
-            return Result.DropIncomingRequest
+          when {
+            incomingRequest.isAsync && !incomingRequest.isStateUpdate -> {
+              return Result.DropIncomingRequest
+            }
+            incomingRequest.isAsync &&
+                incomingRequest.isStateUpdate &&
+                !runningResolve.isStateUpdate -> {
+              return Result.DropIncomingRequest
+            }
           }
         } else {
-          if (runningResolve.executionMode == ExecutionMode.ASYNC) {
+          if (runningResolve.isAsync) {
             cancellableResolves.add(runningResolve)
           }
         }
       }
 
       return if (cancellableResolves.isNotEmpty()) {
-        Result.CancelRunningRequests(ongoingRequests.map { it.id })
+        Result.CancelRunningRequests(cancellableResolves.map { it.id })
       } else {
         Result.ProcessIncomingRequest
       }
@@ -100,23 +108,39 @@ interface ResolveCancellationPolicy : CancellationPolicy<ResolveMetadata> {
 
       for (runningResolve in ongoingRequests) {
         if (runningResolve.isEquivalentTo(incomingRequest)) {
-          if (incomingRequest.executionMode == ExecutionMode.ASYNC) {
-            return Result.DropIncomingRequest
-          } else if (runningResolve.executionMode == ExecutionMode.ASYNC) {
-            cancellableResolves.add(runningResolve)
+          when {
+            incomingRequest.isAsync && !incomingRequest.isStateUpdate -> {
+              return Result.DropIncomingRequest
+            }
+            incomingRequest.isAsync &&
+                incomingRequest.isStateUpdate &&
+                !runningResolve.isStateUpdate -> {
+              return Result.DropIncomingRequest
+            }
+            runningResolve.isAsync -> {
+              cancellableResolves.add(runningResolve)
+            }
           }
         } else {
-          if (runningResolve.executionMode == ExecutionMode.ASYNC) {
+          if (runningResolve.isAsync) {
             cancellableResolves.add(runningResolve)
           }
         }
       }
 
       return if (cancellableResolves.isNotEmpty()) {
-        Result.CancelRunningRequests(ongoingRequests.map { it.id })
+        Result.CancelRunningRequests(cancellableResolves.map { it.id })
       } else {
         Result.ProcessIncomingRequest
       }
     }
   }
 }
+
+private val ResolveMetadata.isAsync: Boolean
+  get() = executionMode == ExecutionMode.ASYNC
+
+private val ResolveMetadata.isStateUpdate: Boolean
+  get() =
+      source == LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC ||
+          source == LayoutState.CalculateLayoutSource.UPDATE_STATE_SYNC
