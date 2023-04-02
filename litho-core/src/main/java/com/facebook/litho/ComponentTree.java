@@ -70,11 +70,13 @@ import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.ResolveCancellationStrategy;
 import com.facebook.litho.debug.LithoDebugEvent;
+import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventBus;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
@@ -1432,6 +1434,8 @@ public class ComponentTree
   }
 
   private void onAsyncStateUpdateEnqueued(String attribution, boolean isCreateLayoutInProgress) {
+    dispatchStateUpdateEnqueuedEvent(attribution, false);
+
     if (mBatchedStateUpdatesStrategy == null
         || !mBatchedStateUpdatesStrategy.onAsyncStateUpdateEnqueued(
             attribution, isCreateLayoutInProgress)) {
@@ -1472,6 +1476,8 @@ public class ComponentTree
       sSyncStateUpdatesHandler.set(new WeakReference<>(handler));
     }
 
+    dispatchStateUpdateEnqueuedEvent(attribution, true);
+
     synchronized (mUpdateStateSyncRunnableLock) {
       if (mUpdateStateSyncRunnable != null) {
         handler.remove(mUpdateStateSyncRunnable);
@@ -1483,6 +1489,21 @@ public class ComponentTree
         tag = "updateStateSync " + attribution;
       }
       handler.post(mUpdateStateSyncRunnable, tag);
+    }
+  }
+
+  private void dispatchStateUpdateEnqueuedEvent(String attribution, boolean isSynchronous) {
+    if (DebugEventBus.getEnabled()) {
+      DebugEventDispatcher.dispatch(
+          LithoDebugEvent.StateUpdateEnqueued,
+          String.valueOf(mId),
+          () -> {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put(LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
+            map.put(LithoDebugEventAttributes.Attribution, attribution);
+            map.put(LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
+            return map;
+          });
     }
   }
 
