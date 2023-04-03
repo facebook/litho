@@ -22,8 +22,8 @@ object LithoDebugEvent {
   val RenderCore: DebugEvent.Companion = DebugEvent
   const val LayoutCommitted = "Litho.LayoutCommitted"
   const val LayoutCalculated = "Litho.LayoutCalculated"
+  const val MeasureSizeSpecsMismatch = "Litho.SizeSpecsMismatch"
   const val StateUpdateEnqueued = "Litho.StateUpdateEnqueued"
-  const val RenderOnMainThreadStarted = "RenderOnMainThreadStarted"
 }
 
 object LithoDebugEventAttributes {
@@ -31,16 +31,9 @@ object LithoDebugEventAttributes {
   const val Root = "root"
   const val Attribution = "attribution"
   const val StateUpdateType = "state_update_type"
-  const val RootId = "root_id"
-  const val MainThreadLayoutStateRootId = "main_thread_layout_state_root_id"
   const val MainThreadLayoutStateWidthSpec = "main_thread_layout_state_width_spec"
   const val MainThreadLayoutStateHeightSpec = "main_thread_layout_state_height_spec"
-  const val MainThreadLayoutStatePrettySizeSpecs = "main_thread_layout_state_size_specs_pretty"
   const val MeasureWidthSpec = "measure_width_spec"
   const val MeasureHeightSpec = "measure_height_spec"
-  const val MeasurePrettySizeSpecs = "measure_size_specs_pretty"
-  const val SizeSpecsMatch = "size_specs_match"
-  const val IdMatch = "id_match"
-  const val HasMainThreadLayoutState = "has_main_thread_layout_state"
   const val Breadcrumb = "breadcrumb"
 }

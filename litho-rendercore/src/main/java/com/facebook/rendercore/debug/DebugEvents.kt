@@ -24,7 +24,7 @@ sealed class DebugEvent(
     val type: String,
     val renderStateId: String,
     val threadName: String = Thread.currentThread().name,
-    private val attributes: Map<String, Any?> = emptyMap()
+    val attributes: Map<String, Any?> = emptyMap()
 ) {
 
   companion object {
@@ -34,17 +34,7 @@ sealed class DebugEvent(
     const val RenderTreeMounted = "RenderCore.RenderTreeMounted"
   }
 
-  /** Returns the value of attribute with [name]. */
-  fun <T> attribute(name: String): T = attributes[name] as T
-
-  /** Returns the value of attribute with [name] or `null` if not present. */
-  fun <T> attributeOrNull(name: String): T? = attributes[name] as? T
-
-  /**
-   * Returns the value of the attribute with [name]. If there is no value present, then it will
-   * return the [default].
-   */
-  fun <T> attribute(name: String, default: T): T = attributeOrNull(name) ?: default
+  fun attribute(name: String): Any? = attributes[name]
 
   override fun toString(): String {
     return """
@@ -232,6 +222,7 @@ object DebugEventDispatcher {
 
 /** Object to subscribe to debug events */
 object DebugEventBus {
+
   @JvmStatic
   var enabled: Boolean
     @JvmStatic get() = DebugEventDispatcher.enabled
