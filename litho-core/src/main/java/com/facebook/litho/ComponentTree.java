@@ -34,11 +34,18 @@ import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Breadcrumb;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.HasMainThreadLayoutState;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.IdMatch;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateHeightSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStatePrettySizeSpecs;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateRootId;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.MainThreadLayoutStateWidthSpec;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureHeightSpec;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasurePrettySizeSpecs;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.MeasureWidthSpec;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.RootId;
+import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.content.Context;
@@ -1068,22 +1075,45 @@ public class ComponentTree
 
           LayoutState state = mMainThreadLayoutState;
 
-          if (state != null) {
+          if (DebugEventBus.getEnabled()) {
+            HashMap<String, Object> attributes = new HashMap<>();
+            attributes.put(Root, mRoot != null ? mRoot.getSimpleName() : "");
+            attributes.put(Breadcrumb, mDebugLogBreadcrumb);
+            attributes.put(HasMainThreadLayoutState, state != null);
+            attributes.put(SizeSpecsMatch, true);
+            attributes.put(IdMatch, true);
+
+            if (state != null) {
+              int id = mRoot != null ? mRoot.getId() : INVALID_ID;
+              int mainThreadLayoutStateRootId = state.getRootComponent().getId();
+              boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
+              boolean doesIdsMatch = mainThreadLayoutStateRootId != id && id != INVALID_ID;
+
+              if (!doesSpecMatch) {
+                attributes.put(SizeSpecsMatch, false);
+                attributes.put(MainThreadLayoutStateWidthSpec, state.getWidthSpec());
+                attributes.put(MainThreadLayoutStateHeightSpec, state.getHeightSpec());
+                attributes.put(
+                    MainThreadLayoutStatePrettySizeSpecs,
+                    specsToString(state.getWidthSpec(), state.getHeightSpec()));
+
+                attributes.put(MeasureWidthSpec, widthSpec);
+                attributes.put(MeasureHeightSpec, heightSpec);
+                attributes.put(MeasurePrettySizeSpecs, specsToString(widthSpec, heightSpec));
+              }
+
+              if (!doesIdsMatch) {
+                attributes.put(IdMatch, false);
+                attributes.put(RootId, id);
+                attributes.put(MainThreadLayoutStateRootId, mainThreadLayoutStateRootId);
+              }
+            }
+
             DebugEventDispatcher.dispatch(
-                LithoDebugEvent.MeasureSizeSpecsMismatch,
-                String.valueOf(mId),
-                () -> {
-                  HashMap<String, Object> hashMap = new HashMap<>();
-                  hashMap.put(MainThreadLayoutStateWidthSpec, state.getWidthSpec());
-                  hashMap.put(MainThreadLayoutStateHeightSpec, state.getHeightSpec());
-                  hashMap.put(MeasureWidthSpec, widthSpec);
-                  hashMap.put(MeasureHeightSpec, heightSpec);
-                  hashMap.put(Root, mRoot != null ? mRoot.getSimpleName() : "");
-                  hashMap.put(Breadcrumb, mDebugLogBreadcrumb);
-                  return hashMap;
-                });
+                LithoDebugEvent.RenderOnMainThreadStarted, String.valueOf(mId), () -> attributes);
           }
 
+          // TODO: Remove this after plugging the logs subscriber by default.
           if (DEBUG_LOGS) {
             if (mMainThreadLayoutState != null) {
 
