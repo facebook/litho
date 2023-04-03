@@ -109,7 +109,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   // Keep ComponentTree when detached from this view in case the ComponentTree is shared between
   // sticky header and RecyclerView's binder
   // TODO T14859077 Replace with proper solution
-  private ComponentTree mTemporaryDetachedComponent;
+  private @Nullable ComponentTree mTemporaryDetachedComponentTree;
   private int mTransientStateCount;
   private boolean mDoMeasureInLayout;
   private @Nullable Map<String, ComponentLogParams> mInvalidStateLogParams;
@@ -246,8 +246,12 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     requestLayout();
   }
 
-  public void startTemporaryDetach() {
-    mTemporaryDetachedComponent = mComponentTree;
+  public void setTemporaryDetachedComponentTree(@Nullable ComponentTree componentTree) {
+    mTemporaryDetachedComponentTree = componentTree;
+  }
+
+  public boolean hasTemporaryDetachedComponentTree() {
+    return mTemporaryDetachedComponentTree != null;
   }
 
   @Override
@@ -421,9 +425,9 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     int width = MeasureSpec.getSize(widthMeasureSpec);
     int height = MeasureSpec.getSize(heightMeasureSpec);
 
-    if (mTemporaryDetachedComponent != null && mComponentTree == null) {
-      setComponentTree(mTemporaryDetachedComponent);
-      mTemporaryDetachedComponent = null;
+    if (mTemporaryDetachedComponentTree != null && mComponentTree == null) {
+      setComponentTree(mTemporaryDetachedComponentTree);
+      mTemporaryDetachedComponentTree = null;
     }
 
     if (!mForceLayout
@@ -720,7 +724,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
     assertMainThread();
     assertNotInMeasure();
 
-    mTemporaryDetachedComponent = null;
+    mTemporaryDetachedComponentTree = null;
     if (mComponentTree == componentTree) {
       if (mIsAttached) {
         rebind();

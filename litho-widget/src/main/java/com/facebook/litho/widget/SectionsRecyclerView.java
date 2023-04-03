@@ -26,6 +26,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -89,11 +90,14 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     return mRecyclerView;
   }
 
-  public void setStickyComponent(ComponentTree component) {
-    if (component.getLithoView() != null) {
-      component.getLithoView().startTemporaryDetach();
+  public void setStickyComponent(ComponentTree componentTree) {
+    @Nullable LithoView existingLithoView = componentTree.getLithoView();
+    mStickyHeader.setComponentTree(componentTree);
+
+    // Set this after because setComponentTree clears temporary detached component tree
+    if (existingLithoView != null && mStickyHeader != existingLithoView) {
+      existingLithoView.setTemporaryDetachedComponentTree(componentTree);
     }
-    mStickyHeader.setComponentTree(component);
     measureStickyHeader(getWidth());
   }
 
@@ -114,6 +118,31 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   public void hideStickyHeader() {
     mStickyHeader.unmountAllItems();
     mStickyHeader.setVisibility(View.GONE);
+  }
+
+  public void maybeRestoreDetachedComponentTree(int stickyHeaderPosition) {
+    if (stickyHeaderPosition <= -1
+        || !ComponentsConfiguration.initStickyHeaderInLayoutWhenComponentTreeIsNull
+        || mStickyHeader.getComponentTree() == null) {
+      return;
+    }
+
+    @Nullable
+    RecyclerView.ViewHolder viewHolder =
+        mRecyclerView.findViewHolderForAdapterPosition(stickyHeaderPosition);
+    @Nullable
+    RecyclerBinderViewHolder recyclerBinderViewHolder =
+        viewHolder instanceof RecyclerBinderViewHolder
+            ? (RecyclerBinderViewHolder) viewHolder
+            : null;
+    @Nullable
+    LithoView lithoView =
+        recyclerBinderViewHolder != null ? recyclerBinderViewHolder.getLithoView() : null;
+    if (lithoView != null
+        && lithoView.getComponentTree() == null
+        && lithoView.hasTemporaryDetachedComponentTree()) {
+      lithoView.requestLayout();
+    }
   }
 
   public boolean isStickyHeaderHidden() {

@@ -110,6 +110,7 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     if (stickyHeaderPosition == RecyclerView.NO_POSITION || firstVisibleItemComponentTree == null) {
       // no sticky header above first visible position, reset the state
       mSectionsRecyclerView.hideStickyHeader();
+      mSectionsRecyclerView.maybeRestoreDetachedComponentTree(previousStickyHeaderPosition);
       previousStickyHeaderPosition = RecyclerView.NO_POSITION;
       return;
     }
@@ -148,6 +149,7 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
 
       lastTranslatedView = firstVisibleView;
       mSectionsRecyclerView.hideStickyHeader();
+      mSectionsRecyclerView.maybeRestoreDetachedComponentTree(stickyHeaderPosition);
       previousStickyHeaderPosition = RecyclerView.NO_POSITION;
     } else {
 
