@@ -27,4 +27,6 @@ class EventDispatchInfo(
     // Component.newEventHandler
     @JvmField var hasEventDispatcher: HasEventDispatcher?,
     @JvmField var componentContext: ComponentContext?
-)
+) {
+  @JvmField var tag: String? = null
+}

@@ -16,28 +16,47 @@
 
 package com.facebook.litho
 
+import com.facebook.rendercore.RenderCoreSystrace
+
 @Suppress("NOTHING_TO_INLINE")
 inline fun <reified E : Any, R> eventHandlerWithReturn(
     noinline onEvent: (E) -> R
 ): EventHandler<E> = KEventHandler(onEvent)
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <reified E : Any> eventHandler(noinline onEvent: (E) -> Unit): EventHandler<E> =
-    KEventHandler(onEvent)
+inline fun <reified E : Any> eventHandler(
+    noinline onEvent: (E) -> Unit,
+): EventHandler<E> = eventHandler(onEvent, null)
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun <reified E : Any> eventHandler(
+    noinline onEvent: (E) -> Unit,
+    tag: String?
+): EventHandler<E> = KEventHandler(onEvent, tag)
 /**
  * [EventHandler] for codegen-free Components which squashes [EventHandler], [HasEventDispatcher]
  * and [EventDispatcher] together in one object allocation.
  */
-class KEventHandler<E : Any, R>(private val onEvent: (event: E) -> R) :
-    EventHandler<E>(-1, EventDispatchInfo(null, null), null), HasEventDispatcher, EventDispatcher {
+class KEventHandler<E : Any, R>(
+    private val onEvent: (event: E) -> R,
+    private val tag: String? = null,
+) : EventHandler<E>(-1, EventDispatchInfo(null, null), null), HasEventDispatcher, EventDispatcher {
 
   init {
     dispatchInfo.hasEventDispatcher = this
+    dispatchInfo.tag = tag
   }
 
   override fun dispatchEvent(event: E) {
+    applyOnValidTag { RenderCoreSystrace.beginSection("onEvent: $tag") }
+
     onEvent(event)
+
+    applyOnValidTag { RenderCoreSystrace.endSection() }
+  }
+
+  private fun applyOnValidTag(block: () -> Unit) {
+    if (!tag.isNullOrEmpty()) block()
   }
 
   override fun dispatchOnEvent(eventHandler: EventHandler<*>, eventState: Any): R {

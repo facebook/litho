@@ -51,25 +51,26 @@ internal enum class VisibilityFloatField : StyleItemField {
 @PublishedApi
 internal data class VisibilityStyleItem(
     override val field: VisibilityField,
-    override val value: Any?
+    override val value: Any?,
+    val tag: String? = null
 ) : StyleItem<Any?> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       VisibilityField.ON_VISIBLE ->
-          commonProps.visibleHandler(eventHandler(value as (VisibleEvent) -> Unit))
+          commonProps.visibleHandler(eventHandler(value as (VisibleEvent) -> Unit, tag))
       VisibilityField.ON_INVISIBLE ->
-          commonProps.invisibleHandler(eventHandler(value as (InvisibleEvent) -> Unit))
+          commonProps.invisibleHandler(eventHandler(value as (InvisibleEvent) -> Unit, tag))
       VisibilityField.ON_FOCUSED ->
-          commonProps.focusedHandler(eventHandler(value as (FocusedVisibleEvent) -> Unit))
+          commonProps.focusedHandler(eventHandler(value as (FocusedVisibleEvent) -> Unit, tag))
       VisibilityField.ON_UNFOCUSED ->
-          commonProps.unfocusedHandler(eventHandler(value as (UnfocusedVisibleEvent) -> Unit))
+          commonProps.unfocusedHandler(eventHandler(value as (UnfocusedVisibleEvent) -> Unit, tag))
       VisibilityField.ON_FULL_IMPRESSION ->
           commonProps.fullImpressionHandler(
-              eventHandler(value as (FullImpressionVisibleEvent) -> Unit))
+              eventHandler(value as (FullImpressionVisibleEvent) -> Unit, tag))
       VisibilityField.ON_VISIBILITY_CHANGED, ->
           commonProps.visibilityChangedHandler(
-              eventHandler(value as (VisibilityChangedEvent) -> Unit))
+              eventHandler(value as (VisibilityChangedEvent) -> Unit, tag))
     }
   }
 }
@@ -91,6 +92,10 @@ internal class VisibilityFloatStyleItem(
 /** Registers a callback to be called when any part of the Component becomes visible on screen. */
 inline fun Style.onVisible(noinline onVisible: (VisibleEvent) -> Unit): Style =
     this + VisibilityStyleItem(VisibilityField.ON_VISIBLE, onVisible)
+
+@Deprecated("This will be removed soon")
+inline fun Style.onVisibleWithTag(tag: String?, noinline onVisible: (VisibleEvent) -> Unit): Style =
+    this + VisibilityStyleItem(VisibilityField.ON_VISIBLE, onVisible, tag)
 
 /**
  * Registers a callback to be called when a Component becomes fully invisible (e.g. scrolled off or
