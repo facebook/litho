@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.StateUpdateReceiver.StateUpdate;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -27,13 +28,14 @@ public class ResolveFuture<State, RenderContext>
     extends ThreadInheritingPriorityFuture<Pair<Node<RenderContext>, State>> {
 
   private final int mVersion;
+  private final List<StateUpdate> mStateUpdatesToApply;
 
   public ResolveFuture(
       final RenderState.ResolveFunc<State, RenderContext> resolveFunc,
       ResolveContext<RenderContext> resolveContext,
       @Nullable Node<RenderContext> committedTree,
       @Nullable State committedState,
-      List<StateUpdateReceiver.StateUpdate<State>> stateUpdatesToApply,
+      List<StateUpdate> stateUpdatesToApply,
       int resolveVersion) {
     super(
         new Callable<Pair<Node<RenderContext>, State>>() {
@@ -45,9 +47,14 @@ public class ResolveFuture<State, RenderContext>
         },
         "ResolveFuture");
     mVersion = resolveVersion;
+    mStateUpdatesToApply = stateUpdatesToApply;
   }
 
   public int getVersion() {
     return mVersion;
+  }
+
+  public List<StateUpdate> getStateUpdatesToApply() {
+    return mStateUpdatesToApply;
   }
 }

@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 import android.content.Context;
@@ -28,7 +29,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,6 +40,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
 
   private static final int UNSET = -1;
   private static final int PROMOTION_MESSAGE = 99;
+  private static final int UPDATE_STATE_MESSAGE = 100;
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
 
   public static int NO_ID = -1;
@@ -101,6 +103,8 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   private @Nullable Node<RenderContext> mCommittedResolvedTree;
   private @Nullable State mCommittedState;
 
+  private final List<StateUpdate> mPendingStateUpdates = new ArrayList<>();
+
   private @Nullable RenderResult<State, RenderContext> mCommittedRenderResult;
 
   private int mResolveVersionCounter = 0;
@@ -123,30 +127,60 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
   }
 
   @ThreadConfined(ThreadConfined.ANY)
+  public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
+    setTree(resolveFunc, null);
+  }
+
+  @ThreadConfined(ThreadConfined.ANY)
   public void setTree(ResolveFunc<State, RenderContext> resolveFunc, @Nullable Executor executor) {
+    requestResolve(resolveFunc, executor);
+  }
+
+  @ThreadConfined(ThreadConfined.ANY)
+  @Override
+  public void enqueueStateUpdate(StateUpdate stateUpdate) {
+    synchronized (this) {
+      mPendingStateUpdates.add(stateUpdate);
+      if (mLatestResolveFunc == null) {
+        return;
+      }
+    }
+
+    if (!mUIHandler.hasMessages(UPDATE_STATE_MESSAGE)) {
+      mUIHandler.sendEmptyMessage(UPDATE_STATE_MESSAGE);
+    }
+  }
+
+  private void flushStateUpdates() {
+    requestResolve(null, null);
+  }
+
+  private void requestResolve(
+      @Nullable ResolveFunc<State, RenderContext> resolveFunc, @Nullable Executor executor) {
     final ResolveFuture<State, RenderContext> future;
 
     synchronized (this) {
-      mLatestResolveFunc = resolveFunc;
+      // Resolve was triggered by State Update, but all pendingStateUpdates are already applied.
+      if (resolveFunc == null && mPendingStateUpdates.isEmpty()) {
+        return;
+      }
+
+      if (resolveFunc != null) {
+        mLatestResolveFunc = resolveFunc;
+      }
 
       future =
           new ResolveFuture<>(
-              resolveFunc,
+              requireNonNull(mLatestResolveFunc),
               new ResolveContext<>(mRenderContext, this),
               mCommittedResolvedTree,
               mCommittedState,
-              Collections.emptyList(),
+              mPendingStateUpdates.isEmpty() ? emptyList() : new ArrayList<>(mPendingStateUpdates),
               mResolveVersionCounter++);
       mResolveFuture = future;
     }
     if (executor != null) {
-      executor.execute(
-          new Runnable() {
-            @Override
-            public void run() {
-              resolveTreeAndMaybeCommit(future);
-            }
-          });
+      executor.execute(() -> resolveTreeAndMaybeCommit(future));
     } else {
       resolveTreeAndMaybeCommit(future);
     }
@@ -157,11 +191,6 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
     if (maybeCommitResolveResult(result, future)) {
       layoutAndMaybeCommitInternal(null);
     }
-  }
-
-  @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(ResolveFunc<State, RenderContext> resolveFunc) {
-    setTree(resolveFunc, null);
   }
 
   private synchronized boolean maybeCommitResolveResult(
@@ -175,6 +204,7 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
       mCommittedResolveVersion = future.getVersion();
       mCommittedResolvedTree = result.first;
       mCommittedState = result.second;
+      mPendingStateUpdates.removeAll(future.getStateUpdatesToApply());
       didCommit = true;
     }
 
@@ -313,11 +343,6 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
     mHostListener = hostListener;
   }
 
-  @Override
-  public void enqueueStateUpdate(StateUpdate stateUpdate) {
-    // TODO implement state updates
-  }
-
   @ThreadConfined(ThreadConfined.UI)
   public void detach() {
     mHostListener = null;
@@ -388,6 +413,10 @@ public class RenderState<State, RenderContext> implements StateUpdateReceiver<St
       switch (msg.what) {
         case PROMOTION_MESSAGE:
           maybePromoteCommittedTreeToUI();
+          break;
+
+        case UPDATE_STATE_MESSAGE:
+          flushStateUpdates();
           break;
         default:
           throw new RuntimeException("Unknown message: " + msg.what);
