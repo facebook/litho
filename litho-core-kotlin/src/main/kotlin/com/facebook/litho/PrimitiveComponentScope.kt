@@ -52,9 +52,9 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param defaultValue value that will be set to the Content after unbind
    * @param bindCall function or function reference that will set the dynamic value on the content
    */
-  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>,
-      bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc
+      crossinline bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc
   ) {
     val bindDynamicScope = BindDynamicScope()
     addBinder(
@@ -67,64 +67,65 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * Creates a binding between the dynamic value, and the content’s property.
    *
    * @param defaultValue value that will be set to the Content after unbind
-   * @param applier function reference that will set the dynamic value on the content
+   * @param setter function reference that will set the dynamic value on the content
    */
-  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>,
-      applier: KFunction2<ContentType, T, Any?>,
+      setter: KFunction2<ContentType, T, Any?>,
       default: T
   ) {
     addBinder(
         dynamicValue,
-        { content, value -> applier(content, value) },
-        { content -> applier(content, default) })
+        { content, value -> setter(content, value) },
+        { content -> setter(content, default) })
   }
 
   /**
    * Creates a binding between the dynamic value, and the content’s property.
    *
    * @param defaultValue value that will be set to the Content after unbind
-   * @param applier property reference that will set the dynamic value on the content
+   * @param setter property reference that will set the dynamic value on the content
    */
-  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>,
-      applier: KMutableProperty1<ContentType, T>,
+      setter: KMutableProperty1<ContentType, T>,
       default: T
   ) {
     addBinder(
         dynamicValue,
-        { content, value -> applier.set(content, value) },
-        { content -> applier.set(content, default) })
+        { content, value -> setter.set(content, value) },
+        { content -> setter.set(content, default) })
   }
 
   /**
    * Creates a binding between the dynamic value, and the content’s property. The default value of
    * the property is assumed to be null, so after unbind, null value will be set to the Content.
    *
-   * @param applier function reference that will set the dynamic value on the content
+   * @param setter function reference that will set the dynamic value on the content
    */
   inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T?>,
-      applier: KFunction2<ContentType, T?, Any?>,
-  ) = bindDynamic(dynamicValue, applier, null)
+      setter: KFunction2<ContentType, T?, Any?>,
+  ) = bindDynamic(dynamicValue, setter, null)
 
   /**
    * Creates a binding between the dynamic value, and the content’s property. The default value of
    * the property is assumed to be null, so after unbind, null value will be set to the Content.
    *
-   * @param applier property reference that will set the dynamic value on the content
+   * @param setter property reference that will set the dynamic value on the content
    */
   inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T?>,
-      applier: KMutableProperty1<ContentType, T?>,
-  ) = bindDynamic(dynamicValue, applier, null)
+      setter: KMutableProperty1<ContentType, T?>,
+  ) = bindDynamic(dynamicValue, setter, null)
 
   /**
    * Adds a binder for a [DynamicValue] using [MountConfigurationScope.bind] and passing Any() as
    * deps in order to make sure that the binder will always update. This is equivalent to returning
    * true from shouldUpdate().
    */
-  private inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
+  @PublishedApi
+  internal inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
       dynamicValue: DynamicValue<T>,
       crossinline bindCall: (ContentType, T) -> Unit,
       crossinline unbindCall: (ContentType) -> Unit
@@ -134,12 +135,12 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
     bind(Any()) { content ->
       if (listener == null) {
         listener =
-            DynamicValue.OnValueChangeListener<T> {
+            DynamicValue.OnValueChangeListener {
               ThreadUtils.assertMainThread()
               bindCall(content, dynamicValue.get())
             }
       }
-      dynamicValue.attachListener(listener!!)
+      listener?.let { dynamicValue.attachListener(it) }
       bindCall(content, dynamicValue.get())
       onUnbind {
         unbindCall(content)
@@ -171,13 +172,13 @@ fun interface UnbindDynamicFunc {
 class BindDynamicScope {
 
   // Cache the [UnbindDynamicFunc] to avoid creating a new instance on each [DynamicValue] update
-  internal var unbindDynamicFunc: UnbindDynamicFunc? = null
+  @PublishedApi internal var unbindDynamicFunc: UnbindDynamicFunc? = null
 
   /**
    * Defines an unbind function to be invoked when the content needs to be updated or a [Primitive]
    * is detached.
    */
-  fun onUnbindDynamic(unbindDynamic: () -> Unit): UnbindDynamicFunc {
+  inline fun onUnbindDynamic(crossinline unbindDynamic: () -> Unit): UnbindDynamicFunc {
     val unbindDynamicFunc = this.unbindDynamicFunc ?: UnbindDynamicFunc { unbindDynamic() }
     if (this.unbindDynamicFunc == null) {
       this.unbindDynamicFunc = unbindDynamicFunc

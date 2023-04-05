@@ -33,10 +33,9 @@ class MountConfigurationScope<ContentType : Any> {
    */
   var doesMountRenderTreeHosts: Boolean = false
 
-  internal val fixedBinders: List<RenderUnit.DelegateBinder<*, ContentType>>
-    get() = _fixedBinders
-
-  private val _fixedBinders = mutableListOf<RenderUnit.DelegateBinder<*, ContentType>>()
+  @PublishedApi
+  internal val fixedBinders: MutableList<RenderUnit.DelegateBinder<*, ContentType>> =
+      mutableListOf()
 
   /**
    * Creates a binding between the value, and the content’s property. Allows for specifying custom
@@ -50,10 +49,13 @@ class MountConfigurationScope<ContentType : Any> {
    *   prop, [deps] should include that color.
    * @param bindCall A function that allows for applying properties to the content.
    */
-  fun bind(vararg deps: Any?, bindCall: BindScope.(content: ContentType) -> UnbindFunc) {
+  inline fun bind(
+      vararg deps: Any?,
+      crossinline bindCall: BindScope.(content: ContentType) -> UnbindFunc
+  ) {
     val bindScope = BindScope()
     var unbindFunc: UnbindFunc? = null
-    _fixedBinders.add(
+    fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType> {
@@ -111,13 +113,13 @@ class MountConfigurationScope<ContentType : Any> {
    * @param bindCall A function that allows for applying properties to the content and accessing the
    *   layout data that was generated during the layout pass.
    */
-  fun <LayoutDataT> bindWithLayoutData(
+  inline fun <LayoutDataT> bindWithLayoutData(
       vararg deps: Any?,
-      bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc
+      crossinline bindCall: BindScope.(content: ContentType, layoutData: LayoutDataT) -> UnbindFunc
   ) {
     val bindScope = BindScope()
     var unbindFunc: UnbindFunc? = null
-    _fixedBinders.add(
+    fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             deps,
             object : RenderUnit.Binder<Array<out Any?>, ContentType> {
@@ -174,10 +176,10 @@ class MountConfigurationScope<ContentType : Any> {
    * Creates a binding between the value, and the content’s property.
    *
    * @param defaultValue value that will be set to the Content after unbind
-   * @param applier function reference that will set the value on the content
+   * @param setter function reference that will set the value on the content
    */
-  fun <T> T.bindTo(applier: KFunction2<ContentType, T, *>, defaultValue: T) {
-    _fixedBinders.add(
+  inline fun <T> T.bindTo(setter: KFunction2<ContentType, T, *>, defaultValue: T) {
+    fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
             object : RenderUnit.Binder<T, ContentType> {
@@ -196,7 +198,7 @@ class MountConfigurationScope<ContentType : Any> {
                   model: T,
                   layoutData: Any?
               ) {
-                applier(content, model)
+                setter(content, model)
               }
 
               override fun unbind(
@@ -205,7 +207,7 @@ class MountConfigurationScope<ContentType : Any> {
                   model: T,
                   layoutData: Any?
               ) {
-                applier(content, defaultValue)
+                setter(content, defaultValue)
               }
             }))
   }
@@ -214,10 +216,10 @@ class MountConfigurationScope<ContentType : Any> {
    * Creates a binding between the value, and the content’s property.
    *
    * @param defaultValue value that will be set to the Content after unbind
-   * @param applier property reference that will set the value on the content
+   * @param setter property reference that will set the value on the content
    */
-  fun <T> T.bindTo(applier: KMutableProperty1<ContentType, T>, defaultValue: T) {
-    _fixedBinders.add(
+  inline fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T>, defaultValue: T) {
+    fixedBinders.add(
         RenderUnit.DelegateBinder.createDelegateBinder(
             this,
             object : RenderUnit.Binder<T, ContentType> {
@@ -236,7 +238,7 @@ class MountConfigurationScope<ContentType : Any> {
                   model: T,
                   layoutData: Any?
               ) {
-                applier.set(content, model)
+                setter.set(content, model)
               }
 
               override fun unbind(
@@ -245,7 +247,7 @@ class MountConfigurationScope<ContentType : Any> {
                   model: T,
                   layoutData: Any?
               ) {
-                applier.set(content, defaultValue)
+                setter.set(content, defaultValue)
               }
             }))
   }
@@ -254,17 +256,17 @@ class MountConfigurationScope<ContentType : Any> {
    * Creates a binding between the value, and the content’s property. The default value of the
    * property is assumed to be null, so after unbind, null value will be set to the Content.
    *
-   * @param applier function reference that will set the value on the content
+   * @param setter function reference that will set the value on the content
    */
-  inline fun <T> T.bindTo(applier: KFunction2<ContentType, T?, *>) = bindTo(applier, null)
+  inline fun <T> T.bindTo(setter: KFunction2<ContentType, T?, *>) = bindTo(setter, null)
 
   /**
    * Creates a binding between the value, and the content’s property. The default value of the
    * property is assumed to be null, so after unbind, null value will be set to the Content.
    *
-   * @param applier property reference that will set the value on the content
+   * @param setter property reference that will set the value on the content
    */
-  inline fun <T> T.bindTo(applier: KMutableProperty1<ContentType, T?>) = bindTo(applier, null)
+  inline fun <T> T.bindTo(setter: KMutableProperty1<ContentType, T?>) = bindTo(setter, null)
 
   /**
    * Creates a binding between the value, and the content’s property. Allows for specifying custom
