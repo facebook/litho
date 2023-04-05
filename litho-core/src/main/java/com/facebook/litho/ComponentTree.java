@@ -974,7 +974,7 @@ public class ComponentTree
     mLithoView = view;
   }
 
-  void clearLithoView() {
+  public void clearLithoView() {
     assertMainThread();
 
     // Crash if the ComponentTree is mounted to a view.
