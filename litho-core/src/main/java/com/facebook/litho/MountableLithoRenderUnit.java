@@ -91,14 +91,14 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   protected void mountBinders(
       Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
     mMountable.mountBinders(
-        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData, tracer);
+        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData, tracer);
   }
 
   @Override
   protected void unmountBinders(
       Context context, Object o, @Nullable Object layoutData, Systracer tracer) {
     mMountable.unmountBinders(
-        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData, tracer);
+        context, o, Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData, tracer);
   }
 
   @Override
@@ -107,7 +107,7 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
     mMountable.attachBinders(
         context,
         content,
-        Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData,
+        Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData,
         tracer);
   }
 
@@ -117,7 +117,7 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
     mMountable.detachBinders(
         context,
         content,
-        Preconditions.checkNotNull((LithoLayoutData) layoutData).mLayoutData,
+        Preconditions.checkNotNull((LithoLayoutData) layoutData).layoutData,
         tracer);
   }
 
@@ -134,8 +134,8 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         context,
         o,
         ((MountableLithoRenderUnit) currentRenderUnit).mMountable,
-        Preconditions.checkNotNull((LithoLayoutData) currentLayoutData).mLayoutData,
-        Preconditions.checkNotNull((LithoLayoutData) newLayoutData).mLayoutData,
+        Preconditions.checkNotNull((LithoLayoutData) currentLayoutData).layoutData,
+        Preconditions.checkNotNull((LithoLayoutData) newLayoutData).layoutData,
         mountDelegate,
         isAttached);
   }

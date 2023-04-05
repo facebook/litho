@@ -721,7 +721,7 @@ public class LayoutState
       try {
         if (isMountSpec(component) && component instanceof SpecGeneratedComponent) {
           ((SpecGeneratedComponent) component)
-              .onBoundsDefined(context, result, (InterStagePropsContainer) layoutData.mLayoutData);
+              .onBoundsDefined(context, result, (InterStagePropsContainer) layoutData.layoutData);
         }
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(context, component, e);
