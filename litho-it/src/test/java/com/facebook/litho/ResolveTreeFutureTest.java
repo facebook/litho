@@ -66,7 +66,7 @@ public class ResolveTreeFutureTest {
             true,
             1,
             null,
-            LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC);
+            CalculateLayoutSource.SET_ROOT_ASYNC);
 
     // Set the render-result holder to be set during a background / async run of the future.
     // Since it will be interrupted and resumed on the main-thread, it's expected this holder to
@@ -88,7 +88,7 @@ public class ResolveTreeFutureTest {
 
         // set the render-result-holder here. It is expected to be null.
         resolveResultHolder[0] =
-            resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC).result;
+            resolveTreeFuture.runAndGet(CalculateLayoutSource.SET_ROOT_ASYNC).result;
 
         // indicate thread has finished
         backgroundTaskCompleteHolder[1] = true;
@@ -113,7 +113,7 @@ public class ResolveTreeFutureTest {
 
     // While still blocked, trigger a sync calculation on the main thread
     final ResolveResult renderResult =
-        resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
+        resolveTreeFuture.runAndGet(CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     // Wait for the background thread to finish
     waitForMilestone(
@@ -162,10 +162,10 @@ public class ResolveTreeFutureTest {
             true,
             1,
             null,
-            LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+            CalculateLayoutSource.SET_ROOT_SYNC);
 
     final ResolveResult renderResult =
-        resolveTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
+        resolveTreeFuture.runAndGet(CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     assertThat(renderResult).isNotNull();
 
@@ -180,10 +180,10 @@ public class ResolveTreeFutureTest {
             -1,
             0,
             true,
-            LayoutState.CalculateLayoutSource.SET_ROOT_SYNC);
+            CalculateLayoutSource.SET_ROOT_SYNC);
 
     final LayoutState layoutState =
-        layoutTreeFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_SYNC).result;
+        layoutTreeFuture.runAndGet(CalculateLayoutSource.SET_ROOT_SYNC).result;
 
     assertThat(layoutState).isNotNull();
 

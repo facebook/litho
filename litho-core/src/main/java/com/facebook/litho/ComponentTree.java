@@ -23,7 +23,6 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VERSION;
-import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
@@ -3704,7 +3703,7 @@ public class ComponentTree
       Component root,
       TreeState treeState,
       @Nullable TreeProps treeProps,
-      @LayoutState.CalculateLayoutSource int source,
+      @CalculateLayoutSource int source,
       @Nullable String attribution) {
     if (mTimeMachine != null) {
       final TreeState frozenTreeState = new TreeState(treeState);

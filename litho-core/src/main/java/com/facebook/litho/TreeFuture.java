@@ -321,7 +321,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    * @return The expected result of calculation, or null if this future was released.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  TreeFutureResult<T> runAndGet(@LayoutState.CalculateLayoutSource final int source) {
+  TreeFutureResult<T> runAndGet(@CalculateLayoutSource final int source) {
     if (mRunningThreadId.compareAndSet(-1, Process.myTid())) {
       mFutureTask.run();
     }
@@ -478,7 +478,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       TreeFuture.TreeFutureResult<T> trackAndRunTreeFuture(
           F treeFuture,
           final List<F> futureList,
-          final @LayoutState.CalculateLayoutSource int source,
+          final @CalculateLayoutSource int source,
           final Object mutex,
           final @Nullable FutureExecutionListener futureExecutionListener) {
     final boolean isSync = isFromSyncLayout(source);

@@ -48,7 +48,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
       final int componentTreeId,
       final int layoutVersion,
       final boolean isLayoutDiffingEnabled,
-      @LayoutState.CalculateLayoutSource final int source) {
+      @CalculateLayoutSource final int source) {
     super(false);
 
     mResolveResult = resolveResult;

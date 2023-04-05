@@ -18,7 +18,7 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.LayoutState
+import com.facebook.litho.CalculateLayoutSource
 import com.facebook.litho.TreeProps
 
 /** This metadata encompasses all characteristics associated to a specific `Resolve` request. */
@@ -27,7 +27,7 @@ data class ResolveMetadata(
     val componentId: Int,
     val treeProps: TreeProps?,
     val executionMode: ExecutionMode,
-    @LayoutState.CalculateLayoutSource val source: Int
+    @CalculateLayoutSource val source: Int
 ) {
 
   val id: Int = localVersion

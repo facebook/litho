@@ -18,7 +18,7 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.LayoutState
+import com.facebook.litho.CalculateLayoutSource
 import com.facebook.litho.TreeProps
 import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.cancellation.CancellationPolicy.Result
@@ -119,13 +119,13 @@ class DefaultResolveCancellationPolicyTest {
             resolveMetadata.copy(
                 localVersion = 0,
                 executionMode = ExecutionMode.ASYNC,
-                source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC))
+                source = CalculateLayoutSource.UPDATE_STATE_ASYNC))
 
     val incomingResolve =
         resolveMetadata.copy(
             executionMode = ExecutionMode.ASYNC,
             localVersion = 1,
-            source = LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC)
+            source = CalculateLayoutSource.SET_ROOT_ASYNC)
 
     val result = cancellationEvaluator.evaluate(runningResolves, incomingResolve)
 
@@ -139,13 +139,13 @@ class DefaultResolveCancellationPolicyTest {
             resolveMetadata.copy(
                 localVersion = 0,
                 executionMode = ExecutionMode.ASYNC,
-                source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC))
+                source = CalculateLayoutSource.UPDATE_STATE_ASYNC))
 
     val incomingResolve =
         resolveMetadata.copy(
             executionMode = ExecutionMode.ASYNC,
             localVersion = 1,
-            source = LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC)
+            source = CalculateLayoutSource.UPDATE_STATE_ASYNC)
 
     val result = cancellationEvaluator.evaluate(runningResolves, incomingResolve)
 
@@ -182,5 +182,5 @@ class DefaultResolveCancellationPolicyTest {
           localVersion = 0,
           treeProps = TreeProps().apply { put(String::class.java, "a property") },
           executionMode = ExecutionMode.SYNC,
-          source = LayoutState.CalculateLayoutSource.SET_ROOT_SYNC)
+          source = CalculateLayoutSource.SET_ROOT_SYNC)
 }

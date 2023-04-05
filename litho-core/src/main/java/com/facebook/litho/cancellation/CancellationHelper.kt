@@ -19,7 +19,7 @@
 package com.facebook.litho.cancellation
 
 import android.util.Log
-import com.facebook.litho.LayoutState.CalculateLayoutSource
+import com.facebook.litho.CalculateLayoutSource
 import com.facebook.litho.PotentiallyPartialResult
 import com.facebook.litho.TreeFuture
 import com.facebook.litho.TreeFuture.TreeFutureResult
