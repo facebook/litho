@@ -2,7 +2,7 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.CalculateLayoutSource
+import com.facebook.litho.RenderSource
 
 enum class ExecutionMode {
   SYNC,
@@ -11,14 +11,14 @@ enum class ExecutionMode {
 
 private val executionsModesBySource =
     mapOf(
-        CalculateLayoutSource.SET_ROOT_SYNC to ExecutionMode.SYNC,
-        CalculateLayoutSource.SET_ROOT_ASYNC to ExecutionMode.ASYNC,
-        CalculateLayoutSource.UPDATE_STATE_SYNC to ExecutionMode.SYNC,
-        CalculateLayoutSource.UPDATE_STATE_ASYNC to ExecutionMode.ASYNC,
-        CalculateLayoutSource.SET_SIZE_SPEC_SYNC to ExecutionMode.SYNC,
-        CalculateLayoutSource.SET_SIZE_SPEC_ASYNC to ExecutionMode.ASYNC,
-        CalculateLayoutSource.MEASURE_SET_SIZE_SPEC to ExecutionMode.SYNC,
-        CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC to ExecutionMode.ASYNC)
+        RenderSource.SET_ROOT_SYNC to ExecutionMode.SYNC,
+        RenderSource.SET_ROOT_ASYNC to ExecutionMode.ASYNC,
+        RenderSource.UPDATE_STATE_SYNC to ExecutionMode.SYNC,
+        RenderSource.UPDATE_STATE_ASYNC to ExecutionMode.ASYNC,
+        RenderSource.SET_SIZE_SPEC_SYNC to ExecutionMode.SYNC,
+        RenderSource.SET_SIZE_SPEC_ASYNC to ExecutionMode.ASYNC,
+        RenderSource.MEASURE_SET_SIZE_SPEC to ExecutionMode.SYNC,
+        RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC to ExecutionMode.ASYNC)
 
 internal fun getExecutionMode(source: Int): ExecutionMode =
     executionsModesBySource[source] ?: error("Unexpected source for resolve: $source")

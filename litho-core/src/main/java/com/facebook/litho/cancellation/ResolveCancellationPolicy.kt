@@ -18,7 +18,7 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.CalculateLayoutSource
+import com.facebook.litho.RenderSource
 import com.facebook.litho.cancellation.CancellationPolicy.Result
 
 /**
@@ -141,6 +141,4 @@ private val ResolveMetadata.isAsync: Boolean
   get() = executionMode == ExecutionMode.ASYNC
 
 private val ResolveMetadata.isStateUpdate: Boolean
-  get() =
-      source == CalculateLayoutSource.UPDATE_STATE_ASYNC ||
-          source == CalculateLayoutSource.UPDATE_STATE_SYNC
+  get() = source == RenderSource.UPDATE_STATE_ASYNC || source == RenderSource.UPDATE_STATE_SYNC

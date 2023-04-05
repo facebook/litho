@@ -355,7 +355,7 @@ public class ComponentTree
   private int mHeightSpec = SIZE_UNINITIALIZED;
 
   @GuardedBy("this")
-  private @CalculateLayoutSource int mLastLayoutSource = CalculateLayoutSource.NONE;
+  private @RenderSource int mLastLayoutSource = RenderSource.NONE;
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
@@ -1267,7 +1267,7 @@ public class ComponentTree
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT_SYNC,
+        RenderSource.SET_ROOT_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null);
@@ -1311,7 +1311,7 @@ public class ComponentTree
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT_SYNC,
+        RenderSource.SET_ROOT_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null);
@@ -1324,7 +1324,7 @@ public class ComponentTree
         SIZE_UNINITIALIZED,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT_ASYNC,
+        RenderSource.SET_ROOT_ASYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null);
@@ -1561,9 +1561,7 @@ public class ComponentTree
         SIZE_UNINITIALIZED,
         isAsync,
         null /*output */,
-        isAsync
-            ? CalculateLayoutSource.UPDATE_STATE_ASYNC
-            : CalculateLayoutSource.UPDATE_STATE_SYNC,
+        isAsync ? RenderSource.UPDATE_STATE_ASYNC : RenderSource.UPDATE_STATE_SYNC,
         INVALID_LAYOUT_VERSION,
         attribution,
         rootTreeProps,
@@ -1689,7 +1687,7 @@ public class ComponentTree
         heightSpec,
         false /* isAsync */,
         output /* output */,
-        CalculateLayoutSource.SET_SIZE_SPEC_SYNC,
+        RenderSource.SET_SIZE_SPEC_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null,
@@ -1704,7 +1702,7 @@ public class ComponentTree
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
+        RenderSource.SET_SIZE_SPEC_ASYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null,
@@ -1720,7 +1718,7 @@ public class ComponentTree
         heightSpec,
         false /* isAsync */,
         output /* output */,
-        CalculateLayoutSource.MEASURE_SET_SIZE_SPEC,
+        RenderSource.MEASURE_SET_SIZE_SPEC,
         INVALID_LAYOUT_VERSION,
         null,
         null,
@@ -1735,7 +1733,7 @@ public class ComponentTree
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC,
+        RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null,
@@ -1751,7 +1749,7 @@ public class ComponentTree
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT_ASYNC,
+        RenderSource.SET_ROOT_ASYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null);
@@ -1768,7 +1766,7 @@ public class ComponentTree
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT_ASYNC,
+        RenderSource.SET_ROOT_ASYNC,
         INVALID_LAYOUT_VERSION,
         null,
         treeProps);
@@ -1782,7 +1780,7 @@ public class ComponentTree
         heightSpec,
         false /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT_SYNC,
+        RenderSource.SET_ROOT_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null);
@@ -1796,7 +1794,7 @@ public class ComponentTree
         heightSpec,
         false /* isAsync */,
         output,
-        CalculateLayoutSource.SET_ROOT_SYNC,
+        RenderSource.SET_ROOT_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
         null);
@@ -1814,7 +1812,7 @@ public class ComponentTree
         heightSpec,
         false /* isAsync */,
         output,
-        CalculateLayoutSource.SET_ROOT_SYNC,
+        RenderSource.SET_ROOT_SYNC,
         INVALID_LAYOUT_VERSION,
         null,
         treeProps);
@@ -1833,7 +1831,7 @@ public class ComponentTree
         heightSpec,
         false /* isAsync */,
         output,
-        CalculateLayoutSource.SET_ROOT_SYNC,
+        RenderSource.SET_ROOT_SYNC,
         externalRootVersion,
         null,
         treeProps);
@@ -1852,7 +1850,7 @@ public class ComponentTree
         heightSpec,
         true /* isAsync */,
         output,
-        CalculateLayoutSource.SET_ROOT_ASYNC,
+        RenderSource.SET_ROOT_ASYNC,
         externalRootVersion,
         null,
         treeProps);
@@ -1918,7 +1916,7 @@ public class ComponentTree
       int heightSpec,
       boolean isAsync,
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       int externalRootVersion,
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps) {
@@ -1946,7 +1944,7 @@ public class ComponentTree
       int heightSpec,
       boolean isAsync,
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       int externalRootVersion,
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
@@ -1968,8 +1966,7 @@ public class ComponentTree
       }
 
       // If this is coming from a setRoot
-      if (source == CalculateLayoutSource.SET_ROOT_SYNC
-          || source == CalculateLayoutSource.SET_ROOT_ASYNC) {
+      if (source == RenderSource.SET_ROOT_SYNC || source == RenderSource.SET_ROOT_ASYNC) {
         if (mExternalRootVersion >= 0 && externalRootVersion < 0) {
           throw new IllegalStateException(
               "Setting an unversioned root after calling setVersionedRootAndSizeSpec is not "
@@ -2115,7 +2112,7 @@ public class ComponentTree
   private void requestRenderWithSplitFutures(
       boolean isAsync,
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
       final int widthSpec,
@@ -2129,11 +2126,11 @@ public class ComponentTree
 
     // If we're only setting root, and there are no size specs, move the operation to async
     // to avoid hanging on the main thread
-    if (source == CalculateLayoutSource.SET_ROOT_SYNC
+    if (source == RenderSource.SET_ROOT_SYNC
         && widthSpec == SIZE_UNINITIALIZED
         && heightSpec == SIZE_UNINITIALIZED) {
       isAsync = true;
-      source = CalculateLayoutSource.SET_ROOT_ASYNC;
+      source = RenderSource.SET_ROOT_ASYNC;
     }
 
     // The current root and tree-props are the same as the committed resolved result. Therefore,
@@ -2197,7 +2194,7 @@ public class ComponentTree
 
   private void doResolve(
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
       final Component root,
@@ -2349,7 +2346,7 @@ public class ComponentTree
   @Nullable
   private PerfEvent createEventForPipeline(
       @FrameworkLogEvents.LogEventId int eventId,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String extraAttribution,
       Component root,
       int pipelineVersion) {
@@ -2393,7 +2390,7 @@ public class ComponentTree
   private void requestLayoutWithSplitFutures(
       final ResolveResult resolveResult,
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
       boolean forceSyncCalculation,
@@ -2445,7 +2442,7 @@ public class ComponentTree
   private void doLayout(
       final ResolveResult resolveResult,
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String extraAttribution,
       boolean isCreateLayoutInProgress,
       final int widthSpec,
@@ -2562,7 +2559,7 @@ public class ComponentTree
   /** Calculates the layout state. */
   private void doLegacyRender(
       @Nullable Size output,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
@@ -2696,7 +2693,7 @@ public class ComponentTree
   private void commitLayoutState(
       final LayoutState layoutState,
       final int layoutVersion,
-      final @CalculateLayoutSource int source,
+      final @RenderSource int source,
       final @Nullable String extraAttribution,
       final boolean isCreateLayoutInProgress,
       final @Nullable TreeProps treeProps,
@@ -2785,8 +2782,8 @@ public class ComponentTree
               layoutVersion,
               rootWidth,
               rootHeight,
-              source == CalculateLayoutSource.UPDATE_STATE_ASYNC
-                  || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
+              source == RenderSource.UPDATE_STATE_ASYNC
+                  || source == RenderSource.UPDATE_STATE_SYNC);
         }
       }
 
@@ -3174,7 +3171,7 @@ public class ComponentTree
 
   private class DoLayoutRunnable extends ThreadTracingRunnable {
     private final ResolveResult mResolveResult;
-    private final @CalculateLayoutSource int mSource;
+    private final @RenderSource int mSource;
     private final int mWidthSpec;
     private final int mHeightSpec;
     private final @Nullable String mAttribution;
@@ -3182,7 +3179,7 @@ public class ComponentTree
 
     public DoLayoutRunnable(
         final ResolveResult resolveResult,
-        @CalculateLayoutSource int source,
+        @RenderSource int source,
         int widthSpec,
         int heightSpec,
         @Nullable String attribution,
@@ -3209,7 +3206,7 @@ public class ComponentTree
   }
 
   private class DoResolveRunnable extends ThreadTracingRunnable {
-    private final @CalculateLayoutSource int mSource;
+    private final @RenderSource int mSource;
     private final Component mRoot;
     private final TreeProps mTreeProps;
     private final int mWidthSpec;
@@ -3218,7 +3215,7 @@ public class ComponentTree
     private final boolean mIsCreateLayoutInProgress;
 
     public DoResolveRunnable(
-        @CalculateLayoutSource int source,
+        @RenderSource int source,
         Component root,
         TreeProps treeProps,
         int widthSpec,
@@ -3250,13 +3247,13 @@ public class ComponentTree
 
   private class LegacyRenderRunnable extends ThreadTracingRunnable {
 
-    private final @CalculateLayoutSource int mSource;
+    private final @RenderSource int mSource;
     private final @Nullable TreeProps mTreeProps;
     private final @Nullable String mAttribution;
     private final boolean mIsCreateLayoutInProgress;
 
     public LegacyRenderRunnable(
-        @CalculateLayoutSource int source,
+        @RenderSource int source,
         @Nullable TreeProps treeProps,
         @Nullable String attribution,
         boolean isCreateLayoutInProgress) {
@@ -3703,7 +3700,7 @@ public class ComponentTree
       Component root,
       TreeState treeState,
       @Nullable TreeProps treeProps,
-      @CalculateLayoutSource int source,
+      @RenderSource int source,
       @Nullable String attribution) {
     if (mTimeMachine != null) {
       final TreeState frozenTreeState = new TreeState(treeState);
@@ -3730,7 +3727,7 @@ public class ComponentTree
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.RELOAD_PREVIOUS_STATE,
+        RenderSource.RELOAD_PREVIOUS_STATE,
         INVALID_LAYOUT_VERSION,
         null,
         null,

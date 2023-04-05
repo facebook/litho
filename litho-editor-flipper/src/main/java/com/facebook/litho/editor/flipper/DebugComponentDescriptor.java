@@ -37,13 +37,13 @@ import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
-import com.facebook.litho.CalculateLayoutSource;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTreeTimeMachine;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.DebugLayoutNodeEditor;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.RenderSource;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
@@ -274,29 +274,29 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   // The colors are defined in Flipper on ui/components/colors.tsx
   // RGB values compatible with CSS are also accepted
   public static Pair<String, String> makeDisplayAndColor(
-      boolean isSelected, @CalculateLayoutSource int source, @Nullable String attribution) {
+      boolean isSelected, @RenderSource int source, @Nullable String attribution) {
     final String attrib = attribution == null ? "" : ": " + attribution;
     final String selectedColor = "white";
     switch (source) {
-      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+      case RenderSource.MEASURE_SET_SIZE_SPEC:
         return new Pair<>("Measure set size sync" + attrib, isSelected ? selectedColor : "orange");
-      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC:
+      case RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC:
         return new Pair<>("Measure set size async" + attrib, isSelected ? selectedColor : "orange");
-      case CalculateLayoutSource.SET_SIZE_SPEC_ASYNC:
+      case RenderSource.SET_SIZE_SPEC_ASYNC:
         return new Pair<>("Set size async" + attrib, isSelected ? selectedColor : "blueDark");
-      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+      case RenderSource.SET_SIZE_SPEC_SYNC:
         return new Pair<>("Set size sync" + attrib, isSelected ? selectedColor : "blueDark");
-      case CalculateLayoutSource.UPDATE_STATE_ASYNC:
+      case RenderSource.UPDATE_STATE_ASYNC:
         return new Pair<>(attribution + " async", isSelected ? selectedColor : "lemon");
-      case CalculateLayoutSource.UPDATE_STATE_SYNC:
+      case RenderSource.UPDATE_STATE_SYNC:
         return new Pair<>(attribution + " sync", isSelected ? selectedColor : "lemon");
-      case CalculateLayoutSource.NONE:
+      case RenderSource.NONE:
         return new Pair<>("None" + attrib, isSelected ? selectedColor : "black");
-      case CalculateLayoutSource.TEST:
+      case RenderSource.TEST:
         return new Pair<>("Test" + attrib, isSelected ? selectedColor : "black");
-      case CalculateLayoutSource.SET_ROOT_ASYNC:
+      case RenderSource.SET_ROOT_ASYNC:
         return new Pair<>("Set root async" + attrib, isSelected ? selectedColor : "slate");
-      case CalculateLayoutSource.SET_ROOT_SYNC:
+      case RenderSource.SET_ROOT_SYNC:
         return new Pair<>("Set root sync" + attrib, isSelected ? selectedColor : "slate");
       default:
         return new Pair<>("Unknown" + attrib, isSelected ? selectedColor : "red");

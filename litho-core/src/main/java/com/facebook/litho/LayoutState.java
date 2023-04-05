@@ -93,13 +93,13 @@ public class LayoutState
   @Nullable private Transition.RootBoundsTransition mRootWidthAnimation;
   @Nullable private Transition.RootBoundsTransition mRootHeightAnimation;
 
-  public static boolean isFromSyncLayout(@CalculateLayoutSource int source) {
+  public static boolean isFromSyncLayout(@RenderSource int source) {
     switch (source) {
-      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
-      case CalculateLayoutSource.SET_ROOT_SYNC:
-      case CalculateLayoutSource.UPDATE_STATE_SYNC:
-      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
-      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
+      case RenderSource.MEASURE_SET_SIZE_SPEC:
+      case RenderSource.SET_ROOT_SYNC:
+      case RenderSource.UPDATE_STATE_SYNC:
+      case RenderSource.SET_SIZE_SPEC_SYNC:
+      case RenderSource.RELOAD_PREVIOUS_STATE:
         return true;
       default:
         return false;
@@ -1288,29 +1288,29 @@ public class LayoutState
     }
   }
 
-  static String layoutSourceToString(@CalculateLayoutSource int source) {
+  static String layoutSourceToString(@RenderSource int source) {
     switch (source) {
-      case CalculateLayoutSource.SET_ROOT_SYNC:
+      case RenderSource.SET_ROOT_SYNC:
         return "setRoot";
-      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+      case RenderSource.SET_SIZE_SPEC_SYNC:
         return "setSizeSpec";
-      case CalculateLayoutSource.UPDATE_STATE_SYNC:
+      case RenderSource.UPDATE_STATE_SYNC:
         return "updateStateSync";
-      case CalculateLayoutSource.SET_ROOT_ASYNC:
+      case RenderSource.SET_ROOT_ASYNC:
         return "setRootAsync";
-      case CalculateLayoutSource.SET_SIZE_SPEC_ASYNC:
+      case RenderSource.SET_SIZE_SPEC_ASYNC:
         return "setSizeSpecAsync";
-      case CalculateLayoutSource.UPDATE_STATE_ASYNC:
+      case RenderSource.UPDATE_STATE_ASYNC:
         return "updateStateAsync";
-      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+      case RenderSource.MEASURE_SET_SIZE_SPEC:
         return "measure_setSizeSpec";
-      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC:
+      case RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC:
         return "measure_setSizeSpecAsync";
-      case CalculateLayoutSource.TEST:
+      case RenderSource.TEST:
         return "test";
-      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
+      case RenderSource.RELOAD_PREVIOUS_STATE:
         return "reloadState";
-      case CalculateLayoutSource.NONE:
+      case RenderSource.NONE:
         return "none";
       default:
         throw new RuntimeException("Unknown calculate layout source: " + source);
