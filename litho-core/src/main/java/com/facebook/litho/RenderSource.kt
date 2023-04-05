@@ -45,3 +45,39 @@ annotation class RenderSource {
     const val RELOAD_PREVIOUS_STATE = 8
   }
 }
+
+object RenderSourceUtils {
+  @JvmStatic
+  fun getExecutionMode(@RenderSource source: Int): String {
+    return when (source) {
+      RenderSource.SET_ROOT_SYNC,
+      RenderSource.UPDATE_STATE_SYNC,
+      RenderSource.SET_SIZE_SPEC_SYNC,
+      RenderSource.MEASURE_SET_SIZE_SPEC -> "sync"
+      RenderSource.SET_ROOT_ASYNC,
+      RenderSource.UPDATE_STATE_ASYNC,
+      RenderSource.SET_SIZE_SPEC_ASYNC,
+      RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC -> "async"
+      RenderSource.TEST -> "test"
+      RenderSource.NONE -> "none"
+      else -> "unknown"
+    }
+  }
+
+  @JvmStatic
+  fun getSource(@RenderSource source: Int): String {
+    return when (source) {
+      RenderSource.SET_ROOT_SYNC,
+      RenderSource.SET_ROOT_ASYNC -> "set-root"
+      RenderSource.UPDATE_STATE_SYNC,
+      RenderSource.UPDATE_STATE_ASYNC -> "update-state"
+      RenderSource.SET_SIZE_SPEC_SYNC,
+      RenderSource.SET_SIZE_SPEC_ASYNC -> "set-size"
+      RenderSource.MEASURE_SET_SIZE_SPEC,
+      RenderSource.MEASURE_SET_SIZE_SPEC_ASYNC -> "measure"
+      RenderSource.TEST -> "test"
+      RenderSource.NONE -> "none"
+      else -> "unknown"
+    }
+  }
+}
