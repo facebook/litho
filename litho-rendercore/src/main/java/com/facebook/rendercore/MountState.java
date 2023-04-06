@@ -16,6 +16,9 @@
 
 package com.facebook.rendercore;
 
+import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
+import static com.facebook.rendercore.debug.DebugEventAttribute.Description;
+import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.trace;
 import static com.facebook.rendercore.extensions.RenderCoreExtension.shouldUpdate;
 
@@ -25,7 +28,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.debug.DebugEvent;
-import com.facebook.rendercore.debug.DebugEventAttribute;
 import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -35,6 +37,7 @@ import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -113,7 +116,6 @@ public class MountState implements MountDelegateTarget {
    */
   @Override
   public void mount(RenderTree renderTree) {
-
     if (renderTree == null) {
       throw new IllegalStateException("Trying to mount a null RenderTreeNode");
     }
@@ -718,77 +720,95 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final boolean isTracing = mTracer.isTracing();
-    if (isTracing) {
-      mTracer.beginSection("MountItem: " + renderTreeNode.getRenderUnit().getDescription());
-      mTracer.beginSection("MountItem:before " + renderTreeNode.getRenderUnit().getDescription());
-    }
+    trace(
+        DebugEvent.RenderUnitMounted,
+        String.valueOf(mRenderTree.getRenderStateId()),
+        () -> {
+          HashMap<String, Object> attributes = new LinkedHashMap<>();
+          attributes.put(RenderUnitId, renderTreeNode.getRenderUnit().getId());
+          attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
+          return attributes;
+        },
+        scope -> {
+          final boolean isTracing = mTracer.isTracing();
+          if (isTracing) {
+            mTracer.beginSection("MountItem: " + renderTreeNode.getRenderUnit().getDescription());
+            mTracer.beginSection(
+                "MountItem:before " + renderTreeNode.getRenderUnit().getDescription());
+          }
 
-    // 1. Resolve the correct host to mount our content to.
-    final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
+          // 1. Resolve the correct host to mount our content to.
+          final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
 
-    final RenderUnit parentRenderUnit = hostTreeNode.getRenderUnit();
-    final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
+          final RenderUnit parentRenderUnit = hostTreeNode.getRenderUnit();
+          final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
 
-    // 2. Ensure render tree node's parent is mounted or throw exception depending on the
-    // ensure-parent-mounted flag.
-    maybeEnsureParentIsMounted(
-        renderTreeNode, renderUnit, hostTreeNode, parentRenderUnit, processLogBuilder);
+          // 2. Ensure render tree node's parent is mounted or throw exception depending on the
+          // ensure-parent-mounted flag.
+          maybeEnsureParentIsMounted(
+              renderTreeNode, renderUnit, hostTreeNode, parentRenderUnit, processLogBuilder);
 
-    final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
-    final Object parentContent = mountItem.getContent();
-    assertParentContentType(parentContent, renderUnit, parentRenderUnit);
+          final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
+          final Object parentContent = mountItem.getContent();
+          assertParentContentType(parentContent, renderUnit, parentRenderUnit);
 
-    final Host host = (Host) parentContent;
+          final Host host = (Host) parentContent;
 
-    // 3. call the RenderUnit's Mount bindings.
-    final Object content =
-        MountItemsPool.acquireMountContent(mContext, renderUnit.getContentAllocator());
+          // 3. call the RenderUnit's Mount bindings.
+          final Object content =
+              MountItemsPool.acquireMountContent(mContext, renderUnit.getContentAllocator());
 
-    if (mMountDelegate != null) {
-      mMountDelegate.startNotifyVisibleBoundsChangedSection();
-    }
+          if (mMountDelegate != null) {
+            mMountDelegate.startNotifyVisibleBoundsChangedSection();
+          }
 
-    if (isTracing) {
-      mTracer.endSection();
-      mTracer.beginSection("MountItem:mount " + renderTreeNode.getRenderUnit().getDescription());
-    }
-    mountRenderUnitToContent(renderTreeNode, renderUnit, content);
+          if (isTracing) {
+            mTracer.endSection();
+            mTracer.beginSection(
+                "MountItem:mount " + renderTreeNode.getRenderUnit().getDescription());
+          }
+          mountRenderUnitToContent(renderTreeNode, renderUnit, content);
 
-    // 4. Mount the content into the selected host.
-    final MountItem item = mountContentInHost(content, host, renderTreeNode);
-    if (isTracing) {
-      mTracer.endSection();
-      mTracer.beginSection("MountItem:bind " + renderTreeNode.getRenderUnit().getDescription());
-    }
+          // 4. Mount the content into the selected host.
+          final MountItem item = mountContentInHost(content, host, renderTreeNode);
+          if (isTracing) {
+            mTracer.endSection();
+            mTracer.beginSection(
+                "MountItem:bind " + renderTreeNode.getRenderUnit().getDescription());
+          }
 
-    // 5. Call attach binding functions
-    bindRenderUnitToContent(item);
+          // 5. Call attach binding functions
+          bindRenderUnitToContent(item);
 
-    if (isTracing) {
-      mTracer.endSection();
-      mTracer.beginSection(
-          "MountItem:applyBounds " + renderTreeNode.getRenderUnit().getDescription());
-    }
+          if (isTracing) {
+            mTracer.endSection();
+            mTracer.beginSection(
+                "MountItem:applyBounds " + renderTreeNode.getRenderUnit().getDescription());
+          }
 
-    // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
-    // bind might have triggered a layout request within a View.
-    BoundsUtils.applyBoundsToMountContent(
-        renderTreeNode, item.getContent(), true /* force */, mTracer);
+          // 6. Apply the bounds to the Mount content now. It's important to do so after bind as
+          // calling
+          // bind might have triggered a layout request within a View.
+          BoundsUtils.applyBoundsToMountContent(
+              renderTreeNode, item.getContent(), true /* force */, mTracer);
 
-    if (isTracing) {
-      mTracer.endSection();
-      mTracer.beginSection("MountItem:after " + renderTreeNode.getRenderUnit().getDescription());
-    }
-    if (mMountDelegate != null) {
-      mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
-      mMountDelegate.endNotifyVisibleBoundsChangedSection();
-    }
+          if (isTracing) {
+            mTracer.endSection();
+            mTracer.beginSection(
+                "MountItem:after " + renderTreeNode.getRenderUnit().getDescription());
+          }
+          if (mMountDelegate != null) {
+            mMountDelegate.onBoundsAppliedToItem(renderTreeNode, item.getContent());
+            mMountDelegate.endNotifyVisibleBoundsChangedSection();
+          }
 
-    if (isTracing) {
-      mTracer.endSection();
-      mTracer.endSection();
-    }
+          if (isTracing) {
+            mTracer.endSection();
+            mTracer.endSection();
+          }
+
+          return null;
+        });
   }
 
   private void unmountItemRecursively(final long id) {
@@ -979,9 +999,9 @@ public class MountState implements MountDelegateTarget {
         String.valueOf(mRenderTree.getRenderStateId()),
         () -> {
           HashMap<String, Object> attributes = new HashMap<>();
-          attributes.put(DebugEventAttribute.RenderUnitId, unit.getId());
-          attributes.put(DebugEventAttribute.Description, unit.getDescription());
-          attributes.put(DebugEventAttribute.Bounds, node.getBounds());
+          attributes.put(RenderUnitId, unit.getId());
+          attributes.put(Description, unit.getDescription());
+          attributes.put(Bounds, node.getBounds());
           return attributes;
         },
         scope -> {
@@ -1028,7 +1048,6 @@ public class MountState implements MountDelegateTarget {
   }
 
   private void updateMountItemIfNeeded(RenderTreeNode renderTreeNode, MountItem currentMountItem) {
-
     final MountDelegate mountDelegate = mMountDelegate;
     final boolean isTracing = mTracer.isTracing();
 
