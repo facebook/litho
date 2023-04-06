@@ -828,97 +828,110 @@ public class MountState implements MountDelegateTarget {
             && mUnmountDelegateExtension.shouldDelegateUnmount(
                 mMountDelegate.getUnmountDelegateExtensionState(), item);
 
-    if (isTracing) {
-      mTracer.beginSection("UnmountItem: " + unit.getDescription());
-    }
+    trace(
+        DebugEvent.RenderUnitUnmounted,
+        String.valueOf(mRenderTree.getRenderStateId()),
+        () -> {
+          HashMap<String, Object> attributes = new LinkedHashMap<>();
+          attributes.put(RenderUnitId, id);
+          attributes.put(Description, unit.getDescription());
+          return attributes;
+        },
+        scope -> {
+          if (isTracing) {
+            mTracer.beginSection("UnmountItem: " + unit.getDescription());
+          }
 
-    // Recursively unmount mounted children items.
-    // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
-    // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
-    // sub tree, that will still have mounted items. (Different sequence number on RenderTreeNode
-    // id)
-    if (node.getChildrenCount() > 0) {
+          /* Recursively unmount mounted children items.
+          This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
+          sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
+          sub tree, that will still have mounted items. (Different sequence number on RenderTreeNode id) */
+          if (node.getChildrenCount() > 0) {
 
-      // unmount all children
-      for (int i = node.getChildrenCount() - 1; i >= 0; i--) {
-        unmountItemRecursively(node.getChildAt(i).getRenderUnit().getId());
-      }
+            // unmount all children
+            for (int i = node.getChildrenCount() - 1; i >= 0; i--) {
+              unmountItemRecursively(node.getChildAt(i).getRenderUnit().getId());
+            }
 
-      // check if all items are unmount from the host
-      if (!hasUnmountDelegate && ((Host) content).getMountItemCount() > 0) {
-        if (RenderCoreConfig.shouldIgnoreMountingErrors) {
-          ErrorReporter.getInstance()
-              .report(
-                  LogLevel.ERROR,
-                  "MountState:UntrackedItems",
-                  "Host has untracked items: " + ((Host) content).getDescriptionOfMountedItems(),
-                  null,
-                  0,
-                  null);
-          ((Host) content).safelyUnmountAll();
-        } else {
-          throw new IllegalStateException(
-              "Recursively unmounting items from a ComponentHost, left"
-                  + " some items behind maybe because not tracked by its MountState");
-        }
-      }
-    }
+            // check if all items are unmount from the host
+            if (!hasUnmountDelegate && ((Host) content).getMountItemCount() > 0) {
+              if (RenderCoreConfig.shouldIgnoreMountingErrors) {
+                ErrorReporter.getInstance()
+                    .report(
+                        LogLevel.ERROR,
+                        "MountState:UntrackedItems",
+                        "Host has untracked items: "
+                            + ((Host) content).getDescriptionOfMountedItems(),
+                        null,
+                        0,
+                        null);
+                ((Host) content).safelyUnmountAll();
+              } else {
+                throw new IllegalStateException(
+                    "Recursively unmounting items from a ComponentHost, left"
+                        + " some items behind maybe because not tracked by its MountState");
+              }
+            }
+          }
 
-    // The root host item cannot be unmounted as it's a reference
-    // to the top-level Host, and it is not mounted in a host.
-    if (unit.getId() == ROOT_HOST_ID) {
-      unmountRootItem();
-      if (isTracing) {
-        mTracer.endSection();
-      }
-      return;
-    } else {
-      mIdToMountedItemMap.remove(unit.getId());
-    }
+          // The root host item cannot be unmounted as it's a reference
+          // to the top-level Host, and it is not mounted in a host.
+          if (unit.getId() == ROOT_HOST_ID) {
+            unmountRootItem();
+            if (isTracing) {
+              mTracer.endSection();
+            }
+            return null;
+          } else {
+            mIdToMountedItemMap.remove(unit.getId());
+          }
 
-    final Host host = item.getHost();
+          final Host host = item.getHost();
 
-    if (hasUnmountDelegate) {
-      mUnmountDelegateExtension.unmount(
-          mMountDelegate.getUnmountDelegateExtensionState(), item, host);
-    } else {
+          if (hasUnmountDelegate) {
+            mUnmountDelegateExtension.unmount(
+                mMountDelegate.getUnmountDelegateExtensionState(), item, host);
+          } else {
 
-      if (isTracing) {
-        mTracer.beginSection("UnmountItem:remove: " + unit.getDescription());
-      }
-      host.unmount(item);
-      if (isTracing) {
-        mTracer.endSection();
-      }
+            if (isTracing) {
+              mTracer.beginSection("UnmountItem:remove: " + unit.getDescription());
+            }
+            host.unmount(item);
+            if (isTracing) {
+              mTracer.endSection();
+            }
 
-      if (item.isBound()) {
-        if (isTracing) {
-          mTracer.beginSection("UnmountItem:unbind: " + unit.getDescription());
-        }
-        unbindRenderUnitFromContent(item);
-        if (isTracing) {
-          mTracer.endSection();
-        }
-      }
+            if (item.isBound()) {
+              if (isTracing) {
+                mTracer.beginSection("UnmountItem:unbind: " + unit.getDescription());
+              }
+              unbindRenderUnitFromContent(item);
+              if (isTracing) {
+                mTracer.endSection();
+              }
+            }
 
-      if (content instanceof View) {
-        ((View) content).setPadding(0, 0, 0, 0);
-      }
+            if (content instanceof View) {
+              ((View) content).setPadding(0, 0, 0, 0);
+            }
 
-      if (isTracing) {
-        mTracer.beginSection("UnmountItem:unmount: " + unit.getDescription());
-      }
-      unmountRenderUnitFromContent(node, unit, content);
-      if (isTracing) {
-        mTracer.endSection();
-      }
+            if (isTracing) {
+              mTracer.beginSection("UnmountItem:unmount: " + unit.getDescription());
+            }
+            unmountRenderUnitFromContent(node, unit, content);
+            if (isTracing) {
+              mTracer.endSection();
+            }
 
-      item.releaseMountContent(mContext);
-    }
+            item.releaseMountContent(mContext);
+          }
 
-    if (isTracing) {
-      mTracer.endSection();
-    }
+          if (isTracing) {
+            mTracer.endSection();
+          }
+
+          return null;
+        });
   }
 
   /**

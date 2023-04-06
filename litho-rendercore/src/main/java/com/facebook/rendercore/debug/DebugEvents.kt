@@ -34,6 +34,7 @@ sealed class DebugEvent(
     const val RenderTreeMounted = "RenderCore.RenderTreeMounted"
     const val MountItemMount = "RenderCore.MountItem.Mount"
     const val RenderUnitMounted = "RenderCore.RenderUnit.Mounted"
+    const val RenderUnitUnmounted = "RenderCore.RenderUnit.Unmounted"
   }
 
   /** Returns the value of attribute with [name]. */
