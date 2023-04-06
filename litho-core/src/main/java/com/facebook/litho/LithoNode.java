@@ -36,7 +36,6 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.animation.StateListAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -410,8 +409,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * Builds the YogaNode tree from this tree of LithoNodes. At the same time, builds the
    * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
    */
-  @SuppressLint("LongLogTag")
-  private static @Nullable YogaNode buildYogaTree(
+  private static @Nullable LithoLayoutResult buildYogaTree(
       LayoutContext<LithoRenderContext> context,
       LithoNode currentNode,
       @Nullable YogaNode parentNode) {
@@ -425,26 +423,27 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     // Transfer the layout props to YogaNode
     currentNode.writeToYogaNode(writer);
 
-    final YogaNode node = writer.getNode();
+    final YogaNode yogaNode = writer.getNode();
 
     // Only add the YogaNode and LayoutResult if the node renders something. If it does
     // not render anything then it should not participate in grow/shrink behaviours.
     final @Nullable LithoLayoutResult parentLayoutResult =
         parentNode != null ? LithoLayoutResult.getLayoutResultFromYogaNode(parentNode) : null;
 
-    final LithoLayoutResult layoutResult = currentNode.createLayoutResult(node);
+    final LithoLayoutResult layoutResult = currentNode.createLayoutResult(yogaNode);
     currentNode.applyDiffNode(renderContext.layoutStateContext, layoutResult, parentLayoutResult);
-    node.setData(new Pair(context, layoutResult));
+    yogaNode.setData(new Pair(context, layoutResult));
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
-      final @Nullable YogaNode yogaNode = buildYogaTree(context, currentNode.getChildAt(i), node);
-      if (yogaNode != null) {
-        node.addChildAt(yogaNode, node.getChildCount());
-        layoutResult.addChild(LithoLayoutResult.getLayoutResultFromYogaNode(yogaNode));
+      final @Nullable LithoLayoutResult childLayoutResult =
+          buildYogaTree(context, currentNode.getChildAt(i), yogaNode);
+      if (childLayoutResult != null) {
+        yogaNode.addChildAt(childLayoutResult.getYogaNode(), yogaNode.getChildCount());
+        layoutResult.addChild(childLayoutResult);
       }
     }
 
-    return node;
+    return layoutResult;
   }
 
   public @Nullable LithoLayoutResult calculateLayout(
@@ -471,24 +470,25 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("buildYogaTree:" + getHeadComponent().getSimpleName());
     }
 
-    final @Nullable YogaNode root = buildYogaTree(c, this, null);
+    final @Nullable LithoLayoutResult layoutResult = buildYogaTree(c, this, null);
+    final @Nullable YogaNode yogaRoot = layoutResult != null ? layoutResult.getYogaNode() : null;
 
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
-    if (root == null) {
+    if (yogaRoot == null) {
       return null;
     }
 
     if (isLayoutDirectionInherit() && isLayoutDirectionRTL(c.getAndroidContext())) {
-      root.setDirection(YogaDirection.RTL);
+      yogaRoot.setDirection(YogaDirection.RTL);
     }
-    if (YogaConstants.isUndefined(root.getWidth().value)) {
-      Layout.setStyleWidthFromSpec(root, widthSpec);
+    if (YogaConstants.isUndefined(yogaRoot.getWidth().value)) {
+      Layout.setStyleWidthFromSpec(yogaRoot, widthSpec);
     }
-    if (YogaConstants.isUndefined(root.getHeight().value)) {
-      Layout.setStyleHeightFromSpec(root, heightSpec);
+    if (YogaConstants.isUndefined(yogaRoot.getHeight().value)) {
+      Layout.setStyleHeightFromSpec(yogaRoot, heightSpec);
     }
 
     final float width =
@@ -504,13 +504,13 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       ComponentsSystrace.beginSection("yogaCalculateLayout:" + getHeadComponent().getSimpleName());
     }
 
-    root.calculateLayout(width, height);
+    yogaRoot.calculateLayout(width, height);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
-    return LithoLayoutResult.getLayoutResultFromYogaNode(root);
+    return layoutResult;
   }
 
   public void child(
