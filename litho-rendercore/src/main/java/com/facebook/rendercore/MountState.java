@@ -25,6 +25,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.debug.DebugEvent;
+import com.facebook.rendercore.debug.DebugEventAttribute;
+import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -32,6 +34,7 @@ import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -970,11 +973,25 @@ public class MountState implements MountDelegateTarget {
 
   private void mountRenderUnitToContent(
       final RenderTreeNode node, final RenderUnit unit, final Object content) {
-    final MountDelegate mountDelegate = mMountDelegate;
-    unit.mountBinders(mContext, content, node.getLayoutData(), mTracer);
-    if (mountDelegate != null) {
-      mountDelegate.onMountItem(unit, content, node.getLayoutData());
-    }
+
+    DebugEventDispatcher.trace(
+        DebugEvent.MountItemMount,
+        String.valueOf(mRenderTree.getRenderStateId()),
+        () -> {
+          HashMap<String, Object> attributes = new HashMap<>();
+          attributes.put(DebugEventAttribute.RenderUnitId, unit.getId());
+          attributes.put(DebugEventAttribute.Description, unit.getDescription());
+          attributes.put(DebugEventAttribute.Bounds, node.getBounds());
+          return attributes;
+        },
+        scope -> {
+          final MountDelegate mountDelegate = mMountDelegate;
+          unit.mountBinders(mContext, content, node.getLayoutData(), mTracer);
+          if (mountDelegate != null) {
+            mountDelegate.onMountItem(unit, content, node.getLayoutData());
+          }
+          return null;
+        });
   }
 
   private void unmountRenderUnitFromContent(

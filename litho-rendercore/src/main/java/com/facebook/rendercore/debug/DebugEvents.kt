@@ -32,6 +32,7 @@ sealed class DebugEvent(
     const val RenderTreeCommitted = "RenderCore.RenderTreeCommitted"
     const val RenderTreeCalculated = "RenderCore.RenderTreeCalculated"
     const val RenderTreeMounted = "RenderCore.RenderTreeMounted"
+    const val MountItemMount = "RenderCore.MountItem.Mount"
   }
 
   /** Returns the value of attribute with [name]. */
@@ -67,6 +68,9 @@ object DebugEventAttribute {
   const val width = "width"
   const val height = "height"
   const val source = "source"
+  const val RenderUnitId = "renderUnitId"
+  const val Description = "description"
+  const val Bounds = "bounds"
 }
 
 /** Base class for marker events */
