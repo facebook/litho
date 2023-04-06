@@ -3512,6 +3512,17 @@ public class ComponentTree
       return this;
     }
 
+    /**
+     * This should not be used in majority of cases and should only be used when overriding previous
+     * component tree id {@link ComponentTree.Builder#overrideComponentTreeId}
+     *
+     * @param renderUnitIdGenerator to override the {@link ComponentTree} renderUnitIgGenerator.
+     */
+    public Builder overrideRenderUnitIdMap(RenderUnitIdGenerator renderUnitIdGenerator) {
+      this.mRenderUnitIdGenerator = renderUnitIdGenerator;
+      return this;
+    }
+
     public Builder measureListener(@Nullable MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
       return this;
