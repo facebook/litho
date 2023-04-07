@@ -61,11 +61,13 @@ inline fun ResourcesScope.TextInput(
     inputType: Int = EditorInfo.TYPE_CLASS_TEXT,
     imeOptions: Int = EditorInfo.IME_NULL,
     inputFilter: InputFilter? = null,
+    inputFilters: List<InputFilter>? = null,
     textInputActions: TextInputActions = TextInputActions.Default,
     handle: Handle? = null,
     inputBackground: Drawable? = null,
 ): TextInput =
     TextInput.create(context)
+        .inputFilters(inputFilters)
         .initialText(initialText)
         .hint(hint)
         .textColorStateList(ColorStateList.valueOf(textColor))
