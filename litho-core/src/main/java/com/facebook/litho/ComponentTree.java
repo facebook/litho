@@ -87,9 +87,7 @@ import com.facebook.rendercore.debug.DebugEventDispatcher;
 import com.facebook.rendercore.visibility.VisibilityBoundsTransformer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
@@ -1074,43 +1072,42 @@ public class ComponentTree
 
           LayoutState state = mMainThreadLayoutState;
 
-          if (DebugEventBus.getEnabled()) {
-            HashMap<String, Object> attributes = new HashMap<>();
-            attributes.put(Root, mRoot != null ? mRoot.getSimpleName() : "");
-            attributes.put(Breadcrumb, mDebugLogBreadcrumb);
-            attributes.put(HasMainThreadLayoutState, state != null);
-            attributes.put(SizeSpecsMatch, true);
-            attributes.put(IdMatch, true);
+          DebugEventDispatcher.dispatch(
+              LithoDebugEvent.RenderOnMainThreadStarted,
+              String.valueOf(mId),
+              attributes -> {
+                attributes.put(Root, mRoot != null ? mRoot.getSimpleName() : "");
+                attributes.put(Breadcrumb, mDebugLogBreadcrumb);
+                attributes.put(HasMainThreadLayoutState, state != null);
+                attributes.put(SizeSpecsMatch, true);
+                attributes.put(IdMatch, true);
 
-            if (state != null) {
-              int id = mRoot != null ? mRoot.getId() : INVALID_ID;
-              int mainThreadLayoutStateRootId = state.getRootComponent().getId();
-              boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
-              boolean doesIdsMatch = mainThreadLayoutStateRootId != id && id != INVALID_ID;
+                if (state != null) {
+                  int id = mRoot != null ? mRoot.getId() : INVALID_ID;
+                  int mainThreadLayoutStateRootId = state.getRootComponent().getId();
+                  boolean doesSpecMatch = state.isCompatibleSpec(widthSpec, heightSpec);
+                  boolean doesIdsMatch = mainThreadLayoutStateRootId != id && id != INVALID_ID;
 
-              if (!doesSpecMatch) {
-                attributes.put(SizeSpecsMatch, false);
-                attributes.put(MainThreadLayoutStateWidthSpec, state.getWidthSpec());
-                attributes.put(MainThreadLayoutStateHeightSpec, state.getHeightSpec());
-                attributes.put(
-                    MainThreadLayoutStatePrettySizeSpecs,
-                    specsToString(state.getWidthSpec(), state.getHeightSpec()));
+                  if (!doesSpecMatch) {
+                    attributes.put(SizeSpecsMatch, false);
+                    attributes.put(MainThreadLayoutStateWidthSpec, state.getWidthSpec());
+                    attributes.put(MainThreadLayoutStateHeightSpec, state.getHeightSpec());
+                    attributes.put(
+                        MainThreadLayoutStatePrettySizeSpecs,
+                        specsToString(state.getWidthSpec(), state.getHeightSpec()));
 
-                attributes.put(MeasureWidthSpec, widthSpec);
-                attributes.put(MeasureHeightSpec, heightSpec);
-                attributes.put(MeasurePrettySizeSpecs, specsToString(widthSpec, heightSpec));
-              }
+                    attributes.put(MeasureWidthSpec, widthSpec);
+                    attributes.put(MeasureHeightSpec, heightSpec);
+                    attributes.put(MeasurePrettySizeSpecs, specsToString(widthSpec, heightSpec));
+                  }
 
-              if (!doesIdsMatch) {
-                attributes.put(IdMatch, false);
-                attributes.put(RootId, id);
-                attributes.put(MainThreadLayoutStateRootId, mainThreadLayoutStateRootId);
-              }
-            }
-
-            DebugEventDispatcher.dispatch(
-                LithoDebugEvent.RenderOnMainThreadStarted, String.valueOf(mId), () -> attributes);
-          }
+                  if (!doesIdsMatch) {
+                    attributes.put(IdMatch, false);
+                    attributes.put(RootId, id);
+                    attributes.put(MainThreadLayoutStateRootId, mainThreadLayoutStateRootId);
+                  }
+                }
+              });
 
           // TODO: Remove this after plugging the logs subscriber by default.
           if (DEBUG_LOGS) {
@@ -1526,12 +1523,12 @@ public class ComponentTree
       DebugEventDispatcher.dispatch(
           LithoDebugEvent.StateUpdateEnqueued,
           String.valueOf(mId),
-          () -> {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put(LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
-            map.put(LithoDebugEventAttributes.Attribution, attribution);
-            map.put(LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
-            return map;
+          attributes -> {
+            attributes.put(
+                LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
+            attributes.put(LithoDebugEventAttributes.Attribution, attribution);
+            attributes.put(
+                LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
           });
     }
   }
@@ -2721,13 +2718,11 @@ public class ComponentTree
         DebugEventDispatcher.dispatch(
             LithoDebugEvent.LayoutCommitted,
             String.valueOf(mId),
-            () -> {
-              Map<String, Object> attributes = new HashMap<>();
+            attributes -> {
               attributes.put(DebugEventAttribute.version, layoutVersion);
               attributes.put(DebugEventAttribute.source, layoutSourceToString(source));
               attributes.put(DebugEventAttribute.width, layoutState.getWidth());
               attributes.put(DebugEventAttribute.height, layoutState.getHeight());
-              return attributes;
             });
       }
 

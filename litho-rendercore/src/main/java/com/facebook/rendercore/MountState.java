@@ -35,11 +35,9 @@ import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.utils.CommonUtils;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import kotlin.Unit;
 
 public class MountState implements MountDelegateTarget {
 
@@ -123,7 +121,7 @@ public class MountState implements MountDelegateTarget {
     trace(
         DebugEvent.RenderTreeMounted,
         String.valueOf(renderTree.getRenderStateId()),
-        Collections::emptyMap,
+        attributes -> {},
         traceScope -> {
           try {
 
@@ -136,7 +134,7 @@ public class MountState implements MountDelegateTarget {
             final RenderTree previousRenderTree = mRenderTree;
 
             if (!updateRenderTree(renderTree)) {
-              return null;
+              return Unit.INSTANCE;
             }
 
             final boolean isTracing = mTracer.isTracing();
@@ -290,7 +288,7 @@ public class MountState implements MountDelegateTarget {
             mIsMounting = false;
           }
 
-          return null;
+          return Unit.INSTANCE;
         });
   }
 
@@ -723,11 +721,9 @@ public class MountState implements MountDelegateTarget {
     trace(
         DebugEvent.RenderUnitMounted,
         String.valueOf(mRenderTree.getRenderStateId()),
-        () -> {
-          HashMap<String, Object> attributes = new LinkedHashMap<>();
+        attributes -> {
           attributes.put(RenderUnitId, renderTreeNode.getRenderUnit().getId());
           attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
-          return attributes;
         },
         scope -> {
           final boolean isTracing = mTracer.isTracing();
@@ -807,7 +803,7 @@ public class MountState implements MountDelegateTarget {
             mTracer.endSection();
           }
 
-          return null;
+          return Unit.INSTANCE;
         });
   }
 
@@ -831,11 +827,9 @@ public class MountState implements MountDelegateTarget {
     trace(
         DebugEvent.RenderUnitUnmounted,
         String.valueOf(mRenderTree.getRenderStateId()),
-        () -> {
-          HashMap<String, Object> attributes = new LinkedHashMap<>();
+        attributes -> {
           attributes.put(RenderUnitId, id);
           attributes.put(Description, unit.getDescription());
-          return attributes;
         },
         scope -> {
           if (isTracing) {
@@ -1010,12 +1004,10 @@ public class MountState implements MountDelegateTarget {
     DebugEventDispatcher.trace(
         DebugEvent.MountItemMount,
         String.valueOf(mRenderTree.getRenderStateId()),
-        () -> {
-          HashMap<String, Object> attributes = new HashMap<>();
+        attributes -> {
           attributes.put(RenderUnitId, unit.getId());
           attributes.put(Description, unit.getDescription());
           attributes.put(Bounds, node.getBounds());
-          return attributes;
         },
         scope -> {
           final MountDelegate mountDelegate = mMountDelegate;
@@ -1023,7 +1015,7 @@ public class MountState implements MountDelegateTarget {
           if (mountDelegate != null) {
             mountDelegate.onMountItem(unit, content, node.getLayoutData());
           }
-          return null;
+          return Unit.INSTANCE;
         });
   }
 

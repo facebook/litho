@@ -138,14 +138,17 @@ object DebugEventDispatcher {
       type: String,
       renderStateId: String,
       timestamp: Long = SystemClock.uptimeMillis(),
-      attributes: () -> Map<String, Any?> = { emptyMap() },
+      attributesFiller: AttributesFiller = AttributesFiller {},
   ) {
     if (enabled) {
+      val attributes = LinkedHashMap<String, Any?>()
+      attributesFiller.fillAttributes(attributes)
+
       val event =
           DebugMarkerEvent(
               type = type,
               renderStateId = renderStateId,
-              attributes = attributes(),
+              attributes = attributes,
               timestamp = timestamp,
           )
       subscribers.forEach { subscriber ->
@@ -160,13 +163,13 @@ object DebugEventDispatcher {
   inline fun dispatch(
       type: String,
       renderStateId: String,
-      attributes: () -> Map<String, Any?> = { emptyMap() },
+      attributesFiller: AttributesFiller = AttributesFiller {}
   ) {
     dispatch(
         type = type,
         renderStateId = renderStateId,
         timestamp = SystemClock.uptimeMillis(),
-        attributes = attributes,
+        attributesFiller = attributesFiller,
     )
   }
 
@@ -174,7 +177,7 @@ object DebugEventDispatcher {
   inline fun trace(
       type: String,
       renderStateId: String,
-      attributes: () -> Map<String, Any?> = { emptyMap() },
+      attributesFiller: AttributesFiller = AttributesFiller {},
       block: (TraceScope?) -> Unit,
   ) {
 
@@ -196,10 +199,11 @@ object DebugEventDispatcher {
       return
     }
 
-    val attrs = LinkedHashMap<String, Any?>(attributes())
+    val attributes = LinkedHashMap<String, Any?>()
+    attributesFiller.fillAttributes(attributes)
 
     val startTime = SystemClock.uptimeMillis()
-    block(TraceScope(attributes = attrs))
+    block(TraceScope(attributes = attributes))
     val endTime = SystemClock.uptimeMillis()
 
     val event =
@@ -208,7 +212,7 @@ object DebugEventDispatcher {
             renderStateId = renderStateId,
             startTimestamp = startTime,
             endTimestamp = endTime,
-            attributes = attrs,
+            attributes = attributes,
         )
 
     subscribersToNotify.forEach { it.onEvent(event) }
@@ -269,4 +273,16 @@ object DebugEventBus {
   fun unsubscribeAll() {
     DebugEventDispatcher.unsubscribeAll()
   }
+}
+
+/**
+ * This consumer interface is used so that clients can fill the [DebugEvent] attributes map in a
+ * cleaner way in both Java and Kotlin.
+ *
+ * By doing this (and not use a lambda directly), we can guarantee that Java clients are not forced
+ * to return `Unit.INSTANCE` or `null`.
+ */
+fun interface AttributesFiller {
+
+  fun fillAttributes(map: MutableMap<String, Any?>)
 }
