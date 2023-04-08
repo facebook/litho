@@ -174,17 +174,16 @@ object DebugEventDispatcher {
   }
 
   @JvmStatic
-  inline fun trace(
+  inline fun <T> trace(
       type: String,
       renderStateId: String,
       attributesFiller: AttributesFiller = AttributesFiller {},
-      block: (TraceScope?) -> Unit,
-  ) {
+      block: (TraceScope?) -> T,
+  ): T {
 
     // run the block if the event bus is disabled
     if (!enabled) {
-      block(null)
-      return
+      return block(null)
     }
 
     // find the subscribers listening for this event
@@ -195,15 +194,14 @@ object DebugEventDispatcher {
 
     // run the block if there are no subscribers
     if (subscribersToNotify.isEmpty()) {
-      block(null)
-      return
+      return block(null)
     }
 
     val attributes = LinkedHashMap<String, Any?>()
     attributesFiller.fillAttributes(attributes)
 
     val startTime = SystemClock.uptimeMillis()
-    block(TraceScope(attributes = attributes))
+    val res = block(TraceScope(attributes = attributes))
     val endTime = SystemClock.uptimeMillis()
 
     val event =
@@ -216,6 +214,8 @@ object DebugEventDispatcher {
         )
 
     subscribersToNotify.forEach { it.onEvent(event) }
+
+    return res
   }
 
   @Synchronized
