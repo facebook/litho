@@ -16,7 +16,7 @@
 
 package com.facebook.rendercore.debug
 
-import android.os.SystemClock
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 /** Base class of all debug events */
@@ -64,8 +64,7 @@ sealed class DebugEvent(
 /** Collection of attributes */
 object DebugEventAttribute {
   const val timestamp = "timestamp"
-  const val startTimestamp = "startTimestamp"
-  const val endTimestamp = "endTimestamp"
+  const val duration = "duration"
   const val version = "version"
   const val width = "width"
   const val height = "height"
@@ -77,7 +76,7 @@ object DebugEventAttribute {
 
 /** Base class for marker events */
 class DebugMarkerEvent(
-    val timestamp: Long = SystemClock.uptimeMillis(),
+    val timestamp: Long = System.currentTimeMillis(), // for calendar time
     type: String,
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
@@ -95,8 +94,8 @@ class DebugMarkerEvent(
 
 /** Base class for process events */
 class DebugProcessEvent(
-    val startTimestamp: Long,
-    val endTimestamp: Long,
+    val timestamp: Long = System.currentTimeMillis(), // for calendar time
+    val duration: Duration,
     type: String,
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
@@ -108,8 +107,8 @@ class DebugProcessEvent(
         threadName = threadName,
         attributes =
             buildMap {
-              put(DebugEventAttribute.startTimestamp, startTimestamp)
-              put(DebugEventAttribute.endTimestamp, endTimestamp)
+              put(DebugEventAttribute.timestamp, timestamp)
+              put(DebugEventAttribute.duration, duration)
               putAll(attributes)
             })
 
@@ -137,7 +136,7 @@ object DebugEventDispatcher {
   inline fun dispatch(
       type: String,
       renderStateId: String,
-      timestamp: Long = SystemClock.uptimeMillis(),
+      timestamp: Long = System.currentTimeMillis(), // for calender time
       attributesFiller: AttributesFiller = AttributesFiller {},
   ) {
     if (enabled) {
@@ -168,7 +167,7 @@ object DebugEventDispatcher {
     dispatch(
         type = type,
         renderStateId = renderStateId,
-        timestamp = SystemClock.uptimeMillis(),
+        timestamp = System.currentTimeMillis(), // for calender time
         attributesFiller = attributesFiller,
     )
   }
@@ -200,16 +199,15 @@ object DebugEventDispatcher {
     val attributes = LinkedHashMap<String, Any?>()
     attributesFiller.fillAttributes(attributes)
 
-    val startTime = SystemClock.uptimeMillis()
+    val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
-    val endTime = SystemClock.uptimeMillis()
+    val endTime = System.nanoTime()
 
     val event =
         DebugProcessEvent(
             type = type,
             renderStateId = renderStateId,
-            startTimestamp = startTime,
-            endTimestamp = endTime,
+            duration = Duration(value = endTime - startTime),
             attributes = attributes,
         )
 
@@ -285,4 +283,17 @@ object DebugEventBus {
 fun interface AttributesFiller {
 
   fun fillAttributes(map: MutableMap<String, Any?>)
+}
+
+@JvmInline
+value class Duration(val value: Long) {
+  override fun toString(): String {
+    return if (value < 1_000) {
+      "$value ns"
+    } else if (value < 1_000_0000) {
+      "${TimeUnit.NANOSECONDS.toMicros(value)} µs"
+    } else {
+      "${TimeUnit.NANOSECONDS.toMillis(value)} ms"
+    }
+  }
 }
