@@ -28,6 +28,8 @@ import com.facebook.flipper.plugins.uidebugger.UIDebuggerFlipperPlugin;
 import com.facebook.flipper.plugins.uidebugger.core.UIDContext;
 import com.facebook.flipper.plugins.uidebugger.litho.UIDebuggerLithoSupport;
 import com.facebook.litho.editor.flipper.LithoFlipperDescriptors;
+import com.facebook.rendercore.debug.DebugEventBus;
+import com.facebook.rendercore.debug.DebugEventLogger;
 import com.facebook.soloader.SoLoader;
 
 public class LithoSampleApplication extends Application {
@@ -35,6 +37,9 @@ public class LithoSampleApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    DebugEventBus.setEnabled(true);
+    DebugEventBus.subscribe(DebugEventLogger::new);
 
     Fresco.initialize(this);
     SoLoader.init(this, false);
