@@ -132,11 +132,13 @@ abstract class DebugEventSubscriber(vararg val events: String) {
 /** Object to dispatch debug events */
 object DebugEventDispatcher {
 
-  val _enabled: AtomicBoolean = AtomicBoolean(false)
+  val enabledRef: AtomicBoolean = AtomicBoolean(false)
+
+  @JvmStatic
   var enabled: Boolean
-    get() = _enabled.get()
+    get() = enabledRef.get()
     set(value) {
-      _enabled.set(value)
+      enabledRef.set(value)
     }
 
   private val minLogLevelRef = AtomicReference(LogLevel.DEBUG)
@@ -148,10 +150,10 @@ object DebugEventDispatcher {
       minLogLevelRef.set(value)
     }
 
-  private val _mutableSubscribers: MutableSet<DebugEventSubscriber> = mutableSetOf()
+  private val mutableSubscribers: MutableSet<DebugEventSubscriber> = mutableSetOf()
 
   val subscribers: Set<DebugEventSubscriber>
-    @Synchronized get() = _mutableSubscribers
+    @Synchronized get() = mutableSubscribers
 
   @JvmStatic
   inline fun dispatch(
@@ -159,11 +161,11 @@ object DebugEventDispatcher {
       renderStateId: String,
       timestamp: Long = System.currentTimeMillis(), // for calender time
       logLevel: LogLevel = LogLevel.DEBUG,
-      attributesFiller: AttributesFiller = AttributesFiller {},
+      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {},
   ) {
     if (enabled && logLevel >= this.minLogLevel) {
       val attributes = LinkedHashMap<String, Any?>()
-      attributesFiller.fillAttributes(attributes)
+      attributesAccumulator.accumulate(attributes)
 
       val event =
           DebugMarkerEvent(
@@ -185,13 +187,13 @@ object DebugEventDispatcher {
   inline fun dispatch(
       type: String,
       renderStateId: String,
-      attributesFiller: AttributesFiller = AttributesFiller {}
+      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {}
   ) {
     dispatch(
         type = type,
         renderStateId = renderStateId,
         timestamp = System.currentTimeMillis(), // for calender time
-        attributesFiller = attributesFiller,
+        attributesAccumulator = attributesAccumulator,
     )
   }
 
@@ -200,14 +202,14 @@ object DebugEventDispatcher {
       type: String,
       renderStateId: String,
       logLevel: LogLevel = LogLevel.DEBUG,
-      attributesFiller: AttributesFiller = AttributesFiller {},
+      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {},
   ) {
     dispatch(
         type = type,
         renderStateId = renderStateId,
         timestamp = System.currentTimeMillis(), // for calender time
         logLevel = logLevel,
-        attributesFiller = attributesFiller,
+        attributesAccumulator = attributesAccumulator,
     )
   }
 
@@ -215,7 +217,7 @@ object DebugEventDispatcher {
   inline fun <T> trace(
       type: String,
       renderStateId: String,
-      attributesFiller: AttributesFiller = AttributesFiller {},
+      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {},
       block: (TraceScope?) -> T,
   ): T {
 
@@ -236,7 +238,7 @@ object DebugEventDispatcher {
     }
 
     val attributes = LinkedHashMap<String, Any?>()
-    attributesFiller.fillAttributes(attributes)
+    attributesAccumulator.accumulate(attributes)
 
     val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
@@ -257,17 +259,17 @@ object DebugEventDispatcher {
 
   @Synchronized
   fun subscribe(subscriber: DebugEventSubscriber) {
-    _mutableSubscribers.add(subscriber)
+    mutableSubscribers.add(subscriber)
   }
 
   @Synchronized
   internal fun unsubscribe(subscriber: DebugEventSubscriber) {
-    _mutableSubscribers.remove(subscriber)
+    mutableSubscribers.remove(subscriber)
   }
 
   @Synchronized
   fun unsubscribeAll() {
-    _mutableSubscribers.clear()
+    mutableSubscribers.clear()
   }
 
   class TraceScope(private val attributes: LinkedHashMap<String, Any?>) {
@@ -313,15 +315,12 @@ object DebugEventBus {
 }
 
 /**
- * This consumer interface is used so that clients can fill the [DebugEvent] attributes map in a
- * cleaner way in both Java and Kotlin.
- *
- * By doing this (and not use a lambda directly), we can guarantee that Java clients are not forced
- * to return `Unit.INSTANCE` or `null`.
+ * This accumulator interface is invoked to get attributes of a [DebugEvent]. Using this interface
+ * improve ergonomics in Java; i.e. not return `Unit.INSTANCE` or `null`.
  */
-fun interface AttributesFiller {
+fun interface AttributesAccumulator {
 
-  fun fillAttributes(map: MutableMap<String, Any?>)
+  fun accumulate(map: MutableMap<String, Any?>)
 }
 
 @JvmInline
