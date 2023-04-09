@@ -32,6 +32,12 @@ class SampleComponentsReporter : ErrorReporterDelegate {
       metadata: Map<String, Any>?
   ) {
     when (level) {
+      LogLevel.VERBOSE -> {
+        Log.v(tag, message)
+      }
+      LogLevel.DEBUG -> {
+        Log.d(tag, message)
+      }
       LogLevel.WARNING -> {
         Log.w(tag, message)
       }

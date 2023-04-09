@@ -16,14 +16,17 @@
 
 package com.facebook.rendercore.debug
 
+import com.facebook.rendercore.LogLevel
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 
 /** Base class of all debug events */
 sealed class DebugEvent(
     val type: String,
     val renderStateId: String,
     val threadName: String = Thread.currentThread().name,
+    val logLevel: LogLevel = LogLevel.DEBUG,
     private val attributes: Map<String, Any?> = emptyMap()
 ) {
 
@@ -85,12 +88,14 @@ class DebugMarkerEvent(
     type: String,
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
+    logLevel: LogLevel = LogLevel.DEBUG,
     attributes: Map<String, Any?> = emptyMap()
 ) :
     DebugEvent(
         type = type,
         renderStateId = renderStateId,
         threadName = threadName,
+        logLevel = logLevel,
         attributes =
             buildMap {
               put(DebugEventAttribute.timestamp, timestamp)
@@ -104,12 +109,14 @@ class DebugProcessEvent(
     type: String,
     renderStateId: String,
     threadName: String = Thread.currentThread().name,
+    logLevel: LogLevel = LogLevel.DEBUG,
     attributes: Map<String, Any?> = emptyMap()
 ) :
     DebugEvent(
         type = type,
         renderStateId = renderStateId,
         threadName = threadName,
+        logLevel = logLevel,
         attributes =
             buildMap {
               put(DebugEventAttribute.timestamp, timestamp)
@@ -132,6 +139,15 @@ object DebugEventDispatcher {
       _enabled.set(value)
     }
 
+  private val minLogLevelRef = AtomicReference(LogLevel.DEBUG)
+
+  @JvmStatic
+  var minLogLevel: LogLevel
+    get() = minLogLevelRef.get()
+    set(value) {
+      minLogLevelRef.set(value)
+    }
+
   private val _mutableSubscribers: MutableSet<DebugEventSubscriber> = mutableSetOf()
 
   val subscribers: Set<DebugEventSubscriber>
@@ -142,9 +158,10 @@ object DebugEventDispatcher {
       type: String,
       renderStateId: String,
       timestamp: Long = System.currentTimeMillis(), // for calender time
+      logLevel: LogLevel = LogLevel.DEBUG,
       attributesFiller: AttributesFiller = AttributesFiller {},
   ) {
-    if (enabled) {
+    if (enabled && logLevel >= this.minLogLevel) {
       val attributes = LinkedHashMap<String, Any?>()
       attributesFiller.fillAttributes(attributes)
 
@@ -154,6 +171,7 @@ object DebugEventDispatcher {
               renderStateId = renderStateId,
               attributes = attributes,
               timestamp = timestamp,
+              logLevel = logLevel,
           )
       subscribers.forEach { subscriber ->
         if (subscriber.events.contains(type) || subscriber.events.contains(DebugEvent.All)) {
@@ -173,6 +191,22 @@ object DebugEventDispatcher {
         type = type,
         renderStateId = renderStateId,
         timestamp = System.currentTimeMillis(), // for calender time
+        attributesFiller = attributesFiller,
+    )
+  }
+
+  @JvmStatic
+  inline fun dispatch(
+      type: String,
+      renderStateId: String,
+      logLevel: LogLevel = LogLevel.DEBUG,
+      attributesFiller: AttributesFiller = AttributesFiller {},
+  ) {
+    dispatch(
+        type = type,
+        renderStateId = renderStateId,
+        timestamp = System.currentTimeMillis(), // for calender time
+        logLevel = logLevel,
         attributesFiller = attributesFiller,
     )
   }

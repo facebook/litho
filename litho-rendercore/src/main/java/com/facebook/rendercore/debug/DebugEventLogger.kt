@@ -17,10 +17,17 @@
 package com.facebook.rendercore.debug
 
 import android.util.Log
+import com.facebook.rendercore.LogLevel
 
 /** This debug event subscriber listens to all events and prints them to logcat */
 class DebugEventLogger : DebugEventSubscriber(DebugEvent.All) {
   override fun onEvent(event: DebugEvent) {
-    Log.d("rc-debug-events", event.toString())
+    when (event.logLevel) {
+      LogLevel.VERBOSE -> Log.v("rc-debug-events", event.toString())
+      LogLevel.DEBUG -> Log.d("rc-debug-events", event.toString())
+      LogLevel.WARNING -> Log.w("rc-debug-events", event.toString())
+      LogLevel.ERROR -> Log.e("rc-debug-events", event.toString())
+      LogLevel.FATAL -> Log.e("rc-debug-events", event.toString())
+    }
   }
 }

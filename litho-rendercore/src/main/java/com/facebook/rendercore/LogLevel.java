@@ -17,7 +17,9 @@
 package com.facebook.rendercore;
 
 public enum LogLevel {
+  VERBOSE,
+  DEBUG,
   WARNING,
   ERROR,
-  FATAL
+  FATAL,
 }
