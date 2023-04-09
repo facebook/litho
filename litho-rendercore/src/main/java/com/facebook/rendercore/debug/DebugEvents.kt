@@ -51,13 +51,18 @@ sealed class DebugEvent(
 
   override fun toString(): String {
     return """
-      [DebugEvent]
-        type='$type',
-        renderStateId='$renderStateId',
-        thread='$threadName',
-        attributes='$attributes'
+      |[DebugEvent]
+      |  type = '$type',
+      |  renderStateId = '$renderStateId',
+      |  thread = '$threadName',
+      |  attributes = ${attributes.entries.joinToString(
+        prefix = "{\n",
+        separator = ",\n",
+        postfix = "\n|  }",
+        transform = { e -> "|    ${e.key} = ${e.value}" }
+    )}
     """
-        .trimIndent()
+        .trimMargin()
   }
 }
 
