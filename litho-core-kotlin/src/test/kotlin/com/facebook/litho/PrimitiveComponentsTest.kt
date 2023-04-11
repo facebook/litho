@@ -915,6 +915,54 @@ class PrimitiveComponentsTest {
     assertThat(LifecycleStep.getSteps(steps))
         .containsExactly(LifecycleStep.ON_MOUNT, LifecycleStep.ON_EVENT_VISIBLE)
   }
+
+  @Test
+  fun `Primitive component's RenderUnit should have a correct description`() {
+    var defaultRenderUnitDescription: String = ""
+    val componentNoDescription =
+        object : PrimitiveComponent() {
+          override fun PrimitiveComponentScope.render(): LithoPrimitive {
+            val primitive =
+                Primitive(
+                    layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                    MountBehavior(ViewAllocator { context -> TextView(context) }) {})
+
+            defaultRenderUnitDescription = primitive.renderUnit.description
+
+            return LithoPrimitive(primitive, null)
+          }
+        }
+    var testView = lithoViewRule.render { Column { child(componentNoDescription) } }
+
+    assertThat(defaultRenderUnitDescription)
+        .contains("com.facebook.rendercore.primitives.MountBehavior")
+
+    testView.lithoView.unmountAllItems()
+
+    var customRenderUnitDescription: String = ""
+    val customDescription = "RenderUnit description"
+    val componentWithDescription =
+        object : PrimitiveComponent() {
+          override fun PrimitiveComponentScope.render(): LithoPrimitive {
+            val primitive =
+                Primitive(
+                    layoutBehavior = FixedSizeLayoutBehavior(100.px, 100.px),
+                    MountBehavior(ViewAllocator { context -> TextView(context) }) {
+                      description = customDescription
+                    })
+
+            customRenderUnitDescription = primitive.renderUnit.description
+
+            return LithoPrimitive(primitive, null)
+          }
+        }
+
+    testView = lithoViewRule.render { Column { child(componentWithDescription) } }
+
+    assertThat(customRenderUnitDescription).isEqualTo(customDescription)
+
+    testView.lithoView.unmountAllItems()
+  }
 }
 
 class TestViewPrimitiveComponent(

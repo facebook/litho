@@ -51,6 +51,11 @@ class MountBehavior<ContentType : Any>(
           override fun getId(): Long {
             return this@MountBehavior.id
           }
+
+          override fun getDescription(): String {
+            return mountConfigurationScope.description?.take(MAX_DESCRIPTION_LENGTH)
+                ?: super.getDescription()
+          }
         }
       }
 }

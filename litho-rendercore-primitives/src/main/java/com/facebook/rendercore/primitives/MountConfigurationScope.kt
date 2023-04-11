@@ -33,6 +33,14 @@ class MountConfigurationScope<ContentType : Any> {
    */
   var doesMountRenderTreeHosts: Boolean = false
 
+  /**
+   * A description of the underlying [RenderUnit]. Mainly for debugging purposes such as tracing and
+   * logs. Maximum description length is 127 characters. Everything above that will be truncated.
+   *
+   * Default is null.
+   */
+  var description: String? = null
+
   @PublishedApi
   internal val fixedBinders: MutableList<RenderUnit.DelegateBinder<*, ContentType>> =
       mutableListOf()

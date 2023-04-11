@@ -46,6 +46,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
     VIEW,
   }
 
+  // RenderUnit's description is used for tracing, and according to:
+  // https://developer.android.com/reference/android/os/Trace#beginSection(java.lang.String)
+  // the max length of the tracing section name is 127
+  public static final int MAX_DESCRIPTION_LENGTH = 127;
+
   private static final int MAX_FIXED_MOUNT_BINDERS_COUNT = 64;
 
   private final RenderType mRenderType;
