@@ -24,6 +24,7 @@ import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.litho.Resolver.applyTransitionsAndUseEffectEntriesToNode;
 
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
@@ -79,7 +80,8 @@ public class TestLayoutState {
 
     c.setLayoutStateContext(lsc);
 
-    Layout.measureTree(lsc, c.getAndroidContext(), root, widthSpec, heightSpec, null);
+    Layout.measureTree(
+        lsc, c.getAndroidContext(), root, new LayoutCache(), widthSpec, heightSpec, null);
 
     c.clearCalculationStateContext();
 

@@ -17,7 +17,6 @@
 package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Map;
  * pass as ReadCache.
  */
 public final class LayoutCache {
-  static final class CachedData {
+  public static final class CachedData {
     private final Map<Node<?>, LayoutResult> mCacheByNode = new HashMap<>();
     private final LongSparseArray<Object> mCacheById = new LongSparseArray<>();
   }
@@ -41,7 +40,7 @@ public final class LayoutCache {
     this(null);
   }
 
-  LayoutCache(@Nullable CachedData oldWriteCache) {
+  public LayoutCache(@Nullable CachedData oldWriteCache) {
     mReadCache = oldWriteCache;
   }
 
@@ -64,7 +63,6 @@ public final class LayoutCache {
     mWriteCache.mCacheById.put(uniqueId, value);
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public CachedData getWriteCacheData() {
     return mWriteCache;
   }

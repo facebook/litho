@@ -47,6 +47,7 @@ import com.facebook.litho.widget.SolidColor
 import com.facebook.litho.widget.TestNullLayoutComponent
 import com.facebook.litho.widget.Text
 import com.facebook.rendercore.Function
+import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.utils.MeasureSpecUtils
 import com.facebook.yoga.YogaAlign
@@ -1985,7 +1986,13 @@ class LayoutStateCalculateTest {
     c.setLayoutStateContext(layoutStateContext)
     val node =
         Layout.measureTree(
-            layoutStateContext, c.androidContext, lithoNode, widthSpec, heightSpec, null)
+            layoutStateContext,
+            c.androidContext,
+            lithoNode,
+            LayoutCache(),
+            widthSpec,
+            heightSpec,
+            null)
     assertThat(node?.width).isEqualTo(width)
     assertThat(node?.height).isEqualTo(height)
     assertThat(node?.childCount).isEqualTo(1)

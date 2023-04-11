@@ -42,6 +42,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.LithoViewAttributesExtension.ViewAttributesInput;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.MeasureResult;
 import com.facebook.rendercore.MountItemsPool;
@@ -137,6 +138,7 @@ public class LayoutState
   @Nullable LithoLayoutResult mLayoutResult;
   @Nullable TransitionId mRootTransitionId;
   @Nullable String mRootComponentName;
+  @Nullable LayoutCache.CachedData mLayoutCacheData;
 
   private @Nullable DiffNode mDiffTreeRoot;
 
@@ -200,6 +202,7 @@ public class LayoutState
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
+    mLayoutCacheData = current != null ? current.mLayoutCacheData : null;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mScopedSpecComponentInfos = new ArrayList<>();
     mVisibilityOutputs = new ArrayList<>(8);
@@ -557,6 +560,7 @@ public class LayoutState
           Layout.measure(
               layoutStateContext,
               Preconditions.checkNotNull(immediateParentContext),
+              new LayoutCache(),
               (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY));

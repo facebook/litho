@@ -29,6 +29,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaNode;
@@ -40,6 +41,7 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final Context androidContext,
       final @Nullable LithoNode node,
+      final LayoutCache layoutCache,
       final int widthSpec,
       final int heightSpec,
       final @Nullable PerfEvent layoutStatePerfEvent) {
@@ -53,7 +55,7 @@ class Layout {
 
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
-            androidContext, new LithoRenderContext(layoutStateContext), 0, null, null);
+            androidContext, new LithoRenderContext(layoutStateContext), 0, layoutCache, null);
 
     final LithoLayoutResult result = node.calculateLayout(context, widthSpec, heightSpec);
 
@@ -67,6 +69,7 @@ class Layout {
   private static @Nullable LithoLayoutResult measureNestedTree(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
+      final LayoutCache layoutCache,
       final NestedTreeHolderResult holderResult,
       final int widthSpec,
       final int heightSpec) {
@@ -89,7 +92,8 @@ class Layout {
 
     // 2. Check if cached layout result is compatible and can be reused or not.
     final @Nullable LithoLayoutResult cachedLayout =
-        consumeCachedLayout(layoutStateContext, node, holderResult, widthSpec, heightSpec);
+        consumeCachedLayout(
+            layoutStateContext, layoutCache, node, holderResult, widthSpec, heightSpec);
 
     if (cachedLayout != null) {
       return cachedLayout;
@@ -104,6 +108,7 @@ class Layout {
           layoutStateContext,
           currentLayout.getContext().getAndroidContext(),
           currentLayout.getNode(),
+          layoutCache,
           widthSpec,
           heightSpec,
           null);
@@ -184,7 +189,13 @@ class Layout {
 
       // 4.b Measure the tree
       return measureTree(
-          nestedLsc, parentContext.getAndroidContext(), newNode, widthSpec, heightSpec, null);
+          nestedLsc,
+          parentContext.getAndroidContext(),
+          newNode,
+          layoutCache,
+          widthSpec,
+          heightSpec,
+          null);
     } finally {
       parentContext.setCalculationStateContext(prevContext);
     }
@@ -193,17 +204,19 @@ class Layout {
   static @Nullable LithoLayoutResult measure(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
+      final LayoutCache layoutCache,
       final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec) {
 
     final LithoLayoutResult layout =
-        measureNestedTree(layoutStateContext, parentContext, holder, widthSpec, heightSpec);
+        measureNestedTree(
+            layoutStateContext, parentContext, layoutCache, holder, widthSpec, heightSpec);
 
     final @Nullable LithoLayoutResult currentLayout = holder.getNestedResult();
 
     if (layout != null && layout != currentLayout) {
-      // If layout created is not same as previous layout then set last width / heihgt, measdured
+      // If layout created is not same as previous layout then set last width / height, measured
       // width and height specs
       layout.setLastWidthSpec(widthSpec);
       layout.setLastHeightSpec(heightSpec);
@@ -220,6 +233,7 @@ class Layout {
   @Nullable
   static LithoLayoutResult consumeCachedLayout(
       final LayoutStateContext layoutStateContext,
+      final LayoutCache layoutCache,
       final NestedTreeHolder holder,
       final NestedTreeHolderResult holderResult,
       final int widthSpec,
@@ -259,6 +273,7 @@ class Layout {
               layoutStateContext,
               cachedLayout.getContext().getAndroidContext(),
               cachedLayout.getNode(),
+              layoutCache,
               widthSpec,
               heightSpec,
               null);

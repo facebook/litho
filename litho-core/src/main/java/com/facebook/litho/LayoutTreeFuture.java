@@ -24,6 +24,7 @@ import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.LayoutMetadata;
 import com.facebook.litho.cancellation.RequestMetadataSupplier;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.LayoutCache;
 
 public class LayoutTreeFuture extends TreeFuture<LayoutState>
     implements RequestMetadataSupplier<LayoutMetadata> {
@@ -172,6 +173,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
               isLayoutDiffingEnabled,
               lsc.isAccessibilityEnabled());
 
+      final LayoutCache writableCache = new LayoutCache(layoutState.mLayoutCacheData);
+
       if (perfEventLogger != null) {
         lsc.setPerfEvent(perfEventLogger);
       }
@@ -183,9 +186,16 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
 
         final @Nullable LithoLayoutResult root =
             Layout.measureTree(
-                lsc, c.getAndroidContext(), node, widthSpec, heightSpec, perfEventLogger);
+                lsc,
+                c.getAndroidContext(),
+                node,
+                writableCache,
+                widthSpec,
+                heightSpec,
+                perfEventLogger);
 
         layoutState.mLayoutResult = root;
+        layoutState.mLayoutCacheData = writableCache.getWriteCacheData();
 
         if (perfEventLogger != null) {
           perfEventLogger.markerPoint("start_collect_results");

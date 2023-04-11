@@ -62,6 +62,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.primitives.Equivalence;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
@@ -708,7 +709,14 @@ public abstract class Component
                 null);
 
         lastMeasuredLayout =
-            Layout.measureTree(nestedLsc, c.getAndroidContext(), node, widthSpec, heightSpec, null);
+            Layout.measureTree(
+                nestedLsc,
+                c.getAndroidContext(),
+                node,
+                new LayoutCache(),
+                widthSpec,
+                heightSpec,
+                null);
 
         if (lastMeasuredLayout == null) {
           outputSize.width = 0;
