@@ -62,9 +62,16 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   }
 
   public void dispatchEvent(E event) {
+    boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("onEvent:" + this);
+    }
     Preconditions.checkNotNull(dispatchInfo.hasEventDispatcher)
         .getEventDispatcher()
         .dispatchOnEvent(this, event);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   @Override

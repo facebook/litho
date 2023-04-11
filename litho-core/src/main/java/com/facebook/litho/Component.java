@@ -29,6 +29,7 @@ import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
+import static com.facebook.rendercore.utils.CommonUtils.getSectionNameForTracing;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -183,7 +184,12 @@ public abstract class Component
     // We don't want to wrap and throw error events
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       if (isTracing) {
-        ComponentsSystrace.beginSection("dispatchErrorEvent");
+        ComponentsSystrace.beginSection(
+            "onError:"
+                + getSimpleName()
+                + "("
+                + getSectionNameForTracing(eventState.getClass())
+                + ")");
       }
       try {
         return dispatchOnEventImpl(eventHandler, eventState);
@@ -196,7 +202,12 @@ public abstract class Component
 
     final Object token = EventDispatcherInstrumenter.onBeginWork(eventHandler, eventState);
     if (isTracing) {
-      ComponentsSystrace.beginSection("dispatchOnEvent");
+      ComponentsSystrace.beginSection(
+          "onEvent:"
+              + getSimpleName()
+              + "("
+              + getSectionNameForTracing(eventState.getClass())
+              + ")");
     }
     try {
       return dispatchOnEventImpl(eventHandler, eventState);
