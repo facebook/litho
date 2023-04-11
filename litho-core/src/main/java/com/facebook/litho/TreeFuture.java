@@ -22,11 +22,14 @@ import static com.facebook.litho.WorkContinuationInstrumenter.markFailure;
 import static com.facebook.litho.WorkContinuationInstrumenter.onBeginWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onEndWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForContinuation;
+import static com.facebook.litho.config.CancellationCheckMode.EXCEPTION_TYPE;
+import static com.facebook.litho.config.CancellationCheckMode.FLAG;
 
 import android.os.Process;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.cancellation.FutureCancelledByPolicyException;
+import com.facebook.litho.config.CancellationCheckMode;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.instrumentation.FutureInstrumenter;
@@ -126,7 +129,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
    * @return false if the task could not be cancelled, typically because it has already completed
    *     normally; true otherwise
    */
-  public boolean cancel(boolean useInterruption) {
+  public synchronized boolean cancel(boolean useInterruption) {
     mCancelled = true;
 
     if (useInterruption) {
@@ -423,6 +426,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
         throw new FutureCancelledByPolicyException();
       } else {
         final Throwable cause = e.getCause();
+
         if (cause instanceof RuntimeException) {
           throw (RuntimeException) cause;
         } else {
@@ -447,7 +451,28 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   }
 
   private boolean isExpectedInterruptionOrCancellation(Exception e) {
-    return (e instanceof CancellationException || e instanceof InterruptedException) && mCancelled;
+    CancellationCheckMode cancellationCheckMode = ComponentsConfiguration.sCancellationCheckMode;
+    if (cancellationCheckMode == null) {
+      return false;
+    }
+
+    if (e instanceof CancellationException || e.getCause() instanceof CancellationException) {
+      return true;
+    }
+
+    boolean isInterruptedException =
+        e instanceof InterruptedException || e.getCause() instanceof InterruptedException;
+
+    switch (ComponentsConfiguration.sCancellationCheckMode) {
+      case EXCEPTION_TYPE:
+        return isInterruptedException;
+      case FLAG:
+        return mCancelled;
+      case BOTH:
+        return isInterruptedException && mCancelled;
+      default:
+        return false;
+    }
   }
 
   /**
