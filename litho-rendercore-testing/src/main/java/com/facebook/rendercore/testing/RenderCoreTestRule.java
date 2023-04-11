@@ -26,6 +26,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
@@ -70,9 +71,9 @@ public class RenderCoreTestRule implements TestRule {
   private @Nullable RenderTreeHost renderTreeHost;
   private @Nullable RenderState<?, ?> renderState;
   private @Nullable Node<?> rootNode;
+  private @Nullable RenderCoreExtension<?, ?>[] extensions;
   private int widthSpec = DEFAULT_WIDTH_SPEC;
   private int heightSpec = DEFAULT_HEIGHT_SPEC;
-  private RenderCoreExtension<?, ?>[] extensions;
 
   @Override
   public Statement apply(final Statement base, Description description) {
@@ -89,6 +90,8 @@ public class RenderCoreTestRule implements TestRule {
           renderTreeHost = null;
           rootNode = null;
           extensions = null;
+          renderState = null;
+          MountItemsPool.clear();
         }
       }
     };
