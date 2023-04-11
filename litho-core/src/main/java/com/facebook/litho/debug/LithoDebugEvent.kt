@@ -20,6 +20,7 @@ import com.facebook.rendercore.debug.DebugEvent
 
 object LithoDebugEvent {
   val RenderCore: DebugEvent.Companion = DebugEvent
+  const val RenderRequest = "Litho.RenderRequest"
   const val LayoutCommitted = "Litho.LayoutCommitted"
   const val LayoutCalculated = "Litho.LayoutCalculated"
   const val StateUpdateEnqueued = "Litho.StateUpdateEnqueued"
@@ -27,7 +28,6 @@ object LithoDebugEvent {
 }
 
 object LithoDebugEventAttributes {
-
   const val Root = "root"
   const val Attribution = "attribution"
   const val StateUpdateType = "state_update_type"
@@ -43,4 +43,7 @@ object LithoDebugEventAttributes {
   const val IdMatch = "id_match"
   const val HasMainThreadLayoutState = "has_main_thread_layout_state"
   const val Breadcrumb = "breadcrumb"
+  const val RenderSource = "source"
+  const val RenderExecutionMode = "execution-mode"
+  const val Forced = "forced"
 }

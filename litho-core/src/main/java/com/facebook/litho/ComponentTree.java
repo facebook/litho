@@ -27,6 +27,8 @@ import static com.facebook.litho.LayoutState.isFromSyncLayout;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
+import static com.facebook.litho.RenderSourceUtils.getExecutionMode;
+import static com.facebook.litho.RenderSourceUtils.getSource;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
@@ -46,6 +48,7 @@ import static com.facebook.litho.debug.LithoDebugEventAttributes.Root;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.RootId;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.SizeSpecsMatch;
 import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
+import static com.facebook.rendercore.utils.MeasureSpecUtils.getMeasureSpecDescription;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -75,10 +78,12 @@ import com.facebook.litho.cancellation.LayoutCancellationPolicy;
 import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.ResolveCancellationStrategy;
+import com.facebook.litho.debug.AttributionUtils;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import com.facebook.rendercore.debug.DebugEventAttribute;
@@ -1954,6 +1959,10 @@ public class ComponentTree
     final TreeProps requestedTreeProps;
 
     synchronized (this) {
+
+      // logs the render that was requested
+      logRenderRequest(root, source, widthSpec, heightSpec, extraAttribution, forceLayout);
+
       if (mReleased) {
         // If this is coming from a background thread, we may have been released from the main
         // thread. In that case, do nothing.
@@ -2104,6 +2113,31 @@ public class ComponentTree
           requestedRoot,
           requestedTreeProps);
     }
+  }
+
+  private void logRenderRequest(
+      final @Nullable Component root,
+      final @RenderSource int source,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable String extraAttribution,
+      final boolean wasForced) {
+    DebugEventDispatcher.dispatch(
+        LithoDebugEvent.RenderRequest,
+        String.valueOf(mId),
+        LogLevel.VERBOSE,
+        attrs -> {
+          final String attribution = AttributionUtils.getAttribution(extraAttribution);
+          attrs.put(LithoDebugEventAttributes.RenderSource, getSource(source));
+          attrs.put(LithoDebugEventAttributes.RenderExecutionMode, getExecutionMode(source));
+          attrs.put(LithoDebugEventAttributes.Attribution, attribution);
+          attrs.put(LithoDebugEventAttributes.Root, root != null ? root.getSimpleName() : "null");
+          attrs.put(LithoDebugEventAttributes.Forced, wasForced);
+          if (widthSpec != SIZE_UNINITIALIZED || heightSpec != SIZE_UNINITIALIZED) {
+            attrs.put(DebugEventAttribute.widthSpec, getMeasureSpecDescription(widthSpec));
+            attrs.put(DebugEventAttribute.heightSpec, getMeasureSpecDescription(heightSpec));
+          }
+        });
   }
 
   private void requestRenderWithSplitFutures(

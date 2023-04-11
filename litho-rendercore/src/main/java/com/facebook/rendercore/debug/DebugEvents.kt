@@ -76,6 +76,8 @@ object DebugEventAttribute {
   const val version = "version"
   const val width = "width"
   const val height = "height"
+  const val widthSpec = "widthSpec"
+  const val heightSpec = "heightSpec"
   const val source = "source"
   const val RenderUnitId = "renderUnitId"
   const val Description = "description"
