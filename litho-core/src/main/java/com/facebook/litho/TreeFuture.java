@@ -451,7 +451,8 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   }
 
   private boolean isExpectedInterruptionOrCancellation(Exception e) {
-    CancellationCheckMode cancellationCheckMode = ComponentsConfiguration.sCancellationCheckMode;
+    final CancellationCheckMode cancellationCheckMode =
+        ComponentsConfiguration.sCancellationCheckMode;
     if (cancellationCheckMode == null) {
       return false;
     }
@@ -460,10 +461,10 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       return true;
     }
 
-    boolean isInterruptedException =
+    final boolean isInterruptedException =
         e instanceof InterruptedException || e.getCause() instanceof InterruptedException;
 
-    switch (ComponentsConfiguration.sCancellationCheckMode) {
+    switch (cancellationCheckMode) {
       case EXCEPTION_TYPE:
         return isInterruptedException;
       case FLAG:
