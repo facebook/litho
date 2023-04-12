@@ -59,6 +59,11 @@ public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocato
     return view.getClass();
   }
 
+  @Override
+  public boolean isRecyclingDisabled() {
+    return true;
+  }
+
   public ViewWrapperUnit addBindBinders(RenderUnit.Binder<ViewWrapperUnit, View>... binders) {
     for (Binder<ViewWrapperUnit, View> binder : binders) {
       super.addAttachBinder(createDelegateBinder(this, binder));

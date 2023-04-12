@@ -57,4 +57,9 @@ public class DrawableWrapperUnit extends RenderUnit<Drawable>
   public Class<?> getRenderContentType() {
     return drawable.getClass();
   }
+
+  @Override
+  public boolean isRecyclingDisabled() {
+    return true;
+  }
 }
