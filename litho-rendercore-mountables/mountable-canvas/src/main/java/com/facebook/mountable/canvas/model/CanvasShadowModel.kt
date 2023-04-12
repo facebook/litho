@@ -17,6 +17,7 @@
 package com.facebook.mountable.canvas.model
 
 import androidx.annotation.ColorInt
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 
 /**
  * A definition for a shadow which should be drawn under a shape on a Canvas.
@@ -26,12 +27,10 @@ import androidx.annotation.ColorInt
  * @property radius blur radius
  * @property color color of the shadow
  */
-@Suppress("KtDataClass")
+@DataClassGenerate
 data class CanvasShadowModel(
     val dx: Float,
     val dy: Float,
     val radius: Float,
     @ColorInt val color: Int
-) {
-  override fun toString(): String = ""
-}
+)

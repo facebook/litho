@@ -20,6 +20,7 @@ import android.graphics.LinearGradient
 import android.graphics.RadialGradient
 import android.graphics.Shader
 import androidx.annotation.ColorInt
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.utils.types.Point
 
 sealed interface CanvasShadingModel
@@ -29,20 +30,16 @@ sealed interface CanvasShadingModel
  *
  * @property color The color (including alpha)
  */
-@Suppress("KtDataClass")
-data class CanvasSolidColorShading(@ColorInt val color: Int) : CanvasShadingModel {
-  override fun toString(): String = ""
-}
+@DataClassGenerate
+data class CanvasSolidColorShading(@ColorInt val color: Int) : CanvasShadingModel
 
 /**
  * A definition for a gradient shading.
  *
  * @property gradient The gradient definition
  */
-@Suppress("KtDataClass")
-data class CanvasGradientShading(val gradient: CanvasGradientModel) : CanvasShadingModel {
-  override fun toString(): String = ""
-}
+@DataClassGenerate
+data class CanvasGradientShading(val gradient: CanvasGradientModel) : CanvasShadingModel
 
 sealed interface CanvasGradientModel {
   fun toShader(): Shader
@@ -57,7 +54,7 @@ sealed interface CanvasGradientModel {
  * @property endPoint The end of the gradient line
  * @property tileMode The tiling mode
  */
-@Suppress("KtDataClass")
+@DataClassGenerate
 data class CanvasLinearGradient(
     val gradient: CanvasGradient,
     val startPoint: Point,
@@ -74,7 +71,6 @@ data class CanvasLinearGradient(
         gradient.positions,
         tileMode)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -85,7 +81,7 @@ data class CanvasLinearGradient(
  * @property radius Must be positive. The radius of the circle for this gradient
  * @property tileMode The tiling mode
  */
-@Suppress("KtDataClass")
+@DataClassGenerate
 data class CanvasRadialGradient(
     val gradient: CanvasGradient,
     val center: Point,
@@ -95,7 +91,6 @@ data class CanvasRadialGradient(
   override fun toShader(): Shader {
     return RadialGradient(center.x, center.y, radius, gradient.colors, gradient.positions, tileMode)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -105,10 +100,8 @@ data class CanvasRadialGradient(
  * @property positions The relative positions [0..1] of each corresponding color in the colors
  *   array. If this is null, the the colors are distributed evenly along the gradient
  */
-@Suppress("KtDataClass")
+@DataClassGenerate
 data class CanvasGradient(@ColorInt val colors: IntArray, val positions: FloatArray?) {
-  override fun toString(): String = ""
-
   override fun equals(other: Any?): Boolean {
     if (this === other) {
       return true

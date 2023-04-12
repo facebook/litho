@@ -19,6 +19,7 @@ package com.facebook.mountable.canvas.model
 import android.annotation.SuppressLint
 import android.graphics.Path
 import android.graphics.RectF
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.CanvasState
 import com.facebook.mountable.utils.types.FillRule
 import com.facebook.mountable.utils.types.Point
@@ -40,8 +41,8 @@ sealed interface CanvasPathChildModel {
  * @property children child path definitions that will be added or applied on the path in the same
  *   order as they're specified
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPath(
     private val fillRule: FillRule,
     private val children: List<CanvasPathChildModel>
@@ -54,7 +55,6 @@ data class CanvasPath(
       }
     }
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -62,13 +62,12 @@ data class CanvasPath(
  *
  * @property point The start point of a new contour
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathMoveTo(private val point: Point) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.moveTo(point.x, point.y)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -78,13 +77,12 @@ data class CanvasPathMoveTo(private val point: Point) : CanvasPathChildModel {
  *
  * @property point The end point of a line
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathLineTo(private val point: Point) : CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.lineTo(point.x, point.y)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -96,14 +94,13 @@ data class CanvasPathLineTo(private val point: Point) : CanvasPathChildModel {
  * @property controlPoint The control point on a quadratic curve
  * @property endPoint The end point on a quadratic curve
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathQuadTo(private val controlPoint: Point, private val endPoint: Point) :
     CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.quadTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -116,8 +113,8 @@ data class CanvasPathQuadTo(private val controlPoint: Point, private val endPoin
  * @property controlPoint2 The 2nd control point on a cubic curve
  * @property endPoint The end point on a cubic curve
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathCubicTo(
     private val controlPoint1: Point,
     private val controlPoint2: Point,
@@ -127,7 +124,6 @@ data class CanvasPathCubicTo(
     androidPath.cubicTo(
         controlPoint1.x, controlPoint1.y, controlPoint2.x, controlPoint2.y, endPoint.x, endPoint.y)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -139,8 +135,8 @@ data class CanvasPathCubicTo(
  * @property endDegrees The angle to the end point of the arc
  * @property clockwise true to make a clockwise arc; false to make a counterclockwise arc
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathArc(
     private val center: Point,
     private val radius: Float,
@@ -156,7 +152,6 @@ data class CanvasPathArc(
         startAngle,
         endAngle)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -166,8 +161,8 @@ data class CanvasPathArc(
  * @property size The size of the rectangle
  * @property cornerRadius The radius of the rounded corners
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathRect(
     private val topLeft: Point,
     private val size: Size,
@@ -180,7 +175,6 @@ data class CanvasPathRect(
         cornerRadius,
         Path.Direction.CW)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -189,8 +183,8 @@ data class CanvasPathRect(
  * @property topLeft The coordinates of the top left point of the ellipse
  * @property size The size of the ellipse
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathEllipse(private val topLeft: Point, private val size: Size) :
     CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
@@ -198,7 +192,6 @@ data class CanvasPathEllipse(private val topLeft: Point, private val size: Size)
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height),
         Path.Direction.CW)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -207,14 +200,13 @@ data class CanvasPathEllipse(private val topLeft: Point, private val size: Size)
  * @property center The center of the circle
  * @property radius The radius of the circle
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathCircle(private val center: Point, private val radius: Float) :
     CanvasPathChildModel {
   override fun applyTo(androidPath: Path, state: CanvasState) {
     androidPath.addCircle(center.x, center.y, radius, Path.Direction.CW)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -235,8 +227,8 @@ object CanvasPathClose : CanvasPathChildModel {
  * @property transformModel The transform that will be applied to the src before adding it to the
  *   current path
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasPathAdd(
     private val src: CanvasPathModel,
     private val transformModel: CanvasTransformModel
@@ -248,5 +240,4 @@ data class CanvasPathAdd(
         }
     androidPath.addPath(srcPath)
   }
-  override fun toString(): String = ""
 }

@@ -18,6 +18,7 @@ package com.facebook.mountable.canvas.model
 
 import android.annotation.SuppressLint
 import android.graphics.Matrix
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.values
 import com.facebook.mountable.utils.types.Point
 
@@ -41,8 +42,8 @@ sealed interface CanvasTransformChildModel {
  * @property children The child transforms which will be post applied in the same order as they're
  *   specified
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasTransform(
     private val a: Float,
     private val b: Float,
@@ -66,9 +67,7 @@ data class CanvasTransform(
       children[i].applyTo(matrix)
     }
   }
-
-  override fun toString(): String = ""
-
+  
   companion object {
     val IDENTITY: CanvasTransform =
         CanvasTransform(a = 1f, b = 0f, c = 0f, d = 1f, tx = 0f, ty = 0f, children = listOf())
@@ -81,8 +80,8 @@ data class CanvasTransform(
  * @property transform The transform that should be inverted
  * @throws IllegalArgumentException If the specified transform can't be inverted
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasInverseTransform(private val transform: CanvasTransformModel) :
     CanvasTransformChildModel {
   override fun applyTo(matrix: Matrix) {
@@ -91,7 +90,6 @@ data class CanvasInverseTransform(private val transform: CanvasTransformModel) :
       throw IllegalArgumentException("Can't invert matrix: ${matrix.toShortString()} ")
     }
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -101,14 +99,13 @@ data class CanvasInverseTransform(private val transform: CanvasTransformModel) :
  * @property dx The horizontal translation
  * @property dy The vertical translation
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasTranslate(private val dx: Float, private val dy: Float) :
     CanvasTransformChildModel {
   override fun applyTo(matrix: Matrix) {
     matrix.postTranslate(dx, dy)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -119,8 +116,8 @@ data class CanvasTranslate(private val dx: Float, private val dy: Float) :
  * @property sy The vertical scale
  * @property pivot The point around which scale will be applied
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasScale(
     private val sx: Float,
     private val sy: Float,
@@ -129,7 +126,6 @@ data class CanvasScale(
   override fun applyTo(matrix: Matrix) {
     matrix.postScale(sx, sy, pivot.x, pivot.y)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -139,8 +135,8 @@ data class CanvasScale(
  * @property degrees The rotation degrees
  * @property pivot The point around which scale will be applied
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasRotate(
     private val degrees: Float,
     private val pivot: Point,
@@ -148,7 +144,6 @@ data class CanvasRotate(
   override fun applyTo(matrix: Matrix) {
     matrix.postRotate(degrees, pivot.x, pivot.y)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -159,8 +154,8 @@ data class CanvasRotate(
  * @property ky The vertical skewing
  * @property pivot The point around which scale will be applied
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasSkew(
     private val kx: Float,
     private val ky: Float,
@@ -169,5 +164,4 @@ data class CanvasSkew(
   override fun applyTo(matrix: Matrix) {
     matrix.postSkew(kx, ky, pivot.x, pivot.y)
   }
-  override fun toString(): String = ""
 }

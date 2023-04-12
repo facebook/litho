@@ -20,6 +20,7 @@ import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.utils.types.Point
 import com.facebook.mountable.utils.types.Size
 
@@ -35,14 +36,13 @@ sealed interface CanvasShapeModel : CanvasShape {
  * @param startPoint The start point of the line
  * @param endPoint The end point of the line
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasShapeLine(private val startPoint: Point, private val endPoint: Point) :
     CanvasShapeModel {
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, paint)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -52,8 +52,8 @@ data class CanvasShapeLine(private val startPoint: Point, private val endPoint: 
  * @property size The size of the rectangle
  * @property cornerRadius The radius of the rounded corners
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasShapeRect(
     private val topLeft: Point,
     private val size: Size,
@@ -66,7 +66,6 @@ data class CanvasShapeRect(
         cornerRadius,
         paint)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -75,14 +74,13 @@ data class CanvasShapeRect(
  * @property center The center of the circle
  * @property radius The radius of the circle
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasShapeCircle(private val center: Point, private val radius: Float) :
     CanvasShapeModel {
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawCircle(center.x, center.y, radius, paint)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -94,8 +92,8 @@ data class CanvasShapeCircle(private val center: Point, private val radius: Floa
  * @property endDegrees The angle to the end point of the arc
  * @property clockwise true to make a clockwise arc; false to make a counterclockwise arc
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasShapeArc(
     private val center: Point,
     private val radius: Float,
@@ -113,7 +111,6 @@ data class CanvasShapeArc(
         false,
         paint)
   }
-  override fun toString(): String = ""
 }
 
 /**
@@ -122,13 +119,12 @@ data class CanvasShapeArc(
  * @property topLeft The coordinates of the top left point of the ellipse
  * @property size The size of the ellipse
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasShapeEllipse(private val topLeft: Point, private val size: Size) :
     CanvasShapeModel {
   override fun draw(canvas: Canvas, paint: Paint) {
     canvas.drawOval(
         RectF(topLeft.x, topLeft.y, topLeft.x + size.width, topLeft.y + size.height), paint)
   }
-  override fun toString(): String = ""
 }

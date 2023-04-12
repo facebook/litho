@@ -24,6 +24,7 @@ import android.os.Build
 import androidx.annotation.FloatRange
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withMatrix
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.CanvasState
 import com.facebook.mountable.canvas.withLayer
 import com.facebook.mountable.utils.types.BlendingMode
@@ -44,8 +45,8 @@ sealed interface CanvasNodeModel {
  *   [android.graphics.Path] objects.
  * @property children The child nodes of the canvas
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasModel(
     private val canvasState: CanvasState,
     private val children: List<CanvasNodeModel>
@@ -76,8 +77,6 @@ data class CanvasModel(
   fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(children = children)
   }
-
-  override fun toString(): String = ""
 }
 
 /**
@@ -94,8 +93,8 @@ data class CanvasModel(
  *   is null
  * @property children The child nodes of the group
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasGroup(
     private val transform: CanvasTransformModel,
     private val size: Size,
@@ -131,8 +130,6 @@ data class CanvasGroup(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(children = children)
   }
-
-  override fun toString(): String = ""
 }
 
 /**
@@ -152,8 +149,9 @@ data class CanvasGroup(
  *   the parent layer
  * @property children The child nodes of the layer
  */
-@Suppress("DEPRECATION", "KtDataClass")
+@Suppress("DEPRECATION")
 @SuppressLint("NotInvokedPrivateMethod", "DeprecatedMethod")
+@DataClassGenerate
 data class CanvasLayer(
     val transform: CanvasTransformModel,
     val size: Size,
@@ -193,9 +191,7 @@ data class CanvasLayer(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(blendingMode = blendingMode, children = children)
   }
-
-  override fun toString(): String = ""
-
+  
   companion object {
     const val DEFAULT_ALPHA = 1.0f
   }
@@ -213,8 +209,8 @@ data class CanvasLayer(
  * @property blendingMode The blend mode that will be used when filling the shape
  * @property shadow The shadow that will be drawn below the path
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasFill(
     val shape: CanvasShape,
     val shading: CanvasShadingModel,
@@ -237,8 +233,6 @@ data class CanvasFill(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(shadow = shadow, blendingMode = blendingMode)
   }
-
-  override fun toString(): String = ""
 }
 
 /**
@@ -272,8 +266,8 @@ data class CanvasFill(
  *   units from its beginning. Passing a value of 0 draws a line starting with the beginning of a
  *   dash pattern. Ignored if dash-lengths is null.
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasStroke(
     val shape: CanvasShape,
     val shading: CanvasShadingModel,
@@ -302,9 +296,7 @@ data class CanvasStroke(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(shadow = shadow, blendingMode = blendingMode)
   }
-
-  override fun toString(): String = ""
-
+  
   // equals and hashCode has to be explicitly declared because of dashLength property which is of
   // FloatArray type and we want to compare it by its contents
   override fun equals(other: Any?): Boolean {
@@ -385,8 +377,8 @@ data class CanvasStroke(
  *
  * @property block The lambda callback to issue drawing commands on the provided [Canvas]
  */
-@Suppress("KtDataClass")
 @SuppressLint("NotInvokedPrivateMethod")
+@DataClassGenerate
 data class CanvasDrawIntoCanvas(private val block: (Canvas) -> Unit) : CanvasNodeModel {
   override fun draw(canvas: Canvas, state: CanvasState) {
     block(canvas)
@@ -395,8 +387,6 @@ data class CanvasDrawIntoCanvas(private val block: (Canvas) -> Unit) : CanvasNod
   override fun needsSoftwareLayer(): Boolean {
     return false
   }
-
-  override fun toString(): String = ""
 }
 
 /**
