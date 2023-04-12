@@ -144,8 +144,8 @@ class EqualDimensionsLayoutBehavior(private val layoutData: Any? = null) : Layou
 }
 
 class PrimitiveLayoutResult(
-    private val width: Int,
-    private val height: Int,
+    val width: Int,
+    val height: Int,
     private val paddingTop: Int = 0,
     private val paddingRight: Int = 0,
     private val paddingBottom: Int = 0,

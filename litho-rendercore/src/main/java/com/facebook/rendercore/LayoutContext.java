@@ -85,8 +85,7 @@ public class LayoutContext<RenderContext> {
     this.previousLayoutData = previousLayoutData;
   }
 
-  @Nullable
-  Object consumePreviousLayoutDataForCurrentNode() {
+  public @Nullable Object consumePreviousLayoutDataForCurrentNode() {
     final Object data = previousLayoutData;
     previousLayoutData = null;
     return data;
