@@ -138,7 +138,8 @@ object DebugEventDispatcher {
 
   @JvmStatic
   var enabled: Boolean
-    get() = enabledRef.get()
+    @JvmStatic get() = enabledRef.get()
+    @JvmStatic
     set(value) {
       enabledRef.set(value)
     }
@@ -147,7 +148,8 @@ object DebugEventDispatcher {
 
   @JvmStatic
   var minLogLevel: LogLevel
-    get() = minLogLevelRef.get()
+    @JvmStatic get() = minLogLevelRef.get()
+    @JvmStatic
     set(value) {
       minLogLevelRef.set(value)
     }
