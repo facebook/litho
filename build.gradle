@@ -21,13 +21,14 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.1'
         classpath "com.vanniktech:gradle-maven-publish-plugin:${MAVEN_PUBLISH_PLUGIN}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${DOKKA_VERSION}"
-
+        classpath "com.facebook.kotlin.compilerplugins.dataclassgenerate:gradleplugin:${DATA_CLASS_GENERATE_VERSION}"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
