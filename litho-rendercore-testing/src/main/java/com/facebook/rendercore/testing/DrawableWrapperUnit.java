@@ -21,12 +21,13 @@ import android.graphics.drawable.Drawable;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
-public class SimpleDrawableUnit extends RenderUnit<Drawable> implements ContentAllocator<Drawable> {
+public class DrawableWrapperUnit extends RenderUnit<Drawable>
+    implements ContentAllocator<Drawable> {
 
   private final Drawable drawable;
   private final long id;
 
-  public SimpleDrawableUnit(final Drawable drawable, final long id) {
+  public DrawableWrapperUnit(final Drawable drawable, final long id) {
     super(RenderType.DRAWABLE);
     this.drawable = drawable;
     this.id = id;

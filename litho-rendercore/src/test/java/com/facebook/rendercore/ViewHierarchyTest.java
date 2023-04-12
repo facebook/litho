@@ -13,9 +13,9 @@ import android.view.View;
 import android.widget.TextView;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
+import com.facebook.rendercore.testing.DrawableWrapperUnit;
 import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
-import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
 import com.facebook.rendercore.testing.TestLayoutResultVisitor.Result;
 import com.facebook.rendercore.testing.TestMountExtension;
@@ -55,7 +55,7 @@ public class ViewHierarchyTest {
   public void onRenderSimpleLayoutResult_shouldRenderTheDrawable() {
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleDrawableUnit(new ColorDrawable(Color.BLACK), 1))
+            .renderUnit(new DrawableWrapperUnit(new ColorDrawable(Color.BLACK), 1))
             .width(100)
             .height(100)
             .build();
@@ -130,13 +130,13 @@ public class ViewHierarchyTest {
             .height(240)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleDrawableUnit(new ColorDrawable(Color.BLACK), 2))
+                    .renderUnit(new DrawableWrapperUnit(new ColorDrawable(Color.BLACK), 2))
                     .padding(5, 5, 5, 5)
                     .width(120)
                     .height(120))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleDrawableUnit(new ColorDrawable(Color.BLUE), 3))
+                    .renderUnit(new DrawableWrapperUnit(new ColorDrawable(Color.BLUE), 3))
                     .x(5)
                     .y(5)
                     .width(110)
@@ -150,7 +150,7 @@ public class ViewHierarchyTest {
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleDrawableUnit(new ColorDrawable(Color.BLUE), 5))
+                    .renderUnit(new DrawableWrapperUnit(new ColorDrawable(Color.BLUE), 5))
                     .x(15)
                     .y(15)
                     .width(95)

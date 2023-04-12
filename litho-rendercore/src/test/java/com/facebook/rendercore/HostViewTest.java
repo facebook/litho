@@ -17,9 +17,9 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
+import com.facebook.rendercore.testing.DrawableWrapperUnit;
 import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
-import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
 import com.facebook.rendercore.testing.ViewWrapperUnit;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class HostViewTest {
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
-                        new SimpleDrawableUnit(
+                        new DrawableWrapperUnit(
                             new TrackingColorDrawable(
                                 Color.BLACK,
                                 2,
@@ -118,7 +118,7 @@ public class HostViewTest {
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
-                        new SimpleDrawableUnit(
+                        new DrawableWrapperUnit(
                             new TrackingColorDrawable(
                                 Color.BLUE,
                                 3,
@@ -141,7 +141,7 @@ public class HostViewTest {
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
-                        new SimpleDrawableUnit(
+                        new DrawableWrapperUnit(
                             new TrackingColorDrawable(
                                 Color.BLUE,
                                 5,
@@ -203,8 +203,8 @@ public class HostViewTest {
   @Test
   public void onRenderUnitWithTouchableDrawable_shouldHandleTouchEvent() {
     final Point point = new Point(0, 0);
-    final SimpleDrawableUnit unit =
-        new SimpleDrawableUnit(
+    final DrawableWrapperUnit unit =
+        new DrawableWrapperUnit(
             new TouchableColorDrawable(
                 new View.OnTouchListener() {
 

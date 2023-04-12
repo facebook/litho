@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
-import com.facebook.litho.IncrementalMountExtensionTest.TestInput
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.rendercore.MountDelegate
 import com.facebook.rendercore.MountDelegateInput
@@ -29,7 +28,7 @@ import com.facebook.rendercore.RenderUnit
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput
-import com.facebook.rendercore.testing.SimpleDrawableUnit
+import com.facebook.rendercore.testing.DrawableWrapperUnit
 import java.util.ArrayList
 import java.util.LinkedHashMap
 import org.assertj.core.api.Assertions.assertThat
@@ -148,7 +147,7 @@ class IncrementalMountExtensionTest {
         val renderTreeNode = mock<RenderTreeNode>()
         whenever(renderTreeNode.layoutData).thenReturn(mock<LithoAnimtableItem>())
         whenever(renderTreeNode.getAbsoluteBounds(anyOrNull<Rect>())).thenReturn(bounds)
-        val renderUnit: RenderUnit<*> = SimpleDrawableUnit(ColorDrawable(Color.BLACK), i.toLong())
+        val renderUnit: RenderUnit<*> = DrawableWrapperUnit(ColorDrawable(Color.BLACK), i.toLong())
         whenever(renderTreeNode.renderUnit).thenReturn(renderUnit)
         mountableOutputs.add(renderTreeNode)
         val incrementalMountOutput =
