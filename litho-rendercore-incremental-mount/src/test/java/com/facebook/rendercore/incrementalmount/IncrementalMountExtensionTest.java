@@ -37,8 +37,8 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.Increm
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
-import com.facebook.rendercore.testing.TestHost;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
+import com.facebook.rendercore.testing.TestHostView;
 import com.facebook.rendercore.testing.TestRenderUnit;
 import com.facebook.rendercore.testing.ViewWrapperUnit;
 import org.junit.Rule;
@@ -611,6 +611,6 @@ public class IncrementalMountExtensionTest {
   }
 
   private static MountState createMountState(Context c) {
-    return new MountState(new TestHost(c));
+    return new MountState(new TestHostView(c));
   }
 }

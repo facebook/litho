@@ -22,19 +22,19 @@ import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestHost extends HostView {
+public class TestHostView extends HostView {
 
   private final List bindOrder;
   private final List unbindOrder;
   private int mMoveCount;
 
-  public TestHost(Context context) {
+  public TestHostView(Context context) {
     super(context, null);
     this.bindOrder = new ArrayList<>();
     this.unbindOrder = new ArrayList<>();
   }
 
-  public TestHost(Context context, List bindOrder, List unbindOrder) {
+  public TestHostView(Context context, List bindOrder, List unbindOrder) {
     super(context, null);
     this.bindOrder = bindOrder;
     this.unbindOrder = unbindOrder;
@@ -43,13 +43,13 @@ public class TestHost extends HostView {
   @Override
   public void mount(int index, MountItem mountItem) {
     super.mount(index, mountItem);
-    bindOrder.add(TestHost.this);
+    bindOrder.add(TestHostView.this);
   }
 
   @Override
   public void unmount(int index, MountItem mountItem) {
     super.unmount(index, mountItem);
-    unbindOrder.add(TestHost.this);
+    unbindOrder.add(TestHostView.this);
   }
 
   @Override

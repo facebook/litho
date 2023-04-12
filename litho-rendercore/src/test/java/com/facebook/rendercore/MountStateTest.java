@@ -16,8 +16,8 @@ import com.facebook.rendercore.renderunits.HostRenderUnit;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
-import com.facebook.rendercore.testing.TestHost;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
+import com.facebook.rendercore.testing.TestHostView;
 import com.facebook.rendercore.testing.TestNode;
 import com.facebook.rendercore.testing.TestRenderUnit;
 import com.facebook.rendercore.testing.ViewWrapperUnit;
@@ -77,7 +77,7 @@ public class MountStateTest {
   public void testUnmountAllDoesntTraverseNestedHierarchies() {
     final Context c = RuntimeEnvironment.application;
 
-    final TestHost innerTestHost = new TestHost(c);
+    final TestHostView innerTestHost = new TestHostView(c);
 
     final TestNode root = new TestNode();
     final TestNode leaf = new TestNode(0, 0, 10, 10);
@@ -157,7 +157,7 @@ public class MountStateTest {
     leaf.setRenderUnit(renderUnit);
 
     final RenderTree renderTree = createRenderTree(c, root);
-    final TestHost host = new TestHost(c, bindOrder, unbindOrder);
+    final TestHostView host = new TestHostView(c, bindOrder, unbindOrder);
     final MountState mountState = new MountState(host);
 
     mountState.mount(renderTree);
@@ -458,7 +458,7 @@ public class MountStateTest {
     final TestNode hostNode = new TestNode(0, 0, 100, 100);
     final TestNode child = new TestNode(0, 0, 10, 10);
     final TestNode secondChild = new TestNode(0, 0, 10, 10);
-    final TestHost testHost = new TestHost(c);
+    final TestHostView testHost = new TestHostView(c);
 
     final TestHostRenderUnit hostRenderUnit =
         new TestHostRenderUnit() {
@@ -902,6 +902,6 @@ public class MountStateTest {
   }
 
   private static MountState createMountState(Context c) {
-    return new MountState(new TestHost(c));
+    return new MountState(new TestHostView(c));
   }
 }

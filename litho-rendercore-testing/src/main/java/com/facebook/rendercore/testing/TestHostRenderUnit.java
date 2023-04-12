@@ -45,6 +45,6 @@ public class TestHostRenderUnit extends TestRenderUnit {
 
   @Override
   public Host createContent(Context c) {
-    return new TestHost(c);
+    return new TestHostView(c);
   }
 }

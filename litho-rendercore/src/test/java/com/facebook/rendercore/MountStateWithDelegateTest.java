@@ -10,7 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
-import com.facebook.rendercore.testing.TestHost;
+import com.facebook.rendercore.testing.TestHostView;
 import com.facebook.rendercore.testing.TestMountExtension;
 import com.facebook.rendercore.testing.TestNode;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
@@ -113,7 +113,7 @@ public class MountStateWithDelegateTest {
     extensions[0] = new TestRenderCoreExtension(mountExtension);
 
     final RenderTree renderTree = createRenderTree(c, root, extensions);
-    final TestHost host = new TestHost(c, bindOrder, unbindOrder);
+    final TestHostView host = new TestHostView(c, bindOrder, unbindOrder);
     final MountState mountState = new MountState(host);
 
     mountState.mount(renderTree);
@@ -179,7 +179,7 @@ public class MountStateWithDelegateTest {
     extensions[0] = new TestRenderCoreExtension(mountExtension);
 
     final RenderTree renderTree = createRenderTree(c, root, extensions);
-    final TestHost host = new TestHost(c, bindOrder, unbindOrder);
+    final TestHostView host = new TestHostView(c, bindOrder, unbindOrder);
     final MountState mountState = new MountState(host);
 
     mountState.mount(renderTree);
@@ -239,7 +239,7 @@ public class MountStateWithDelegateTest {
   }
 
   private static MountState createMountState(Context c) {
-    return new MountState(new TestHost(c));
+    return new MountState(new TestHostView(c));
   }
 
   private class TestMountExtensionWithAcquire extends TestMountExtension {
