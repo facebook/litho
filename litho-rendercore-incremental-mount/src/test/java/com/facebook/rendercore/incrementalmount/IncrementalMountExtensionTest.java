@@ -34,9 +34,9 @@ import com.facebook.rendercore.RootHostView;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
+import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
 import com.facebook.rendercore.testing.TestHostView;
 import com.facebook.rendercore.testing.TestRenderUnit;
@@ -68,7 +68,7 @@ public class IncrementalMountExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(100, 100)
         .render();
 
@@ -93,7 +93,7 @@ public class IncrementalMountExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(50, 50)
         .render();
 
@@ -118,7 +118,7 @@ public class IncrementalMountExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(0, 0)
         .render();
 
@@ -169,7 +169,7 @@ public class IncrementalMountExtensionTest {
     mRenderCoreTestRule
         .useRootHost(host)
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(100, 300)
         .render();
 
@@ -230,7 +230,7 @@ public class IncrementalMountExtensionTest {
     mRenderCoreTestRule
         .useRootHost(host)
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(100, 300)
         .render();
 
@@ -282,7 +282,7 @@ public class IncrementalMountExtensionTest {
     mRenderCoreTestRule
         .useRootHost(host)
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(300, 100)
         .render();
 
@@ -353,7 +353,7 @@ public class IncrementalMountExtensionTest {
     mRenderCoreTestRule
         .useRootHost(host)
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(100, 201)
         .render();
 
@@ -388,7 +388,10 @@ public class IncrementalMountExtensionTest {
                                     .height(100))))
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(newRoot)).setSizePx(100, 201).render();
+    mRenderCoreTestRule
+        .useRootNode(new LayoutResultWrappingNode(newRoot))
+        .setSizePx(100, 201)
+        .render();
 
     // Un-mounts the Host with id 2.
     assertThat(((HostView) host.getChildAt(0)).getChildCount()).isEqualTo(0);
@@ -436,7 +439,7 @@ public class IncrementalMountExtensionTest {
     mRenderCoreTestRule
         .useRootHost(host)
         .useExtensions(extensions)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .setSizePx(100, 210)
         .render();
 

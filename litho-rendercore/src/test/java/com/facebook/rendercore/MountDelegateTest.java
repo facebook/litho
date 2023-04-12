@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.ViewWrapperUnit;
@@ -60,7 +60,7 @@ public class MountDelegateTest {
     final RenderCoreExtension extension = new TestRenderCoreExtension(mountExtension);
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {extension})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
@@ -80,7 +80,7 @@ public class MountDelegateTest {
     assertThat(mountExtension.onBindItem).isEqualTo(2 + 1 /* for the root*/);
 
     mRenderCoreTestRule
-        .useRootNode(new SimpleWrapperNode(SimpleLayoutResult.create().build()))
+        .useRootNode(new LayoutResultWrappingNode(SimpleLayoutResult.create().build()))
         .render();
 
     // No new calls to the 'before' APIs

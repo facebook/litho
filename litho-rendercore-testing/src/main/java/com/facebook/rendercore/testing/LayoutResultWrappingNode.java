@@ -20,11 +20,11 @@ import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Node;
 
-public class SimpleWrapperNode implements Node {
+public class LayoutResultWrappingNode implements Node {
 
   private final LayoutResult mLayoutResult;
 
-  public SimpleWrapperNode(LayoutResult layoutResult) {
+  public LayoutResultWrappingNode(LayoutResult layoutResult) {
     mLayoutResult = layoutResult;
   }
 

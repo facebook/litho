@@ -17,10 +17,10 @@ import android.view.View;
 import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
+import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.ViewWrapperUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,7 +156,7 @@ public class HostViewTest {
                     .height(95))
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     final HostView host = (HostView) mRenderCoreTestRule.getRootHost();
 
@@ -224,7 +224,7 @@ public class HostViewTest {
             .child(SimpleLayoutResult.create().renderUnit(unit).width(100).height(100))
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     final HostView host = (HostView) mRenderCoreTestRule.getRootHost();
     final MotionEvent event =
@@ -252,7 +252,7 @@ public class HostViewTest {
     final LayoutResult root =
         SimpleLayoutResult.create().renderUnit(unit).width(100).height(100).build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     final HostView host = (HostView) ((HostView) mRenderCoreTestRule.getRootHost()).getChildAt(0);
     final MotionEvent event =

@@ -12,9 +12,9 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.ViewWrapperUnit;
@@ -49,7 +49,7 @@ public class RenderCoreExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {e1, e2, e3, e4})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     final View rootView = (View) mRenderCoreTestRule.getRootHost();
@@ -86,7 +86,7 @@ public class RenderCoreExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {e1, e2})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
@@ -109,7 +109,7 @@ public class RenderCoreExtensionTest {
     // Next render
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {e3, e4})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
@@ -143,7 +143,7 @@ public class RenderCoreExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {new TestRenderCoreExtension(extension)})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     // should call
@@ -181,7 +181,7 @@ public class RenderCoreExtensionTest {
 
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {new TestRenderCoreExtension(extension)})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     RootHostView rootView = (RootHostView) mRenderCoreTestRule.getRootHost();

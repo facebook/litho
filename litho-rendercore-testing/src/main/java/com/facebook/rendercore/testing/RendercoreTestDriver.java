@@ -106,7 +106,7 @@ public class RendercoreTestDriver {
 
     @Override
     public LayoutBuilderPart withLayoutResult(LayoutResult result) {
-      mRootNode = new SimpleWrapperNode(result);
+      mRootNode = new LayoutResultWrappingNode(result);
       return this;
     }
 

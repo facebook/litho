@@ -13,10 +13,10 @@ import android.view.View;
 import android.widget.TextView;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
+import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestLayoutResultVisitor.Result;
 import com.facebook.rendercore.testing.TestMountExtension;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
@@ -43,7 +43,7 @@ public class ViewHierarchyTest {
             .height(100)
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
         .matches(
@@ -60,7 +60,7 @@ public class ViewHierarchyTest {
             .height(100)
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
         .matches(ViewMatchNode.forType(Host.class).bounds(0, 0, 100, 100));
@@ -102,7 +102,7 @@ public class ViewHierarchyTest {
                             .height(100)))
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
         .matches(
@@ -157,7 +157,7 @@ public class ViewHierarchyTest {
                     .height(95))
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
         .matches(
@@ -215,7 +215,7 @@ public class ViewHierarchyTest {
                             .height(100)))
             .build();
 
-    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule.useRootNode(new LayoutResultWrappingNode(root)).render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())
         .matches(
@@ -308,7 +308,7 @@ public class ViewHierarchyTest {
 
     mRenderCoreTestRule
         .useExtensions(new RenderCoreExtension[] {extension})
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .render();
 
     ViewAssertions.assertThat((View) mRenderCoreTestRule.getRootHost())

@@ -13,9 +13,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
+import com.facebook.rendercore.testing.LayoutResultWrappingNode;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
 import com.facebook.rendercore.testing.TestHostView;
 import com.facebook.rendercore.testing.TestNode;
@@ -513,7 +513,9 @@ public class MountStateTest {
 
     final RenderTree tree =
         createRenderTree(
-            c, new SimpleWrapperNode(SimpleLayoutResult.create().width(100).height(100).build()));
+            c,
+            new LayoutResultWrappingNode(
+                SimpleLayoutResult.create().width(100).height(100).build()));
 
     mountState.mount(tree);
 
@@ -595,7 +597,7 @@ public class MountStateTest {
                                     .height(100))))
             .build();
 
-    final RenderTree renderTree = createRenderTree(c, new SimpleWrapperNode(root));
+    final RenderTree renderTree = createRenderTree(c, new LayoutResultWrappingNode(root));
     final MountState mountState = createMountState(c);
 
     mountState.mount(renderTree);
@@ -649,7 +651,7 @@ public class MountStateTest {
                     .height(100))
             .build();
 
-    final RenderTree renderTree = createRenderTree(c, new SimpleWrapperNode(root));
+    final RenderTree renderTree = createRenderTree(c, new LayoutResultWrappingNode(root));
     final MountState mountState = createMountState(c);
 
     mountState.mount(renderTree);
@@ -700,7 +702,10 @@ public class MountStateTest {
 
     final RootHostView rootHost = new RootHostView(c);
 
-    mRenderCoreTestRule.useRootHost(rootHost).useRootNode(new SimpleWrapperNode(root)).render();
+    mRenderCoreTestRule
+        .useRootHost(rootHost)
+        .useRootNode(new LayoutResultWrappingNode(root))
+        .render();
 
     // Should bind both the mount/unmount and attach/detach binders
     assertThat(bindOrder)
@@ -762,7 +767,7 @@ public class MountStateTest {
 
     mRenderCoreTestRule
         .useRenderTreeHost(rootHost)
-        .useRootNode(new SimpleWrapperNode(root))
+        .useRootNode(new LayoutResultWrappingNode(root))
         .renderWithRenderTreeHost();
 
     // Should bind both the mount/unmount and attach/detach binders
@@ -832,7 +837,7 @@ public class MountStateTest {
                     .height(100))
             .build();
 
-    final RenderTree renderTree = createRenderTree(c, new SimpleWrapperNode(root));
+    final RenderTree renderTree = createRenderTree(c, new LayoutResultWrappingNode(root));
     final MountState mountState = createMountState(c);
 
     mountState.mount(renderTree);
@@ -887,7 +892,7 @@ public class MountStateTest {
                     .height(100))
             .build();
 
-    final RenderTree renderTree = createRenderTree(c, new SimpleWrapperNode(root));
+    final RenderTree renderTree = createRenderTree(c, new LayoutResultWrappingNode(root));
     final MountState mountState = createMountState(c);
 
     mountState.mount(renderTree);
