@@ -23,12 +23,12 @@ import android.view.View;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.RenderUnit;
 
-public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator<View> {
+public class ViewWrapperUnit extends RenderUnit<View> implements ContentAllocator<View> {
 
   private final View view;
   private final long id;
 
-  public SimpleViewUnit(final View view, final long id) {
+  public ViewWrapperUnit(final View view, final long id) {
     super(RenderType.VIEW);
     this.view = view;
     this.id = id;
@@ -59,16 +59,16 @@ public class SimpleViewUnit extends RenderUnit<View> implements ContentAllocator
     return view.getClass();
   }
 
-  public SimpleViewUnit addBindBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
-    for (Binder<SimpleViewUnit, View> binder : binders) {
+  public ViewWrapperUnit addBindBinders(RenderUnit.Binder<ViewWrapperUnit, View>... binders) {
+    for (Binder<ViewWrapperUnit, View> binder : binders) {
       super.addAttachBinder(createDelegateBinder(this, binder));
     }
 
     return this;
   }
 
-  public SimpleViewUnit addMounBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
-    for (Binder<SimpleViewUnit, View> binder : binders) {
+  public ViewWrapperUnit addMounBinders(RenderUnit.Binder<ViewWrapperUnit, View>... binders) {
+    for (Binder<ViewWrapperUnit, View> binder : binders) {
       super.addOptionalMountBinder(createDelegateBinder(this, binder));
     }
 

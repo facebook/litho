@@ -13,10 +13,10 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleViewUnit;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
 import com.facebook.rendercore.testing.ViewAssertions;
+import com.facebook.rendercore.testing.ViewWrapperUnit;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,18 +39,18 @@ public class MountDelegateTest {
             .height(300)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .y(100)
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                     .y(200)
                     .width(100)
                     .height(100))

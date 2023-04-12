@@ -20,8 +20,8 @@ import com.facebook.rendercore.renderunits.HostRenderUnit;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleViewUnit;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
+import com.facebook.rendercore.testing.ViewWrapperUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -133,7 +133,7 @@ public class HostViewTest {
                     .height(110))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                     .x(10)
                     .y(10)
                     .width(100)

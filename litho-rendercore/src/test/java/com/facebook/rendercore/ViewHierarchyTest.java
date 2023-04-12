@@ -16,12 +16,12 @@ import com.facebook.rendercore.renderunits.HostRenderUnit;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleViewUnit;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestLayoutResultVisitor.Result;
 import com.facebook.rendercore.testing.TestMountExtension;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
 import com.facebook.rendercore.testing.ViewAssertions;
+import com.facebook.rendercore.testing.ViewWrapperUnit;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.List;
 import org.junit.Rule;
@@ -38,7 +38,7 @@ public class ViewHierarchyTest {
   public void onRenderSimpleLayoutResult_shouldRenderTheView() {
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
             .width(100)
             .height(100)
             .build();
@@ -80,12 +80,12 @@ public class ViewHierarchyTest {
             .height(200)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .x(100)
                     .width(100)
                     .height(100))
@@ -97,7 +97,7 @@ public class ViewHierarchyTest {
                     .height(100)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                            .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                             .width(100)
                             .height(100)))
             .build();
@@ -143,7 +143,7 @@ public class ViewHierarchyTest {
                     .height(110))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                     .x(10)
                     .y(10)
                     .width(100)
@@ -192,12 +192,12 @@ public class ViewHierarchyTest {
             .height(200)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .x(100)
                     .width(100)
                     .height(100))
@@ -210,7 +210,7 @@ public class ViewHierarchyTest {
                     .height(100)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new TextView(c), 5))
+                            .renderUnit(new ViewWrapperUnit(new TextView(c), 5))
                             .width(100)
                             .height(100)))
             .build();
@@ -246,7 +246,7 @@ public class ViewHierarchyTest {
             .height(1000)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
                     .width(100)
                     .height(100))
             .child(
@@ -256,7 +256,7 @@ public class ViewHierarchyTest {
                     .height(400)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                            .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                             .x(100)
                             .y(100)
                             .width(100)
@@ -270,7 +270,7 @@ public class ViewHierarchyTest {
                             .height(200)
                             .child(
                                 SimpleLayoutResult.create()
-                                    .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                                    .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                                     .x(100)
                                     .y(100)
                                     .width(100)
@@ -283,7 +283,7 @@ public class ViewHierarchyTest {
                     .height(400)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new TextView(c), 6))
+                            .renderUnit(new ViewWrapperUnit(new TextView(c), 6))
                             .x(100)
                             .y(100)
                             .width(100)
@@ -297,7 +297,7 @@ public class ViewHierarchyTest {
                             .height(200)
                             .child(
                                 SimpleLayoutResult.create()
-                                    .renderUnit(new SimpleViewUnit(new TextView(c), 8))
+                                    .renderUnit(new ViewWrapperUnit(new TextView(c), 8))
                                     .x(100)
                                     .y(100)
                                     .width(100)

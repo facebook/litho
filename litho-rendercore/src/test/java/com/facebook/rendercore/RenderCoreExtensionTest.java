@@ -14,10 +14,10 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleViewUnit;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestRenderCoreExtension;
 import com.facebook.rendercore.testing.ViewAssertions;
+import com.facebook.rendercore.testing.ViewWrapperUnit;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.ArrayList;
 import org.junit.Rule;
@@ -34,7 +34,7 @@ public class RenderCoreExtensionTest {
   public void onRenderWithExtension_shouldRenderView() {
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
             .width(100)
             .height(100)
             .build();
@@ -73,7 +73,7 @@ public class RenderCoreExtensionTest {
   public void onRenderWithNewExtensions_shouldRenderViewAndDiscardOldExtensions() {
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
             .width(100)
             .height(100)
             .build();
@@ -134,7 +134,7 @@ public class RenderCoreExtensionTest {
   public void onUnmountAllItemsWithExtensions_shouldCallbackAllExtensions() {
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
             .width(100)
             .height(100)
             .build();
@@ -172,7 +172,7 @@ public class RenderCoreExtensionTest {
   public void onUnmountRootItem_shouldCallbackAllExtensions() {
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(mRenderCoreTestRule.getContext()), 1))
             .width(100)
             .height(100)
             .build();

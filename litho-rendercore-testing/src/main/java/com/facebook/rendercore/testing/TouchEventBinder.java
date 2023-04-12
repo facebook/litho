@@ -21,7 +21,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderUnit;
 
-public class TouchEventBinder implements RenderUnit.Binder<SimpleViewUnit, View> {
+public class TouchEventBinder implements RenderUnit.Binder<ViewWrapperUnit, View> {
 
   private final View.OnTouchListener mListener;
 
@@ -31,8 +31,8 @@ public class TouchEventBinder implements RenderUnit.Binder<SimpleViewUnit, View>
 
   @Override
   public boolean shouldUpdate(
-      final SimpleViewUnit currentModel,
-      final SimpleViewUnit newModel,
+      final ViewWrapperUnit currentModel,
+      final ViewWrapperUnit newModel,
       final @Nullable Object currentLayoutData,
       final @Nullable Object nextLayoutData) {
     return true;
@@ -42,7 +42,7 @@ public class TouchEventBinder implements RenderUnit.Binder<SimpleViewUnit, View>
   public void bind(
       final Context context,
       final View view,
-      final SimpleViewUnit binder,
+      final ViewWrapperUnit binder,
       final @Nullable Object data) {
     view.setOnTouchListener(mListener);
   }
@@ -51,7 +51,7 @@ public class TouchEventBinder implements RenderUnit.Binder<SimpleViewUnit, View>
   public void unbind(
       final Context context,
       final View view,
-      final SimpleViewUnit binder,
+      final ViewWrapperUnit binder,
       final @Nullable Object data) {
     view.setOnTouchListener(null);
   }

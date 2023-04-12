@@ -36,11 +36,11 @@ import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleViewUnit;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestHost;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
 import com.facebook.rendercore.testing.TestRenderUnit;
+import com.facebook.rendercore.testing.ViewWrapperUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,7 +61,7 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
             .width(100)
             .height(100)
             .build();
@@ -86,7 +86,7 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
             .width(100)
             .height(100)
             .build();
@@ -111,7 +111,7 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+            .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
             .width(100)
             .height(100)
             .build();
@@ -149,18 +149,18 @@ public class IncrementalMountExtensionTest {
             .height(300)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .y(100)
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .y(200)
                     .width(100)
                     .height(100))
@@ -210,18 +210,18 @@ public class IncrementalMountExtensionTest {
             .height(300)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .y(100)
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .y(200)
                     .width(100)
                     .height(100))
@@ -262,18 +262,18 @@ public class IncrementalMountExtensionTest {
             .height(100)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .x(100)
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .x(200)
                     .width(100)
                     .height(100))
@@ -327,22 +327,22 @@ public class IncrementalMountExtensionTest {
             .height(201)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new HostView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new HostView(c), 1))
                     .width(100)
                     .height(100)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new HostView(c), 2))
+                            .renderUnit(new ViewWrapperUnit(new HostView(c), 2))
                             .width(100)
                             .height(100)
                             .child(
                                 SimpleLayoutResult.create()
-                                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                                     .width(100)
                                     .height(100))))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new HostView(c), 4))
+                    .renderUnit(new ViewWrapperUnit(new HostView(c), 4))
                     .y(100)
                     .width(100)
                     .height(101))
@@ -366,24 +366,24 @@ public class IncrementalMountExtensionTest {
             .height(201)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new HostView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new HostView(c), 1))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new HostView(c), 4))
+                    .renderUnit(new ViewWrapperUnit(new HostView(c), 4))
                     .y(100)
                     .width(100)
                     .height(101)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new HostView(c), 2)) // Host changed.
+                            .renderUnit(new ViewWrapperUnit(new HostView(c), 2)) // Host changed.
                             .y(1)
                             .width(100)
                             .height(100)
                             .child(
                                 SimpleLayoutResult.create()
-                                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                                     .width(100)
                                     .height(100))))
             .build();
@@ -420,12 +420,12 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new HostView(c), 1))
+            .renderUnit(new ViewWrapperUnit(new HostView(c), 1))
             .width(100)
             .height(100)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .y(110)
                     .width(100)
                     .height(100))

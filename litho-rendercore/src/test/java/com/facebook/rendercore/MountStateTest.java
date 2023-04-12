@@ -15,12 +15,12 @@ import android.widget.TextView;
 import com.facebook.rendercore.renderunits.HostRenderUnit;
 import com.facebook.rendercore.testing.RenderCoreTestRule;
 import com.facebook.rendercore.testing.SimpleLayoutResult;
-import com.facebook.rendercore.testing.SimpleViewUnit;
 import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestHost;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
 import com.facebook.rendercore.testing.TestNode;
 import com.facebook.rendercore.testing.TestRenderUnit;
+import com.facebook.rendercore.testing.ViewWrapperUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -537,7 +537,7 @@ public class MountStateTest {
             .height(1000)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
                     .width(100)
                     .height(100))
             .child(
@@ -547,7 +547,7 @@ public class MountStateTest {
                     .height(400)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                            .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                             .x(100)
                             .y(100)
                             .width(100)
@@ -561,7 +561,7 @@ public class MountStateTest {
                             .height(200)
                             .child(
                                 SimpleLayoutResult.create()
-                                    .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                                    .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                                     .x(100)
                                     .y(100)
                                     .width(100)
@@ -574,7 +574,7 @@ public class MountStateTest {
                     .height(400)
                     .child(
                         SimpleLayoutResult.create()
-                            .renderUnit(new SimpleViewUnit(new TextView(c), 6))
+                            .renderUnit(new ViewWrapperUnit(new TextView(c), 6))
                             .x(100)
                             .y(100)
                             .width(100)
@@ -588,7 +588,7 @@ public class MountStateTest {
                             .height(200)
                             .child(
                                 SimpleLayoutResult.create()
-                                    .renderUnit(new SimpleViewUnit(new TextView(c), 8))
+                                    .renderUnit(new ViewWrapperUnit(new TextView(c), 8))
                                     .x(100)
                                     .y(100)
                                     .width(100)
@@ -642,7 +642,7 @@ public class MountStateTest {
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
-                        new SimpleViewUnit(new TextView(c), 1)
+                        new ViewWrapperUnit(new TextView(c), 1)
                             .addBindBinders(bindBinder)
                             .addMounBinders(mountBinder))
                     .width(100)
@@ -691,7 +691,7 @@ public class MountStateTest {
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
-                        new SimpleViewUnit(new TextView(c), 1)
+                        new ViewWrapperUnit(new TextView(c), 1)
                             .addBindBinders(attachBinder)
                             .addMounBinders(mountBinder))
                     .width(100)
@@ -751,7 +751,7 @@ public class MountStateTest {
             .child(
                 SimpleLayoutResult.create()
                     .renderUnit(
-                        new SimpleViewUnit(new TextView(c), 1)
+                        new ViewWrapperUnit(new TextView(c), 1)
                             .addBindBinders(attachBinder)
                             .addMounBinders(mountBinder))
                     .width(100)
@@ -806,26 +806,26 @@ public class MountStateTest {
             .height(1000)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 1))
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 2))
                     .x(200)
                     .y(200)
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 3))
                     .x(300)
                     .y(300)
                     .width(100)
                     .height(100))
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new TextView(c), 4))
+                    .renderUnit(new ViewWrapperUnit(new TextView(c), 4))
                     .x(400)
                     .y(400)
                     .width(100)
@@ -877,12 +877,12 @@ public class MountStateTest {
     final Context c = mRenderCoreTestRule.getContext();
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new LinearLayout(c), 1))
+            .renderUnit(new ViewWrapperUnit(new LinearLayout(c), 1))
             .width(100)
             .height(100)
             .child(
                 SimpleLayoutResult.create()
-                    .renderUnit(new SimpleViewUnit(new View(c), 2))
+                    .renderUnit(new ViewWrapperUnit(new View(c), 2))
                     .width(100)
                     .height(100))
             .build();
