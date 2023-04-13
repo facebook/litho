@@ -22,7 +22,24 @@ import android.os.Handler
 import com.facebook.rendercore.MountItemsPool
 import com.facebook.rendercore.MountState
 import com.facebook.rendercore.RunnableHandler
+import com.facebook.rendercore.primitives.Allocator
+import com.facebook.rendercore.primitives.AspectRatioLayoutBehavior
+import com.facebook.rendercore.primitives.BindScope
+import com.facebook.rendercore.primitives.DrawableAllocator
+import com.facebook.rendercore.primitives.EqualDimensionsLayoutBehavior
 import com.facebook.rendercore.primitives.Equivalence
+import com.facebook.rendercore.primitives.FillLayoutBehavior
+import com.facebook.rendercore.primitives.FillOrGoneLayoutBehavior
+import com.facebook.rendercore.primitives.FixedSizeLayoutBehavior
+import com.facebook.rendercore.primitives.FromSpecsLayoutBehavior
+import com.facebook.rendercore.primitives.LayoutBehavior
+import com.facebook.rendercore.primitives.LayoutScope
+import com.facebook.rendercore.primitives.MountBehavior
+import com.facebook.rendercore.primitives.MountConfigurationScope
+import com.facebook.rendercore.primitives.Primitive
+import com.facebook.rendercore.primitives.PrimitiveLayoutResult
+import com.facebook.rendercore.primitives.PrimitiveRenderUnit
+import com.facebook.rendercore.primitives.ViewAllocator
 
 private val preloadClassHandler: Handler =
     RunnableHandler.DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper())
@@ -180,7 +197,25 @@ fun preloadLithoClasses(additionalClasses: Set<Class<*>>? = null) {
                 ComponentTreeDumpingHelper::class.java,
                 BoundaryWorkingRange::class.java,
                 RenderCompleteEvent::class.java,
-                InterceptTouchEvent::class.java)
+                InterceptTouchEvent::class.java,
+                Primitive::class.java,
+                MountConfigurationScope::class.java,
+                BindScope::class.java,
+                MountBehavior::class.java,
+                PrimitiveRenderUnit::class.java,
+                LayoutScope::class.java,
+                LayoutBehavior::class.java,
+                PrimitiveLayoutResult::class.java,
+                FromSpecsLayoutBehavior::class.java,
+                FillLayoutBehavior::class.java,
+                FillOrGoneLayoutBehavior::class.java,
+                FixedSizeLayoutBehavior::class.java,
+                AspectRatioLayoutBehavior::class.java,
+                EqualDimensionsLayoutBehavior::class.java,
+                Equivalence::class.java,
+                Allocator::class.java,
+                ViewAllocator::class.java,
+                DrawableAllocator::class.java)
             .toHashSet()
     if (additionalClasses != null) {
       classes.addAll(additionalClasses)
