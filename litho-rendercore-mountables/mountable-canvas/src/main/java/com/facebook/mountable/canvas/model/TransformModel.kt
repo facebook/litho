@@ -67,7 +67,7 @@ data class CanvasTransform(
       children[i].applyTo(matrix)
     }
   }
-  
+
   companion object {
     val IDENTITY: CanvasTransform =
         CanvasTransform(a = 1f, b = 0f, c = 0f, d = 1f, tx = 0f, ty = 0f, children = listOf())

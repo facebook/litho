@@ -191,7 +191,7 @@ data class CanvasLayer(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(blendingMode = blendingMode, children = children)
   }
-  
+
   companion object {
     const val DEFAULT_ALPHA = 1.0f
   }
@@ -296,7 +296,7 @@ data class CanvasStroke(
   override fun needsSoftwareLayer(): Boolean {
     return checkIfSoftwareLayerNeeded(shadow = shadow, blendingMode = blendingMode)
   }
-  
+
   // equals and hashCode has to be explicitly declared because of dashLength property which is of
   // FloatArray type and we want to compare it by its contents
   override fun equals(other: Any?): Boolean {
