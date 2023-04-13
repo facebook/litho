@@ -43,6 +43,7 @@ import com.facebook.litho.testing.sections.TestGroupSection;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.sections.TestTarget.Operation;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -611,7 +612,9 @@ public class DataDiffSectionSpecTest {
   }
 
   @SuppressLint("AvoidSubClassing")
-  private static class RecordingComponentsReporter extends DefaultComponentsReporter {
+  private static class RecordingComponentsReporter implements ErrorReporterDelegate {
+    private final DefaultComponentsReporter mDefaultComponentsReporter =
+        new DefaultComponentsReporter();
     private final Queue<String> mMessages = new LinkedList<>();
 
     @Override
@@ -622,7 +625,8 @@ public class DataDiffSectionSpecTest {
         @Nullable Throwable cause,
         int samplingFrequency,
         @Nullable Map<String, Object> metadata) {
-      super.report(level, categoryKey, message, cause, samplingFrequency, metadata);
+      mDefaultComponentsReporter.report(
+          level, categoryKey, message, cause, samplingFrequency, metadata);
       mMessages.offer(message);
     }
 

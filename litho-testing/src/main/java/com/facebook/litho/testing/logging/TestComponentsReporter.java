@@ -19,12 +19,16 @@ package com.facebook.litho.testing.logging;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.litho.DefaultComponentsReporter;
+import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class TestComponentsReporter extends DefaultComponentsReporter {
+public class TestComponentsReporter implements ErrorReporterDelegate {
+
+  private final DefaultComponentsReporter mDefaultComponentsReporter =
+      new DefaultComponentsReporter();
 
   private final List<Pair<LogLevel, String>> mLoggedMessages = new LinkedList<>();
   private final List<Pair<LogLevel, String>> mLoggedCategoryKeys = new LinkedList<>();
@@ -37,7 +41,6 @@ public class TestComponentsReporter extends DefaultComponentsReporter {
     return mLoggedCategoryKeys;
   }
 
-  @Override
   public void report(
       LogLevel level,
       String categoryKey,
@@ -45,7 +48,8 @@ public class TestComponentsReporter extends DefaultComponentsReporter {
       @Nullable Throwable cause,
       int samplingFrequency,
       @Nullable Map<String, Object> metadata) {
-    super.report(level, categoryKey, message, cause, samplingFrequency, metadata);
+    mDefaultComponentsReporter.report(
+        level, categoryKey, message, cause, samplingFrequency, metadata);
     mLoggedMessages.add(new Pair<>(level, message));
     mLoggedCategoryKeys.add(new Pair<>(level, categoryKey));
   }
