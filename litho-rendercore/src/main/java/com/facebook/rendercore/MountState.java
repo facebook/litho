@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Bounds;
 import static com.facebook.rendercore.debug.DebugEventAttribute.Description;
 import static com.facebook.rendercore.debug.DebugEventAttribute.RenderUnitId;
+import static com.facebook.rendercore.debug.DebugEventAttribute.RootHostHashCode;
 import static com.facebook.rendercore.debug.DebugEventDispatcher.trace;
 import static com.facebook.rendercore.extensions.RenderCoreExtension.shouldUpdate;
 
@@ -121,7 +122,7 @@ public class MountState implements MountDelegateTarget {
     trace(
         DebugEvent.RenderTreeMounted,
         String.valueOf(renderTree.getRenderStateId()),
-        attributes -> {},
+        attributes -> attributes.put(RootHostHashCode, mRootHost.hashCode()),
         traceScope -> {
           try {
 
@@ -724,6 +725,8 @@ public class MountState implements MountDelegateTarget {
         attributes -> {
           attributes.put(RenderUnitId, renderTreeNode.getRenderUnit().getId());
           attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
+          attributes.put(Bounds, renderTreeNode.getBounds());
+          attributes.put(RootHostHashCode, mRootHost.hashCode());
         },
         scope -> {
           final boolean isTracing = mTracer.isTracing();

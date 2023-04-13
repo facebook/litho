@@ -82,6 +82,7 @@ object DebugEventAttribute {
   const val RenderUnitId = "renderUnitId"
   const val Description = "description"
   const val Bounds = "bounds"
+  const val RootHostHashCode = "rootHostHashCode"
 }
 
 /** Base class for marker events */
