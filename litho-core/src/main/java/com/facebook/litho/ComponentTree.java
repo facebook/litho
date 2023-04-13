@@ -79,6 +79,7 @@ import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.ResolveCancellationStrategy;
 import com.facebook.litho.debug.AttributionUtils;
+import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.debug.LithoDebugEvent;
 import com.facebook.litho.debug.LithoDebugEventAttributes;
 import com.facebook.litho.perfboost.LithoPerfBooster;
@@ -991,6 +992,8 @@ public class ComponentTree
     if (mInAttach) {
       throw new RuntimeException("clearing LithoView while in attach");
     }
+
+    clearDebugOverlay(mLithoView);
 
     mLithoView = null;
   }
@@ -3196,6 +3199,21 @@ public class ComponentTree
 
   public static int generateComponentTreeId() {
     return sIdGenerator.getAndIncrement();
+  }
+
+  static void drawDebugOverlay(@Nullable LithoView view, int id) {
+    if (DebugOverlay.isEnabled && view != null) {
+      Drawable drawable = DebugOverlay.getDebugOverlay(id);
+      clearDebugOverlay(view);
+      drawable.setBounds(0, 0, view.getWidth(), view.getHeight());
+      view.getOverlay().add(drawable);
+    }
+  }
+
+  static void clearDebugOverlay(@Nullable LithoView view) {
+    if (view != null) {
+      view.getOverlay().clear();
+    }
   }
 
   private class DoLayoutRunnable extends ThreadTracingRunnable {

@@ -1320,7 +1320,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
 
     if (mComponentTree != null) {
       mComponentTree.release();
-      mComponentTree = null;
+      ComponentTree.clearDebugOverlay(this);
       mMountInfo = null;
       mNullComponentCause = "release_CT";
     }
@@ -1399,6 +1399,7 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
       mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       mMountState.mount(renderTree);
       LithoStats.incrementComponentMountCount();
+      ComponentTree.drawDebugOverlay(this, layoutState.getComponentTreeId());
     }
   }
 

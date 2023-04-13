@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.LayoutMetadata;
 import com.facebook.litho.cancellation.RequestMetadataSupplier;
+import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutCache;
 
@@ -218,6 +219,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
       LithoStats.incrementComponentCalculateLayoutCount();
       if (ThreadUtils.isMainThread()) {
         LithoStats.incrementComponentCalculateLayoutOnUICount();
+      }
+
+      if (DebugOverlay.isEnabled) {
+        DebugOverlay.updateLayoutHistory(treeId);
       }
 
       return layoutState;

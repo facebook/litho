@@ -26,6 +26,7 @@ import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.RequestMetadataSupplier;
 import com.facebook.litho.cancellation.ResolveMetadata;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import java.util.List;
 
@@ -228,6 +229,10 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
       } else {
         attachables = context.isNullNodeEnabled() ? Resolver.collectAttachables(node) : null;
         rsc.getCache().freezeCache();
+      }
+
+      if (DebugOverlay.isEnabled) {
+        DebugOverlay.updateResolveHistory(componentTreeId);
       }
 
       return new ResolveResult(
