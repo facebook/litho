@@ -334,6 +334,8 @@ public class ComponentsConfiguration {
 
   private final boolean mUseCancelableLayoutFutures;
 
+  private final boolean mUseInterruptibleResolution;
+
   private final boolean mShouldReuseOutputs;
 
   private final boolean mIsLegacyRenderEnabled;
@@ -358,6 +360,10 @@ public class ComponentsConfiguration {
     return mUseCancelableLayoutFutures;
   }
 
+  public boolean getUseInterruptibleResolution() {
+    return mUseInterruptibleResolution;
+  }
+
   public boolean isShouldAddHostViewForRootComponent() {
     return mShouldAddHostViewForRootComponent;
   }
@@ -368,6 +374,7 @@ public class ComponentsConfiguration {
 
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
+    mUseInterruptibleResolution = builder.mUseInterruptibleResolution;
     mShouldReuseOutputs = builder.mShouldReuseOutputs;
     mIsLayoutCancellationEnabled = builder.mIsLayoutCancellationEnabled;
     mResolveCancellationStrategy = builder.mResolveCancellationStrategy;
@@ -401,7 +408,8 @@ public class ComponentsConfiguration {
 
   public static class Builder {
     boolean mUsePaintAdvanceForEllipsisCalculation = false;
-    boolean mUseCancelableLayoutFutures;
+    boolean mUseCancelableLayoutFutures = true;
+    boolean mUseInterruptibleResolution = true;
     boolean mShouldReuseOutputs = false;
     boolean mIsLayoutCancellationEnabled = false;
     boolean mIsLegacyRenderEnabled = false;
@@ -413,6 +421,11 @@ public class ComponentsConfiguration {
 
     public Builder useCancelableLayoutFutures(boolean enable) {
       this.mUseCancelableLayoutFutures = enable;
+      return this;
+    }
+
+    public Builder useInterruptibleResolution(boolean enable) {
+      this.mUseInterruptibleResolution = enable;
       return this;
     }
 

@@ -95,7 +95,7 @@ public final class LithoStats {
 
   /** @return the global count of all do resume operations that have happened in the process. */
   public static long getResumeCount() {
-    return sResolveCount.get();
+    return sResumeCount.get();
   }
 
   /** @return the global count of all do layout operations that have happened in the process. */

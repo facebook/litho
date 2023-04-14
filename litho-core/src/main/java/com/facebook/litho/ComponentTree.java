@@ -2300,8 +2300,10 @@ public class ComponentTree
             // we mark it as Non-Interruptible.
             (!ComponentsConfiguration.isSyncTaskNonInterruptibleEnabled
                     || !LayoutState.isFromSyncLayout(source))
-                && mContext.mLithoConfiguration.mComponentsConfiguration
-                    .getUseCancelableLayoutFutures(),
+                && (mContext.mLithoConfiguration.mComponentsConfiguration
+                        .getUseInterruptibleResolution()
+                    || mContext.mLithoConfiguration.mComponentsConfiguration
+                        .getUseCancelableLayoutFutures()),
             widthSpec,
             heightSpec,
             mId,
@@ -2666,7 +2668,9 @@ public class ComponentTree
             committedLayoutState != null ? committedLayoutState.getDiffTree() : null,
             extraAttribution,
             null,
-            mContext.mLithoConfiguration.mComponentsConfiguration.getUseCancelableLayoutFutures());
+            mContext.mLithoConfiguration.mComponentsConfiguration.getUseInterruptibleResolution()
+                || mContext.mLithoConfiguration.mComponentsConfiguration
+                    .getUseCancelableLayoutFutures());
 
     final TreeFuture.TreeFutureResult<LegacyPotentiallyPartialResult> resultHolder =
         TreeFuture.trackAndRunTreeFuture(
