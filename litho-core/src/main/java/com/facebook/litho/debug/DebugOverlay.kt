@@ -35,7 +35,7 @@ class DebugOverlay(private val isMainThreadLayouts: List<Boolean>) : Drawable() 
 
   companion object {
 
-    const val isEnabled: Boolean = false
+    @JvmField var isEnabled: Boolean = false
 
     private const val COLOR_RED_SEMITRANSPARENT = 0x22FF0000
     private const val COLOR_GREEN_SEMITRANSPARENT = 0x2200FF00

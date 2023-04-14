@@ -1154,7 +1154,7 @@ public class ComponentTree
 
       if (needsSyncLayout || forceLayout) {
 
-        if (enableDebugFlash() && ThreadUtils.isMainThread() && mLithoView != null) {
+        if (DebugOverlay.isEnabled && ThreadUtils.isMainThread() && mLithoView != null) {
           flash(mLithoView);
         }
 
@@ -3191,10 +3191,6 @@ public class ComponentTree
               },
               500);
         });
-  }
-
-  private boolean enableDebugFlash() {
-    return ComponentsConfiguration.debugFlashComponentOnRender;
   }
 
   public static int generateComponentTreeId() {
