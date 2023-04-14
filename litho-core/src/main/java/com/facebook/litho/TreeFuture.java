@@ -22,8 +22,6 @@ import static com.facebook.litho.WorkContinuationInstrumenter.markFailure;
 import static com.facebook.litho.WorkContinuationInstrumenter.onBeginWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onEndWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForContinuation;
-import static com.facebook.litho.config.CancellationCheckMode.EXCEPTION_TYPE;
-import static com.facebook.litho.config.CancellationCheckMode.FLAG;
 
 import android.os.Process;
 import androidx.annotation.Nullable;
@@ -31,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.cancellation.FutureCancelledByPolicyException;
 import com.facebook.litho.config.CancellationCheckMode;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.ResolveCancellationStrategy;
 import com.facebook.rendercore.Systracer;
 import com.facebook.rendercore.instrumentation.FutureInstrumenter;
 import java.util.List;
@@ -421,8 +420,7 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
       }
     } catch (ExecutionException | InterruptedException | CancellationException e) {
       onWaitEnd(shouldTrace, true);
-
-      if (isExpectedInterruptionOrCancellation(e)) {
+      if (isInterruptBasedCancellationEnabled() && isExpectedInterruptionOrCancellation(e)) {
         throw new FutureCancelledByPolicyException();
       } else {
         final Throwable cause = e.getCause();
@@ -453,11 +451,11 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   private boolean isExpectedInterruptionOrCancellation(Exception e) {
     final CancellationCheckMode cancellationCheckMode =
         ComponentsConfiguration.sCancellationCheckMode;
-    if (cancellationCheckMode == null) {
-      return false;
+    if (e instanceof CancellationException || e.getCause() instanceof CancellationException) {
+      return true;
     }
 
-    if (e instanceof CancellationException || e.getCause() instanceof CancellationException) {
+    if (cancellationCheckMode == null) {
       return true;
     }
 
@@ -471,6 +469,25 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
         return mCancelled;
       case BOTH:
         return isInterruptedException && mCancelled;
+      default:
+        return false;
+    }
+  }
+
+  /** This will return {@code true} if the cancellation strategy used is based on interruption. */
+  private boolean isInterruptBasedCancellationEnabled() {
+    String description = getDescription();
+    switch (description) {
+      case ResolveTreeFuture.DESCRIPTION:
+        ResolveCancellationStrategy resolveCancellationStrategy =
+            ComponentsConfiguration.getDefaultComponentsConfiguration()
+                .getResolveCancellationStrategy();
+
+        return resolveCancellationStrategy == ResolveCancellationStrategy.DEFAULT_INTERRUPT
+            || resolveCancellationStrategy == ResolveCancellationStrategy.GREEDY_INTERRUPT;
+      case LayoutTreeFuture.DESCRIPTION:
+        return ComponentsConfiguration.getDefaultComponentsConfiguration()
+            .isLayoutCancellationEnabled();
       default:
         return false;
     }

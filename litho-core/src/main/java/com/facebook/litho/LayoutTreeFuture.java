@@ -40,6 +40,8 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
   private final boolean mIsLayoutDiffingEnabled;
   private LayoutMetadata mLayoutMetadata;
 
+  public static final String DESCRIPTION = "layout";
+
   public LayoutTreeFuture(
       final ResolveResult resolveResult,
       final @Nullable LayoutState currentLayoutState,
@@ -73,7 +75,7 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
 
   @Override
   public String getDescription() {
-    return "layout";
+    return DESCRIPTION;
   }
 
   @Override

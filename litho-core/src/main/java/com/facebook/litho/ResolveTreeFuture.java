@@ -41,6 +41,8 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
   private final int mResolveVersion;
   private final @Nullable String mExtraAttribution;
 
+  static final String DESCRIPTION = "resolve";
+
   // TODO(T137275959): Refactor sync render logic to remove sizes from resolved tree future
   @Deprecated private final int mSyncWidthSpec;
   @Deprecated private final int mSyncHeightSpec;
@@ -136,7 +138,7 @@ public class ResolveTreeFuture extends TreeFuture<ResolveResult>
 
   @Override
   public String getDescription() {
-    return "resolve";
+    return DESCRIPTION;
   }
 
   public ResolveMetadata getMetadata() {
