@@ -18,9 +18,11 @@
 
 package com.facebook.litho.cancellation
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.ResolveResult
 
 /** This metadata encompasses all characteristics associated to a specific `Layout` request. */
+@DataClassGenerate
 data class LayoutMetadata(
     val localVersion: Int,
     val widthSpec: Int,

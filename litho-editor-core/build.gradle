@@ -16,6 +16,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion

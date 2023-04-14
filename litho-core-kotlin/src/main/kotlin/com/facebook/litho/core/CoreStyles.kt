@@ -16,6 +16,7 @@
 
 package com.facebook.litho.core
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
@@ -67,6 +68,7 @@ internal enum class CoreFloatField : StyleItemField {
 
 /** Common style item for all core dimen styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
+@DataClassGenerate
 internal data class CoreDimenStyleItem(
     override val field: CoreDimenField,
     override val value: Dimen

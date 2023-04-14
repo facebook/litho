@@ -16,6 +16,7 @@
 
 package com.facebook.litho.accessibility
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -56,6 +57,7 @@ internal enum class AccessibilityField : StyleItemField {
 }
 
 @PublishedApi
+@DataClassGenerate
 internal data class AccessibilityStyleItem(
     override val field: AccessibilityField,
     override val value: Any?

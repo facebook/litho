@@ -17,6 +17,7 @@
 package com.facebook.litho.animated
 
 import android.graphics.drawable.Drawable
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.DynamicPropsManager.KEY_ALPHA
@@ -54,6 +55,7 @@ internal enum class DynamicField : StyleItemField {
  * Common style item for all dynamic value styles. See note on [DynamicField] about this pattern.
  */
 @PublishedApi
+@DataClassGenerate
 internal data class DynamicStyleItem(
     override val field: DynamicField,
     override val value: DynamicValue<*>

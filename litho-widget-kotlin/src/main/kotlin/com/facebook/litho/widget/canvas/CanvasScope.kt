@@ -19,6 +19,7 @@ package com.facebook.litho.widget.canvas
 import android.annotation.SuppressLint
 import android.graphics.Canvas
 import androidx.annotation.FloatRange
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.CanvasState
 import com.facebook.mountable.canvas.model.CanvasDrawIntoCanvas
 import com.facebook.mountable.canvas.model.CanvasFill
@@ -39,7 +40,7 @@ import com.facebook.mountable.utils.types.center
 
 class CanvasScope {
   @PublishedApi
-  @Suppress("KtDataClass")
+  @DataClassGenerate
   internal data class DrawParams(
       var children: MutableList<CanvasNodeModel> = mutableListOf(),
       var size: Size = Size(0f, 0f)

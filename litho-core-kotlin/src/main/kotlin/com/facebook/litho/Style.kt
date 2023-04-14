@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+
 interface StyleItemField
 
 /**
@@ -124,6 +126,7 @@ open class Style(
  * Style take precedence if the two define different values for the same attribute, similar to
  * adding maps.
  */
+@DataClassGenerate
 private data class CombinedStyle(val first: Style?, val second: Style?) : Style(first, null) {
 
   override fun forEach(lambda: (StyleItem<*>) -> Unit) {

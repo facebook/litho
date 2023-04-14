@@ -16,6 +16,7 @@
 
 package com.facebook.litho.cancellation
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.TreeFuture
 
 /**
@@ -47,7 +48,7 @@ interface CancellationPolicy<M> {
 
     object DropIncomingRequest : Result()
 
-    data class CancelRunningRequests(val requestIds: List<Int>) : Result()
+    @DataClassGenerate data class CancelRunningRequests(val requestIds: List<Int>) : Result()
   }
 
   /**

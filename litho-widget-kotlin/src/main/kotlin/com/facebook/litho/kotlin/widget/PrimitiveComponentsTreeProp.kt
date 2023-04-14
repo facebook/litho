@@ -16,5 +16,7 @@
 
 package com.facebook.litho.kotlin.widget
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
+
 /** Data class used as a TreeProp to toggle [PrimitiveComponent] */
-data class PrimitiveComponentsTreeProp(val isEnabled: Boolean)
+@DataClassGenerate data class PrimitiveComponentsTreeProp(val isEnabled: Boolean)

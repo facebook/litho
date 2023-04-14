@@ -184,4 +184,4 @@ abstract class MountableComponent() : Component() {
 /**
  * A class that holds a [Mountable] and [Style] that should be applied to the [MountableComponent].
  */
-data class MountableRenderResult(val mountable: Mountable<*>, val style: Style?)
+class MountableRenderResult(val mountable: Mountable<*>, val style: Style?)

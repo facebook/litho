@@ -18,6 +18,7 @@
 
 package com.facebook.litho.transition
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Style
@@ -27,6 +28,7 @@ import com.facebook.litho.Transition
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.getCommonPropsHolder
 
+@DataClassGenerate
 data class TransitionKeyStyleItemValue(
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType
@@ -37,6 +39,7 @@ enum class TransitionKeyFields : StyleItemField {
 }
 
 @PublishedApi
+@DataClassGenerate
 internal data class TransitionKeyStyleItem(
     val context: ComponentContext,
     val transitionKey: String?,

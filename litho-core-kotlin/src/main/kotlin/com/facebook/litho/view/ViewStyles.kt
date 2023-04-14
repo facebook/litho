@@ -24,6 +24,7 @@ import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -94,6 +95,7 @@ internal enum class DimenField : StyleItemField {
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
 @PublishedApi
+@DataClassGenerate
 internal data class ObjectStyleItem(override val field: ObjectField, override val value: Any?) :
     StyleItem<Any?> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
@@ -144,6 +146,7 @@ internal data class ObjectStyleItem(override val field: ObjectField, override va
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
+@DataClassGenerate
 internal data class FloatStyleItem(override val field: FloatField, override val value: Float) :
     StyleItem<Float> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
@@ -160,6 +163,7 @@ internal data class FloatStyleItem(override val field: FloatField, override val 
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
+@DataClassGenerate
 internal data class DimenStyleItem(override val field: DimenField, override val value: Dimen) :
     StyleItem<Dimen> {
   override fun applyToComponent(context: ComponentContext, component: Component) {
@@ -508,6 +512,7 @@ enum class ShadowStyleField : StyleItemField {
   SHADOW_ITEM,
 }
 
+@DataClassGenerate
 data class ShadowStyleItemParams(
     val elevation: Dimen,
     val outlineProvider: ViewOutlineProvider,
@@ -516,6 +521,7 @@ data class ShadowStyleItemParams(
 )
 
 @PublishedApi
+@DataClassGenerate
 internal data class ShadowStyleItem(
     val elevation: Dimen,
     val outlineProvider: ViewOutlineProvider,

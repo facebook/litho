@@ -16,9 +16,10 @@
 
 package com.facebook.litho.widget.collection
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Component
 
-@Suppress("KtDataClass")
+@DataClassGenerate
 data class CollectionChild(
     val id: Any,
     val component: Component? = null,

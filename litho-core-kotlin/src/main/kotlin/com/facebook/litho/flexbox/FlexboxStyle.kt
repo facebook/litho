@@ -16,6 +16,7 @@
 
 package com.facebook.litho.flexbox
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -68,6 +69,7 @@ internal enum class FlexboxObjectField : StyleItemField {
 
 /** Common style item for all dimen styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
+@DataClassGenerate
 internal data class FlexboxDimenStyleItem(
     override val field: FlexboxDimenField,
     override val value: Dimen

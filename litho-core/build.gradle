@@ -17,6 +17,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'com.facebook.kotlin.compilerplugins.dataclassgenerate'
 
 project.group = GROUP
 version = VERSION_NAME

@@ -18,10 +18,12 @@
 
 package com.facebook.litho.cancellation
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.RenderSource
 import com.facebook.litho.TreeProps
 
 /** This metadata encompasses all characteristics associated to a specific `Resolve` request. */
+@DataClassGenerate
 data class ResolveMetadata(
     val localVersion: Int,
     val componentId: Int,

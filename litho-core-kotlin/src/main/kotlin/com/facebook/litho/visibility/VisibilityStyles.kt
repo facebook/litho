@@ -16,6 +16,7 @@
 
 package com.facebook.litho.visibility
 
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.FocusedVisibleEvent
@@ -49,6 +50,7 @@ internal enum class VisibilityFloatField : StyleItemField {
 }
 
 @PublishedApi
+@DataClassGenerate
 internal data class VisibilityStyleItem(
     override val field: VisibilityField,
     override val value: Any?,

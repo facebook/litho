@@ -16,9 +16,9 @@
 
 package com.facebook.litho.widget.canvas
 
-import android.annotation.SuppressLint
 import android.graphics.Shader
 import androidx.annotation.ColorInt
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.mountable.canvas.model.CanvasGradient
 import com.facebook.mountable.canvas.model.CanvasGradientShading
 import com.facebook.mountable.canvas.model.CanvasLinearGradient
@@ -112,7 +112,7 @@ fun Gradient(vararg colorsAndPositions: GradientColorAndPosition): Gradient {
  * @property position The relative positions [0..1] of each corresponding color in the colors array.
  *   If this is null, the the colors are distributed evenly along the gradient
  */
-@SuppressLint("MissingDataClassGenerateAnnotation")
+@DataClassGenerate
 data class GradientColorAndPosition(@ColorInt val color: Int, val position: Float)
 
 infix fun @receiver:ColorInt Int.at(position: Float): GradientColorAndPosition {

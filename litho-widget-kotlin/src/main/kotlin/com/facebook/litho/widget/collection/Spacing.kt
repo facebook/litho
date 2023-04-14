@@ -21,6 +21,7 @@ import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
 import com.facebook.litho.Dimen
 import com.facebook.litho.ResourcesScope
 
@@ -57,6 +58,7 @@ fun ResourcesScope.LinearSpacing(
     LinearSpacingItemDecoration(
         all?.toPixels(), between?.toPixels(), start?.toPixels(), end?.toPixels())
 
+@DataClassGenerate
 data class LinearSpacingItemDecoration(
     @Px val all: Int? = null,
     @Px val between: Int? = null,
