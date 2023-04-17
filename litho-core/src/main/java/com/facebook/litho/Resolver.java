@@ -166,13 +166,18 @@ public class Resolver {
     final ScopedComponentInfo scopedComponentInfo;
 
     try {
-
       // 1. Consume the layout created in `willrender`.
       final LithoNode cached =
           component.consumeLayoutCreatedInWillRender(resolveStateContext, parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
+        if (isTracing) {
+          // end create-node
+          ComponentsSystrace.endSection();
+          // end-resolve
+          ComponentsSystrace.endSection();
+        }
         return cached;
       }
 
@@ -270,17 +275,28 @@ public class Resolver {
 
       // 7. If the layout is null then return immediately.
       if (node == null) {
+        if (isTracing) {
+          // end create-node
+          ComponentsSystrace.endSection();
+          // end-resolve
+          ComponentsSystrace.endSection();
+        }
         return null;
       }
 
-    } catch (Exception e) {
-      ComponentUtils.handleWithHierarchy(parent, component, e);
-      return null;
-    } finally {
       if (isTracing) {
-        // end of createLayout
+        // end create-node
         ComponentsSystrace.endSection();
       }
+    } catch (Exception e) {
+      ComponentUtils.handleWithHierarchy(parent, component, e);
+      if (isTracing) {
+        // end create-node
+        ComponentsSystrace.endSection();
+        // end resolve
+        ComponentsSystrace.endSection();
+      }
+      return null;
     }
 
     if (resolveLayoutCreationEvent != null && componentsLogger != null) {
@@ -347,8 +363,11 @@ public class Resolver {
     scopedComponentInfo.addWorkingRangeToNode(node);
 
     if (isTracing) {
-      // end of afterCreateLayout
+      // end of after-create-node
       ComponentsSystrace.endSection();
+    }
+
+    if (isTracing) {
       // end of resolve
       ComponentsSystrace.endSection();
     }
