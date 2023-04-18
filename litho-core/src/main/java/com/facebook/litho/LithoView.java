@@ -41,10 +41,8 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountState;
-import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.extensions.MountExtension;
-import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
@@ -58,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends ComponentHost implements RenderCoreExtensionHost, AnimatedRootHost {
+public class LithoView extends BaseMountingView {
 
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
@@ -93,8 +91,6 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
   private boolean mHasNewComponentTree = false;
-  private int mAnimatedWidth = -1;
-  private int mAnimatedHeight = -1;
   private OnDirtyMountListener mOnDirtyMountListener = null;
   private final Rect mRect = new Rect();
   private @Nullable OnPostDrawListener mOnPostDrawListener = null;
@@ -351,26 +347,6 @@ public class LithoView extends ComponentHost implements RenderCoreExtensionHost,
    */
   public void suppressMeasureComponentTree(boolean suppress) {
     mSuppressMeasureComponentTree = suppress;
-  }
-
-  /**
-   * Sets the width that the LithoView should take on the next measure pass and then requests a
-   * layout. This should be called from animation-driving code on each frame to animate the size of
-   * the LithoView.
-   */
-  public void setAnimatedWidth(int width) {
-    mAnimatedWidth = width;
-    requestLayout();
-  }
-
-  /**
-   * Sets the height that the LithoView should take on the next measure pass and then requests a
-   * layout. This should be called from animation-driving code on each frame to animate the size of
-   * the LithoView.
-   */
-  public void setAnimatedHeight(int height) {
-    mAnimatedHeight = height;
-    requestLayout();
   }
 
   @Override
