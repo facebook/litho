@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
@@ -244,7 +245,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   }
 
   @Override
-  public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+  public void obtainLithoViewChildren(List<BaseMountingView> lithoViews) {
     lithoViews.add(mStickyHeader);
     for (int i = 0, size = mRecyclerView.getChildCount(); i < size; i++) {
       final View child = mRecyclerView.getChildAt(i);

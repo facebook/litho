@@ -24,6 +24,7 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoMetadataExceptionWrapper;
@@ -147,7 +148,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   }
 
   @Override
-  public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+  public void obtainLithoViewChildren(List<BaseMountingView> lithoViews) {
     lithoViews.add(mLithoView);
   }
 

@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import androidx.annotation.Nullable;
+import com.facebook.litho.BaseMountingView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
@@ -112,7 +113,7 @@ public class HorizontalScrollLithoView extends HorizontalScrollView
   }
 
   @Override
-  public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+  public void obtainLithoViewChildren(List<BaseMountingView> lithoViews) {
     lithoViews.add(mLithoView);
   }
 

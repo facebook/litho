@@ -45,12 +45,12 @@ public class NestedLithoViewsExtension extends MountExtension<Void, Void> {
       @Nullable Object layoutData) {
 
     if (content instanceof HasLithoViewChildren) {
-      final ArrayList<LithoView> lithoViews = new ArrayList<>();
-      ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
+      final ArrayList<BaseMountingView> baseMountingViews = new ArrayList<>();
+      ((HasLithoViewChildren) content).obtainLithoViewChildren(baseMountingViews);
 
-      for (int i = lithoViews.size() - 1; i >= 0; i--) {
-        final LithoView lithoView = lithoViews.get(i);
-        lithoView.unmountAllItems();
+      for (int i = baseMountingViews.size() - 1; i >= 0; i--) {
+        final BaseMountingView baseMountingView = baseMountingViews.get(i);
+        baseMountingView.unmountAllItems();
       }
     }
   }

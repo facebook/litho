@@ -123,6 +123,7 @@ public class LithoViewTestHelper {
       int depth,
       boolean withProps,
       @Nullable DebugComponentDescriptionHelper.ExtraDescription extraDescription) {
+    // TODO support other implementations of BaseMountingView T149859358
     if (!(view instanceof LithoView)) {
       return "";
     }
@@ -214,13 +215,16 @@ public class LithoViewTestHelper {
     }
   }
 
-  public static String toDebugString(@Nullable LithoView lithoView) {
-    if (lithoView == null) {
+  public static String toDebugString(@Nullable BaseMountingView baseMountingView) {
+    // TODO support other implementaions of BaseMountingView T149859358
+    if (baseMountingView == null || (!(baseMountingView instanceof LithoView))) {
       return "";
     }
 
-    final String debugString = viewToString(lithoView, true);
-    return TextUtils.isEmpty(debugString) ? viewBoundsToString(lithoView) : debugString;
+    final String debugString = viewToString((LithoView) baseMountingView, true);
+    return TextUtils.isEmpty(debugString)
+        ? viewBoundsToString((LithoView) baseMountingView)
+        : debugString;
   }
 
   private static String viewBoundsToString(LithoView lithoView) {

@@ -589,6 +589,19 @@ public class ComponentUtils {
    * Uses the given ComponentTree to add metadata to a wrapper exception (if the wrapper doesn't
    * already exist) and return it.
    */
+  public static LithoMetadataExceptionWrapper wrapWithMetadata(BaseMountingView view, Exception e) {
+    if (view instanceof LithoView) {
+      return wrapWithMetadata(((LithoView) view).getComponentTree(), e);
+    }
+    // TODO T149859358 support other implementations of BaseMountingView
+
+    return new LithoMetadataExceptionWrapper(e);
+  }
+
+  /**
+   * Uses the given ComponentTree to add metadata to a wrapper exception (if the wrapper doesn't
+   * already exist) and return it.
+   */
   public static LithoMetadataExceptionWrapper wrapWithMetadata(ComponentTree c, Exception e) {
     if (e instanceof LithoMetadataExceptionWrapper) {
       return (LithoMetadataExceptionWrapper) e;

@@ -148,7 +148,7 @@ public class LithoHostListenerCoordinator {
     mIncrementalMountExtensionState = null;
   }
 
-  void enableVisibilityProcessing(LithoView lithoView) {
+  void enableVisibilityProcessing(BaseMountingView lithoView) {
     if (mVisibilityExtensionState != null) {
       return;
     }
