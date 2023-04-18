@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import static org.junit.Assert.assertEquals;
+import com.facebook.litho.testing.testrunner.LithoTestRunner
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
 
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-@RunWith(LithoTestRunner.class)
-public class RecyclePoolTest {
-
+@RunWith(LithoTestRunner::class)
+class RecyclePoolTest {
   @Test
-  public void testClear() {
-    final RecyclePool<Object> pool = new RecyclePool<>("test", 10, false);
-    final int ELEMENT_NUM = 7;
-
-    for (int i = 0; i < ELEMENT_NUM; i++) {
-      pool.release(new Object());
+  fun testClear() {
+    val pool = RecyclePool<Any>("test", 10, false)
+    val elemNum = 7
+    for (i in 0 until elemNum) {
+      pool.release(Any())
     }
-
-    assertEquals(ELEMENT_NUM, pool.getCurrentSize());
-
-    pool.clear();
-
-    assertEquals(0, pool.getCurrentSize());
+    assertThat(pool.currentSize).isEqualTo(elemNum)
+    pool.clear()
+    assertThat(pool.currentSize).isEqualTo(0)
   }
 }
