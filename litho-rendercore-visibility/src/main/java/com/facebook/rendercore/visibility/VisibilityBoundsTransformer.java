@@ -17,10 +17,11 @@
 package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 public interface VisibilityBoundsTransformer {
 
   @Nullable
-  Rect getTransformedLocalVisibleRect(@Nullable Rect rect);
+  Rect getTransformedLocalVisibleRect(ViewGroup host);
 }

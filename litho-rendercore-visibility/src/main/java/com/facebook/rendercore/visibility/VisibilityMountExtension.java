@@ -187,14 +187,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         RenderCoreSystrace.beginSection("VisibilityExtension.processVisibilityOutputs");
       }
 
-      @Nullable
-      VisibilityBoundsTransformer visibilityBoundsTransformer =
-          extensionState.getState().mVisibilityBoundsTransformer;
-      if (visibilityBoundsTransformer != null) {
-        localVisibleRect =
-            visibilityBoundsTransformer.getTransformedLocalVisibleRect(localVisibleRect);
-      }
-
       processVisibilityOutputsNonInc(extensionState, localVisibleRect, isDirty);
 
     } finally {
@@ -236,163 +228,177 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       Log.d(DEBUG_TAG, "Visibility Outputs to process: " + size);
     }
 
-    final boolean isTracing = RenderCoreSystrace.isTracing();
+    if (!extensionState.getState().mVisibilityOutputs.isEmpty()) {
 
-    final Rect intersection = new Rect();
-    for (int j = 0; j < size; j++) {
-      final VisibilityOutput visibilityOutput = state.mVisibilityOutputs.get(j);
-      final String componentName = visibilityOutput.getKey();
-
-      if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
-        Log.d(DEBUG_TAG, "Processing Visibility for: " + componentName);
-      }
-      if (isTracing) {
-        RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
+      final @Nullable VisibilityBoundsTransformer transformer =
+          extensionState.getState().mVisibilityBoundsTransformer;
+      if (transformer != null) {
+        Rect transformed = transformer.getTransformedLocalVisibleRect(extensionState.getRootHost());
+        if (transformed != null) {
+          localVisibleRect = transformed;
+        }
       }
 
-      final Rect visibilityOutputBounds = visibilityOutput.getBounds();
+      final boolean isTracing = RenderCoreSystrace.isTracing();
 
-      final boolean boundsIntersect =
-          intersection.setIntersect(visibilityOutputBounds, localVisibleRect);
-      final boolean isFullyVisible = boundsIntersect && intersection.equals(visibilityOutputBounds);
-      final String visibilityOutputId = visibilityOutput.getId();
-      VisibilityItem visibilityItem = state.mVisibilityIdToItemMap.get(visibilityOutputId);
+      final Rect intersection = new Rect();
+      for (int j = 0; j < size; j++) {
+        final VisibilityOutput visibilityOutput = state.mVisibilityOutputs.get(j);
+        final String componentName = visibilityOutput.getKey();
 
-      final boolean wasFullyVisible;
-      if (visibilityItem != null) {
-        wasFullyVisible = visibilityItem.wasFullyVisible();
-        visibilityItem.setWasFullyVisible(isFullyVisible);
-      } else {
-        wasFullyVisible = false;
-      }
-
-      if (isFullyVisible
-          && wasFullyVisible
-          && VisibilityExtensionConfigs.skipVisChecksForFullyVisible) {
-        // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
+        if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+          Log.d(DEBUG_TAG, "Processing Visibility for: " + componentName);
+        }
         if (isTracing) {
-          RenderCoreSystrace.endSection();
+          RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
         }
 
-        visibilityItem.setDoNotClearInThisPass(isDirty);
-        continue;
-      }
+        final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
-      final Function<Void> visibleHandler = visibilityOutput.getVisibleEventHandler();
-      final Function<Void> focusedHandler = visibilityOutput.getFocusedEventHandler();
-      final Function<Void> unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
-      final Function<Void> fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
-      final Function<Void> invisibleHandler = visibilityOutput.getInvisibleEventHandler();
-      final Function<Void> visibilityChangedHandler =
-          visibilityOutput.getVisibilityChangedEventHandler();
+        final boolean boundsIntersect =
+            intersection.setIntersect(visibilityOutputBounds, localVisibleRect);
+        final boolean isFullyVisible =
+            boundsIntersect && intersection.equals(visibilityOutputBounds);
+        final String visibilityOutputId = visibilityOutput.getId();
+        VisibilityItem visibilityItem = state.mVisibilityIdToItemMap.get(visibilityOutputId);
 
-      final boolean isCurrentlyVisible =
-          boundsIntersect
-              && isInVisibleRange(visibilityOutput, visibilityOutputBounds, intersection);
+        final boolean wasFullyVisible;
+        if (visibilityItem != null) {
+          wasFullyVisible = visibilityItem.wasFullyVisible();
+          visibilityItem.setWasFullyVisible(isFullyVisible);
+        } else {
+          wasFullyVisible = false;
+        }
 
-      if (visibilityItem != null) {
+        if (isFullyVisible
+            && wasFullyVisible
+            && VisibilityExtensionConfigs.skipVisChecksForFullyVisible) {
+          // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
+          if (isTracing) {
+            RenderCoreSystrace.endSection();
+          }
 
-        // If we did a relayout due to e.g. a state update then the handlers will have changed,
-        // so we should keep them up to date.
-        visibilityItem.setUnfocusedHandler(unfocusedHandler);
-        visibilityItem.setInvisibleHandler(invisibleHandler);
+          visibilityItem.setDoNotClearInThisPass(isDirty);
+          continue;
+        }
 
-        if (!isCurrentlyVisible) {
-          // Either the component is invisible now, but used to be visible, or the key on the
-          // component has changed so we should generate new visibility events for the new
-          // component.
-          if (visibilityItem.getInvisibleHandler() != null) {
-            VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+        final Function<Void> visibleHandler = visibilityOutput.getVisibleEventHandler();
+        final Function<Void> focusedHandler = visibilityOutput.getFocusedEventHandler();
+        final Function<Void> unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
+        final Function<Void> fullImpressionHandler =
+            visibilityOutput.getFullImpressionEventHandler();
+        final Function<Void> invisibleHandler = visibilityOutput.getInvisibleEventHandler();
+        final Function<Void> visibilityChangedHandler =
+            visibilityOutput.getVisibilityChangedEventHandler();
+
+        final boolean isCurrentlyVisible =
+            boundsIntersect
+                && isInVisibleRange(visibilityOutput, visibilityOutputBounds, intersection);
+
+        if (visibilityItem != null) {
+
+          // If we did a relayout due to e.g. a state update then the handlers will have changed,
+          // so we should keep them up to date.
+          visibilityItem.setUnfocusedHandler(unfocusedHandler);
+          visibilityItem.setInvisibleHandler(invisibleHandler);
+
+          if (!isCurrentlyVisible) {
+            // Either the component is invisible now, but used to be visible, or the key on the
+            // component has changed so we should generate new visibility events for the new
+            // component.
+            if (visibilityItem.getInvisibleHandler() != null) {
+              VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+            }
+
+            if (visibilityChangedHandler != null) {
+              VisibilityUtils.dispatchOnVisibilityChanged(
+                  visibilityChangedHandler, 0, 0, 0, 0, 0, 0, 0f, 0f);
+            }
+
+            if (visibilityItem.isInFocusedRange()) {
+              visibilityItem.setFocusedRange(false);
+              if (visibilityItem.getUnfocusedHandler() != null) {
+                VisibilityUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+              }
+            }
+
+            state.mVisibilityIdToItemMap.remove(visibilityOutputId);
+            visibilityItem = null;
+          } else {
+            // Processed, do not clear.
+            visibilityItem.setDoNotClearInThisPass(isDirty);
+          }
+        }
+
+        if (isCurrentlyVisible) {
+          // The component is visible now, but used to be outside the viewport.
+          if (visibilityItem == null) {
+            final String globalKey = visibilityOutput.getId();
+            visibilityItem =
+                new VisibilityItem(
+                    globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
+            visibilityItem.setDoNotClearInThisPass(isDirty);
+            visibilityItem.setWasFullyVisible(isFullyVisible);
+            state.mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
+
+            if (visibleHandler != null) {
+              final Object content =
+                  visibilityOutput.hasMountableContent
+                      ? getContentById(extensionState, visibilityOutput.mRenderUnitId)
+                      : null;
+              VisibilityUtils.dispatchOnVisible(visibleHandler, content);
+            }
+          }
+
+          // Check if the component has entered or exited the focused range.
+          if (focusedHandler != null || unfocusedHandler != null) {
+            if (isInFocusedRange(extensionState, visibilityOutputBounds, intersection)) {
+              if (!visibilityItem.isInFocusedRange()) {
+                visibilityItem.setFocusedRange(true);
+                if (focusedHandler != null) {
+                  VisibilityUtils.dispatchOnFocused(focusedHandler);
+                }
+              }
+            } else {
+              if (visibilityItem.isInFocusedRange()) {
+                visibilityItem.setFocusedRange(false);
+                if (unfocusedHandler != null) {
+                  VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
+                }
+              }
+            }
+          }
+          // If the component has not entered the full impression range yet, make sure to update the
+          // information about the visible edges.
+          if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
+            visibilityItem.setVisibleEdges(visibilityOutputBounds, intersection);
+
+            if (visibilityItem.isInFullImpressionRange()) {
+              VisibilityUtils.dispatchOnFullImpression(fullImpressionHandler);
+            }
           }
 
           if (visibilityChangedHandler != null) {
+            final int visibleWidth = getVisibleWidth(intersection);
+            final int visibleHeight = getVisibleHeight(intersection);
+            int rootHostViewWidth = getRootHostViewWidth(extensionState);
+            int rootHostViewHeight = getRootHostViewHeight(extensionState);
             VisibilityUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler, 0, 0, 0, 0, 0, 0, 0f, 0f);
-          }
-
-          if (visibilityItem.isInFocusedRange()) {
-            visibilityItem.setFocusedRange(false);
-            if (visibilityItem.getUnfocusedHandler() != null) {
-              VisibilityUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
-            }
-          }
-
-          state.mVisibilityIdToItemMap.remove(visibilityOutputId);
-          visibilityItem = null;
-        } else {
-          // Processed, do not clear.
-          visibilityItem.setDoNotClearInThisPass(isDirty);
-        }
-      }
-
-      if (isCurrentlyVisible) {
-        // The component is visible now, but used to be outside the viewport.
-        if (visibilityItem == null) {
-          final String globalKey = visibilityOutput.getId();
-          visibilityItem =
-              new VisibilityItem(
-                  globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
-          visibilityItem.setDoNotClearInThisPass(isDirty);
-          visibilityItem.setWasFullyVisible(isFullyVisible);
-          state.mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
-
-          if (visibleHandler != null) {
-            final Object content =
-                visibilityOutput.hasMountableContent
-                    ? getContentById(extensionState, visibilityOutput.mRenderUnitId)
-                    : null;
-            VisibilityUtils.dispatchOnVisible(visibleHandler, content);
+                visibilityChangedHandler,
+                getVisibleTop(visibilityOutputBounds, intersection),
+                getVisibleLeft(visibilityOutputBounds, intersection),
+                visibleWidth,
+                visibleHeight,
+                rootHostViewWidth,
+                rootHostViewHeight,
+                100f * visibleWidth / visibilityOutputBounds.width(),
+                100f * visibleHeight / visibilityOutputBounds.height());
           }
         }
 
-        // Check if the component has entered or exited the focused range.
-        if (focusedHandler != null || unfocusedHandler != null) {
-          if (isInFocusedRange(extensionState, visibilityOutputBounds, intersection)) {
-            if (!visibilityItem.isInFocusedRange()) {
-              visibilityItem.setFocusedRange(true);
-              if (focusedHandler != null) {
-                VisibilityUtils.dispatchOnFocused(focusedHandler);
-              }
-            }
-          } else {
-            if (visibilityItem.isInFocusedRange()) {
-              visibilityItem.setFocusedRange(false);
-              if (unfocusedHandler != null) {
-                VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
-              }
-            }
-          }
+        if (isTracing) {
+          RenderCoreSystrace.endSection();
         }
-        // If the component has not entered the full impression range yet, make sure to update the
-        // information about the visible edges.
-        if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
-          visibilityItem.setVisibleEdges(visibilityOutputBounds, intersection);
-
-          if (visibilityItem.isInFullImpressionRange()) {
-            VisibilityUtils.dispatchOnFullImpression(fullImpressionHandler);
-          }
-        }
-
-        if (visibilityChangedHandler != null) {
-          final int visibleWidth = getVisibleWidth(intersection);
-          final int visibleHeight = getVisibleHeight(intersection);
-          int rootHostViewWidth = getRootHostViewWidth(extensionState);
-          int rootHostViewHeight = getRootHostViewHeight(extensionState);
-          VisibilityUtils.dispatchOnVisibilityChanged(
-              visibilityChangedHandler,
-              getVisibleTop(visibilityOutputBounds, intersection),
-              getVisibleLeft(visibilityOutputBounds, intersection),
-              visibleWidth,
-              visibleHeight,
-              rootHostViewWidth,
-              rootHostViewHeight,
-              100f * visibleWidth / visibilityOutputBounds.width(),
-              100f * visibleHeight / visibilityOutputBounds.height());
-        }
-      }
-
-      if (isTracing) {
-        RenderCoreSystrace.endSection();
       }
     }
 

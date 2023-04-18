@@ -3599,9 +3599,8 @@ public class ComponentTree
       return this;
     }
 
-    public Builder visibilityBoundsTransformer(
-        @Nullable VisibilityBoundsTransformer visibilityBoundsTransformers) {
-      this.visibilityBoundsTransformer = visibilityBoundsTransformer;
+    public Builder visibilityBoundsTransformer(@Nullable VisibilityBoundsTransformer transformer) {
+      visibilityBoundsTransformer = transformer;
       return this;
     }
 
@@ -3619,6 +3618,10 @@ public class ComponentTree
 
       if (config == null) {
         config = context.mLithoConfiguration.mComponentsConfiguration;
+      }
+
+      if (visibilityBoundsTransformer == null) {
+        visibilityBoundsTransformer = context.mLithoConfiguration.visibilityBoundsTransformer;
       }
 
       return new ComponentTree(this);
