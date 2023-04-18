@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.TreeState.TreeMountInfo;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -79,7 +80,6 @@ public class LithoView extends BaseMountingView {
   private @Nullable String mPreviousComponentSimpleName;
   private @Nullable String mNullComponentCause;
   private @Nullable MountStartupLoggingInfo mMountStartupLoggingInfo;
-  private @Nullable TreeState.TreeMountInfo mMountInfo;
   public final int mViewAttributeFlags;
 
   /**
@@ -398,7 +398,8 @@ public class LithoView extends BaseMountingView {
     if (height == 0) {
       maybeLogInvalidZeroHeight();
     }
-    final boolean hasMounted = mMountInfo != null && mMountInfo.mHasMounted;
+    final TreeMountInfo mountInfo = getMountInfo();
+    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
 
     final boolean canAnimateRootBounds =
         !mSuppressMeasureComponentTree
@@ -604,11 +605,6 @@ public class LithoView extends BaseMountingView {
     }
 
     mComponentTree = componentTree;
-    if (componentTree != null && componentTree.getTreeState() != null) {
-      mMountInfo = componentTree.getTreeState().getMountInfo();
-    } else {
-      mMountInfo = null;
-    }
 
     setupMountExtensions();
 
@@ -835,7 +831,7 @@ public class LithoView extends BaseMountingView {
     if (mComponentTree != null) {
       mComponentTree.release();
       ComponentTree.clearDebugOverlay(this);
-      mMountInfo = null;
+      mComponentTree = null;
       mNullComponentCause = "release_CT";
     }
   }
@@ -1195,7 +1191,8 @@ public class LithoView extends BaseMountingView {
     if (rootBoundsTransition == null) {
       return -1;
     }
-    final boolean hasMounted = mMountInfo != null && mMountInfo.mHasMounted;
+    final TreeMountInfo mountInfo = getMountInfo();
+    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
     if (!hasMounted && rootBoundsTransition.appearTransition != null) {
       return (int)
           Transition.getRootAppearFromValue(
