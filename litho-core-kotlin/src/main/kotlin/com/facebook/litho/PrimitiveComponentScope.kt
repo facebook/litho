@@ -52,9 +52,9 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param defaultValue value that will be set to the Content after unbind
    * @param bindCall function or function reference that will set the dynamic value on the content
    */
-  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>,
-      crossinline bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc
+      bindCall: BindDynamicScope.(ContentType, T) -> UnbindDynamicFunc
   ) {
     val bindDynamicScope = BindDynamicScope()
     addBinder(
@@ -69,7 +69,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param defaultValue value that will be set to the Content after unbind
    * @param setter function reference that will set the dynamic value on the content
    */
-  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>,
       setter: KFunction2<ContentType, T, Any?>,
       default: T
@@ -86,7 +86,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * @param defaultValue value that will be set to the Content after unbind
    * @param setter property reference that will set the dynamic value on the content
    */
-  inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
+  fun <ContentType : Any, T> MountConfigurationScope<ContentType>.bindDynamic(
       dynamicValue: DynamicValue<T>,
       setter: KMutableProperty1<ContentType, T>,
       default: T
@@ -124,8 +124,7 @@ internal constructor(context: ComponentContext, resolveStateContext: ResolveStat
    * deps in order to make sure that the binder will always update. This is equivalent to returning
    * true from shouldUpdate().
    */
-  @PublishedApi
-  internal inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
+  private inline fun <ContentType : Any, T> MountConfigurationScope<ContentType>.addBinder(
       dynamicValue: DynamicValue<T>,
       crossinline bindCall: (ContentType, T) -> Unit,
       crossinline unbindCall: (ContentType) -> Unit
@@ -172,13 +171,13 @@ fun interface UnbindDynamicFunc {
 class BindDynamicScope {
 
   // Cache the [UnbindDynamicFunc] to avoid creating a new instance on each [DynamicValue] update
-  @PublishedApi internal var unbindDynamicFunc: UnbindDynamicFunc? = null
+  internal var unbindDynamicFunc: UnbindDynamicFunc? = null
 
   /**
    * Defines an unbind function to be invoked when the content needs to be updated or a [Primitive]
    * is detached.
    */
-  inline fun onUnbindDynamic(crossinline unbindDynamic: () -> Unit): UnbindDynamicFunc {
+  fun onUnbindDynamic(unbindDynamic: () -> Unit): UnbindDynamicFunc {
     val unbindDynamicFunc = this.unbindDynamicFunc ?: UnbindDynamicFunc { unbindDynamic() }
     if (this.unbindDynamicFunc == null) {
       this.unbindDynamicFunc = unbindDynamicFunc
