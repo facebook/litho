@@ -22,7 +22,6 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,14 +49,6 @@ public class LithoView extends BaseMountingView {
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
-
-  private static final String TAG = LithoView.class.getSimpleName();
-
-  private @Nullable LithoLifecycleProvider mLifecycleProvider;
-
-  private final Rect mCachedCorrectedVisibleRect = new Rect();
-  private final Rect mScrollPositionChangedRect = new Rect();
-  private final Rect mLastScrollPositionChangedRect = new Rect();
 
   private @Nullable ComponentTree mComponentTree;
   private final ComponentContext mComponentContext;
