@@ -14,51 +14,47 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import android.content.Context;
-import android.provider.Settings;
-import android.util.Log;
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.config.ComponentsConfiguration;
+import android.content.Context
+import android.provider.Settings
+import android.util.Log
+import com.facebook.infer.annotation.Nullsafe
+import com.facebook.litho.config.ComponentsConfiguration
+import kotlin.jvm.JvmField
 
 /** Utilities for animations debug. */
-@Nullsafe(Nullsafe.Mode.LOCAL)
-public class AnimationsDebug {
+object AnimationsDebug {
+  @JvmField val ENABLED = ComponentsConfiguration.isEndToEndTestRun
+  const val TAG = "LithoAnimationDebug"
 
-  public static final boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
-  static final String TAG = "LithoAnimationDebug";
-
-  static void debugPrintLayoutState(LayoutState layoutState) {
+  @JvmStatic
+  fun debugPrintLayoutState(layoutState: LayoutState) {
     if (!ENABLED) {
-      return;
+      return
     }
-    Log.d(TAG, layoutState.dumpAsString());
+    Log.d(TAG, layoutState.dumpAsString())
   }
 
-  static boolean areTransitionsEnabled(@Nullable Context context) {
+  @JvmStatic
+  fun areTransitionsEnabled(context: Context?): Boolean {
     if (ComponentsConfiguration.isAnimationDisabled) {
       // mostly for unit tests
-      return false;
+      return false
     }
-
     if (!ComponentsConfiguration.isEndToEndTestRun) {
-      return true;
+      return true
     }
-
     if (!ComponentsConfiguration.CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS) {
-      return false;
+      return false
     }
-
     if (context == null) {
-      return false;
+      return false
     }
-
-    float animatorDurationScale =
+    val animatorDurationScale =
         Settings.Global.getFloat(
-            context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
-    return ComponentsConfiguration.forceEnableTransitionsForInstrumentationTests
-        || animatorDurationScale != 0f;
+            context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+    return (ComponentsConfiguration.forceEnableTransitionsForInstrumentationTests ||
+        animatorDurationScale != 0f)
   }
 }
