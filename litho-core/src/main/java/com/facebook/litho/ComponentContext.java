@@ -110,11 +110,14 @@ public class ComponentContext implements Cloneable {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, treeProps, buildDefaultLithoConfiguration(context, logTag, logger), null);
+    this(context, treeProps, buildDefaultLithoConfiguration(context, null, logTag, logger), null);
   }
 
-  private static LithoConfiguration buildDefaultLithoConfiguration(
-      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
+  public static LithoConfiguration buildDefaultLithoConfiguration(
+      final Context context,
+      final @Nullable VisibilityBoundsTransformer transformer,
+      final @Nullable String logTag,
+      final @Nullable ComponentsLogger logger) {
     ComponentsLogger loggerToUse =
         logger != null ? logger : ComponentsConfiguration.sComponentsLogger;
 
@@ -137,7 +140,7 @@ public class ComponentContext implements Cloneable {
         logTagToUse,
         loggerToUse,
         null, // TODO check if we can make this not nullable and always instantiate one
-        null);
+        transformer);
   }
 
   public ComponentContext(

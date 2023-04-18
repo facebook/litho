@@ -21,6 +21,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree.LithoConfiguration;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventDispatchInfo;
 import com.facebook.litho.EventHandler;
@@ -41,7 +42,7 @@ public class SectionContext extends ComponentContext {
   private @Nullable ChangeSetCalculationState mChangeSetCalculationState;
 
   public SectionContext(Context context) {
-    this(context, null, null);
+    this(context, null, null, null);
   }
 
   public SectionContext(ComponentContext context) {
@@ -64,6 +65,11 @@ public class SectionContext extends ComponentContext {
       @Nullable TreeProps treeProps) {
     super(context, logTag, logger);
     super.setTreeProps(treeProps);
+    mKeyHandler = new KeyHandler();
+  }
+
+  public SectionContext(Context context, LithoConfiguration config, @Nullable TreeProps treeProps) {
+    super(context, treeProps, config, null);
     mKeyHandler = new KeyHandler();
   }
 
