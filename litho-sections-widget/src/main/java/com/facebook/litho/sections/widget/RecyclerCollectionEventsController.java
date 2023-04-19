@@ -41,6 +41,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   private int mSnapMode = SNAP_NONE;
   private int mFirstCompletelyVisibleItemPosition = 0;
   private int mLastCompletelyVisibleItemPosition = 0;
+  private int mItemCount = 0;
 
   /** Sent the RecyclerCollection a request to refresh it's backing data. */
   public void requestRefresh() {
@@ -278,5 +279,18 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     if (lastCompletelyVisibleItemPosition != -1) {
       mLastCompletelyVisibleItemPosition = lastCompletelyVisibleItemPosition;
     }
+    mItemCount = layoutInfo.getItemCount();
+  }
+
+  public int getFirstCompletelyVisibleItemPosition() {
+    return mFirstCompletelyVisibleItemPosition;
+  }
+
+  public int getLastCompletelyVisibleItemPosition() {
+    return mLastCompletelyVisibleItemPosition;
+  }
+
+  public int getItemCount() {
+    return mItemCount;
   }
 }
