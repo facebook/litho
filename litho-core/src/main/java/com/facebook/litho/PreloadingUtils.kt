@@ -48,7 +48,7 @@ private val preloadClassHandler: Handler =
  * Utility for preloading classes that should be loaded early but may not be accessible outside of
  * Litho.
  */
-fun preloadLithoClasses(additionalClasses: Set<Class<*>>? = null) {
+fun preloadLithoClasses(additionalClasses: (() -> Set<Class<*>>)? = null) {
   val r = Runnable {
     val classes: MutableSet<Class<*>> =
         listOf(
@@ -218,7 +218,7 @@ fun preloadLithoClasses(additionalClasses: Set<Class<*>>? = null) {
                 DrawableAllocator::class.java)
             .toHashSet()
     if (additionalClasses != null) {
-      classes.addAll(additionalClasses)
+      classes.addAll(additionalClasses())
     }
     for (clazz in classes) {
       clazz.hashCode()
