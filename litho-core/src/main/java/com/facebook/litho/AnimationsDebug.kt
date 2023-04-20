@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.provider.Settings
 import android.util.Log
-import com.facebook.infer.annotation.Nullsafe
 import com.facebook.litho.config.ComponentsConfiguration
 import kotlin.jvm.JvmField
 
