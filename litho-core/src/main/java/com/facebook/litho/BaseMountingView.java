@@ -93,6 +93,92 @@ public abstract class BaseMountingView extends ComponentHost
     requestLayout();
   }
 
+  @Override
+  protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.performLayout");
+      }
+      if (hasTree()) {
+
+        onBeforeLayout(left, top, right, bottom);
+
+        boolean wasMountTriggered = mountComponentIfNeeded();
+
+        // If this happens the LithoView might have moved on Screen without a scroll event
+        // triggering incremental mount. We trigger one here to be sure all the content is visible.
+        if (!wasMountTriggered) {
+          notifyVisibleBoundsChanged();
+        }
+
+        if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
+          // If the layout() call on the component didn't trigger a mount step,
+          // we might need to perform an inner layout traversal on children that
+          // requested it as certain complex child views (e.g. ViewPager,
+          // RecyclerView, etc) rely on that.
+          performLayoutOnChildrenIfNecessary(this);
+        }
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
+    final int childCount = host.getChildCount();
+    if (childCount == 0) {
+      return;
+    }
+
+    // Snapshot the children before traversal as measure/layout could trigger events which cause
+    // children to be mounted/unmounted.
+    View[] children = new View[childCount];
+    for (int i = 0; i < childCount; i++) {
+      children[i] = host.getChildAt(i);
+    }
+
+    for (int i = 0; i < childCount; i++) {
+      final View child = children[i];
+      if (child.getParent() != host) {
+        // child has been removed
+        continue;
+      }
+
+      if (child.isLayoutRequested()) {
+        // The hosting view doesn't allow children to change sizes dynamically as
+        // this would conflict with the component's own layout calculations.
+        child.measure(
+            MeasureSpec.makeMeasureSpec(child.getWidth(), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(child.getHeight(), MeasureSpec.EXACTLY));
+        child.layout(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+      }
+
+      if (child instanceof ComponentHost) {
+        performLayoutOnChildrenIfNecessary((ComponentHost) child);
+      }
+    }
+  }
+
+  /**
+   * Indicates if the children of this view should be laid regardless to a mount step being
+   * triggered on layout. This step can be important when some of the children in the hierarchy are
+   * changed (e.g. resized) but the parent wasn't.
+   *
+   * <p>Since the framework doesn't expect its children to resize after being mounted, this should
+   * be used only for extreme cases where the underline views are complex and need this behavior.
+   *
+   * @return boolean Returns true if the children of this view should be laid out even when a mount
+   *     step was not needed.
+   */
+  protected boolean shouldAlwaysLayoutChildren() {
+    return false;
+  }
+
+  protected void onBeforeLayout(int left, int top, int right, int bottom) {}
+
   /**
    * Sets the height that the BaseMountingView should take on the next measure pass and then
    * requests a layout. This should be called from animation-driving code on each frame to animate
