@@ -64,6 +64,7 @@ public abstract class BaseMountingView extends ComponentHost
   private boolean mVisibilityHintIsVisible;
   private boolean mSkipMountingIfNotVisible;
   private final Rect mRect = new Rect();
+  private boolean mIsAttached;
 
   public BaseMountingView(Context context) {
     this(context, null);
@@ -178,6 +179,68 @@ public abstract class BaseMountingView extends ComponentHost
   }
 
   protected void onBeforeLayout(int left, int top, int right, int bottom) {}
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    onAttach();
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    onDetach();
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    onDetach();
+  }
+
+  @Override
+  public void onFinishTemporaryDetach() {
+    super.onFinishTemporaryDetach();
+    onAttach();
+  }
+
+  private void onAttach() {
+    if (!mIsAttached) {
+      mIsAttached = true;
+      onAttached();
+    }
+  }
+
+  protected void onAttached() {
+    mMountState.attach();
+  }
+
+  private void onDetach() {
+    if (mIsAttached) {
+      mIsAttached = false;
+      onDetached();
+    }
+  }
+
+  public void rebind() {
+    mMountState.attach();
+  }
+
+  /**
+   * To be called this when the LithoView is about to become inactive. This means that either the
+   * view is about to be recycled or moved off-screen.
+   */
+  public void unbind() {
+    mMountState.detach();
+  }
+
+  protected void onDetached() {
+    mMountState.detach();
+  }
+
+  boolean isAttached() {
+    return mIsAttached;
+  }
 
   /**
    * Sets the height that the BaseMountingView should take on the next measure pass and then
@@ -947,10 +1010,6 @@ public abstract class BaseMountingView extends ComponentHost
     final LayoutState layoutState = getCurrentLayoutState();
 
     return layoutState != null ? layoutState.mRootComponentName : "";
-  }
-
-  final MountState getMountState() {
-    return mMountState;
   }
 
   /**

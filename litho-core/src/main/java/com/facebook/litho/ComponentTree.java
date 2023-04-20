@@ -897,6 +897,7 @@ public class ComponentTree
       } else {
         mLithoView.rebind();
       }
+
     } finally {
       mInAttach = false;
     }

@@ -53,7 +53,6 @@ public class LithoView extends BaseMountingView {
 
   private @Nullable ComponentTree mComponentTree;
   private final ComponentContext mComponentContext;
-  private boolean mIsAttached;
   private boolean mIsAttachedForTest;
   // The bounds of the visible rect that was used for the previous incremental mount.
 
@@ -177,18 +176,6 @@ public class LithoView extends BaseMountingView {
     return mTemporaryDetachedComponentTree != null;
   }
 
-  @Override
-  protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    onAttach();
-  }
-
-  @Override
-  protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    onDetach();
-  }
-
   /**
    * Along with {@link #onDetachedFromWindowForTest} below, makes the LithoView think it's attached/
    * detached in a unit test environment. This also handles setting the same state for all LithoView
@@ -223,51 +210,6 @@ public class LithoView extends BaseMountingView {
 
     dispatchAttachedForTestToChildren();
   }
-
-  @Override
-  public void onStartTemporaryDetach() {
-    super.onStartTemporaryDetach();
-    onDetach();
-  }
-
-  @Override
-  public void onFinishTemporaryDetach() {
-    super.onFinishTemporaryDetach();
-    onAttach();
-  }
-
-  private void onAttach() {
-    if (!mIsAttached) {
-      mIsAttached = true;
-
-      if (mComponentTree != null) {
-        mComponentTree.attach();
-      }
-
-      refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
-
-      AccessibilityManagerCompat.addAccessibilityStateChangeListener(
-          mAccessibilityManager, mAccessibilityStateChangeListener);
-    }
-  }
-
-  private void onDetach() {
-    if (mIsAttached) {
-      mIsAttached = false;
-
-      getMountState().detach();
-
-      if (mComponentTree != null) {
-        mComponentTree.detach();
-      }
-
-      AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
-          mAccessibilityManager, mAccessibilityStateChangeListener);
-
-      mSuppressMeasureComponentTree = false;
-    }
-  }
-
   /**
    * If set to true, the onMeasure(..) call won't measure the ComponentTree with the given measure
    * specs, but it will just use them as measured dimensions.
@@ -486,7 +428,7 @@ public class LithoView extends BaseMountingView {
 
     mTemporaryDetachedComponentTree = null;
     if (mComponentTree == componentTree) {
-      if (mIsAttached) {
+      if (isAttached()) {
         rebind();
       }
       return;
@@ -516,7 +458,7 @@ public class LithoView extends BaseMountingView {
             componentTree,
             mInvalidStateLogParams.get(SET_ALREADY_ATTACHED_COMPONENT_TREE));
       }
-      if (mIsAttached) {
+      if (isAttached()) {
         mComponentTree.detach();
       }
 
@@ -536,7 +478,7 @@ public class LithoView extends BaseMountingView {
       }
       mComponentTree.setLithoView(this);
 
-      if (mIsAttached) {
+      if (isAttached()) {
         mComponentTree.attach();
       } else {
         requestLayout();
@@ -565,18 +507,6 @@ public class LithoView extends BaseMountingView {
     } else {
       mComponentTree.setRootAsync(component);
     }
-  }
-
-  public void rebind() {
-    getMountState().attach();
-  }
-
-  /**
-   * To be called this when the LithoView is about to become inactive. This means that either the
-   * view is about to be recycled or moved off-screen.
-   */
-  public void unbind() {
-    getMountState().detach();
   }
 
   /**
@@ -632,6 +562,33 @@ public class LithoView extends BaseMountingView {
       return;
     }
     super.setVisibilityHint(isVisible);
+  }
+
+  @Override
+  protected void onAttached() {
+    // Not calling super intentionally as in the LithoView case we want ComponentTree to control the
+    // rebind logic.
+    if (mComponentTree != null) {
+      mComponentTree.attach();
+    }
+
+    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+
+    AccessibilityManagerCompat.addAccessibilityStateChangeListener(
+        mAccessibilityManager, mAccessibilityStateChangeListener);
+  }
+
+  @Override
+  protected void onDetached() {
+    super.onDetached();
+    if (mComponentTree != null) {
+      mComponentTree.detach();
+    }
+
+    AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
+        mAccessibilityManager, mAccessibilityStateChangeListener);
+
+    mSuppressMeasureComponentTree = false;
   }
 
   @Override
