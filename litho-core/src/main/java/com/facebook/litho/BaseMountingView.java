@@ -26,7 +26,10 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeState.TreeMountInfo;
+import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegateTarget;
@@ -896,6 +899,56 @@ public abstract class BaseMountingView extends ComponentHost
     if (mLithoHostListenerCoordinator != null) {
       mLithoHostListenerCoordinator.clearLastMountedTreeId();
     }
+  }
+
+  /**
+   * @return the width value that that the MountingView should be animating from. If this returns
+   *     non-negative value, we will override the measured width with this value so that initial
+   *     animated value is correctly applied.
+   */
+  @ThreadConfined(ThreadConfined.UI)
+  int getInitialAnimatedMountingViewWidth(int currentAnimatedWidth, boolean hasNewComponentTree) {
+    final Transition.RootBoundsTransition transition =
+        getCurrentLayoutState() != null ? getCurrentLayoutState().getRootWidthAnimation() : null;
+    return getInitialAnimatedMountingViewDimension(
+        currentAnimatedWidth, hasNewComponentTree, transition, AnimatedProperties.WIDTH);
+  }
+
+  /**
+   * @return the height value that the MountingView should be animating from. If this returns
+   *     non-negative value, we will override the measured height with this value so that initial
+   *     animated value is correctly applied.
+   */
+  @ThreadConfined(ThreadConfined.UI)
+  int getInitialAnimatedMountingViewHeight(int currentAnimatedHeight, boolean hasNewComponentTree) {
+    final Transition.RootBoundsTransition transition =
+        getCurrentLayoutState() != null ? getCurrentLayoutState().getRootHeightAnimation() : null;
+    return getInitialAnimatedMountingViewDimension(
+        currentAnimatedHeight, hasNewComponentTree, transition, AnimatedProperties.HEIGHT);
+  }
+
+  private int getInitialAnimatedMountingViewDimension(
+      int currentAnimatedDimension,
+      boolean hasNewComponentTree,
+      @Nullable Transition.RootBoundsTransition rootBoundsTransition,
+      AnimatedProperty property) {
+    if (rootBoundsTransition == null) {
+      return -1;
+    }
+    final TreeState treeState = getTreeState();
+    final TreeMountInfo mountInfo = treeState != null ? treeState.getMountInfo() : null;
+    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
+    if (!hasMounted && rootBoundsTransition.appearTransition != null) {
+      return (int)
+          Transition.getRootAppearFromValue(
+              rootBoundsTransition.appearTransition, getCurrentLayoutState(), property);
+    }
+
+    if (hasMounted && !hasNewComponentTree) {
+      return currentAnimatedDimension;
+    }
+
+    return -1;
   }
 
   private void recursivelySetVisibleHint(boolean isVisible, boolean skipMountingIfNotVisible) {

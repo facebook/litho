@@ -30,10 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
-import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeState.TreeMountInfo;
-import com.facebook.litho.animation.AnimatedProperties;
-import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.lang.ref.WeakReference;
@@ -319,13 +316,13 @@ public class LithoView extends BaseMountingView {
       maybeCollectAllTransitions();
 
       final int initialAnimatedWidth =
-          getInitialAnimatedLithoViewWidth(upToDateWidth, mHasNewComponentTree);
+          getInitialAnimatedMountingViewWidth(upToDateWidth, mHasNewComponentTree);
       if (initialAnimatedWidth != -1) {
         width = initialAnimatedWidth;
       }
 
       final int initialAnimatedHeight =
-          getInitialAnimatedLithoViewHeight(upToDateHeight, mHasNewComponentTree);
+          getInitialAnimatedMountingViewHeight(upToDateHeight, mHasNewComponentTree);
       if (initialAnimatedHeight != -1) {
         height = initialAnimatedHeight;
       }
@@ -1027,61 +1024,6 @@ public class LithoView extends BaseMountingView {
     lithoSpecific.put("tree", ComponentTreeDumpingHelper.dumpContextTree(tree));
 
     return metadata;
-  }
-
-  /**
-   * @return the width value that LithoView should be animating from. If this returns non-negative
-   *     value, we will override the measured width with this value so that initial animated value
-   *     is correctly applied.
-   */
-  @ThreadConfined(ThreadConfined.UI)
-  int getInitialAnimatedLithoViewWidth(int currentAnimatedWidth, boolean hasNewComponentTree) {
-    final Transition.RootBoundsTransition transition =
-        mComponentTree != null && mComponentTree.getMainThreadLayoutState() != null
-            ? mComponentTree.getMainThreadLayoutState().getRootWidthAnimation()
-            : null;
-    return getInitialAnimatedLithoViewDimension(
-        currentAnimatedWidth, hasNewComponentTree, transition, AnimatedProperties.WIDTH);
-  }
-
-  /**
-   * @return the height value that LithoView should be animating from. If this returns non-negative
-   *     value, we will override the measured height with this value so that initial animated value
-   *     is correctly applied.
-   */
-  @ThreadConfined(ThreadConfined.UI)
-  int getInitialAnimatedLithoViewHeight(int currentAnimatedHeight, boolean hasNewComponentTree) {
-    final Transition.RootBoundsTransition transition =
-        mComponentTree != null && mComponentTree.getMainThreadLayoutState() != null
-            ? mComponentTree.getMainThreadLayoutState().getRootHeightAnimation()
-            : null;
-    return getInitialAnimatedLithoViewDimension(
-        currentAnimatedHeight, hasNewComponentTree, transition, AnimatedProperties.HEIGHT);
-  }
-
-  private int getInitialAnimatedLithoViewDimension(
-      int currentAnimatedDimension,
-      boolean hasNewComponentTree,
-      @Nullable Transition.RootBoundsTransition rootBoundsTransition,
-      AnimatedProperty property) {
-    if (rootBoundsTransition == null) {
-      return -1;
-    }
-    final TreeMountInfo mountInfo = getMountInfo();
-    final boolean hasMounted = mountInfo != null && mountInfo.mHasMounted;
-    if (!hasMounted && rootBoundsTransition.appearTransition != null) {
-      return (int)
-          Transition.getRootAppearFromValue(
-              rootBoundsTransition.appearTransition,
-              mComponentTree.getMainThreadLayoutState(),
-              property);
-    }
-
-    if (hasMounted && !hasNewComponentTree) {
-      return currentAnimatedDimension;
-    }
-
-    return -1;
   }
 
   public interface OnDirtyMountListener {
