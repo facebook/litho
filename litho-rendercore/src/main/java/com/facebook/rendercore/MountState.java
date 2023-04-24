@@ -833,6 +833,8 @@ public class MountState implements MountDelegateTarget {
         attributes -> {
           attributes.put(RenderUnitId, id);
           attributes.put(Description, unit.getDescription());
+          attributes.put(Bounds, node.getBounds());
+          attributes.put(RootHostHashCode, mRootHost.hashCode());
         },
         scope -> {
           if (isTracing) {
@@ -1084,14 +1086,27 @@ public class MountState implements MountDelegateTarget {
         mTracer.beginSection("UpdateItem: " + renderUnit.getDescription());
       }
 
-      renderUnit.updateBinders(
-          mContext,
-          content,
-          currentRenderUnit,
-          currentLayoutData,
-          newLayoutData,
-          mountDelegate,
-          currentMountItem.isBound());
+      trace(
+          DebugEvent.RenderUnitUpdated,
+          String.valueOf(mRenderTree.getRenderStateId()),
+          attributes -> {
+            attributes.put(RenderUnitId, renderTreeNode.getRenderUnit().getId());
+            attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
+            attributes.put(Bounds, renderTreeNode.getBounds());
+            attributes.put(RootHostHashCode, mRootHost.hashCode());
+          },
+          scope -> {
+            renderUnit.updateBinders(
+                mContext,
+                content,
+                currentRenderUnit,
+                currentLayoutData,
+                newLayoutData,
+                mountDelegate,
+                currentMountItem.isBound());
+
+            return Unit.INSTANCE;
+          });
     }
 
     currentMountItem.setIsBound(true);
