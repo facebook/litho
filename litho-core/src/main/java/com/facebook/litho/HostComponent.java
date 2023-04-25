@@ -44,9 +44,7 @@ class HostComponent extends SpecGeneratedComponent {
     return new HostMountContentPool(
         "HostComponent",
         ComponentsConfiguration.hostComponentPoolSize,
-        ComponentsConfiguration.hostComponentRecyclingByWindowIsEnabled
-            || ComponentsConfiguration.hostComponentRecyclingByMountStateIsEnabled
-            || ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);
+        ComponentsConfiguration.unsafeHostComponentRecyclingIsEnabled);
   }
 
   @Override

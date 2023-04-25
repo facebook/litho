@@ -189,14 +189,6 @@ public class ComponentsConfiguration {
    */
   public static boolean enableNestedTreePreallocation = false;
 
-  /**
-   * These params are part of an experiment to try to re-enable host recycling while avoiding native
-   * RenderThread crashes we've seen when trying to reuse ComponentHosts.
-   */
-  public static boolean hostComponentRecyclingByWindowIsEnabled = false;
-
-  public static boolean hostComponentRecyclingByMountStateIsEnabled = false;
-
   public static boolean unsafeHostComponentRecyclingIsEnabled = false;
 
   public static int hostComponentPoolSize = 30;
