@@ -331,11 +331,11 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   public @Nullable LithoRenderUnit getContentRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mContentRenderUnit == null) {
-        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this, layoutState);
+        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this);
       }
       return mContentRenderUnit;
     } else {
-      return InternalNodeUtils.createContentRenderUnit(this, layoutState);
+      return InternalNodeUtils.createContentRenderUnit(this);
     }
   }
 
@@ -354,33 +354,33 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   public @Nullable LithoRenderUnit getBackgroundRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mBackgroundRenderUnit == null) {
-        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this, layoutState);
+        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this);
       }
       return mBackgroundRenderUnit;
     } else {
-      return InternalNodeUtils.createBackgroundRenderUnit(this, layoutState);
+      return InternalNodeUtils.createBackgroundRenderUnit(this);
     }
   }
 
   public @Nullable LithoRenderUnit getForegroundRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mForegroundRenderUnit == null) {
-        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this, layoutState);
+        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this);
       }
       return mForegroundRenderUnit;
     } else {
-      return InternalNodeUtils.createForegroundRenderUnit(this, layoutState);
+      return InternalNodeUtils.createForegroundRenderUnit(this);
     }
   }
 
   public @Nullable LithoRenderUnit getBorderRenderUnit(final LayoutState layoutState) {
     if (mContext.shouldReuseOutputs()) {
       if (mBorderRenderUnit == null) {
-        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this, layoutState);
+        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this);
       }
       return mBorderRenderUnit;
     } else {
-      return InternalNodeUtils.createBorderRenderUnit(this, layoutState);
+      return InternalNodeUtils.createBorderRenderUnit(this);
     }
   }
 
