@@ -255,15 +255,6 @@ class LithoNodeTest {
   }
 
   @Test
-  fun testDuplicateParentStateFlag() {
-    val node = acquireInternalNode()
-    node.duplicateParentState(false)
-    assertThat(isFlagSet(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue
-    clearFlag(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")
-    assertEmptyFlags(node)
-  }
-
-  @Test
   fun testBackgroundFlag() {
     val node = acquireInternalNode()
     node.backgroundColor(0xFFFF0000.toInt())
@@ -306,7 +297,6 @@ class LithoNodeTest {
     orig.visibilityChangedHandler(null)
     orig.transferInto(dest)
     assertThat(isFlagSet(dest, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue
-    assertThat(isFlagSet(dest, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue
     assertThat(isFlagSet(dest, "PFLAG_BACKGROUND_IS_SET")).isTrue
     assertThat(isFlagSet(dest, "PFLAG_FOREGROUND_IS_SET")).isTrue
     assertThat(isFlagSet(dest, "PFLAG_VISIBLE_HANDLER_IS_SET")).isTrue

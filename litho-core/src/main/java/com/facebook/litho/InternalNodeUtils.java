@@ -135,7 +135,7 @@ public class InternalNodeUtils {
         node,
         node.getImportantForAccessibility(),
         updateState,
-        node.isDuplicateParentStateEnabled(),
+        node.isHostDuplicateParentState(),
         node.isDuplicateChildrenStatesEnabled(),
         false,
         true);

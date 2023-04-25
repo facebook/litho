@@ -94,7 +94,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L;
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
-  protected static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
   protected static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
   protected static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
   protected static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
@@ -147,6 +146,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   protected boolean mIsPaddingSet;
   protected boolean mDuplicateParentState;
+  protected boolean mHostDuplicateParentState;
   protected boolean mDuplicateChildrenStates;
   protected boolean mForceViewWrapping;
 
@@ -171,6 +171,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   protected @Nullable YogaMeasureFunction mYogaMeasureFunction;
 
   private @Nullable CommonProps.DefaultLayoutProps mDebugLayoutProps;
+
+  private boolean mNeedsHostView = false;
 
   private boolean mIsClone = false;
   private boolean mFrozen;
@@ -366,18 +368,29 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   final void freeze(final CalculationStateContext context) {
-    freeze(context, IMPORTANT_FOR_ACCESSIBILITY_AUTO, ENABLED_UNSET);
+    freeze(context, IMPORTANT_FOR_ACCESSIBILITY_AUTO, ENABLED_UNSET, true);
   }
 
-  private void freeze(
+  final void freeze(
       final CalculationStateContext context,
       final int parentImportantForAccessibility,
-      final int parentEnabledState) {
+      final int parentEnabledState,
+      final boolean parentDuplicatesParentState) {
     if (mFrozen) {
       return;
     }
 
     final boolean isRoot = context.getRootComponentId() == getHeadComponent().getId();
+
+    mHostDuplicateParentState = isDuplicateParentStateEnabled();
+    mNeedsHostView = InternalNodeUtils.needsHostView(this);
+
+    final boolean shouldDuplicateParentState =
+        mNeedsHostView
+            || isRoot
+            || (parentDuplicatesParentState && isDuplicateParentStateEnabled());
+
+    duplicateParentState(shouldDuplicateParentState);
 
     if (!isRoot) { // if not root component
 
@@ -398,7 +411,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
           .freeze(
               context,
               getImportantForAccessibility(),
-              getNodeInfo() != null ? getNodeInfo().getEnabledState() : ENABLED_UNSET);
+              getNodeInfo() != null ? getNodeInfo().getEnabledState() : ENABLED_UNSET,
+              isDuplicateParentStateEnabled());
     }
 
     // Sets mFrozen as true to avoid anymore mutation.
@@ -527,7 +541,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   public void duplicateParentState(boolean duplicateParentState) {
-    mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
   }
 
@@ -853,6 +866,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   public boolean isDuplicateChildrenStatesEnabled() {
     return mDuplicateChildrenStates;
+  }
+
+  public boolean isHostDuplicateParentState() {
+    return mHostDuplicateParentState;
   }
 
   public boolean isForceViewWrapping() {

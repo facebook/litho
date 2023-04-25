@@ -163,6 +163,7 @@ class Layout {
         return null;
       }
 
+      // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
       holderResult.getNode().copyInto(newNode);
       newNode.freeze(layoutStateContext);
 

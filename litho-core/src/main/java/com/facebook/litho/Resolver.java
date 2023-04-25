@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -536,7 +538,8 @@ public class Resolver {
       keys = treeState.getKeysForPendingStateUpdates();
     }
 
-    return reconcile(resolveStateContext, c, node, next, nextScopedComponentInfo, nextKey, keys);
+    return reconcile(
+        resolveStateContext, c, node, next, nextScopedComponentInfo, nextKey, keys, null);
   }
 
   /**
@@ -557,7 +560,8 @@ public class Resolver {
       final Component next,
       final ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey,
-      final Set<String> keys) {
+      final Set<String> keys,
+      final @Nullable LithoNode parent) {
     final int mode = getReconciliationMode(nextScopedComponentInfo.getContext(), current, keys);
     final LithoNode layout;
     switch (mode) {
@@ -572,6 +576,19 @@ public class Resolver {
         layout =
             Resolver.resolveWithGlobalKey(
                 resolveStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
+        if (layout != null) {
+          if (parent == null) {
+            layout.freeze(resolveStateContext);
+          } else {
+            layout.freeze(
+                resolveStateContext,
+                parent.getImportantForAccessibility(),
+                parent.getNodeInfo() != null
+                    ? parent.getNodeInfo().getEnabledState()
+                    : ENABLED_UNSET,
+                parent.isDuplicateParentStateEnabled());
+          }
+        }
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
@@ -624,7 +641,14 @@ public class Resolver {
       // 3.2 Reconcile child layout.
       final LithoNode copy =
           reconcile(
-              resolveStateContext, parentContext, child, component, scopedComponentInfo, key, keys);
+              resolveStateContext,
+              parentContext,
+              child,
+              component,
+              scopedComponentInfo,
+              key,
+              keys,
+              current);
 
       // 3.3 Add the child to the cloned yoga node
       layout.child(copy);

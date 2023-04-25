@@ -109,9 +109,7 @@ public class NestedTreeHolder extends LithoNode {
     if (target.isImportantForAccessibilityIsSet()) {
       target.importantForAccessibility(mImportantForAccessibility);
     }
-    if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
-      target.duplicateParentState(mDuplicateParentState);
-    }
+    target.duplicateParentState(mDuplicateParentState);
     if ((mPrivateFlags & PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET) != 0L) {
       target.duplicateChildrenStates(mDuplicateChildrenStates);
     }
