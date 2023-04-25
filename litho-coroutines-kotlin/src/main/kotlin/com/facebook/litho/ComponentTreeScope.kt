@@ -30,15 +30,15 @@ import kotlinx.coroutines.launch
 val LithoTree.lithoTreeScope: CoroutineScope
   get() {
     while (true) {
-      val existing = mInternalScopeRef.get() as? CoroutineScope
+      val existing = internalScopeRef.get() as? CoroutineScope
       if (existing != null) {
         return existing
       }
       val job = SupervisorJob()
       val newScope = ComponentTreeScope(this, job + Dispatchers.Main.immediate)
-      if (mInternalScopeRef.compareAndSet(null, newScope)) {
+      if (internalScopeRef.compareAndSet(null, newScope)) {
         newScope.register()
-        job.invokeOnCompletion { mInternalScopeRef.compareAndSet(newScope, null) }
+        job.invokeOnCompletion { internalScopeRef.compareAndSet(newScope, null) }
         return newScope
       }
     }
