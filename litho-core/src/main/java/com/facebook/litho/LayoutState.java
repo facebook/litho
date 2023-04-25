@@ -151,8 +151,6 @@ public class LayoutState
   private long mCurrentHostMarker = -1L;
   private int mCurrentHostOutputPosition = -1;
 
-  private boolean mShouldDuplicateParentState = true;
-
   private final boolean mShouldGenerateDiffTree;
   private int mComponentTreeId = -1;
   private final int mId;
@@ -647,16 +645,6 @@ public class LayoutState
       layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
     }
 
-    // We need to take into account flattening when setting duplicate parent state. The parent after
-    // flattening may no longer exist. Therefore the value of duplicate parent state should only be
-    // true if the path between us (inclusive) and our inner/root host (exclusive) all are
-    // duplicate parent state.
-    final boolean shouldDuplicateParentState = layoutState.mShouldDuplicateParentState;
-    layoutState.mShouldDuplicateParentState =
-        needsHostView
-            || layoutState.isLayoutRoot(result)
-            || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
-
     // 2. Add background if defined.
     if (!context.mLithoConfiguration.mComponentsConfiguration.isShouldDisableBgFgOutputs()) {
       final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit(layoutState);
@@ -933,7 +921,6 @@ public class LayoutState
       layoutState.mCurrentHostMarker = currentHostMarker;
       layoutState.mCurrentHostOutputPosition = currentHostOutputPosition;
     }
-    layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
 
     addCurrentAffinityGroupToTransitionMapping(layoutState);
     layoutState.mCurrentTransitionId = currentTransitionId;
@@ -1535,10 +1522,6 @@ public class LayoutState
 
   public ComponentContext getComponentContext() {
     return mContext;
-  }
-
-  boolean getCurrentShouldDuplicateParentState() {
-    return mShouldDuplicateParentState;
   }
 
   boolean isAccessibilityEnabled() {

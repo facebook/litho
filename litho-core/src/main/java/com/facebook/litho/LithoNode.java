@@ -389,6 +389,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mHostDuplicateParentState = isDuplicateParentStateEnabled();
     mNeedsHostView = InternalNodeUtils.needsHostView(this);
 
+    // We need to take into account flattening when setting duplicate parent state. The parent after
+    // flattening may no longer exist. Therefore the value of duplicate parent state should only be
+    // true if the path between us (inclusive) and our inner/root host (exclusive) all are
+    // duplicate parent state.
+
     final boolean shouldDuplicateParentState =
         mNeedsHostView
             || isRoot

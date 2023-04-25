@@ -87,7 +87,7 @@ public class InternalNodeUtils {
             : result.areCachedMeasuresValid()
                 ? LithoRenderUnit.STATE_UPDATED
                 : LithoRenderUnit.STATE_DIRTY,
-        layoutState.getCurrentShouldDuplicateParentState(),
+        node.isDuplicateParentStateEnabled(),
         false,
         needsHostView(node),
         node.willMountView());
@@ -267,7 +267,7 @@ public class InternalNodeUtils {
         previousId != id
             ? LithoRenderUnit.STATE_UNKNOWN
             : isCachedOutputUpdated ? LithoRenderUnit.STATE_UPDATED : LithoRenderUnit.STATE_DIRTY,
-        layoutState.getCurrentShouldDuplicateParentState(),
+        node.isDuplicateParentStateEnabled(),
         false,
         needsHostView(node),
         false);
