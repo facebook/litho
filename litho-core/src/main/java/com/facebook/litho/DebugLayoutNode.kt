@@ -38,7 +38,7 @@ class DebugLayoutNode internal constructor(private val result: LithoLayoutResult
   val background: Drawable?
     get() = node.background
 
-  fun hasViewOutput(): Boolean = InternalNodeUtils.hasViewOutput(result.node)
+  fun hasViewOutput(): Boolean = LithoNode.hasViewOutput(result.node)
 
   val rotation: Float
     get() = node.nodeInfo?.rotation ?: 0f
