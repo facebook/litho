@@ -69,7 +69,7 @@ public class Resolver {
       node = resolve(resolveStateContext, c, component);
 
       if (node != null && !resolveStateContext.isLayoutInterrupted()) {
-        node.freeze(resolveStateContext);
+        node.applyParentDependentCommonProps(resolveStateContext);
       }
 
       // This needs to finish layout on the UI thread.
@@ -413,7 +413,7 @@ public class Resolver {
       resumeResolvingTree(resolveStateContext, root.getChildAt(i));
     }
 
-    root.freeze(resolveStateContext);
+    root.applyParentDependentCommonProps(resolveStateContext);
 
     return root;
   }
@@ -578,9 +578,9 @@ public class Resolver {
                 resolveStateContext, parentContext, next, Preconditions.checkNotNull(nextKey));
         if (layout != null) {
           if (parent == null) {
-            layout.freeze(resolveStateContext);
+            layout.applyParentDependentCommonProps(resolveStateContext);
           } else {
-            layout.freeze(
+            layout.applyParentDependentCommonProps(
                 resolveStateContext,
                 parent.getImportantForAccessibility(),
                 parent.getNodeInfo() != null

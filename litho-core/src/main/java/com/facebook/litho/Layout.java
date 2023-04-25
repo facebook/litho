@@ -165,7 +165,7 @@ class Layout {
 
       // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
       holderResult.getNode().copyInto(newNode);
-      newNode.freeze(layoutStateContext);
+      newNode.applyParentDependentCommonProps(layoutStateContext);
 
       // If the resolved tree inherits the layout direction, then set it now.
       if (newNode.isLayoutDirectionInherit()) {

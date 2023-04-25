@@ -374,11 +374,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
   }
 
-  final void freeze(final CalculationStateContext context) {
-    freeze(context, IMPORTANT_FOR_ACCESSIBILITY_AUTO, ENABLED_UNSET, true);
+  final void applyParentDependentCommonProps(final CalculationStateContext context) {
+    applyParentDependentCommonProps(context, IMPORTANT_FOR_ACCESSIBILITY_AUTO, ENABLED_UNSET, true);
   }
 
-  final void freeze(
+  final void applyParentDependentCommonProps(
       final CalculationStateContext context,
       final int parentImportantForAccessibility,
       final int parentEnabledState,
@@ -420,7 +420,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     for (int i = 0; i < getChildCount(); i++) {
       getChildAt(i)
-          .freeze(
+          .applyParentDependentCommonProps(
               context,
               getImportantForAccessibility(),
               getNodeInfo() != null ? getNodeInfo().getEnabledState() : ENABLED_UNSET,
