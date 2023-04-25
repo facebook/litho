@@ -22,7 +22,6 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
-import static com.facebook.litho.LithoNode.willMountView;
 import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
 import static com.facebook.litho.LithoRenderUnit.isMountableView;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -1087,7 +1086,7 @@ public class LayoutState
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
-    if (willMountView(node) && !layoutState.isLayoutRoot(result)) {
+    if (node.willMountView() && !layoutState.isLayoutRoot(result)) {
       throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
     }
 
@@ -1672,7 +1671,7 @@ public class LayoutState
     if (type == OutputUnitType.HOST) {
       willMountView = true;
     } else if (type == OutputUnitType.CONTENT) {
-      willMountView = result != null && LithoNode.willMountView(result.getNode());
+      willMountView = result != null && result.getNode().willMountView();
     } else {
       willMountView = false;
     }

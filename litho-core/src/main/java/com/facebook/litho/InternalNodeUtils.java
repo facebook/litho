@@ -23,7 +23,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
 import static com.facebook.litho.Component.isMountable;
 import static com.facebook.litho.Component.isPrimitive;
-import static com.facebook.litho.LithoNode.willMountView;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
 import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
@@ -91,7 +90,7 @@ public class InternalNodeUtils {
         layoutState.getCurrentShouldDuplicateParentState(),
         false,
         needsHostView(node),
-        willMountView(node));
+        node.willMountView());
   }
 
   /** Creates a {@link LithoRenderUnit} for the host output iff the result needs a host view. */
@@ -150,7 +149,7 @@ public class InternalNodeUtils {
 
     // Only create a background output when the component does not mount a View because
     // the background will get set in the output of the component.
-    if (background != null && !willMountView(result.getNode())) {
+    if (background != null && !result.getNode().willMountView()) {
       return createDrawableRenderUnit(result, background, OutputUnitType.BACKGROUND, layoutState);
     }
 
@@ -167,7 +166,7 @@ public class InternalNodeUtils {
 
     /// Only create a foreground output when the component does not mount a View because
     // the foreground has already been set in the output of the component.
-    if (foreground != null && (!willMountView(node) || SDK_INT < M)) {
+    if (foreground != null && (!node.willMountView() || SDK_INT < M)) {
       return createDrawableRenderUnit(result, foreground, OutputUnitType.FOREGROUND, layoutState);
     }
 
@@ -439,7 +438,7 @@ public class InternalNodeUtils {
    */
   static boolean needsHostView(final LithoNode node) {
 
-    if (willMountView(node)) {
+    if (node.willMountView()) {
       // Component already represents a View.
       return false;
     }
@@ -566,7 +565,7 @@ public class InternalNodeUtils {
    */
   static boolean hasViewOutput(LithoNode node) {
     return node.isForceViewWrapping()
-        || willMountView(node)
+        || node.willMountView()
         || InternalNodeUtils.hasViewAttributes(node.getNodeInfo())
         || InternalNodeUtils.needsHostViewForCommonDynamicProps(node)
         || InternalNodeUtils.needsHostViewForTransition(node);
@@ -575,7 +574,7 @@ public class InternalNodeUtils {
   private static boolean hasSelectedStateWhenDisablingDrawableOutputs(final LithoNode node) {
     return ComponentContext.getComponentsConfig(node.getHeadComponentContext())
             .isShouldAddHostViewForRootComponent()
-        && !willMountView(node)
+        && !node.willMountView()
         && node.getNodeInfo() != null
         && node.getNodeInfo().getSelectedState() != NodeInfo.SELECTED_UNSET;
   }
@@ -592,6 +591,6 @@ public class InternalNodeUtils {
   }
 
   static boolean needsHostViewForTransition(final LithoNode node) {
-    return !TextUtils.isEmpty(node.getTransitionKey()) && !willMountView(node);
+    return !TextUtils.isEmpty(node.getTransitionKey()) && !node.willMountView();
   }
 }

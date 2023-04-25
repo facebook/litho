@@ -173,6 +173,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   private @Nullable CommonProps.DefaultLayoutProps mDebugLayoutProps;
 
   private boolean mNeedsHostView = false;
+  private boolean mWillMountView = false;
 
   private boolean mIsClone = false;
   private boolean mFrozen;
@@ -250,6 +251,9 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   public void appendComponent(ScopedComponentInfo scopedComponentInfo) {
     mScopedComponentInfos.add(scopedComponentInfo);
+    if (mScopedComponentInfos.size() == 1) {
+      mWillMountView = willMountView(this);
+    }
   }
 
   public void appendUnresolvedComponent(Component component) {
@@ -1105,6 +1109,10 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   public String getSimpleName() {
     return mScopedComponentInfos.isEmpty() ? "<null>" : getComponentAt(0).getSimpleName();
+  }
+
+  public boolean willMountView() {
+    return mWillMountView;
   }
 
   public boolean isClone() {
