@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.rendercore.LayoutCache
 import com.facebook.rendercore.LayoutContext
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
@@ -66,7 +67,8 @@ class LithoNodeTouchExpansionTest {
 
   private fun calculateLayout(): LithoLayoutResult? {
     val context =
-        LayoutContext(context.androidContext, LithoRenderContext(layoutStateContext), 0, null, null)
+        LayoutContext(
+            context.androidContext, LithoRenderContext(layoutStateContext), 0, LayoutCache(), null)
     return node.calculateLayout(context, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED)
   }
 

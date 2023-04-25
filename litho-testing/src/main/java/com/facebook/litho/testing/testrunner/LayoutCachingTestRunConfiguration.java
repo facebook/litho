@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho.testing.testrunner;
 
-import com.facebook.yoga.YogaNode
-import java.lang.UnsupportedOperationException
+import com.facebook.litho.config.ComponentsConfiguration;
+import org.junit.runners.model.FrameworkMethod;
 
-/**
- * This [LithoNode] represents a component that renders to `null`. This is required to support
- * reconciliation of state, and transitions on a component that conditionally renders to null.
- */
-class NullNode : LithoNode() {
+public class LayoutCachingTestRunConfiguration implements LithoTestRunConfiguration {
 
-  override fun createYogaNodeWriter(): YogaLayoutProps? = null
+  private final boolean layoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
 
-  public override fun createLayoutResult(
-      node: YogaNode,
-      layoutProps: YogaLayoutProps?
-  ): LithoLayoutResult {
-    throw UnsupportedOperationException("NullNode must not be used for layout")
+  @Override
+  public void beforeTest(FrameworkMethod method) {
+    ComponentsConfiguration.enableLayoutCaching = !layoutCachingEnabled;
+  }
+
+  @Override
+  public void afterTest(FrameworkMethod method) {
+    ComponentsConfiguration.enableLayoutCaching = layoutCachingEnabled;
   }
 }

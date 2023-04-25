@@ -62,7 +62,9 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.LayoutContext;
+import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderUnit;
@@ -84,6 +86,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** {@link LithoNode} is the {@link Node} implementation of Litho. */
 @OkToExtend
@@ -93,6 +96,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
+  private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L;
@@ -178,6 +182,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   private boolean mNeedsHostView = false;
   private boolean mWillMountView = false;
 
+  private int mId;
   private boolean mIsClone = false;
   private boolean mFrozen;
   private boolean mNodeInfoWasWritten;
@@ -190,6 +195,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
   protected LithoNode() {
     mDebugComponents = new HashSet<>();
+    mId = sIdGenerator.getAndIncrement();
   }
 
   public @Nullable Mountable<?> getMountable() {
@@ -439,26 +445,49 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       LayoutContext<LithoRenderContext> context,
       LithoNode currentNode,
       @Nullable YogaNode parentNode) {
-    final LithoRenderContext renderContext = context.getRenderContext();
-    final @Nullable YogaLayoutProps writer = currentNode.createYogaNodeWriter();
 
-    if (writer == null) {
-      return null;
+    LithoLayoutResult layoutResult = null;
+    YogaNode yogaNode = null;
+    if (ComponentsConfiguration.enableLayoutCaching) {
+      final LayoutCache layoutCache = context.getLayoutCache();
+      LayoutResult cachedLayoutResult = layoutCache.get(currentNode);
+      if (cachedLayoutResult != null) {
+        // The situation that we can fully reuse the yoga tree
+        final LithoLayoutResult lithoLayoutResult =
+            buildYogaTreeFromCache(context, (LithoLayoutResult) cachedLayoutResult);
+
+        resetSizeIfNecessary(parentNode, lithoLayoutResult);
+
+        return lithoLayoutResult;
+      }
+
+      cachedLayoutResult = layoutCache.get(currentNode.mId);
+      if (cachedLayoutResult != null) {
+        // The situation that we can partially reuse the yoga tree
+        YogaNode clonedNode =
+            ((LithoLayoutResult) cachedLayoutResult).getYogaNode().cloneWithoutChildren();
+
+        yogaNode = clonedNode;
+        layoutResult =
+            ((LithoLayoutResult) cachedLayoutResult).copyLayoutResult(currentNode, clonedNode);
+
+        resetSizeIfNecessary(parentNode, layoutResult);
+      }
     }
 
-    // Transfer the layout props to YogaNode
-    currentNode.writeToYogaNode(writer);
-
-    final YogaNode yogaNode = writer.getNode();
-
-    // Only add the YogaNode and LayoutResult if the node renders something. If it does
-    // not render anything then it should not participate in grow/shrink behaviours.
-    final @Nullable LithoLayoutResult parentLayoutResult =
-        parentNode != null ? LithoLayoutResult.getLayoutResultFromYogaNode(parentNode) : null;
-
-    final LithoLayoutResult layoutResult = currentNode.createLayoutResult(yogaNode);
-    currentNode.applyDiffNode(renderContext.layoutStateContext, layoutResult, parentLayoutResult);
+    if (layoutResult == null) {
+      final @Nullable YogaLayoutProps writer = currentNode.createYogaNodeWriter();
+      if (writer == null) {
+        return null;
+      }
+      // Transfer the layout props to YogaNode
+      currentNode.writeToYogaNode(writer);
+      yogaNode = writer.getNode();
+      layoutResult = currentNode.createLayoutResult(yogaNode, writer);
+    }
     yogaNode.setData(new Pair(context, layoutResult));
+    applyDiffNode(context.getRenderContext().layoutStateContext, currentNode, yogaNode, parentNode);
+    saveLithoLayoutResultIntoCache(context, currentNode, layoutResult);
 
     for (int i = 0; i < currentNode.getChildCount(); i++) {
       final @Nullable LithoLayoutResult childLayoutResult =
@@ -470,6 +499,78 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     }
 
     return layoutResult;
+  }
+
+  // Since we could potentially change with/maxWidth and height/maxHeight, we should reset them to
+  // default value before we re-measure with the latest size specs.
+  // We don't need to reset the size if last measured size equals to the original specified size.
+  private static void resetSizeIfNecessary(
+      @Nullable YogaNode parent, LithoLayoutResult layoutResult) {
+    if (parent != null) {
+      return;
+    }
+    final YogaNode yogaNode = layoutResult.getYogaNode();
+    if (Float.compare(layoutResult.getWidthFromStyle(), yogaNode.getWidth().value) != 0) {
+      yogaNode.setWidth(YogaConstants.UNDEFINED);
+      yogaNode.setMaxWidth(YogaConstants.UNDEFINED);
+    }
+    if (Float.compare(layoutResult.getHeightFromStyle(), yogaNode.getHeight().value) != 0) {
+      yogaNode.setHeight(YogaConstants.UNDEFINED);
+      yogaNode.setMaxHeight(YogaConstants.UNDEFINED);
+    }
+  }
+
+  private static LithoLayoutResult buildYogaTreeFromCache(
+      LayoutContext<LithoRenderContext> context, LithoLayoutResult cachedLayoutResult) {
+    YogaNode clonedNode = cachedLayoutResult.getYogaNode().cloneWithChildren();
+    return cloneLayoutResultsRecursively(context, cachedLayoutResult, clonedNode);
+  }
+
+  private static LithoLayoutResult cloneLayoutResultsRecursively(
+      LayoutContext<LithoRenderContext> context,
+      LithoLayoutResult cachedLayoutResult,
+      YogaNode clonedYogaNode) {
+    LithoNode node = cachedLayoutResult.mNode;
+    LithoLayoutResult result = cachedLayoutResult.copyLayoutResult(node, clonedYogaNode);
+    clonedYogaNode.setData(new Pair(context, result));
+    saveLithoLayoutResultIntoCache(context, node, result);
+
+    for (int i = 0, count = cachedLayoutResult.getChildCount(); i < count; i++) {
+      LithoLayoutResult child =
+          cloneLayoutResultsRecursively(
+              context, cachedLayoutResult.getChildAt(i), clonedYogaNode.getChildAt(i));
+      result.addChild(child);
+    }
+    return result;
+  }
+
+  /**
+   * Only add the YogaNode and LayoutResult if the node renders something. If it does not render
+   * anything then it should not participate in grow/shrink behaviours.
+   */
+  private static void applyDiffNode(
+      LayoutStateContext context,
+      LithoNode currentNode,
+      YogaNode currentYogaNode,
+      @Nullable YogaNode parentYogaNode) {
+    final @Nullable LithoLayoutResult parentLayoutResult =
+        parentYogaNode != null
+            ? LithoLayoutResult.getLayoutResultFromYogaNode(parentYogaNode)
+            : null;
+    final LithoLayoutResult currentLayoutResult =
+        LithoLayoutResult.getLayoutResultFromYogaNode(currentYogaNode);
+    currentNode.applyDiffNode(context, currentLayoutResult, parentLayoutResult);
+  }
+
+  /** Save LithoLayoutResult into LayoutCache, using node itself and id as keys. */
+  private static void saveLithoLayoutResultIntoCache(
+      LayoutContext<LithoRenderContext> context, LithoNode node, LithoLayoutResult result) {
+    if (!ComponentsConfiguration.enableLayoutCaching) {
+      return;
+    }
+    final LayoutCache layoutCache = context.getLayoutCache();
+    layoutCache.put(node, result);
+    layoutCache.put(node.mId, result);
   }
 
   public @Nullable LithoLayoutResult calculateLayout(
@@ -1132,6 +1233,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     try {
       node = (LithoNode) super.clone();
       node.mIsClone = true;
+      node.mId = this.mId;
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
@@ -1254,8 +1356,14 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     mIsPaddingSet = writer.isPaddingSet;
   }
 
-  LithoLayoutResult createLayoutResult(final YogaNode node) {
-    return new LithoLayoutResult(getTailComponentContext(), this, node);
+  LithoLayoutResult createLayoutResult(
+      final YogaNode node, @Nullable final YogaLayoutProps layoutProps) {
+    final float widthFromStyle =
+        layoutProps != null ? layoutProps.widthFromStyle : YogaConstants.UNDEFINED;
+    final float heightFromStyle =
+        layoutProps != null ? layoutProps.heightFromStyle : YogaConstants.UNDEFINED;
+    return new LithoLayoutResult(
+        getTailComponentContext(), this, node, widthFromStyle, heightFromStyle);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Rect padding) {

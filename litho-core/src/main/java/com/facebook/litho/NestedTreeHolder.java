@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.PathEffect;
 import androidx.annotation.Nullable;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaNode;
 
 /**
@@ -92,8 +93,14 @@ public class NestedTreeHolder extends LithoNode {
   }
 
   @Override
-  NestedTreeHolderResult createLayoutResult(final YogaNode node) {
-    return new NestedTreeHolderResult(getTailComponentContext(), this, node);
+  NestedTreeHolderResult createLayoutResult(
+      final YogaNode node, @Nullable final YogaLayoutProps layoutProps) {
+    final float widthFromStyle =
+        layoutProps != null ? layoutProps.widthFromStyle : YogaConstants.UNDEFINED;
+    final float heightFromStyle =
+        layoutProps != null ? layoutProps.heightFromStyle : YogaConstants.UNDEFINED;
+    return new NestedTreeHolderResult(
+        getTailComponentContext(), this, node, widthFromStyle, heightFromStyle);
   }
 
   public void copyInto(LithoNode target) {

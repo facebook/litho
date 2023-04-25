@@ -31,8 +31,12 @@ public class NestedTreeHolderResult extends LithoLayoutResult {
   @Nullable LithoLayoutResult mNestedTree;
 
   public NestedTreeHolderResult(
-      final ComponentContext c, final NestedTreeHolder internalNode, final YogaNode yogaNode) {
-    super(c, internalNode, yogaNode);
+      final ComponentContext c,
+      final NestedTreeHolder internalNode,
+      final YogaNode yogaNode,
+      final float widthFromStyle,
+      final float heightFromStyle) {
+    super(c, internalNode, yogaNode, widthFromStyle, heightFromStyle);
   }
 
   @Override

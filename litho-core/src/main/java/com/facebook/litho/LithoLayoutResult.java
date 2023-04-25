@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.LayoutContext;
 import com.facebook.rendercore.LayoutResult;
 import com.facebook.rendercore.MeasureResult;
@@ -51,6 +52,7 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
   private final YogaNode mYogaNode;
 
   private boolean mCachedMeasuresValid;
+  private boolean mIsCachedLayout;
   private @Nullable DiffNode mDiffNode;
 
   private int mLastWidthSpec = DiffNode.UNSPECIFIED;
@@ -68,12 +70,20 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
 
   private boolean mWasMeasured = false;
   private boolean mMeasureHadExceptions = false;
+  private float mWidthFromStyle = YogaConstants.UNDEFINED;
+  private float mHeightFromStyle = YogaConstants.UNDEFINED;
 
   public LithoLayoutResult(
-      final ComponentContext c, final LithoNode node, final YogaNode yogaNode) {
+      final ComponentContext c,
+      final LithoNode node,
+      final YogaNode yogaNode,
+      final float widthFromStyle,
+      final float heightFromStyle) {
     mContext = c;
     mNode = node;
     mYogaNode = yogaNode;
+    mWidthFromStyle = widthFromStyle;
+    mHeightFromStyle = heightFromStyle;
 
     /*
 
@@ -306,6 +316,30 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mCachedMeasuresValid;
   }
 
+  public boolean isCachedLayout() {
+    return mIsCachedLayout;
+  }
+
+  public void setCachedLayout(boolean isCachedLayout) {
+    mIsCachedLayout = isCachedLayout;
+  }
+
+  public float getWidthFromStyle() {
+    return mWidthFromStyle;
+  }
+
+  public void setWidthFromStyle(float widthFromStyle) {
+    mWidthFromStyle = widthFromStyle;
+  }
+
+  public float getHeightFromStyle() {
+    return mHeightFromStyle;
+  }
+
+  public void setHeightFromStyle(float heightFromStyle) {
+    mHeightFromStyle = heightFromStyle;
+  }
+
   public @Nullable DiffNode getDiffNode() {
     return mDiffNode;
   }
@@ -382,6 +416,21 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     } else {
       return InternalNodeUtils.createBorderRenderUnit(this);
     }
+  }
+
+  public LithoLayoutResult copyLayoutResult(LithoNode node, YogaNode yogaNode) {
+    LithoLayoutResult copiedResult = node.createLayoutResult(yogaNode, null);
+    copiedResult.setCachedLayout(true);
+    copiedResult.setCachedMeasuresValid(mCachedMeasuresValid);
+    copiedResult.setDiffNode(mDiffNode);
+    copiedResult.setLastWidthSpec(mLastWidthSpec);
+    copiedResult.setLastHeightSpec(mLastHeightSpec);
+    copiedResult.setLastMeasuredWidth(mLastMeasuredWidth);
+    copiedResult.setLastMeasuredHeight(mLastMeasuredHeight);
+    copiedResult.setLayoutData(mLayoutData);
+    copiedResult.setWidthFromStyle(mWidthFromStyle);
+    copiedResult.setHeightFromStyle(mHeightFromStyle);
+    return copiedResult;
   }
 
   @Override
@@ -520,8 +569,18 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     final ComponentContext componentScopedContext = node.getTailComponentContext();
     final DiffNode diffNode = areCachedMeasuresValid() ? getDiffNode() : null;
 
+    // If layout cache is valid then we can reuse measurements from the previous pass
+    if (ComponentsConfiguration.enableLayoutCaching
+        && isCachedLayout()
+        && getLastMeasuredWidth() == widthSpec
+        && getLastMeasuredHeight() == heightSpec
+        && !shouldAlwaysRemeasure(component)) {
+
+      return new MeasureResult(
+          (int) getLastMeasuredWidth(), (int) getLastMeasuredHeight(), mLayoutData);
+    }
     // If diff node is set check if measurements from the previous pass can be reused
-    if (diffNode != null
+    else if (diffNode != null
         && diffNode.getLastWidthSpec() == widthSpec
         && diffNode.getLastHeightSpec() == heightSpec
         && !shouldAlwaysRemeasure(component)) {

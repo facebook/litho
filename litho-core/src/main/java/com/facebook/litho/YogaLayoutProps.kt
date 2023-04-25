@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaConstants
 import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaFlexDirection
@@ -29,53 +30,67 @@ import kotlin.jvm.JvmField
 open class YogaLayoutProps(val node: YogaNode) : LayoutProps {
 
   @JvmField var isPaddingSet: Boolean = false
+  @JvmField var widthFromStyle: Float = YogaConstants.UNDEFINED
+  @JvmField var heightFromStyle: Float = YogaConstants.UNDEFINED
 
   override fun widthPx(width: Int) {
-    node.setWidth(width.toFloat())
+    widthFromStyle = width.toFloat()
+    node.setWidth(widthFromStyle)
   }
 
   override fun widthPercent(percent: Float) {
-    node.setWidthPercent(percent)
+    widthFromStyle = percent
+    node.setWidthPercent(widthFromStyle)
   }
 
   override fun minWidthPx(minWidth: Int) {
-    node.setMinWidth(minWidth.toFloat())
+    widthFromStyle = minWidth.toFloat()
+    node.setMinWidth(widthFromStyle)
   }
 
   override fun maxWidthPx(maxWidth: Int) {
-    node.setMaxWidth(maxWidth.toFloat())
+    widthFromStyle = maxWidth.toFloat()
+    node.setMaxWidth(widthFromStyle)
   }
 
   override fun minWidthPercent(percent: Float) {
-    node.setMinWidthPercent(percent)
+    widthFromStyle = percent
+    node.setMinWidthPercent(widthFromStyle)
   }
 
   override fun maxWidthPercent(percent: Float) {
-    node.setMaxWidthPercent(percent)
+    widthFromStyle = percent
+    node.setMaxWidthPercent(widthFromStyle)
   }
 
   override fun heightPx(height: Int) {
-    node.setHeight(height.toFloat())
+    heightFromStyle = height.toFloat()
+    node.setHeight(heightFromStyle)
   }
 
   override fun heightPercent(percent: Float) {
-    node.setHeightPercent(percent)
+    heightFromStyle = percent
+    node.setHeightPercent(heightFromStyle)
   }
 
   override fun minHeightPx(minHeight: Int) {
-    node.setMinHeight(minHeight.toFloat())
+    heightFromStyle = minHeight.toFloat()
+    node.setMinHeight(heightFromStyle)
   }
 
   override fun maxHeightPx(maxHeight: Int) {
-    node.setMaxHeight(maxHeight.toFloat())
+    heightFromStyle = maxHeight.toFloat()
+    node.setMaxHeight(heightFromStyle)
   }
 
   override fun minHeightPercent(percent: Float) {
-    node.setMinHeightPercent(percent)
+    heightFromStyle = percent
+    node.setMinHeightPercent(heightFromStyle)
   }
 
   override fun maxHeightPercent(percent: Float) {
-    node.setMaxHeightPercent(percent)
+    heightFromStyle = percent
+    node.setMaxHeightPercent(heightFromStyle)
   }
 
   override fun layoutDirection(direction: YogaDirection) {

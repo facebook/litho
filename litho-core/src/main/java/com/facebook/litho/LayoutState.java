@@ -267,6 +267,16 @@ public class LayoutState
       measure = null;
     }
 
+    if (ComponentsConfiguration.enableLayoutCaching && hasExactSize) {
+      // We'd like to reuse the layout result for cached nodes, record the size info for the node
+      // that has exact size because they would not be measured through `LithoLayoutResult#measure`
+      // function.
+      result.setLastMeasuredWidth(result.getWidth());
+      result.setLastMeasuredHeight(result.getHeight());
+      result.setLastWidthSpec(exactly(result.getWidth()));
+      result.setLastHeightSpec(exactly(result.getHeight()));
+    }
+
     if (measure != null && measure.mHadExceptions) {
       return null;
     }
