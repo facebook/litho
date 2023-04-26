@@ -745,7 +745,8 @@ public class TreeDiffingTest {
     LithoRenderUnit unit =
         MountSpecLithoRenderUnit.create(
             0, component, null, null, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
-    return RenderTreeNodeUtils.create(unit, new Rect(), null, null);
+    return RenderTreeNodeUtils.create(
+        unit, new Rect(), new LithoLayoutData(0, 0, 0, 0, null, null), null);
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {

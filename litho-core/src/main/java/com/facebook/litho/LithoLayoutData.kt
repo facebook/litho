@@ -64,5 +64,10 @@ class LithoLayoutData(
       }
       return layoutData.layoutData
     }
+
+    @JvmStatic
+    fun getExpandedTouchBounds(data: Any?): Rect? {
+      return verifyAndGetLithoLayoutData(data).expandedTouchBounds
+    }
   }
 }

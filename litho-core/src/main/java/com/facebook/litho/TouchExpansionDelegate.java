@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -147,7 +145,9 @@ class TouchExpansionDelegate extends TouchDelegate {
 
     @Nullable
     Rect getDelegateBounds() {
-      final Rect expansion = getRenderUnit(mItem).getTouchBoundsExpansion();
+      final Rect expansion =
+          LithoLayoutData.getExpandedTouchBounds(mItem.getRenderTreeNode().getLayoutData());
+
       if (expansion == null) {
         return null;
       }

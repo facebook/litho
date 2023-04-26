@@ -40,7 +40,22 @@ object MountItemTestHelper {
             flags,
             importantForAccessibility,
             LithoRenderUnit.STATE_UNKNOWN)
-    val node = create(unit, bounds ?: Rect(), null, null)
+    val width = bounds?.width() ?: 0
+    val height = bounds?.height() ?: 0
+    val node =
+        create(
+            unit,
+            bounds ?: Rect(),
+            LithoLayoutData(
+                width,
+                height,
+                0,
+                0,
+                null,
+                null,
+            ),
+            null,
+        )
     return MountItem(node, host, content).apply { mountData = LithoMountData(content) }
   }
 }

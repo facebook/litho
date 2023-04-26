@@ -157,8 +157,8 @@ class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY))
     assertThat(layoutState.mountableOutputCount).isEqualTo(6)
-    val renderUnit = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4))
-    assertThat(renderUnit.touchBoundsExpansion).isEqualTo(Rect(5, 5, 5, 5))
+    val layoutData = layoutState.getMountableOutputAt(4).layoutData as LithoLayoutData
+    assertThat(layoutData.expandedTouchBounds).isEqualTo(Rect(5, 5, 5, 5))
     val nodeInfo = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).nodeInfo
     assertThat(nodeInfo).isNotNull
     assertThat(nodeInfo?.clickHandler).isNotNull
