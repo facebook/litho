@@ -31,7 +31,6 @@ import static com.facebook.litho.LithoRenderUnit.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
@@ -318,13 +317,11 @@ public class InternalNodeUtils {
     }
 
     Mountable<?> mountable = node.getMountable();
-    Rect touchBoundsExpansion = result.getExpandedTouchBounds();
     if (mountable != null && isMountable(component)) {
       return MountableLithoRenderUnit.create(
           component,
           context,
           layoutOutputNodeInfo,
-          touchBoundsExpansion,
           flags,
           importantForAccessibility,
           updateState,
@@ -337,7 +334,6 @@ public class InternalNodeUtils {
           component,
           context,
           layoutOutputNodeInfo,
-          touchBoundsExpansion,
           flags,
           importantForAccessibility,
           updateState,
@@ -349,7 +345,6 @@ public class InternalNodeUtils {
         component,
         context,
         layoutOutputNodeInfo,
-        touchBoundsExpansion,
         flags,
         importantForAccessibility,
         updateState);

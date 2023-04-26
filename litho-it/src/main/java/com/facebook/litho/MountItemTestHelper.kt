@@ -36,7 +36,6 @@ object MountItemTestHelper {
             component,
             null,
             info,
-            bounds,
             flags,
             importantForAccessibility,
             LithoRenderUnit.STATE_UNKNOWN)

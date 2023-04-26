@@ -16,14 +16,11 @@
 
 package com.facebook.litho
 
-import android.graphics.Rect
 import androidx.annotation.IntDef
-import com.facebook.litho.LithoRenderUnit.UpdateState
 import com.facebook.litho.annotations.ImportantForAccessibility
 import com.facebook.rendercore.MountItem
 import com.facebook.rendercore.RenderTreeNode
 import com.facebook.rendercore.RenderUnit
-import com.facebook.rendercore.RenderUnit.RenderType
 import com.facebook.rendercore.transitions.TransitionRenderUnit
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
@@ -33,7 +30,6 @@ protected constructor(
     private val _id: Long,
     val component: Component,
     val nodeInfo: NodeInfo?,
-    val touchBoundsExpansion: Rect?,
     val flags: Int,
     importantForAccessibility: Int,
     @get:UpdateState val updateState: Int,

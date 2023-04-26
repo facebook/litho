@@ -304,7 +304,6 @@ public class LayoutState
             HostComponent.create(),
             null,
             null,
-            null,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LithoRenderUnit.STATE_DIRTY);

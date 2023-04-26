@@ -125,7 +125,7 @@ public class TransitionTest {
 
     LithoRenderUnit rootUnit =
         MountSpecLithoRenderUnit.create(
-            0, component, null, null, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
+            0, component, null, null, 0, 0, LithoRenderUnit.STATE_UNKNOWN);
 
     when(layoutState.getMountableOutputAt(0))
         .thenReturn(RenderTreeNodeUtils.create(rootUnit, new Rect(0, 0, 300, 100), null, null));
