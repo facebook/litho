@@ -238,8 +238,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableRecyclerBinderStableId = false;
 
-  public static boolean requestMountForPrefetchedItems = false;
-
   public static boolean enableLayoutCaching = false;
 
   public static int recyclerBinderStrategy = 0;
