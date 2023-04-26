@@ -400,7 +400,7 @@ public class LayoutState
             bounds.height(),
             layoutState.mId,
             layoutState.mPreviousLayoutStateId,
-            unit.getTouchBoundsExpansion(),
+            result.getExpandedTouchBounds(),
             layoutData),
         parent);
   }

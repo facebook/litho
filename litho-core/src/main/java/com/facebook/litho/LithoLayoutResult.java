@@ -21,6 +21,7 @@ import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import androidx.annotation.Nullable;
@@ -231,6 +232,23 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return mNode.getTouchExpansion() != null
         && mNode.getNodeInfo() != null
         && mNode.getNodeInfo().hasTouchEventHandlers();
+  }
+
+  @Nullable
+  Rect getExpandedTouchBounds() {
+    if (!getNode().hasTouchExpansion()) {
+      return null;
+    }
+
+    final int left = getTouchExpansionLeft();
+    final int top = getTouchExpansionTop();
+    final int right = getTouchExpansionRight();
+    final int bottom = getTouchExpansionBottom();
+    if (left == 0 && top == 0 && right == 0 && bottom == 0) {
+      return null;
+    }
+
+    return new Rect(left, top, right, bottom);
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
