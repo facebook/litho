@@ -161,7 +161,7 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
 
   @Override
   public Class<?> getRenderContentType() {
-    return mMountable.getClass();
+    return mMountable.getRenderContentType();
   }
 
   @Override
