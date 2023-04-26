@@ -395,14 +395,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
       @Nullable MountDelegate mountDelegate,
       boolean isAttached) {
 
-    final List<DelegateBinder> attachBindersForBind =
-        new ArrayList<>(sizeOrZero(getAttachBinders()));
+    final List<DelegateBinder> attachBindersForBind = new ArrayList<>(sizeOrZero(mAttachBinders));
     final List<DelegateBinder> attachBindersForUnbind =
-        new ArrayList<>(sizeOrZero(currentRenderUnit.getAttachBinders()));
+        new ArrayList<>(sizeOrZero(currentRenderUnit.mAttachBinders));
     final List<DelegateBinder> optionalMountBindersForBind =
-        new ArrayList<>(sizeOrZero(getOptionalMountBinders()));
+        new ArrayList<>(sizeOrZero(mOptionalMountBinders));
     final List<DelegateBinder> optionalMountBindersForUnbind =
-        new ArrayList<>(sizeOrZero(currentRenderUnit.getOptionalMountBinders()));
+        new ArrayList<>(sizeOrZero(currentRenderUnit.mOptionalMountBinders));
 
     // 1. Resolve fixed mount binders which should update.
     long fixedMountBindersToUpdate =
@@ -414,17 +413,17 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
 
     // 2. Diff the binders to resolve what's to bind/unbind.
     resolveBindersToUpdate(
-        currentRenderUnit.getAttachBinders(),
-        getAttachBinders(),
-        currentRenderUnit.getAttachBinderTypeToDelegateMap(),
+        currentRenderUnit.mAttachBinders,
+        mAttachBinders,
+        currentRenderUnit.mAttachBinderTypeToDelegateMap,
         currentLayoutData,
         newLayoutData,
         attachBindersForBind,
         attachBindersForUnbind);
     resolveBindersToUpdate(
-        currentRenderUnit.getOptionalMountBinders(),
-        getOptionalMountBinders(),
-        currentRenderUnit.getOptionalMountBinderTypeToDelegateMap(),
+        currentRenderUnit.mOptionalMountBinders,
+        mOptionalMountBinders,
+        currentRenderUnit.mOptionalMountBinderTypeToDelegateMap,
         currentLayoutData,
         newLayoutData,
         optionalMountBindersForBind,
