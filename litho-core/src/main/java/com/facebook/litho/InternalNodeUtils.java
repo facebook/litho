@@ -55,7 +55,7 @@ public class InternalNodeUtils {
     }
 
     final String componentKey = node.getTailComponentKey();
-    final ComponentContext context = result.getContext();
+    final ComponentContext context = node.getTailComponentContext();
     final @Nullable DiffNode diffNode = result.getDiffNode();
     long previousId = -1;
 
@@ -72,7 +72,6 @@ public class InternalNodeUtils {
         id,
         component,
         context,
-        result,
         node,
         node.getImportantForAccessibility(),
         previousId != id
@@ -112,8 +111,7 @@ public class InternalNodeUtils {
       updateState = LithoRenderUnit.STATE_DIRTY;
     } else {
       id =
-          result
-              .getContext()
+          node.getTailComponentContext()
               .calculateLayoutOutputId(node.getTailComponentKey(), OutputUnitType.HOST);
 
       updateState = LithoRenderUnit.STATE_UNKNOWN;
@@ -123,7 +121,6 @@ public class InternalNodeUtils {
         id,
         hostComponent,
         null,
-        result,
         node,
         node.getImportantForAccessibility(),
         updateState,
@@ -137,11 +134,12 @@ public class InternalNodeUtils {
    * Creates a {@link LithoRenderUnit} for the background output iff the result has a background.
    */
   static @Nullable LithoRenderUnit createBackgroundRenderUnit(LithoLayoutResult result) {
-    final Drawable background = result.getBackground();
+    final LithoNode node = result.getNode();
+    final Drawable background = node.getBackground();
 
     // Only create a background output when the component does not mount a View because
     // the background will get set in the output of the component.
-    if (background != null && !result.getNode().willMountView()) {
+    if (background != null && !node.willMountView()) {
       return createDrawableRenderUnit(result, background, OutputUnitType.BACKGROUND);
     }
 
@@ -187,6 +185,7 @@ public class InternalNodeUtils {
 
     final Component component = DrawableComponent.create(drawable);
     final LithoNode node = result.getNode();
+    final ComponentContext context = node.getTailComponentContext();
     final String componentKey = node.getTailComponentKey();
     final @Nullable DiffNode diffNode = result.getDiffNode();
 
@@ -218,7 +217,7 @@ public class InternalNodeUtils {
         isCachedOutputUpdated =
             !component.shouldComponentUpdate(null, recycle.getComponent(), null, component);
       } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
+        ComponentUtils.handleWithHierarchy(context, component, e);
         isCachedOutputUpdated = false;
       }
     } else {
@@ -226,7 +225,7 @@ public class InternalNodeUtils {
     }
 
     final long previousId = recycle != null ? recycle.getId() : -1;
-    final long id = result.getContext().calculateLayoutOutputId(componentKey, outputType);
+    final long id = context.calculateLayoutOutputId(componentKey, outputType);
 
     /* Call onBoundsDefined for the DrawableComponent */
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -236,10 +235,10 @@ public class InternalNodeUtils {
 
     try {
       if (component instanceof SpecGeneratedComponent) {
-        ((SpecGeneratedComponent) component).onBoundsDefined(result.getContext(), result, null);
+        ((SpecGeneratedComponent) component).onBoundsDefined(context, result, null);
       }
     } catch (Exception e) {
-      ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
+      ComponentUtils.handleWithHierarchy(context, component, e);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -250,7 +249,6 @@ public class InternalNodeUtils {
         id,
         component,
         null,
-        result,
         node,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         previousId != id
@@ -267,7 +265,6 @@ public class InternalNodeUtils {
       long id,
       Component component,
       @Nullable ComponentContext context,
-      LithoLayoutResult result,
       LithoNode node,
       int importantForAccessibility,
       @LithoRenderUnit.UpdateState int updateState,
