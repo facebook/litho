@@ -58,11 +58,14 @@ open class RecyclePool<T : Any>(
     }
   }
 
-  override fun getName(): String = _name
+  override val name: String
+    get() = _name
 
-  override fun getMaxSize(): Int = _maxSize
+  override val maxSize: Int
+    get() = _maxSize
 
-  override fun getCurrentSize(): Int = _currentSize
+  override val currentSize: Int
+    get() = _currentSize
 
   fun clear() {
     if (isSync) {

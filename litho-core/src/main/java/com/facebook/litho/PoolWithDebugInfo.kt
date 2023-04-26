@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
 /** A object pool that has debug info for display in tools like Stetho. */
-public interface PoolWithDebugInfo {
+interface PoolWithDebugInfo {
 
   /** @return a human-readable name for the pool. */
-  String getName();
+  val name: String
 
   /** @return the max number of objects this pool will hold. */
-  int getMaxSize();
+  val maxSize: Int
 
   /** @return the number of objects currently in the pool. */
-  int getCurrentSize();
+  val currentSize: Int
 }
