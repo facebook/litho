@@ -328,7 +328,6 @@ public class LayoutState
       final LithoRenderUnit unit,
       LayoutState layoutState,
       LithoLayoutResult result,
-      LithoNode node,
       @Nullable RenderTreeNode parent,
       @Nullable DebugHierarchy.Node hierarchy) {
 
@@ -1088,7 +1087,7 @@ public class LayoutState
     }
 
     final RenderTreeNode hostRenderTreeNode =
-        createHostRenderTreeNode(hostRenderUnit, layoutState, result, node, parent, hierarchy);
+        createHostRenderTreeNode(hostRenderUnit, layoutState, result, parent, hierarchy);
 
     if (diffNode != null) {
       diffNode.setHostOutput(hostRenderUnit);
