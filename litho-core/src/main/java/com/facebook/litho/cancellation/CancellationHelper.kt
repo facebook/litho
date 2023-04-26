@@ -23,7 +23,6 @@ import com.facebook.litho.PotentiallyPartialResult
 import com.facebook.litho.RenderSource
 import com.facebook.litho.TreeFuture
 import com.facebook.litho.TreeFuture.TreeFutureResult
-import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.stats.LithoStats
 import java.util.LinkedList
 
@@ -66,34 +65,23 @@ F : RequestMetadataSupplier<M> {
       debugLog { "Will attempt to cancel running requests: ${result.requestIds} (${attribution})" }
 
       val futuresToRemove =
-          cancelFutures<F, M, T>(
-              result.requestIds,
-              pendingFuturesCopy,
-              cancellationPolicy.cancellationMode,
-              attribution)
+          cancelFutures<F, M, T>(result.requestIds, pendingFuturesCopy, attribution)
 
       synchronized(mutex) { futures.removeAll(futuresToRemove) }
     }
   }
 
-  return try {
-    TreeFuture.trackAndRunTreeFuture(treeFuture, futures, source, mutex, futureExecutionListener)
-  } catch (e: FutureCancelledByPolicyException) {
-    debugLog { "Future was cancelled by CancellationPolicy" }
-    TreeFutureResult.cancelled()
-  }
+  return TreeFuture.trackAndRunTreeFuture(
+      treeFuture, futures, source, mutex, futureExecutionListener)
 }
 
 /**
  * This method takes a list of versions of the [TreeFuture] that should be cancelled and returns a
  * [Set] with all the [TreeFuture] cancelled.
- *
- * The [CancellationExecutionMode] decides if a short-circuit or interrupt approach should be taken.
  */
 private fun <F, M, T> cancelFutures(
     futuresToCancelVersions: List<Int>,
     pendingFutures: List<F>,
-    cancellationMode: CancellationExecutionMode,
     attribution: String
 ): Set<TreeFuture<*>> where
 F : TreeFuture<T>,
@@ -106,7 +94,7 @@ T : PotentiallyPartialResult {
     if (futureToCancel != null) {
       incrementCancellationStats(attribution)
 
-      futureToCancel.cancel(cancellationMode == CancellationExecutionMode.INTERRUPT)
+      futureToCancel.cancel(false)
       cancelledFutures.add(futureToCancel)
 
       debugLog { "Cancelled future (${futureToCancel.version}) with success." }

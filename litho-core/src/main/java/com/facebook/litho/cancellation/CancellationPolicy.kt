@@ -17,7 +17,6 @@
 package com.facebook.litho.cancellation
 
 import com.facebook.kotlin.compilerplugins.dataclassgenerate.annotation.DataClassGenerate
-import com.facebook.litho.TreeFuture
 
 /**
  * This policy is responsible for evaluating the context around the current executions of of a given
@@ -30,8 +29,6 @@ import com.facebook.litho.TreeFuture
  * indicate which action should be taken.
  */
 interface CancellationPolicy<M> {
-
-  val cancellationMode: CancellationExecutionMode
 
   fun evaluate(ongoingRequests: List<M>, incomingRequest: M): Result
 
@@ -49,23 +46,5 @@ interface CancellationPolicy<M> {
     object DropIncomingRequest : Result()
 
     @DataClassGenerate data class CancelRunningRequests(val requestIds: List<Int>) : Result()
-  }
-
-  /**
-   * In the scope of cancelling Resolve's we can perform it with one two approaches.
-   *
-   * The [INTERRUPT] mode, will make use of [TreeFuture] cancellation APIs, which can interrupt the
-   * Thread execution.
-   *
-   * If [SHORT_CIRCUIT] is used, then it will signal the [TreeFuture] that it is released and this
-   * will stop the resolve process as soon as one of the points we check if we should interrupt the
-   * resolve process. This happens for example, when [Row] or [Column] are being resolved.
-   *
-   * Please note, that the [SHORT_CIRCUIT] will only work for [Resolve], and it will not have effect
-   * for [Layout] as it has no short-circuit mechanism at this momenet.
-   */
-  enum class CancellationExecutionMode {
-    INTERRUPT,
-    SHORT_CIRCUIT
   }
 }

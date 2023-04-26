@@ -36,9 +36,6 @@ interface LayoutCancellationPolicy : CancellationPolicy<LayoutMetadata> {
 
   class Default : LayoutCancellationPolicy {
 
-    override val cancellationMode: CancellationPolicy.CancellationExecutionMode =
-        CancellationPolicy.CancellationExecutionMode.INTERRUPT
-
     /**
      * This method identifies which action to take whenever a new Layout request happens.
      *

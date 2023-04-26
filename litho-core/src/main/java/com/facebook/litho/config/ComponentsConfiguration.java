@@ -293,8 +293,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableStateUpdatesBatching = true;
 
-  @Nullable public static CancellationCheckMode sCancellationCheckMode = null;
-
   @Nullable public static ComponentsLogger sComponentsLogger;
 
   private boolean mIsLayoutCancellationEnabled = false;

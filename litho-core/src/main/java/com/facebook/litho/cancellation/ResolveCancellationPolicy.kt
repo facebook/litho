@@ -35,8 +35,7 @@ interface ResolveCancellationPolicy : CancellationPolicy<ResolveMetadata> {
       incomingRequest: ResolveMetadata
   ): Result
 
-  class Default(override val cancellationMode: CancellationPolicy.CancellationExecutionMode) :
-      ResolveCancellationPolicy {
+  object Default : ResolveCancellationPolicy {
 
     /**
      * This method identifies which action to take whenever a new Resolve request happens.
@@ -84,8 +83,7 @@ interface ResolveCancellationPolicy : CancellationPolicy<ResolveMetadata> {
     }
   }
 
-  class Greedy(override val cancellationMode: CancellationPolicy.CancellationExecutionMode) :
-      ResolveCancellationPolicy {
+  object Greedy : ResolveCancellationPolicy {
 
     /**
      * This method identifies which action to take whenever a new Resolve request happens.

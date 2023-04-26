@@ -53,7 +53,7 @@ class ResolveCancellationTest {
   fun `should not process an incoming redundant resolve request`() {
     // as we are not cancelling any running resolve on this test, the cancellation mode doesn't
     // matter
-    val lithoView = createEmptyLithoView(ResolveCancellationStrategy.DEFAULT_SHORT_CIRCUIT)
+    val lithoView = createEmptyLithoView(ResolveCancellationStrategy.LIGHT)
 
     val controller = ResolveTestController(lithoView.componentTree)
     val testComponent = controller.newTestComponent()
@@ -95,8 +95,8 @@ class ResolveCancellationTest {
    * execution is done by marking the TreeFuture as released.
    */
   @Test
-  fun `should cancel a running resolve when an incoming resolve makes it redundant - with short circuit`() {
-    testCancellingRunningResolve(ResolveCancellationStrategy.DEFAULT_SHORT_CIRCUIT)
+  fun `should cancel a running resolve when an incoming resolve makes it redundant - with light`() {
+    testCancellingRunningResolve(ResolveCancellationStrategy.LIGHT)
   }
 
   /**
@@ -106,13 +106,10 @@ class ResolveCancellationTest {
    * In this case, the incoming *Resolve* will effectively start a process that generates a
    * different *ResolveResult*. For this reason, we can cancel the running request, as it is
    * outdated, since we will process a new one that is different.
-   *
-   * In this test, the cancellation execution is done by interrupting the Future using
-   * `Future#cancel` APIs.
    */
   @Test
-  fun `should cancel a running resolve when an incoming resolve makes it redundant - with interruption`() {
-    testCancellingRunningResolve(ResolveCancellationStrategy.DEFAULT_INTERRUPT)
+  fun `should cancel a running resolve when an incoming resolve makes it redundant - with greedy`() {
+    testCancellingRunningResolve(ResolveCancellationStrategy.GREEDY)
   }
 
   private fun testCancellingRunningResolve(cancellationExecutionMode: ResolveCancellationStrategy) {

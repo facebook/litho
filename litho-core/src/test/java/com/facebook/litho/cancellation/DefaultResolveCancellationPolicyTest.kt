@@ -20,15 +20,13 @@ package com.facebook.litho.cancellation
 
 import com.facebook.litho.RenderSource
 import com.facebook.litho.TreeProps
-import com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode
 import com.facebook.litho.cancellation.CancellationPolicy.Result
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class DefaultResolveCancellationPolicyTest {
 
-  private val cancellationEvaluator =
-      ResolveCancellationPolicy.Default(cancellationMode = CancellationExecutionMode.INTERRUPT)
+  private val cancellationEvaluator = ResolveCancellationPolicy.Default
 
   // #################
   // ## NON-EQUIVALENT

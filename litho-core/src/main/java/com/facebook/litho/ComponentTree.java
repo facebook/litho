@@ -32,7 +32,6 @@ import static com.facebook.litho.RenderSourceUtils.getSource;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
-import static com.facebook.litho.cancellation.CancellationPolicy.CancellationExecutionMode;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.Breadcrumb;
 import static com.facebook.litho.debug.LithoDebugEventAttributes.HasMainThreadLayoutState;
@@ -501,21 +500,11 @@ public class ComponentTree
       mResolveCancellationPolicy = null;
     } else {
       switch (resolveCancellationStrategy) {
-        case DEFAULT_INTERRUPT:
-          mResolveCancellationPolicy =
-              new ResolveCancellationPolicy.Default(CancellationExecutionMode.INTERRUPT);
+        case LIGHT:
+          mResolveCancellationPolicy = ResolveCancellationPolicy.Default.INSTANCE;
           break;
-        case DEFAULT_SHORT_CIRCUIT:
-          mResolveCancellationPolicy =
-              new ResolveCancellationPolicy.Default(CancellationExecutionMode.SHORT_CIRCUIT);
-          break;
-        case GREEDY_INTERRUPT:
-          mResolveCancellationPolicy =
-              new ResolveCancellationPolicy.Greedy(CancellationExecutionMode.INTERRUPT);
-          break;
-        case GREEDY_SHORT_CIRCUIT:
-          mResolveCancellationPolicy =
-              new ResolveCancellationPolicy.Greedy(CancellationExecutionMode.SHORT_CIRCUIT);
+        case GREEDY:
+          mResolveCancellationPolicy = ResolveCancellationPolicy.Greedy.INSTANCE;
           break;
         default:
           mResolveCancellationPolicy = null;
