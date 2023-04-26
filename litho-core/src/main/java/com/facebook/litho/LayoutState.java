@@ -314,7 +314,7 @@ public class LayoutState
             unit,
             new Rect(0, 0, width, height),
             new LithoLayoutData(
-                width, height, layoutState.mId, layoutState.mPreviousLayoutStateId, null),
+                width, height, layoutState.mId, layoutState.mPreviousLayoutStateId, null, null),
             null);
 
     if (hierarchy != null) {
@@ -400,6 +400,7 @@ public class LayoutState
             bounds.height(),
             layoutState.mId,
             layoutState.mPreviousLayoutStateId,
+            unit.getTouchBoundsExpansion(),
             layoutData),
         parent);
   }

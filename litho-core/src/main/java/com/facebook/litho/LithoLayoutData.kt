@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Rect
 import com.facebook.litho.LithoRenderUnit.UpdateState
 import com.facebook.rendercore.RenderTreeNode
 
@@ -31,6 +32,7 @@ class LithoLayoutData(
     @field:JvmField val height: Int,
     @field:JvmField val currentLayoutStateId: Int,
     @field:JvmField val previousLayoutStateId: Int,
+    @field:JvmField val expandedTouchBounds: Rect?,
     @field:JvmField val layoutData: Any?
 ) {
   companion object {
