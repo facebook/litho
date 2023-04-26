@@ -88,12 +88,6 @@ public @interface MountSpec {
   boolean isPureRender() default false;
 
   /**
-   * @return Boolean indicating whether the component skips Incremental Mount. If this is true then
-   *     the Component is not going to be Incremental Mounted.
-   */
-  boolean excludeFromIncrementalMount() default false;
-
-  /**
    * @return boolean indicating whether this mount spec has child LithoViews. If this is true then
    *     we need to ensure that these child views are correctly incrementally mounted.
    */

@@ -105,7 +105,6 @@ public class PsiMountSpecModelFactory {
         mountSpecAnnotation.isPublic(),
         dependencyInjectionHelper,
         mountSpecAnnotation.isPureRender(),
-        mountSpecAnnotation.excludeFromIncrementalMount(),
         mountSpecAnnotation.hasChildLithoViews(),
         mountSpecAnnotation.poolSize(),
         mountSpecAnnotation.canPreallocate(),
