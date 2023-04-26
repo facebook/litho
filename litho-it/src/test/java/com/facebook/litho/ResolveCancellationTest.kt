@@ -28,12 +28,10 @@ import com.facebook.litho.testing.TimeOutSemaphore
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import java.util.concurrent.CountDownLatch
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@Ignore
 @RunWith(LithoTestRunner::class)
 class ResolveCancellationTest {
 

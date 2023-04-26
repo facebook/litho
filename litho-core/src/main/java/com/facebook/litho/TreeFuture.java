@@ -102,40 +102,6 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   /** Returns an integer that identifies uniquely the version of this {@link TreeFuture}. */
   public abstract int getVersion();
 
-  /**
-   * This indicates if this {@link TreeFuture} was canceleled by the framework. If so, we can
-   * consider that any {@link InterruptedException} or {@link CancellationException} was actively
-   * triggered by us.
-   */
-  private boolean mCancelled = false;
-
-  /**
-   * This method will forcefully cancel any possible execution or remaining execution of the task
-   * associated to this {@link TreeFuture}.
-   *
-   * <p>This attempt will fail if the task has already completed, has already been cancelled, or
-   * could not be cancelled for some other reason.
-   *
-   * <p>If successful, and this task has not started when cancel is called, this task should never
-   * run.
-   *
-   * <p>If the task has already started, then the mayInterruptIfRunning parameter determines whether
-   * the thread executing this task should be interrupted in an attempt to stop the task./ protected
-   *
-   * @return false if the task could not be cancelled, typically because it has already completed
-   *     normally; true otherwise
-   */
-  public synchronized boolean cancel(boolean useInterruption) {
-    mCancelled = true;
-
-    if (useInterruption) {
-      return mFutureTask.cancel(true);
-    } else {
-      release();
-      return true;
-    }
-  }
-
   /** Calculates a new result for this TreeFuture. */
   protected abstract T calculate();
 
@@ -429,10 +395,6 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
     }
 
     synchronized (TreeFuture.this) {
-      if (mCancelled) {
-        return TreeFutureResult.cancelled();
-      }
-
       if (mReleased) {
         return TreeFutureResult.interruptWithMessage(FUTURE_RESULT_NULL_REASON_RELEASED);
       }
@@ -543,26 +505,20 @@ public abstract class TreeFuture<T extends PotentiallyPartialResult> {
   public static class TreeFutureResult<T extends PotentiallyPartialResult> {
     public final @Nullable T result;
     public final @Nullable String message;
-    public final boolean wasCancelled;
 
-    private TreeFutureResult(@Nullable T result, @Nullable String message, boolean isCancelled) {
+    private TreeFutureResult(@Nullable T result, @Nullable String message) {
       this.result = result;
       this.message = message;
-      this.wasCancelled = isCancelled;
     }
 
     public static <T extends PotentiallyPartialResult> TreeFutureResult<T> finishWithResult(
         T result) {
-      return new TreeFutureResult<>(result, null, false);
+      return new TreeFutureResult<>(result, null);
     }
 
     public static <T extends PotentiallyPartialResult> TreeFutureResult<T> interruptWithMessage(
         String message) {
-      return new TreeFutureResult<>(null, message, false);
-    }
-
-    public static <T extends PotentiallyPartialResult> TreeFutureResult<T> cancelled() {
-      return new TreeFutureResult<>(null, null, true);
+      return new TreeFutureResult<>(null, message);
     }
   }
 

@@ -72,6 +72,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.cancellation.CancellationHelper;
 import com.facebook.litho.cancellation.LayoutCancellationPolicy;
 import com.facebook.litho.cancellation.ResolveCancellationPolicy;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -2301,15 +2302,26 @@ public class ComponentTree
 
     final TreeFuture.TreeFutureResult<ResolveResult> resolveResultHolder;
 
-    resolveResultHolder =
-        TreeFuture.trackAndRunTreeFuture(
-            treeFuture,
-            mResolveResultFutures,
-            source,
-            mResolveResultFutureLock,
-            mFutureExecutionListener);
+    if (mResolveCancellationPolicy != null) {
+      resolveResultHolder =
+          CancellationHelper.trackAndRunTreeFutureWithCancellation(
+              treeFuture,
+              mResolveResultFutures,
+              source,
+              mResolveResultFutureLock,
+              mFutureExecutionListener,
+              mResolveCancellationPolicy);
+    } else {
+      resolveResultHolder =
+          TreeFuture.trackAndRunTreeFuture(
+              treeFuture,
+              mResolveResultFutures,
+              source,
+              mResolveResultFutureLock,
+              mFutureExecutionListener);
+    }
 
-    if (resolveResultHolder == null || resolveResultHolder.wasCancelled) {
+    if (resolveResultHolder == null) {
       return;
     }
 
@@ -2504,15 +2516,26 @@ public class ComponentTree
             mIsLayoutDiffingEnabled,
             source);
 
-    layoutStateHolder =
-        TreeFuture.trackAndRunTreeFuture(
-            layoutTreeFuture,
-            mLayoutTreeFutures,
-            source,
-            mLayoutStateFutureLock,
-            mFutureExecutionListener);
+    if (mLayoutCancellationPolicy != null) {
+      layoutStateHolder =
+          CancellationHelper.trackAndRunTreeFutureWithCancellation(
+              layoutTreeFuture,
+              mLayoutTreeFutures,
+              source,
+              mLayoutStateFutureLock,
+              mFutureExecutionListener,
+              mLayoutCancellationPolicy);
+    } else {
+      layoutStateHolder =
+          TreeFuture.trackAndRunTreeFuture(
+              layoutTreeFuture,
+              mLayoutTreeFutures,
+              source,
+              mLayoutStateFutureLock,
+              mFutureExecutionListener);
+    }
 
-    if (layoutStateHolder == null || layoutStateHolder.wasCancelled) {
+    if (layoutStateHolder == null) {
       return;
     }
 

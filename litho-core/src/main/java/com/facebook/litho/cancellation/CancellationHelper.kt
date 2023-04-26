@@ -22,6 +22,7 @@ import android.util.Log
 import com.facebook.litho.PotentiallyPartialResult
 import com.facebook.litho.RenderSource
 import com.facebook.litho.TreeFuture
+import com.facebook.litho.TreeFuture.FUTURE_RESULT_NULL_REASON_RELEASED
 import com.facebook.litho.TreeFuture.TreeFutureResult
 import com.facebook.litho.stats.LithoStats
 import java.util.LinkedList
@@ -59,7 +60,7 @@ F : RequestMetadataSupplier<M> {
     is CancellationPolicy.Result.DropIncomingRequest -> {
       debugLog { "Dropping incoming request. (${attribution})" }
       incrementCancellationStats(treeFuture.description)
-      return TreeFutureResult.cancelled()
+      return TreeFutureResult.interruptWithMessage(FUTURE_RESULT_NULL_REASON_RELEASED)
     }
     is CancellationPolicy.Result.CancelRunningRequests -> {
       debugLog { "Will attempt to cancel running requests: ${result.requestIds} (${attribution})" }
@@ -94,7 +95,7 @@ T : PotentiallyPartialResult {
     if (futureToCancel != null) {
       incrementCancellationStats(attribution)
 
-      futureToCancel.cancel(false)
+      futureToCancel.release()
       cancelledFutures.add(futureToCancel)
 
       debugLog { "Cancelled future (${futureToCancel.version}) with success." }
