@@ -123,10 +123,9 @@ litho_robolectric4_test(
 litho_android_library(
     name = "testutil",
     srcs = [
-        "StateUpdateTestComponent.java",
+        "StateUpdateTestComponent.kt",
     ],
     autoglob = False,
-    language = "JAVA",
     source = "8",
     target = "8",
     visibility = [
