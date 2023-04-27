@@ -40,7 +40,7 @@ public class RenderUnitTest {
   }
 
   @Test
-  public void testaddMountBinders_WithSameBinderType_WontAddDuplicates() {
+  public void testAddMountBinders_WithSameBinderType_WontAddDuplicates() {
     final TestRenderUnit renderUnit = new TestRenderUnit();
 
     final TestBinder1 mountBinder1 = new TestBinder1(mBindOrder, mUnbindOrder);
@@ -439,31 +439,5 @@ public class RenderUnitTest {
 
     assertThat(mBindOrder).containsExactly(drawableMountBinder);
     assertThat(mUnbindOrder).containsExactly(drawableMountBinder);
-  }
-
-  private static class TestRenderUnit extends RenderUnit<View> implements ContentAllocator<View> {
-
-    public TestRenderUnit() {
-      super(RenderType.VIEW);
-    }
-
-    public TestRenderUnit(List<DelegateBinder<?, ? super View>> fixedMountBinders) {
-      super(RenderType.VIEW, fixedMountBinders, Collections.emptyList(), Collections.emptyList());
-    }
-
-    @Override
-    public View createContent(Context c) {
-      return new View(c);
-    }
-
-    @Override
-    public ContentAllocator<View> getContentAllocator() {
-      return this;
-    }
-
-    @Override
-    public long getId() {
-      return 0;
-    }
   }
 }
