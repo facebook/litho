@@ -30,6 +30,7 @@ import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaDisplay;
+import com.facebook.yoga.YogaErrata;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -60,6 +61,7 @@ public class YogaLayoutFunction {
 
   static {
     DEFAULT_YOGA_CONFIG.setUseWebDefaults(true);
+    DEFAULT_YOGA_CONFIG.setErrata(YogaErrata.CLASSIC);
   }
 
   private YogaLayoutFunction() {}
