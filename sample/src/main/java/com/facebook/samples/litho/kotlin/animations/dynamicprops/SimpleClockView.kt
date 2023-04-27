@@ -24,7 +24,7 @@ import android.graphics.PointF
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.Dimension
-import androidx.annotation.Dimension.Companion.DP
+import androidx.annotation.Dimension.DP
 import androidx.annotation.Px
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
