@@ -18,6 +18,7 @@ package com.facebook.litho.yoga;
 
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaConfigFactory;
+import com.facebook.yoga.YogaErrata;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNodeFactory;
 
@@ -25,6 +26,7 @@ public abstract class LithoYogaFactory {
   public static YogaConfig createYogaConfig() {
     YogaConfig yogaConfig = YogaConfigFactory.create();
     yogaConfig.setUseWebDefaults(true);
+    yogaConfig.setErrata(YogaErrata.CLASSIC);
     return yogaConfig;
   }
 
