@@ -395,6 +395,20 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
 
     final boolean isRoot = context.getRootComponentId() == getHeadComponent().getId();
 
+    if (!isRoot) { // if not root component
+
+      // If parents important for A11Y is YES_HIDE_DESCENDANTS then
+      // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
+      if (parentImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+        importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      }
+
+      // If the parent of this node is disabled, this node has to be disabled too.
+      if (parentEnabledState == ENABLED_SET_FALSE) {
+        mutableNodeInfo().setEnabled(false);
+      }
+    }
+
     mHostDuplicateParentState = isDuplicateParentStateEnabled();
     mNeedsHostView = needsHostView(this);
 
@@ -409,20 +423,6 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
             || (parentDuplicatesParentState && isDuplicateParentStateEnabled());
 
     duplicateParentState(shouldDuplicateParentState);
-
-    if (!isRoot) { // if not root component
-
-      // If parents important for A11Y is YES_HIDE_DESCENDANTS then
-      // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
-      if (parentImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
-        importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-      }
-
-      // If the parent of this node is disabled, this node has to be disabled too.
-      if (parentEnabledState == ENABLED_SET_FALSE) {
-        mutableNodeInfo().setEnabled(false);
-      }
-    }
 
     for (int i = 0; i < getChildCount(); i++) {
       getChildAt(i)
@@ -1224,6 +1224,18 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
     return mWillMountView;
   }
 
+  /**
+   * Note: Is only resolved after layout.
+   *
+   * @return {@code true} iff the node's out requires a host to wrap it
+   */
+  public boolean needsHostView() {
+    if (!mFrozen) {
+      throw new IllegalStateException("LithoNode:(" + getSimpleName() + ") has not been resolved.");
+    }
+    return mNeedsHostView;
+  }
+
   public boolean isClone() {
     return mIsClone;
   }
@@ -1298,6 +1310,8 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
       // If a NestedTreeHolder is set then transfer its resolved props into this LithoNode.
       if (mNestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
         mNestedTreeHolder.transferInto(this);
+        // TODO (T151239896): Revaluate copy into and freeze after common props are refactored
+        mNeedsHostView = needsHostView(this);
         if (mPaddingFromBackground != null) {
           setPaddingFromDrawable(writer, mPaddingFromBackground);
         }
@@ -1457,7 +1471,7 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
    * Determine if a given {@link LithoNode} within the context of a given {@link LayoutState}
    * requires to be wrapped inside a view.
    *
-   * @see LithoNode#needsHostView(LithoNode)
+   * @see LithoNode#needsHostView()
    */
   private static boolean hasViewContent(final LithoNode node) {
     final Component component = node.getTailComponent();
@@ -1549,11 +1563,11 @@ public class LithoNode implements Node<LithoRenderContext>, Cloneable {
   }
 
   /**
-   * Similar to {@link LithoNode#needsHostView(LithoNode)} but without dependency to {@link
-   * LayoutState} instance. This will be used for debugging tools to indicate whether the mountable
-   * output is a wrapped View or View MountSpec. Unlike {@link LithoNode#needsHostView(LithoNode)}
-   * this does not consider accessibility also does not consider root component, but this
-   * approximation is good enough for debugging purposes.
+   * Similar to {@link LithoNode#needsHostView()} but without dependency to {@link LayoutState}
+   * instance. This will be used for debugging tools to indicate whether the mountable output is a
+   * wrapped View or View MountSpec. Unlike {@link LithoNode#needsHostView()} this does not consider
+   * accessibility also does not consider root component, but this approximation is good enough for
+   * debugging purposes.
    */
   static boolean hasViewOutput(final LithoNode node) {
     return node.isForceViewWrapping()

@@ -81,7 +81,7 @@ public class InternalNodeUtils {
                 : LithoRenderUnit.STATE_DIRTY,
         node.isDuplicateParentStateEnabled(),
         false,
-        LithoNode.needsHostView(node),
+        node.needsHostView(),
         node.willMountView());
   }
 
@@ -90,7 +90,7 @@ public class InternalNodeUtils {
       LithoLayoutResult result, final boolean isRoot) {
     final LithoNode node = result.getNode();
 
-    if (!isRoot && !LithoNode.needsHostView(node)) {
+    if (!isRoot && !node.needsHostView()) {
       return null;
     }
 
@@ -256,7 +256,7 @@ public class InternalNodeUtils {
             : isCachedOutputUpdated ? LithoRenderUnit.STATE_UPDATED : LithoRenderUnit.STATE_DIRTY,
         node.isDuplicateParentStateEnabled(),
         false,
-        LithoNode.needsHostView(node),
+        node.needsHostView(),
         false);
   }
 
