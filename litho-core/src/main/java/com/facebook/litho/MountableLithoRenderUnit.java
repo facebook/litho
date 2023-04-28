@@ -38,7 +38,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @UpdateState int updateState,
       final Mountable mountable,
       final @Nullable ComponentContext context) {
     super(
@@ -47,7 +46,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
         nodeInfo,
         flags,
         importantForAccessibility,
-        updateState,
         mountable.getRenderType(),
         context);
 
@@ -60,10 +58,9 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @UpdateState int updateState,
       final Mountable mountable) {
     return new MountableLithoRenderUnit(
-        component, nodeInfo, flags, importantForAccessibility, updateState, mountable, context);
+        component, nodeInfo, flags, importantForAccessibility, mountable, context);
   }
 
   @Override

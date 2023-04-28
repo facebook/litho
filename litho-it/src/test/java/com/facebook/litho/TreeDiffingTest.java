@@ -23,7 +23,7 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LithoRenderUnit.STATE_DIRTY;
 import static com.facebook.litho.LithoRenderUnit.STATE_UNKNOWN;
 import static com.facebook.litho.LithoRenderUnit.STATE_UPDATED;
-import static com.facebook.litho.LithoRenderUnit.getRenderUnit;
+import static com.facebook.litho.MountSpecLithoRenderUnit.getUpdateState;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
@@ -459,10 +459,8 @@ public class TreeDiffingTest {
     LayoutState thirdState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(thirdState.getMountableOutputCount()).isEqualTo(4);
-    assertThat(getRenderUnit(thirdState.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
-    assertThat(getRenderUnit(thirdState.getMountableOutputAt(3)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
+    assertThat(getUpdateState(thirdState.getMountableOutputAt(2))).isEqualTo(STATE_UPDATED);
+    assertThat(getUpdateState(thirdState.getMountableOutputAt(3))).isEqualTo(STATE_UPDATED);
   }
 
   // This test covers the same case with the foreground since the code path is the same!
@@ -478,24 +476,19 @@ public class TreeDiffingTest {
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
     LayoutState state = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
-    assertThat(getRenderUnit(state.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_UNKNOWN);
+    assertThat(getUpdateState(state.getMountableOutputAt(2))).isEqualTo(STATE_UNKNOWN);
 
     mLegacyLithoViewRule.setRoot(component2);
     LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
-    assertThat(getRenderUnit(secondState.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_UNKNOWN);
-    assertThat(getRenderUnit(secondState.getMountableOutputAt(3)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
+    assertThat(getUpdateState(secondState.getMountableOutputAt(2))).isEqualTo(STATE_UNKNOWN);
+    assertThat(getUpdateState(secondState.getMountableOutputAt(3))).isEqualTo(STATE_UPDATED);
 
     mLegacyLithoViewRule.setRoot(component3);
     LayoutState thirdState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
-    assertThat(getRenderUnit(thirdState.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_UNKNOWN);
-    assertThat(getRenderUnit(thirdState.getMountableOutputAt(3)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
+    assertThat(getUpdateState(thirdState.getMountableOutputAt(2))).isEqualTo(STATE_UNKNOWN);
+    assertThat(getUpdateState(thirdState.getMountableOutputAt(3))).isEqualTo(STATE_UPDATED);
   }
 
   @Test
@@ -515,18 +508,12 @@ public class TreeDiffingTest {
     LayoutState secondState = mLegacyLithoViewRule.getComponentTree().getMainThreadLayoutState();
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
-    assertThat(STATE_DIRTY)
-        .isEqualTo(getRenderUnit(secondState.getMountableOutputAt(0)).getUpdateState());
-    assertThat(STATE_UNKNOWN)
-        .isEqualTo(getRenderUnit(secondState.getMountableOutputAt(1)).getUpdateState());
-    assertThat(STATE_UPDATED)
-        .isEqualTo(getRenderUnit(secondState.getMountableOutputAt(2)).getUpdateState());
-    assertThat(STATE_UNKNOWN)
-        .isEqualTo(getRenderUnit(secondState.getMountableOutputAt(3)).getUpdateState());
-    assertThat(STATE_UNKNOWN)
-        .isEqualTo(getRenderUnit(secondState.getMountableOutputAt(4)).getUpdateState());
-    assertThat(STATE_UPDATED)
-        .isEqualTo(getRenderUnit(secondState.getMountableOutputAt(5)).getUpdateState());
+    assertThat(STATE_DIRTY).isEqualTo(getUpdateState(secondState.getMountableOutputAt(0)));
+    assertThat(STATE_UNKNOWN).isEqualTo(getUpdateState(secondState.getMountableOutputAt(1)));
+    assertThat(STATE_UPDATED).isEqualTo(getUpdateState(secondState.getMountableOutputAt(2)));
+    assertThat(STATE_UNKNOWN).isEqualTo(getUpdateState(secondState.getMountableOutputAt(3)));
+    assertThat(STATE_UNKNOWN).isEqualTo(getUpdateState(secondState.getMountableOutputAt(4)));
+    assertThat(STATE_UPDATED).isEqualTo(getUpdateState(secondState.getMountableOutputAt(5)));
   }
 
   @Test
@@ -615,11 +602,13 @@ public class TreeDiffingTest {
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedRoot =
-        (TestComponent) getRenderUnit(prevLayoutState.getMountableOutputAt(2)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(prevLayoutState.getMountableOutputAt(2)).getComponent();
     assertThat(prevNestedRoot.wasMeasureCalled()).isTrue();
 
     TestComponent nestedRoot =
-        (TestComponent) getRenderUnit(layoutState.getMountableOutputAt(2)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(2)).getComponent();
     assertThat(nestedRoot.wasMeasureCalled()).isFalse();
   }
 
@@ -646,23 +635,29 @@ public class TreeDiffingTest {
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevMainTreeLeaf =
-        (TestComponent) getRenderUnit(prevLayoutState.getMountableOutputAt(1)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(prevLayoutState.getMountableOutputAt(1)).getComponent();
     assertThat(prevMainTreeLeaf.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf1 =
-        (TestComponent) getRenderUnit(prevLayoutState.getMountableOutputAt(3)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(prevLayoutState.getMountableOutputAt(3)).getComponent();
     assertThat(prevNestedLeaf1.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf2 =
-        (TestComponent) getRenderUnit(prevLayoutState.getMountableOutputAt(4)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(prevLayoutState.getMountableOutputAt(4)).getComponent();
     assertThat(prevNestedLeaf2.wasMeasureCalled()).isTrue();
 
     TestComponent mainTreeLeaf =
-        (TestComponent) getRenderUnit(layoutState.getMountableOutputAt(1)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(1)).getComponent();
     assertThat(mainTreeLeaf.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf1 =
-        (TestComponent) getRenderUnit(layoutState.getMountableOutputAt(3)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(3)).getComponent();
     assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf2 =
-        (TestComponent) getRenderUnit(layoutState.getMountableOutputAt(4)).getComponent();
+        (TestComponent)
+            LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(4)).getComponent();
     assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
   }
 
@@ -707,11 +702,9 @@ public class TreeDiffingTest {
 
   private static void assertOutputsState(
       LayoutState layoutState, @LithoRenderUnit.UpdateState int state) {
-    assertThat(STATE_DIRTY)
-        .isEqualTo(getRenderUnit(layoutState.getMountableOutputAt(0)).getUpdateState());
+    assertThat(STATE_DIRTY).isEqualTo(getUpdateState(layoutState.getMountableOutputAt(0)));
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
-      LithoRenderUnit output = getRenderUnit(layoutState.getMountableOutputAt(i));
-      assertThat(state).isEqualTo(output.getUpdateState());
+      assertThat(state).isEqualTo(getUpdateState(layoutState.getMountableOutputAt(i)));
     }
   }
 

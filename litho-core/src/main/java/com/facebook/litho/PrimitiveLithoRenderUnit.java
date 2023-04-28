@@ -38,7 +38,6 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @UpdateState int updateState,
       final PrimitiveRenderUnit primitiveRenderUnit,
       final @Nullable ComponentContext context) {
     super(
@@ -47,7 +46,6 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
         nodeInfo,
         flags,
         importantForAccessibility,
-        updateState,
         primitiveRenderUnit.getRenderType(),
         context);
 
@@ -60,16 +58,9 @@ public class PrimitiveLithoRenderUnit extends LithoRenderUnit {
       final @Nullable NodeInfo nodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @UpdateState int updateState,
       final PrimitiveRenderUnit primitiveRenderUnit) {
     return new PrimitiveLithoRenderUnit(
-        component,
-        nodeInfo,
-        flags,
-        importantForAccessibility,
-        updateState,
-        primitiveRenderUnit,
-        context);
+        component, nodeInfo, flags, importantForAccessibility, primitiveRenderUnit, context);
   }
 
   @Override

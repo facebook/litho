@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.rendercore.ContentAllocator;
 import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
@@ -35,6 +36,8 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   private boolean mIsShouldUpdateCachingEnabled;
   private boolean mIsShouldUpdateResultCached;
   private boolean mCachedShouldUpdateResult;
+
+  private final @UpdateState int mUpdateState;
 
   private MountSpecLithoRenderUnit(
       long id,
@@ -50,7 +53,6 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
         nodeInfo,
         flags,
         importantForAccessibility,
-        updateState,
         getRenderType(component),
         context);
     addOptionalMountBinders(
@@ -59,6 +61,7 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
     addAttachBinder(
         DelegateBinder.createDelegateBinder(
             this, MountSpecLithoRenderUnit.LithoBindBinder.INSTANCE));
+    this.mUpdateState = updateState;
   }
 
   public static MountSpecLithoRenderUnit create(
@@ -131,6 +134,10 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   @Override
   public Class<?> getRenderContentType() {
     return getComponent().getClass();
+  }
+
+  public int getUpdateState() {
+    return mUpdateState;
   }
 
   public static boolean shouldUpdateMountItem(
@@ -266,10 +273,10 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
   }
 
   static boolean shouldUpdateMountItem(
-      final LithoRenderUnit nextRenderUnit,
+      final MountSpecLithoRenderUnit nextRenderUnit,
       final @Nullable LithoLayoutData nextLayoutData,
       final @Nullable ComponentContext nextContext,
-      final LithoRenderUnit currentRenderUnit,
+      final MountSpecLithoRenderUnit currentRenderUnit,
       final @Nullable LithoLayoutData currentLayoutData,
       final @Nullable ComponentContext currentContext,
       final boolean useUpdateValueFromLayoutOutput) {
@@ -328,5 +335,9 @@ public class MountSpecLithoRenderUnit extends LithoRenderUnit implements Content
 
   static boolean sameSize(final LithoLayoutData next, final LithoLayoutData current) {
     return next.width == current.width && next.height == current.height;
+  }
+
+  public static @UpdateState int getUpdateState(RenderTreeNode node) {
+    return ((MountSpecLithoRenderUnit) node.getRenderUnit()).getUpdateState();
   }
 }

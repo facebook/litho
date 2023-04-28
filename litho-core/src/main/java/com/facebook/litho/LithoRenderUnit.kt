@@ -32,7 +32,6 @@ protected constructor(
     val nodeInfo: NodeInfo?,
     val flags: Int,
     importantForAccessibility: Int,
-    @get:UpdateState val updateState: Int,
     renderType: RenderType?,
     @field:JvmField val componentContext: ComponentContext?
 ) : RenderUnit<Any?>(renderType), TransitionRenderUnit {

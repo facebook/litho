@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.litho.LithoRenderUnit.UpdateState
+import com.facebook.litho.MountSpecLithoRenderUnit.getUpdateState
 import com.facebook.litho.SizeSpec.makeSizeSpec
 import com.facebook.litho.config.TempComponentsConfigurations
 import com.facebook.litho.drawable.ComparableColorDrawable
@@ -68,21 +69,13 @@ class LegacyTreeDiffingTest {
     componentTree.root = component3
     val thirdState = requireNotNull(componentTree.mainThreadLayoutState)
     assertThat(5).isEqualTo(thirdState.mountableOutputCount)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(thirdState.getMountableOutputAt(1)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(thirdState.getMountableOutputAt(1))))
         .isEqualTo(LithoRenderUnit.STATE_DIRTY)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(thirdState.getMountableOutputAt(2)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(thirdState.getMountableOutputAt(2))))
         .isEqualTo(LithoRenderUnit.STATE_UPDATED)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(thirdState.getMountableOutputAt(3)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(thirdState.getMountableOutputAt(3))))
         .isEqualTo(LithoRenderUnit.STATE_UPDATED)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(thirdState.getMountableOutputAt(4)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(thirdState.getMountableOutputAt(4))))
         .isEqualTo(LithoRenderUnit.STATE_UPDATED)
   }
 
@@ -99,21 +92,15 @@ class LegacyTreeDiffingTest {
     componentTree.setRootAndSizeSpecSync(
         component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY))
     val state = requireNotNull(componentTree.mainThreadLayoutState)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(state.getMountableOutputAt(2)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(state.getMountableOutputAt(2))))
         .isEqualTo(LithoRenderUnit.STATE_UNKNOWN)
     componentTree.root = component2
     val secondState = requireNotNull(componentTree.mainThreadLayoutState)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(secondState.getMountableOutputAt(2)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(secondState.getMountableOutputAt(2))))
         .isEqualTo(LithoRenderUnit.STATE_UPDATED)
     componentTree.root = component3
     val thirdState = requireNotNull(componentTree.mainThreadLayoutState)
-    assertThat(
-            LithoRenderUnit.getRenderUnit(requireNotNull(thirdState.getMountableOutputAt(2)))
-                .updateState)
+    assertThat(getUpdateState(requireNotNull(thirdState.getMountableOutputAt(2))))
         .isEqualTo(LithoRenderUnit.STATE_DIRTY)
   }
 
@@ -151,10 +138,9 @@ class LegacyTreeDiffingTest {
     private lateinit var transparentDrawable: Drawable
     private fun assertOutputsState(layoutState: LayoutState, @UpdateState state: Int) {
       assertThat(LithoRenderUnit.STATE_DIRTY)
-          .isEqualTo(LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(0)).updateState)
+          .isEqualTo(getUpdateState(layoutState.getMountableOutputAt(0)))
       for (i in 1 until layoutState.mountableOutputCount) {
-        val output = LithoRenderUnit.getRenderUnit(layoutState.getMountableOutputAt(i))
-        assertThat(state).isEqualTo(output.updateState)
+        assertThat(state).isEqualTo(getUpdateState(layoutState.getMountableOutputAt(i)))
       }
     }
   }

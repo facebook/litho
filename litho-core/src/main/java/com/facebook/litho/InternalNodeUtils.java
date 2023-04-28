@@ -316,13 +316,7 @@ public class InternalNodeUtils {
     Mountable<?> mountable = node.getMountable();
     if (mountable != null && isMountable(component)) {
       return MountableLithoRenderUnit.create(
-          component,
-          context,
-          layoutOutputNodeInfo,
-          flags,
-          importantForAccessibility,
-          updateState,
-          mountable);
+          component, context, layoutOutputNodeInfo, flags, importantForAccessibility, mountable);
     }
 
     Primitive primitive = node.getPrimitive();
@@ -333,7 +327,6 @@ public class InternalNodeUtils {
           layoutOutputNodeInfo,
           flags,
           importantForAccessibility,
-          updateState,
           primitive.getRenderUnit());
     }
 
