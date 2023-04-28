@@ -1132,7 +1132,6 @@ public class LayoutState
 
     final RenderTree renderTree =
         new RenderTree(root, flatList, mWidthSpec, mHeightSpec, mComponentTreeId, null);
-    renderTree.setRenderTreeData(this);
     mCachedRenderTree = renderTree;
 
     return renderTree;
