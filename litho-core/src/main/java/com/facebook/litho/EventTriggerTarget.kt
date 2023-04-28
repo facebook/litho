@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho
 
-import com.facebook.infer.annotation.ThreadSafe;
-import javax.annotation.Nullable;
+import com.facebook.infer.annotation.ThreadSafe
 
 /**
- * A class implementing this interface wll expose a method annotated with {@link
- * com.facebook.litho.annotations.OnTrigger} to accept an {@link
- * com.facebook.litho.annotations.Event} given an {@link EventTrigger}
+ * A class implementing this fun interface wll expose a method annotated with
+ * [com.facebook.litho.annotations.OnTrigger] to accept an [com.facebook.litho.annotations.Event]
+ * given an [EventTrigger]
  */
 @ThreadSafe
-public interface EventTriggerTarget {
-  @Nullable
-  Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params);
+interface EventTriggerTarget {
+
+  fun acceptTriggerEvent(eventTrigger: EventTrigger<*>, eventState: Any, params: Array<Any>): Any?
 }
