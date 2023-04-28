@@ -75,37 +75,37 @@ abstract class PrimitiveRenderUnit<ContentType>(
   override fun doesMountRenderTreeHosts(): Boolean = doesMountRenderTreeHosts
 
   public override fun mountBinders(
-      context: Context?,
+      context: Context,
       content: ContentType,
       layoutData: Any?,
-      tracer: Systracer?
+      tracer: Systracer
   ) = super.mountBinders(context, content, layoutData, tracer)
 
   public override fun unmountBinders(
-      context: Context?,
+      context: Context,
       content: ContentType,
       layoutData: Any?,
-      tracer: Systracer?
+      tracer: Systracer
   ) = super.unmountBinders(context, content, layoutData, tracer)
 
   public override fun attachBinders(
-      context: Context?,
+      context: Context,
       content: ContentType,
       layoutData: Any?,
-      tracer: Systracer?
+      tracer: Systracer
   ) = super.attachBinders(context, content, layoutData, tracer)
 
   public override fun detachBinders(
-      context: Context?,
+      context: Context,
       content: ContentType,
       layoutData: Any?,
-      tracer: Systracer?
+      tracer: Systracer
   ) = super.detachBinders(context, content, layoutData, tracer)
 
   public override fun updateBinders(
-      context: Context?,
+      context: Context,
       content: ContentType,
-      currentRenderUnit: RenderUnit<ContentType>?,
+      currentRenderUnit: RenderUnit<ContentType>,
       currentLayoutData: Any?,
       newLayoutData: Any?,
       mountDelegate: MountDelegate?,

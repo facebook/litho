@@ -114,29 +114,29 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final void mountBinders(
-      Context context, Object contentT, @Nullable Object layoutData, Systracer tracer) {
-    super.mountBinders(context, (ContentT) contentT, layoutData, tracer);
+      Context context, ContentT contentT, @Nullable Object layoutData, Systracer tracer) {
+    super.mountBinders(context, contentT, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final void unmountBinders(
-      Context context, Object contentT, @Nullable Object layoutData, Systracer tracer) {
-    super.unmountBinders(context, (ContentT) contentT, layoutData, tracer);
+      Context context, ContentT contentT, @Nullable Object layoutData, Systracer tracer) {
+    super.unmountBinders(context, contentT, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final void attachBinders(
-      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
-    super.attachBinders(context, (ContentT) content, layoutData, tracer);
+      Context context, ContentT content, @Nullable Object layoutData, Systracer tracer) {
+    super.attachBinders(context, content, layoutData, tracer);
   }
 
   /** This method is an override that calls super impl to keep it protected on RenderUnit. */
   @Override
   public final void detachBinders(
-      Context context, Object content, @Nullable Object layoutData, Systracer tracer) {
-    super.detachBinders(context, (ContentT) content, layoutData, tracer);
+      Context context, ContentT content, @Nullable Object layoutData, Systracer tracer) {
+    super.detachBinders(context, content, layoutData, tracer);
   }
 
   @Override
