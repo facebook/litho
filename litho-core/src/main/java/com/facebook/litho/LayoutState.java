@@ -1226,17 +1226,29 @@ public class LayoutState
       ComponentsSystrace.endSection();
     }
 
-    final LithoNode forSaving = layoutState.mRoot;
-    if (!c.isReconciliationEnabled()
-        && !ComponentsConfiguration.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun
-        && !ComponentsConfiguration.keepLithoNodes) {
-      layoutState.mRoot = null;
-      layoutState.mLayoutResult = null;
+    final LithoNode nodeForSaving = layoutState.mRoot;
+    final LithoLayoutResult layoutResultForSaving = layoutState.mLayoutResult;
+
+    // clean it up for sanity
+    layoutState.mRoot = null;
+    layoutState.mLayoutResult = null;
+
+    // enabled for debugging and end to end tests
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.isEndToEndTestRun) {
+      layoutState.mRoot = nodeForSaving;
+      layoutState.mLayoutResult = layoutResultForSaving;
+      return;
     }
 
-    if (ComponentsConfiguration.keepLithoNodes) {
-      layoutState.mRoot = forSaving;
+    // only keep the node if reconciliation is enabled for legacy render
+    if (c.isReconciliationEnabled()
+        && c.mLithoConfiguration.mComponentsConfiguration.isLegacyRenderEnabled()) {
+      layoutState.mRoot = nodeForSaving;
+    }
+
+    // override used by analytics teams
+    if (ComponentsConfiguration.keepLayoutResults) {
+      layoutState.mLayoutResult = layoutResultForSaving;
     }
   }
 

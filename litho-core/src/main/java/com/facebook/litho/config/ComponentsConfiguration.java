@@ -161,8 +161,8 @@ public class ComponentsConfiguration {
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
 
-  /** Keeps the litho node tree in the LayoutState. This will increase memory use. */
-  public static boolean keepLithoNodes = false;
+  /** Keeps the litho layout result tree in the LayoutState. This will increase memory use. */
+  public static boolean keepLayoutResults = false;
 
   /**
    * Used by LithoViews to determine whether or not to self-manage the view-port changes, rather
