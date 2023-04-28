@@ -126,24 +126,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> {
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
   public abstract long getId();
 
-  protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
-      getOptionalMountBinderTypeToDelegateMap() {
-    return mOptionalMountBinderTypeToDelegateMap;
-  }
-
-  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getOptionalMountBinders() {
-    return mOptionalMountBinders;
-  }
-
-  protected @Nullable Map<Class<?>, DelegateBinder<?, MOUNT_CONTENT>>
-      getAttachBinderTypeToDelegateMap() {
-    return mAttachBinderTypeToDelegateMap;
-  }
-
-  protected @Nullable List<DelegateBinder<?, MOUNT_CONTENT>> getAttachBinders() {
-    return mAttachBinders;
-  }
-
   public Class<?> getRenderContentType() {
     return getClass();
   }

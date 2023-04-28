@@ -19,8 +19,6 @@ package com.facebook.rendercore;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A {@link Mountable} represents a rendering primitive.
@@ -158,31 +156,5 @@ public abstract class Mountable<ContentT> extends RenderUnit<ContentT> implement
         newLayoutData,
         mountDelegate,
         isAttached);
-  }
-
-  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
-  @Override
-  public final @Nullable Map<Class<?>, DelegateBinder<?, ContentT>>
-      getOptionalMountBinderTypeToDelegateMap() {
-    return super.getOptionalMountBinderTypeToDelegateMap();
-  }
-
-  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
-  @Override
-  public final @Nullable List<DelegateBinder<?, ContentT>> getOptionalMountBinders() {
-    return super.getOptionalMountBinders();
-  }
-
-  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
-  @Override
-  public final @Nullable Map<Class<?>, DelegateBinder<?, ContentT>>
-      getAttachBinderTypeToDelegateMap() {
-    return super.getAttachBinderTypeToDelegateMap();
-  }
-
-  /** This method is an override that calls super impl to keep it protected on RenderUnit. */
-  @Override
-  public final @Nullable List<DelegateBinder<?, ContentT>> getAttachBinders() {
-    return super.getAttachBinders();
   }
 }

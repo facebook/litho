@@ -25,8 +25,6 @@ import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.Mountable;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.Systracer;
-import java.util.List;
-import java.util.Map;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class MountableLithoRenderUnit extends LithoRenderUnit {
@@ -130,30 +128,6 @@ public class MountableLithoRenderUnit extends LithoRenderUnit {
   @Nullable
   public <T extends Binder<?, ?>> T findAttachBinderByClass(Class<T> klass) {
     return mMountable.findAttachBinderByClass(klass);
-  }
-
-  @Nullable
-  @Override
-  public Map<Class<?>, DelegateBinder<?, Object>> getOptionalMountBinderTypeToDelegateMap() {
-    return mMountable.getOptionalMountBinderTypeToDelegateMap();
-  }
-
-  @Nullable
-  @Override
-  public List<DelegateBinder<?, Object>> getOptionalMountBinders() {
-    return mMountable.getOptionalMountBinders();
-  }
-
-  @Nullable
-  @Override
-  public Map<Class<?>, DelegateBinder<?, Object>> getAttachBinderTypeToDelegateMap() {
-    return mMountable.getAttachBinderTypeToDelegateMap();
-  }
-
-  @Nullable
-  @Override
-  public List<DelegateBinder<?, Object>> getAttachBinders() {
-    return mMountable.getAttachBinders();
   }
 
   @Override

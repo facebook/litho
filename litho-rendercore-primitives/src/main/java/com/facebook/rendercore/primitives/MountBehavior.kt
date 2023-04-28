@@ -119,18 +119,4 @@ abstract class PrimitiveRenderUnit<ContentType>(
           newLayoutData,
           mountDelegate,
           isAttached)
-
-  public override fun getOptionalMountBinderTypeToDelegateMap():
-      MutableMap<Class<*>, DelegateBinder<*, ContentType>>? =
-      super.getOptionalMountBinderTypeToDelegateMap()
-
-  public override fun getOptionalMountBinders(): MutableList<DelegateBinder<*, ContentType>>? =
-      super.getOptionalMountBinders()
-
-  public override fun getAttachBinderTypeToDelegateMap():
-      MutableMap<Class<*>, DelegateBinder<*, ContentType>>? =
-      super.getAttachBinderTypeToDelegateMap()
-
-  public override fun getAttachBinders(): MutableList<DelegateBinder<*, ContentType>>? =
-      super.getAttachBinders()
 }
