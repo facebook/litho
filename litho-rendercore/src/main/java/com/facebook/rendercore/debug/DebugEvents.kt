@@ -287,7 +287,6 @@ object DebugEventDispatcher {
 
 /** Object to subscribe to debug events */
 object DebugEventBus {
-  @JvmStatic
   var enabled: Boolean
     @JvmStatic get() = DebugEventDispatcher.enabled
     @JvmStatic
