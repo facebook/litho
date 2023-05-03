@@ -157,6 +157,7 @@ module.exports = {
       {
         'Android Studio': [
           'ide/android-studio-plugin',
+          ...fbInternalOnly(['ide/fb/android-studio-ui-preview']),
         ],
         'Debugging': [
           'debugging/debugging-tips',
