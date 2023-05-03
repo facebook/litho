@@ -590,8 +590,8 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     // If layout cache is valid then we can reuse measurements from the previous pass
     if (ComponentsConfiguration.enableLayoutCaching
         && isCachedLayout()
-        && getLastMeasuredWidth() == widthSpec
-        && getLastMeasuredHeight() == heightSpec
+        && getLastWidthSpec() == widthSpec
+        && getLastHeightSpec() == heightSpec
         && !shouldAlwaysRemeasure(component)) {
 
       return new MeasureResult(
