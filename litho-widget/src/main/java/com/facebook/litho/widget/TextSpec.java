@@ -175,6 +175,7 @@ import java.util.Collections;
 @MountSpec(
     isPureRender = true,
     poolSize = 30,
+    canPreallocate = true,
     events = {TextOffsetOnTouchEvent.class})
 class TextSpec {
 

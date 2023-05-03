@@ -1342,19 +1342,9 @@ public class LayoutState
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final RenderTreeNode treeNode = mMountableOutputs.get(i);
         final Component component = getRenderUnit(treeNode).getComponent();
-
-        if (!((component instanceof SpecGeneratedComponent
-                && ((SpecGeneratedComponent) component).canPreallocate())
-            || (treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
-                && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
-                    .getMountable()
-                    .getContentAllocator()
-                    .canPreallocate())
-            || (treeNode.getRenderUnit() instanceof PrimitiveLithoRenderUnit
-                && ((PrimitiveLithoRenderUnit) treeNode.getRenderUnit())
-                    .getPrimitiveRenderUnit()
-                    .getContentAllocator()
-                    .canPreallocate()))) {
+        if (!isMountSpecThatCanPreallocate(component)
+            && !isMountableThatCanPreallocate(treeNode)
+            && !isPrimitiveThatCanPreallocate(treeNode)) {
           continue;
         }
 
@@ -1364,7 +1354,8 @@ public class LayoutState
           continue;
         }
 
-        if (isMountableView(treeNode.getRenderUnit())) {
+        if (ComponentsConfiguration.enableDrawablePreAllocation
+            || isMountableView(treeNode.getRenderUnit())) {
           if (isTracing) {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
@@ -1382,6 +1373,27 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+  }
+
+  private boolean isPrimitiveThatCanPreallocate(RenderTreeNode treeNode) {
+    return treeNode.getRenderUnit() instanceof PrimitiveLithoRenderUnit
+        && ((PrimitiveLithoRenderUnit) treeNode.getRenderUnit())
+            .getPrimitiveRenderUnit()
+            .getContentAllocator()
+            .canPreallocate();
+  }
+
+  private boolean isMountableThatCanPreallocate(RenderTreeNode treeNode) {
+    return treeNode.getRenderUnit() instanceof MountableLithoRenderUnit
+        && ((MountableLithoRenderUnit) treeNode.getRenderUnit())
+            .getMountable()
+            .getContentAllocator()
+            .canPreallocate();
+  }
+
+  private boolean isMountSpecThatCanPreallocate(Component component) {
+    return component instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) component).canPreallocate();
   }
 
   boolean isActivityValid() {

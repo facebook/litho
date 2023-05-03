@@ -54,7 +54,7 @@ import javax.annotation.Nullable;
  * @prop drawable Drawable to display.
  * @prop scaleType Scale type for the drawable within the container.
  */
-@MountSpec(isPureRender = true, poolSize = 30)
+@MountSpec(isPureRender = true, poolSize = 30, canPreallocate = true)
 class ImageSpec {
 
   private static final ScaleType[] SCALE_TYPE = ScaleType.values();
