@@ -30,7 +30,7 @@ fun Style.attribute(body: (AttributesAcceptor) -> Unit): Style {
 }
 
 operator fun <T> AttributesAcceptor.set(key: AttributeKey<T>, value: T) {
-  setAttributeKey(key, value)
+  setDebugAttributeKey(key, value)
 }
 
 private class AttributeStyleItem(

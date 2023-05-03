@@ -16,13 +16,9 @@
 
 package com.facebook.litho.cancellation
 
-import com.facebook.litho.EmptyComponent
-import com.facebook.litho.MeasuredResultCache
-import com.facebook.litho.ResolveResult
 import com.facebook.litho.cancellation.CancellationPolicy.Result
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.mock
 
 class DefaultLayoutCancellationPolicyTest {
 
@@ -136,24 +132,11 @@ class DefaultLayoutCancellationPolicyTest {
         .isEqualTo(Result.CancelRunningRequests(runningLayouts.map(LayoutMetadata::localVersion)))
   }
 
-  private val resolveResult: ResolveResult =
-      ResolveResult(
-          node = null,
-          context = mock(),
-          component = EmptyComponent(),
-          cache = MeasuredResultCache(),
-          treeState = mock(),
-          isPartialResult = false,
-          version = 0,
-          createdEventHandlers = null,
-          attachables = null,
-          contextForResuming = null)
-
   private val layoutMetadata =
       LayoutMetadata(
           localVersion = 0,
           widthSpec = 100,
           heightSpec = 200,
           executionMode = ExecutionMode.SYNC,
-          resolveResult = resolveResult)
+          resolveResult = null)
 }

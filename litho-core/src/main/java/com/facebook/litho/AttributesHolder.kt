@@ -25,7 +25,7 @@ class AttributesHolder : AttributesAcceptor {
 
   operator fun <T> get(key: AttributeKey<T>): T? = _attributes[key] as T?
 
-  override fun <T> setAttributeKey(attributeKey: AttributeKey<T>, value: T) {
+  override fun <T> setDebugAttributeKey(attributeKey: AttributeKey<T>, value: T) {
     _attributes[attributeKey] = value
   }
 

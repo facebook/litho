@@ -24,5 +24,5 @@ package com.facebook.litho
  * Reading attributes is not allowed for the clients, as only the testing APIs should use it.
  */
 interface AttributesAcceptor {
-  fun <T> setAttributeKey(attributeKey: AttributeKey<T>, value: T)
+  fun <T> setDebugAttributeKey(attributeKey: AttributeKey<T>, value: T)
 }

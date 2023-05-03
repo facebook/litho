@@ -48,7 +48,7 @@ class FiltersTest {
   @Test
   fun `hasAttribute successfully matches when the attribute has the correct value`() {
     val component = DummyComponent()
-    component.setAttributeKey(counterKey, 10)
+    component.setDebugAttributeKey(counterKey, 10)
 
     val filter = hasAttribute(counterKey, 10)
     val testNode = TestNode(component)
@@ -58,7 +58,7 @@ class FiltersTest {
   @Test
   fun `hasAttribute fails to match when the attribute has a different value`() {
     val component = DummyComponent()
-    component.setAttributeKey(counterKey, 10)
+    component.setDebugAttributeKey(counterKey, 10)
 
     val filter = hasAttribute(counterKey, 20)
     val testNode = TestNode(component)

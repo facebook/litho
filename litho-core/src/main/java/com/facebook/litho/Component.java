@@ -2479,19 +2479,32 @@ public abstract class Component
   /**
    * Holds the attributes for this component. These attributes are used in the scope of the testing
    * API, which can verify if a given Component has a given attribute.
+   *
+   * <p>In release builds it should be null, as this code is only used for testing purposes.
    */
-  private final AttributesHolder mAttributesHolder = new AttributesHolder();
+  @Nullable
+  private final AttributesHolder mDebugAttributesHolder =
+      ComponentsConfiguration.isDebugModeEnabled ? new AttributesHolder() : null;
 
   @Override
-  public <T> void setAttributeKey(AttributeKey<T> attributeKey, T value) {
-    mAttributesHolder.setAttributeKey(attributeKey, value);
+  public <T> void setDebugAttributeKey(AttributeKey<T> attributeKey, T value) {
+    if (mDebugAttributesHolder != null) {
+      mDebugAttributesHolder.setDebugAttributeKey(attributeKey, value);
+    }
   }
 
-  public <T> T getAttribute(AttributeKey<T> attributeKey) {
-    return mAttributesHolder.get(attributeKey);
+  public <T> T getDebugAttribute(AttributeKey<T> attributeKey) {
+    if (mDebugAttributesHolder == null) {
+      throw new RuntimeException("This shouldn't get accessed when not initialized");
+    }
+
+    return mDebugAttributesHolder.get(attributeKey);
   }
 
-  public Map<AttributeKey<?>, Object> getAttributes() {
-    return mAttributesHolder.getAttributes();
+  public Map<AttributeKey<?>, Object> getDebugAttributes() {
+    if (mDebugAttributesHolder == null) {
+      throw new RuntimeException("This shouldn't get accessed when not initialized");
+    }
+    return mDebugAttributesHolder.getAttributes();
   }
 }

@@ -27,7 +27,7 @@ data class LayoutMetadata(
     val localVersion: Int,
     val widthSpec: Int,
     val heightSpec: Int,
-    val resolveResult: ResolveResult,
+    val resolveResult: ResolveResult?,
     val executionMode: ExecutionMode
 ) {
 

@@ -910,7 +910,7 @@ class TextSpec {
       @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
     Component componentScope = c.getComponentScope();
     if (componentScope != null) {
-      componentScope.setAttributeKey(
+      componentScope.setDebugAttributeKey(
           WidgetAttributes.Text, Collections.singletonList(processedText));
     }
 

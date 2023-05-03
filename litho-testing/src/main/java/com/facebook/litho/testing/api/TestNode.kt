@@ -38,13 +38,13 @@ class TestNode(private val component: Component) {
           TestNodeAttributes.ContentDescription to component.commonProps?.contentDescription,
           TestNodeActionAttributes.OnClick to component.commonProps?.clickHandler)
 
-  private val componentAttributes: Map<AttributeKey<*>, *> = component.attributes
+  private val componentAttributes: Map<AttributeKey<*>, *> = component.debugAttributes
 
   val clickHandler: EventHandler<ClickEvent>?
     get() = component.commonProps?.clickHandler
 
   fun <T> getAttribute(key: AttributeKey<T>): T =
-      commonPropsAttributes[key] as? T ?: component.getAttribute(key)
+      commonPropsAttributes[key] as? T ?: component.getDebugAttribute(key)
 
   val attributes: Set<Pair<AttributeKey<*>, *>> =
       (commonPropsAttributes + componentAttributes).entries.map { it.toPair() }.toSet()
