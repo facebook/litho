@@ -96,6 +96,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.concurrent.GuardedBy;
+import kotlin.Unit;
 
 /**
  * Represents a tree of components and controls their life cycle. ComponentTree takes in a single
@@ -1072,7 +1073,7 @@ public class ComponentTree
 
           DebugEventDispatcher.dispatch(
               LithoDebugEvent.RenderOnMainThreadStarted,
-              String.valueOf(mId),
+              () -> String.valueOf(mId),
               attributes -> {
                 attributes.put(Root, mRoot != null ? mRoot.getSimpleName() : "");
                 attributes.put(Breadcrumb, mDebugLogBreadcrumb);
@@ -1105,6 +1106,7 @@ public class ComponentTree
                     attributes.put(MainThreadLayoutStateRootId, mainThreadLayoutStateRootId);
                   }
                 }
+                return Unit.INSTANCE;
               });
 
           // TODO: Remove this after plugging the logs subscriber by default.
@@ -1520,13 +1522,14 @@ public class ComponentTree
     if (DebugEventBus.getEnabled()) {
       DebugEventDispatcher.dispatch(
           LithoDebugEvent.StateUpdateEnqueued,
-          String.valueOf(mId),
+          () -> String.valueOf(mId),
           attributes -> {
             attributes.put(
                 LithoDebugEventAttributes.Root, mRoot != null ? mRoot.getSimpleName() : "");
             attributes.put(LithoDebugEventAttributes.Attribution, attribution);
             attributes.put(
                 LithoDebugEventAttributes.StateUpdateType, isSynchronous ? "sync" : "async");
+            return Unit.INSTANCE;
           });
     }
   }
@@ -2117,7 +2120,7 @@ public class ComponentTree
       final boolean wasForced) {
     DebugEventDispatcher.dispatch(
         LithoDebugEvent.RenderRequest,
-        String.valueOf(mId),
+        () -> String.valueOf(mId),
         LogLevel.VERBOSE,
         attrs -> {
           final String attribution = AttributionUtils.getAttribution(extraAttribution);
@@ -2130,6 +2133,7 @@ public class ComponentTree
             attrs.put(DebugEventAttribute.widthSpec, getMeasureSpecDescription(widthSpec));
             attrs.put(DebugEventAttribute.heightSpec, getMeasureSpecDescription(heightSpec));
           }
+          return Unit.INSTANCE;
         });
   }
 
@@ -2748,12 +2752,13 @@ public class ComponentTree
         committedNewLayout = true;
         DebugEventDispatcher.dispatch(
             LithoDebugEvent.LayoutCommitted,
-            String.valueOf(mId),
+            () -> String.valueOf(mId),
             attributes -> {
               attributes.put(DebugEventAttribute.version, layoutVersion);
               attributes.put(DebugEventAttribute.source, layoutSourceToString(source));
               attributes.put(DebugEventAttribute.width, layoutState.getWidth());
               attributes.put(DebugEventAttribute.height, layoutState.getHeight());
+              return Unit.INSTANCE;
             });
       }
 

@@ -121,8 +121,11 @@ public class MountState implements MountDelegateTarget {
 
     trace(
         DebugEvent.RenderTreeMounted,
-        String.valueOf(renderTree.getRenderStateId()),
-        attributes -> attributes.put(RootHostHashCode, mRootHost.hashCode()),
+        () -> String.valueOf(renderTree.getRenderStateId()),
+        attributes -> {
+          attributes.put(RootHostHashCode, mRootHost.hashCode());
+          return Unit.INSTANCE;
+        },
         traceScope -> {
           try {
 
@@ -721,12 +724,13 @@ public class MountState implements MountDelegateTarget {
 
     trace(
         DebugEvent.RenderUnitMounted,
-        String.valueOf(mRenderTree.getRenderStateId()),
+        () -> String.valueOf(mRenderTree.getRenderStateId()),
         attributes -> {
           attributes.put(RenderUnitId, renderTreeNode.getRenderUnit().getId());
           attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
           attributes.put(Bounds, renderTreeNode.getBounds());
           attributes.put(RootHostHashCode, mRootHost.hashCode());
+          return Unit.INSTANCE;
         },
         scope -> {
           final boolean isTracing = mTracer.isTracing();
@@ -829,12 +833,13 @@ public class MountState implements MountDelegateTarget {
 
     trace(
         DebugEvent.RenderUnitUnmounted,
-        String.valueOf(mRenderTree.getRenderStateId()),
+        () -> String.valueOf(mRenderTree.getRenderStateId()),
         attributes -> {
           attributes.put(RenderUnitId, id);
           attributes.put(Description, unit.getDescription());
           attributes.put(Bounds, node.getBounds());
           attributes.put(RootHostHashCode, mRootHost.hashCode());
+          return Unit.INSTANCE;
         },
         scope -> {
           if (isTracing) {
@@ -1008,11 +1013,12 @@ public class MountState implements MountDelegateTarget {
 
     DebugEventDispatcher.trace(
         DebugEvent.MountItemMount,
-        String.valueOf(mRenderTree.getRenderStateId()),
+        () -> String.valueOf(mRenderTree.getRenderStateId()),
         attributes -> {
           attributes.put(RenderUnitId, unit.getId());
           attributes.put(Description, unit.getDescription());
           attributes.put(Bounds, node.getBounds());
+          return Unit.INSTANCE;
         },
         scope -> {
           final MountDelegate mountDelegate = mMountDelegate;
@@ -1088,12 +1094,13 @@ public class MountState implements MountDelegateTarget {
 
       trace(
           DebugEvent.RenderUnitUpdated,
-          String.valueOf(mRenderTree.getRenderStateId()),
+          () -> String.valueOf(mRenderTree.getRenderStateId()),
           attributes -> {
             attributes.put(RenderUnitId, renderTreeNode.getRenderUnit().getId());
             attributes.put(Description, renderTreeNode.getRenderUnit().getDescription());
             attributes.put(Bounds, renderTreeNode.getBounds());
             attributes.put(RootHostHashCode, mRootHost.hashCode());
+            return Unit.INSTANCE;
           },
           scope -> {
             renderUnit.updateBinders(

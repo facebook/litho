@@ -41,7 +41,7 @@ class DebugEventsTest {
     val timestamp = System.currentTimeMillis()
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = timestamp,
     ) { map ->
       map[TestAttr] = TestAttrValue
@@ -64,7 +64,7 @@ class DebugEventsTest {
     val timestamp = System.currentTimeMillis()
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = timestamp,
     ) { map ->
       map[TestAttr] = TestAttrValue
@@ -92,7 +92,7 @@ class DebugEventsTest {
     var event: DebugEvent? = null
     DebugEventBus.subscribe { TestEventSubscriber { e -> event = e } }
 
-    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = TestRenderStateId)
+    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
 
     assertThat(event).isNull()
   }
@@ -103,14 +103,14 @@ class DebugEventsTest {
     val subscriber = TestEventSubscriber { e -> event = e }
     DebugEventBus.subscribe { subscriber }
 
-    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = TestRenderStateId)
+    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
 
     assertThat(event).isNotNull
     event = null
 
     DebugEventBus.unsubscribe(subscriber)
 
-    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = TestRenderStateId)
+    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
 
     assertThat(event).isNull()
   }
@@ -124,14 +124,14 @@ class DebugEventsTest {
     val timestamp = System.currentTimeMillis() - 1 // note: time in the past
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = timestamp,
     ) { map ->
       map[TestAttr] = TestAttrValue
     }
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId, // note: no timestamp passed
+        renderStateId = { TestRenderStateId }, // note: no timestamp passed
     ) { map ->
       map[TestAttr] = "{$TestAttrValue}_1" // note: different attr value
     }
@@ -161,9 +161,9 @@ class DebugEventsTest {
       TestEventsSubscriber(notTestEvent, listener = { e -> otherEvent = e })
     }
 
-    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = TestRenderStateId)
+    DebugEventDispatcher.dispatch(type = TestEvent, renderStateId = { TestRenderStateId })
 
-    DebugEventDispatcher.dispatch(type = notTestEvent, renderStateId = TestRenderStateId)
+    DebugEventDispatcher.dispatch(type = notTestEvent, renderStateId = { TestRenderStateId })
 
     assertThat(event).isNotNull
     assertThat(otherEvent).isNotNull
@@ -176,10 +176,10 @@ class DebugEventsTest {
 
     DebugEventBus.subscribe { TestEventsSubscriber(All, listener = { e -> events.add(e) }) }
 
-    DebugEventDispatcher.dispatch(type = "a", renderStateId = TestRenderStateId)
-    DebugEventDispatcher.dispatch(type = "b", renderStateId = TestRenderStateId)
-    DebugEventDispatcher.dispatch(type = "c", renderStateId = TestRenderStateId)
-    DebugEventDispatcher.dispatch(type = "d", renderStateId = TestRenderStateId)
+    DebugEventDispatcher.dispatch(type = "a", renderStateId = { TestRenderStateId })
+    DebugEventDispatcher.dispatch(type = "b", renderStateId = { TestRenderStateId })
+    DebugEventDispatcher.dispatch(type = "c", renderStateId = { TestRenderStateId })
+    DebugEventDispatcher.dispatch(type = "d", renderStateId = { TestRenderStateId })
 
     assertThat(events.size).isEqualTo(4)
   }
@@ -196,7 +196,7 @@ class DebugEventsTest {
 
     DebugEventDispatcher.trace(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         attributesAccumulator = { attributes -> attributes[TestAttr] = TestAttrValue },
     ) { scope ->
       scope?.attribute(traceTestAttr, "2")
@@ -219,7 +219,7 @@ class DebugEventsTest {
     DebugEventDispatcher.minLogLevel = LogLevel.VERBOSE
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
         logLevel = LogLevel.VERBOSE) {
           mapOf<String, Any?>(TestAttr to TestAttrValue)
@@ -231,7 +231,7 @@ class DebugEventsTest {
     DebugEventDispatcher.minLogLevel = LogLevel.VERBOSE
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
         logLevel = LogLevel.DEBUG) {
           mapOf<String, Any?>(TestAttr to TestAttrValue)
@@ -243,7 +243,7 @@ class DebugEventsTest {
     DebugEventDispatcher.minLogLevel = LogLevel.WARNING
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
         logLevel = LogLevel.DEBUG) {
           mapOf<String, Any?>(TestAttr to TestAttrValue)
@@ -255,7 +255,7 @@ class DebugEventsTest {
     DebugEventDispatcher.minLogLevel = LogLevel.WARNING
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
         logLevel = LogLevel.ERROR) {
           mapOf<String, Any?>(TestAttr to TestAttrValue)
@@ -267,7 +267,7 @@ class DebugEventsTest {
     DebugEventDispatcher.minLogLevel = LogLevel.ERROR
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
         logLevel = LogLevel.ERROR) {
           mapOf<String, Any?>(TestAttr to TestAttrValue)
@@ -279,7 +279,7 @@ class DebugEventsTest {
     DebugEventDispatcher.minLogLevel = LogLevel.FATAL
     DebugEventDispatcher.dispatch(
         type = TestEvent,
-        renderStateId = TestRenderStateId,
+        renderStateId = { TestRenderStateId },
         timestamp = System.currentTimeMillis(),
         logLevel = LogLevel.ERROR) {
           mapOf<String, Any?>(TestAttr to TestAttrValue)

@@ -164,19 +164,19 @@ object DebugEventDispatcher {
   @JvmStatic
   inline fun dispatch(
       type: String,
-      renderStateId: String,
+      renderStateId: () -> String,
       timestamp: Long = System.currentTimeMillis(), // for calender time
       logLevel: LogLevel = LogLevel.DEBUG,
-      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {},
+      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
   ) {
     if (enabled && logLevel >= this.minLogLevel) {
       val attributes = LinkedHashMap<String, Any?>()
-      attributesAccumulator.accumulate(attributes)
+      attributesAccumulator(attributes)
 
       val event =
           DebugMarkerEvent(
               type = type,
-              renderStateId = renderStateId,
+              renderStateId = renderStateId(),
               attributes = attributes,
               timestamp = timestamp,
               logLevel = logLevel,
@@ -192,8 +192,8 @@ object DebugEventDispatcher {
   @JvmStatic
   inline fun dispatch(
       type: String,
-      renderStateId: String,
-      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {}
+      renderStateId: () -> String,
+      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {}
   ) {
     dispatch(
         type = type,
@@ -206,9 +206,9 @@ object DebugEventDispatcher {
   @JvmStatic
   inline fun dispatch(
       type: String,
-      renderStateId: String,
+      renderStateId: () -> String,
       logLevel: LogLevel = LogLevel.DEBUG,
-      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {},
+      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {}
   ) {
     dispatch(
         type = type,
@@ -222,8 +222,8 @@ object DebugEventDispatcher {
   @JvmStatic
   inline fun <T> trace(
       type: String,
-      renderStateId: String,
-      attributesAccumulator: AttributesAccumulator = AttributesAccumulator {},
+      renderStateId: () -> String,
+      attributesAccumulator: (MutableMap<String, Any?>) -> Unit = {},
       block: (TraceScope?) -> T,
   ): T {
 
@@ -244,7 +244,7 @@ object DebugEventDispatcher {
     }
 
     val attributes = LinkedHashMap<String, Any?>()
-    attributesAccumulator.accumulate(attributes)
+    attributesAccumulator(attributes)
 
     val startTime = System.nanoTime()
     val res = block(TraceScope(attributes = attributes))
@@ -253,7 +253,7 @@ object DebugEventDispatcher {
     val event =
         DebugProcessEvent(
             type = type,
-            renderStateId = renderStateId,
+            renderStateId = renderStateId(),
             duration = Duration(value = endTime - startTime),
             attributes = attributes,
         )
