@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.cancellation.ExecutionModeKt;
 import com.facebook.litho.cancellation.LayoutMetadata;
 import com.facebook.litho.cancellation.RequestMetadataSupplier;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlay;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.LayoutCache;
@@ -208,6 +209,10 @@ public class LayoutTreeFuture extends TreeFuture<LayoutState>
 
         if (perfEventLogger != null) {
           perfEventLogger.markerPoint("end_collect_results");
+        }
+
+        if (ComponentsConfiguration.enableLayoutCaching && root != null) {
+          root.clearYogaNodeData();
         }
 
         layoutState.setCreatedEventHandlers(

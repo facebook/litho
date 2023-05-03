@@ -500,6 +500,17 @@ public class LithoLayoutResult implements ComponentLayout, LayoutResult {
     return ((Pair<LayoutContext, LithoLayoutResult>) yogaNode.getData()).second;
   }
 
+  /**
+   * Since layout data(layout context and result itself) is useless once we finish layout
+   * calculation with layout caching, clean up recursively to reduce the cost of memory.
+   */
+  void clearYogaNodeData() {
+    getYogaNode().setData(null);
+    for (int i = 0, count = getChildCount(); i < count; i++) {
+      getChildAt(i).clearYogaNodeData();
+    }
+  }
+
   boolean wasMeasured() {
     return mWasMeasured;
   }
