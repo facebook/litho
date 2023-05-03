@@ -147,4 +147,13 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
       notifyVisibleBoundsChanged();
     }
   }
+
+  @Nullable
+  RenderTree getCurrentRenderTree() {
+    return mCurrentRenderTree;
+  }
+
+  public @Nullable Object findMountContentById(long id) {
+    return mMountState.getContentById(id);
+  }
 }
