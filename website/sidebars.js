@@ -155,6 +155,9 @@ module.exports = {
     // TODO: clean this section up, add intro page
     'Tooling': [
       {
+        'Android Studio': [
+          'ide/android-studio-plugin',
+        ],
         'Debugging': [
           'debugging/debugging-tips',
           'debugging/debugging-sections',
