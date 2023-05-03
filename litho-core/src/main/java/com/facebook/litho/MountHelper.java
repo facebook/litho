@@ -33,4 +33,10 @@ public class MountHelper {
       lithoView.mountComponent(visibleRect, processVisibilityOutputs);
     }
   }
+
+  private static final Rect sEmptyRect = new Rect();
+
+  public static void requestMount(LithoView lithoView, boolean processVisibilityOutputs) {
+    lithoView.mountComponent(sEmptyRect, processVisibilityOutputs);
+  }
 }
